@@ -1009,7 +1009,6 @@
 <translation id="2928905813689894207">ທີ່ຢູ່ຮຽກເກັບເງິນ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ທີ່ຢູ່}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ທີ່ຢູ່}}</translation>
 <translation id="2930577230479659665">ຕັດອອກຫຼັງຈາກສຳເນົາແຕ່ລະສະບັບ</translation>
-<translation id="2932085390869194046">ແນະນຳລະຫັດຜ່ານ...</translation>
 <translation id="2933624813161016821">ຟອຍລ໌ລາຍນູນ</translation>
 <translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ນິ້ວ</translation>
@@ -2959,6 +2958,7 @@
 <translation id="6709133671862442373">ຂ່າວ</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6710594484020273272">&lt;ພິມຄຳສັບການຄົ້ນຫາ&gt;</translation>
+<translation id="6710648923880003133">ແນະນຳລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ</translation>
 <translation id="671076103358959139">ໂທເຄັນການລົງທະບຽນ:</translation>
 <translation id="6711464428925977395">ມີບາງຢ່າງຜິດພາດກັບເຊີບເວີພຣັອກຊີ ຫຼື ທີ່ຢູ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>

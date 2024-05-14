@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kort på Ny fane-siden</translation>
 <translation id="2241634353105152135">Bare én gang</translation>
 <translation id="2253414712144136228">Fjern <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 nettsted er blokkert}other{# nettsteder er blokkert}}</translation>
 <translation id="228293613124499805">De fleste nettsteder du besøker, lagrer sannsynligvis data på enheten din. Ofte gjøres dette for å gi deg en bedre opplevelse, ved at preferansene dine eller informasjonen du deler med nettstedet, blir lagret. Vi anbefaler at du lar denne innstillingen være på.</translation>
 <translation id="2289270750774289114">Spør når nettsteder vil oppdage Bluetooth-enheter i nærheten (anbefales)</translation>
 <translation id="2315043854645842844">Operativsystemet har ikke støtte for sertifikatvalg på klientsiden.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Når dette er på, kan nettsteder be om å få se etter Bluetooth-enheter. Når dette er av, kan ikke nettsteder se etter Bluetooth-enheter.</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8730621377337864115">Ferdig</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 nettsted er tillatt}other{# nettsteder er tillatt}}</translation>
 <translation id="8751914237388039244">Velg et bilde</translation>
 <translation id="8800034312320686233">Virker ikke nettstedet?</translation>
 <translation id="8801436777607969138">Blokkér JavaScript for et bestemt nettsted.</translation>

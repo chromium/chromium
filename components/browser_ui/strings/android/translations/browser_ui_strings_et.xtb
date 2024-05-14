@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Uued vahekaardi lehekaardid</translation>
 <translation id="2241634353105152135">Ainult ühe korra</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eemalda</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sait on blokeeritud}other{# saiti on blokeeritud}}</translation>
 <translation id="228293613124499805">Enamik külastatavaid saite salvestavad teie seadmesse tõenäoliselt andmeid, sageli selleks, et täiustada teie kasutuskogemust, salvestades teie eelistused või teabe, mida saidiga jagate. Soovitame selle seade sisselülitatuks jätta.</translation>
 <translation id="2289270750774289114">Küsi, kui sait soovib läheduses asuvaid Bluetoothi seadmeid tuvastada (soovitatav)</translation>
 <translation id="2315043854645842844">Operatsioonisüsteem ei toeta kliendipoolset sertifikaadi valimist.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete otsimiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid otsida.</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Ühel saidil on luba}other{# saidil on luba}}</translation>
 <translation id="8751914237388039244">Kujutise valimine</translation>
 <translation id="8800034312320686233">Kas sait ei tööta?</translation>
 <translation id="8801436777607969138">JavaScripti blokeerimine konkreetsel saidil.</translation>

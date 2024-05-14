@@ -35,7 +35,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1507198376417198979">Sérsníða nýja Chrome prófílinn</translation>
 <translation id="1516530951338665275">Google Chrome þarf Bluetooth-aðgang til að halda pörun áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Sérsníddu þitt Chrome</translation>
 <translation id="1551749261806528781">Skráðu þig inn í Chrome til að vista og nota aðgangsorðin og fleira í öllum tækjunum þínum. Þetta aðgangsorð verður vistað á Google-reikningnum þínum eftir að þú skráir þig inn.</translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -377,7 +376,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6933858244219479645">ChromeOS-kerfi</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
-<translation id="6944202724043006419">Til að hefja umlykjandi lotu þarf Chrome að hafa skilning á umhverfinu og heimild til að rekja handahreyfingar</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
 <translation id="6989339256997917931">Google Chrome var uppfært en þú hefur ekki notað það í a.m.k. 30 daga.</translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
@@ -452,7 +450,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8009904340233602924">Nota Chrome án reiknings</translation>
 <translation id="8013993649590906847">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google.</translation>
 <translation id="8019103195866286235">Útgefandi þessarar viðbótar afturkallaði hana og hún kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
-<translation id="8031641407207794385">Sérsníddu þitt Chrome</translation>
 <translation id="80471789339884597">Takk fyrir að setja upp. Þú þarft að endurræsa alla vafra áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Þú getur opnað bókamerki, lestrarstillingu og fleira úr valmynd Chrome efst til hægri</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

@@ -34,7 +34,6 @@
 <translation id="1516530951338665275">Google Chrome treba pristup Bluetoothu za nastavak 
  uparivanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS omogućen je dodatnim <ph name="BEGIN_LINK_CROS_OSS" />softverom utemeljenim na otvorenom izvornom kodu<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Prilagodite svoj Chrome</translation>
 <translation id="1551749261806528781">Da biste spremili i upotrebljavali zaporke i drugo na svim svojim uređajima, prijavite se u Chrome. Zaporka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1583073672411044740">Korisnik <ph name="EXISTING_USER" /> već je prijavljen na taj profil u Chromeu. Izradit će se novi profil u Chromeu za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -370,7 +369,6 @@
 <translation id="6933858244219479645">Sustav ChromeOS</translation>
 <translation id="6938166777909186039">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.1.</translation>
 <translation id="6943584222992551122">Podaci o pregledavanju za tu osobu izbrisat će se s ovog uređaja. Da biste vratili te podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome treba dopuštenje za razumijevanje scene i praćenje ruku kako bi pokrenuo interaktivnu sesiju</translation>
 <translation id="6967962315388095737">Ulazno pravilo kako bi Google Chrome Beta dopustio mDNS promet.</translation>
 <translation id="6989339256997917931">Google Chrome ažuriran je, ali vi ga niste upotrebljavali barem 30 dana.</translation>
 <translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sustava nije podržana.</translation>
@@ -445,7 +443,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8009904340233602924">Koristi Chrome bez računa</translation>
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
 <translation id="8019103195866286235">Razvojni programer poništio je objavljivanje tog proširenja i možda nije sigurno. Uklonite ga iz Chromea kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
-<translation id="8031641407207794385">Prilagodite svoj Chrome</translation>
 <translation id="80471789339884597">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti sve preglednike.</translation>
 <translation id="8064015041956107954">Možete otvoriti oznake, čitački način rada i druge značajke putem izbornika preglednika Chrome u gornjem desnom kutu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

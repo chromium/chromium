@@ -36,8 +36,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1516530951338665275">Google Chromeu je potreban pristup Bluetoothu da nastavi s
 uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Prilagodite Chrome</translation>
-<translation id="1551749261806528781">Da biste spremili i upotrebljavali zaporke i drugo na svim svojim uređajima, prijavite se u Chrome. Zaporka će se spremiti na vaš Google račun nakon što se prijavite.</translation>
+<translation id="1551749261806528781">Da sačuvate i koristite lozinke i drugo na svim uređajima, prijavite se u Chrome. Ova lozinka će se sačuvati na Google račun nakon što se prijavite.</translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> je već prijavljen/a na ovom Chrome profilu. Ovim će se kreirati novi Chrome profil za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome koristi vašu kameru.</translation>
@@ -321,7 +320,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5940385492829620908">Vaša aktivnost na webu, oznake i drugi sadržaji s Chromea se nalaze ovdje.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
-<translation id="5947104538377036631">Prečac za Chrome</translation>
+<translation id="5947104538377036631">Prečica Chromea</translation>
 <translation id="6003112304606738118">Preuzimanje… Preostalo je <ph name="HOURS" /> h</translation>
 <translation id="6014316319780893079">Pomoću <ph name="BEGIN_LINK" />Chromeovih alata<ph name="END_LINK" /> možete pregledati sigurno i zadržati kontrolu</translation>
 <translation id="6022659036123304283">Prilagodite Chrome svojim potrebama</translation>
@@ -378,7 +377,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome treba odobrenje za razumijevanje scena i praćenje ruke da pokrene interaktivnu sesiju</translation>
 <translation id="6967962315388095737">Ulazno pravilo da Google Chrome beta verzija dozvoli mDNS saobraćaj.</translation>
 <translation id="6989339256997917931">Google Chrome je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
 <translation id="7011190694940573312">Instalacija nije uspjela jer ova verzija operativnog sistema nije podržana.</translation>
@@ -453,7 +451,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8009904340233602924">Koristi Chrome bez računa</translation>
 <translation id="8013993649590906847">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
 <translation id="8019103195866286235">Programer je opozvao objavljivanje ove ekstenzije i može biti nesigurna. Uklonite je s Chromea kako više ne bi mogla vidjeti i mijenjati vaše podatke na web lokacijama koje posjećujete, uključujući vaše lične informacije.</translation>
-<translation id="8031641407207794385">Prilagodite Chrome</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Možete otvoriti oznake, način rada za čitanje i više u Chrome meniju u gornjem desnom uglu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

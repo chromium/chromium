@@ -1007,7 +1007,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2928905813689894207">Ikheli lokukhokha</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> nongu-<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ngaphezulu}}</translation>
 <translation id="2930577230479659665">Sika ngemuva kwekhophi ngayinye</translation>
-<translation id="2932085390869194046">Iphakamisa iphasiwedi...</translation>
 <translation id="2933624813161016821">I-Embossing Foil</translation>
 <translation id="2938225289965773019">Vula izixhumanisi ze-<ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Imvilophu ye-9 x 12 in</translation>
@@ -2953,6 +2952,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6709133671862442373">Izindaba</translation>
 <translation id="6710213216561001401">Okwedlule</translation>
 <translation id="6710594484020273272">&lt;Thayipha itemu lokusesha&gt;</translation>
+<translation id="6710648923880003133">Iphakamisa iphasiwedi eqinile</translation>
 <translation id="671076103358959139">Ithokheni yokubhaliswa:</translation>
 <translation id="6711464428925977395">Kukhona okungalungile ngeseva elibamba, noma ikheli alilungile.</translation>
 <translation id="6716672519412350405">I-<ph name="URL" /> ifuna ukudala imephu ye-3D yendawo ekuzungezile futhi ilandelele indawo yekhamera</translation>

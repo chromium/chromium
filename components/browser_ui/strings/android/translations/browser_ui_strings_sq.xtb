@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kartat në faqen e skedës së re</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
 <translation id="228293613124499805">Shumica e sajteve që viziton ka mundësi që të ruajnë të dhëna në pajisjen tënde, shpesh për të përmirësuar përvojën tënde duke ruajtur preferencat e tua ose informacionet që ti ndan me sajtin. Ne rekomandojmë që ta mbash të aktivizuar këtë cilësim.</translation>
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Kur cilësimi është aktiv, sajtet mund të kërkojnë leje që të kërkojnë për pajisjet me Bluetooth. Kur cilësimi është joaktiv, sajtet mund të kërkojnë për pajisjet me Bluetooth.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8730621377337864115">U krye</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Lejohet 1 sajt}other{Lejohen # sajte}}</translation>
 <translation id="8751914237388039244">Zgjidh një imazh</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8801436777607969138">Blloko JavaScript për një sajt specifik.</translation>

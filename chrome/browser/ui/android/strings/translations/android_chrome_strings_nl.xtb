@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Orden je gevolgde producten in Bookmarks</translation>
 <translation id="1466383950273130737">Kies de taal voor Chromium</translation>
 <translation id="1477626028522505441">Downloaden van <ph name="FILE_NAME" /> is mislukt door serverproblemen.</translation>
+<translation id="1480287803138246127">Een deel van je geschiedenis wordt hier misschien niet getoond. Open de volledige Chrome-geschiedenis om al je Chrome-geschiedenis te bekijken.</translation>
 <translation id="148482509007564431">Proces voor bookmark opslaan</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1493287004536771723">Je volgt <ph name="SITE_NAME" /></translation>
@@ -1005,6 +1006,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
 <translation id="6233974827872475843">Sla de wachtwoorden op dit apparaat op in je Google-account door synchronisatie aan te zetten</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
+<translation id="6251449557817521191">Bekijk hier je Chrome-geschiedenis</translation>
 <translation id="6255794742848779505">We wijzigen hoe wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
@@ -1389,6 +1391,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
 <translation id="7986497153528221272">Als je wachtwoorden wilt bekijken, moet je eerst een schermvergrendeling instellen op je apparaat</translation>
+<translation id="7988531104457683216">Een deel van je geschiedenis wordt hier misschien niet getoond. Open de volledige Chrome-geschiedenis om al je Chrome-geschiedenis te bekijken. Er kunnen ook andere vormen van browsegeschiedenis voor je Google-account zijn opgeslagen op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Je ziet content zodra deze beschikbaar komt</translation>
 <translation id="799576009106109668">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="8004582292198964060">Browser</translation>

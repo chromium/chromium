@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי להמשיך 
  את ההתאמה. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏<ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת מאפשרת את השימוש ב-ChromeOS.</translation>
-<translation id="155168855724261758">‏התאמה אישית של Chrome</translation>
+<translation id="1551749261806528781">‏כדי לשמור סיסמאות ונתונים נוספים בכל המכשירים ולהשתמש בהם, צריך להיכנס ל-Chrome. הסיסמה הזו תישמר בחשבון שלך ב-Google לאחר הכניסה.</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
 <translation id="1583073672411044740">‏המשתמש <ph name="EXISTING_USER" /> כבר מחובר לפרופיל Chrome הזה. ייווצר פרופיל Chrome חדש בשביל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">‏Google Chrome משתמש במצלמה שלך.</translation>
@@ -264,6 +264,7 @@
 <translation id="4970880042055371251">‏גרסת ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏לוחצים על 'מנהל הסיסמאות של Google'</translation>
+<translation id="5120334927898581447">‏כניסה אל Chrome כשנכנסים לשירותי Google אחרים</translation>
 <translation id="5126049312684316860">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chrome טוענת מראש עוד יותר דפים שיש סיכוי גבוה שייפתחו</translation>
 <translation id="5132929315877954718">‏מקום לגלות אפליקציות, משחקים, תוספים ועיצובים מעולים ל-Google Chrome.</translation>
 <translation id="5139423532931106058">‏התאמה אישית של פרופיל Chrome</translation>
@@ -297,6 +298,7 @@
 <translation id="5709557627224531708">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="5727531838415286053">‏אם צורפת באופן אקראי לגרסת ניסיון פעילה ב-Chrome, היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chrome מחיקה של תחומי העניין שלך על בסיס מתחלף מדי חודש. תחומי עניין שלא הוסרו עוברים רענון.</translation>
 <translation id="5736850870166430177">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
+<translation id="575458254678141039">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס ל-Chrome עם אותו חשבון</translation>
 <translation id="5756509061973259733">‏כבר קיים במכשיר פרופיל Chrome עם החשבון הזה.</translation>
 <translation id="5795887333006832406">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת Canary</translation>
 <translation id="5804318322022881572">‏לא ניתן היה להפעיל את Chrome. יש לנסות שוב.</translation>
@@ -310,6 +312,7 @@
 <translation id="5940385492829620908">‏היסטוריית האתרים, הסימניות ופריטים נוספים מ-Chrome נמצאים כאן.</translation>
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
+<translation id="5947104538377036631">‏קיצור דרך ב-Chrome</translation>
 <translation id="6003112304606738118">מתבצעת הורדה… יש עוד <ph name="HOURS" /> שע'</translation>
 <translation id="6014316319780893079">‏בעזרת <ph name="BEGIN_LINK" />הכלים של Chrome<ph name="END_LINK" /> אפשר לגלוש בבטחה ובשליטה</translation>
 <translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
@@ -347,6 +350,7 @@
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת פיתוח</translation>
 <translation id="659498884637196217">‏שמורה במנהל הסיסמאות של Google במכשיר הזה</translation>
 <translation id="6632473616050862500">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת.</translation>
+<translation id="6660596345553328257">‏להיכנס אל Chrome?</translation>
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
 <translation id="6679975945624592337">‏Google Chrome יכול לפעול ברקע</translation>
 <translation id="6696915334902295848">‏נדרשת הרשאת גישה למיקרופון ב-Chrome עבור האתר הזה</translation>
@@ -365,7 +369,6 @@
 <translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
 <translation id="6943584222992551122">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chrome בתור<ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">‏כדי להתחיל פעילות של מציאות משולבת, נדרשת ל-Chrome הרשאה ל'הבנת סצנות' ולמעקב אחר תנועות הידיים</translation>
 <translation id="6967962315388095737">‏כלל נכנס לגרסת הבטא של Google Chrome כדי לאפשר תנועת mDNS.</translation>
 <translation id="6989339256997917931">‏Google Chrome עודכן, אך לא השתמשת בו לפחות 30 ימים.</translation>
 <translation id="7011190694940573312">ההתקנה נכשלה כי הגרסה הזו של מערכת ההפעלה לא נתמכת.</translation>
@@ -375,6 +378,7 @@
 <translation id="7036251913954633326">‏אם ברצונך להשתמש בחשבון הזה באופן חד-פעמי, אפשר להשתמש <ph name="GUEST_LINK_BEGIN" />במצב אורח<ph name="GUEST_LINK_END" /> בדפדפן Chrome. כדי להוסיף חשבון של מישהו אחר, <ph name="LINK_BEGIN" />יש להוסיף משתמש חדש<ph name="LINK_END" /> אל <ph name="DEVICE_TYPE" />.
 
 יכול להיות שהרשאות שכבר נתת לאתרים ולאפליקציות יחולו על החשבון הזה. יש לך גם אפשרות לנהל את חשבונות Google <ph name="SETTINGS_LINK_BEGIN" />בהגדרות<ph name="SETTINGS_LINK_END" />.</translation>
+<translation id="7037538054043837165">‏צריך להיכנס ל-Chrome כדי לשמור סיסמאות ונתונים נוספים בכל המכשירים, ולהשתמש בהם</translation>
 <translation id="7059914902409643750">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
 <translation id="7071827361006050863">‏נתוני הגלישה ב-Chrome יימחקו בקרוב</translation>
 <translation id="7085332316435785646">‏בוחרים אם לכלול את ההיסטוריה ב-Chrome להתאמה אישית מדויקת יותר בשירותי Google</translation>
@@ -439,7 +443,6 @@
 <translation id="8009904340233602924">‏שימוש ב-Chrome ללא חשבון</translation>
 <translation id="8013993649590906847">‏אם אין לתמונה תיאור מועיל, Chrome ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google.</translation>
 <translation id="8019103195866286235">‏הפרסום של התוסף הזה בוטל על ידי המפתח שלו, ויכול להיות שהתוסף לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר להציג ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
-<translation id="8031641407207794385">‏התאמה אישית של Chrome</translation>
 <translation id="80471789339884597">תודה שהתקנת. עליך להפעיל מחדש את כל הדפדפנים לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">‏אפשר לפתוח סימניות, מצב קריאה ועוד מתפריט Chrome בפינה השמאלית העליונה</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
@@ -448,6 +451,7 @@
 <translation id="8111297389482307122">‏‫Chrome צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יישארו במכשיר הזה.</translation>
 <translation id="8129812357326543296">‏מידע על Google Chrome&amp;</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>
+<translation id="8162006532256575008">‏שימוש ב-Chrome ללא חשבון</translation>
 <translation id="8255190535488645436">‏Google Chrome משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="8257796129973882597">‏אפשר לפתוח סימניות, מצב קריאה ועוד מתפריט Chrome</translation>
 <translation id="8267953129876836456">‏יש ל-Chrome כמה המלצות לגבי בטיחות שכדאי לבדוק</translation>
@@ -458,6 +462,7 @@
 <translation id="8336463659890584292">‏כשאתר מבקש לטעון מראש קישורים בדף שלו באופן פרטי, Chrome משתמש בשרתי Google. כך מוסתרת הזהות שלך מהאתר שנטען מראש, אבל Google יכולה לדעת אילו אתרים נטענים מראש.</translation>
 <translation id="8342675569599923794">‏Chrome‏ חסם את הקובץ הזה כי הוא מסוכן.</translation>
 <translation id="8349795646647783032">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
+<translation id="8350273347136316769">‏אני רוצה להיכנס ל-Chrome באופן אוטומטי</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="8383226135083126309">‏<ph name="BEGIN_BOLD" />איך אנחנו משתמשים בנתונים האלה:<ph name="END_BOLD" /> Chrome יכול להעריך מהם תחומי העניין שלך. לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chrome כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="8387459386171870978">‏המשך השימוש ב-Chrome</translation>
@@ -509,6 +514,7 @@
 <translation id="9053892488859122171">‏מערכת ChromeOS Flex</translation>
 <translation id="9090566250983691233">‏למה קבצים מסוימים נחסמים ב-Chrome</translation>
 <translation id="911206726377975832">למחוק גם את נתוני הגלישה שלך?</translation>
+<translation id="9127728564687112483">‏אני לא רוצה להיכנס ל-Chrome</translation>
 <translation id="9138603949443464873">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chrome</translation>
 <translation id="9195993889682885387">‏Chrome יכול להעריך מהם תחומי העניין שלך על סמך היסטוריית הגלישה שלך מהשבועות האחרונים. המידע הזה נשאר במכשיר שלך.</translation>
 <translation id="919706545465235479">‏יש לעדכן את Chrome כדי להתחיל את הסנכרון</translation>

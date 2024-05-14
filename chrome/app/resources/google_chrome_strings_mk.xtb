@@ -36,7 +36,7 @@
 <translation id="1516530951338665275">Google Chrome бара пристап до Bluetooth за да продолжи со 
  спарувањето. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Приспособете го вашиот Chrome</translation>
+<translation id="1551749261806528781">За да ги зачувувате и користите лозинките и друго на сите ваши уреди, најавете се на Chrome. Откако ќе се најавите, лозинкава ќе се зачува во вашата сметка на Google.</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
 <translation id="1583073672411044740">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome ја користи вашата камера.</translation>
@@ -320,6 +320,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5940385492829620908">Вебот, обележувачите и останатите работи на Chrome живеат тука.</translation>
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
+<translation id="5947104538377036631">Кратенка за Chrome</translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6014316319780893079">Со <ph name="BEGIN_LINK" />алатките од Chrome<ph name="END_LINK" />, може да прелистувате безбедно и да ја контролирате ситуацијата</translation>
 <translation id="6022659036123304283">Направете го Chrome свој</translation>
@@ -376,7 +377,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6933858244219479645">Систем ChromeOS</translation>
 <translation id="6938166777909186039">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome бара дозвола за разбирање на сцената и следење со рацете за да започне сесија со повеќекратна стимулација</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
 <translation id="6989339256997917931">Google Chrome се ажурираше, но не сте го употребиле најмалку 30 дена.</translation>
 <translation id="7011190694940573312">Инсталацијата не успеа бидејќи оваа верзија на оперативниот систем не е поддржана.</translation>
@@ -451,7 +451,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8009904340233602924">Користи Chrome без сметка</translation>
 <translation id="8013993649590906847">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google.</translation>
 <translation id="8019103195866286235">Програмерот го поништи објавувањето на екстензијава, па можеби не е безбедна. Отстранете ја од Chrome за да не може веќе да ги гледа и променува вашите податоци на сајтовите што ги отворате, што ги опфаќа и вашите лични податоци.</translation>
-<translation id="8031641407207794385">Приспособете го вашиот Chrome</translation>
 <translation id="80471789339884597">Фала за инсталирањето. Мора да ги рестартирате сите ваши прелистувачи пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Може да отворате обележувачи, „Режим за читање“ и друго од менито на Chrome во горниот десен агол</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

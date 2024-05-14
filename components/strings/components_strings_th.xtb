@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">ที่อยู่สำหรับการเรียกเก็บเงิน</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}}</translation>
 <translation id="2930577230479659665">ตัดออกหลังสำเนาแต่ละฉบับ</translation>
-<translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2933624813161016821">ฟอยล์ลายนูน</translation>
 <translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 นิ้ว</translation>
@@ -2305,6 +2304,7 @@
 <translation id="5447765697759493033">ระบบจะไม่แปลไซต์นี้</translation>
 <translation id="5452270690849572955">ไม่พบหน้า <ph name="HOST_NAME" /> นี้</translation>
 <translation id="5455374756549232013">เวลาบันทึกของนโยบายไม่เหมาะสม</translation>
+<translation id="5456428544444655325">ไม่ต้องแสดง</translation>
 <translation id="5456839782162429664">ยืนยันด้วยตนเองทุกครั้งที่คุณชำระเงินโดยใช้การป้อนข้อความอัตโนมัติ</translation>
 <translation id="5457113250005438886">ไม่ถูกต้อง</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}other{<ph name="CONTACT_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}}</translation>
@@ -2955,6 +2955,7 @@
 <translation id="6709133671862442373">ข่าวสาร</translation>
 <translation id="6710213216561001401">ก่อนหน้า</translation>
 <translation id="6710594484020273272">&lt;พิมพ์ข้อความค้นหา&gt;</translation>
+<translation id="6710648923880003133">แนะนำรหัสผ่านที่รัดกุม</translation>
 <translation id="671076103358959139">โทเค็นการลงทะเบียน:</translation>
 <translation id="6711464428925977395">พร็อกซีเซิร์ฟเวอร์ผิดปกติหรือที่อยู่ไม่ถูกต้อง</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>

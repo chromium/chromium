@@ -58,6 +58,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2018879682492276940">Yükleme başarısız oldu. Lütfen tekrar deneyin.</translation>
 <translation id="2020032459870799438">Öteki şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
+<translation id="2065461321550902389">Şifreleri ve diğer öğeleri tüm cihazlarınızda kaydedip kullanmak için Chromium'da oturum açın. Bu şifre, oturum açtıktan sonra Google Hesabınıza kaydedilir.</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="2088953378266246249">Chromium'un kök sertifikalarını nasıl yönettiği hakkında bilgi</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}other{Chromium # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Sekmeleriniz açık kalır.}}</translation>
@@ -309,6 +310,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6333502561965082103">Chromium'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="6334986366598267305">Chromium'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
+<translation id="6347933965114150440">Chromium Kısayolu</translation>
 <translation id="6366160072964553914">Dosya çok indirilmediği ve tehlikeli olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="6375219077595103062">Şifre Yöneticisi'ne kısayol ekleyin</translation>
@@ -372,7 +374,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="718435575166326686">Bu site için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="7196312274710523067">Chromium başlatılamadı. Tekrar deneyin.</translation>
 <translation id="7197677400338048821">Chromium, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin.</translation>
-<translation id="7198365860059291213">Chromium'un kapsamlı bir oturum başlatmak için sahneyi anlama ve el izleme iznine ihtiyacı var</translation>
 <translation id="7213407614656404070">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="7246575524853130370">Chromium'un tahmin ettiği ilgi alanlarınız</translation>
@@ -450,7 +451,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
-<translation id="858822505990366713">Chromium'unuzu Özelleştirin</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="8619360774459241877">Chromium başlatılıyor...</translation>
 <translation id="8621669128220841554">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Chromium'u tekrar indirin.</translation>
@@ -469,7 +469,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8931379085695076764">Chromium son birkaç haftalık tarama geçmişinize göre ilgi alanlarınızı tahmin edebilir. Bu bilgi, cihazınızda kalır.</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>
-<translation id="895999862145835951">Chromium'unuzu özelleştirin</translation>
 <translation id="897581876605952338">Chromium Enterprise logosu</translation>
 <translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>
 <translation id="8988036198400390003">Chromium profillerini yönetin</translation>

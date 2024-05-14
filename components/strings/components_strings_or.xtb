@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">ମୂଲ୍ୟ ଅଧିକ ଅଟେ</translation>
 <translation id="2122719317867821810">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ଏକ ଦ୍ୱନ୍ଦ୍ୱ ସୃଷ୍ଟି କରୁଥିବା ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ଓଭରରାଇଡ୍ ହୋଇଛି।</translation>
 <translation id="2126374524350484896">PDF ପ୍ରଯୋଜକ:</translation>
+<translation id="2127090458081644412">ଏହି ଡିଭାଇସରେ ପାସୱାର୍ଡ ସେଭ କରାଯାଇଛି</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">ଏଗୁଡ଼ିକ ରେଣ୍ଡମ ଅର୍ଡରରେ ଦେଖାଯାଏ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ଆପଣଙ୍କର ଡିଫଲ୍ଟକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
@@ -1006,7 +1007,6 @@
 <translation id="2928905813689894207">ବିଲିଂ ଠିକଣା</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}}</translation>
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
-<translation id="2932085390869194046">ପାସ୍‌ୱର୍ଡ ପ୍ରସ୍ତାବ କରନ୍ତୁ...</translation>
 <translation id="2933624813161016821">ଏମ୍ବସିଂ ଫଏଲ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ଲିଙ୍କ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="2941878205777356567">ଏନଭେଲପ 9 x 12 in</translation>
@@ -2028,6 +2028,7 @@
 <translation id="4901778704868714008">ସେଭ୍ କରନ୍ତୁ...</translation>
 <translation id="4901952598169637881">କାଜୁଆଲ ଜୋତା</translation>
 <translation id="4905659621780993806">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ <ph name="DATE" />ରେ <ph name="TIME" /> ବେଳେ ସ୍ୱଚାଳିତ ଭାବେ ରିଷ୍ଟାର୍ଟ କରିବେ। ଆପଣଙ୍କ ଡିଭାଇସ ରିଷ୍ଟାର୍ଟ ହେବା ପୂର୍ବରୁ ଖୋଲା ଥିବା ଯେ କୌଣସି ଆଇଟମକୁ ସେଭ କରନ୍ତୁ।</translation>
+<translation id="4913784027728226227">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଏହି ପାସୱାର୍ଡ ସେଭ କରି ବ୍ୟବହାର କରିବା ପାଇଁ ଏହା ପ୍ରକୃତରେ ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="4913987521957242411">ଉପର ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="4916389289686916969">ଟିଭି ରିଆଲିଟୀ ଶୋ'ଗୁଡ଼ିକ</translation>
 <translation id="4917064667437236721">ଇମେଜିଂ ସିଲିଣ୍ଡର</translation>
@@ -2311,6 +2312,7 @@
 <translation id="5470861586879999274">&amp;ରି-ଡୁ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="547963486735802022">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ଟ୍ରାନ୍ସଫର କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="5481076368049295676">ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଏହି ବିଷୟବସ୍ତୁ ବିପଜ୍ଜନକ ସଫ୍ଟୱେର୍ ଇନ୍‍ଷ୍ଟଲ୍‌ କରିବାକୁ ଚେଷ୍ଟା କରିପାରେ ଯାହା ଆପଣଙ୍କର ସୂଚନା ଚୋରି କରେ କିମ୍ବା ଡିଲିଟ୍‌ କରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">ଲେଖିବାରେ ସହାୟତାର ଅଫର କରନ୍ତୁ</translation>
 <translation id="54817484435770891">ବୈଧ ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5483838506518938965">ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ଭାବରେ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି</translation>
 <translation id="5485973315555778056">କ୍ଲାଉଡ ମେସିନ</translation>
@@ -2949,6 +2951,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
+<translation id="6710648923880003133">ଜଟିଳ ପାସୱାର୍ଡ ସୁପାରିଶ କରନ୍ତୁ</translation>
 <translation id="671076103358959139">ନାମାଙ୍କିତ ଟୋକନ୍:</translation>
 <translation id="6711464428925977395">ପ୍ରକ୍ସି ସର୍ଭରରେ କିଛି ତ୍ରୁଟି ଅଛି କିମ୍ବା ଠିକଣା ଭୁଲ୍ ଅଛି।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ଚାହୁଁଛି</translation>

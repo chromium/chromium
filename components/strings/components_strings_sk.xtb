@@ -1007,7 +1007,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2928905813689894207">Fakturačná adresa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšia}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšie}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšej}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalších}}</translation>
 <translation id="2930577230479659665">Orezať po každej kópii</translation>
-<translation id="2932085390869194046">Navrhnúť heslo…</translation>
 <translation id="2933624813161016821">Razbová fólia</translation>
 <translation id="2938225289965773019">Otvárať odkazy protokolu <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Obálka 228,6 mm × 304,8 mm</translation>
@@ -2302,6 +2301,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5447765697759493033">Tento web nebude preložený</translation>
 <translation id="5452270690849572955">Táto stránka webu <ph name="HOST_NAME" /> sa nenašla</translation>
 <translation id="5455374756549232013">Chybná časová pečiatka pravidla</translation>
+<translation id="5456428544444655325">Nikdy nezobrazovať</translation>
 <translation id="5456839782162429664">Pri každej platbe využívajúcej automatické dopĺňanie požiadať o manuálne overenie</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
@@ -2951,6 +2951,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6710594484020273272">&lt;Zadajte hľadaný výraz&gt;</translation>
+<translation id="6710648923880003133">Navrhnúť silné heslo</translation>
 <translation id="671076103358959139">Registračný token:</translation>
 <translation id="6711464428925977395">Vyskytol sa problém s proxy serverom alebo je adresa nesprávna.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce vytvoriť 3D mapu vášho okolia a sledovať umiestnenie kamier</translation>

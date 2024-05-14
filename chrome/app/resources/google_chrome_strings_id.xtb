@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk melanjutkan 
  penyambungan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
-<translation id="155168855724261758">Sesuaikan Chrome Anda</translation>
+<translation id="1551749261806528781">Untuk menyimpan dan menggunakan sandi dan lainnya di semua perangkat Anda, login ke Chrome. Sandi ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> telah login ke profil Chrome ini. Ini akan membuat profil Chrome baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera Anda.</translation>
@@ -312,6 +312,7 @@
 <translation id="5940385492829620908">Web, bookmark, dan file Chrome Anda lainnya tersedia di sini.</translation>
 <translation id="5941711191222866238">Perkecil</translation>
 <translation id="5941830788786076944">Jadikan Google Chrome sebagai browser default</translation>
+<translation id="5947104538377036631">Pintasan Chrome</translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alat dari Chrome<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
 <translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
@@ -368,7 +369,6 @@
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6943584222992551122">Data browsing pengguna ini akan dihapus dari perangkat ini. Untuk memulihkan data, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome memerlukan izin pelacakan tangan dan pemahaman adegan untuk memulai sesi imersif</translation>
 <translation id="6967962315388095737">Inbound rule untuk Google Chrome Beta guna mengizinkan traffic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
 <translation id="7011190694940573312">Penginstalan gagal karena versi sistem operasi ini tidak didukung.</translation>
@@ -443,7 +443,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8009904340233602924">Gunakan Chrome tanpa akun</translation>
 <translation id="8013993649590906847">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
 <translation id="8019103195866286235">Ekstensi ini dibatalkan publikasinya oleh developer, dan mungkin tidak aman. Hapus dari Chrome agar ekstensi ini tidak dapat lagi melihat dan mengubah data Anda di situs yang Anda kunjungi, termasuk info pribadi Anda.</translation>
-<translation id="8031641407207794385">Sesuaikan Chrome Anda</translation>
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Anda dapat membuka bookmark, mode baca, dan lainnya dari menu Chrome di kanan atas</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

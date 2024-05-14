@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">Faktura Ünvanı</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Hər kopyadan sonra kəsin</translation>
-<translation id="2932085390869194046">Parol təklif edin...</translation>
 <translation id="2933624813161016821">Qabarıq folqa</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="2941878205777356567">Zərf 9 x 12 düym</translation>
@@ -2952,6 +2951,7 @@
 <translation id="6709133671862442373">Xəbərlər</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6710594484020273272">&lt;Axtarış sözünü yazın&gt;</translation>
+<translation id="6710648923880003133">Güclü parol təklif edin</translation>
 <translation id="671076103358959139">Qeydiyyat Açarı:</translation>
 <translation id="6711464428925977395">Proksi serveri ilə bağlı nəsə xəta var və ya ünvan yanlışdır.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və kamera mövqeyini izləmək istəyir</translation>

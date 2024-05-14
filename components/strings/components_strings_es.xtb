@@ -615,6 +615,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2122214041802369259">Precio alto</translation>
 <translation id="2122719317867821810">Esta política funciona según lo previsto, pero ha anulado un valor en conflicto definido en otra parte.</translation>
 <translation id="2126374524350484896">Proveedor de PDF:</translation>
+<translation id="2127090458081644412">Contraseña guardada en este dispositivo</translation>
 <translation id="2130448033692577677">Es posible que las plantillas que has especificado no se apliquen por no haber configurado la política DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Se muestran en orden aleatorio. Puedes cambiar tu buscador predeterminado cuando quieras.</translation>
@@ -1006,7 +1007,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2928905813689894207">Dirección de facturación</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
 <translation id="2930577230479659665">Recortar después de cada copia</translation>
-<translation id="2932085390869194046">Sugerir contraseña...</translation>
 <translation id="2933624813161016821">Papel de aluminio gofrado</translation>
 <translation id="2938225289965773019">Abrir enlaces de <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Sobre de 9x12 pulgadas</translation>
@@ -2031,6 +2031,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4901778704868714008">Guardar...</translation>
 <translation id="4901952598169637881">Calzado informal</translation>
 <translation id="4905659621780993806">Tu administrador reiniciará tu dispositivo automáticamente a las <ph name="TIME" /> el <ph name="DATE" />. Guarda los elementos que tengas abiertos antes de que el dispositivo se reinicie.</translation>
+<translation id="4913784027728226227">Para guardar y usar esta contraseña en todos tus dispositivos, debes verificar que eres tú</translation>
 <translation id="4913987521957242411">Perforado en la parte superior izquierda</translation>
 <translation id="4916389289686916969">Reality shows</translation>
 <translation id="4917064667437236721">Cilindro de imágenes</translation>
@@ -2304,6 +2305,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5447765697759493033">Este sitio web no va a traducirse</translation>
 <translation id="5452270690849572955">No se puede encontrar esta página (<ph name="HOST_NAME" />)</translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
+<translation id="5456428544444655325">No mostrar nunca</translation>
 <translation id="5456839782162429664">Verificar manualmente cada vez que pagues usando Autocompletar</translation>
 <translation id="5457113250005438886">No válido</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
@@ -2314,6 +2316,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5470861586879999274">&amp;Rehacer edición</translation>
 <translation id="547963486735802022">Prueba a transferir tus archivos de nuevo</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o elimine tu información en el dispositivo. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Añadir dirección válida</translation>
 <translation id="5483838506518938965">Ya has terminado</translation>
 <translation id="5485973315555778056">Máquina de la nube</translation>
@@ -2953,6 +2956,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Introducir término de búsqueda&gt;</translation>
+<translation id="6710648923880003133">Sugerir contraseña segura</translation>
 <translation id="671076103358959139">Token de registro:</translation>
 <translation id="6711464428925977395">Se ha producido un error con el servidor proxy o la dirección es incorrecta.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quiere crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>

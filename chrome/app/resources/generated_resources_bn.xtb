@@ -112,7 +112,6 @@
 <translation id="107450319332239199">কোনও সমস্যা হয়েছে। এর পরিবর্তে ম্যানুয়ালি উইন্ডো খুলুন।</translation>
 <translation id="1075920807995555452">আপনার <ph name="DEVICE_TYPE" />-এ আপনার উদ্যোগের ম্যানেজ করা পরিবেশে টুল, এডিটর ও আইডিই (IDE) রান করান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">টেক্সট কার্সরের মাধ্যমে আপনি একটি পৃষ্ঠা থেকে অন্য পৃষ্ঠাতে নেভিগেট করুন</translation>
-<translation id="1076382954055048850">অন্যান্য কাস্ট সেশন দেখুন</translation>
 <translation id="1076698951459398590">থিম সক্ষম করুন</translation>
 <translation id="1076766328672150609">আপনার সন্তান ডিভাইস আনলক করতে পিন ব্যবহার করতে পারে।</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@
 <translation id="1176471985365269981">আপনার ডিভাইসে ফাইল অথবা ফোল্ডার এডিট করার অনুমতি নেই</translation>
 <translation id="1177073277575830464">Android-এর 'দ্রুত সেট-আপ' সম্পূর্ণ হয়েছে। আপনার <ph name="DEVICE_TYPE" />-এ সেট-আপ করা চালিয়ে যান।</translation>
 <translation id="1177440945615690056">আপনি 'সেটিংস' থেকে যেকোনও উপযুক্ত মোবাইল নেটওয়ার্কে কানেক্ট করতে পারবেন।</translation>
+<translation id="1177548198167638471">এই প্রশ্ন আর দেখতে চাই না</translation>
 <translation id="1177863135347784049">কাস্টম</translation>
 <translation id="1178093605842850860">এই সাইট পড়ার ও পরিবর্তন করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -2985,7 +2985,6 @@
 <translation id="3184536091884214176">CUPS প্রিন্টার সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{এই অ্যাপ ব্লক করা আছে}one{কিছু অ্যাপ ব্লক করা আছে}other{কিছু অ্যাপ ব্লক করা আছে}}</translation>
 <translation id="3187472288455401631">বিজ্ঞাপন পরিমাপ</translation>
-<translation id="3188257591659621405">আমার ফাইল</translation>
 <translation id="3188465121994729530">সরানোর গড়</translation>
 <translation id="3189187154924005138">বড় কার্সর</translation>
 <translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
@@ -3833,6 +3832,7 @@
 <translation id="3810914450553844415">আপনার অ্যাডমিনিস্ট্রেটর আর কোনও Google অ্যাকাউন্ট ব্যবহার করার অনুমতি দেয় না।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="381202950560906753">আরেকটি জুড়ুন</translation>
+<translation id="381219490185664296">ট্যাব গ্রুপ আনগ্রুপ করবেন?</translation>
 <translation id="3812525830114410218">খারাপ সার্টিফিকেট</translation>
 <translation id="3813296892522778813">আপনি যা খুঁজছেন তা খুঁজে না পেলে <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome সহায়তা<ph name="END_LINK_CHROMIUM" />য় যান</translation>
 <translation id="3813358687923336574">পৃষ্ঠাগুলি অনুবাদ ও 'কুইক আন্সার' ফিচারের জন্য ব্যবহার করা ভাষা</translation>
@@ -4272,7 +4272,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - এইচআইডি ডিভাইস কানেক্ট করা আছে</translation>
 <translation id="4139326893730851150">ফার্মওয়্যার আপডেট দেখুন</translation>
 <translation id="4142052906269098341">ফোন দিয়ে <ph name="DEVICE_TYPE" /> আনলক করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">আরও উন্নত মানের ভিডিও পান এবং ব্যাটারি সাশ্রয় করুন। শুধুমাত্র আপনার Cast চালু আছে এমন স্ক্রিনে ভিডিও চলবে</translation>
 <translation id="4146026355784316281">সর্বদা সিস্টেম নিরীক্ষকের সাথে খুলুন</translation>
 <translation id="4146785383423576110">রিসেট এবং সাফ করুন</translation>
 <translation id="4147099377280085053">ব্রেইল সারণী বেছে নিন</translation>
@@ -4548,7 +4547,6 @@
 <translation id="4361745360460842907">ট্যাব রূপে খুলুন</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> হল আপনার <ph name="DEVICE_TYPE" />-এর ডিফল্ট অ্যাকাউন্ট।</translation>
 <translation id="4363262124589131906">এই Chromebook-এ 'আমার ড্রাইভ'-এর নতুন ফাইল সিঙ্ক করার প্রসেস অটোমেটিক বন্ধ করে দেবে</translation>
-<translation id="4363771538994847871">কোনও Cast গন্তব্য পাওয়া যায়নি। সাহায্য প্রয়োজন?</translation>
 <translation id="4364327530094270451">ফুটি</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> একটি উইন্ডো শেয়ার করছে।</translation>
 <translation id="4364830672918311045">বিজ্ঞপ্তিগুলি প্রদর্শন করুন</translation>
@@ -5077,6 +5075,7 @@
 <translation id="4777458362738635055">এই ডিভাইসের অন্যান্য ব্যবহারকারীরা এই নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
 <translation id="4777813841994368231">চালু আছে • ডেভেলপার এই এক্সটেনশনটি প্রকাশনা থেকে সরিয়ে নিয়েছেন</translation>
 <translation id="4777825441726637019">Play Store</translation>
+<translation id="4777866634702576038">ট্যাব গ্রুপ মুছবেন?</translation>
 <translation id="4777943778632837590">নেটওয়ার্ক সার্ভারের নাম কনফিগার করুন</translation>
 <translation id="4778653490315793244">এখনও দেখানোর মতো কিছুই নেই</translation>
 <translation id="4779083564647765204">জুম</translation>
@@ -5485,6 +5484,7 @@
 <translation id="5093477827231450397">সেইসব সাইটের তালিকা যা আপনি ব্লক করেছেন এবং যার থেকে আপনি অন্য সাইটে বিজ্ঞাপনের সাজেশন চান না</translation>
 <translation id="5093569275467863761">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা ছদ্মবেশী সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files অ্যাপ বা অন্য অ্যাপ থেকে এই অ্যাপে কাজ করে এমন ফাইল খুলতে ও এডিট করতে পারবেন। ডিফল্ট হিসেবে কোন কোন ফাইল এই অ্যাপে খোলে তা নিয়ন্ত্রণ করতে, <ph name="BEGIN_LINK" />আপনার ডিভাইসে কীভাবে ডিফল্ট হিসেবে অ্যাপ সেট করবেন তা জানুন<ph name="END_LINK" />।</translation>
+<translation id="5094423602314093681">ট্যাব সরাবেন ও গ্রুপ মুছবেন?</translation>
 <translation id="5094721898978802975">সহযোগী ন্যাটিভ অ্যাপ্লিকেশানগুলির সাথে যোগাযোগ করুন</translation>
 <translation id="5095252080770652994">প্রোগ্রেস</translation>
 <translation id="5095507226704905004">ফাইলটি কপি করা যাচ্ছে না কারণ এর আর অস্তিত্ব নেই</translation>
@@ -8089,7 +8089,6 @@
 <translation id="7090714929377281710">অটোমেটিক হটস্পট বন্ধ করুন</translation>
 <translation id="7093220653036489319">দ্রুত উত্তর</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" />: নামের্ ডিভাইসসমূহের সাথে ডেটা বিনিময় করুন</translation>
-<translation id="7094680343477712655">আপনার <ph name="DEVICE_NAME" />-এ কাস্ট সংক্রান্ত অনুরোধ গ্রহণ করুন।</translation>
 <translation id="7098389117866926363">USB-C ডিভাইস (পিছনের বাঁ পোর্ট)</translation>
 <translation id="7098447629416471489">অন্যান্য সংরক্ষিত সার্চ ইঞ্জিন এখানে দেখা যাবে</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{অ্যাপটি সরিয়ে দিন}one{অ্যাপ সরিয়ে দিন}other{অ্যাপ সরিয়ে দিন}}</translation>
@@ -9577,7 +9576,6 @@
 <translation id="8198457270656084773">সিস্টেমের ডিভাইস-লগ পৃষ্ঠা খুঁজছেন? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />দেখুন।</translation>
 <translation id="8199300056570174101">নেটওয়ার্ক (পরিষেবা) এবং ডিভাইসের বৈশিষ্ট্য</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
-<translation id="8200789660596905522"><ph name="DEVICE_NAME" />-এ কাস্ট সংক্রান্ত অনুরোধ গ্রহণ করা হচ্ছে কিনা তা নিশ্চিত করুন।</translation>
 <translation id="8202160505685531999">অাপনার <ph name="DEVICE_TYPE" /> প্রোফাইল আপডেট করার জন্য দয়া করে পুনরায় আপনার পাসওয়ার্ড লিখুন।</translation>
 <translation id="8202827109322349110">প্রাথমিক এডিটরে খুলুন</translation>
 <translation id="8203152941016626022">যে ডিভাইসে 'নিয়ারবাই শেয়ার' ব্যবহার করা হচ্ছে, তার নাম</translation>

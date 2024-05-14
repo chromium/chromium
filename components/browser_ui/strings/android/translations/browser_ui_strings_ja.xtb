@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">新しいタブページのカード</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />　を削除</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 件のサイトがブロックされています}other{# 件のサイトがブロックされています}}</translation>
 <translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
@@ -475,12 +474,11 @@
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="868929229000858085">連絡先を検索</translation>
-<translation id="8712637175834984815">OK</translation>
+<translation id="8712637175834984815">理解した</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="8721719390026067591">オンにすると、サイトは Bluetooth デバイスの検出を要求できます。オフにすると、サイトは Bluetooth デバイスを検出できません。</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8730621377337864115">完了</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 件のサイトが許可されています}other{# 件のサイトが許可されています}}</translation>
 <translation id="8751914237388039244">画像を選択</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>

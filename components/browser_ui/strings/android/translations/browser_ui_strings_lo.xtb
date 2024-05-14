@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">ບັດໜ້າແຖບໃໝ່</translation>
 <translation id="2241634353105152135">ຄັ້ງ​ດຽວ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ລຶບອອກ</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{ມີ 1 ເວັບໄຊທີ່ຖືກບລັອກ}other{ມີ # ເວັບໄຊທີ່ຖືກບລັອກ}}</translation>
 <translation id="228293613124499805">ເວັບໄຊສ່ວນຫຼາຍທີ່ທ່ານເຂົ້າຈະບັນທຶກຂໍ້ມູນໄປໃສ່ອຸປະກອນຂອງທ່ານ, ສ່ວນຫຼາຍແມ່ນເພື່ອປັບປຸງປະສົບການຂອງທ່ານໂດຍການບັນທຶກການຕັ້ງຄ່າ ຫຼື ຂໍ້ມູນທີ່ທ່ານແບ່ງປັນກັບເວັບໄຊ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້.</translation>
 <translation id="2289270750774289114">ຖາມເມື່ອເວັບໄຊຕ້ອງການກວດຫາອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ (ແນະນຳ)</translation>
 <translation id="2315043854645842844">ການ​ເລືອກ​ໃບ​ຢັ້ງ​ຢືນເບື້ອງ​ລູກ​ຂ່າຍ​ບໍ່​ຖືກ​ຮອງ​ຮັບ​ໂດຍ​ລະ​ບົບ​ປະຕິບັດການ.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍຊອກຫາອຸປະກອນ Bluetooth ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດຊອກຫາອຸປະກອນ Bluetooth ໄດ້.</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{ມີ 1 ເວັບໄຊທີ່ອະນຸຍາດ}other{ມີ # ເວັບໄຊທີ່ອະນຸຍາດ}}</translation>
 <translation id="8751914237388039244">ເລືອກຮູບ</translation>
 <translation id="8800034312320686233">ເວັບໄຊໃຊ້ບໍ່ໄດ້ບໍ?</translation>
 <translation id="8801436777607969138">ບລັອກ JavaScript ສຳລັບເວັບໄຊສະເພາະ.</translation>

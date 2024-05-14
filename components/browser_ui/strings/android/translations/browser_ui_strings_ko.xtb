@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">새 탭 페이지 카드</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> 삭제</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{차단된 사이트 1개}other{차단된 사이트 #개}}</translation>
 <translation id="228293613124499805">내가 방문하는 대부분의 사이트에서는 기기에 데이터를 저장하며, 사이트에 공유한 환경설정이나 정보를 저장하여 사용자 환경을 개선하는 경우가 많습니다. 이 설정을 유지하는 것이 좋습니다.</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2315043854645842844">클라이언트측 인증서 선택이 운영체제에서 지원되지 않습니다.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">사용 설정하면 사이트에서 블루투스 기기 검색을 요청할 수 있습니다. 사용 중지하면 사이트에서 블루투스 기기를 검색할 수 없습니다.</translation>
 <translation id="8725066075913043281">다시 시도하기</translation>
 <translation id="8730621377337864115">완료</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{허용된 사이트 1개}other{허용된 사이트 #개}}</translation>
 <translation id="8751914237388039244">이미지 선택</translation>
 <translation id="8800034312320686233">사이트가 작동하지 않나요?</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>

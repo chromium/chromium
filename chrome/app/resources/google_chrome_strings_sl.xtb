@@ -36,7 +36,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1516530951338665275">Google Chrome potrebuje dostop do Bluetootha za nadaljevanje 
  seznanjanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Prilagodite si Chrome</translation>
 <translation id="1551749261806528781">Če želite gesla in drugo shraniti ter jih uporabljati v vseh napravah, se prijavite v Chrome. To geslo bo po prijavi shranjeno v računu Google.</translation>
 <translation id="1553358976309200471">Posodobi Chrome</translation>
 <translation id="1583073672411044740">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromu. S tem bo ustvarjen novi profil v Chromu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -378,7 +377,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome potrebuje dovoljenje za razumevanje prizora in za sledenje rokam, da bi lahko začel interaktivno sejo</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome je posodobljen, a ga niste uporabljali že vsaj 30 dni.</translation>
 <translation id="7011190694940573312">Namestitev ni uspela, ker ta različica operacijskega sistema ni podprta.</translation>
@@ -453,7 +451,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8009904340233602924">Uporaba Chroma brez prijave</translation>
 <translation id="8013993649590906847">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="8019103195866286235">Razvijalec je preklical objavo te razširitve in morda ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
-<translation id="8031641407207794385">Prilagodite si Chrome</translation>
 <translation id="80471789339884597">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati vse brskalnike.</translation>
 <translation id="8064015041956107954">V Chromovem meniju lahko v zgornjem desnem kotu odprete zaznamke, način za branje in drugo</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

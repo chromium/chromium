@@ -7125,13 +7125,6 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="662991036483361836">Impedir que los usuarios habiliten Compartir con Nearby</translation>
-<translation id="6634974629075330608">Esta política inhabilita temporalmente los cambios en la forma en que Chrome gestiona las cookies configuradas mediante JavaScript que contienen determinados caracteres de control (NULL, retorno de carro y salto de línea).
-Anteriormente, la presencia de cualquiera de estos caracteres en una cadena de cookies provocaba que se truncara, pero aun así se definía.
-Ahora, la presencia de estos caracteres hará que se ignore toda la cadena de cookies.
-
-Si se le asigna el valor True a esta política (el valor predeterminado), se habilitará el nuevo comportamiento.
-
-Si se le asigna el valor False a esta política, se habilitará el comportamiento anterior.</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
 <translation id="6640355849038068978">Si se habilita esta opción, los usuarios podrán abrir la aplicación Eche (por ejemplo, haciendo clic en una notificación de la función Mi teléfono).
 
@@ -7891,6 +7884,13 @@ Nota: Si vas a usar esta política para resolver la zona horaria automáticament
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Inhabilitar el acceso root a las máquinas virtuales de Linux</translation>
 <translation id="7194407337890404814">Nombre del proveedor de búsquedas predeterminadas</translation>
+<translation id="7196336906814426783">Esta política establece una serie de intervalos semanales para programar la suspensión automática. Cuando comience un intervalo, el dispositivo <ph name="PRODUCT_OS_NAME" /> pasará al modo Suspensión. Cuando finalice el intervalo, el dispositivo se activará.
+
+No se admiten programaciones que incluyan intervalos que se solapen. Esta política no tendrá ningún efecto si contiene dos intervalos solapados.
+
+Los dispositivos <ph name="PRODUCT_OS_NAME" /> se basarán en la zona horaria del sistema para aplicar estos intervalos.
+
+Nota importante: Si las programaciones configuradas mediante esta política entran en conflicto con otros ajustes de gestión de energía, como <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />, es posible que no se ejecuten según lo esperado. Para permitir que se apliquen los intervalos de suspensión programados, comprueba que estos ajustes estén configurados.</translation>
 <translation id="7198134478421755850">Extensión</translation>
 <translation id="7199304109870655950">Permite configurar las opciones de acceso remoto en el host de Escritorio Remoto de Chrome.
 

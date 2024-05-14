@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">账单邮寄地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
-<translation id="2932085390869194046">建议密码…</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2941878205777356567">9 x 12 英寸信封</translation>
@@ -2302,6 +2301,7 @@
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 的网页</translation>
 <translation id="5455374756549232013">策略时间戳无效</translation>
+<translation id="5456428544444655325">永不显示</translation>
 <translation id="5456839782162429664">每次使用自动填充功能付款时都手动验证</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}other{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}}</translation>
@@ -2951,6 +2951,7 @@
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6710594484020273272">&lt;输入搜索字词&gt;</translation>
+<translation id="6710648923880003133">建议一个安全系数高的密码</translation>
 <translation id="671076103358959139">注册令牌：</translation>
 <translation id="6711464428925977395">代理服务器出现问题，或者地址有误。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>

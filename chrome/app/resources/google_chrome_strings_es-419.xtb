@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">Google Chrome necesita acceso a la conexión Bluetooth para continuar con la 
  vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS es posible gracias al <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
-<translation id="155168855724261758">Personalizar Chrome</translation>
+<translation id="1551749261806528781">Para guardar contraseñas, usarlas y realizar más acciones en todos tus dispositivos, accede a Chrome. Esta contraseña se guardará en tu Cuenta de Google después de que accedas.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Se creará un nuevo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome está usando tu cámara.</translation>
@@ -312,6 +312,7 @@
 <translation id="5940385492829620908">Aquí puedes encontrar tus páginas web, favoritos y otros contenidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Haga de Google Chrome su navegador predeterminado</translation>
+<translation id="5947104538377036631">Acceso directo de Chrome</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">Con las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" />, puedes navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome a tu medida</translation>
@@ -368,7 +369,6 @@
 <translation id="6933858244219479645">Sistema de ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.1.</translation>
 <translation id="6943584222992551122">Los datos de navegación de esta persona se borrarán de este dispositivo. Para recuperarlos, accede a Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome necesita permiso de seguimiento de la mano y comprensión de escenas para iniciar una sesión envolvente</translation>
 <translation id="6967962315388095737">Regla de entrada para que Google Chrome Beta permita el tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
 <translation id="7011190694940573312">La instalación falló porque esta versión del sistema operativo no es compatible.</translation>
@@ -443,7 +443,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8009904340233602924">Usar Chrome sin una cuenta</translation>
 <translation id="8013993649590906847">Si una imagen no tiene una descripción útil, Chrome intentará proporcionarte una. Para crear descripciones, se envían las imágenes a Google.</translation>
 <translation id="8019103195866286235">El desarrollador anuló la publicación de esta extensión y es posible que no sea segura. Quítala de Chrome para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida tu información personal.</translation>
-<translation id="8031641407207794385">Personalizar Chrome</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>
 <translation id="8064015041956107954">Puedes abrir los favoritos, el modo de lectura y más desde el Menú de Chrome en la esquina superior derecha</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

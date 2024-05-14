@@ -1007,7 +1007,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2928905813689894207">Billing Address</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> pa}}</translation>
 <translation id="2930577230479659665">Paikliin pagkatapos ng bawat pagkopya</translation>
-<translation id="2932085390869194046">Magmungkahi ng Password...</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -2306,6 +2305,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5447765697759493033">Hindi isasalin ang site na ito</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
 <translation id="5455374756549232013">Maling timestamp ng patakaran</translation>
+<translation id="5456428544444655325">Huwag kailanman ipakita</translation>
 <translation id="5456839782162429664">Manual na i-verify sa tuwing magbabayad ka gamit ang autofill</translation>
 <translation id="5457113250005438886">Di-wasto</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}one{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}other{<ph name="CONTACT_PREVIEW" /> at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> pa}}</translation>
@@ -2956,6 +2956,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6709133671862442373">Balita</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6710594484020273272">&lt;I-type ang termino para sa paghahanap&gt;</translation>
+<translation id="6710648923880003133">Magmungkahi ng Malakas na Password</translation>
 <translation id="671076103358959139">Token sa Pag-enroll</translation>
 <translation id="6711464428925977395">May problema sa proxy server, o mali ang address.</translation>
 <translation id="6716672519412350405">Gusto ng <ph name="URL" /> na gumawa ng 3D na mapa ng iyong kapaligiran at subaybayan ang posisyon ng camera</translation>

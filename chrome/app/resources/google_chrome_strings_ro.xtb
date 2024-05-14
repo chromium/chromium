@@ -33,7 +33,6 @@
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1516530951338665275">Google Chrome are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
-<translation id="155168855724261758">Personalizează browserul Chrome</translation>
 <translation id="1551749261806528781">Pentru a salva și a folosi parolele și altele pe toate dispozitivele, conectează-te la Chrome. Parola se va salva în Contul Google după ce te conectezi.</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chrome. Astfel, se va crea un nou profil Chrome pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -369,7 +368,6 @@
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.1.</translation>
 <translation id="6943584222992551122">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome are nevoie de permisiune pentru înțelegerea scenei și pentru urmărirea mâinilor spre a începe o sesiune captivantă</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a fost actualizat, dar nu l-ai folosit cel puțin 30 de zile.</translation>
 <translation id="7011190694940573312">Nu s-a instalat deoarece această versiune a sistemului de operare nu este acceptată.</translation>
@@ -444,7 +442,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8009904340233602924">Folosește Chrome fără un cont</translation>
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8019103195866286235">Dezvoltatorul a anulat publicarea acestei extensii și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
-<translation id="8031641407207794385">Personalizează browserul Chrome</translation>
 <translation id="80471789339884597">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești toate browserele.</translation>
 <translation id="8064015041956107954">Poți să deschizi marcaje, modul de lectură și altele din meniul Chrome din dreapta sus</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

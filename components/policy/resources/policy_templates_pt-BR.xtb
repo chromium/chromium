@@ -7381,13 +7381,6 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
 <translation id="66265932317331474">Enviar informações da CPU</translation>
 <translation id="6628120204569232711">Informa o status de armazenamento</translation>
 <translation id="662991036483361836">Impedir que os usuários ativem o recurso "Compartilhar por proximidade"</translation>
-<translation id="6634974629075330608">Esta política fornece uma desativação temporária para mudanças na forma como o Chrome lida com cookies definidos pelo JavaScript e que contêm determinados caracteres de controle (NULL, retorno de carro e feed de linha).
-Antes, a presença de qualquer um desses caracteres em uma string de cookies faria com que eles fossem truncados, mas ainda assim definidos.
-Agora, a presença desses caracteres vai fazer com que toda a string de cookies seja ignorada.
-
-Se esta política for definida como verdadeira (padrão), o novo comportamento será ativado.
-
-Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
 <translation id="663685822663765995">Restringir o modo de cor de impressão</translation>
 <translation id="6640355849038068978">Se esta configuração estiver ativada, os usuários vão poder abrir o app Eche, por exemplo, clicando na notificação do recurso Seu smartphone.
 
@@ -8161,6 +8154,13 @@ Observação: se você estiver usando esta política para resolver o fuso horár
       Para acessar informações detalhadas sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
 <translation id="719398790886719721">Desativar acesso raiz às máquinas virtuais Linux</translation>
 <translation id="7194407337890404814">Nome do provedor de pesquisa padrão</translation>
+<translation id="7196336906814426783">Esta política estabelece uma série de intervalos semanais para programar a suspensão automática. Quando um intervalo é iniciado, o dispositivo <ph name="PRODUCT_OS_NAME" /> entra no modo de suspensão e é ativado quando o intervalo termina.
+
+Não é possível usar programações com intervalos sobrepostos. Esta política não terá efeito se tiver dois intervalos sobrepostos.
+
+Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.
+
+Importante: as programações definidas por esta política podem não ocorrer como esperado se entrarem em conflito com outras configurações de gerenciamento de energia, como <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Verifique se essas configurações estão definidas para permitir que os intervalos de suspensão programados entrem em vigor.</translation>
 <translation id="7198134478421755850">Extensão</translation>
 <translation id="7199304109870655950">Configurar opções de acesso remoto no host da Área de trabalho remota do Google Chrome.
 

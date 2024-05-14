@@ -5431,6 +5431,15 @@ Se il criterio viene impostato su Disattivato, la cronologia di navigazione e qu
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>
+<translation id="5326431956495937408">Se il criterio viene attivato, gli utenti possono inviare le loro password ai membri del gruppo Famiglia (in base al servizio per le famiglie) e ricevere password dai membri.
+Se il criterio viene attivato o se non viene configurato, in Gestore delle password viene visualizzato un pulsante che consente di inviare una password.
+Le password ricevute vengono memorizzate nell'account dell'utente e sono disponibili in Gestore delle password.
+
+Se il criterio viene disattivato, gli utenti non possono inviare password da Gestore delle password ad altri utenti e non possono riceverle da altri utenti.
+
+La funzionalità non è disponibile se la sincronizzazione delle password viene disattivata (tramite le impostazioni dell'utente o attivando il criterio <ph name="SYNC_DISABLED" />).
+
+Gli account gestiti non sono idonei a far parte di un gruppo Famiglia o a crearli, pertanto non possono condividere le password.</translation>
 <translation id="532848608876725157">Attiva DNS over HTTPS con fallback non sicuro</translation>
 <translation id="5328965694451556034">Segnala accesso/uscita</translation>
 <translation id="5329018127554115226">La modalità ad alta efficienza verrà disattivata.</translation>
@@ -7174,13 +7183,6 @@ Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione,
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="662991036483361836">Impedisci agli utenti di attivare la Condivisione nelle vicinanze</translation>
-<translation id="6634974629075330608">Questo criterio consente di disattivare temporaneamente le modifiche al modo in cui Chrome gestisce i cookie impostati tramite JavaScript che contengono determinati caratteri di controllo (null, ritorno a capo e avanzamento riga).
-In precedenza, la presenza di uno qualsiasi di questi caratteri in una stringa di cookie causava un troncamento ma il criterio veniva comunque impostato.
-Ora, la presenza di questi caratteri farà sì che l'intera stringa di cookie venga ignorata.
-
-Se questo criterio viene impostato su Vero (valore predefinito), il nuovo comportamento viene attivato.
-
-Se questo criterio viene impostato su Falso, viene attivato il comportamento precedente.</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
 <translation id="6640355849038068978">Se questa impostazione viene attivata, gli utenti potranno avviare l'applicazione Eche, ad esempio facendo clic su una notifica di Phone Hub.
 

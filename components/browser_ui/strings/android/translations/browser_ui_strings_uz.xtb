@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Yangi varaq sahifasi bildirgilari</translation>
 <translation id="2241634353105152135">Bir marta</translation>
 <translation id="2253414712144136228">Olib tashlash: <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 ta sayt bloklangan}other{# ta sayt bloklangan}}</translation>
 <translation id="228293613124499805">Siz ochgan saytlarning aksariyati sozlamalaringiz yoki ularga ulashgan axborotlar kabilarni qurilmangizda saqlashi mumkin. Koʻpincha bu qulayligingiz uchun amalga oshiriladi. Bu sozlamani oʻchirmaslikni tavsiya qilamiz.</translation>
 <translation id="2289270750774289114">Sayt atrofdagi Bluetooth qurilmalarni tekshirmoqchi boʻlsa, xabar berilsin (tavsiya etiladi)</translation>
 <translation id="2315043854645842844">Tanlangan mijoz sertifikati eskirgan va operatsion tizim tomonidan qo‘llab-quvvatlanmaydi.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Yoqilsa, saytlar Bluetooth qurilmalarni qidirish uchun ruxsat soʻrashi mumkin. Oʻchirilsa, saytlar bunday qurilmalarni qidira olmaydi.</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8730621377337864115">Tayyor</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 ta saytga ruxsat berilgan}other{# ta saytga ruxsat berilgan}}</translation>
 <translation id="8751914237388039244">Rasmni tanlang</translation>
 <translation id="8800034312320686233">Sayt ishlamayaptimi?</translation>
 <translation id="8801436777607969138">Muayyan saytda JavaScript kodini bloklash.</translation>

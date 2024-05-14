@@ -35,7 +35,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1507198376417198979">Pertsonalizatu Chrome-ko profil berria</translation>
 <translation id="1516530951338665275">Google Chrome-k Bluetootha erabiltzeko baimena behar du parekatzen jarraitzeko. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chrome OS.</translation>
-<translation id="155168855724261758">Pertsonalizatu zure Chrome</translation>
+<translation id="1551749261806528781">Pasahitzak eta bestelako datuak gailu guztietan gordetzeko eta erabiltzeko, hasi saioa Chrome-n. Saioa hasi ondoren, pasahitz hau zure Google-ko kontuan gordeko da.</translation>
 <translation id="1553358976309200471">Eguneratu Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> erabiltzaileak Chrome-ko profil honetan hasi du saioa dagoeneko. Chrome-ko beste profil bat sortuko da <ph name="USER_EMAIL_ADDRESS" /> helbiderako.</translation>
 <translation id="1587223624401073077">Google Chrome kamera erabiltzen ari da.</translation>
@@ -319,6 +319,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5940385492829620908">Zure weba, laster-markak eta Chrome-n dituzun beste gauzak hemen bizi dira.</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
+<translation id="5947104538377036631">Chrome-ren lasterbidea</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome-ren tresnekin<ph name="END_LINK" />, segurtasunez araka dezakezu, eta dena kontrolpean eduki</translation>
 <translation id="6022659036123304283">Zeureganatu Chrome</translation>
@@ -375,7 +376,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6933858244219479645">ChromeOS sistema</translation>
 <translation id="6938166777909186039">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>
 <translation id="6943584222992551122">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
-<translation id="6944202724043006419">Chrome-k eszena ulertzeko eta eskuzko jarraipenerako baimena behar du saio murgiltzaile bat hasteko</translation>
 <translation id="6967962315388095737">Google Chrome Beta-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="6989339256997917931">Google Chrome eguneratu egin da, baina ez duzu 30 egunetan erabili.</translation>
 <translation id="7011190694940573312">Instalazioak huts egin du, sistema eragilearen bertsio hau bateragarria ez delako.</translation>
@@ -450,7 +450,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8009904340233602924">Erabili Chrome saioa hasi gabe</translation>
 <translation id="8013993649590906847">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio.</translation>
 <translation id="8019103195866286235">Garatzaileak luzapena desargitaratu du, eta agian ez da segurua. Ken ezazu Chrome-tik, bisitatzen dituzun webguneetan zure datuak ikusi eta aldatu ezin izan ditzan, informazio pertsonala barne.</translation>
-<translation id="8031641407207794385">Pertsonalizatu zure Chrome</translation>
 <translation id="80471789339884597">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzaile guztiak berrabiarazi behar dituzu.</translation>
 <translation id="8064015041956107954">Laster-markak, irakurtzeko modua eta abar goiko eskuineko izkinan dagoen Chrome-ko menutik ireki ditzakezu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

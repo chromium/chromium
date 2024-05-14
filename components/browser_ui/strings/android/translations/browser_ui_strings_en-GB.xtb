@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">New tab page cards</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remove</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="228293613124499805">Most sites that you visit probably save data to your device, often to improve your experience by saving your preferences or information that you share with the site. We recommend keeping this setting on.</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2315043854645842844">Client side certificate selection is not supported by the operating system.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">When on, sites can ask to look for Bluetooth devices. When off, sites can't look for Bluetooth devices.</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8730621377337864115">Done</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site allowed}other{# sites allowed}}</translation>
 <translation id="8751914237388039244">Select an image</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>

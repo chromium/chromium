@@ -145,6 +145,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3474745554856756813">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">O atalho <ph name="SHORTCUT" /> permite alternar entre perfis do Chromium</translation>
 <translation id="3509308970982693815">Feche todas as janelas do Chromium e tente novamente.</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> já tem sessão iniciada.  Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chromium considere.</translation>
 <translation id="3567254597502212821">O seu histórico de navegação, um registo dos sites que visitou através do Chromium neste dispositivo.</translation>
 <translation id="3639635944603682591">Os dados de navegação desta pessoa serão eliminados deste dispositivo. Para recuperar os dados, inicie sessão no Chromium como <ph name="USER_EMAIL" />.</translation>
@@ -377,7 +378,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="718435575166326686">O Chromium necessita da autorização da câmara para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">O Chromium não consegue verificar as suas palavras-passe. Tente novamente após 24 horas.</translation>
-<translation id="7198365860059291213">O Chromium necessita da compreensão do cenário e da autorização de acompanhamento manual para iniciar uma sessão envolvente</translation>
 <translation id="7213407614656404070">Use o Chromium sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7223968959479464213">Gestor de Tarefas - Chromium</translation>
 <translation id="7246575524853130370">Os seus interesses conforme estimado pelo Chromium</translation>
@@ -434,6 +434,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso. Como tal, o Chromium bloqueou-o.</translation>
 <translation id="8232193495299001329">O Chromium não consegue validar a origem desta extensão, e pode não ser segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo informações pessoais.</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>
+<translation id="8254601181414348851">Iniciar sessão no Chromium num novo perfil?</translation>
 <translation id="8266560134891435528">O Chromium não consegue verificar as suas palavras-passe porque não tem sessão iniciada.</translation>
 <translation id="8286943863733751221">O <ph name="BEGIN_LINK" />Chromium avisa<ph name="END_LINK" /> sobre transferências e sites inseguros</translation>
 <translation id="8290862415967981663">Este ficheiro pode ser perigoso. Como tal, o Chromium bloqueou-o.</translation>
@@ -455,7 +456,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
-<translation id="858822505990366713">Personalizar Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> os sites podem armazenar informações no Chromium sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">A iniciar o Chromium…</translation>
 <translation id="8621669128220841554">A instalação falhou devido a um erro não especificado. Descarregue novamente o Chromium .</translation>
@@ -474,7 +474,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8931379085695076764">O Chromium pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium.</translation>
-<translation id="895999862145835951">Personalizar Chromium</translation>
 <translation id="897581876605952338">Logótipo do Chromium Enterprise</translation>
 <translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
 <translation id="8988036198400390003">Gerir perfis do Chromium</translation>

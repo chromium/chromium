@@ -35,7 +35,6 @@
 <translation id="1516530951338665275">पेअर करणे पुढे सुरू ठेवण्यासाठी, Google Chrome ला ब्लूटूथ ॲक्सेस करण्याची 
  आवश्यकता आहे. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
-<translation id="155168855724261758">तुमचे Chrome कस्टमाइझ करा</translation>
 <translation id="1551749261806528781">तुमच्या सर्व डिव्हाइसवर पासवर्ड आणि बरेच काही सेव्ह करण्यासाठी व वापरण्यासाठी, Chrome मध्ये साइन इन करा. तुम्ही साइन इन केल्यावर हा पासवर्ड तुमच्या Google खाते मध्ये सेव्ह केला जाईल.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. हे <ph name="USER_EMAIL_ADDRESS" /> साठी नवीन Chrome प्रोफाइल तयार करेल</translation>
@@ -376,7 +375,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6933858244219479645">ChromeOS सिस्टीम</translation>
 <translation id="6938166777909186039">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे Windows 10 किंवा त्यापुढील आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर Windows 8.1 वापरत आहे.</translation>
 <translation id="6943584222992551122">या व्यक्तीचा ब्राउझिंग डेटा या डिव्हाइसवरून हटवला जाईल. डेटा रीकव्हर करण्यासाठी, Chrome वर <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
-<translation id="6944202724043006419">इमर्सिव्ह सेशन सुरू करण्यासाठी Chrome ला सीन समजून घेणे आणि हँड ट्रॅकिंगची परवानगी आवश्यक आहे</translation>
 <translation id="6967962315388095737">Google Chrome बीटाचा mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="6989339256997917931">Google Chrome अपडेट केला गेला, परंतु तुम्ही तो किमान 30 दिवसांपासून वापरलेला नाही.</translation>
 <translation id="7011190694940573312">इंस्टॉलेशन यशस्वी झाले नाही, कारण ऑपरेटिंग सिस्टीमच्या या आवृत्तीला सपोर्ट नाही.</translation>
@@ -451,7 +449,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8009904340233602924">खात्याशिवाय Chrome वापरा</translation>
 <translation id="8013993649590906847">इमेजचे उपयोगी वर्णन नसल्यास, Chrome तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात.</translation>
 <translation id="8019103195866286235">हे एक्स्टेंशन त्याच्या डेव्हलपरने अप्रकाशित केले होते आणि ते असुरक्षित असू शकते. ते Chrome वरून काढून टाका, जेणेकरून ते तुमच्या वैयक्तिक माहितीच्या समावेशासह तुम्ही भेट देत असलेल्या साइटवरील तुमचा डेटा आता पाहू आणि बदलू शकत नाही.</translation>
-<translation id="8031641407207794385">तुमचे Chrome कस्टमाइझ करा</translation>
 <translation id="80471789339884597">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचे सर्व ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="8064015041956107954">तुम्ही सर्वात वरती उजवीकडे असलेल्या Chrome मेनूमधून बुकमार्क, वाचन मोड आणि बरेच काही उघडू शकता</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

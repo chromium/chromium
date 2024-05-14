@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1002108253973310084">En inkompatibel version av protokollet upptäcktes. Kontrollera att du har den senaste versionen av programvaran på båda datorerna och försök igen.</translation>
+<translation id="1002108253973310084">En inkompatibel version av protokollet upptäcktes. Kontrollera att du har den senaste versionen av mjukvaran på båda datorerna och försök igen.</translation>
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1297009705180977556">Det gick inte att ansluta till <ph name="HOSTNAME" /></translation>
@@ -63,7 +63,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4060747889721220580">Ladda ned fil</translation>
 <translation id="4126409073460786861">När konfigureringen är klar uppdaterar du den här sidan. Sedan kan du ansluta till datorn genom att välja enheten och ange pinkoden</translation>
 <translation id="4145029455188493639">Inloggad som <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="4155497795971509630">Vissa obligatoriska komponenter saknas. Kontrollera att du har installerat den senaste versionen av programvaran och försök igen.</translation>
+<translation id="4155497795971509630">Vissa obligatoriska komponenter saknas. Kontrollera att du har installerat den senaste versionen av mjukvaran och försök igen.</translation>
 <translation id="4176825807642096119">Åtkomstkod</translation>
 <translation id="4227991223508142681">Verktyg för värdprovisionering</translation>
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>

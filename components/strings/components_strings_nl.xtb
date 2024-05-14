@@ -679,6 +679,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2227758700723188171">Studiebeurzen en -toelagen</translation>
 <translation id="2228057197024893428">Dit adres is momenteel opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Genegeerde niet-unieke snelkoppeling: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
@@ -722,6 +723,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2317259163369394535">Voor <ph name="DOMAIN" /> zijn een gebruikersnaam en een wachtwoord vereist.</translation>
 <translation id="2318594867107319532">Laatste beleidstijdstempel:</translation>
 <translation id="2320564945062300737">Gezichtsverzorgingsproducten</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 venster}other{# vensters}}</translation>
 <translation id="2328651992442742497">Toegestaan (standaard)</translation>
 <translation id="2328955282645810595">Bouw- en elektrisch gereedschap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verloopt op <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2928905813689894207">Factuuradres</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Bijsnijden na elke kopie</translation>
-<translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
 <translation id="2933624813161016821">Reliëffolie</translation>
 <translation id="2938225289965773019">Links voor <ph name="PROTOCOL" /> openen</translation>
 <translation id="2941878205777356567">Envelop 9 x 12 inch</translation>
@@ -2301,6 +2302,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5447765697759493033">Deze site wordt niet vertaald</translation>
 <translation id="5452270690849572955">Deze pagina op <ph name="HOST_NAME" /> kan niet worden gevonden</translation>
 <translation id="5455374756549232013">Onjuist tijdstempel van beleid</translation>
+<translation id="5456428544444655325">Nooit tonen</translation>
 <translation id="5456839782162429664">Altijd handmatig verifiëren als je betaalt met automatisch invullen</translation>
 <translation id="5457113250005438886">Ongeldig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2441,6 +2443,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dierenartsen</translation>
 <translation id="5715150588940290235">Opgeslagen beveiligingscodes verwijderen?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> van <ph name="WINDOW_COUNT" /> op dit apparaat</translation>
 <translation id="5717509257172454543">Schaatsen</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="5720895412771013401">Desktopcomputers</translation>
@@ -2950,6 +2953,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6709133671862442373">Nieuws</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Typ een zoekterm&gt;</translation>
+<translation id="6710648923880003133">Sterk wachtwoord voorstellen</translation>
 <translation id="671076103358959139">Inschrijftoken:</translation>
 <translation id="6711464428925977395">Er is iets mis met de proxyserver of het adres is onjuist.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
@@ -3403,6 +3407,7 @@ Aanvullende informatie:
 <translation id="7564667064360547717">Overhemden, shirts en bovenstukjes</translation>
 <translation id="7567204685887185387">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk frauduleus verstrekt. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="7568616151991626879">Google Chrome probeert je wachtwoord in te vullen in <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Geen}=1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Creditcard verwijderen uit Chrome?</translation>
 <translation id="7569983096843329377">Zwart</translation>

@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
+<translation id="1480287803138246127">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a.</translation>
 <translation id="148482509007564431">Tok čuvanja obeleživača</translation>
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovaj sajt</translation>
 <translation id="1493287004536771723">Pratite <ph name="SITE_NAME" /></translation>
@@ -1005,6 +1006,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa koji nisu zasnovani na drugim veb-sajtovima koje ste posetili. Mnogi veb-sajtovi će ipak prikupljati i koristiti podatke pregledanja, na primer, radi poboljšanja bezbednosti, pružanja sadržaja, oglasa i preporuka, kao i radi generisanja statistike izveštavanja.</translation>
 <translation id="6233974827872475843">Uključite sinhronizaciju da biste sačuvali lozinke sa ovog uređaja na Google nalogu</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
+<translation id="6251449557817521191">Ovde pregledajte istoriju Chrome-a</translation>
 <translation id="6255794742848779505">Menjamo način čuvanja lozinki na ovom uređaju</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
@@ -1389,6 +1391,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku koja je ugrožena pri povredi podataka.</translation>
 <translation id="7986497153528221272">Da biste videli lozinke, prvo podesite otključavanje ekrana na uređaju</translation>
+<translation id="7988531104457683216">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a. Google nalog može da ima i druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Videćete sadržaj kada postane dostupan</translation>
 <translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="8004582292198964060">Pregledač</translation>

@@ -378,7 +378,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="7196312274710523067">Chromium nuk mund të hapej. Provo përsëri.</translation>
 <translation id="7197677400338048821">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
-<translation id="7198365860059291213">Chromium ka nevojë për lejen për kuptimin e skenës dhe gjurmimin e duarve për të nisur një seancë gjithëpërfshirëse</translation>
 <translation id="7213407614656404070">Përdor Chromium sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
 <translation id="7246575524853130370">Interesat e tua sipas përllogaritjes nga Chromium</translation>
@@ -456,7 +455,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google"</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
-<translation id="858822505990366713">Personalizo Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Si i përdorim këto të dhëna:<ph name="END_BOLD" /> Sajtet mund të ruajnë informacione për interesat e tua në Chromium. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>
 <translation id="8621669128220841554">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarko përsëri Chromium.</translation>
@@ -475,7 +473,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8931379085695076764">Chromium mund të përllogarisë interesat e tua bazuar në historikun tënd të shfletimit nga javët e fundit. Ky informacion qëndron në pajisjen tënde.</translation>
 <translation id="8941642502866065432">Chromium nuk mund të përditësohet</translation>
-<translation id="895999862145835951">Personalizo Chromium</translation>
 <translation id="897581876605952338">Logoja e Chromium Enterprise</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>

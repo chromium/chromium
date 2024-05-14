@@ -35,7 +35,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1507198376417198979">Customise your new Chrome profile</translation>
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Customise your Chrome</translation>
 <translation id="1551749261806528781">To save and use passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -377,7 +376,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6943584222992551122">This person's browsing data will be deleted from this device. To recover the data, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome needs scene understanding and hand-tracking permission to start an immersive session</translation>
 <translation id="6967962315388095737">Inbound rule for Google Chrome Beta to allow mDNS traffic.</translation>
 <translation id="6989339256997917931">Google Chrome has been updated, but you haven't used it for at least 30 days.</translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
@@ -452,7 +450,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8009904340233602924">Use Chrome without an account</translation>
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8019103195866286235">This extension was unpublished by its developer and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
-<translation id="8031641407207794385">Customise your Chrome</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">You can open bookmarks, reading mode and more from the Chrome menu at the top right</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

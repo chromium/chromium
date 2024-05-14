@@ -34,7 +34,6 @@
 <translation id="1516530951338665275">‏يجب منح Google Chrome الإذن بالوصول إلى البلوتوث لمواصلة عملية 
 الإقران. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">‏تخصيص Chrome</translation>
 <translation id="1551749261806528781">‏لحفظ كلمات المرور واستخدامها وتنفيذ إجراءات أخرى على جميع أجهزتك، عليك تسجيل الدخول إلى Chrome. سيتم حفظ كلمة المرور هذه في حسابك على Google بعد تسجيل الدخول.</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
 <translation id="1583073672411044740">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. سيؤدي هذا الإجراء إلى إنشاء ملف شخصي جديد على Chrome لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -374,7 +373,6 @@
 <translation id="6933858244219479645">‏نظام التشغيل ChromeOS</translation>
 <translation id="6938166777909186039">‏للحصول على تحديثات Google Chrome في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 8.1.</translation>
 <translation id="6943584222992551122">‏سيتم حذف بيانات تصفُّح هذا المستخدم من هذا الجهاز. لاسترداد البيانات، يُرجى تسجيل الدخول إلى Chrome بصفتك <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">‏يحتاج Chrome إلى إذن فهم المشهد وتتبُّع اليد لبدء جلسة غامرة</translation>
 <translation id="6967962315388095737">‏قاعدة الوارد إلى الإصدار التجريبي من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="6989339256997917931">‏تم تحديث متصفح Google Chrome، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>
 <translation id="7011190694940573312">تعذّر تثبيت هذا الإصدار من نظام التشغيل لأنّه غير متوافق.</translation>
@@ -447,7 +445,6 @@
 <translation id="8009904340233602924">‏استخدام Chrome بدون حساب</translation>
 <translation id="8013993649590906847">‏في حال لم تتضمن صورة ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google.</translation>
 <translation id="8019103195866286235">‏ألغى المطوِّر نشر هذه الإضافة، علمًا بأنّها قد تكون غير آمنة. يُرجى إزالة هذه الإضافة من Chrome كي لا تتمكّن من الاطّلاع على بياناتك وتغييرها، بما في ذلك معلوماتك الشخصية، على المواقع الإلكترونية التي تزورها.</translation>
-<translation id="8031641407207794385">‏تخصيص Chrome</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">‏يمكنك فتح الإشارات المرجعية وتفعيل "وضع القراءة" والمزيد من قائمة Chrome في أعلى يسار الشاشة</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>

@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">Платежный адрес</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}}</translation>
 <translation id="2930577230479659665">Подрезать после каждого экземпляра</translation>
-<translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2933624813161016821">Фольга для тиснения</translation>
 <translation id="2938225289965773019">переход по ссылкам <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Конверт 229 x 305 мм</translation>
@@ -2305,6 +2304,7 @@
 <translation id="5447765697759493033">Этот сайт не будет переводиться автоматически</translation>
 <translation id="5452270690849572955">Страница <ph name="HOST_NAME" /> не найдена</translation>
 <translation id="5455374756549232013">Неверная временная метка политики</translation>
+<translation id="5456428544444655325">Никогда</translation>
 <translation id="5456839782162429664">Запрашивать подтверждение при каждой оплате с использованием автозаполнения</translation>
 <translation id="5457113250005438886">Недопустимые данные</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакт}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакт}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакта}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактов}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакта}}</translation>
@@ -2955,6 +2955,7 @@
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Введите поисковый запрос&gt;</translation>
+<translation id="6710648923880003133">Сгенерировать надежный пароль</translation>
 <translation id="671076103358959139">Токен регистрации:</translation>
 <translation id="6711464428925977395">На прокси-сервере возникла проблема или адрес указан неверно.</translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запрашивает разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.</translation>

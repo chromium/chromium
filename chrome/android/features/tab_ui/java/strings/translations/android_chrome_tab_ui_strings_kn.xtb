@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{ನೀವು <ph name="TABS_COUNT_ONE" /> ಆರ್ಕೈವ್ ಮಾಡಿದ ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ}one{ನೀವು <ph name="TABS_COUNT_MANY" /> ಆರ್ಕೈವ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}other{ನೀವು <ph name="TABS_COUNT_MANY" /> ಆರ್ಕೈವ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ}}</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
 <translation id="3291470810748040983">ತೆರೆದ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಿದ್ದಾಗ ನೀವು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
+<translation id="3322827343001922122">ಟ್ಯಾಬ್ ಗುಂಪು <ph name="TITLE_OF_GROUP" /> ಗಾಗಿ ಟ್ಯಾಬ್ ಗುಂಪಿನ ಕ್ರಿಯೆಯ ಮೆನುವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3547352561153509682">ಇದು <ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರುವ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಗುಂಪನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Сервер түйүнүнүн аталышы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн USB кабелин сууруп, анан кайра сайыңыз</translation>
 <translation id="5099354524039520280">өйдө</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> баскычы жок ыкчам баскыч айрым колдонмолордун ыкчам баскычына каршы келиши мүмкүн. Бул ыкчам баскычты колдоно берүү үчүн кайра басыңыз же <ph name="KEY" /> баскычы бар жаңы ыкчам баскычты басыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Окшош:</translation>

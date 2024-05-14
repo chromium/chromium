@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">Διεύθυνση χρέωσης</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="2930577230479659665">Περικοπή μετά από κάθε αντίγραφο</translation>
-<translation id="2932085390869194046">Πρόταση για κωδικό πρόσβασης…</translation>
 <translation id="2933624813161016821">Ανάγλυφο φύλλο αλουμινίου</translation>
 <translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Φάκελος 9 x 12 ίντσες</translation>
@@ -2307,6 +2306,7 @@
 <translation id="5447765697759493033">Αυτός ο ιστότοπος δεν θα μεταφραστεί</translation>
 <translation id="5452270690849572955">Δεν είναι δυνατός ο εντοπισμός αυτής της σελίδας του κεντρικού υπολογιστή <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Εσφαλμένη χρονική σήμανση πολιτικής</translation>
+<translation id="5456428544444655325">Να μην εμφανίζονται ποτέ</translation>
 <translation id="5456839782162429664">Μη αυτόματη επαλήθευση κάθε φορά που πληρώνετε χρησιμοποιώντας την αυτόματη συμπλήρωση</translation>
 <translation id="5457113250005438886">Μη έγκυρο</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
@@ -2957,6 +2957,7 @@
 <translation id="6709133671862442373">Ειδήσεις</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6710594484020273272">&lt;Πληκτρολογήστε όρο αναζήτησης&gt;</translation>
+<translation id="6710648923880003133">Πρόταση ισχυρού κωδικού πρόσβασης</translation>
 <translation id="671076103358959139">Διακριτικό εγγραφής:</translation>
 <translation id="6711464428925977395">Υπάρχει κάποιο πρόβλημα με το διακομιστή μεσολάβησης ή η διεύθυνση είναι εσφαλμένη.</translation>
 <translation id="6716672519412350405">Ο ιστότοπος <ph name="URL" /> θέλει να δημιουργήσει τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας και να παρακολουθεί τη θέση της κάμερας.</translation>

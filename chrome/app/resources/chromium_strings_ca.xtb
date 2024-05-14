@@ -58,6 +58,7 @@
 <translation id="2018879682492276940">La instal·lació ha fallat. Torna-ho a provar.</translation>
 <translation id="2020032459870799438">Per comprovar si les teves altres contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Tria si vols incloure l'historial de Chromium per obtenir experiències més personalitzades als serveis de Google</translation>
+<translation id="2065461321550902389">Per desar i utilitzar les contrasenyes i altres elements en tots els teus dispositius, inicia la sessió a Chromium. Aquesta contrasenya es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="2086476982681781442">Chromium ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="2088953378266246249">Informació sobre com gestiona Chromium els seus certificats arrel</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}other{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}}</translation>
@@ -311,6 +312,7 @@
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6333502561965082103">Hi ha una altra operació en curs a Chromium. Torna-ho a provar més tard.</translation>
 <translation id="6334986366598267305">Ara resulta més fàcil utilitzar Chromium amb el vostre compte de Google i en ordinadors compartits.</translation>
+<translation id="6347933965114150440">Drecera de Chromium</translation>
 <translation id="6366160072964553914">Chromium ha bloquejat aquesta baixada perquè el fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="6373523479360886564">Confirmeu que voleu desinstal·lar Chromium?</translation>
 <translation id="6375219077595103062">Afegeix una drecera al gestor de contrasenyes</translation>
@@ -375,7 +377,6 @@
 <translation id="718435575166326686">Chromium necessita permís d'accés a la càmera per a aquest lloc web</translation>
 <translation id="7196312274710523067">No s'ha pogut iniciar Chromium. Torna-ho a provar.</translation>
 <translation id="7197677400338048821">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores.</translation>
-<translation id="7198365860059291213">Chromium necessita entendre l'escena i el permís de seguiment de la mà per iniciar una sessió immersiva</translation>
 <translation id="7213407614656404070">Utilitza Chromium cada vegada que facis clic en enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="7223968959479464213">Gestor de tasques: Chromium</translation>
 <translation id="7246575524853130370">Els teus interessos segons les estimacions de Chromium</translation>
@@ -453,7 +454,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
-<translation id="858822505990366713">Personalitza el teu Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chromium sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="8619360774459241877">S'està iniciant Chromium...</translation>
 <translation id="8621669128220841554">La instal·lació ha fallat a causa d'un error no especificat. Torneu a baixar Chromium.</translation>
@@ -472,7 +472,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>
 <translation id="8931379085695076764">Chromium pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>
 <translation id="8941642502866065432">Chromium no es pot actualitzar</translation>
-<translation id="895999862145835951">Personalitza el teu Chromium</translation>
 <translation id="897581876605952338">Logotip de Chromium Enterprise</translation>
 <translation id="8986207147630327271">Estàs afegint un perfil de treball a aquest navegador i donant control al teu administrador únicament sobre el perfil de treball.</translation>
 <translation id="8988036198400390003">Gestiona els perfils de Chromium</translation>

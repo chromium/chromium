@@ -1008,7 +1008,6 @@
 <translation id="2928905813689894207">বিলিংয়ের ঠিকানা</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টি}}</translation>
 <translation id="2930577230479659665">প্রতিটি কপির পর ট্রিম করুন</translation>
-<translation id="2932085390869194046">পাসওয়ার্ড প্রস্তাব করুন…</translation>
 <translation id="2933624813161016821">এমবসিং ফয়েল</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিঙ্কগুলি খুলুন</translation>
 <translation id="2941878205777356567">এনভেলপ ৯ x ১২ ইঞ্চি</translation>
@@ -2307,6 +2306,7 @@
 <translation id="5447765697759493033">এই সাইটটি অনুবাদ করা হবে না</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" /> পৃষ্ঠাটি পাওয়া যাচ্ছে না</translation>
 <translation id="5455374756549232013">ত্রুটিপূর্ণ নীতি টাইমস্ট্যাম্প</translation>
+<translation id="5456428544444655325">কখনই দেখাবেন না</translation>
 <translation id="5456839782162429664">অটোফিল ব্যবহার করে প্রত্যেকবার পেমেন্ট করার সময় ম্যানুযালি যাচাই করুন</translation>
 <translation id="5457113250005438886">ভুল</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}one{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}other{<ph name="CONTACT_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টি}}</translation>
@@ -2956,6 +2956,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6710594484020273272">&lt;সার্চের পদ লিখুন&gt;</translation>
+<translation id="6710648923880003133">শক্তিশালী পাসওয়ার্ড সাজেস্ট করুন</translation>
 <translation id="671076103358959139">নথিভুক্ত করার জন্য টোকেন:</translation>
 <translation id="6711464428925977395">প্রক্সী সার্ভারের কোনো সমস্যা হয়েছে, অথবা ঠিকানাটি ভুল।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চাইছে</translation>

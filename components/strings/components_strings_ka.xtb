@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">ფასისთვის თვალის მიდევნება გამოირთო</translation>
 <translation id="127777513559587977">სატელევიზიო თოქ-შოუები</translation>
 <translation id="1281476433249504884">სტეკერი 1</translation>
+<translation id="1281536351321444151">მომავალში ამ IBAN-ის ავტომატურად შესავსებად შეინახეთ ის თქვენს Google ანგარიშში</translation>
 <translation id="1282358575813748144">ნავები და წყლის ტრანსპორტი</translation>
 <translation id="1283977499362032052">რეზიუმეები და პორტფოლიოები</translation>
 <translation id="1285320974508926690">არასდროს გადათარგმნო ეს საიტი</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">ლანგარი 8</translation>
 <translation id="1530707389502320859">როგორც ჩანს, საიტი, რომლის მონახულებასაც ეს-ესაა ცდილობდით, ყალბია. თავდამსხმელები, ზოგჯერ, ახდენენ საიტების იმიტირებას URL-ში მცირე, რთულად შესამჩნევი ცვლილებების შეტანით.</translation>
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
+<translation id="1533966801397200693">პროფილი, რომელშიც შესული ხართ, მართული პროფილია. თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს აუცილებელი ამოცანები. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
 <translation id="1537807545287921620">ამ PDF-ზე წვდომა შეუძლებელია. გახსენით კონტექსტური მენიუ და აირჩიეთ „ტექსტის ამოღება PDF-იდან“.</translation>
 <translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">სასწავლო გრანტები და სტიპენდიები</translation>
 <translation id="2228057197024893428">ეს მისამართი ამჟამად შენახულია Chrome-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">იგნორირებულია არაუნიკალური მალსახმობი: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="2233745931693710080">კომპაქტდისკი</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> საჭიროებს მომხმარებლის სახელსა და პაროლს.</translation>
 <translation id="2318594867107319532">წესების ბოლო დროის ანაბეჭდი:</translation>
 <translation id="2320564945062300737">სახის მოვლის საშუალებები</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 ფანჯარა}other{# ფანჯარა}}</translation>
 <translation id="2328651992442742497">დაშვებულია (ნაგულისხმევად)</translation>
 <translation id="2328955282645810595">მშენებლობა და ელექტროხელსაწყოები</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, ძალაშია <ph name="EXPIRATION_DATE_ABBR" />-მდე</translation>
@@ -1007,7 +1011,6 @@
 <translation id="2928905813689894207">ბილინგის მისამართი</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="2930577230479659665">შემოჭრა თითოეული ასლის შემდეგ</translation>
-<translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2933624813161016821">აფსკი ცხელი ტვიფვრისთვის</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
 <translation id="2941878205777356567">კონვერტი 9 x 12 დუიმი</translation>
@@ -1185,6 +1188,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">შეიყვანეთ <ph name="NUMBER_OF_DIGITS" />-ციფრიანი დამადასტურებელი კოდი</translation>
 <translation id="3272643614306383237">1 მბაიტზე ნაკლები. შესაძლოა, ზოგიერთი საიტი შემდეგ ვიზიტზე უფრო ნელა ჩაიტვირთოს.</translation>
+<translation id="3273738040255912340">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chromium-ს მიღმაც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{ადმინისტრატორის წესების მიხედვით, ამ ფაილის <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}other{ადმინისტრატორის წესების მიხედვით, ამ ფაილების <ph name="DESTINATION_NAME" />-ში გახსნა რეკომენდებული არ არის}}</translation>
 <translation id="3282085321714087552">თქვენმა ორგანიზაციამ (<ph name="ENROLLMENT_DOMAIN" />) მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
@@ -2446,6 +2450,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ვეტერინარები</translation>
 <translation id="5715150588940290235">გსურთ, წაშალოთ უსაფრთხოების შენახული კოდები?</translation>
+<translation id="5715918316982363436"><ph name="WINDOW_COUNT" />-დან <ph name="TAB_COUNT" /> ამ მოწყობილობაზე</translation>
 <translation id="5717509257172454543">ციგურებით სრიალი</translation>
 <translation id="5720705177508910913">მიმდინარე მომხმარებელი</translation>
 <translation id="5720895412771013401">სამაგიდო კომპიუტერები</translation>
@@ -2956,6 +2961,7 @@
 <translation id="6709133671862442373">ახალი ამბები</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="6710594484020273272">&lt;აკრიფეთ საძიებო ფრაზა&gt;</translation>
+<translation id="6710648923880003133">ძლიერი პაროლის შემოთავაზება</translation>
 <translation id="671076103358959139">რეგისტრაციის ჟეტონი:</translation>
 <translation id="6711464428925977395">პროქსი-სერვერთან დაკავშირებით რაღაც პრობლემაა, ან მისამართი არასწორია.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ითხოვს თქვენი გარემოს 3-განზომილებიანი რუკის შექმნასა და კამერის პოზიციისთვის თვალის მიდევნების ნებართვას</translation>
@@ -3409,6 +3415,7 @@
 <translation id="7564667064360547717">მაისურები და ზედები</translation>
 <translation id="7567204685887185387">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შეიძლება გაიცა თაღლითურად. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="7568616151991626879">Google Chrome ცდილობს, შეავსოს თქვენი პაროლი <ph name="APP_NAME" />-ში.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{არცერთი}=1{1 ჩანართი ამ მოწყობილობაზე}other{# ჩანართი ამ მოწყობილობაზე}}</translation>
 <translation id="7569490014721427265">გოლფი</translation>
 <translation id="7569952961197462199">ამოიშალოს საკრედიტო ბარათი Chrome-იდან?</translation>
 <translation id="7569983096843329377">შავი</translation>
@@ -3888,6 +3895,7 @@
 <translation id="8446884382197647889">შეიტყვეთ მეტი</translation>
 <translation id="8449155699563577224">17 x 24 დუიმი</translation>
 <translation id="8449836157089738489">ყველას გახსნა ჩანართების ახალ ჯგუფში</translation>
+<translation id="84561192812921051">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">განუსაზღვრელი</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">ჩართვა</translation>

@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Tarxetas da páxina Nova pestana</translation>
 <translation id="2241634353105152135">Só unha vez</translation>
 <translation id="2253414712144136228">Eliminar <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="228293613124499805">A maioría dos sitios que visitas poden gardar datos no teu dispositivo. A miúdo, gardan as túas preferencias ou a información que compartes co sitio para mellorar a túa experiencia. É recomendable manter activada esta opción de configuración.</translation>
 <translation id="2289270750774289114">Preguntar cando un sitio web queira detectar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">A selección do certificado do cliente non é compatible co sistema operativo.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Cando esta opción está activada, os sitios poden pedirche permiso para buscar dispositivos Bluetooth. Cando esta opción está desactivada, os sitios non poden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8730621377337864115">Feito</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="8751914237388039244">Selecciona unha imaxe</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>
 <translation id="8801436777607969138">Bloquea JavaScript para un sitio específico.</translation>

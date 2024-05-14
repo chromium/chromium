@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">ధర ట్రాకింగ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="127777513559587977">టీవీ టాక్ షోలు</translation>
 <translation id="1281476433249504884">స్టాకర్ 1</translation>
+<translation id="1281536351321444151">తర్వాతసారి ఈ IBANను ఆటోఫిల్ చేయడానికి, దాన్ని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="1282358575813748144">బోట్‌లు &amp; నీటిపై వెళ్లే వాహనాలు</translation>
 <translation id="1283977499362032052">రెజ్యూమ్‌లు &amp; పోర్ట్‌ఫోలియోలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
@@ -288,6 +289,7 @@
 <translation id="1529789484829130889">ట్రే 8</translation>
 <translation id="1530707389502320859">ఇప్పుడు మీరు సందర్శించాలని ప్రయత్నించిన సైట్ నకిలీదిగా అనిపిస్తుంది. URLకు చిన్న, అంత తేలికగా కనపడని మార్పులను చేయడం ద్వారా దాడి చేసేవారు కొన్నిసార్లు సైట్‌లను అనుకరిస్తారు.</translation>
 <translation id="1532118530259321453">ఈ పేజీ ఇలా చెబుతోంది</translation>
+<translation id="1533966801397200693">మీరు సైన్ ఇన్ చేసిన ప్రొఫైల్, మేనేజ్ చేయబడే ప్రొఫైల్. మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">పేజీని అనువాదం చేయి</translation>
 <translation id="1537807545287921620">ఈ PDFను యాక్సెస్ చేయడం సాధ్యం కాదు. సంబంధిత మెనూను తెరిచి, "PDF నుండి టెక్స్ట్‌ను ఎక్స్‌ట్రాక్ట్ చేయండి"ని ఆన్ చేయండి</translation>
 <translation id="1539840569003678498">రిపోర్ట్ పంపబడింది:</translation>
@@ -1002,7 +1004,6 @@
 <translation id="2928905813689894207">బిల్లింగ్ అడ్రస్‌</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">ప్రతి కాపీ తర్వాత కత్తిరించండి</translation>
-<translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2933624813161016821">ఎంబాసింగ్ ఫాయిల్</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> లింక్‌లను తెరవండి</translation>
 <translation id="2941878205777356567">9 x 12 అంగుళాల ఎన్వలప్</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-డిజిట్ వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3272643614306383237">1 MB కంటే తక్కువ. మీరు తర్వాతిసారి ఉపయోగించినప్పుడు కొన్ని సైట్‌లు మరింత నిదానంగా లోడ్ కావచ్చు.</translation>
+<translation id="3273738040255912340">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల కూడా మేనేజ్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}other{<ph name="DESTINATION_NAME" />‌లో ఈ ఫైల్స్‌ను తెరవవద్దని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేస్తోంది}}</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
@@ -2301,6 +2303,7 @@
 <translation id="5447765697759493033">ఈ సైట్ అనువదించబడదు</translation>
 <translation id="5452270690849572955">ఈ <ph name="HOST_NAME" /> పేజీ కనుగొనబడలేదు</translation>
 <translation id="5455374756549232013">చెల్లని విధాన సమయముద్ర</translation>
+<translation id="5456428544444655325">ఎప్పుడూ చూపవద్దు</translation>
 <translation id="5456839782162429664">మీరు ఆటోఫిల్‌ను ఉపయోగించి పేమెంట్ చేసిన ప్రతిసారీ మాన్యువల్‌గా వెరిఫై చేయండి</translation>
 <translation id="5457113250005438886">చెల్లదు</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2951,6 +2954,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6710594484020273272">&lt;శోధన పదాన్ని టైప్ చేయండి&gt;</translation>
+<translation id="6710648923880003133">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించండి</translation>
 <translation id="671076103358959139">నమోదు టోకెన్:</translation>
 <translation id="6711464428925977395">ప్రాక్సీ సర్వర్‌లో ఏదో తప్పు ఉంది లేదా అడ్రస్‌ సరైనది కాదు.</translation>
 <translation id="6716672519412350405">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి, కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి <ph name="URL" /> అనుమతి అడుగుతోంది</translation>
@@ -3883,6 +3887,7 @@
 <translation id="8446884382197647889">మరింత తెలుసుకోండి</translation>
 <translation id="8449155699563577224">17 x 24 అంగుళాలు</translation>
 <translation id="8449836157089738489">అన్నింటినీ కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
+<translation id="84561192812921051">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేయవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">అనిశ్చితం</translation>
 <translation id="8458202188076138974">లెటర్ అదనం</translation>
 <translation id="8460854335417802511">దీన్ని ఆన్ చేయండి</translation>

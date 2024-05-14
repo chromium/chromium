@@ -36,7 +36,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1516530951338665275">Prehliadač Google Chrome potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Prispôsobiť Chrome</translation>
 <translation id="1551749261806528781">Ak chcete ukladať a používať heslá a ďalší obsah vo všetkých svojich zariadeniach, prihláste sa do Chromu. Toto heslo bude uložené do vášho účtu Google, keď sa prihlásite.</translation>
 <translation id="1553358976309200471">Aktualizovať Chrome</translation>
 <translation id="1583073672411044740">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu Chromu prihlásený. Týmto sa vytvorí nový profil Chromu pre <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -376,7 +375,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.1.</translation>
 <translation id="6943584222992551122">Dáta prehliadania tejto osoby sa odstránia z tohto zariadenia. Ak ich budete chcieť obnoviť, prihláste sa do Chromu ako <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome potrebuje na spustenie imerzívnej relácie porozumieť okoliu a vyžaduje aj povolenie sledovať ruky</translation>
 <translation id="6967962315388095737">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome beta verzie, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="6989339256997917931">Prehliadač Google Chrome bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
 <translation id="7011190694940573312">Nepodarilo sa nainštalovať, pretože táto verzia operačného systému nie je podporovaná.</translation>
@@ -451,7 +449,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8009904340233602924">Použiť Chrome bez účtu</translation>
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8019103195866286235">Zverejnenie tohto rozšírenia bolo zrušené jeho vývojárom. Môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
-<translation id="8031641407207794385">Prispôsobiť Chrome</translation>
 <translation id="80471789339884597">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať všetky svoje prehliadače.</translation>
 <translation id="8064015041956107954">Záložky, režim čítania a ďalší obsah môžete otvoriť v Ponuke Chrome vpravo hore</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

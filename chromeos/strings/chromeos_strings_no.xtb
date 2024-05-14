@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">Ingen bilder er tilgjengelige. For å legge til bilder, gå til <ph name="LINK" /></translation>
 <translation id="2305172810646967500">svart</translation>
 <translation id="2307344026739914387">Bruk nåværende nøkkelpar</translation>
+<translation id="2308243864813041101">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
 <translation id="2324354238778375592">Løsne</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">Kontroller</translation>
 <translation id="2652403576514495859">slå diktering av eller på</translation>
 <translation id="2653659639078652383">Send inn</translation>
+<translation id="2654647726140493436">Ikke slå av <ph name="DEVICE_TYPE" /> eller koble fra strømkabelen for <ph name="DEVICE_TYPE" /> mens oppdateringen pågår</translation>
 <translation id="2656001153562991489">Kun på Chromebook Plus</translation>
 <translation id="2665671725390405060">Hør uttalen</translation>
 <translation id="267442004702508783">last inn på nytt</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">Skriv om</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="324961752321393509">Administratoren din tillater ikke lukking av denne appen</translation>
+<translation id="3263941347294171263">Koble <ph name="DEVICE_NAME" /> fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
 <translation id="3275729367986477355">Brukerbilde</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
@@ -715,6 +718,7 @@
 <translation id="5088172560898466307">Vertsnavn for tjener</translation>
 <translation id="5089810972385038852">Fylke/delstat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> og sett den inn igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Lignende:</translation>
@@ -728,6 +732,7 @@
 <translation id="5160857336552977725">Logg på <ph name="DEVICE_TYPE" /></translation>
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
+<translation id="517075088756846356">Koble <ph name="DEVICE_NAME" />-strømkabelen fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5180108905184566358">baobabtrær</translation>
 <translation id="5180712487038406644">Uttrykksfull</translation>
 <translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
@@ -789,6 +794,7 @@
 <translation id="554067135846762198">korallrød og gyllenbrun</translation>
 <translation id="5543701552415191873">låst</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Denne oppdateringen leveres av produsenten av den eksterne enheten og er ikke bekreftet av Google.</translation>
 <translation id="5559898619118303662">Bytt automatisk til mørkt tema ved solnedgang</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> i nyanser av <ph name="TERRAIN_COLOR" /></translation>
@@ -1080,6 +1086,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">fargerik</translation>
 <translation id="710028965487274708">Mislykket – autorisasjonen mislyktes</translation>
+<translation id="7101959270679078188">Lås opp <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Velg grafikk som kun finnes på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
@@ -1355,6 +1362,7 @@
 <translation id="8675354002693747642">Forhåndsdelt nøkkel</translation>
 <translation id="8677859815076891398">Ingen album. Opprett et album i <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
+<translation id="8689520252402395106">Sett inn USB-kabelen for <ph name="DEVICE_NAME" /> igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
@@ -1362,6 +1370,7 @@
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
 <translation id="8730621377337864115">Ferdig</translation>
+<translation id="8739555075907731077">Satt på pause (<ph name="PERCENTAGE_VALUE" /> % er fullført)</translation>
 <translation id="8747900814994928677">Bekreft endringen</translation>
 <translation id="8749478549112817787">Kamerabakgrunn</translation>
 <translation id="8755946156089753497">tårn</translation>

@@ -615,6 +615,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2122214041802369259">Magas ár</translation>
 <translation id="2122719317867821810">A házirend az elvárt módon működik, de valahol máshol ütköző érték van beállítva, amelyet felülbírál ez a házirend.</translation>
 <translation id="2126374524350484896">PDF-konvertáló:</translation>
+<translation id="2127090458081644412">Jelszó mentve erre az eszközre</translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">A sorrend véletlenszerű. Az alapértelmezett választását bármikor módosíthatja.</translation>
@@ -1006,7 +1007,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2928905813689894207">Számlázási cím</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Vágás minden példány után</translation>
-<translation id="2932085390869194046">Jelszó ajánlása…</translation>
 <translation id="2933624813161016821">Dombornyomó fólia</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> linkek megnyitása</translation>
 <translation id="2941878205777356567">9 × 12 hüvelykes boríték</translation>
@@ -2029,6 +2029,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4901778704868714008">Mentés…</translation>
 <translation id="4901952598169637881">Cipők mindennapi viseletre</translation>
 <translation id="4905659621780993806">Rendszergazdája a következő időpontban automatikusan újra fogja indítani az eszközét: <ph name="DATE" /> <ph name="TIME" />. Az eszköz újraindítása előtt mentse az összes megnyitott elemet.</translation>
+<translation id="4913784027728226227">Ha az összes eszközén menteni és használni szeretné ezt a jelszót, igazolja személyazonosságát</translation>
 <translation id="4913987521957242411">Lyuk balra fent</translation>
 <translation id="4916389289686916969">Televíziós valóságshow-k</translation>
 <translation id="4917064667437236721">Képkezelő henger</translation>
@@ -2302,6 +2303,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5447765697759493033">Nem fordítjuk le ezt a webhelyet</translation>
 <translation id="5452270690849572955">Ez a(z) <ph name="HOST_NAME" /> oldal nem található</translation>
 <translation id="5455374756549232013">Hibás az irányelv időbélyege</translation>
+<translation id="5456428544444655325">Soha nem látszik</translation>
 <translation id="5456839782162429664">Manuális ellenőrzés minden alkalommal, amikor automatikus kitöltés használatával fizet</translation>
 <translation id="5457113250005438886">Érvénytelen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2312,6 +2314,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5470861586879999274">&amp;Szerkesztés újra</translation>
 <translation id="547963486735802022">Próbálja meg újból átvinni a fájlokat</translation>
 <translation id="5481076368049295676">Lehet, hogy ez a tartalom megpróbál olyan veszélyes szoftvert telepíteni az eszközre, amely ellophatja vagy törölheti az Ön adatait. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
+<translation id="5481682542063333508">Íráshoz való segítség felajánlása</translation>
 <translation id="54817484435770891">Érvényes címet adjon meg</translation>
 <translation id="5483838506518938965">Elkészült</translation>
 <translation id="5485973315555778056">Felhőalapú szolgáltatás – gép</translation>
@@ -2951,6 +2954,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6709133671862442373">Hírek</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="6710594484020273272">&lt;Írja be a keresési kifejezést&gt;</translation>
+<translation id="6710648923880003133">Erős jelszó ajánlása</translation>
 <translation id="671076103358959139">Regisztrációs token</translation>
 <translation id="6711464428925977395">Valami gond van a proxyszerverrel, vagy a cím nem megfelelő.</translation>
 <translation id="6716672519412350405">A(z) <ph name="URL" /> 3D-s térképet szeretne készíteni az Ön környezetéről, és követni szeretné a kamera pozícióját</translation>

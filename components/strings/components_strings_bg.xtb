@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">Адрес за фактуриране</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Отрязване след всяко копие</translation>
-<translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2933624813161016821">Фолио за гравиране</translation>
 <translation id="2938225289965773019">Да отваря връзки от типа „<ph name="PROTOCOL" />“.</translation>
 <translation id="2941878205777356567">Плик 9 x 12 инча</translation>
@@ -2306,6 +2305,7 @@
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
 <translation id="5455374756549232013">Невалидно клеймо за дата и час на правилото</translation>
+<translation id="5456428544444655325">Да не се показва никога</translation>
 <translation id="5456839782162429664">Ръчно потвърждаване при всяко плащане чрез автоматично попълване</translation>
 <translation id="5457113250005438886">Невалидно</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2956,6 +2956,7 @@
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6710594484020273272">&lt;Въведете дума за търсене&gt;</translation>
+<translation id="6710648923880003133">Предложение за надеждна парола</translation>
 <translation id="671076103358959139">Означение за регистриране:</translation>
 <translation id="6711464428925977395">Нещо не е наред с прокси сървъра или адресът е неправилен.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> иска да създаде триизмерна карта на заобикалящата ви среда и да следи позицията на камерата</translation>

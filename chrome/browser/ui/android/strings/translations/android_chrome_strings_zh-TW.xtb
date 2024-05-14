@@ -766,6 +766,7 @@
 <translation id="4961107849584082341">將這個網頁翻譯成任何語言</translation>
 <translation id="496607651705915226">如要在 Google 帳戶中儲存及使用新密碼，請更新 Google Play 服務</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
+<translation id="4971753085054504448">請嘗試搜尋其他內容，或是開啟完整的 Chrome 歷史記錄，查看更多結果。</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查錯別字或嘗試執行網頁搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -1051,6 +1052,7 @@
 <translation id="6459045781120991510">問卷調查</translation>
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">你可以查看自己透過 Chrome 造訪的網站，並對這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資訊以及你的造訪時間長度。這些資訊可協助我們改善數位健康。</translation>
+<translation id="6470181189905173055">使用 <ph name="APP_LABEL" /> 時，在 Chrome 中開啟的網頁會顯示在這裡。</translation>
 <translation id="6473086018775716761">分享選項清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對你很重要：</translation>

@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organizza i tuoi prodotti monitorati in Segnalibri</translation>
 <translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
+<translation id="1480287803138246127">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser.</translation>
 <translation id="148482509007564431">Flusso di salvataggio dei preferiti</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1493287004536771723">Stai seguendo <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3226612997184048185">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chrome e ricevere notifiche quando il prezzo scende</translation>
 <translation id="3227557059438308877">Google Chrome come token di sicurezza</translation>
 <translation id="3232293466644486101">Elimina dati di navigazione…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> schede eliminate</translation>
 <translation id="3232754137068452469">App web</translation>
 <translation id="3236059992281584593">1 min rimanente</translation>
 <translation id="3237087289225714896">Precaricamento standard:</translation>
@@ -862,6 +864,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5515439363601853141">Sblocca per visualizzare la password</translation>
 <translation id="5517095782334947753">Sono presenti preferiti, cronologia, password e altre impostazioni di <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Reindirizzamento bloccato.</translation>
+<translation id="5526281268548144413">Impossibile eseguire la chiusura in più finestre</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min fa}other{# min fa}}</translation>
 <translation id="5548606607480005320">Controllo di sicurezza</translation>
 <translation id="5554520618550346933">Quando utilizzi una password, Chrome ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
@@ -1005,6 +1008,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annunci non basati su altri siti web visitati. Molti siti web continueranno tuttavia a raccogliere e a utilizzare i dati di navigazione, ad esempio per aumentare la sicurezza, fornire contenuti, annunci e consigli, nonché per generare statistiche sui rapporti.</translation>
 <translation id="6233974827872475843">Attiva la sincronizzazione per salvare nel tuo Account Google le password su questo dispositivo</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
+<translation id="6251449557817521191">Visualizza qui la cronologia di Chrome</translation>
 <translation id="6255794742848779505">Stiamo cambiando la modalità di salvataggio delle password su questo dispositivo</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
 <translation id="6277522088822131679">Si è verificato un problema durante la stampa della pagina. Riprova.</translation>
@@ -1336,6 +1340,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7759809451544302770">Facoltative</translation>
 <translation id="7762668264895820836">Scheda SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> scheda eliminata</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
 <translation id="7772375229873196092">Chiudi <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1389,6 +1394,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
 <translation id="7986497153528221272">Per visualizzare le password, imposta un blocco schermo sul tuo dispositivo</translation>
+<translation id="7988531104457683216">Parte della tua cronologia potrebbe non essere visualizzata qui. Per vedere tutta la cronologia di Chrome, apri la cronologia completa del browser. Inoltre, il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Vedrai i contenuti non appena saranno disponibili</translation>
 <translation id="799576009106109668">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
 <translation id="8004582292198964060">Browser</translation>

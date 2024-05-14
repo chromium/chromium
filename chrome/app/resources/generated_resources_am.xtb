@@ -112,7 +112,6 @@
 <translation id="107450319332239199">የሆነ ችግር ተፈጥሯል። ከዚህ ይልቅ መስኮቶቹን በእጅ ይክፈቱ።</translation>
 <translation id="1075920807995555452">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ በድርጅትዎ የሚተዳደር አካባቢ ውስጥ መሣሪያዎችን፣ አርታዒዎችን እና አይዲኢዎችን ያሂዱ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">ገጾችን በጽሑፍ ጠቋሚ ይዳስሱ</translation>
-<translation id="1076382954055048850">ሌላ የcast ክፍለ-ጊዜዎችን አሳይ</translation>
 <translation id="1076698951459398590">ገጽታን አንቃ</translation>
 <translation id="1076766328672150609">ልጅዎ መሣሪያውን ለመክፈት ፒን መጠቀም ይችላል።</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -249,6 +248,7 @@
 <translation id="1176471985365269981">በመሳሪያዎ ላይ ፋይሎችን ውይም አቃፊዎችን ለማርትዕ አልተፈቀደም</translation>
 <translation id="1177073277575830464">የAndroid ፈጣን ማዋቀር ተጠናቋል። በእርስዎ <ph name="DEVICE_TYPE" /> ማዋቀሩን ይቀጥሉ</translation>
 <translation id="1177440945615690056">በቅንብሮች ውስጥ ወደ ማናቸውም ብቁ የሆኑ የተንቀሳቃሽ ስልክ አውታረ መረቦች ማገናኘት ይችላሉ።</translation>
+<translation id="1177548198167638471">ዳግም አትጠይቁ</translation>
 <translation id="1177863135347784049">ብጁ</translation>
 <translation id="1178093605842850860">ይህን ጣቢያ ማንበብ እና መለወጥ ተፈቅዷል</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
@@ -2977,7 +2977,6 @@
 <translation id="3184536091884214176">የCUPS አታሚዎችን ያዋቅሩ ወይም ያቀናብሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ይህ መተግበሪያ ታግዷል}one{አንዳንድ መተግበሪያዎች ታግደዋል}other{አንዳንድ መተግበሪያዎች ታግደዋል}}</translation>
 <translation id="3187472288455401631">የማስታወቂያ ልኬት</translation>
-<translation id="3188257591659621405">የእኔ ፋይሎች</translation>
 <translation id="3188465121994729530">አማካኝ በመውሰድ ላይ</translation>
 <translation id="3189187154924005138">ትልቅ ጠቋሚ</translation>
 <translation id="3190558889382726167">የይለፍ ቃል ተቀምጧል</translation>
@@ -3825,6 +3824,7 @@
 <translation id="3810914450553844415">አስተዳዳሪዎ ተጨማሪ የGoogle መለያዎችን አይፈቅድም።</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="381202950560906753">ሌላ አክል</translation>
+<translation id="381219490185664296">የትር ቡድን ይበተን?</translation>
 <translation id="3812525830114410218">መጥፎ የእውቅና ማረጋገጫ</translation>
 <translation id="3813296892522778813">የሚፈልጉትን ነገር ማግኘት ካልቻሉ ወደ <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome እገዛ<ph name="END_LINK_CHROMIUM" /> ይሂዱ</translation>
 <translation id="3813358687923336574">ገጾችን ለመተርጎም እና ለፈጣን መልሶች ጥቅም ላይ የዋለ ቋንቋ</translation>
@@ -4262,7 +4262,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID መሣሪያ ተገናኝቷል</translation>
 <translation id="4139326893730851150">የፊርምዌር ዝማኔዎች</translation>
 <translation id="4142052906269098341">የእርስዎን <ph name="DEVICE_TYPE" /> በስልክዎ መክፈት አለብዎት። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">የተሻለ ጥራት ያለውን ቪዲዮ ያግኙ እና የባትሪ ዕድሜ ይቆጥቡ። ቪዲዮ በእርስዎ የCast-የነቃ ማያ ገፅ ላይ ብቻ ይጫወታል።</translation>
 <translation id="4146026355784316281">ሁልጊዜ ከሥርዓት ተመልካች ጋር ክፈት</translation>
 <translation id="4146785383423576110">ዳግም አዘጋጅ እና አጽዳ</translation>
 <translation id="4147099377280085053">የብሬይል ሰንጠረዥ ይምረጡ</translation>
@@ -4538,7 +4537,6 @@
 <translation id="4361745360460842907">እንደ ትር ክፈት</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ያለው ነባሪ መለያ ነው</translation>
 <translation id="4363262124589131906">My Drive ውስጥ ያሉ አዲስ ፋይሎች ወደዚህ Chromebook በራስ-ሰር ማስመር ያቆማሉ</translation>
-<translation id="4363771538994847871">ምንም የCast መድረሻዎች አልተገኙም። እገዛ አስፈለገዎት?</translation>
 <translation id="4364327530094270451">ሐብሐብ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> አንድ መስኮት እያጋራ ነው።</translation>
 <translation id="4364830672918311045">ማሳወቂያዎችን አሳይ</translation>
@@ -5065,6 +5063,7 @@
 <translation id="4777458362738635055">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ መጠቀም ይችላሉ</translation>
 <translation id="4777813841994368231">በርቷል • ይህ ቅጥያ በገንቢው ከህትመት ወጥቷል</translation>
 <translation id="4777825441726637019">Play  መደብር</translation>
+<translation id="4777866634702576038">የትር ቡድን ይሰረዝ?</translation>
 <translation id="4777943778632837590">የአውታረ መረብ ስም አገልጋዮችን ያዋቅሩ</translation>
 <translation id="4778653490315793244">ገና ምንም የሚታይ ነገር የለም</translation>
 <translation id="4779083564647765204">ማጉሊያ</translation>
@@ -5474,6 +5473,7 @@
 <translation id="5093477827231450397">ለሌላ ጣቢያዎች ማስታወቂያዎች እንዲጠቁሙ የማይፈልጓቸው ያገዷቸው ጣቢያዎች ዝርዝር</translation>
 <translation id="5093569275467863761">ማንነት የማያሳውቅ የጀርባ/ፊት መሸጎጫ ንዑስ ክፈፍ፦ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ከፋይሎች መተግበሪያው ወይም ከሌሎች መተግበሪያዎች ሆነው የሚደገፉ ፋይሎችን በዚህ መተግበሪያ መክፈት እና ማርትዕ ይችላሉ። የትኛዎቹ ፋይሎች ይህን መተግበሪያ በነባሪነት እንደሚከፍቱ ለመቆጣጠር <ph name="BEGIN_LINK" />ነባሪ መተግበሪያዎችን በመሣሪያዎ ላይ እንዴት ማቀናበር እንደሚችሉ ይወቁ<ph name="END_LINK" />።</translation>
+<translation id="5094423602314093681">ትር/ሮች ይወገድ/ዱ እና ቡድን ይሰረዝ?</translation>
 <translation id="5094721898978802975">ከተባባሪ ቤተኛ መተግበሪያዎች ጋር ተገናኝ</translation>
 <translation id="5095252080770652994">ግስጋሴ</translation>
 <translation id="5095507226704905004">ፋይሉ ከአሁን ወዲህ ስለማይገኝ መቀዳት አይችልም</translation>
@@ -8076,7 +8076,6 @@
 <translation id="7090714929377281710">መገናኛ ነጥብን በራስ ሰር አጥፋ</translation>
 <translation id="7093220653036489319">ፈጣን መልሶች</translation>
 <translation id="7093866338626856921">ስማቸው እንደሚከተለው ከሆኑ መሣሪያዎች ጋር ውሂብ ተለዋወጥ፦ <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">በእርስዎ <ph name="DEVICE_NAME" /> ላይ የCast ጥያቄን ይቀበሉ።</translation>
 <translation id="7098389117866926363">USB-C መሣሪያ (የግራ ወደብ ከኋላ በኩል)</translation>
 <translation id="7098447629416471489">ሌሎች የተቀመጡ የፍለጋ ፕሮግራሞች እዚህ ይታያሉ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{መተግበሪያ አስወግድ}one{መተግበሪያዎችን አስወግድ}other{መተግበሪያዎችን አስወግድ}}</translation>
@@ -9570,7 +9569,6 @@ nil</translation>
 <translation id="8198457270656084773">የአሳሸ መሣሪያ-ምዝግብ ማስታወሻ ገጹን እየፈለጉ ነው? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> የሚለውን ይጎብኙ።</translation>
 <translation id="8199300056570174101">አውታረ መረብ (አገልግሎት) እና የመሣሪያ ጠባያት</translation>
 <translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
-<translation id="8200789660596905522">በእርስዎ <ph name="DEVICE_NAME" /> ላይ ያለውን የCast ጥያቄ መቀበልዎን ያረጋግጡ።</translation>
 <translation id="8202160505685531999">የእርስዎን የ<ph name="DEVICE_TYPE" /> መገለጫ ለማዘመን እባክዎ የእርስዎን የይለፍ ቃል ዳግም ያስገቡት።</translation>
 <translation id="8202827109322349110">በመሠረታዊ አርታዒ ውስጥ ክፈት</translation>
 <translation id="8203152941016626022">የአቅራቢያ አጋራ የመሣሪያ ስም</translation>

@@ -424,6 +424,7 @@
 <translation id="3226612997184048185">Бетбелгілерді Google аккаунтыңызда да сақтасаңыз, Chrome-да өнім бағаларын бақылап, баға төмендеген кезде, хабарландыру аласыз.</translation>
 <translation id="3227557059438308877">Google Chrome браузерін қауіпсіздік кілті ретінде пайдалану</translation>
 <translation id="3232293466644486101">Браузерді пайдалану деректерін жою…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> қойынды жойылды.</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3236059992281584593">1 мин қалды</translation>
 <translation id="3237087289225714896">Стандартты алдын ала жүктеу:</translation>
@@ -862,6 +863,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5515439363601853141">Құпия сөзді көру үшін құлыпты ашыңыз</translation>
 <translation id="5517095782334947753">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы, құпия сөздері және басқа да параметрлері бар.</translation>
 <translation id="5524843473235508879">Баcқа бетке бағыттау бөгелді.</translation>
+<translation id="5526281268548144413">Бірнеше терезеде жабу мүмкін емес.</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
 <translation id="5554520618550346933">Құпия сөзді пайдаланған кезде, ол онлайн жарияланған болса, Chrome сізге ескертеді. Тексеру кезінде құпия сөздер мен пайдаланушылар аты шифрланады. Сондықтан оларды ешкім, тіпті Google да оқи алмайды.</translation>
@@ -1336,6 +1338,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7759809451544302770">Қосымша</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-ші SD картасы</translation>
 <translation id="7764225426217299476">Мекенжай қосу</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> қойынды жойылды.</translation>
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> қолданбасын жабу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

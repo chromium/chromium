@@ -37,7 +37,6 @@
 <translation id="1516530951338665275">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
  ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ເກີດຂຶ້ນໄດ້ດ້ວຍ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
-<translation id="155168855724261758">ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>
 <translation id="1551749261806528781">ເພື່ອບັນທຶກ ແລະ ໃຊ້ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome. ລະບົບຈະບັນທຶກລະຫັດຜ່ານນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານຫຼັງຈາກທີ່ທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1553358976309200471">ອັບ​ເດດ Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chrome ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -395,7 +394,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6933858244219479645">ລະບົບ ChromeOS</translation>
 <translation id="6938166777909186039">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ Windows 10 ຫຼື ໃໝ່ກວ່າ. ຄອມພິວເຕີນີ້ກຳລັງນຳໃຊ້ Windows 8.1.</translation>
 <translation id="6943584222992551122">ຂໍ້ມູນການທ່ອງເວັບຂອງບຸກຄົນນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ເພື່ອກູ້ຂໍ້ມູນຄືນມາ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome ຕ້ອງການຄວາມເຂົ້າໃຈກ່ຽວກັບສາກ ແລະ ການອະນຸຍາດໃນການຕິດຕາມການເຄື່ອນໄຫວຂອງມືເພື່ອເລີ່ມເຊດຊັນສົມຈິງ</translation>
 <translation id="6967962315388095737">ກົດລະບຽບຂາເຂົ້າສໍາລັບ Google Chrome Beta ເພື່ອອະນຸຍາດການຮັບສົ່ງຂໍ້ມູນ mDNS.</translation>
 <translation id="6989339256997917931">ອັບເດດ Google Chrome ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
 <translation id="7011190694940573312">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກລະບົບບໍ່ຮອງຮັບລະບົບປະຕິບັດການເວີຊັນນີ້.</translation>
@@ -480,7 +478,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8009904340233602924">ໃຊ້ Chrome ໂດຍບໍ່ມີບັນຊີ</translation>
 <translation id="8013993649590906847">ຖ້າຮູບບໍ່ມີລາຍລະອຽດທີ່ເປັນປະໂຫຍດ, Chrome ຈະພະຍາຍາມໃຫ້ລາຍລະອຽດແກ່ທ່ານ. ເພື່ອສ້າງລາຍລະອຽດ, ລະບົບຈະສົ່ງຮູບພາບໃຫ້ Google.</translation>
 <translation id="8019103195866286235">ນັກພັດທະນາຍົກເລີກການເຜີຍແຜ່ສ່ວນຂະຫຍາຍນີ້ແລ້ວ ແລະ ອາດບໍ່ປອດໄພ. ລຶບສ່ວນຂະຫຍາຍດັ່ງກ່າວອອກຈາກ Chrome ເພື່ອບໍ່ໃຫ້ເບິ່ງ ແລະ ປ່ຽນຂໍ້ມູນຂອງທ່ານຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ, ເຊິ່ງຮວມເຖິງຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ.</translation>
-<translation id="8031641407207794385">ປັບແຕ່ງ Chrome ຂອງທ່ານ</translation>
 <translation id="80471789339884597">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານທັງໝົດກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">ທ່ານສາມາດເປີດບຸກມາກ, ໂໝດການອ່ານ ແລະ ອື່ນໆໄດ້ຈາກເມນູ Chrome ທີ່ຢູ່ເບື້ອງຂວາເທິງສຸດ</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

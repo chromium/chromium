@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">શિક્ષણ માટે અનુદાન અને શિષ્યવૃત્તિ</translation>
 <translation id="2228057197024893428">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં સાચવો.</translation>
 <translation id="2229456043301340598">વિશિષ્ટ ન હોય તેવો શૉર્ટકટ અવગણો: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 ટૅબ}one{# ટૅબ}other{# ટૅબ}}</translation>
 <translation id="2233745931693710080">કોમ્પેક્ટ ડિસ્ક</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2239100178324503013">હમણાં મોકલો</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> માટે વપરાશકર્તાનામ અને પાસવર્ડ આવશ્યક છે.</translation>
 <translation id="2318594867107319532">પૉલિસીમાં છેલ્લે ફેરફાર કર્યાનો ટાઇમસ્ટેમ્પ:</translation>
 <translation id="2320564945062300737">ચહેરાની સંભાળ માટેની પ્રોડક્ટ</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 વિન્ડો}one{# વિન્ડો}other{# વિન્ડો}}</translation>
 <translation id="2328651992442742497">મંજૂર (ડિફૉલ્ટ)</translation>
 <translation id="2328955282645810595">બાંધકામ અને પાવર ટૂલ</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">બિલિંગનું સરનામું</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}}</translation>
 <translation id="2930577230479659665">પ્રત્યેક કૉપિ પછી ટ્રિમ કરો</translation>
-<translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
 <translation id="2933624813161016821">એમ્બોસિંગ ફૉઇલ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="2941878205777356567">એન્વલપ 9 x 12 ઇંચ</translation>
@@ -2306,6 +2307,7 @@
 <translation id="5447765697759493033">આ સાઇટનો અનુવાદ થશે નહીં</translation>
 <translation id="5452270690849572955">આ <ph name="HOST_NAME" /> પેજ શોધી શકાતું નથી</translation>
 <translation id="5455374756549232013">ખરાબ પૉલિસી ટાઇમસ્ટેમ્પ</translation>
+<translation id="5456428544444655325">ક્યારેય બતાવશો નહીં</translation>
 <translation id="5456839782162429664">જ્યારે પણ તમે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરીને ચુકવણી કરો, ત્યારે મેન્યુઅલી ચકાસણી કરો</translation>
 <translation id="5457113250005438886">અમાન્ય</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}one{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}other{<ph name="CONTACT_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> વધુ}}</translation>
@@ -2446,6 +2448,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">પશુચિકિત્સકો</translation>
 <translation id="5715150588940290235">શું સાચવેલા સુરક્ષા કોડ ડિલીટ કરીએ?</translation>
+<translation id="5715918316982363436">આ ડિવાઇસ પર <ph name="WINDOW_COUNT" />માંથી <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">આઇસ સ્કૅટિંગ</translation>
 <translation id="5720705177508910913">વર્તમાન વપરાશકર્તા</translation>
 <translation id="5720895412771013401">ડેસ્કટૉપ કમ્પ્યૂટર</translation>
@@ -2956,6 +2959,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6710594484020273272">&lt;શોધ શબ્દ લખો&gt;</translation>
+<translation id="6710648923880003133">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="671076103358959139">નોંધણી ટોકન:</translation>
 <translation id="6711464428925977395">પ્રૉક્સી સર્વરમાં કંઈક ખોટું થયું છે અથવા તો ઍડ્રેસ ખોટું છે.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> તમારી આજુબાજુનો 3D નકશો બનાવવા અથવા કૅમેરાનું સ્ટેટસ ટ્રૅક કરવા માગે છે</translation>
@@ -3409,6 +3413,7 @@
 <translation id="7564667064360547717">શર્ટ અને ટૉપ</translation>
 <translation id="7567204685887185387">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર કપટપૂર્વક રજૂ કરવામાં આવેલ હોઈ શકે છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{એકપણ નહીં}=1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
 <translation id="7569490014721427265">ગોલ્ફ</translation>
 <translation id="7569952961197462199">Chrome માંથી ક્રેડિટ કાર્ડ દૂર કરીએ?</translation>
 <translation id="7569983096843329377">શ્યામ</translation>

@@ -112,7 +112,6 @@
 <translation id="107450319332239199">Произошла ошибка. Откройте окна вручную.</translation>
 <translation id="1075920807995555452">Запускайте инструменты, редакторы и интегрированные среды разработки на устройстве <ph name="DEVICE_TYPE" /> в среде, управляемой вашей организацией. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Навигация по страницам с помощью курсора</translation>
-<translation id="1076382954055048850">Показать другие сеансы трансляции</translation>
 <translation id="1076698951459398590">Включить тему</translation>
 <translation id="1076766328672150609">Ребенок может использовать PIN-код для разблокировки устройства.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -249,6 +248,7 @@
 <translation id="1176471985365269981">Сайты, которым запрещено изменять файлы и папки на устройстве:</translation>
 <translation id="1177073277575830464">Быстрая настройка Android завершена. Продолжите настройку на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="1177440945615690056">Теперь вы можете подключиться к любой доступной мобильной сети. Это делается в настройках.</translation>
+<translation id="1177548198167638471">Больше не спрашивать</translation>
 <translation id="1177863135347784049">Персонализированные</translation>
 <translation id="1178093605842850860">Расширению разрешено просматривать и изменять этот сайт</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -2971,7 +2971,6 @@
 <translation id="3184536091884214176">Настройте принтеры CUPS. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Это приложение заблокировано}one{Некоторые приложения заблокированы}few{Некоторые приложения заблокированы}many{Некоторые приложения заблокированы}other{Некоторые приложения заблокированы}}</translation>
 <translation id="3187472288455401631">Оценка эффективности рекламы</translation>
-<translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3188465121994729530">Скользящее среднее</translation>
 <translation id="3189187154924005138">Большой курсор</translation>
 <translation id="3190558889382726167">Пароль сохранен</translation>
@@ -3819,6 +3818,7 @@
 <translation id="3810914450553844415">Администратор запретил добавлять дополнительные аккаунты Google</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381202950560906753">Добавить ещё</translation>
+<translation id="381219490185664296">Расформировать группу вкладок?</translation>
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
 <translation id="3813296892522778813">Поиск не дал результатов? Перейдите в <ph name="BEGIN_LINK_CHROMIUM" />Справочный центр Google Chrome<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="3813358687923336574">Язык, на который переводятся страницы и быстрые ответы</translation>
@@ -4258,7 +4258,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – подключено HID-устройство</translation>
 <translation id="4139326893730851150">Обновления встроенного ПО</translation>
 <translation id="4142052906269098341">Разблокировка устройства <ph name="DEVICE_TYPE" /> с помощью телефона. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">С помощью этой функции вы улучшите качество видео и продлите время работы от батареи. Видео будет воспроизводиться только на экранах с поддержкой Cast.</translation>
 <translation id="4146026355784316281">Всегда открывать в программе просмотра по умолчанию</translation>
 <translation id="4146785383423576110">Сброс настроек и удаление вредоносного ПО</translation>
 <translation id="4147099377280085053">Вид шрифта Брайля</translation>
@@ -4534,7 +4533,6 @@
 <translation id="4361745360460842907">Открыть во вкладке</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> – аккаунт по умолчанию на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4363262124589131906">Новые файлы в разделе "Мой диск" перестанут автоматически синхронизироваться с этим устройством Chromebook.</translation>
-<translation id="4363771538994847871">Нет устройств для трансляции. Нужна помощь?</translation>
 <translation id="4364327530094270451">Дыня</translation>
 <translation id="4364567974334641491">Приложение "<ph name="APP_NAME" />" предоставило доступ к окну.</translation>
 <translation id="4364830672918311045">Показ уведомлений</translation>
@@ -5061,6 +5059,7 @@
 <translation id="4777458362738635055">У других пользователей устройства есть доступ к этой сети</translation>
 <translation id="4777813841994368231">Включено • Разработчик отменил публикацию этого расширения</translation>
 <translation id="4777825441726637019">Play Маркет</translation>
+<translation id="4777866634702576038">Удалить группу вкладок?</translation>
 <translation id="4777943778632837590">Настроить серверы доменных имен</translation>
 <translation id="4778653490315793244">Контент отсутствует</translation>
 <translation id="4779083564647765204">Масштаб</translation>
@@ -5470,6 +5469,7 @@
 <translation id="5093477827231450397">Список заблокированных сайтов, которым запрещено предлагать рекламу для других сайтов</translation>
 <translation id="5093569275467863761">Субфрейм возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Вы можете открывать и редактировать поддерживаемые файлы в этом приложении из Google Файлов и других приложений. Указать, какие типы файлов по умолчанию будут открываться в этом приложении, можно в <ph name="BEGIN_LINK" />настройках приложений по умолчанию на устройстве<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">Убрать вкладки и удалить группу?</translation>
 <translation id="5094721898978802975">Установка соединения со смежными нативными приложениями</translation>
 <translation id="5095252080770652994">Ход выполнения</translation>
 <translation id="5095507226704905004">Невозможно скопировать файл, так как он больше не существует.</translation>
@@ -8076,7 +8076,6 @@
 <translation id="7090714929377281710">Автоматически отключать точку доступа</translation>
 <translation id="7093220653036489319">Быстрые ответы</translation>
 <translation id="7093866338626856921">Обмен данными с устройствами <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">Примите запрос на трансляцию на устройстве <ph name="DEVICE_NAME" /></translation>
 <translation id="7098389117866926363">Устройство USB-C (порт слева на задней панели)</translation>
 <translation id="7098447629416471489">Здесь появятся другие сохраненные поисковые системы</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Удалить приложение}one{Удалить приложения}few{Удалить приложения}many{Удалить приложения}other{Удалить приложения}}</translation>
@@ -9564,7 +9563,6 @@
 <translation id="8198457270656084773">Ищете журнал устройств системы? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Настройки сети и устройства</translation>
 <translation id="8200772114523450471">Возобновить</translation>
-<translation id="8200789660596905522">Трансляция возможна только при принятии запроса на устройстве <ph name="DEVICE_NAME" /></translation>
 <translation id="8202160505685531999">Чтобы обновить профиль устройства <ph name="DEVICE_TYPE" />, введите пароль ещё раз</translation>
 <translation id="8202827109322349110">Открыть в базовом редакторе</translation>
 <translation id="8203152941016626022">Обмен с окружением: название устройства</translation>

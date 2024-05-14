@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Име хоста сервера</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Искључите USB кабл <ph name="DEVICE_NAME" />, па га поново прикључите да бисте наставили процес ажурирања</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Пречица без тастера <ph name="META_KEY" /> може да буде у супротности са пречицом неке апликације. Поново притисните ову пречицу да бисте наставили да је користите или притисните нову пречицу помоћу тастера <ph name="KEY" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Слично:</translation>

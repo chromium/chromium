@@ -35,7 +35,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1516530951338665275">Google Chrome a besoin d'accéder au Bluetooth pour continuer 
  l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Personnaliser Chrome</translation>
 <translation id="1551749261806528781">Pour enregistrer et utiliser des mots de passe et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce mot de passe sera enregistré dans votre compte Google une fois que vous vous serez connecté.</translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1583073672411044740">L'utilisateur <ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Cela va créer un profil Chrome pour <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -377,7 +376,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.1.</translation>
 <translation id="6943584222992551122">Les données de navigation de cet utilisateur vont être supprimées de cet appareil. Pour les récupérer, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome doit comprendre la scène et être autorisé à suivre les mouvements des mains pour lancer une session immersive</translation>
 <translation id="6967962315388095737">Règle de trafic entrant pour la version bêta de Google Chrome autorisant le trafic mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a été mis à jour, mais vous ne l'avez pas utilisé depuis plus de 30 jours.</translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas compatible.</translation>
@@ -452,7 +450,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8009904340233602924">Utiliser Chrome sans compte</translation>
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour nous permettre de créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8019103195866286235">Cette extension peut présenter des risques, car son développeur a annulé sa publication. Supprimez-la de Chrome pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
-<translation id="8031641407207794385">Personnaliser Chrome</translation>
 <translation id="80471789339884597">Merci d'avoir installé notre produit. Vous devez redémarrer tous vos navigateurs avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome situé en haut à droite</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

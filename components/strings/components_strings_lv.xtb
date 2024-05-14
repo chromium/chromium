@@ -615,6 +615,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2122214041802369259">Cena ir augsta</translation>
 <translation id="2122719317867821810">Šī politika darbojas, kā paredzēts, taču citur ir iestatīta konfliktējoša vērtība, kas tiek ignorēta šīs politikas dēļ.</translation>
 <translation id="2126374524350484896">PDF izveides rīks:</translation>
+<translation id="2127090458081644412">Parole ir saglabāta šajā ierīcē</translation>
 <translation id="2130448033692577677">Norādītās veidnes, iespējams, netiks lietotas, jo nav iestatīta politika DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Meklētājprogrammas tiek rādītas nejaušā secībā. Jebkurā brīdī varat mainīt noklusējuma meklētājprogrammu.</translation>
@@ -1006,7 +1007,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2928905813689894207">Norēķinu adrese</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}zero{<ph name="SHIPPING_ADDRESS_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Apgriešana pēc katras kopijas</translation>
-<translation id="2932085390869194046">Ieteikt paroli...</translation>
 <translation id="2933624813161016821">Folijspieduma folija</translation>
 <translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2941878205777356567">Aploksne (9 x 12 collas)</translation>
@@ -2030,6 +2030,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4901778704868714008">Saglabāt...</translation>
 <translation id="4901952598169637881">Ikdienas apavi</translation>
 <translation id="4905659621780993806">Jūsu administrators automātiski restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />. Saglabājiet visus atvērtos failus, pirms ierīce tiek restartēta.</translation>
+<translation id="4913784027728226227">Lai saglabātu un izmantotu šo paroli visās savās ierīcēs, apstipriniet savu identitāti.</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
 <translation id="4916389289686916969">TV realitātes šovi</translation>
 <translation id="4917064667437236721">Attēlveidošanas cilindrs</translation>
@@ -2303,6 +2304,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5447765697759493033">Šī vietne netiks tulkota</translation>
 <translation id="5452270690849572955">Šo vietnes <ph name="HOST_NAME" /> lapu nevar atrast</translation>
 <translation id="5455374756549232013">Politikas laikspiedols nav derīgs.</translation>
+<translation id="5456428544444655325">Nekad nerādīt</translation>
 <translation id="5456839782162429664">Manuāli verificēt katru reizi, kad maksāšanai izmantojat automātisko aizpildi</translation>
 <translation id="5457113250005438886">Nav derīgi</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2313,6 +2315,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5470861586879999274">&amp;Atcelt labojuma atsaukšanu</translation>
 <translation id="547963486735802022">Mēģiniet vēlreiz pārsūtīt savus failus.</translation>
 <translation id="5481076368049295676">Šis saturs jūsu ierīcē var mēģināt instalēt bīstamu programmatūru, kas var nozagt vai izdzēst jūsu informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
+<translation id="5481682542063333508">Piedāvāt palīdzību rakstīšanā</translation>
 <translation id="54817484435770891">Derīgas adreses pievienošana</translation>
 <translation id="5483838506518938965">Gatavs</translation>
 <translation id="5485973315555778056">Mākoņa ierīce</translation>
@@ -2952,6 +2955,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6709133671862442373">Ziņas</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6710594484020273272">&lt;Ierakstiet meklēšanas vienumu&gt;</translation>
+<translation id="6710648923880003133">Ieteikt drošu paroli</translation>
 <translation id="671076103358959139">Reģistrācijas pilnvara:</translation>
 <translation id="6711464428925977395">Starpniekserverī radās kļūda, vai arī adrese nav pareiza.</translation>
 <translation id="6716672519412350405">Vietne <ph name="URL" /> vēlas izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju.</translation>

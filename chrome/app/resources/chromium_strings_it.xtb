@@ -145,6 +145,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3474745554856756813">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">La scorciatoia <ph name="SHORTCUT" /> consente di passare da un profilo Chromium all'altro</translation>
 <translation id="3509308970982693815">Chiudi tutte le finestre di Chromium e riprova.</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> ha già eseguito l’accesso.  Per tenere separata la tua navigazione, accedi a Chromium nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chromium prenda in considerazione.</translation>
 <translation id="3567254597502212821">La cronologia di navigazione, ossia un record dei siti visitati da Chromium sul dispositivo in uso.</translation>
 <translation id="3639635944603682591">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
@@ -376,7 +377,6 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="718435575166326686">Chromium deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
 <translation id="7196312274710523067">Impossibile avviare Chromium. Riprova.</translation>
 <translation id="7197677400338048821">Chromium non può controllare le tue password. Riprova tra 24 ore.</translation>
-<translation id="7198365860059291213">Chromium ha bisogno delle autorizzazioni di comprensione della scena e rilevamento delle mani per avviare una sessione immersiva</translation>
 <translation id="7213407614656404070">Usa Chromium ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">I tuoi interessi stimati da Chromium</translation>
@@ -433,6 +433,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="8232193495299001329">Chromium non può verificare la provenienza dell'estensione. Potrebbe non essere sicura. Rimuovila da Chromium in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le informazioni personali.</translation>
 <translation id="8248265253516264921">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
+<translation id="8254601181414348851">Accedere a Chromium in un nuovo profilo?</translation>
 <translation id="8266560134891435528">Chromium non può controllare le tue password perché non hai effettuato l'accesso</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ti avvisa<ph name="END_LINK" /> in caso di siti e download non sicuri</translation>
 <translation id="8290862415967981663">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chromium.</translation>
@@ -454,7 +455,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8568283329061645092">Chromium può controllare le tue password quando accedi con il tuo Account Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
-<translation id="858822505990366713">Personalizza Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>
 <translation id="8621669128220841554">Installazione non riuscita a causa di un errore imprecisato. Scarica di nuovo Chromium.</translation>
@@ -473,7 +473,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8931379085695076764">Chromium può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>
 <translation id="8941642502866065432">Impossibile aggiornare Chromium</translation>
-<translation id="895999862145835951">Personalizza Chromium</translation>
 <translation id="897581876605952338">Logo di Chromium Enterprise</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="8988036198400390003">Gestisci i profili Chromium</translation>

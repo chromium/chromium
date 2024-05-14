@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">სერვერის სახელი</translation>
 <translation id="5089810972385038852">შტატი</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">გამოაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი და ისევ შეაერთეთ, რომ განახლება განაგრძოთ</translation>
 <translation id="5099354524039520280">ზემოთ</translation>
 <translation id="5107243100836678918">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">სინონიმური:</translation>

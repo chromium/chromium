@@ -58,6 +58,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2020032459870799438">Para verificar se suas outras senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Escolha se você quer incluir o histórico do Chromium para ter experiências mais personalizadas nos Serviços do Google</translation>
+<translation id="2065461321550902389">Para salvar e usar senhas e muito mais em todos seus dispositivos, faça login no Chromium. A senha será salva na sua Conta do Google depois que você fizer login.</translation>
 <translation id="2086476982681781442">O Chromium bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="2088953378266246249">Informações sobre como o Chromium gerencia os certificados raiz</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. Suas guias vão permanecer abertas.}}</translation>
@@ -309,6 +310,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6333502561965082103">Outra operação está em progresso no Chromium. Tente novamente mais tarde.</translation>
 <translation id="6334986366598267305">Agora ficou mais fácil usar o Chromium com sua Conta do Google e em computadores compartilhados.</translation>
+<translation id="6347933965114150440">Atalho do Chromium</translation>
 <translation id="6366160072964553914">O Chromium bloqueou o download porque o arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="6373523479360886564">Você quer mesmo desinstalar o Chromium?</translation>
 <translation id="6375219077595103062">Adicionar um atalho para o Gerenciador de senhas</translation>
@@ -371,7 +373,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
-<translation id="7198365860059291213">O Chromium precisa de permissões de compreensão de cena e de rastreamento da mão para iniciar uma sessão imersiva</translation>
 <translation id="7213407614656404070">Usar o Chromium sempre que clicar em links em mensagens, documentos e outros apps</translation>
 <translation id="7223968959479464213">Gerenciador de tarefas - Chromium</translation>
 <translation id="7246575524853130370">Seus interesses estimados pelo Chromium</translation>
@@ -447,7 +448,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
-<translation id="858822505990366713">Personalizar o Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos esses dados<ph name="END_BOLD" />: sites podem armazenar informações sobre seus interesses com o Chromium. Por exemplo, se você visitar um site para comprar sapatos de maratona, ele pode definir "maratonas" como um dos seus interesses. Depois, se você visitar outro site para se inscrever em uma maratona, esse site pode mostrar um anúncio de sapatos de corrida com base nos seus interesses.</translation>
 <translation id="8619360774459241877">Iniciando o Chromium…</translation>
 <translation id="8621669128220841554">Falha na instalação devido a um erro não especificado. Baixe o Chromium novamente.</translation>
@@ -466,7 +466,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8931379085695076764">O Chromium pode fazer uma estimativa dos seus interesses com base no seu histórico de navegação das últimas semanas. Essas informações ficam no dispositivo.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>
-<translation id="895999862145835951">Personalizar o Chromium</translation>
 <translation id="897581876605952338">Logotipo do Chromium Enterprise</translation>
 <translation id="8986207147630327271">Você está adicionando um perfil de trabalho a este navegador. O administrador poderá controlar apenas o perfil de trabalho.</translation>
 <translation id="8988036198400390003">Gerenciar perfis do Chromium</translation>

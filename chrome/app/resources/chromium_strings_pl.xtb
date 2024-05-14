@@ -375,7 +375,6 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
-<translation id="7198365860059291213">Aby rozpocząć realistyczną sesję, Chromium potrzebuje uprawnień do rozpoznawania scen i śledzenia rąk</translation>
 <translation id="7213407614656404070">Używaj Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7223968959479464213">Menedżer zadań – Chromium</translation>
 <translation id="7246575524853130370">Twoje zainteresowania oszacowane przez Chromium</translation>
@@ -454,7 +453,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8555465886620020932">Błąd usługi: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8568283329061645092">Chromium może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
-<translation id="858822505990366713">Dostosuj Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> w Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="8619360774459241877">Uruchamiam Chromium…</translation>
 <translation id="8621669128220841554">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Chromium ponownie.</translation>
@@ -473,7 +471,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8907580949721785412">Chromium próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="8931379085695076764">Chromium może oszacować Twoje zainteresowania na podstawie Twojej historii przeglądania z ostatnich kilku tygodni. Te informacje zostają na Twoim urządzeniu.</translation>
 <translation id="8941642502866065432">Nie można zaktualizować Chromium</translation>
-<translation id="895999862145835951">Dostosuj Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8986207147630327271">Dodajesz profil służbowy w tej przeglądarce i dajesz swojemu administratorowi kontrolę tylko nad tym profilem.</translation>
 <translation id="8988036198400390003">Zarządzaj profilami Chromium</translation>

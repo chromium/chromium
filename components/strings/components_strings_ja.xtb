@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">請求先住所</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}}</translation>
 <translation id="2930577230479659665">トリミング（コピー単位）</translation>
-<translation id="2932085390869194046">パスワードを自動生成...</translation>
 <translation id="2933624813161016821">ホイル（エンボス）</translation>
 <translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="2941878205777356567">9x12 インチ封筒</translation>
@@ -2306,6 +2305,7 @@
 <translation id="5447765697759493033">このサイトは翻訳されません</translation>
 <translation id="5452270690849572955">この <ph name="HOST_NAME" /> ページが見つかりません</translation>
 <translation id="5455374756549232013">ポリシーのタイムスタンプが不適切です</translation>
+<translation id="5456428544444655325">表示しない</translation>
 <translation id="5456839782162429664">自動入力を使用したお支払いのたびに手動で確認する</translation>
 <translation id="5457113250005438886">無効</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件）}other{<ph name="CONTACT_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 件）}}</translation>
@@ -2956,6 +2956,7 @@
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6710594484020273272">&lt;検索キーワードを入力&gt;</translation>
+<translation id="6710648923880003133">安全なパスワードを自動生成</translation>
 <translation id="671076103358959139">登録トークン:</translation>
 <translation id="6711464428925977395">プロキシ サーバーに問題がある、またはアドレスが正しくありません。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を求めています</translation>
@@ -4009,7 +4010,7 @@
 <translation id="8705331520020532516">シリアル番号</translation>
 <translation id="8708134712139312373">Bluetooth デバイスへの接続を要求できる</translation>
 <translation id="8710842507289500830">フォント スタイル</translation>
-<translation id="8712637175834984815">OK</translation>
+<translation id="8712637175834984815">理解した</translation>
 <translation id="8713438021996895321">詩</translation>
 <translation id="8718314106902482036">支払い処理を完了できませんでした</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />、<ph name="DESCRIPTION" />、検索候補</translation>

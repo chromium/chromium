@@ -678,6 +678,7 @@
 <translation id="2227758700723188171">ಅಧ್ಯಯನ ಅನುದಾನಗಳು ಮತ್ತು ವಿದ್ಯಾರ್ಥಿವೇತನಗಳು</translation>
 <translation id="2228057197024893428">ಈ ವಿಳಾಸವನ್ನು ಪ್ರಸ್ತುತವಾಗಿ Chrome ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಲು, ಅದನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ, <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">ಅನನ್ಯವಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2233745931693710080">ಕಾಂಪ್ಯಾಕ್ಟ್ ಡಿಸ್ಕ್</translation>
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2239100178324503013">ಈಗ ಕಳುಹಿಸಿ</translation>
@@ -721,6 +722,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ಗೆ ಬಳಕೆದಾರರಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="2318594867107319532">ಕೊನೆಯ ಪಾಲಿಸಿ ಟೈಮ್‌ಸ್ಟ್ಯಾಂಪ್:</translation>
 <translation id="2320564945062300737">ಮುಖದ ಆರೈಕೆಯ ಉತ್ಪನ್ನಗಳು</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 ವಿಂಡೋ}one{# ವಿಂಡೋಗಳು}other{# ವಿಂಡೋಗಳು}}</translation>
 <translation id="2328651992442742497">ಅನುಮತಿಸಲಾಗಿದೆ (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="2328955282645810595">ನಿರ್ಮಾಣ ಮತ್ತು ವಿದ್ಯುತ್ ಟೂಲ್‌ಗಳು</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> ದಿನಾಂಕದಂದು ಅವಧಿ ಮೀರುತ್ತದೆ</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ಇನ್ನಷ್ಟು}}</translation>
 <translation id="2930577230479659665">ಪ್ರತಿ ಮುದ್ರಣಪ್ರತಿಯ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
-<translation id="2932085390869194046">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="2933624813161016821">ಎಂಬಾಸಿಂಗ್ ಫಾಯಿಲ್</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2941878205777356567">ಎನ್ವಲಪ್ 9 x 12 ಇಂಚು</translation>
@@ -2303,6 +2304,7 @@
 <translation id="5447765697759493033">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5452270690849572955">ಈ <ph name="HOST_NAME" /> ಪುಟ ಕಂಡುಬರುವುದಿಲ್ಲ</translation>
 <translation id="5455374756549232013">ತಪ್ಪಾದ ನೀತಿಯ ಸಮಯಸ್ಟ್ಯಾಂಪ್</translation>
+<translation id="5456428544444655325">ಎಂದಿಗೂ ತೋರಿಸಬೇಡ</translation>
 <translation id="5456839782162429664">ನೀವು ಆಟೋಫಿಲ್ ಬಳಸಿಕೊಂಡು ಪ್ರತಿ ಬಾರಿ ಪಾವತಿಸಿದಾಗ ಹಸ್ತಚಾಲಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="5457113250005438886">ಅಮಾನ್ಯ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}one{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}other{<ph name="CONTACT_PREVIEW" /> ಮತ್ತು <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ಇನ್ನಷ್ಟು}}</translation>
@@ -2443,6 +2445,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">ಪಶುವೈದ್ಯರು</translation>
 <translation id="5715150588940290235">ಸೇವ್ ಮಾಡಲಾದ ಸೆಕ್ಯೂರಿಟಿ ಕೋಡ್‌ಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
+<translation id="5715918316982363436">ಈ ಸಾಧನದಲ್ಲಿ <ph name="WINDOW_COUNT" /> ರಿಂದ <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">ಐಸ್ ಸ್ಕೇಟಿಂಗ್</translation>
 <translation id="5720705177508910913">ಪ್ರಸ್ತುತ ಬಳಕೆದಾರ</translation>
 <translation id="5720895412771013401">ಡೆಸ್ಕ್‌ಟಾಪ್ ಕಂಪ್ಯೂಟರ್‌ಗಳು</translation>
@@ -2953,6 +2956,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6710594484020273272">&lt;ಹುಡುಕಾಟದ ಪದ ಟೈಪ್ ಮಾಡಿ&gt;</translation>
+<translation id="6710648923880003133">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ</translation>
 <translation id="671076103358959139">ನೋಂದಣಿಯ ಟೋಕನ್:</translation>
 <translation id="6711464428925977395">ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌‌ನಲ್ಲಿ ಏನೋ ದೋಷವಿದೆ ಅಥವಾ ವಿಳಾಸವು ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="6716672519412350405">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸುವುದು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತಿದೆ</translation>
@@ -3405,6 +3409,7 @@
 <translation id="7564667064360547717">ಶರ್ಟ್‌ಗಳು ಮತ್ತು ಟಾಪ್‌ಗಳು</translation>
 <translation id="7567204685887185387">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ವಂಚನೆಯಿಂದ ನೀಡಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="7568616151991626879"><ph name="APP_NAME" /> ನಲ್ಲಿ Google Chrome ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಭರ್ತಿ ಮಾಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಟ್ಯಾಬ್}one{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}other{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="7569490014721427265">ಗಾಲ್ಫ್</translation>
 <translation id="7569952961197462199">Chrome ನಿಂದ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="7569983096843329377">ಕಪ್ಪು</translation>

@@ -1007,7 +1007,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2928905813689894207">Arveldusaadress</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Kärbi pärast iga koopiat</translation>
-<translation id="2932085390869194046">Soovita parooli …</translation>
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
 <translation id="2941878205777356567">9 × 12-tolline ümbrik</translation>
@@ -2306,6 +2305,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5447765697759493033">Seda saiti ei tõlgita</translation>
 <translation id="5452270690849572955">Hosti <ph name="HOST_NAME" /> lehte ei leita</translation>
 <translation id="5455374756549232013">Reegli ajatempel on sobimatu</translation>
+<translation id="5456428544444655325">Ära kunagi kuva</translation>
 <translation id="5456839782162429664">Käsitsi kinnitamine iga kord, kui kasutate maksmisel automaattäidet</translation>
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2956,6 +2956,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6709133671862442373">Uudised</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
+<translation id="6710648923880003133">Soovita tugevat parooli</translation>
 <translation id="671076103358959139">Registreerimismärk:</translation>
 <translation id="6711464428925977395">Puhverserveriga on midagi valesti või aadress on vale.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> soovib luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit</translation>

@@ -36,7 +36,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1516530951338665275">„Google Chrome“ reikia pasiekti „Bluetooth“, kad galėtų sieti 
  toliau. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">„Chrome“ OS pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Tinkinti „Chrome“</translation>
 <translation id="1551749261806528781">Jei norite išsaugoti ir naudoti slaptažodžius ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“. Šis slaptažodis bus išsaugotas jūsų „Google“ paskyroje, kai prisijungsite.</translation>
 <translation id="1553358976309200471">Atnaujinti „Chrome“</translation>
 <translation id="1583073672411044740">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chrome“ profilio. Bus sukurtas naujas <ph name="USER_EMAIL_ADDRESS" /> „Chrome“ profilis</translation>
@@ -378,7 +377,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6933858244219479645">„ChromeOS“ sistema</translation>
 <translation id="6938166777909186039">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 10 ar naujesnės versijos „Windows“. Šiame kompiuteryje naudojama 8.1 versijos „Windows“.</translation>
 <translation id="6943584222992551122">Šio asmens naršymo duomenys bus ištrinti iš šio įrenginio. Jei norite atkurti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">„Chrome“ reikia scenos paaiškinimo ir rankos stebėjimo leidimo, kad galėtų pradėti įtraukiantį seansą</translation>
 <translation id="6967962315388095737">Beta versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
 <translation id="6989339256997917931">„Google Chrome“ atnaujinta, tačiau jos nenaudojote mažiausiai 30 dienų.</translation>
 <translation id="7011190694940573312">Įdiegti nepavyko, nes ši operacinės sistemos versija nepalaikoma.</translation>
@@ -453,7 +451,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8009904340233602924">Naudoti „Chrome“ be paskyros</translation>
 <translation id="8013993649590906847">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
 <translation id="8019103195866286235">Kūrėjas anuliavo šio plėtinio paskelbimą ir gali būti nesaugus. Pašalinkite jį iš „Chrome“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
-<translation id="8031641407207794385">Tinkinti „Chrome“</translation>
 <translation id="80471789339884597">Dėkojame už diegimą. Turite iš naujo paleisti visas naršykles, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="8064015041956107954">Galite atidaryti žymes, skaitymo režimą ir kt. naudodami viršuje dešinėje esantį „Chrome“ meniu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

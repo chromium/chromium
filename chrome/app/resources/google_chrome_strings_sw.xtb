@@ -36,7 +36,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1516530951338665275">Google Chrome inahitaji ruhusa ya kufikia Bluetooth ili iendelee 
  kuoanisha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Mfumo wa Uendeshaji wa Chrome umewezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada.</translation>
-<translation id="155168855724261758">Weka Mapendeleo Kwenye Chrome Yako</translation>
+<translation id="1551749261806528781">Ili uhifadhi na utumie manenosiri na zaidi kwenye vifaa vyote, ingia katika akaunti kwenye Chrome. Ukishaingia katika akaunti, nenosiri hili litahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="1553358976309200471">Sasisha Chrome</translation>
 <translation id="1583073672411044740">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Hatua hii itafungua wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /> kwenye Chrome</translation>
 <translation id="1587223624401073077">Google Chrome inatumia kamera yako.</translation>
@@ -320,6 +320,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5940385492829620908">Wavuti, alamisho, na vitu vyako vingine vya Chrome vinapatikana hapa.</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
+<translation id="5947104538377036631">Njia ya Mkato ya Chrome</translation>
 <translation id="6003112304606738118">Inapakua... Zimesalia saa <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chrome<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
@@ -376,7 +377,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6933858244219479645">Mfumo wa ChromeOS</translation>
 <translation id="6938166777909186039">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo Windows 8.1.</translation>
 <translation id="6943584222992551122">Data ya kuvinjari ya mtu huyu itafutwa kwenye kifaa hiki. Ili urejeshe data, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome inahitaji kuelewa muktadha na ruhusa ya kufuatilia mijongeo ya mikono ili ianzishe kipindi cha hali ya kina</translation>
 <translation id="6967962315388095737">Sheria ya kuingia ya Google Chrome Beta ili kuruhusu trafiki ya mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome imesasishwa, lakini hujaitumia kwa angalau siku 30.</translation>
 <translation id="7011190694940573312">Imeshindwa kusakinisha kwa sababu toleo hili la mfumo wa uendeshaji halitumiki.</translation>
@@ -451,7 +451,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8009904340233602924">Tumia Chrome bila akaunti</translation>
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8019103195866286235">Uchapishaji wa kiendelezi hiki ulibatilishwa na msanidi programu na huenda kisiwe salama. Kiondoe kwenye Chrome ili kisiweze tena kuona na kubadilisha data yako kwenye tovuti unazotembelea, ikiwa ni pamoja na taarifa zako binafsi.</translation>
-<translation id="8031641407207794385">Weka mapendeleo kwenye Chrome yako</translation>
 <translation id="80471789339884597">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena vivinjari vyako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Unaweza kufungua alamisho, hali ya kusoma na zaidi katika menyu ya Chrome kwenye sehemu ya juu kulia</translation>
 <translation id="8064015586118426197">Arifa ya ChromeOS Flex</translation>

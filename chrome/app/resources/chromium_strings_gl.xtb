@@ -378,7 +378,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="718435575166326686">Chromium necesita permiso de acceso á cámara para este sitio</translation>
 <translation id="7196312274710523067">Non se puido iniciar Chromium. Téntao de novo.</translation>
 <translation id="7197677400338048821">Chromium non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas.</translation>
-<translation id="7198365860059291213">Chromium necesita comprender a escena e poder facer un seguimento das mans para comezar unha sesión envolvente</translation>
 <translation id="7213407614656404070">Usa Chromium cada vez que fagas clic nas ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="7223968959479464213">Xestor de tarefas: Chromium</translation>
 <translation id="7246575524853130370">Os teus intereses estimados por Chromium</translation>
@@ -456,7 +455,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8555465886620020932">Produciuse un erro no servizo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
-<translation id="858822505990366713">Personalizar Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chromium información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
 <translation id="8619360774459241877">Iniciando Chromium…</translation>
 <translation id="8621669128220841554">Non se puido efectuar a instalación debido a un erro. Volve descargar Chromium.</translation>
@@ -475,7 +473,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8907580949721785412">Chromium está tentando mostrar contrasinais. Escribe os teus contrasinais de Windows para permitir esta acción.</translation>
 <translation id="8931379085695076764">Chromium pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>
-<translation id="895999862145835951">Personalizar Chromium</translation>
 <translation id="897581876605952338">Logotipo de Chromium Enterprise</translation>
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8988036198400390003">Xestionar perfís de Chromium</translation>

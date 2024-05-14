@@ -766,6 +766,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4961107849584082341">Bármely nyelvre lefordíthatja ezt az oldalt</translation>
 <translation id="496607651705915226">Ha új jelszavakat szeretne menteni és használni Google-fiókjában, frissítse a Google Play-szolgáltatásokat.</translation>
 <translation id="4971735654804503942">Gyorsabb, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen. Figyelmezteti Önt a jelszavakkal kapcsolatos problémákra. Igénybevételéhez el kell küldeni a böngészési adatokat a Google-nak.</translation>
+<translation id="4971753085054504448">További találatok megjelenítéséhez próbáljon valami másra keresni, vagy nyissa meg a teljes Chrome-előzményeket.</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4987271110129728827">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni az interneten.</translation>
 <translation id="4988526792673242964">Oldal</translation>
@@ -1051,6 +1052,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6459045781120991510">Felmérések</translation>
 <translation id="6461962085415701688">A fájlt nem lehet megnyitni</translation>
 <translation id="6464977750820128603">Megnézheti a Chrome böngészővel felkeresett webhelyeket, és beállíthat hozzájuk időzítéseket.\n\nAz időzítéssel ellátott webhelyek adatait és a látogatás hosszát megkapja a Google. Ezek az adatok a digitális jóllét funkció továbbfejlesztésére szolgálnak.</translation>
+<translation id="6470181189905173055">Itt jelennek majd meg a(z) <ph name="APP_LABEL" /> használata közben a Chrome-ban megnyitott oldalai.</translation>
 <translation id="6473086018775716761">A megosztási lehetőségek listája félmagasságban van megnyitva.</translation>
 <translation id="6475951671322991020">Videó letöltése</translation>
 <translation id="6477928892249167417">Úgy tűnik, ezek a webhelyek fontosak Önnek:</translation>

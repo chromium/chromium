@@ -261,6 +261,7 @@
 <translation id="2287186687001756809">Nem található kép. Fotók hozzáadásához ugorjon a következőre: <ph name="LINK" />.</translation>
 <translation id="2305172810646967500">fekete</translation>
 <translation id="2307344026739914387">Jelenlegi kulcspár használata</translation>
+<translation id="2308243864813041101">A frissítési folyamat folytatásához húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
 <translation id="2324354238778375592">Lebegő</translation>
@@ -317,6 +318,7 @@
 <translation id="2645380101799517405">Vezérlők</translation>
 <translation id="2652403576514495859">diktálás be- vagy kikapcsolása</translation>
 <translation id="2653659639078652383">Küldés</translation>
+<translation id="2654647726140493436">A frissítés közben ne kapcsolja ki <ph name="DEVICE_TYPE" /> eszközét, és ne húzza ki a(z) <ph name="DEVICE_TYPE" /> tápkábelét</translation>
 <translation id="2656001153562991489">Kizárólag Chromebook Plus esetén</translation>
 <translation id="2665671725390405060">Kiejtés meghallgatása</translation>
 <translation id="267442004702508783">frissítés</translation>
@@ -395,6 +397,7 @@
 <translation id="3237710083340813756">Átírás</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="324961752321393509">A rendszergazda nem engedélyezi az alkalmazás bezárását</translation>
+<translation id="3263941347294171263">Húzza ki, majd csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> eszközt a frissítési folyamat folytatásához</translation>
 <translation id="3268178239013324452">Sikertelen – Nyitva van a nyomtató fedele</translation>
 <translation id="3275729367986477355">Avatarkép</translation>
 <translation id="3283504360622356314">{0,plural, =1{Fájl szerkesztése}other{Fájlok szerkesztése}}</translation>
@@ -728,6 +731,7 @@
 <translation id="5160857336552977725">Jelentkezzen be <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
+<translation id="517075088756846356">A frissítési folyamat folytatásához húzza ki, majd csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> tápkábelét</translation>
 <translation id="5180108905184566358">majomkenyérfák</translation>
 <translation id="5180712487038406644">Kifejező</translation>
 <translation id="5190187232518914472">Élje át újra kedvenc emlékeit. Albumok létrehozásához és szerkesztéséhez lépjen a <ph name="LINK_BEGIN" />Google Fotók<ph name="LINK_END" /> alkalmazásba.</translation>
@@ -789,6 +793,7 @@
 <translation id="554067135846762198">korall és cserbarna</translation>
 <translation id="5543701552415191873">zárolva</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5554741914132564590">Ezt a frissítést a külső eszköz gyártója biztosítja, és a Google nem ellenőrizte.</translation>
 <translation id="5559898619118303662">Automatikus váltás sötét témára napnyugtakor</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> <ph name="TERRAIN_COLOR" /> színű árnyalatokban</translation>
@@ -1080,6 +1085,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">színes</translation>
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
+<translation id="7101959270679078188">Oldja fel a következő eszköz zárolását a frissítési folyamat folytatásához: <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301"><ph name="COUNT" />/<ph name="INDEX" />. eszköz, <ph name="NAME" /> néven.</translation>
 <translation id="7107255225945990211">Válasszon <ph name="PRODUCT_NAME" /> exkluzív animációt</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -1355,6 +1361,7 @@
 <translation id="8675354002693747642">Előre megosztott kulcs</translation>
 <translation id="8677859815076891398">Nincs album. Hozzon létre albumot a <ph name="LINK_BEGIN" />Google Fotókban<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">rámen</translation>
+<translation id="8689520252402395106">A frissítési folyamat folytatásához csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> USB-kábelét</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> A funkció kezeléséhez használja a balra és jobbra nyilakat.</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="871560550817059752">Sikertelen – Kifogyott a tinta</translation>
@@ -1362,6 +1369,7 @@
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8726019395068607495">Leállt – Nyitva van a nyomtató fedele</translation>
 <translation id="8730621377337864115">Kész</translation>
+<translation id="8739555075907731077">Szüneteltetve (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="8747900814994928677">Módosítás megerősítése</translation>
 <translation id="8749478549112817787">Kamera háttere</translation>
 <translation id="8755946156089753497">torony</translation>

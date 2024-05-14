@@ -112,7 +112,6 @@
 <translation id="107450319332239199">എന്തോ പിശകുണ്ടായി. പകരം നേരിട്ട് വിൻഡോകൾ തുറക്കുക.</translation>
 <translation id="1075920807995555452">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിലെ, നിങ്ങളുടെ എന്റർപ്രൈസ് മാനേജ് ചെയ്യുന്ന പരിതസ്ഥിതിയിൽ ടൂളുകൾ, എഡിറ്റർമാർ, IDE-കൾ എന്നിവ റൺ ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">ടെക്‌സ്‌റ്റ് കഴ്‌സർ ഉപയോഗിച്ച് പേജുകൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യുക</translation>
-<translation id="1076382954055048850">മറ്റ് 'കാസ്റ്റ് ചെയ്യൽ' സെഷനുകൾ കാണിക്കുക</translation>
 <translation id="1076698951459398590">തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="1076766328672150609">നിങ്ങളുടെ കുട്ടിക്ക് ഒരു പിൻ ഉപയോഗിച്ച് ഈ ഉപകരണം അൺലോക്ക് ചെയ്യാനാകും.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@
 <translation id="1176471985365269981">നിങ്ങളുടെ ഉപകരണത്തിൽ ഫയലുകളോ ഫോൾഡറുകളോ എഡിറ്റ് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="1177073277575830464">Android-ന്റെ ദ്രുത സജ്ജീകരണം പൂർത്തിയായി. നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ സജ്ജീകരിക്കുന്നത് തുടരുക.</translation>
 <translation id="1177440945615690056">ക്രമീകരണത്തിൽ യോഗ്യതയുള്ള ഏത് മൊബൈൽ നെറ്റ്‌വർക്കിലേക്കും നിങ്ങൾക്ക് കണക്‌റ്റ് ചെയ്യാം</translation>
+<translation id="1177548198167638471">വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
 <translation id="1177863135347784049">ഇഷ്ടാനുസൃതം</translation>
 <translation id="1178093605842850860">ഈ സൈറ്റ് റീഡ് ചെയ്യാനും മാറ്റാനും അനുവാദമുണ്ട്</translation>
 <translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
@@ -2968,7 +2968,6 @@
 <translation id="3184536091884214176">CUPS പ്രിന്ററുകൾ സജ്ജമാക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ഈ ആപ്പ് ബ്ലോക്ക് ചെയ്‌തു}other{ചില ആപ്പുകൾ ബ്ലോക്ക് ചെയ്‌തു}}</translation>
 <translation id="3187472288455401631">ആഡ് മെഷർമെന്റ്</translation>
-<translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3188465121994729530">ശരാശരി നീക്കുന്നു</translation>
 <translation id="3189187154924005138">വലിയ കഴ്‌സർ</translation>
 <translation id="3190558889382726167">പാസ്‌വേഡ് സംരക്ഷിച്ചു</translation>
@@ -3816,6 +3815,7 @@
 <translation id="3810914450553844415">നിങ്ങളുടെ അഡ്‌മിൻ കൂടുതൽ Google അക്കൗണ്ടുകൾ അനുവദിക്കുന്നില്ല.</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
 <translation id="381202950560906753">മറ്റൊന്ന് ചേർക്കുക</translation>
+<translation id="381219490185664296">ടാബ് ഗ്രൂപ്പ് അൺഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3812525830114410218">മോശം സർട്ടിഫിക്കറ്റ്</translation>
 <translation id="3813296892522778813">നിങ്ങൾ തിരയുന്നത് കണ്ടില്ലെങ്കിൽ, <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome സഹായത്തിൽ<ph name="END_LINK_CHROMIUM" /> പോകുക</translation>
 <translation id="3813358687923336574">പേജുകൾ വിവർത്തനം ചെയ്യാനും വേഗത്തിലുള്ള ഉത്തരങ്ങൾക്കും ഉപയോഗിക്കുന്ന ഭാഷ</translation>
@@ -4254,7 +4254,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID ഉപകരണം കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="4139326893730851150">ഫേംവെയര്‍ അപ്ഡേറ്റുകൾ</translation>
 <translation id="4142052906269098341">നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് <ph name="DEVICE_TYPE" /> അൺലോക്ക് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">മികച്ച ഗുണമേന്മയുള്ള വീഡിയോ നേടുകയും ബാറ്ററി ലൈഫ് കൂട്ടുകയും ചെയ്യുക. നിങ്ങളുടെ Cast ചെയ്യാൻ പ്രാപ്തിയുള്ള സ്ക്രീനിൽ മാത്രം വീഡിയോ പ്ലേ ചെയ്യും.</translation>
 <translation id="4146026355784316281">എപ്പോഴും സിസ്‌റ്റം വ്യൂവറിൽ തുറക്കുക</translation>
 <translation id="4146785383423576110">റീസെറ്റ് ചെയ്‌ത ശേഷം മായ്ക്കുക</translation>
 <translation id="4147099377280085053">ബ്രെയ്‌ലി പട്ടിക തിരഞ്ഞെടുക്കുക</translation>
@@ -4530,7 +4529,6 @@
 <translation id="4361745360460842907">ടാബായി തുറക്കുക</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> എന്നതാണ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിന്റെ ഡിഫോൾട്ട് അക്കൗണ്ട്</translation>
 <translation id="4363262124589131906">എന്റെ ഡ്രൈവിലെ പുതിയ ഫയലുകൾ ഈ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കുന്നത് നിർത്തും</translation>
-<translation id="4363771538994847871">കാസ്‌റ്റ് ചെയ്യാനുള്ള ലക്ഷ്യസ്ഥാനങ്ങളൊന്നും കണ്ടെത്തിയില്ല. സഹായം ആവശ്യമാണോ?</translation>
 <translation id="4364327530094270451">മത്തങ്ങ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" />, ഒരു വിൻഡോ പങ്കിടുന്നു.</translation>
 <translation id="4364830672918311045">അറിയിപ്പുകൾ പ്രദർശിപ്പിക്കുക</translation>
@@ -5057,6 +5055,7 @@
 <translation id="4777458362738635055">ഈ ഉപകരണത്തിന്റെ മറ്റ് ഉപയോക്താക്കൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകും</translation>
 <translation id="4777813841994368231">ഓണാണ് • ഈ വിപുലീകരണം അതിന്റെ ഡെവലപ്പർ പ്രസിദ്ധീകരിച്ചത് റദ്ദാക്കി</translation>
 <translation id="4777825441726637019">Play Store</translation>
+<translation id="4777866634702576038">ടാബ് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="4777943778632837590">നെറ്റ്‌വർക്കിന്റെ പേരുള്ള സെര്‍വറുകൾ കോണ്‍ഫിഗര്‍ ചെയ്യുക</translation>
 <translation id="4778653490315793244">കാണിക്കാൻ ഇതുവരെയൊന്നുമില്ല</translation>
 <translation id="4779083564647765204">സൂം ചെയ്യുക</translation>
@@ -5465,6 +5464,7 @@
 <translation id="5093477827231450397">മറ്റ് സൈറ്റുകളിലേക്ക് പരസ്യങ്ങൾ നിർദ്ദേശിക്കുന്നത് താൽപ്പര്യമില്ലാത്തതിനാൽ നിങ്ങൾ ബ്ലോക്ക് ചെയ്‌ത സൈറ്റുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="5093569275467863761">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ സബ്ഫ്രെയിം: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Files ആപ്പിൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണത്തിൽ ഡിഫോൾട്ട് ആപ്പുകൾ എങ്ങനെ സജ്ജീകരിക്കാമെന്ന് അറിയുക<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">ടാബ്(കൾ) നീക്കം ചെയ്ത് ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="5094721898978802975">സഹകരിക്കുന്ന നേറ്റീവ് അപ്ലിക്കേഷനുകളുമായി ആശയവിനിമയം നടത്തുക</translation>
 <translation id="5095252080770652994">പുരോഗതി</translation>
 <translation id="5095507226704905004">ഫയൽ നിലവിലില്ലാത്തതിനാൽ പകർത്താനാകില്ല</translation>
@@ -8066,7 +8066,6 @@
 <translation id="7090714929377281710">ഹോട്ട്‌സ്‌പോട്ട് സ്വയമേവ ഓഫാക്കുക</translation>
 <translation id="7093220653036489319">വേഗത്തിലുള്ള ഉത്തരങ്ങൾ</translation>
 <translation id="7093866338626856921"><ph name="HOSTNAMES" /> പേരിലുള്ള ഉപകരണങ്ങൾ ഉപയോഗിച്ച് ഡാറ്റ എക്‌സ്‌ചേഞ്ചുചെയ്യുക</translation>
-<translation id="7094680343477712655"><ph name="DEVICE_NAME" /> എന്നതിൽ കാസ്റ്റ് അഭ്യർത്ഥന സ്വീകരിക്കുക.</translation>
 <translation id="7098389117866926363">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
 <translation id="7098447629416471489">സംരക്ഷിച്ച മറ്റ് തിരയൽ എഞ്ചിനുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ആപ്പ് നിക്കം ചെയ്യുക}other{ആപ്പുകൾ നീക്കം ചെയ്യുക}}</translation>
@@ -9554,7 +9553,6 @@
 <translation id="8198457270656084773">സിസ്റ്റത്തിന്റെ ഉപകരണ ലോഗ് പേജ് തിരയുകയാണോ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> സന്ദർശിക്കുക.</translation>
 <translation id="8199300056570174101">നെറ്റ്‌വർക്കും (സേവനം) ഉപകരണ പ്രോപ്പർട്ടികളും</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
-<translation id="8200789660596905522"><ph name="DEVICE_NAME" /> എന്നതിൽ കാസ്റ്റ് അഭ്യർത്ഥന സ്വീകരിക്കുന്നുവെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="8202160505685531999">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> പ്രൊഫൈൽ അപ്‌ഡേറ്റ് ചെയ്യാൻ പാസ്‌വേഡ് വീണ്ടും നൽകുക.</translation>
 <translation id="8202827109322349110">അടിസ്ഥാന എഡിറ്ററിൽ തുറക്കുക</translation>
 <translation id="8203152941016626022">സമീപമുള്ള പങ്കിടൽ ഉപകരണത്തിന്റെ പേര്</translation>

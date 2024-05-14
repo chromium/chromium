@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">Google Chrome skal have adgang til Bluetooth for at fortsætte 
  parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS er lavet ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Tilpas Chrome</translation>
+<translation id="1551749261806528781">Log ind i Chrome for at gemme og bruge adgangskoder med mere på alle dine enheder. Denne adgangskode gemmes på din Google-konto, når du er logget ind.</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Denne handling vil oprette en ny Chrome-profil til <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome bruger dit kamera.</translation>
@@ -312,6 +312,7 @@
 <translation id="5940385492829620908">Dit webindhold, dine bogmærker og andre Chrome-ting kan findes her.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gør Google Chrome til din standardbrowser</translation>
+<translation id="5947104538377036631">Chrome-genvej</translation>
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />værktøjer fra Chrome<ph name="END_LINK" /> kan du søge sikkert på nettet og bevare styringen</translation>
 <translation id="6022659036123304283">Gør Chrome til din egen</translation>
@@ -368,7 +369,6 @@
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>
 <translation id="6943584222992551122">Brugerens browserdata slettes fra denne enhed. Log ind på Chrome som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
-<translation id="6944202724043006419">Chrome skal have adgangstilladelse til omgivelsesforståelse og registrering af håndbevægelser for at starte en session i maksimaltilstand</translation>
 <translation id="6967962315388095737">Indgående regel for Google Chrome beta om at tillade mDNS-trafik.</translation>
 <translation id="6989339256997917931">Google Chrome er blevet opdateret, men du har ikke brugt den i 30 dage.</translation>
 <translation id="7011190694940573312">Installationen mislykkedes, fordi denne version af operativsystemet ikke understøttes.</translation>
@@ -443,7 +443,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8009904340233602924">Brug Chrome uden en konto</translation>
 <translation id="8013993649590906847">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser.</translation>
 <translation id="8019103195866286235">Udgivelsen af denne udvidelse blev fjernet af dens udvikler og er muligvis ikke sikker. Fjern den fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, herunder dine personlige oplysninger.</translation>
-<translation id="8031641407207794385">Tilpas Chrome</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Du kan åbne bogmærker, læsetilstand m.m. via Chrome-menuen øverst til højre</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

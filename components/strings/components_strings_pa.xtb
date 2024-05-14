@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">ਬਿਲਿੰਗ ਪਤਾ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ਹੋਰ}}</translation>
 <translation id="2930577230479659665">ਹਰ ਕਾਪੀ ਤੋਂ ਬਾਅਦ ਕਟਾਈ</translation>
-<translation id="2932085390869194046">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
 <translation id="2933624813161016821">ਐਮਬੌਸਿੰਗ ਫ਼ੋਇਲ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2941878205777356567">9 x 12 ਇੰਚ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -2952,6 +2951,7 @@
 <translation id="6709133671862442373">ਖਬਰਾਂ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6710594484020273272">&lt;ਖੋਜ ਸ਼ਬਦ ਟਾਈਪ ਕਰੋ&gt;</translation>
+<translation id="6710648923880003133">ਮਜ਼ਬੂਤ ਪਾਸਵਰਡ ਦਾ ਸੁਝਾਅ ਦਿਓ</translation>
 <translation id="671076103358959139">ਦਰਜਾਬੰਦੀ ਟੋਕਨ:</translation>
 <translation id="6711464428925977395">ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਨਾਲ ਕੋਈ ਸਮੱਸਿਆ ਹੈ ਜਾਂ ਪਤਾ ਗਲਤ ਹੈ।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣਾ ਅਤੇ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>

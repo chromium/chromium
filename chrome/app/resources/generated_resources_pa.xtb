@@ -112,7 +112,6 @@
 <translation id="107450319332239199">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਇਸਦੀ ਬਜਾਏ ਵਿੰਡੋ ਨੂੰ ਹੱਥੀਂ ਖੋਲ੍ਹੋ।</translation>
 <translation id="1075920807995555452">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਤੁਹਾਡੇ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤੇ ਜਾਂਦੇ ਵਾਤਾਵਰਨ ਵਿੱਚ ਟੂਲ, ਸੰਪਾਦਕ ਅਤੇ IDE ਚਲਾਓ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">ਲਿਖਤ ਕਰਸਰ ਦੇ ਨਾਲ ਪੰਨਿਆਂ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
-<translation id="1076382954055048850">ਹੋਰ ਕਾਸਟ ਸੈਸ਼ਨ ਦਿਖਾਓ</translation>
 <translation id="1076698951459398590">ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1076766328672150609">ਤੁਹਾਡੇ ਬੱਚੇ ਵੱਲੋਂ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਿੰਨ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@
 <translation id="1176471985365269981">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ਾਈਲਾਂ ਜਾਂ ਫੋਲਡਰਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="1177073277575830464">Android ਦਾ ਤਤਕਾਲ ਸੈੱਟਅੱਪ ਹੋ ਗਿਆ ਹੈ। ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸੈੱਟਅੱਪ ਜਾਰੀ ਰੱਖੋ।</translation>
 <translation id="1177440945615690056">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਯੋਗਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="1177548198167638471">ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
 <translation id="1177863135347784049">ਵਿਉਂਂਤੀ</translation>
 <translation id="1178093605842850860">ਇਸ ਸਾਈਟ ਨੂੰ ਪੜ੍ਹਨ ਅਤੇ ਬਦਲਣ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="1178581264944972037">ਰੋਕੋ</translation>
@@ -2986,7 +2986,6 @@
 <translation id="3184536091884214176">CUPS ਪ੍ਰਿੰਟਰਾਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ ਜਾਂ ਪ੍ਰਬੰਧਿਤ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{ਇਸ ਐਪ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}one{ਇਸ ਐਪ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}other{ਕੁਝ ਐਪਾਂ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ}}</translation>
 <translation id="3187472288455401631">ਵਿਗਿਆਪਨ ਮਾਪ</translation>
-<translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3188465121994729530">ਮੂਵ ਕਰਨ ਦੀ ਔਸਤ</translation>
 <translation id="3189187154924005138">ਵੱਡਾ ਕਰਸਰ</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -3834,6 +3833,7 @@
 <translation id="3810914450553844415">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਵਧੀਕ Google ਖਾਤਿਆਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦਾ।</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="381202950560906753">ਇੱਕ ਹੋਰ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="381219490185664296">ਕੀ ਟੈਬ ਗਰੁੱਪ ਦੇ ਗਰੁੱਪ ਨੂੰ ਹਟਾਉਣਾ ਹੈ?</translation>
 <translation id="3812525830114410218">ਖ਼ਰਾਬ ਸਰਟੀਫਿਕੇਟ</translation>
 <translation id="3813296892522778813">ਜੇਕਰ ਤੁਹਾਨੂੰ ਉਹ ਚੀਜ਼ ਨਹੀਂ ਮਿਲਦੀ ਜਿਸਨੂੰ ਤੁਸੀਂ ਲੱਭ ਰਹੇ ਹੋ ਤਾਂ <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome ਮਦਦ<ph name="END_LINK_CHROMIUM" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="3813358687923336574">ਪੰਨੇ ਅਤੇ ਤਤਕਾਲ ਜਵਾਬਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਵਰਤੀ ਗਈ ਭਾਸ਼ਾ</translation>
@@ -4273,7 +4273,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4139326893730851150">ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="4142052906269098341">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਅਣਲਾਕ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">ਬਿਹਤਰ ਕੁਆਲਿਟੀ ਦਾ ਵੀਡੀਓ ਪ੍ਰਾਪਤ ਕਰਕੇ ਬੈਟਰੀ ਲਾਈਫ਼ ਬਚਾਓ। ਵੀਡੀਓ ਸਿਰਫ਼ ਤੁਹਾਡੀ Cast ਯੋਗ ਬਣਾਈ ਗਈ ਸਕ੍ਰੀਨ 'ਤੇ ਹੀ ਚਲਾਇਆ ਜਾਵੇਗਾ।</translation>
 <translation id="4146026355784316281">ਹਮੇਸ਼ਾਂ ਸਿਸਟਮ ਵਿਊਅਰ ਨਾਲ ਖੋਲ੍ਹੋ</translation>
 <translation id="4146785383423576110">ਰੀਸੈੱਟ ਕਰੋ ਅਤੇ ਸਾਫ਼ ਕਰੋ</translation>
 <translation id="4147099377280085053">ਬਰੇਲ ਲਿਪੀ ਦੀ ਸਾਰਨੀ ਚੁਣੋ</translation>
@@ -4549,7 +4548,6 @@
 <translation id="4361745360460842907">ਟੈਬ ਵਜੋਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4362675504017386626">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ <ph name="ACCOUNT_EMAIL" /> ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖਾਤਾ ਹੈ</translation>
 <translation id="4363262124589131906">ਮੇਰੀ ਡਰਾਈਵ ਵਿਚਲੀਆਂ ਨਵੀਆਂ ਫ਼ਾਈਲਾਂ ਆਪਣੇ ਆਪ ਇਸ Chromebook ਨਾਲ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰ ਦੇਣਗੀਆਂ</translation>
-<translation id="4363771538994847871">ਕੋਈ ਵੀ ਕਾਸਟ ਮੰਜ਼ਿਲਾਂ ਨਹੀਂ ਮਿਲੀਆਂ। ਕੀ ਮਦਦ ਦੀ ਲੋੜ ਹੈ?</translation>
 <translation id="4364327530094270451">ਖਰਬੂਜ਼ਾ</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4364830672918311045">ਡਿਸਪਲੇ ਸੂਚਨਾਵਾਂ</translation>
@@ -5077,6 +5075,7 @@
 <translation id="4777458362738635055">ਇਸ ਡੀਵਾਈਸ ਦੇ ਹੋਰ ਵਰਤੋਂਕਾਰ ਇਸ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹਨ</translation>
 <translation id="4777813841994368231">ਚਾਲੂ • ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਇਸਦੇ ਵਿਕਾਸਕਾਰ ਵੱਲੋਂ ਅਣਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="4777825441726637019">Play Store</translation>
+<translation id="4777866634702576038">ਕੀ ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4777943778632837590">ਨੈੱਟਵਰਕ ਨਾਮ ਸਰਵਰਾਂ ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
 <translation id="4778653490315793244">ਹਾਲੇ ਦਿਖਾਉਣ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
 <translation id="4779083564647765204">ਜ਼ੂਮ</translation>
@@ -5485,6 +5484,7 @@
 <translation id="5093477827231450397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਸੰਬੰਧੀ ਸੁਝਾਅ ਦੇਣ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ਤੁਸੀਂ ਆਪਣੇ ਫ਼ਾਈਲ ਐਪ ਜਾਂ ਹੋਰ ਐਪਾਂ ਤੋਂ ਇਸ ਐਪ ਨਾਲ ਸਮਰਥਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਕਿ ਕਿਹੜੀਆਂ ਫ਼ਾਈਲਾਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ, ਇਸ ਲਈ <ph name="BEGIN_LINK" />ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ<ph name="END_LINK" />।</translation>
+<translation id="5094423602314093681">ਕੀ ਟੈਬਾਂ ਨੂੰ ਹਟਾਉਣਾ ਅਤੇ ਗਰੁੱਪਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="5094721898978802975">ਨੇਟਿਵ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨਾਲ ਸਹਿਯੋਗ ਕਰਦੇ ਹੋਏ ਸੰਚਾਰ ਕਰੋੇ</translation>
 <translation id="5095252080770652994">ਪ੍ਰਗਤੀ</translation>
 <translation id="5095507226704905004">ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਇਹ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
@@ -8087,7 +8087,6 @@
 <translation id="7090714929377281710">ਹੌਟਸਪੌਟ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="7093220653036489319">ਤਤਕਾਲ ਜਵਾਬ</translation>
 <translation id="7093866338626856921">ਨਾਮ ਦਿੱਤੀਆਂ ਗਈਆਂ ਡਿਵਾਈਸਾਂ ਨਾਲ ਡਾਟਾ ਐਕਸਚੇਂਜ ਕਰੋ: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">ਆਪਣੇ <ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਸਟ ਕਰਨ ਦੀ ਬੇਨਤੀ ਨੂੰ ਸਵੀਕਾਰ ਕਰੋ।</translation>
 <translation id="7098389117866926363">USB-C ਡੀਵਾਈਸ (ਪਿੱਛੇ ਖੱਬਾ ਪੋਰਟ)</translation>
 <translation id="7098447629416471489">ਰੱਖਿਅਤ ਕੀਤੇ ਹੋਰ ਖੋਜ ਇੰਜਣ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{ਐਪ ਨੂੰ ਹਟਾਓ}one{ਐਪ ਨੂੰ ਹਟਾਓ}other{ਐਪਾਂ ਨੂੰ ਹਟਾਓ}}</translation>
@@ -9574,7 +9573,6 @@
 <translation id="8198457270656084773">ਕੀ ਸਿਸਟਮ ਡੀਵਾਈਸ-ਲੌਗ ਪੰਨਾ ਲੱਭ ਰਹੇ ਹੋ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="8199300056570174101">ਨੈੱਟਵਰਕ (ਸੇਵਾ) ਅਤੇ ਡੀਵਾਈਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
-<translation id="8200789660596905522">ਆਪਣੇ <ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਸਟ ਕਰਨ ਦੀ ਬੇਨਤੀ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨਾ ਪੱਕਾ ਕਰੋ।</translation>
 <translation id="8202160505685531999">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਪ੍ਰੋਫਾਈਲ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਆਪਣਾ ਪਾਸਵਰਡ ਮੁੜ-ਦਰਜ ਕਰੋ।</translation>
 <translation id="8202827109322349110">ਮੂਲ ਸੰਪਾਦਕ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8203152941016626022">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਵਾਲੇ ਡੀਵਾਈਸ ਦਾ ਨਾਮ</translation>

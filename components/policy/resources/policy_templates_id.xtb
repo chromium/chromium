@@ -7401,13 +7401,6 @@ Perubahan kebijakan hanya berlaku saat ARC tidak berjalan, misalnya saat memulai
 <translation id="66265932317331474">Melaporkan info CPU</translation>
 <translation id="6628120204569232711">Laporkan status penyimpanan</translation>
 <translation id="662991036483361836">Cegah pengguna mengaktifkan Berbagi Langsung</translation>
-<translation id="6634974629075330608">Kebijakan ini memberikan penghentian sementara untuk perubahan cara Chrome menangani cookie yang ditetapkan melalui JavaScript yang berisi karakter kontrol tertentu (NULL, enter, dan line feed).
-Sebelumnya, keberadaan salah satu karakter ini dalam string cookie akan membuatnya terpotong tetapi masih ditetapkan.
-Sekarang, keberadaan karakter ini akan menyebabkan seluruh string cookie diabaikan.
-
-Jika kebijakan ini disetel ke Benar (True), yang merupakan setelan defaultnya, perilaku baru akan diaktifkan.
-
-Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</translation>
 <translation id="663685822663765995">Batasi mode warna pencetakan</translation>
 <translation id="6640355849038068978">Jika setelan ini diaktifkan, pengguna akan dapat meluncurkan aplikasi Eche, misalnya dengan mengklik notifikasi Phone Hub.
 
@@ -8185,6 +8178,13 @@ Catatan: Jika Anda menggunakan kebijakan ini untuk menentukan zona waktu secara 
       Untuk informasi mendetail tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Nonaktifkan akses root ke mesin virtual Linux</translation>
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
+<translation id="7196336906814426783">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
+
+Jadwal dengan interval yang tumpang tindih tidak didukung. Kebijakan ini tidak akan berpengaruh jika berisi dua interval yang tumpang-tindih.
+
+Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.
+
+Catatan Penting: Jadwal yang disetel oleh kebijakan ini mungkin tidak berjalan seperti yang diharapkan jika jadwal tersebut bertentangan dengan setelan pengelolaan daya lainnya, misalnya <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />. Pastikan setelan ini dikonfigurasi agar mengizinkan penerapan interval penangguhan terjadwal.</translation>
 <translation id="7198134478421755850">Ekstensi</translation>
 <translation id="7199304109870655950">Mengonfigurasi opsi akses jarak jauh di host Chrome Desktop Jarak Jauh.
 

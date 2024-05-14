@@ -615,7 +615,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2122214041802369259">Cijena je visoka</translation>
 <translation id="2122719317867821810">Ovo pravilo radi kako je predviđeno, ali je konfliktna vrijednost postavljena negdje drugo i ovo pravilo ju je zaobišlo.</translation>
 <translation id="2126374524350484896">Aplikacija za kreiranje PDF-a:</translation>
-<translation id="2127090458081644412">Zaporka je spremljena na ovaj uređaj</translation>
+<translation id="2127090458081644412">Lozinka je sačuvana na uređaj</translation>
 <translation id="2130448033692577677">Šabloni koje ste naveli neće se primijeniti jer pravilo DnsOverHttpsMode nije postavljeno.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Prikazuju se nasumičnim redoslijedom. Uvijek možete promijeniti zadani izbor.</translation>
@@ -1007,7 +1007,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2928905813689894207">Adresa za naplatu</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Skraćivanje nakon svakog primjerka</translation>
-<translation id="2932085390869194046">Predloži lozinku…</translation>
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="2938225289965773019">Otvoriti linkove protokola <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Koverta 9 x 12 in</translation>
@@ -2032,7 +2031,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4901952598169637881">Obuća za svaki dan</translation>
 <translation id="4905659621780993806">Vaš administrator će ponovo pokrenuti uređaj automatski u <ph name="TIME" /> <ph name="DATE" />. Sačuvajte sve otvorene stavke prije ponovnog pokretanja uređaja.</translation>
-<translation id="4913784027728226227">Da biste spremili i upotrebljavali tu zaporku na svim svojim uređajima, potvrdite da ste to vi</translation>
+<translation id="4913784027728226227">Potvrdite identitet da sačuvate i koristite ovu lozinku na svim uređajima</translation>
 <translation id="4913987521957242411">Bušenje gornjeg lijevog ugla</translation>
 <translation id="4916389289686916969">TV reality emisije</translation>
 <translation id="4917064667437236721">Slikovni valjak</translation>
@@ -2306,6 +2305,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5447765697759493033">Ova web lokacija se neće prevoditi</translation>
 <translation id="5452270690849572955">Nije moguće pronaći stranicu <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Neispravna vremenska oznaka pravila</translation>
+<translation id="5456428544444655325">Ne prikazuj nikada</translation>
 <translation id="5456839782162429664">Ručna potvrda prilikom svakog plaćanja pomoću automatskog popunjavanja</translation>
 <translation id="5457113250005438886">Nevažeće</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2316,7 +2316,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5470861586879999274">Poništi u&amp;ređivanje</translation>
 <translation id="547963486735802022">Ponovo pokušajte prenijeti fajlove</translation>
 <translation id="5481076368049295676">Ovaj sadržaj može pokušati instalirati opasan softver na vaš uređaj koji krade ili briše vaše informacije. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
-<translation id="5481682542063333508">Ponuda pomoći pri pisanju</translation>
+<translation id="5481682542063333508">Nudi pomoć u pisanju</translation>
 <translation id="54817484435770891">Dodajte važeću adresu</translation>
 <translation id="5483838506518938965">Spremni ste za rad</translation>
 <translation id="5485973315555778056">Mašina u oblaku</translation>
@@ -2956,6 +2956,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6709133671862442373">Vijesti</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6710594484020273272">&lt;Unesite pojam za pretraživanje&gt;</translation>
+<translation id="6710648923880003133">Predloži jaku lozinku</translation>
 <translation id="671076103358959139">Token za prijavu:</translation>
 <translation id="6711464428925977395">Nešto nije uredu s proksi serverom ili je adresa netačna.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi kreirati 3D mapu vašeg okruženja i pratiti položaj kamere</translation>

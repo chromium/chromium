@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">帳單地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
-<translation id="2932085390869194046">建議密碼…</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2941878205777356567">9 x 12 吋信封</translation>
@@ -2305,6 +2304,7 @@
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
+<translation id="5456428544444655325">永不顯示</translation>
 <translation id="5456839782162429664">每次透過自動填入功能付款時都要手動驗證</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
@@ -2955,6 +2955,7 @@
 <translation id="6709133671862442373">新聞</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
+<translation id="6710648923880003133">建議安全性強的密碼</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或地址不正確。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>

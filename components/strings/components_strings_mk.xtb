@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">Цената е висока</translation>
 <translation id="2122719317867821810">Правилово работи како што е предвидено, но конфликтна вредност е поставена некаде на друго место и е отфрлена од правилово.</translation>
 <translation id="2126374524350484896">Приказ во PDF:</translation>
+<translation id="2127090458081644412">Лозинката е зачувана на уредов</translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Пребарувачиве се прикажани по случаен редослед. Може да го промените вашиот стандарден пребарувач кога сакате.</translation>
@@ -1006,7 +1007,6 @@
 <translation id="2928905813689894207">Адреса за наплата</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
-<translation id="2932085390869194046">Предложете лозинка…</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2941878205777356567">Плик 9 x 12 in</translation>
@@ -2031,6 +2031,7 @@
 <translation id="4901778704868714008">Зачувај…</translation>
 <translation id="4901952598169637881">Секојдневни чевли</translation>
 <translation id="4905659621780993806">Вашиот администратор ќе го рестартира уредот автоматски во <ph name="TIME" /> на <ph name="DATE" /> Зачувајте ги отворените ставки пред да се рестартира уредот.</translation>
+<translation id="4913784027728226227">За да ја зачувате и користите лозинкава на сите ваши уреди, потврдете го вашиот идентитет</translation>
 <translation id="4913987521957242411">Дупка горе лево</translation>
 <translation id="4916389289686916969">Реални ТВ-емисии</translation>
 <translation id="4917064667437236721">Цилиндар за слики</translation>
@@ -2314,6 +2315,7 @@
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
 <translation id="547963486735802022">Обидете се да ги префрлите датотеките повторно</translation>
 <translation id="5481076368049295676">Содржинава може да се обиде да инсталира опасен софтвер на вашиот уред што ги краде или брише вашите информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Нудење помош при пишување</translation>
 <translation id="54817484435770891">Додавање важечка адреса</translation>
 <translation id="5483838506518938965">Подготвени сте</translation>
 <translation id="5485973315555778056">Компјутер во облак</translation>
@@ -2953,6 +2955,7 @@
 <translation id="6709133671862442373">Вести</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6710594484020273272">&lt;Внесете поим за пребарување&gt;</translation>
+<translation id="6710648923880003133">Предложи силна лозинка</translation>
 <translation id="671076103358959139">Токен за регистрација:</translation>
 <translation id="6711464428925977395">Нешто не е во ред со прокси-серверот или адресата е неточна.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> сака да создаде 3D-карта на опкружувањето и да ја следи позицијата на камерата</translation>

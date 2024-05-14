@@ -615,6 +615,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2122214041802369259">Cena je vysoká</translation>
 <translation id="2122719317867821810">Zásada funguje podle očekávání, ale jinde je nastavena konfliktní hodnota, kterou tato zásada přepisuje.</translation>
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
+<translation id="2127090458081644412">Heslo bylo uloženo do tohoto zařízení</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Vyhledávače jsou zobrazeny v náhodném pořadí. Výchozí nastavení můžete kdykoliv změnit.</translation>
@@ -1006,7 +1007,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2928905813689894207">Fakturační adresa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> dalších}}</translation>
 <translation id="2930577230479659665">Oříznout za každou kopií</translation>
-<translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2933624813161016821">Razicí fólie</translation>
 <translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Obálka 9 × 12 palců</translation>
@@ -2027,6 +2027,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4901778704868714008">Uložit...</translation>
 <translation id="4901952598169637881">Obuv pro volný čas</translation>
 <translation id="4905659621780993806">V <ph name="TIME" /> dne <ph name="DATE" /> administrátor zařízení automaticky restartuje. Před restartováním zařízení uložte všechny otevřené položky.</translation>
+<translation id="4913784027728226227">Pokud toto heslo chcete uložit a použít na všech svých zařízeních, ověřte svou totožnost</translation>
 <translation id="4913987521957242411">Děrování vlevo nahoře</translation>
 <translation id="4916389289686916969">Televizní reality show</translation>
 <translation id="4917064667437236721">Zobrazovací válec</translation>
@@ -2300,6 +2301,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
 <translation id="5455374756549232013">Chybné časové razítko zásady</translation>
+<translation id="5456428544444655325">Nikdy nezobrazovat</translation>
 <translation id="5456839782162429664">Při každé platbě pomocí automatického vyplňování požádat o ruční ověření</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
@@ -2310,6 +2312,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5470861586879999274">&amp;Opakovat úpravy</translation>
 <translation id="547963486735802022">Zkuste soubory přenést znovu</translation>
 <translation id="5481076368049295676">Tento obsah by vám do zařízení mohl zkusit nainstalovat nebezpečný software, který odcizuje nebo maže informace. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Nabízet pomoc při psaní</translation>
 <translation id="54817484435770891">Přidejte platnou adresu</translation>
 <translation id="5483838506518938965">Hotovo</translation>
 <translation id="5485973315555778056">Cloudové zařízení</translation>
@@ -2948,6 +2951,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6709133671862442373">Zprávy</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6710594484020273272">&lt;Zadejte vyhledávací dotaz&gt;</translation>
+<translation id="6710648923880003133">Navrhnout silné heslo</translation>
 <translation id="671076103358959139">Registrační token:</translation>
 <translation id="6711464428925977395">Došlo k chybě proxy serveru nebo jste zadali nesprávnou adresu.</translation>
 <translation id="6716672519412350405">Web <ph name="URL" /> chce vytvořit 3D mapu vašeho okolí a sledovat polohu kamery</translation>

@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">Высокая цана</translation>
 <translation id="2122719317867821810">Гэта палітыка працуе належным чынам, але перавызначае канфліктуючае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
+<translation id="2127090458081644412">Пароль захаваны на гэтай прыладзе</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку. Змяніць стандартную пошукавую сістэму можна ў любы час.</translation>
@@ -1007,7 +1008,6 @@
 <translation id="2928905813689894207">Адрас для выстаўлення рахункаў</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Абрэзка пасля кожнай копіі</translation>
-<translation id="2932085390869194046">Прапанаваць пароль...</translation>
 <translation id="2933624813161016821">Фольга для ціснення</translation>
 <translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Канверт 9 x 12 цаляў</translation>
@@ -2031,6 +2031,7 @@
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4901952598169637881">Паўсядзённы абутак</translation>
 <translation id="4905659621780993806">Адміністратар аўтаматычна перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" />. Захавайце перад перазапускам прылады ўсё, што вы адкрылі.</translation>
+<translation id="4913784027728226227">Каб захаваць і выкарыстоўваць гэты пароль на ўсіх сваіх прыладах, пацвердзіце сваю асобу</translation>
 <translation id="4913987521957242411">Дзірка зверху злева</translation>
 <translation id="4916389289686916969">Тэлевізійныя рэаліці-шоу</translation>
 <translation id="4917064667437236721">Цыліндр фарміравання відарыса</translation>
@@ -2314,6 +2315,7 @@
 <translation id="5470861586879999274">&amp;Адрабіць змену</translation>
 <translation id="547963486735802022">Паспрабуйце перанесці файлы яшчэ раз</translation>
 <translation id="5481076368049295676">Праз гэта змесціва на вашу прыладу можа ўсталявацца небяспечнае праграмнае забеспячэнне, якое будзе красці або выдаляць інфармацыю. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Прапаноўваць дапамогу з напісаннем</translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
 <translation id="5483838506518938965">Усё гатова</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
@@ -2953,6 +2955,7 @@
 <translation id="6709133671862442373">Навіны</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Увядзіце пошукавы запыт&gt;</translation>
+<translation id="6710648923880003133">Прапанаваць надзейны пароль</translation>
 <translation id="671076103358959139">Маркер рэгістрацыі:</translation>
 <translation id="6711464428925977395">Нешта не так з проксі-серверам або адрас няправільны.</translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>

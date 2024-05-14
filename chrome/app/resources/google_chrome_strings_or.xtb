@@ -36,7 +36,7 @@
 <translation id="1516530951338665275">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Google Chrome ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ 
 ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
-<translation id="155168855724261758">ଆପଣଙ୍କ Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
+<translation id="1551749261806528781">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସେଭ କରିବା ଏବଂ ବ୍ୟବହାର କରିବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ ସାଇନ ଇନ କରିବା ପରେ ଏହି ପାସୱାର୍ଡ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହେବ।</translation>
 <translation id="1553358976309200471">Chrome ଅପ୍‍‍‍‍‍ଡେଟ୍‌</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ଏହି Chrome ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଏହା <ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ଏକ ନୂଆ Chrome ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିବ</translation>
 <translation id="1587223624401073077">Google Chrome ଆପଣଙ୍କର କ୍ୟାମେରା ବ୍ୟବହାର କରୁଛି।</translation>
@@ -320,6 +320,7 @@
 <translation id="5940385492829620908">ଆପଣଙ୍କର ୱେବ୍, ବୁକ୍‌ମାର୍କ ଏବଂ ଅନ୍ୟାନ୍ୟ Chrome ଷ୍ଟଫ୍ ଏଠାରେ ଅଛି।</translation>
 <translation id="5941711191222866238">ସର୍ବନିମ୍ନ କରନ୍ତୁ</translation>
 <translation id="5941830788786076944">ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଭାବରେ Google Chrome ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
+<translation id="5947104538377036631">Chrome ସର୍ଟକଟ</translation>
 <translation id="6003112304606738118">ଡାଉନଲୋଡ ହେଉଛି… <ph name="HOURS" /> ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromeରୁ ଟୁଲଗୁଡ଼ିକ<ph name="END_LINK" /> ମାଧ୍ୟମରେ ଆପଣ ସୁରକ୍ଷିତ ଭାବେ ବ୍ରାଉଜ କରିପାରିବେ ଏବଂ ନିୟନ୍ତ୍ରଣରେ ରହିପାରିବେ</translation>
 <translation id="6022659036123304283">Chromeକୁ ନିଜ ପସନ୍ଦରେ ତିଆରି କରନ୍ତୁ</translation>
@@ -376,7 +377,6 @@
 <translation id="6933858244219479645">ChromeOS ସିଷ୍ଟମ</translation>
 <translation id="6938166777909186039">ଭବିଷ୍ୟତରେ Google Chromeର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ Windows 10 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ Windows 8.1 ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="6943584222992551122">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହି ବ୍ୟକ୍ତିଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ୍‌ କରାଯିବ। ଡାଟା ପୁନରୁଦ୍ଧାର କରିବାକୁ, <ph name="USER_EMAIL" /> ରୂପେ Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
-<translation id="6944202724043006419">ଏକ ଇମର୍ସିଭ ସେସନ ଆରମ୍ଭ କରିବାକୁ Chrome ଦୃଶ୍ୟ ବୁଝାମଣା ଏବଂ ହେଣ୍ଡ ଟ୍ରାକିଂ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6967962315388095737">mDNS ଟ୍ରାଫିକ୍‍କୁ ଅନୁମତି ଦେବା ପାଇଁ Google Chrome Betaରେ ଅନ୍ତର୍ନିହିତ ଥିବା ନିୟମ।</translation>
 <translation id="6989339256997917931">Google Chromeକୁ ଅପ୍‌ଡେଟ୍‌ କରାଯାଇଛି, କିନ୍ତୁ ଆପଣ ଏହାକୁ ଅତିକମରେ 30 ଦିନ ପର୍ଯ୍ୟନ୍ତ ବ୍ୟବହାର କରିନାହାନ୍ତି।</translation>
 <translation id="7011190694940573312">ଅପରେଟିଂ ସିଷ୍ଟମର ଏହି ଭର୍ସନ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
@@ -451,7 +451,6 @@
 <translation id="8009904340233602924">ଏକ ଆକାଉଣ୍ଟ ବିନା Chrome ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8013993649590906847">ଯଦି ଗୋଟିଏ ଛବିରେ ଏକ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chrome ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି।</translation>
 <translation id="8019103195866286235">ଏହି ଏକ୍ସଟେନସନକୁ ଏହାର ଡେଭେଲପରଙ୍କ ଦ୍ୱାରା ଅନପବ୍ଲିସ କରାଯାଇଛି ଏବଂ ଏହା ଅସୁରକ୍ଷିତ ହୋଇପାରେ। Chromeରୁ ଏହାକୁ କାଢ଼ି ଦିଅନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣଙ୍କ ବ୍ୟକ୍ତିଗତ ସୂଚନା ସମେତ ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ ଆପଣଙ୍କ ଡାଟାକୁ ଆଉ ଦେଖିପାରିବ ନାହିଁ ଏବଂ ପରିବର୍ତ୍ତନ କରିପାରିବ ନାହିଁ।</translation>
-<translation id="8031641407207794385">ଆପଣଙ୍କ Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="80471789339884597">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ । ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସମସ୍ତ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8064015041956107954">ଆପଣ ଡାହାଣପଟ ଶୀର୍ଷରେ Chrome ମେନୁରୁ ବୁକମାର୍କ, ରିଡିଂ ମୋଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖୋଲିପାରିବେ</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

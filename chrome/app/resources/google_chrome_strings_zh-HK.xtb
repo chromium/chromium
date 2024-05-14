@@ -35,7 +35,6 @@
 <translation id="1507198376417198979">自訂您的新 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />。</translation>
-<translation id="155168855724261758">自訂 Chrome</translation>
 <translation id="1551749261806528781">如要在所有裝置上儲存及使用密碼和其他資料，請登入 Chrome。登入後，此密碼會儲存至你的 Google 帳戶。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入此 Chrome 設定檔。此操作將為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
@@ -377,7 +376,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
-<translation id="6944202724043006419">Chrome 需要場景理解和手部追蹤權限，才能開始沉浸式工作階段</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但您至少已有 30 天未使用該瀏覽器。</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
@@ -452,7 +450,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8009904340233602924">在不登入帳戶的情況下使用 Chrome</translation>
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8019103195866286235">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
-<translation id="8031641407207794385">自訂 Chrome</translation>
 <translation id="80471789339884597">多謝安裝。您必須先重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015041956107954">你可以由右上方嘅 Chrome 選單打開書籤、閱讀模式之類嘅功能</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

@@ -112,7 +112,6 @@
 <translation id="107450319332239199">Đã xảy ra lỗi. Hãy mở cửa sổ theo cách thủ công.</translation>
 <translation id="1075920807995555452">Chạy các công cụ, trình chỉnh sửa và IDE trong môi trường do doanh nghiệp của bạn quản lý trên <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Di chuyển giữa các trang bằng con trỏ văn bản</translation>
-<translation id="1076382954055048850">Xem các phiên truyền khác</translation>
 <translation id="1076698951459398590">Bật chủ đề</translation>
 <translation id="1076766328672150609">Con bạn có thể dùng mã PIN để mở khóa thiết bị này.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1176471985365269981">Không được phép chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
 <translation id="1177073277575830464">Quá trình thiết lập nhanh Android đã hoàn tất. Hãy tiếp tục thiết lập trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="1177440945615690056">Bạn có thể kết nối với bất cứ mạng di động nào đủ điều kiện trong phần Cài đặt</translation>
+<translation id="1177548198167638471">Không hỏi lại</translation>
 <translation id="1177863135347784049">Tùy chỉnh</translation>
 <translation id="1178093605842850860">Được phép đọc và thay đổi trang web này</translation>
 <translation id="1178581264944972037">Tạm dừng</translation>
@@ -2984,7 +2984,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3184536091884214176">Thiết lập hoặc quản lý máy in CUPS. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ứng dụng này đã bị chặn}other{Một số ứng dụng đã bị chặn}}</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
-<translation id="3188257591659621405">Tệp của tôi</translation>
 <translation id="3188465121994729530">Trung bình động</translation>
 <translation id="3189187154924005138">Con trỏ lớn</translation>
 <translation id="3190558889382726167">Đã lưu mật khẩu</translation>
@@ -3832,6 +3831,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3810914450553844415">Quản trị viên của bạn không cho phép dùng các Tài khoản Google khác.</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="381202950560906753">Thêm vân tay khác</translation>
+<translation id="381219490185664296">Bạn muốn huỷ nhóm thẻ?</translation>
 <translation id="3812525830114410218">Chứng chỉ không hợp lệ</translation>
 <translation id="3813296892522778813">Hãy truy cập <ph name="BEGIN_LINK_CHROMIUM" />Trợ giúp Google Chrome<ph name="END_LINK_CHROMIUM" /> nếu bạn không tìm thấy nội dung mình đang tìm kiếm</translation>
 <translation id="3813358687923336574">Ngôn ngữ dùng để dịch các trang và nội dung trong phần Thông tin nhanh</translation>
@@ -4271,7 +4271,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – Đã kết nối thiết bị giao diện tương tác với con người (HID)</translation>
 <translation id="4139326893730851150">Các bản cập nhật chương trình cơ sở</translation>
 <translation id="4142052906269098341">Mở khóa <ph name="DEVICE_TYPE" /> bằng điện thoại của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">Trải nhiệm chất lượng video tốt hơn và tiết kiệm pin. Video sẽ chỉ phát trên màn hình có hỗ trợ tính năng Truyền.</translation>
 <translation id="4146026355784316281">Luôn mở bằng trình xem hệ thống</translation>
 <translation id="4146785383423576110">Đặt lại và dọn dẹp</translation>
 <translation id="4147099377280085053">Chọn một bảng chữ nổi</translation>
@@ -4547,7 +4546,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4361745360460842907">Mở dưới dạng thẻ</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> là tài khoản mặc định trên <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="4363262124589131906">Các tệp mới trong Drive của tôi sẽ tự động dừng đồng bộ hoá với Chromebook này</translation>
-<translation id="4363771538994847871">Không tìm thấy đích Truyền nào. Bạn cần trợ giúp?</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> đang chia sẻ một cửa sổ.</translation>
 <translation id="4364830672918311045">Hiện thông báo</translation>
@@ -5075,6 +5073,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4777458362738635055">Những người dùng khác trên thiết bị này có thể sử dụng mạng này</translation>
 <translation id="4777813841994368231">Đang bật • Nhà phát triển đã huỷ phát hành tiện ích này</translation>
 <translation id="4777825441726637019">Cửa hàng Play</translation>
+<translation id="4777866634702576038">Bạn muốn xoá nhóm thẻ?</translation>
 <translation id="4777943778632837590">Định cấu hình các máy chủ định danh trong mạng</translation>
 <translation id="4778653490315793244">Chưa có nội dung nào để hiển thị</translation>
 <translation id="4779083564647765204">Thu phóng</translation>
@@ -5484,6 +5483,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5093477827231450397">Danh sách trang web bạn không cho phép đề xuất quảng cáo cho các trang web khác</translation>
 <translation id="5093569275467863761">Khung phụ ẩn danh lưu trong bộ nhớ đệm cho thao tác tiến/lùi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Bạn có thể dùng ứng dụng này trên ứng dụng Files hoặc các ứng dụng khác để mở và chỉnh sửa các tệp được hỗ trợ. Để kiểm soát loại tệp mở được ứng dụng này theo mặc định, hãy <ph name="BEGIN_LINK" />tìm hiểu cách đặt ứng dụng mặc định trên thiết bị<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">Bạn muốn loại bỏ thẻ và xoá nhóm?</translation>
 <translation id="5094721898978802975">Kết nối với ứng dụng gốc hợp tác</translation>
 <translation id="5095252080770652994">Tiến độ</translation>
 <translation id="5095507226704905004">Không thể sao chép tệp này vì tệp không còn tồn tại</translation>
@@ -8086,7 +8086,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7090714929377281710">Tự động tắt điểm phát sóng</translation>
 <translation id="7093220653036489319">Thông tin nhanh</translation>
 <translation id="7093866338626856921">Trao đổi dữ liệu với thiết bị có tên: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">Chấp nhận yêu cầu Truyền trên <ph name="DEVICE_NAME" /> của bạn.</translation>
 <translation id="7098389117866926363">Thiết bị USB-C (cổng bên trái ở phía sau)</translation>
 <translation id="7098447629416471489">Các công cụ tìm kiếm đã lưu khác sẽ xuất hiện ở đây</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Xóa Ứng dụng}other{Xóa các Ứng dụng}}</translation>
@@ -9575,7 +9574,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8198457270656084773">Bạn muốn tìm trang nhật ký thiết bị của hệ thống? Truy cập<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Thuộc tính của thiết bị và mạng (dịch vụ)</translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
-<translation id="8200789660596905522">Bạn cần chấp nhận yêu cầu Truyền trên <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Vui lòng nhập lại mật khẩu để cập nhật hồ sơ <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="8202827109322349110">Mở trong trình chỉnh sửa cơ bản</translation>
 <translation id="8203152941016626022">Tên thiết bị Chia sẻ lân cận</translation>

@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">"बुकमार्कहरू" मा गई आफूले ट्रयाक गरेका उत्पादनहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1466383950273130737">Chrome मा प्रयोग गरिने भाषा छान्नुहोस्</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
+<translation id="1480287803138246127">तपाईंको केही ब्राउजिङ हिस्ट्री यहाँ नदेखिन सक्छ। आफ्नो Chrome को सबै ब्राउजिङ हिस्ट्री हेर्न Chrome को पूरै ब्राउजिङ हिस्ट्री खोल्नुहोस्।</translation>
 <translation id="148482509007564431">बुकमार्क सेभ गर्ने फ्लो</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
 <translation id="1493287004536771723">तपाईं <ph name="SITE_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
@@ -167,7 +168,7 @@
 <translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1922362554271624559">सुझाव गरिएका भाषाहरू</translation>
 <translation id="1924255092154549435">ट्याब एक्स्पान्ड गरियो</translation>
-<translation id="1925021887439448749">आफू अनुकूल पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
+<translation id="1925021887439448749"> कस्टम पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928618076168182477">भिजुअल भ्यू देखाइँदै छ</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">तपाईं आफ्ना बुकमार्कहरू Google खातामा पनि सेभ गर्नुहुन्छ भने तपाईं Chrome मा उत्पादनका मूल्यहरू ट्र्याक गर्न र मूल्य घट्दा सूचना प्राप्त गर्न सक्नुहुन्छ</translation>
 <translation id="3227557059438308877">सुरक्षा साँचोका रूपमा Google Chrome</translation>
 <translation id="3232293466644486101">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> वटा ट्याब मेटाइए</translation>
 <translation id="3232754137068452469">वेब एप</translation>
 <translation id="3236059992281584593">१ मिनेट बाँकी छ</translation>
 <translation id="3237087289225714896">पेज प्रिलोड गर्ने डिफल्ट मोड:</translation>
@@ -861,6 +863,7 @@
 <translation id="5515439363601853141">आफ्नो पासवर्ड हेर्न अनलक गर्नुहोस्</translation>
 <translation id="5517095782334947753">तपाईंसँग <ph name="FROM_ACCOUNT" /> का पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरू छन्।</translation>
 <translation id="5524843473235508879">रिडिरेक्ट गर्न रोक लगाइयो।</translation>
+<translation id="5526281268548144413">एकभन्दा बढी विन्डोहरूमा बन्द गर्न सकिँदैन</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# मिनेटअघि}other{# मिनेटअघि}}</translation>
 <translation id="5548606607480005320">सुरक्षा जाँच</translation>
 <translation id="5554520618550346933">तपाईंले कुनै पासवर्ड प्रयोग गर्नुभयो भने Chrome ले उक्त पासवर्ड अनलाइन प्रकाशित गरिएका खण्डमा तपाईंलाई चेतावनी दिन्छ। यसो गर्ने क्रममा Google लगायत अरू कसैले पनि तपाईंका पासवर्ड र युजरनेम हेर्न नसकून् भन्नाका लागि तिनलाई इन्क्रिप्ट गरिन्छ।</translation>
@@ -1004,6 +1007,7 @@
 उदाहरणका लागि, केही वेबसाइटहरूले तपाईंले भ्रमण गर्नुभएका अन्य वेबसाइटहरूमा आधारित नरहेका विज्ञापन देखाएर यो अनुरोधको प्रतिक्रिया दिन सक्छन्। धेरै वेबसाइटहरूले अझै पनि तपाईँको ब्राउजिङ डेटा संकलन र प्रयोग गर्नेछन् - उदाहरणका लागि, सुरक्षा सुधार गर्न, सामग्री, विज्ञापनहरू र सुझावहरू प्रदान गर्न, र रिपोर्टिङ तथ्याङ्कहरू उत्पन गर्न।</translation>
 <translation id="6233974827872475843">सिंक गर्ने सुविधा अन गरेर यो डिभाइसमा तपाईंको Google खातामा पासवर्डहरू सेभ गर्नुहोस्</translation>
 <translation id="6247557882553405851">Google पासवर्ड म्यानेजर</translation>
+<translation id="6251449557817521191">यहाँ गई आफ्नो Chrome को ब्राउजिङ हिस्ट्री हेर्नुहोस्</translation>
 <translation id="6255794742848779505">हामी यो डिभाइसमा पासवर्डहरू सेभ गर्ने तरिका परिवर्तन गर्दै छौँ</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
 <translation id="6277522088822131679">पृष्ठ प्रिन्टिङ गर्नमा एक समस्या थियो। कृपया पुन: प्रयास गर्नुहोस्।</translation>
@@ -1335,6 +1339,7 @@
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ठेगाना थप्नुहोस्</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> ट्याब मेटाइयो</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />बन्द गर्नुहोस्</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
@@ -1388,6 +1393,7 @@
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7986497153528221272">पासवर्डहरू हेर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
+<translation id="7988531104457683216">तपाईंको केही ब्राउजिङ हिस्ट्री यहाँ नदेखिन सक्छ। आफ्नो Chrome को सबै ब्राउजिङ हिस्ट्री हेर्न Chrome को पूरै ब्राउजिङ हिस्ट्री खोल्नुहोस्। साथै, तपाईंको Google खाताको अन्य प्रकारको ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा सेभ गरिएको हुन सक्छ।</translation>
 <translation id="7995059495660416932">सामग्री उपलब्ध भएपछि यहाँ देखिने छ</translation>
 <translation id="799576009106109668">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिएको हुनाले तपाईं छिटो ब्राउज गर्नु हुने छ</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>

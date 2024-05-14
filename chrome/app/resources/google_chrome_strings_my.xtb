@@ -36,7 +36,7 @@
 <translation id="1516530951338665275">Google Chrome သည် ဆက်လက်တွဲချိတ်ရန် ဘလူးတုသ်သုံးခွင့် 
  လိုပါသည်။ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS ကို <ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ် ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ရေးဆွဲထားသည်။</translation>
-<translation id="155168855724261758">Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ရန်</translation>
+<translation id="1551749261806528781">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများကို သိမ်းရန်နှင့် အသုံးပြုရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။ လက်မှတ်ထိုးဝင်ပြီးလျှင် ဤစကားဝှက်ကို သင့် Google Account တွင် သိမ်းပါမည်။</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ကို ဤ Chrome ပရိုဖိုင်တွင် လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်။ ၎င်းသည် <ph name="USER_EMAIL_ADDRESS" /> အတွက် Chrome ပရိုဖိုင်အသစ် ပြုလုပ်ပါမည်</translation>
 <translation id="1587223624401073077">Google Chrome iသည် သင်၏ ကင်မရာကို သုံးနေ</translation>
@@ -320,6 +320,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5940385492829620908">သင်၏ ဝဘ်၊ စာညှပ်များ၊ နှင့် အခြားသော Chrome အရာများဟာ ဒီမှာ နေထိုင်ကြပါသည်။</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
+<translation id="5947104538377036631">Chrome ဖြတ်လမ်းလင့်ခ်</translation>
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome မှ တူးလ်များ<ph name="END_LINK" /> ဖြင့် လုံခြုံစွာဘရောက်စ်လုပ်ပြီး ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
@@ -376,7 +377,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6933858244219479645">ChromeOS စနစ်</translation>
 <translation id="6938166777909186039">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် Windows 10 နှင့်အထက် လိုအပ်မည်။ ဤကွန်ပျူတာက Windows 8.1 သုံးနေသည်။</translation>
 <translation id="6943584222992551122">ဤပုဂ္ဂိုလ်၏ ကြည့်ရှုမှုဒေတာများကို ဤကိရိယာမှနေ၍ ဖျက်လိုက်ပါမည်။ ဒေတာကို ပြန်လည်ရယူရန် <ph name="USER_EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
-<translation id="6944202724043006419">Chrome သည် ဘက်ပေါင်းစုံစက်ရှင် စတင်ရန် မြင်ကွင်းသိရှိနားလည်မှုနှင့် လက်လှုပ်ရှားဟန်သိခြင်း ခွင့်ပြုချက်လိုအပ်သည်</translation>
 <translation id="6967962315388095737">Google Chrome စမ်းသပ်ဆော့ဖ်ဝဲက mDNS အသွားအလာကို ခွင့်ပြုပေးနိုင်ရန်အတွက် ချမှတ်ထားသော အတွင်းစည်းမျဉ်း။</translation>
 <translation id="6989339256997917931">Google Chrome ကို မွမ်းမံပြီးသွားပြီ၊ သို့သော် သင်သည် ၎င်းကို အနည်းဆုံးအားဖြင့် ရက် ၃၀ အတွင်းမှာ မသုံးခဲ့ပါ။</translation>
 <translation id="7011190694940573312">ဤလည်ပတ်သည့်စနစ်၏ ဗားရှင်းကို မပံ့ပိုးသောကြောင့် ထည့်သွင်း၍မရပါ။</translation>
@@ -451,7 +451,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8009904340233602924">Chrome ကို အကောင့်မပါဘဲ အသုံးပြုရန်</translation>
 <translation id="8013993649590906847">ပုံတွင် အသုံးဝင်သော အကြောင်းအရာ မပါလျှင် Chrome က သင့်အတွက် ဖော်ပြပေးပါမည်။ အကြောင်းအရာများ ဖော်ပြပေးရန် ပုံများကို Google သို့ပို့လိုက်ပါသည်။</translation>
 <translation id="8019103195866286235">ဤနောက်ဆက်တွဲကို ၎င်း၏ ဆော့ဖ်ဝဲရေးသူက ထုတ်ဝေမထားပါ။ ၎င်းသည် လုံခြုံမှု မရှိနိုင်ပါ။ ၎င်းကို Chrome မှ ဖယ်ရှားခြင်းဖြင့် သင့်ကိုယ်ရေးအချက်အလက်များအပါအဝင် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များရှိ သင့်ဒေတာများကို ၎င်းက မြင်နိုင်၊ ပြောင်းနိုင်တော့မည်မဟုတ်ပါ။</translation>
-<translation id="8031641407207794385">Chrome ကို စိတ်ကြိုက်ပြင်ဆင်ရန်</translation>
 <translation id="80471789339884597">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာအားလုံးကို ပြန်စရမည်။</translation>
 <translation id="8064015041956107954">ညာဘက်ထိပ်ရှိ Chrome မီနူးမှတစ်ဆင့် လိပ်စာများ၊ စာဖတ်မုဒ် စသည်တို့ကို ဖွင့်နိုင်သည်</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

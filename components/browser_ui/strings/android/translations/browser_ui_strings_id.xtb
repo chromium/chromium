@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kartu halaman tab baru</translation>
 <translation id="2241634353105152135">Sekali ini saja</translation>
 <translation id="2253414712144136228">Hapus <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="228293613124499805">Sebagian besar situs yang Anda buka mungkin menyimpan data ke perangkat, sering kali untuk meningkatkan pengalaman Anda dengan menyimpan preferensi atau informasi yang Anda bagikan ke situs. Sebaiknya tetap aktifkan setelan ini.</translation>
 <translation id="2289270750774289114">Tanyakan saat situs ingin menemukan perangkat Bluetooth di sekitar (direkomendasikan)</translation>
 <translation id="2315043854645842844">Pilihan sertifikat sisi klien tidak didukung oleh sistem operasi.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Jika diaktifkan, situs dapat meminta untuk mencari perangkat Bluetooth. Jika dinonaktifkan, situs tidak dapat mencari perangkat Bluetooth.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 situs diizinkan}other{# situs diizinkan}}</translation>
 <translation id="8751914237388039244">Pilih gambar</translation>
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>

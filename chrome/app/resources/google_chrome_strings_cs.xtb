@@ -36,7 +36,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
  pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Přizpůsobit si Chrome</translation>
+<translation id="1551749261806528781">Pokud chcete ukládat a používat hesla a další obsah na všech svých zařízeních, přihlaste se do Chromu. Toto heslo se po přihlášení uloží do vašeho účtu Google.</translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
 <translation id="1583073672411044740">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Tímto vytvoříte nový profil Chrome pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome používá vaši kameru.</translation>
@@ -320,6 +320,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5940385492829620908">Zde jsou k dispozici vaše weby, záložky a další obsah Chromu.</translation>
 <translation id="5941711191222866238">Minimalizovat</translation>
 <translation id="5941830788786076944">Nastavit Google Chrome jako výchozí prohlížeč</translation>
+<translation id="5947104538377036631">Zkratka Chromu</translation>
 <translation id="6003112304606738118">Stahování… Zbývající čas: <ph name="HOURS" /> h.</translation>
 <translation id="6014316319780893079">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chrome<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
 <translation id="6022659036123304283">Přizpůsobte si Chrome</translation>
@@ -376,7 +377,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">K zahájení imerzivní relace potřebuje Chrome oprávnění k pochopení scény a sledování rukou</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
 <translation id="6989339256997917931">Prohlížeč Google Chrome byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
 <translation id="7011190694940573312">Instalace se nezdařila, protože tato verze operačního systému není podporována.</translation>
@@ -451,7 +451,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8009904340233602924">Použít Chrome bez účtu</translation>
 <translation id="8013993649590906847">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu.</translation>
 <translation id="8019103195866286235">Toto rozšíření přestal vývojář publikovat a může být nebezpečné. Odstraňte ho z prohlížeče Chrome, aby již nemohlo číst a měnit data (včetně osobních údajů) na webech, které navštěvujete.</translation>
-<translation id="8031641407207794385">Přizpůsobit si Chrome</translation>
 <translation id="80471789339884597">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat všechny prohlížeče.</translation>
 <translation id="8064015041956107954">Z nabídky Chrome vpravo nahoře můžete otevřít záložky, režim čtení a další položky</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

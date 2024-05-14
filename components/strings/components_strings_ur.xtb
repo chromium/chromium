@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">تعلیمی گرانٹس اور اسکالرشپس</translation>
 <translation id="2228057197024893428">‏یہ پتہ فی الحال Chrome پر محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
 <translation id="2229456043301340598">غیر منفرد شارٹ کو نظر انداز کر دیا گیا: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="2233745931693710080">کمپیکٹ ڈسک</translation>
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> کو ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="2318594867107319532">پالیسی کی آخری ٹائم سٹیمپ:</translation>
 <translation id="2320564945062300737">چہرے کی دیکھ بھال سے متعلق پروڈکٹس</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 ونڈو}other{# ونڈوز}}</translation>
 <translation id="2328651992442742497">اجازت ہے (ڈیفالٹ)</translation>
 <translation id="2328955282645810595">تعمیر اور پاور ٹولز</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> کی میعاد <ph name="EXPIRATION_DATE_ABBR" /> کو ختم ہو جائے گی</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">بلنگ پتہ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}}</translation>
 <translation id="2930577230479659665">ہر ایک کاپی کے بعد تراشیں</translation>
-<translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2933624813161016821">ایمبوسنگ فوئل</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="2941878205777356567">‏‎9 x 12 انچ لفافہ</translation>
@@ -2447,6 +2448,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">معالجین حیوانات</translation>
 <translation id="5715150588940290235">محفوظ کردہ سیکیورٹی کوڈز حذف کریں؟</translation>
+<translation id="5715918316982363436">اس آلہ پر <ph name="WINDOW_COUNT" /> سے <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">آئس اسکیٹنگ</translation>
 <translation id="5720705177508910913">حالیہ صارف</translation>
 <translation id="5720895412771013401">ڈیسک ٹاپ کمپیوٹرز</translation>
@@ -2958,6 +2960,7 @@
 <translation id="6709133671862442373">خبریں</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6710594484020273272">&lt;تلاش کی اصطلاح ٹائپ کریں&gt;</translation>
+<translation id="6710648923880003133">مضبوط پاس ورڈ تجویز کریں</translation>
 <translation id="671076103358959139">اندراج کا ٹوکن:</translation>
 <translation id="6711464428925977395">پراکسی سرور میں کچھ غلط ہے یا پتہ درست نہیں ہے۔</translation>
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
@@ -3411,6 +3414,7 @@
 <translation id="7564667064360547717">شرٹس اور ٹاپس</translation>
 <translation id="7567204685887185387">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ فریب کارانہ طور پر جاری کیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="7568616151991626879">‏Google Chrome <ph name="APP_NAME" /> پر آپ کا پاس ورڈ پُر کرنے کی کوشش کر رہا ہے۔</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{کوئی نہیں}=1{اس آلہ پر 1 ٹیب}other{اس آلہ پر # ٹیبز}}</translation>
 <translation id="7569490014721427265">گولف</translation>
 <translation id="7569952961197462199">‏Chrome سے کریڈٹ کارڈ ہٹائیں؟</translation>
 <translation id="7569983096843329377">سیاہ</translation>

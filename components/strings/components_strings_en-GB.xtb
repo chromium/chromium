@@ -1007,7 +1007,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2928905813689894207">Billing address</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="2930577230479659665">Trim after each copy</translation>
-<translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2933624813161016821">Embossing foil</translation>
 <translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -2306,6 +2305,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5447765697759493033">This site will not be translated</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
 <translation id="5455374756549232013">Bad policy timestamp</translation>
+<translation id="5456428544444655325">Never show</translation>
 <translation id="5456839782162429664">Manually verify every time that you pay using autofill</translation>
 <translation id="5457113250005438886">Invalid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" /> and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
@@ -2956,6 +2956,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6710594484020273272">&lt;Type search term&gt;</translation>
+<translation id="6710648923880003133">Suggest strong password</translation>
 <translation id="671076103358959139">Enrolment Token:</translation>
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>

@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">Google Chrome necessita accedir al Bluetooth per continuar 
  amb la vinculació. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure addicional<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Personalitza el teu Chrome</translation>
+<translation id="1551749261806528781">Per desar i utilitzar les contrasenyes i altres elements en tots els teus dispositius, inicia la sessió a Chrome. Aquesta contrasenya es desarà al teu Compte de Google després d'iniciar-hi la sessió.</translation>
 <translation id="1553358976309200471">Actualitza Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chrome. Es crearà un perfil de Chrome nou per a <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome està utilitzant la càmera.</translation>
@@ -312,6 +312,7 @@
 <translation id="5940385492829620908">El vostre web, les adreces d'interès i altres coses de Chrome resideixen aquí.</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5941830788786076944">Estableix Google Chrome com el navegador predeterminat</translation>
+<translation id="5947104538377036631">Drecera de Chrome</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
 <translation id="6014316319780893079">Amb les <ph name="BEGIN_LINK" />eines de Chrome<ph name="END_LINK" />, pots navegar de manera segura i mantenir el control</translation>
 <translation id="6022659036123304283">Personalitza Chrome</translation>
@@ -368,7 +369,6 @@
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.1.</translation>
 <translation id="6943584222992551122">Les dades de navegació d'aquesta persona se suprimiran d'aquest dispositiu. Per recuperar-les, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome necessita entendre l'escena i el permís de seguiment de la mà per iniciar una sessió immersiva</translation>
 <translation id="6967962315388095737">Regla d'entrada de Google Chrome Beta per permetre el trànsit d'mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome està actualitzat, però no l'heu utilitzat durant un mínim de 30 dies.</translation>
 <translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
@@ -443,7 +443,6 @@
 <translation id="8009904340233602924">Fes servir Chrome sense cap compte</translation>
 <translation id="8013993649590906847">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google.</translation>
 <translation id="8019103195866286235">El desenvolupador ha anul·lat la publicació d'aquesta extensió, cosa que podria fer-la poc segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la teva informació personal.</translation>
-<translation id="8031641407207794385">Personalitza el teu Chrome</translation>
 <translation id="80471789339884597">T'agraïm la instal·lació. Has de reiniciar tots els navegadors abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Pots obrir les adreces d'interès, el mode de lectura i més des del menú de Chrome de la part superior dreta</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

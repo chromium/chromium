@@ -1007,7 +1007,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2928905813689894207">Ðịa chỉ thanh toán</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> địa chỉ giao hàng khác}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> địa chỉ giao hàng khác}}</translation>
 <translation id="2930577230479659665">Cắt bỏ sau mỗi bản sao chép</translation>
-<translation id="2932085390869194046">Đề xuất mật khẩu...</translation>
 <translation id="2933624813161016821">Nhũ nổi</translation>
 <translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Phong bì 9 x 12 inch</translation>
@@ -2306,6 +2305,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5447765697759493033">Trang web này sẽ không được dịch</translation>
 <translation id="5452270690849572955">Không thể tìm thấy trang <ph name="HOST_NAME" /> này</translation>
 <translation id="5455374756549232013">Dấu thời gian chính sách không hợp lệ</translation>
+<translation id="5456428544444655325">Không bao giờ hiển thị</translation>
 <translation id="5456839782162429664">Xác minh theo cách thủ công bằng tính năng tự động điền mỗi lần bạn thanh toán</translation>
 <translation id="5457113250005438886">Không hợp lệ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> liên hệ khác}other{<ph name="CONTACT_PREVIEW" /> và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> liên hệ khác}}</translation>
@@ -2956,6 +2956,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6709133671862442373">Tin tức</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6710594484020273272">&lt;Nhập cụm từ tìm kiếm&gt;</translation>
+<translation id="6710648923880003133">Đề xuất mật khẩu mạnh</translation>
 <translation id="671076103358959139">Mã đăng ký:</translation>
 <translation id="6711464428925977395">Đã xảy ra sự cố với máy chủ proxy hoặc địa chỉ không chính xác.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> muốn tạo bản đồ 3D về các khu vực xung quanh bạn và theo dõi thông tin vị trí của máy ảnh</translation>

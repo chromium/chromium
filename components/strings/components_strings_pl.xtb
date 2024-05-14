@@ -1009,7 +1009,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2928905813689894207">Adres rozliczeniowy</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Przycięcie po każdej kopii</translation>
-<translation id="2932085390869194046">Zaproponuj hasło...</translation>
 <translation id="2933624813161016821">Folia do wytłaczania</translation>
 <translation id="2938225289965773019">Otwieranie linków protokołu <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Koperta 9 x 12 cali</translation>
@@ -2308,6 +2307,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5447765697759493033">Ta strona nie zostanie przetłumaczona</translation>
 <translation id="5452270690849572955">Nie można znaleźć tej strony na <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Nieprawidłowy czas zasady</translation>
+<translation id="5456428544444655325">Nigdy nie pokazuj</translation>
 <translation id="5456839782162429664">Weryfikuj ręcznie za każdym razem, gdy płacisz za pomocą autouzupełniania</translation>
 <translation id="5457113250005438886">Nieprawidłowe</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2959,6 +2959,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6709133671862442373">Wiadomości</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6710594484020273272">&lt;Wpisz wyszukiwane słowa&gt;</translation>
+<translation id="6710648923880003133">Zaproponuj silne hasło</translation>
 <translation id="671076103358959139">Token rejestracji:</translation>
 <translation id="6711464428925977395">Serwer proxy działa nieprawidłowo albo adres jest błędny.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery</translation>

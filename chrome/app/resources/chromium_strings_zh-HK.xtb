@@ -378,7 +378,6 @@
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查密碼，請於 24 小時後再試一次。</translation>
-<translation id="7198365860059291213">Chromium 需要場景理解和手部追蹤權限，才能開始沉浸式工作階段</translation>
 <translation id="7213407614656404070">隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測您有以下興趣</translation>
@@ -456,7 +455,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">Chromium 可在您使用 Google 帳戶登入時檢查密碼</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
-<translation id="858822505990366713">自訂 Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我們會如何使用這些資料：<ph name="END_BOLD" />網站可將您的興趣相關資料儲存在 Chromium 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
@@ -475,7 +473,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果您同意的話，請輸入您的 Windows 密碼。</translation>
 <translation id="8931379085695076764">Chromium 可根據最近幾星期的瀏覽記錄推測您的興趣。這些資料會儲存在您的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
-<translation id="895999862145835951">自訂 Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>

@@ -35,7 +35,7 @@
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1516530951338665275">Каб працягнуць спалучэнне, Google Chrome патрабуе доступу да Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Наладзіць Chrome</translation>
+<translation id="1551749261806528781">Каб захоўваць і выкарыстоўваць паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome. Пароль будзе захаваны ва Уліковым запісе Google пасля ўваходу.</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1583073672411044740">Уваход у гэты профіль Chrome ужо выкананы карыстальнікам <ph name="EXISTING_USER" />. Будзе створаны новы профіль Chrome для ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
@@ -319,6 +319,7 @@
 <translation id="5940385492829620908">Тут знаходзяцца вашы вэб-старонкі, закладкі і іншыя даныя браўзера Chrome.</translation>
 <translation id="5941711191222866238">Згарнуць</translation>
 <translation id="5941830788786076944">Зрабіць Google Chrome стандартным браўзерам</translation>
+<translation id="5947104538377036631">Ярлык для Chrome</translation>
 <translation id="6003112304606738118">Ідзе спампоўванне… Застаецца <ph name="HOURS" /> гадз</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Інструменты Chrome<ph name="END_LINK" /> абараняюць вашы даныя пры рабоце ў інтэрнэце</translation>
 <translation id="6022659036123304283">Наладзьце Chrome пад сябе</translation>
@@ -375,7 +376,6 @@
 <translation id="6933858244219479645">Сістэма ChromeOS</translation>
 <translation id="6938166777909186039">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбная версія Windows 10 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца Windows 8.1.</translation>
 <translation id="6943584222992551122">Даныя аб прагледжаных гэтым карыстальнікам старонках будуць выдалены з прылады. Каб аднавіць гэтыя даныя, увайдзіце ў Chrome як <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Для пачатку сеанса Chrome неабходны дазвол на азнаямленне з месцам і адсочванне рухаў рук</translation>
 <translation id="6967962315388095737">Уваходнае правіла для бэта-версіі Google Chrome, якое дазваляе трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome быў абноўлены, але вы не выкарыстоўвалі яго на працягу як мінімум 30 дзён.</translation>
 <translation id="7011190694940573312">Усталяваць праграму не ўдалося, бо гэта версія аперацыйнай сістэмы не падтрымліваецца.</translation>
@@ -450,7 +450,6 @@
 <translation id="8009904340233602924">Выкарыстоўваць Chrome без уліковага запісу</translation>
 <translation id="8013993649590906847">Калі відарыс не мае прыдатнага апісання, Chrome паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google.</translation>
 <translation id="8019103195866286235">Публікацыя гэтага пашырэння была адроблена распрацоўшчыкам, яно можа быць небяспечным. Выдаліце яго з Chrome, каб яно больш не магло бачыць і змяняць даныя на сайтах, якія вы наведваеце, уключаючы вашу асабістую інфармацыю.</translation>
-<translation id="8031641407207794385">Наладзіць Chrome</translation>
 <translation id="80471789339884597">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце ўсе свае браўзеры.</translation>
 <translation id="8064015041956107954">Закладкі, рэжым чытання і іншыя функцыі даступныя з меню Chrome у правым верхнім вугле</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

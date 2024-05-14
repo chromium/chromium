@@ -1007,7 +1007,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2928905813689894207">Enderezo de facturación</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}}</translation>
 <translation id="2930577230479659665">Recorte despois de cada copia</translation>
-<translation id="2932085390869194046">Suxerir contrasinal…</translation>
 <translation id="2933624813161016821">Lámina en relevo</translation>
 <translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
 <translation id="2941878205777356567">Sobre 9 x 12 polgadas</translation>
@@ -2956,6 +2955,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe un termo de busca&gt;</translation>
+<translation id="6710648923880003133">Suxerir contrasinal seguro</translation>
 <translation id="671076103358959139">Token de inscrición:</translation>
 <translation id="6711464428925977395">Produciuse un erro co servidor proxy ou o enderezo é incorrecto.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>

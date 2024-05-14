@@ -112,7 +112,6 @@
 <translation id="107450319332239199">發生問題，請改為手動開啟視窗。</translation>
 <translation id="1075920807995555452">在 <ph name="DEVICE_TYPE" /> 上受企業管理的環境中執行工具、編輯器和 IDE。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">使用文字游標導覽網頁</translation>
-<translation id="1076382954055048850">顯示其他投放工作階段</translation>
 <translation id="1076698951459398590">啟用主題背景</translation>
 <translation id="1076766328672150609">子女可使用 PIN 來解鎖裝置。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@
 <translation id="1176471985365269981">不允許編輯裝置上的檔案或資料夾</translation>
 <translation id="1177073277575830464">Android 快速設定已完成。在你的 <ph name="DEVICE_TYPE" /> 上繼續設定。</translation>
 <translation id="1177440945615690056">你可在「設定」中連線至任何符合資格的流動網絡</translation>
+<translation id="1177548198167638471">不要再詢問</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178093605842850860">已允許讀取及變更此網站</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -2984,7 +2984,6 @@
 <translation id="3184536091884214176">設定或管理 CUPS 打印機。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{已封鎖這個應用程式}other{已封鎖部分應用程式}}</translation>
 <translation id="3187472288455401631">廣告成效評估</translation>
-<translation id="3188257591659621405">我的檔案</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
@@ -3832,6 +3831,7 @@
 <translation id="3810914450553844415">管理員禁止新增其他 Google 帳戶。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">新增其他指紋</translation>
+<translation id="381219490185664296">要將所有分頁移出群組嗎？</translation>
 <translation id="3812525830114410218">錯誤的憑證</translation>
 <translation id="3813296892522778813">如果您找不到需要的資訊，請參閱 <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome 說明<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">用於翻譯頁面和「快速解答」的語言</translation>
@@ -4267,7 +4267,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - 已經連接 HID 裝置</translation>
 <translation id="4139326893730851150">韌體更新</translation>
 <translation id="4142052906269098341">使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">觀看更高品質的影片並延長電池壽命。影片只會在支援 Cast 的螢幕上播放。</translation>
 <translation id="4146026355784316281">一律使用系統檢視器開啟</translation>
 <translation id="4146785383423576110">重設並清理</translation>
 <translation id="4147099377280085053">選取點字表</translation>
@@ -4543,7 +4542,6 @@
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是 <ph name="DEVICE_TYPE" /> 上的預設帳戶</translation>
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至此 Chromebook</translation>
-<translation id="4363771538994847871">找不到 Cast 目標。需要協助嗎？</translation>
 <translation id="4364327530094270451">蜜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
@@ -5071,6 +5069,7 @@
 <translation id="4777458362738635055">此裝置的其他使用者可使用此網絡</translation>
 <translation id="4777813841994368231">已開啟 • 開發人員已取消發佈此擴充程式</translation>
 <translation id="4777825441726637019">Play 商店</translation>
+<translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4777943778632837590">設定網絡域名伺服器</translation>
 <translation id="4778653490315793244">未有可以顯示內容</translation>
 <translation id="4779083564647765204">縮放</translation>
@@ -5480,6 +5479,7 @@
 <translation id="5093477827231450397">您唔希望呢啲網站向其他網站建議廣告，因此已經封鎖咗嘅網站清單</translation>
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">您可在「檔案」應用程式或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
+<translation id="5094423602314093681">要移除分頁並刪除群組嗎？</translation>
 <translation id="5094721898978802975">與合作內置應用程式通訊</translation>
 <translation id="5095252080770652994">進度</translation>
 <translation id="5095507226704905004">檔案已不存在，因此無法複製</translation>
@@ -8078,7 +8078,6 @@
 <translation id="7090714929377281710">自動關閉熱點</translation>
 <translation id="7093220653036489319">快速解答</translation>
 <translation id="7093866338626856921">與名稱為「<ph name="HOSTNAMES" />」的裝置交換數據</translation>
-<translation id="7094680343477712655">請在「<ph name="DEVICE_NAME" />」上接受投放要求。</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7098447629416471489">已儲存的搜尋引擎將會在這裡顯示</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
@@ -9566,7 +9565,6 @@
 <translation id="8198457270656084773">要查看系統的裝置記錄頁面嗎？請前往 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="8199300056570174101">網絡 (服務) 和裝置屬性元件</translation>
 <translation id="8200772114523450471">繼續</translation>
-<translation id="8200789660596905522">請確保在「<ph name="DEVICE_NAME" />」上接受投放要求。</translation>
 <translation id="8202160505685531999">請重新輸入密碼以更新 <ph name="DEVICE_TYPE" /> 的個人檔案。</translation>
 <translation id="8202827109322349110">在基本編輯器中開啟</translation>
 <translation id="8203152941016626022">「咫尺共享」裝置名稱</translation>

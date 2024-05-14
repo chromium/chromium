@@ -112,7 +112,6 @@
 <translation id="107450319332239199">Нещо се обърка. Вместо това отворете прозорците ръчно.</translation>
 <translation id="1075920807995555452">Използвайте инструменти, редактори и интегрирани среди за програмиране в управлявана корпоративна среда на вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Навигиране в страниците чрез текстов курсор</translation>
-<translation id="1076382954055048850">Показване на другите сесии на предаване</translation>
 <translation id="1076698951459398590">Активиране на темата</translation>
 <translation id="1076766328672150609">Детето ви може да отключва това устройство с ПИН код.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@
 <translation id="1176471985365269981">Сайтове без разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="1177073277575830464">Бързото настройване на Android завърши. Продължете настройването на устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">От настройките можете да се свържете с отговаряща на условията мобилна мрежа</translation>
+<translation id="1177548198167638471">Без повторно питане</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1178093605842850860">Има разрешение за четене и промяна на този сайт</translation>
 <translation id="1178581264944972037">Пауза</translation>
@@ -2980,7 +2980,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3184536091884214176">Настройване или управление на принтери, използващи CUPS. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Това приложение е блокирано}other{Някои приложения са блокирани}}</translation>
 <translation id="3187472288455401631">Измерване на рекламите</translation>
-<translation id="3188257591659621405">Моите файлове</translation>
 <translation id="3188465121994729530">Пълзяща средна стойност</translation>
 <translation id="3189187154924005138">Голям курсор</translation>
 <translation id="3190558889382726167">Паролата бе запазена</translation>
@@ -3828,6 +3827,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3810914450553844415">Администраторът ви не разрешава допълнителни профили в Google.</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="381202950560906753">Добавяне на друг</translation>
+<translation id="381219490185664296">Искате ли да разгрупирате разделите?</translation>
 <translation id="3812525830114410218">Невалиден сертификат</translation>
 <translation id="3813296892522778813">Прегледайте <ph name="BEGIN_LINK_CHROMIUM" />помощното съдържание за Google Chrome<ph name="END_LINK_CHROMIUM" />, ако не можете да намерите търсеното</translation>
 <translation id="3813358687923336574">Езикът за превеждане на страници и „Бързи отговори“</translation>
@@ -4268,7 +4268,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – свързано е HID устройство</translation>
 <translation id="4139326893730851150">Актуализации на фърмуера</translation>
 <translation id="4142052906269098341">Отключвайте своя <ph name="DEVICE_TYPE" /> с телефона си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">Гледайте видео с по-добро качество и удължете живота на батерията. Видеото ще се възпроизвежда само на екрана ви, поддържащ Cast.</translation>
 <translation id="4146026355784316281">Отваряне винаги със системния визуализатор</translation>
 <translation id="4146785383423576110">Нулиране на настройките и почистване</translation>
 <translation id="4147099377280085053">Изберете таблица за брайлово писмо</translation>
@@ -4544,7 +4543,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4361745360460842907">Отваряне като раздел</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> е стандартният профил на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="4363262124589131906">Новите файлове в „Моят диск“ ще спрат да се синхронизират автоматично с този Chromebook</translation>
-<translation id="4363771538994847871">Няма намерени местоназначения за Cast. Нуждаете ли се от помощ?</translation>
 <translation id="4364327530094270451">Пъпеш</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> споделя прозорец.</translation>
 <translation id="4364830672918311045">Показване на известия</translation>
@@ -5072,6 +5070,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4777458362738635055">Другите потребители на устройството могат да използват тази мрежа</translation>
 <translation id="4777813841994368231">Включено • Публикуването на това разширение бе прекратено от програмиста му</translation>
 <translation id="4777825441726637019">Google Play Магазин</translation>
+<translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>
 <translation id="4777943778632837590">Конфигуриране на сървърите за имена в мрежата</translation>
 <translation id="4778653490315793244">Още няма нищо за показване</translation>
 <translation id="4779083564647765204">Промяна на мащаба</translation>
@@ -5481,6 +5480,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5093477827231450397">Списък със сайтовете, които сте блокирали и които не искате да предлагат реклами на други сайтове</translation>
 <translation id="5093569275467863761">Подрамка в режим „инкогнито“, съхранена в кеша за назад/напред: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">От „Файлове“ или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">Искате ли да премахнете разделите и да изтриете групата?</translation>
 <translation id="5094721898978802975">Комуникация със съдействащи директно изпълнявани приложения</translation>
 <translation id="5095252080770652994">Напредък</translation>
 <translation id="5095507226704905004">Файлът не може да бъде копиран, тъй като вече не съществува</translation>
@@ -8082,7 +8082,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7090714929377281710">Автоматично изключване на точката за достъп</translation>
 <translation id="7093220653036489319">Бързи отговори</translation>
 <translation id="7093866338626856921">Обмен на данни с устройствата със следните имена: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">Приемете заявката за предаване на устройството си <ph name="DEVICE_NAME" />.</translation>
 <translation id="7098389117866926363">Устройство с USB-C (левият порт на гърба)</translation>
 <translation id="7098447629416471489">Тук ще се покажат другите запазени търсещи машини</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Премахване на приложението}other{Премахване на приложенията}}</translation>
@@ -9571,7 +9570,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8198457270656084773">Търсите страницата със системния регистрационен файл на устройството? Посетете <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Свойства на мрежата (услугата) и устройството</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
-<translation id="8200789660596905522">Не забравяйте да приемете заявката за предаване на устройството си <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Моля, въведете отново паролата си, за да актуализирате потребителския си профил за <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8202827109322349110">Отваряне в основния редактор</translation>
 <translation id="8203152941016626022">Име на устройството за „Споделяне наблизо“</translation>

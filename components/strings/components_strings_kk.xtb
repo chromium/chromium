@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">Баға бақыланбайды</translation>
 <translation id="127777513559587977">Ток-шоулар</translation>
 <translation id="1281476433249504884">1-жинастырушы</translation>
+<translation id="1281536351321444151">Келесі жолы бұл IBAN нөмірін автотолтыру үшін оны Google аккаунтыңызға сақтаңыз.</translation>
 <translation id="1282358575813748144">Қайықтар және кемелер</translation>
 <translation id="1283977499362032052">Түйіндемелер мен портфолиолар</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">8-науа</translation>
 <translation id="1530707389502320859">Жаңа ғана кірген сайт жалған сияқты. Кейде хакерлер белгілі бір сайттарды көшіріп, олардың URL сілтемесіне сіз байқамайтын өзгерістер енгізіп қояды.</translation>
 <translation id="1532118530259321453">Бұл беттегі сұрау</translation>
+<translation id="1533966801397200693">Сіз кірген профиль — басқарылатын профиль. Әкімші профиль параметрлеріне қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Бетті аудару</translation>
 <translation id="1537807545287921620">Бұл PDF қолжетімді емес. Контекстік мәзірді ашып, "PDF-тен мәтін шығарып алу" мүмкіндігін қосыңыз.</translation>
 <translation id="1539840569003678498">Есеп жіберілді:</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">Төлем мекенжайы</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Әр көшірмеден кейін кесу</translation>
-<translation id="2932085390869194046">Құпия сөз жасау...</translation>
 <translation id="2933624813161016821">Бедерлі фольга</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="2941878205777356567">229 x 305 мм хатқалта</translation>
@@ -1184,6 +1185,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> цифрлық растау кодын енгізіңіз</translation>
 <translation id="3272643614306383237">1 МБ-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
+<translation id="3273738040255912340">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chromium браузерінен тыс та басқаруға болады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="3286372614333682499">портреттік</translation>
@@ -2955,6 +2957,7 @@
 <translation id="6709133671862442373">Жаңалықтар</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6710594484020273272">&lt;Іздеу терминін теру&gt;</translation>
+<translation id="6710648923880003133">Күрделі құпия сөз ұсыну</translation>
 <translation id="671076103358959139">Тіркеу таңбалауышы:</translation>
 <translation id="6711464428925977395">Прокси серверде бірдеңе дұрыс емес немесе мекенжай қате.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> айналаңыздың 3D картасын жасағысы және камера орнын бақылағысы келеді.</translation>
@@ -3887,6 +3890,7 @@
 <translation id="8446884382197647889">Толығырақ</translation>
 <translation id="8449155699563577224">17 x 24 дюйм</translation>
 <translation id="8449836157089738489">Барлығын жаңа қойындылар тобында ашу</translation>
+<translation id="84561192812921051">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chrome браузерінен тыс та басқаруға болады.  <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Белгісіз</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Қосу</translation>

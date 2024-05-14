@@ -36,7 +36,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1516530951338665275">Google Chrome necesita acceso al Bluetooth para continuar 
  con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
-<translation id="155168855724261758">Personalizar Chrome</translation>
+<translation id="1551749261806528781">Para guardar, usar contraseñas y realizar otras acciones en todos tus dispositivos, inicia sesión en Chrome. Esta contraseña se guardará en tu cuenta de Google cuando inicies sesión.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ya ha iniciado sesión en este perfil de Chrome. Se creará un perfil nuevo de Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome está utilizando la cámara.</translation>
@@ -320,6 +320,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5940385492829620908">Aquí puedes encontrar tus páginas web, tus marcadores y otros contenidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Establecer Google Chrome como navegador predeterminado</translation>
+<translation id="5947104538377036631">Acceso directo de Chrome</translation>
 <translation id="6003112304606738118">Descargando... Horas restantes: <ph name="HOURS" />.</translation>
 <translation id="6014316319780893079">Las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
@@ -376,7 +377,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.1.</translation>
 <translation id="6943584222992551122">Los datos de navegación de este usuario se eliminarán del dispositivo. Para recuperar los datos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome necesita comprender la escena y tener permiso de seguimiento de las manos para iniciar una sesión inmersiva</translation>
 <translation id="6967962315388095737">Regla entrante para que Google Chrome Beta permita tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="7011190694940573312">No se ha podido realizar la instalación porque esta versión del sistema operativo no es compatible.</translation>
@@ -451,7 +451,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8009904340233602924">Usar Chrome sin una cuenta</translation>
 <translation id="8013993649590906847">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
 <translation id="8019103195866286235">El desarrollador de esta extensión ha anulado su publicación y la extensión podría no ser segura. Elimínala de Chrome para que no pueda ver ni cambiar tus datos en los sitios que visites, incluida tu información personal.</translation>
-<translation id="8031641407207794385">Personalizar Chrome</translation>
 <translation id="80471789339884597">Gracias por realizar la instalación. Debes reiniciar todos tus navegadores para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Puedes abrir los marcadores, el modo lectura y más desde el menú de Chrome situado en la parte superior derecha</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Tarjetas de la página Nueva pestaña</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eliminar</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="228293613124499805">Es probable que la mayoría de los sitios que visites guarden datos en tu dispositivo, a menudo para mejorar la experiencia, ya que guardan tus preferencias o la información que compartes con el sitio. Te recomendamos que actives esta opción.</translation>
 <translation id="2289270750774289114">Preguntar cuando un sitio web quiera buscar dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados de cliente.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Cuando esta opción está activada, los sitios pueden solicitar permiso para buscar dispositivos Bluetooth. Si está desactivada, los sitios no pueden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Reintentar</translation>
 <translation id="8730621377337864115">Hecho</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sitio permitido}other{# sitios permitidos}}</translation>
 <translation id="8751914237388039244">Selecciona una imagen</translation>
 <translation id="8800034312320686233">¿El sitio web no funciona?</translation>
 <translation id="8801436777607969138">Bloquea JavaScript en un sitio específico.</translation>

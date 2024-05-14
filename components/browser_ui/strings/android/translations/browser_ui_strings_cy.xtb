@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Cardiau tudalen tab newydd</translation>
 <translation id="2241634353105152135">Unwaith yn unig</translation>
 <translation id="2253414712144136228">Tynnu <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 wefan wedi'i rhwystro}zero{# gwefan wedi'u rhwystro}two{# wefan wedi'u rhwystro}few{# gwefan wedi'u rhwystro}many{# gwefan wedi'u rhwystro}other{# gwefan wedi'u rhwystro}}</translation>
 <translation id="228293613124499805">Mae'n debyg bod y rhan fwyaf o wefannau y byddwch yn ymweld â nhw yn cadw data i'ch dyfais, yn aml i wella'ch profiad trwy gadw eich dewisiadau neu'r wybodaeth rydych yn ei rhannu â'r wefan. Rydym yn argymell cadw'r gosodiad hwn ymlaen.</translation>
 <translation id="2289270750774289114">Gofyn pan fydd gwefan eisiau darganfod dyfeisiau Bluetooth gerllaw (argymhellir)</translation>
 <translation id="2315043854645842844">Nid yw'r system weithredu yn cefnogi dewis tystysgrif ochr y cleient.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael chwilio am ddyfeisiau Bluetooth. Pan fydd wedi'i ddiffodd, ni all wefannau chwilio am ddyfeisiau Bluetooth.</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Caniateir 1 wefan}zero{Caniateir # gwefan}two{Caniateir # wefan}few{Caniateir # gwefan}many{Caniateir # gwefan}other{Caniateir # gwefan}}</translation>
 <translation id="8751914237388039244">Dewiswch lun</translation>
 <translation id="8800034312320686233">Gwefan ddim yn gweithio?</translation>
 <translation id="8801436777607969138">Rhwystro JavaScript ar gyfer gwefan benodol.</translation>

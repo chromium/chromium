@@ -112,7 +112,6 @@
 <translation id="107450319332239199">Nešto nije u redu. Otvorite prozore ručno.</translation>
 <translation id="1075920807995555452">Pokrenite alate, uređivače i IDE-jeve u okruženju kojim upravlja vaša tvrtka na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Kretanje stranicama pomoću pokazivača za tekst</translation>
-<translation id="1076382954055048850">Prikazivanje drugih sesija Emitiranja</translation>
 <translation id="1076698951459398590">Omogući temu</translation>
 <translation id="1076766328672150609">Vaše dijete može otključati uređaj PIN-om.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -249,6 +248,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1176471985365269981">Nije dopušteno uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="1177073277575830464">Dovršeno je brzo postavljanje Androida. Nastavite s postavljanjem na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">U postavkama se možete povezati s bilo kojom mobilnom mrežom koja ispunjava kriterije</translation>
+<translation id="1177548198167638471">Više me ne pitaj</translation>
 <translation id="1177863135347784049">Prilagođeno</translation>
 <translation id="1178093605842850860">Ima dopuštenje za čitanje i promjenu ove web-lokacije</translation>
 <translation id="1178581264944972037">Pauziraj</translation>
@@ -2972,7 +2972,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3184536091884214176">Postavljanje CUPS pisača ili upravljanje njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta je aplikacija blokirana}one{Neke su aplikacije blokirane}few{Neke su aplikacije blokirane}other{Neke su aplikacije blokirane}}</translation>
 <translation id="3187472288455401631">Mjerenje izvedbe oglasa</translation>
-<translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3188465121994729530">Klizni prosjek</translation>
 <translation id="3189187154924005138">Veliki pokazivač</translation>
 <translation id="3190558889382726167">Zaporka spremljena</translation>
@@ -3820,6 +3819,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3810914450553844415">Vaš administrator ne dopušta dodatne Google račune.</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
 <translation id="381202950560906753">Dodaj još jedan</translation>
+<translation id="381219490185664296">Želite li poništiti grupiranje kartica?</translation>
 <translation id="3812525830114410218">Neispravan certifikat</translation>
 <translation id="3813296892522778813">Ako ne možete pronaći ono što tražite, otvorite <ph name="BEGIN_LINK_CHROMIUM" />pomoć za Google Chrome<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Jezik koji se koristi za prevođenje stranica i brze odgovore</translation>
@@ -4259,7 +4259,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID uređaj povezan</translation>
 <translation id="4139326893730851150">Ažuriranja opreme</translation>
 <translation id="4142052906269098341">Otključajte <ph name="DEVICE_TYPE" /> telefonom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">Gledajte videozapise u boljoj kvaliteti i štedite bateriju. Videozapisi će se reproducirati samo na zaslonu koji podržava Cast.</translation>
 <translation id="4146026355784316281">Uvijek otvori u pregledniku sustava</translation>
 <translation id="4146785383423576110">Vrati na zadano i očisti</translation>
 <translation id="4147099377280085053">Odaberite tablicu brajice</translation>
@@ -4535,7 +4534,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4361745360460842907">Otvori kao karticu</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> zadani je račun na vašem uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="4363262124589131906">Nove datoteke na Mojem disku prestat će se automatski sinkronizirati s ovim Chromebookom</translation>
-<translation id="4363771538994847871">Nije pronađeno nijedno odredište za Cast. Trebate li pomoć?</translation>
 <translation id="4364327530094270451">Dinja</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> dijeli prozor.</translation>
 <translation id="4364830672918311045">Prikaži obavijesti</translation>
@@ -5062,6 +5060,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4777458362738635055">Drugi korisnici ovog uređaja mogu upotrebljavati tu mrežu</translation>
 <translation id="4777813841994368231">Uključeno • Razvojni programer poništio je objavljivanje ovog proširenja</translation>
 <translation id="4777825441726637019">Trgovina Play</translation>
+<translation id="4777866634702576038">Želite li izbrisati grupu kartica?</translation>
 <translation id="4777943778632837590">Konfiguriranje naziva poslužitelja mreže</translation>
 <translation id="4778653490315793244">Još nema ničega</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
@@ -5471,6 +5470,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5093477827231450397">Popis web-lokacija koje ste blokirali i za koje ne želite da predlažu oglase drugim web-lokacijama</translation>
 <translation id="5093569275467863761">Anonimno predmemorirani posjećeni podokvir: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Podržane datoteke možete otvarati i uređivati pomoću ove aplikacije iz aplikacije Datoteke ili drugih aplikacija. Za upravljanje datotekama koje mogu otvoriti aplikaciju prema zadanim postavkama <ph name="BEGIN_LINK" />saznajte kako postaviti zadane aplikacije na uređaju<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">Želite li ukloniti kartice i izbrisati grupu?</translation>
 <translation id="5094721898978802975">komunicirati sa suradničkim nativnim aplikacijama</translation>
 <translation id="5095252080770652994">Napredak</translation>
 <translation id="5095507226704905004">Datoteka se ne može kopirati jer više ne postoji</translation>
@@ -8072,7 +8072,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7090714929377281710">Automatski isključi žarišnu točku</translation>
 <translation id="7093220653036489319">Brzi odgovori</translation>
 <translation id="7093866338626856921">razmjenjivati podatke s uređajima naziva: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">Prihvatite zahtjev za emitiranje na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="7098389117866926363">USB-C uređaj (lijevi priključak sa stražnje strane)</translation>
 <translation id="7098447629416471489">Ovdje će se pojaviti ostale spremljene tražilice</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Ukloni aplikaciju}one{Ukloni aplikacije}few{Ukloni aplikacije}other{Ukloni aplikacije}}</translation>
@@ -9561,7 +9560,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8198457270656084773">Tražite li stranicu zapisnika uređaja u sustavu? Otvorite <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8199300056570174101">Svojstva mreže (usluge) i uređaja</translation>
 <translation id="8200772114523450471">Nastavi</translation>
-<translation id="8200789660596905522">Svakako prihvatite zahtjev za emitiranje na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Ponovo unesite zaporku da biste ažurirali svoj profil na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8202827109322349110">Otvori u osnovnom uređivaču</translation>
 <translation id="8203152941016626022">Naziv uređaja za dijeljenje u blizini</translation>

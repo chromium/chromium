@@ -615,6 +615,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2122214041802369259">Pris yn Uchel</translation>
 <translation id="2122719317867821810">Mae'r polisi hwn yn gweithio yn ôl y bwriad ond gosodir gwerth sy'n gwrthdaro mewn man arall ac mae'n cael ei ddiystyru gan y polisi hwn.</translation>
 <translation id="2126374524350484896">Cynhyrchydd PDF:</translation>
+<translation id="2127090458081644412">Cyfrinair wedi'i gadw i'r ddyfais hon</translation>
 <translation id="2130448033692577677">Mae'n bosib na fydd y templedi rydych wedi'u nodi yn cael eu defnyddio oherwydd nad yw'r polisi DnsOverHttpsMode wedi'i osod.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Dangosir y rhain mewn trefn ar hap. Gallwch newid eich dewis diofyn unrhyw bryd.</translation>
@@ -1006,7 +1007,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2928905813689894207">Cyfeiriad Bilio</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ac <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> arall}}</translation>
 <translation id="2930577230479659665">Tocio ar ôl pob copi</translation>
-<translation id="2932085390869194046">Awgrymu Cyfrinair...</translation>
 <translation id="2933624813161016821">Ffoil Boglynnu</translation>
 <translation id="2938225289965773019">Agor dolenni <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Amlen 9 x 12 o fodfeddi</translation>
@@ -2031,6 +2031,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4901778704868714008">Cadw...</translation>
 <translation id="4901952598169637881">Esgidiau Hamdden</translation>
 <translation id="4905659621780993806">Bydd eich gweinyddwr yn ailgychwyn eich dyfais yn awtomatig am <ph name="TIME" /> ar <ph name="DATE" />. Cadwch unrhyw eitemau sydd ar agor cyn i'ch dyfais ailgychwyn.</translation>
+<translation id="4913784027728226227">I gadw a defnyddio'r cyfrinair hwn ar eich holl ddyfeisiau, cadarnhewch mai chi sydd yno</translation>
 <translation id="4913987521957242411">Twll ar y chwith uchaf</translation>
 <translation id="4916389289686916969">Sioeau Realiti Teledu</translation>
 <translation id="4917064667437236721">Silindr Delweddu</translation>
@@ -2314,6 +2315,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5470861586879999274">&amp;Ailwneud golygu</translation>
 <translation id="547963486735802022">Rhowch gynnig ar drosglwyddo eich ffeiliau eto</translation>
 <translation id="5481076368049295676">Mae'n bosib y bydd y cynnwys hwn yn ceisio gosod meddalwedd beryglus ar eich dyfais sy'n dwyn neu'n dileu eich gwybodaeth. <ph name="BEGIN_LINK" />Dangos beth bynnag<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Cynnig help ysgrifennu</translation>
 <translation id="54817484435770891">Ychwanegu cyfeiriad dilys</translation>
 <translation id="5483838506518938965">Rydych yn barod i fynd</translation>
 <translation id="5485973315555778056">Peiriant cwmwl</translation>
@@ -2953,6 +2955,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6709133671862442373">Newyddion</translation>
 <translation id="6710213216561001401">Blaenorol</translation>
 <translation id="6710594484020273272">&lt;Teipio term chwilio&gt;</translation>
+<translation id="6710648923880003133">Awgrymu Cyfrinair Cryf</translation>
 <translation id="671076103358959139">Tocyn Cofrestru:</translation>
 <translation id="6711464428925977395">Mae rhywbeth o'i le ar y dirprwy weinydd, neu mae'r cyfeiriad yn anghywir.</translation>
 <translation id="6716672519412350405">Mae <ph name="URL" /> eisiau creu map 3D o'ch amgylchoedd ac olrhain safle'r camera</translation>

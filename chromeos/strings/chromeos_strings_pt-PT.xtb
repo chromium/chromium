@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Nome do anfitrião do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Desligue o cabo USB do dispositivo <ph name="DEVICE_NAME" /> e, de seguida, volte a inseri-lo para continuar o processo de atualização</translation>
 <translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">O atalho sem tecla de <ph name="META_KEY" /> pode entrar em conflito com o atalho de alguma app. Prima este atalho novamente para continuar a usá-lo ou prima um novo atalho com a tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinónimos:</translation>

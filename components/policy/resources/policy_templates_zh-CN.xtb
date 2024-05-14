@@ -7046,13 +7046,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
 <translation id="662991036483361836">禁止用户启用“附近分享”功能</translation>
-<translation id="6634974629075330608">此政策是一项临时的选择停用机制：在通过 JavaScript 更改 Chrome 处理 Cookie 的方式时，如果 JavaScript 包含特定的控制字符（NULL、回车符和换行符），就可以使用此政策。
-以前，如果 Cookie 字符串中存在上述任意字符，该 Cookie 字符串就会被截断但仍处于设定状态。
-现在，如果存在这些字符，整个 Cookie 字符串都会被忽略。
-
-如果此政策设为 True（默认值），系统会启用新行为。
-
-如果此政策设为 False，系统会启用旧行为。</translation>
 <translation id="663685822663765995">限制打印颜色模式</translation>
 <translation id="6640355849038068978">如果此设置已启用，用户将能够启动 Eche 应用（例如通过点击 Phone Hub 通知）。
 

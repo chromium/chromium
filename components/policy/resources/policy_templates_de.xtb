@@ -7065,13 +7065,6 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="662991036483361836">Nutzer dürfen Nearby Share nicht aktivieren</translation>
-<translation id="6634974629075330608">Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Cookies widerrufen, die per JavaScript mit bestimmten Steuerzeichen festgelegt werden (NULL, Zeilenumbruch und Zeilenvorschub).
-Bisher führten diese Zeichen in einem Cookie-String dazu, dass der String abgeschnitten, aber dennoch festgelegt wurde.
-Jetzt führen diese Zeichen dazu, dass der gesamte Cookie-String ignoriert wird.
-
-Wenn diese Richtlinie auf „true“ gesetzt ist (Standardeinstellung), ist das neue Verhalten aktiviert.
-
-Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
 <translation id="6640355849038068978">Wenn diese Einstellung aktiviert ist, können Nutzer die App „Eche“ starten, z. B. mit einem Klick auf eine Phone Hub-Benachrichtigung.
 

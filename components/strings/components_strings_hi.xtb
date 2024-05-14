@@ -1008,7 +1008,6 @@
 <translation id="2928905813689894207">बिलिंग पता</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
-<translation id="2932085390869194046">पासवर्ड सुझाएं...</translation>
 <translation id="2933624813161016821">एंबॉसिंग फ़ॉयल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="2941878205777356567">9 x 12 इंच का लिफ़ाफ़ा</translation>
@@ -2306,6 +2305,7 @@
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
+<translation id="5456428544444655325">कभी न दिखाएं</translation>
 <translation id="5456839782162429664">ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, हर बार मैन्युअल तरीके से पुष्टि करें</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
@@ -2956,6 +2956,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="6710594484020273272">&lt;खोज शब्द लिखें&gt;</translation>
+<translation id="6710648923880003133">मज़बूत पासवर्ड का सुझाव पाएं</translation>
 <translation id="671076103358959139">नाम दर्ज करने का टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्वर के साथ कुछ गलत है या पता गलत है.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>

@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">“新标签页”页面卡片</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2253414712144136228">移除“<ph name="NAME_OF_LIST_ITEM" />”</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{已屏蔽 1 个网站}other{已屏蔽 # 个网站}}</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
 <translation id="2289270750774289114">在网站想发现附近的蓝牙设备时询问您（推荐）</translation>
 <translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">开启此设置后，网站可以请求搜寻蓝牙设备。关闭此设置后，网站无法搜寻蓝牙设备。</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允许 1 个网站}other{已允许 # 个网站}}</translation>
 <translation id="8751914237388039244">选择图片</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>

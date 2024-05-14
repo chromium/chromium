@@ -35,7 +35,6 @@
 <translation id="1507198376417198979">አዲሱን የChrome መገለጫዎን ያብጁ</translation>
 <translation id="1516530951338665275">Google Chrome ማጣመርን ለመቀጠል የብሉቱዝ መዳረሻ ያስፈልገዋል። <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> እውን ሊሆን ችሏል።</translation>
-<translation id="155168855724261758">የእርስዎን Chrome ያብጁ</translation>
 <translation id="1551749261806528781">በሁሉም መሣሪያዎችዎ ላይ የይለፍ ቃላትን ለማስቀመጥና ለመጠቀም እና ሌሎች ነገሮችም ለማድረግ ወደ Chrome ይግቡ። በመለያ ከገቡ በኋላ ይህ ይለፍ ቃል በGoogle መለያዎ ውስጥ ይቀመጣል።</translation>
 <translation id="1553358976309200471">Chromeን አዘምን</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ወደዚህ የChrome መገለጫ አስቀድሞ ገብቷል። ይህ አዲስ የChrome መገለጫ ለ<ph name="USER_EMAIL_ADDRESS" /> ይፈጥራል</translation>
@@ -377,7 +376,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6933858244219479645">የChromeOS ስርዓት</translation>
 <translation id="6938166777909186039">የወደፊት የGoogle Chrome ዝማኔዎችን ለማግኘት Windows 10 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር Windows 8.1ን እየተጠቀመ ነው።</translation>
 <translation id="6943584222992551122">የእዚህ ሰው የአሰሳ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ውሂቡን መልሰው ለማግኘት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
-<translation id="6944202724043006419">Chrome መሳጭ ክፍለ ጊዜ ለመጀመር የትዕይንት ግንዛቤ እና የእጅ ክትትል ፈቃድ ያስፈልገዋል</translation>
 <translation id="6967962315388095737">የmDNS ትራፊክን ለመፍቀድ የGoogle Chrome ቅድመ-ይሁንታ የውስጥ ደንብ።</translation>
 <translation id="6989339256997917931">Google Chrome ተዘምኗል፣ ግን ቢያንስ ለ30 ቀኖች አልተጠቀሙበትም።</translation>
 <translation id="7011190694940573312">ይህ የስርዓተ ክወናው ስሪት ስለማይደገፍ መጫኑ አልተሳካም።</translation>
@@ -452,7 +450,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8009904340233602924">Chromeን ያለ መለያ ይጠቀሙ</translation>
 <translation id="8013993649590906847">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chrome ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ።</translation>
 <translation id="8019103195866286235">ይህ ቅጥያ በገንቢው ከህትመት ወጥቷል እና ደህንነቱ የተጠበቀ ላይሆን ይችላል። የግል መረጃዎን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለውን ውሂብዎን ማየት እና መለወጥ እንዳይችል ከChrome ያስወግዱት።</translation>
-<translation id="8031641407207794385">የእርስዎን Chrome ያብጁ</translation>
 <translation id="80471789339884597">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ሁሉንም አሳሾችዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="8064015041956107954">ከላይ በስተቀኝ ካለው የChrome ምናሌ ሆነው ዕልባቶችን፣ የንባብ ሁነታን እና ሌሎችንም መክፈት ይችላሉ።</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

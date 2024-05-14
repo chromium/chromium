@@ -376,7 +376,6 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="718435575166326686">Chromium benötigt die Kameraberechtigung für diese Website</translation>
 <translation id="7196312274710523067">Chromium konnte nicht gestartet werden. Versuche es noch einmal.</translation>
 <translation id="7197677400338048821">Chromium kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
-<translation id="7198365860059291213">Chromium benötigt die Berechtigungen zum Abrufen von Ambienten und für das Hand-Tracking, um eine immersive Sitzung zu starten</translation>
 <translation id="7213407614656404070">Chromium immer verwenden, wenn du auf Links in Nachrichten, Dokumenten und anderen Apps klickst</translation>
 <translation id="7223968959479464213">Task-Manager - Chromium</translation>
 <translation id="7246575524853130370">Deine von Chromium geschätzten Interessen</translation>
@@ -454,7 +453,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
-<translation id="858822505990366713">Chromium anpassen</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />So verwenden wir diese Daten<ph name="END_BOLD" />: Websites können Daten zu deinen Interessen bei Chromium speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
 <translation id="8619360774459241877">Chromium wird gestartet…</translation>
 <translation id="8621669128220841554">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Bitte lade Chromium erneut herunter.</translation>
@@ -473,7 +471,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8931379085695076764">Chromium kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>
 <translation id="8941642502866065432">Chromium kann nicht aktualisiert werden</translation>
-<translation id="895999862145835951">Chromium anpassen</translation>
 <translation id="897581876605952338">Chromium Enterprise-Logo</translation>
 <translation id="8986207147630327271">Du fügst diesem Browser ein Arbeitsprofil hinzu und erteilst deinem Administrator nur Rechte für das Arbeitsprofil.</translation>
 <translation id="8988036198400390003">Chromium-Profile verwalten</translation>

@@ -1007,7 +1007,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2928905813689894207">Laskutusosoite</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" /><ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{ ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> toinen}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muuta}}</translation>
 <translation id="2930577230479659665">Leikkaa jokaisen kopion jälkeen</translation>
-<translation id="2932085390869194046">Ehdota salasanaa…</translation>
 <translation id="2933624813161016821">Kohokuviointifolio</translation>
 <translation id="2938225289965773019">Avata <ph name="PROTOCOL" />-linkit.</translation>
 <translation id="2941878205777356567">Kirjekuori 228 x 304 mm</translation>
@@ -2307,6 +2306,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5447765697759493033">Sivustoa ei käännetä.</translation>
 <translation id="5452270690849572955">Tätä sivuston <ph name="HOST_NAME" /> sivua ei löydy.</translation>
 <translation id="5455374756549232013">Virheellinen käytännön aikaleima</translation>
+<translation id="5456428544444655325">Älä näytä koskaan</translation>
 <translation id="5456839782162429664">Vahvista manuaalisesti aina, kun maksat automaattisen täytön avulla</translation>
 <translation id="5457113250005438886">Virheellinen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> toinen}other{<ph name="CONTACT_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
@@ -2957,6 +2957,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6709133671862442373">Uutiset</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6710594484020273272">&lt;Anna hakukysely&gt;</translation>
+<translation id="6710648923880003133">Ehdota vahvaa salasanaa</translation>
 <translation id="671076103358959139">Käyttöönottotunnus:</translation>
 <translation id="6711464428925977395">Välityspalvelimessa on jotain vikaa tai osoite on virheellinen.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> pyytää lupaa luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa</translation>

@@ -34,7 +34,6 @@
 <translation id="1507198376417198979">Dostosuj swój nowy profil w Chrome</translation>
 <translation id="1516530951338665275">Aby kontynuować parowanie, Google Chrome potrzebuje dostępu do Bluetootha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Spersonalizuj Chrome</translation>
 <translation id="1551749261806528781">Aby zapisywać hasła i inne dane oraz używać ich na wszystkich swoich urządzeniach, zaloguj się w Chrome. To hasło zostanie zapisane na Twoim koncie Google, gdy się zalogujesz.</translation>
 <translation id="1553358976309200471">Zaktualizuj Chrome</translation>
 <translation id="1583073672411044740">W tym profilu Chrome jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Spowoduje to utworzenie nowego profilu Chrome dla użytkownika <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -386,7 +385,6 @@
 <translation id="6933858244219479645">System ChromeOS</translation>
 <translation id="6938166777909186039">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.1.</translation>
 <translation id="6943584222992551122">Dane przeglądania tej osoby zostaną usunięte z tego urządzenia. Aby je odzyskać, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Aby rozpocząć realistyczną sesję, Chrome potrzebuje uprawnień do rozpoznawania scen i śledzenia rąk</translation>
 <translation id="6967962315388095737">Reguła dla ruchu przychodzącego w Google Chrome Beta zezwalająca na ruch mDNS.</translation>
 <translation id="6989339256997917931">Przeglądarka Google Chrome została zaktualizowana, ale nie była przez Ciebie używana przez co najmniej 30 dni.</translation>
 <translation id="7011190694940573312">Instalacja się nie udała, ponieważ ta wersja systemu operacyjnego nie jest obsługiwana.</translation>
@@ -471,7 +469,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8009904340233602924">Używaj Chrome bez konta</translation>
 <translation id="8013993649590906847">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
 <translation id="8019103195866286235">To rozszerzenie zostało wycofane przez dewelopera i może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to także Twoich danych osobowych.</translation>
-<translation id="8031641407207794385">Spersonalizuj Chrome</translation>
 <translation id="80471789339884597">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić wszystkie przeglądarki.</translation>
 <translation id="8064015041956107954">Możesz otworzyć zakładki, tryb czytania lub wybrać inne opcje w menu Chrome w prawym górnym rogu</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

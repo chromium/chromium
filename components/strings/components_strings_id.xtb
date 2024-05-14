@@ -616,6 +616,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2122214041802369259">Harga Tinggi</translation>
 <translation id="2122719317867821810">Kebijakan ini berfungsi sebagaimana mestinya, tetapi nilai yang bertentangan disetel di sumber lain dan digantikan oleh kebijakan ini.</translation>
 <translation id="2126374524350484896">Pembuat PDF:</translation>
+<translation id="2127090458081644412">Sandi disimpan ke perangkat ini</translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Diurutkan acak. Pilihan default dapat diubah kapan saja.</translation>
@@ -1007,7 +1008,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2928905813689894207">Alamat Penagihan</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}}</translation>
 <translation id="2930577230479659665">Trim setelah setiap set tercetak</translation>
-<translation id="2932085390869194046">Sarankan Sandi...</translation>
 <translation id="2933624813161016821">Foil Emboss</translation>
 <translation id="2938225289965773019">Membuka link <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 inci</translation>
@@ -2031,6 +2031,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4901952598169637881">Sepatu Santai</translation>
 <translation id="4905659621780993806">Administrator akan memulai ulang perangkat Anda secara otomatis pada <ph name="DATE" /> pukul <ph name="TIME" />. Simpan item yang terbuka sebelum perangkat dimulai ulang.</translation>
+<translation id="4913784027728226227">Untuk menyimpan dan menggunakan sandi ini di semua perangkat Anda, verifikasi diri Anda</translation>
 <translation id="4913987521957242411">Lubang di kiri atas</translation>
 <translation id="4916389289686916969">Acara Reality Show TV</translation>
 <translation id="4917064667437236721">Tabung Pencitraan</translation>
@@ -2304,6 +2305,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5447765697759493033">Situs ini tidak diterjemahkan</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak dapat ditemukan</translation>
 <translation id="5455374756549232013">Stempel waktu kebijakan salah</translation>
+<translation id="5456428544444655325">Jangan tampilkan</translation>
 <translation id="5456839782162429664">Verifikasi secara manual setiap kali Anda membayar menggunakan isi otomatis</translation>
 <translation id="5457113250005438886">Tidak valid</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
@@ -2314,6 +2316,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5470861586879999274">&amp;Ulangi pengeditan</translation>
 <translation id="547963486735802022">Coba transfer file lagi</translation>
 <translation id="5481076368049295676">Konten ini mungkin mencoba menginstal software berbahaya yang mencuri atau menghapus informasi Anda di perangkat. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Tawarkan bantuan menulis</translation>
 <translation id="54817484435770891">Tambahkan alamat yang valid</translation>
 <translation id="5483838506518938965">Anda sudah siap</translation>
 <translation id="5485973315555778056">Perangkat cloud</translation>
@@ -2953,6 +2956,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6710594484020273272">&lt;Ketik istilah penelusuran&gt;</translation>
+<translation id="6710648923880003133">Sarankan Sandi yang Kuat</translation>
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada yang salah dengan server proxy, atau alamat tidak benar.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>

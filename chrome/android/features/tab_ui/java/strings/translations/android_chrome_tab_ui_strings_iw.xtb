@@ -32,6 +32,7 @@
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{הוספת הכרטיסייה לסימניות}one{הוספת הכרטיסיות לסימניות}two{הוספת הכרטיסיות לסימניות}other{הוספת הכרטיסיות לסימניות}}</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
+<translation id="2498435670446402865">שינוי שם קבוצת הכרטיסיות</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="2569352796411618312">הצעה: <ph name="NUMBER_OF_TABS" /> מהכרטיסיות לא היו בשימוש לאחרונה. לסגור אותן?</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>

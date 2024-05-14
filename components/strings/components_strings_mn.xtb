@@ -1007,7 +1007,6 @@
 <translation id="2928905813689894207">Тооцооны хаяг</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Хуулбар бүрийн дараа тайрах</translation>
-<translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2933624813161016821">Товгор тугалган цаас</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> холбоосуудыг нээх</translation>
 <translation id="2941878205777356567">Дугтуй 9 x 12 инч</translation>
@@ -2956,6 +2955,7 @@
 <translation id="6709133671862442373">Мэдээ</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6710594484020273272">&lt;Хайх зүйлээ шивнэ үү&gt;</translation>
+<translation id="6710648923880003133">Хүчтэй нууц үг санал болгох</translation>
 <translation id="671076103358959139">Бүртгэлийн тэмдэг:</translation>
 <translation id="6711464428925977395">Прокси серверт ямар нэгэн алдаа гарсан, эсвэл хаяг буруу байна.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> нь таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын хөдөлгөөнийг хянахыг хүсэж байна</translation>

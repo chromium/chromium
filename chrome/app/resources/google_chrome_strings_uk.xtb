@@ -34,7 +34,7 @@
 <translation id="1516530951338665275">Щоб продовжити підключення, надайте веб-переглядачу Google Chrome
 доступ до Bluetooth. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ОС Chrome працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Персоналізувати Chrome</translation>
+<translation id="1551749261806528781">Щоб зберігати й використовувати паролі та інші дані на всіх пристроях, увійдіть у Chrome. Після входу цей пароль буде збережено в обліковому записі Google.</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1583073672411044740">Цей профіль Chrome уже використовує <ph name="EXISTING_USER" />. Буде створено новий профіль Chrome для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
@@ -312,6 +312,7 @@
 <translation id="5940385492829620908">Тут містяться ваші веб-сторінки, закладки та інші дані Chrome.</translation>
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
+<translation id="5947104538377036631">Ярлик Chrome</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6014316319780893079">Безпечно переглядайте веб-сторінки й керуйте налаштуваннями завдяки <ph name="BEGIN_LINK" />інструментам від Chrome<ph name="END_LINK" /></translation>
 <translation id="6022659036123304283">Ваш персональний Chrome</translation>
@@ -368,7 +369,6 @@
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.1.</translation>
 <translation id="6943584222992551122">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Щоб почати сеанс з ефектом присутності, потрібно надати Chrome дозвіл на розуміння оточення й відстеження рук</translation>
 <translation id="6967962315388095737">Вхідне правило для бета-версії Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
 <translation id="7011190694940573312">Не вдалося встановити, оскільки ця версія операційної системи не підтримується.</translation>
@@ -443,7 +443,6 @@
 <translation id="8009904340233602924">Використовувати Chrome, не входячи в обліковий запис</translation>
 <translation id="8013993649590906847">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="8019103195866286235">Розробник скасував публікацію цього розширення, і воно може бути небезпечним. Вилучіть його з Chrome, щоб розширення більше не могло переглядати й змінювати дані на сайтах, які ви відвідуєте (зокрема вашу особисту інформацію).</translation>
-<translation id="8031641407207794385">Персоналізувати Chrome</translation>
 <translation id="80471789339884597">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити всі веб-переглядачі.</translation>
 <translation id="8064015041956107954">У меню Chrome угорі праворуч можна відкривати закладки, переходити в режим читання тощо</translation>
 <translation id="8064015586118426197">ОС Chrome Flex</translation>

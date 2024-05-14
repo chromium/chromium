@@ -58,6 +58,7 @@
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2020032459870799438">如要檢查你其他的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">選擇是否要包含 Chromium 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
+<translation id="2065461321550902389">如要在所有裝置上儲存及使用密碼和其他資訊，請登入 Chromium。登入後，這組密碼就會儲存在你的 Google 帳戶中。</translation>
 <translation id="2086476982681781442">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="2088953378266246249">瞭解 Chromium 如何管理根憑證</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
@@ -311,6 +312,7 @@
 <translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項作業，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
+<translation id="6347933965114150440">Chromium 捷徑</translation>
 <translation id="6366160072964553914">這不是常有人下載的檔案，可能有危險，因此 Chromium 已禁止下載</translation>
 <translation id="6373523479360886564">你確定要解除安裝 Chromium 嗎？</translation>
 <translation id="6375219077595103062">新增密碼管理工具的捷徑</translation>
@@ -374,7 +376,6 @@
 <translation id="718435575166326686">Chromium 需要相機權限，才能執行這個網站要求的功能</translation>
 <translation id="7196312274710523067">無法啟動 Chromium，請再試一次。</translation>
 <translation id="7197677400338048821">Chromium 無法檢查你的密碼，請於 24 小時後再試。</translation>
-<translation id="7198365860059291213">Chromium 需要場景理解和手部追蹤權限，才能啟動混合實境工作階段</translation>
 <translation id="7213407614656404070">你只要在訊息、文件和其他應用程式中點選連結，即可透過 Chromium 開啟</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
 <translation id="7246575524853130370">Chromium 推測的興趣喜好</translation>
@@ -453,7 +454,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
-<translation id="858822505990366713">自訂 Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>
 <translation id="8621669128220841554">不明錯誤導致安裝失敗，請重新下載 Chromium。</translation>
@@ -472,7 +472,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8931379085695076764">Chromium 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>
-<translation id="895999862145835951">自訂 Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8986207147630327271">你即將在這個瀏覽器中新增工作資料夾，並僅將工作資料夾的控制權授予管理員。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>

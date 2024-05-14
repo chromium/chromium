@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Karty na stránke na novej karte</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2253414712144136228">Odobrať osobu alebo odstrániť položku <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 blokovaný web}few{# blokované weby}many{# sites blocked}other{# blokovaných webov}}</translation>
 <translation id="228293613124499805">Väčšina webov, ktoré navštevujete, pravdepodobne ukladá dáta vo vašom zariadení. Často ukladajú vaše predvoľby alebo informácie, ktoré s nimi zdieľate, čím zlepšujú vaše prostredie. Toto nastavenie odporúčame nechať zapnuté.</translation>
 <translation id="2289270750774289114">Opýtať sa, keď chce web objavovať zariadenia Bluetooth v okolí (odporúčané)</translation>
 <translation id="2315043854645842844">Operačný systém nepodporuje výber certifikátu na strane klienta.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie vyhľadávať zariadenia s rozhraním Bluetooth. Keď je táto možnosť vypnutá, weby nemôžu vyhľadávať zariadenia s rozhraním Bluetooth.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8730621377337864115">Hotovo</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 povolený web}few{# povolené weby}many{# sites allowed}other{# povolených webov}}</translation>
 <translation id="8751914237388039244">Vyberte obrázok</translation>
 <translation id="8800034312320686233">Web nefunguje?</translation>
 <translation id="8801436777607969138">Blokovať JavaScript na konkrétnom webe.</translation>

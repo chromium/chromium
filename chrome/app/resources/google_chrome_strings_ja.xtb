@@ -33,7 +33,6 @@
 <translation id="1507198376417198979">新しい Chrome プロフィールをカスタマイズ</translation>
 <translation id="1516530951338665275">Google Chrome でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
-<translation id="155168855724261758">Chrome をカスタマイズ</translation>
 <translation id="1551749261806528781">すべてのデバイスでパスワードなどを保存して使用するには、Chrome にログインしてください。このパスワードは、ログイン後に Google アカウントに保存されます。</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。<ph name="USER_EMAIL_ADDRESS" /> 用の新しい Chrome プロファイルが作成されます。</translation>
@@ -369,7 +368,6 @@
 <translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6938166777909186039">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
-<translation id="6944202724043006419">没入型セッションを開始するには、Chrome でシーン認識とハンド トラッキングの権限が必要です</translation>
 <translation id="6967962315388095737">mDNS トラフィックを許可する Google Chrome ベータ版のインバウンド ルールです。</translation>
 <translation id="6989339256997917931">Google Chrome が更新されましたが、30 日間以上使用されていません。</translation>
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
@@ -444,7 +442,6 @@
 <translation id="8009904340233602924">アカウントなしで Chrome を使用する</translation>
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
 <translation id="8019103195866286235">この拡張機能はデベロッパーが非公開にしており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
-<translation id="8031641407207794385">Chrome をカスタマイズ</translation>
 <translation id="80471789339884597">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはすべてのブラウザを再起動してください。</translation>
 <translation id="8064015041956107954">右上の Chrome メニューから、ブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

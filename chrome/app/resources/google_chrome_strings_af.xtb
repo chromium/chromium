@@ -36,7 +36,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome-bedryfstelsel word deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> moontlik gemaak.</translation>
-<translation id="155168855724261758">Pasmaak jou Chrome</translation>
 <translation id="1551749261806528781">Meld aan by Chrome om wagwoorde en meer op al jou toestelle te stoor en te gebruik. Hierdie wagwoord sal in jou Google-rekening gestoor word nadat jy aangemeld het.</translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Dit sal 'n nuwe Chrome-profiel vir <ph name="USER_EMAIL_ADDRESS" /> skep</translation>
@@ -378,7 +377,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.1.</translation>
 <translation id="6943584222992551122">Hierdie persoon se blaaierdata sal van hierdie toestel af uitgevee word. Meld as <ph name="USER_EMAIL" /> by Chrome aan om hierdie data te herwin.</translation>
-<translation id="6944202724043006419">Chrome benodig toestemming vir toneelbegrip en handnasporing om ’n omvattende sessie te begin</translation>
 <translation id="6967962315388095737">Inkomende reël vir Google Chrome Beta om mDNS-verkeer toe te laat.</translation>
 <translation id="6989339256997917931">Google Chrome is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
 <translation id="7011190694940573312">Installering het misluk omdat hierdie weergawe van die bedryfstelsel nie gesteun word nie.</translation>
@@ -453,7 +451,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8009904340233602924">Gebruik Chrome sonder 'n rekening</translation>
 <translation id="8013993649590906847">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep.</translation>
 <translation id="8019103195866286235">Die ontwikkelaar van hierdie uitbreiding het dit gedepubliseer, en dit kan onveilig wees. Verwyder dit uit Chrome sodat dit nie meer jou data, insluitend jou persoonlike inligting, op werwe wat jy besoek kan sien en verander nie.</translation>
-<translation id="8031641407207794385">Pasmaak jou Chrome</translation>
 <translation id="80471789339884597">Dankie dat jy geïnstalleer het. Jy moet al jou blaaiers herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="8064015041956107954">Jy kan boekmerke, leesmodus en meer vanaf die Chrome-kieslys bo regs oopmaak</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

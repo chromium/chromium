@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">শিক্ষাৰ বাবে দিয়া অনুদান আৰু জলপানি</translation>
 <translation id="2228057197024893428">এই ঠিকনাটো বৰ্তমান Chromeত ছেভ কৰা হয়। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="ACCOUNT" />ত ছেভ কৰক।</translation>
 <translation id="2229456043301340598">অদ্বিতীয় নোহোৱা শ্বৰ্টকাট উপেক্ষা কৰা হৈছে: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
 <translation id="2233745931693710080">কমপেক্ট ডিস্ক</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="2239100178324503013">এতিয়াই পঠিয়াওক</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" />ৰ বাবে এটা ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ডৰ প্ৰয়োজন।</translation>
 <translation id="2318594867107319532">শেষ নীতিৰ টাইমষ্টেম্প:</translation>
 <translation id="2320564945062300737">মুখৰ যত্নৰ বাবে ব্যৱহাৰ কৰা প্ৰ’ডাক্ট</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{১ খন ৱিণ্ড’}one{# খন ৱিণ্ড’}other{# খন ৱিণ্ড’}}</translation>
 <translation id="2328651992442742497">অনুমতি আছে (ডিফ’ল্ট)</translation>
 <translation id="2328955282645810595">নিৰ্মাণকাৰ্য আৰু পাৱাৰ সঁজুলি</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" />ত ম্যাদ উকলিব</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">বিলৰ ঠিকনা</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />টা অধিক}}</translation>
 <translation id="2930577230479659665">প্ৰতিখন প্ৰতিলিপিৰ পাছত ট্ৰিম কৰক</translation>
-<translation id="2932085390869194046">পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="2933624813161016821">এম্ব’ছিং ফইল</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিংকবোৰ খোলক</translation>
 <translation id="2941878205777356567">এনভেল’প ৯ x ১২ ইঞ্চি</translation>
@@ -2442,6 +2443,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">পশু চিকিৎসা</translation>
 <translation id="5715150588940290235">ছেভ কৰি ৰখা সুৰক্ষা ক'ড মচিবনে?</translation>
+<translation id="5715918316982363436">এই ডিভাইচটোত থকা <ph name="WINDOW_COUNT" /> খন ৱিণ্ড’ৰ <ph name="TAB_COUNT" /> টা টেব</translation>
 <translation id="5717509257172454543">আইচ স্কেটিং</translation>
 <translation id="5720705177508910913">বর্তমানৰ ব্যৱহাৰকাৰী</translation>
 <translation id="5720895412771013401">ডেস্কটপ কম্পিউটাৰ</translation>
@@ -2951,6 +2953,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6710594484020273272">&lt;সন্ধান কৰিবলগীয়া শব্দ টাইপ কৰক&gt;</translation>
+<translation id="6710648923880003133">বিশ্বস্ত পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক</translation>
 <translation id="671076103358959139">পঞ্জীয়নৰ ট’কেন:</translation>
 <translation id="6711464428925977395">প্ৰ’ক্সি ছার্ভাৰত কিবা আসোঁৱাহ আছে বা ঠিকনাটো শুদ্ধ নহয়।</translation>
 <translation id="6716672519412350405"><ph name="URL" />এ আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিছে</translation>
@@ -3404,6 +3407,7 @@
 <translation id="7564667064360547717">শ্বার্ট আৰু টপ</translation>
 <translation id="7567204685887185387">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে; ইয়াৰ সুৰক্ষাৰ প্ৰমাণপত্ৰ ভুৱাকৈ দিয়া হ'ব পাৰে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ'ব পাৰে।</translation>
 <translation id="7568616151991626879">Google Chromeএ <ph name="APP_NAME" />ত আপোনাৰ পাছৱৰ্ড পূৰ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{একো নাই}=1{এই ডিভাইচটোত থকা ১ টা টেব}one{এই ডিভাইচটোত থকা # টা টেব}other{এই ডিভাইচটোত থকা # টা টেব}}</translation>
 <translation id="7569490014721427265">গ’ল্ফ</translation>
 <translation id="7569952961197462199">Chromeৰ পৰা ক্ৰেডিট কার্ড আঁতৰাবনে?</translation>
 <translation id="7569983096843329377">ক'লা</translation>

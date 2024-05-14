@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">Окуу үчүн гранттар жана стипендиялар</translation>
 <translation id="2228057197024893428">Учурда бул дарек Chrome'го сакталды. Аны Google кызматтарында колдонуу үчүн Google аккаунтуңузга (<ph name="ACCOUNT" />) сактаңыз.</translation>
 <translation id="2229456043301340598">Өзгөчө эмес ыкчам баскыч этибарга алынган жок: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
 <translation id="2233745931693710080">Компакт диск</translation>
 <translation id="2235344399760031203">Үчүнчү тараптын cookie файлдары бөгөттөлдү</translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> домени колдонуучунун атын жана сырсөзүн талап кылып жатат.</translation>
 <translation id="2318594867107319532">Саясаттын акыркы убакыт белгилери:</translation>
 <translation id="2320564945062300737">Бетке кам көрүү өнүмдөрү</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 терезе}other{# терезе}}</translation>
 <translation id="2328651992442742497">Уруксат берилген (демейки)</translation>
 <translation id="2328955282645810595">Курулуш жана электр куралдары</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, мөөнөтү <ph name="EXPIRATION_DATE_ABBR" /> бүтөт</translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">Төлөмдүн дареги</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> дарек}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> жана дагы <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> дарек}}</translation>
 <translation id="2930577230479659665">Ар бир көчүрүүдөн кийин кыркуу</translation>
-<translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2933624813161016821">Эмбоссовка фольгасы</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюйм</translation>
@@ -2445,6 +2446,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринарлар</translation>
 <translation id="5715150588940290235">Сакталган коопсуздук коддору өчүрүлсүнбү?</translation>
+<translation id="5715918316982363436">Ушул түзмөктөгү <ph name="WINDOW_COUNT" /> терезеден <ph name="TAB_COUNT" /> өтмөк</translation>
 <translation id="5717509257172454543">Муз тебүү</translation>
 <translation id="5720705177508910913">Учурдагы колдонуучу</translation>
 <translation id="5720895412771013401">Компьютерлер</translation>
@@ -2955,6 +2957,7 @@
 <translation id="6709133671862442373">Жаңылыктар</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6710594484020273272">&lt;Изделүүчү сөздү териңиз&gt;</translation>
+<translation id="6710648923880003133">Татаал сырсөз сунушталсын</translation>
 <translation id="671076103358959139">Катталуу токени:</translation>
 <translation id="6711464428925977395">Прокси серверден кандайдыр бир ката кетти же дарек туура эмес.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> айланаңыздын 3D картасын түзүүгө же камераңыздын абалына көз салууга уруксат сурап жатат</translation>
@@ -3408,6 +3411,7 @@
 <translation id="7564667064360547717">Көйнөктөр жана үстүнкү кийим</translation>
 <translation id="7567204685887185387">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы алдамчылык жол менен чыгарылган окшойт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> колдонмосунда сырсөзүңүздү толтурууга аракет кылып жатат.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Жок}=1{Ушул түзмөктөгү 1 өтмөк}other{Ушул түзмөктөгү # өтмөк}}</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Насыя картасы Chrome'дон алынып салынсынбы?</translation>
 <translation id="7569983096843329377">Кара</translation>

@@ -36,7 +36,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1516530951338665275">Mae angen mynediad Bluetooth ar Google Chrome i barhau i 
 baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Mae ChromeOS yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
-<translation id="155168855724261758">Addasu Eich Chrome</translation>
+<translation id="1551749261806528781">I gadw a defnyddio cyfrineiriau a mwy ar eich holl ddyfeisiau, mewngofnodwch i Chrome. Bydd y cyfrinair hwn yn cael ei gadw yn eich Cyfrif Google ar ôl i chi fewngofnodi.</translation>
 <translation id="1553358976309200471">Diweddarwch Chrome</translation>
 <translation id="1583073672411044740">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi i'r proffil Chrome hwn. Bydd hyn yn creu proffil Chrome newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Mae Google Chrome yn defnyddio'ch camera.</translation>
@@ -320,6 +320,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5940385492829620908">Mae'ch gwe, nodau tudalen, a phethau Chrome eraill yn byw yma.</translation>
 <translation id="5941711191222866238">Lleihau</translation>
 <translation id="5941830788786076944">Gwneud Google Chrome y porwr diofyn</translation>
+<translation id="5947104538377036631">Llwybr Byr Chrome</translation>
 <translation id="6003112304606738118">Wrthi'n lawrlwytho... Mae <ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6014316319780893079">Gydag <ph name="BEGIN_LINK" />offer gan Chrome<ph name="END_LINK" />, gallwch bori'n ddiogel ac aros mewn rheolaeth</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
@@ -376,7 +377,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6933858244219479645">System ChromeOS</translation>
 <translation id="6938166777909186039">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>
 <translation id="6943584222992551122">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Mae angen caniatâd deall golygfa ac olrhain llaw ar Chrome i ddechrau sesiwn ymdrochol</translation>
 <translation id="6967962315388095737">Rheol dod i mewn ar gyfer Beta Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="6989339256997917931">Mae Google Chrome wedi'i ddiweddaru, ond nid ydych wedi ei ddefnyddio am o leiaf 30 diwrnod.</translation>
 <translation id="7011190694940573312">Wedi methu â gosod oherwydd ni chefnogir y fersiwn hon o'r system weithredu.</translation>
@@ -451,7 +451,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8009904340233602924">Defnyddio Chrome heb gyfrif</translation>
 <translation id="8013993649590906847">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chrome yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="8019103195866286235">Nid oedd yr estyniad hwn wedi'i gyhoeddi gan ei ddatblygwr, a gallai fod yn anniogel. Tynnwch ef o Chrome fel na all weld a newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys eich gwybodaeth bersonol.</translation>
-<translation id="8031641407207794385">Addasu eich Chrome</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Gallwch agor nodau tudalen, modd darllen, a rhagor o'r ddewislen Chrome ar y dde uchaf</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

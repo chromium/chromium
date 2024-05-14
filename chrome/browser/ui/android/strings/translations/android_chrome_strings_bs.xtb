@@ -766,7 +766,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
 <translation id="496607651705915226">Da sačuvate i koristite nove lozinke na Google računu, ažurirajte Google Play usluge</translation>
 <translation id="4971735654804503942">Brža, proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija. Upozorava vas na narušavanje lozinki. Zahtijeva da se podaci o pregledanju šalju Googleu.</translation>
-<translation id="4971753085054504448">Pokušajte potražiti nešto drugo ili otvorite cijelu povijest u Chromeu da biste vidjeli više rezultata.</translation>
+<translation id="4971753085054504448">Pokušajte pretražiti nešto drugo ili otvorite cijelu historiju Chromea da vidite više rezultata.</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4987271110129728827">Nije moguće pronaći tu stranicu. Provjerite pravopis ili pokušajte pretražiti internet.</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -1052,7 +1052,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6459045781120991510">Ankete</translation>
 <translation id="6461962085415701688">Nije moguće otvoriti fajl</translation>
 <translation id="6464977750820128603">Možete vidjeti web lokacije koje posjećujete putem Chromea i za njih postaviti tajmere.\n\nGoogle će primati informacije o web lokacijama za koje postavite tajmere i o vremenu koje provedete na njima. Te informacije se koriste za poboljšanje Digitalnog blagostanja.</translation>
-<translation id="6470181189905173055">Ovdje će se prikazati stranice koje ste otvorili u Chromeu dok upotrebljavate aplikaciju <ph name="APP_LABEL" />.</translation>
+<translation id="6470181189905173055">Ovdje će se prikazivati stranice koje ste otvorili u Chromeu prilikom korištenja aplikacije <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Lista opcija dijeljenja otvorenih na pola visine.</translation>
 <translation id="6475951671322991020">Preuzmi videozapis</translation>
 <translation id="6477928892249167417">Čini se da su vam ove web lokacije važne:</translation>

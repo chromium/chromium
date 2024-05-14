@@ -7088,13 +7088,6 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="662991036483361836">Empêcher les utilisateurs d'activer le Partage à proximité</translation>
-<translation id="6634974629075330608">Cette règle permet de désactiver temporairement les modifications apportées à la façon dont Chrome traite les cookies définis via JavaScript qui contiennent certains caractères de contrôle (NULL, retour chariot et saut de ligne).
-Auparavant, la présence d'un de ces caractères dans une chaîne de cookie entraînait sa troncation, mais il restait défini.
-Désormais, toute la chaîne du cookie sera ignorée en présence de ces caractères.
-
-Si cette règle est définie sur "True" (valeur par défaut), le nouveau comportement est activé.
-
-Si cette règle est définie sur "False", l'ancien comportement est activé.</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
 <translation id="6640355849038068978">Si ce paramètre est activé, les utilisateurs pourront lancer l'application Eche, par exemple en cliquant sur une notification Phone Hub.
 

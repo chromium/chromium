@@ -5359,6 +5359,15 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
 <translation id="5323200200131319468">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="5323271643727095577">Geen annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor beforeunload-gebeurtenis. Annuleringsdialoogvenster tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
 <translation id="5324430722441910403">Instellingen voor Zoekopdrachten op site</translation>
+<translation id="5326431956495937408">Als je het beleid aanzet, kunnen gebruikers hun wachtwoord sturen naar en krijgen van gezinsleden (volgens de Gezinsservice).
+Als het beleid aanstaat of niet is ingesteld, is er een knop in Wachtwoordmanager waarmee je een wachtwoord kunt sturen.
+De ontvangen wachtwoorden worden opgeslagen in het account van de gebruiker en zijn beschikbaar in Wachtwoordmanager.
+
+Als je het beleid uitzet, kunnen gebruikers geen wachtwoorden van Wachtwoordmanager naar andere gebruikers sturen en geen wachtwoorden van andere gebruikers krijgen.
+
+De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via de gebruikersinstellingen of als het beleid <ph name="SYNC_DISABLED" /> aanstaat).
+
+Beheerde accounts kunnen geen lid te worden van een gezinsgroep of er zelf een maken en kunnen daarom geen wachtwoorden delen.</translation>
 <translation id="532848608876725157">DNS-over-HTTPS met onbeveiligde fallback aanzetten</translation>
 <translation id="5328965694451556034">Inloggen/uitloggen rapporteren</translation>
 <translation id="5329018127554115226">De modus voor hoge efficiëntie wordt uitgezet.</translation>
@@ -7055,13 +7064,6 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="662991036483361836">Niet toestaan dat gebruikers Dichtbij delen aanzetten</translation>
-<translation id="6634974629075330608">Dit beleid biedt een tijdelijke afmelding voor wijzigingen in de manier waarop Chrome omgaat met cookies die zijn ingesteld via JavaScript en die bepaalde besturingstekens bevatten (NULL, regelterugloop en regelopschuiving).
-Eerder zorgde de aanwezigheid van een van deze tekens in een cookietekenreeks ervoor dat deze werd afgekapt, maar wel werd ingesteld.
-Nu zorgt de aanwezigheid van deze tekens ervoor dat de hele cookietekenreeks wordt genegeerd.
-
-Als je dit beleid instelt op True (standaard), wordt het nieuwe gedrag toegepast.
-
-Als je dit beleid instelt op False, wordt het oude gedrag toegepast.</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
 <translation id="6640355849038068978">Als deze instelling aanstaat, kunnen gebruikers de Eche-app starten, bijvoorbeeld door op een Telefoonhub-melding te klikken.
 

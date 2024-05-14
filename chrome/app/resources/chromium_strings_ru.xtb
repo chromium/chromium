@@ -374,7 +374,6 @@
 <translation id="718435575166326686">Браузер Chromium запрашивает доступ к камере для этого сайта.</translation>
 <translation id="7196312274710523067">Не удалось запустить Chromium. Повторите попытку.</translation>
 <translation id="7197677400338048821">Не удается проверить пароли в Chromium. Повторите попытку через 24 часа.</translation>
-<translation id="7198365860059291213">Чтобы начать сеанс с погружением, браузеру Chromium нужны разрешения на отслеживание движений рук и определение того, что находится вокруг.</translation>
 <translation id="7213407614656404070">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chromium</translation>
 <translation id="7223968959479464213">Диспетчер задач – Chromium</translation>
 <translation id="7246575524853130370">Ваши интересы по данным Chromium</translation>
@@ -450,7 +449,6 @@
 <translation id="8555465886620020932">Ошибка службы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium проверит ваши пароли, когда вы войдете в аккаунт Google.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
-<translation id="858822505990366713">Настроить Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Как мы используем эти данные.<ph name="END_BOLD" /> Сайты могут хранить в Chromium информацию о ваших интересах. Например, вы перешли на сайт, чтобы купить беговые кроссовки. Он определит, что вам интересны марафоны. Когда вы перейдете на другой сайт, чтобы зарегистрироваться на забег, то увидите рекламу беговых кроссовок.</translation>
 <translation id="8619360774459241877">Запуск Chromium...</translation>
 <translation id="8621669128220841554">В процессе установки произошла неизвестная ошибка. Скачайте Chromium ещё раз.</translation>
@@ -469,7 +467,6 @@
 <translation id="8907580949721785412">Чтобы просмотреть пароли, введите пароль своего аккаунта Windows.</translation>
 <translation id="8931379085695076764">Chromium может предполагать ваши интересы, анализируя историю браузера за последние несколько недель. Эта информация хранится только на вашем устройстве.</translation>
 <translation id="8941642502866065432">Не удалось обновить Chromium</translation>
-<translation id="895999862145835951">Настроить Chromium</translation>
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8986207147630327271">После добавления рабочего профиля администратор не сможет управлять другими профилями.</translation>
 <translation id="8988036198400390003">Управлять профилями Chromium</translation>

@@ -112,7 +112,6 @@
 <translation id="107450319332239199">エラーが発生しました。ウィンドウを手動で開いてください。</translation>
 <translation id="1075920807995555452"><ph name="DEVICE_TYPE" /> 上で、企業が管理している環境でツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">テキスト カーソルを使ってページ間を移動する</translation>
-<translation id="1076382954055048850">他のキャスト セッションを表示</translation>
 <translation id="1076698951459398590">テーマを有効にする</translation>
 <translation id="1076766328672150609">お子様は PIN を使用してデバイスのロックを解除できます。</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -249,6 +248,7 @@
 <translation id="1176471985365269981">デバイスのファイルやフォルダの編集を許可しないサイト</translation>
 <translation id="1177073277575830464">Android のクイック セットアップが完了しました。<ph name="DEVICE_TYPE" /> で設定を続行してください。</translation>
 <translation id="1177440945615690056">[設定] で、有効なモバイル ネットワークであればどれでも接続できます</translation>
+<translation id="1177548198167638471">今後表示しない</translation>
 <translation id="1177863135347784049">カスタム</translation>
 <translation id="1178093605842850860">このサイトの読み取りと変更を許可しました</translation>
 <translation id="1178581264944972037">一時停止</translation>
@@ -2963,7 +2963,6 @@
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{このアプリはブロックされています}other{一部のアプリはブロックされています}}</translation>
 <translation id="3187472288455401631">広告の測定</translation>
-<translation id="3188257591659621405">マイファイル</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
 <translation id="3190558889382726167">パスワードを保存しました</translation>
@@ -3809,6 +3808,7 @@
 <translation id="3810914450553844415">管理者が Google アカウントの追加を許可していません。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">別の指紋を登録</translation>
+<translation id="381219490185664296">タブグループを解除しますか？</translation>
 <translation id="3812525830114410218">不適切な証明書</translation>
 <translation id="3813296892522778813">探しているものが見つからない場合は、<ph name="BEGIN_LINK_CHROMIUM" />Google Chrome のヘルプ<ph name="END_LINK_CHROMIUM" />をご覧ください。</translation>
 <translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
@@ -4248,7 +4248,6 @@
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID デバイスに接続中</translation>
 <translation id="4139326893730851150">ファームウェア アップデート</translation>
 <translation id="4142052906269098341">スマートフォンを使って <ph name="DEVICE_TYPE" /> のロックを解除します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">動画の品質を向上させ、バッテリー消費を抑えます。動画はキャスト対応のスクリーンでのみ再生されます。</translation>
 <translation id="4146026355784316281">常にシステム ビューアで開く</translation>
 <translation id="4146785383423576110">リセットとクリーンアップ</translation>
 <translation id="4147099377280085053">点字表を選択</translation>
@@ -4523,7 +4522,6 @@
 <translation id="4361745360460842907">タブとして開く</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> は <ph name="DEVICE_TYPE" /> のデフォルトのアカウントです</translation>
 <translation id="4363262124589131906">マイドライブ内の新しいファイルは、この Chromebook と自動的に同期されなくなります</translation>
-<translation id="4363771538994847871">キャスト先が見つかりません。ヘルプを表示しますか？</translation>
 <translation id="4364327530094270451">メロン</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> がウィンドウを共有しています。</translation>
 <translation id="4364830672918311045">通知を表示</translation>
@@ -5049,6 +5047,7 @@
 <translation id="4777458362738635055">このデバイスの他のユーザーもこのネットワークを使用できます</translation>
 <translation id="4777813841994368231">オン • この拡張機能はデベロッパーにより非公開にされました</translation>
 <translation id="4777825441726637019">Play ストア</translation>
+<translation id="4777866634702576038">タブグループを削除しますか？</translation>
 <translation id="4777943778632837590">ネットワーク ネームサーバーの設定</translation>
 <translation id="4778653490315793244">コンテンツはまだありません</translation>
 <translation id="4779083564647765204">ズーム</translation>
@@ -5458,6 +5457,7 @@
 <translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたウェブサイトのリスト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ファイルアプリからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
+<translation id="5094423602314093681">タブとグループを削除しますか？</translation>
 <translation id="5094721898978802975">連携するネイティブ アプリケーションと通信</translation>
 <translation id="5095252080770652994">進行状況</translation>
 <translation id="5095507226704905004">ファイルが存在しないため、コピーできません</translation>
@@ -8054,7 +8054,6 @@
 <translation id="7090714929377281710">アクセス ポイントを自動的にオフにする</translation>
 <translation id="7093220653036489319">クイック アンサー</translation>
 <translation id="7093866338626856921">デバイス <ph name="HOSTNAMES" /> とのデータ交換</translation>
-<translation id="7094680343477712655"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
 <translation id="7098447629416471489">保存したその他の検索エンジンがここに表示されます</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{アプリを削除}other{アプリを削除}}</translation>
@@ -9540,7 +9539,6 @@
 <translation id="8198457270656084773">システムのデバイスログ ページをお探しですか？<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> にアクセスしてください。</translation>
 <translation id="8199300056570174101">ネットワーク（サービス）とデバイスのプロパティ</translation>
 <translation id="8200772114523450471">再開</translation>
-<translation id="8200789660596905522"><ph name="DEVICE_NAME" /> でキャスト リクエストを承認してください。</translation>
 <translation id="8202160505685531999"><ph name="DEVICE_TYPE" /> のプロフィールを更新するにはパスワードを再入力してください。</translation>
 <translation id="8202827109322349110">基本エディタで開く</translation>
 <translation id="8203152941016626022">ニアバイシェアのデバイス名</translation>
@@ -10229,7 +10227,7 @@
 <translation id="8710550057342691420">類似のタブを整理</translation>
 <translation id="8711402221661888347">ピクルス</translation>
 <translation id="8711538096655725662">アクセスしたすべてのサイトで自動的に実行します</translation>
-<translation id="8712637175834984815">OK</translation>
+<translation id="8712637175834984815">理解した</translation>
 <translation id="8713110120305151436">クイック設定にユーザー補助オプションを表示する</translation>
 <translation id="8713570323158206935"><ph name="BEGIN_LINK1" />システム情報<ph name="END_LINK1" />を送信する</translation>
 <translation id="8714731224866194981">スマートフォンの写真とアプリを表示しますメッセージの通知にすばやく返信します。</translation>

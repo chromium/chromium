@@ -379,7 +379,6 @@
 <translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="7196312274710523067">Chromium을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="7197677400338048821">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후 다시 시도해 보세요.</translation>
-<translation id="7198365860059291213">몰입형 세션을 시작하려면 Chromium에 장면 이해 및 손 추적 권한이 필요합니다.</translation>
 <translation id="7213407614656404070">언제든지 메시지, 문서 및 다른 앱에서 링크를 클릭하여 Chromium을 사용하세요</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
 <translation id="7246575524853130370">Chromium에서 예측한 내 관심분야</translation>
@@ -457,7 +456,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8568283329061645092">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
-<translation id="858822505990366713">Chromium 맞춤설정</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Chromium의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chromium에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8619360774459241877">Chromium 실행 중...</translation>
 <translation id="8621669128220841554">알 수 없는 오류로 인해 설치에 실패했습니다. Chromium을 다시 다운로드하세요.</translation>
@@ -476,7 +474,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8931379085695076764">Chromium은 지난 몇 주간의 방문 기록을 토대로 내 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="8941642502866065432">Chromium을 업데이트하지 못함</translation>
-<translation id="895999862145835951">Chromium 맞춤설정</translation>
 <translation id="897581876605952338">Chromium Enterprise 로고</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8988036198400390003">Chromium 프로필 관리</translation>

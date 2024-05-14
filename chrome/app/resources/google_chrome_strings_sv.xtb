@@ -36,7 +36,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1516530951338665275">Google Chrome behöver åtkomst för Bluetooth för att fortsätta 
  parkoppla. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS fungerar tack vare <ph name="BEGIN_LINK_CROS_OSS" />ytterligare program med öppen källkod<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Anpassa Chrome</translation>
+<translation id="1551749261806528781">Logga in i Chrome om du vill spara och använda lösenord med mera på alla dina enheter. Lösenordet sparas i ditt Google-konto när du har loggat in.</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. En ny Chrome-profil skapas för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome använder din kamera.</translation>
@@ -320,6 +320,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5940385492829620908">Här finns webben, bokmärken och allt annat du använder Chrome till.</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5941830788786076944">Använd Google Chrome som standardwebbläsare</translation>
+<translation id="5947104538377036631">Chrome-genväg</translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktyg från Chrome<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
@@ -376,7 +377,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.1.</translation>
 <translation id="6943584222992551122">Den här personens webbinformation raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill återställa data.</translation>
-<translation id="6944202724043006419">Chrome behöver omgivelseförståelse och behörighet för handspårning för att starta en omslutande session</translation>
 <translation id="6967962315388095737">Regel som tillåter inkommande mDNS-trafik för Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Chrome har uppdaterats men du har inte använt det på över 30 dagar.</translation>
 <translation id="7011190694940573312">Installationen misslyckades eftersom den här versionen av operativsystemet inte stöds.</translation>
@@ -451,7 +451,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8009904340233602924">Använd Chrome utan konto</translation>
 <translation id="8013993649590906847">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras.</translation>
 <translation id="8019103195866286235">Det här tillägget har tagits bort av utvecklaren och kan vara osäkert. Ta bort det från Chrome så att det inte längre kan se och ändra data, inklusive dina personliga uppgifter, på webbplatser du besöker.</translation>
-<translation id="8031641407207794385">Anpassa Chrome</translation>
 <translation id="80471789339884597">Tack för att du installerat programmet. Du måste starta om alla webbläsare innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Du kan öppna bokmärken, läsläge och annat via Chrome-menyn uppe till höger</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

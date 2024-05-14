@@ -35,7 +35,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1507198376417198979">Personalizo profilin tënd të ri të Chrome</translation>
 <translation id="1516530951338665275">Google Chrome i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Personalizo Chrome</translation>
 <translation id="1551749261806528781">Për të ruajtur dhe përdorur fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chrome. Ky fjalëkalim do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="1553358976309200471">Përditëso Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Kjo do të krijojë një profil të ri të Chrome për <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -377,7 +376,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6933858244219479645">Sistemi i ChromeOS</translation>
 <translation id="6938166777909186039">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.1.</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Chrome ka nevojë për lejen për kuptimin e skenës dhe gjurmimin e duarve për të nisur një seancë gjithëpërfshirëse</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
 <translation id="7011190694940573312">Instalimi dështoi sepse ky version i sistemit operativ nuk mbështetet.</translation>
@@ -452,7 +450,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8009904340233602924">Përdor Chrome pa pasur llogari</translation>
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8019103195866286235">Publikimi i kësaj shtese është anuluar nga zhvilluesi i saj dhe ajo mund të mos jetë e sigurt. Hiqe atë nga Chrome që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
-<translation id="8031641407207794385">Personalizo Chrome</translation>
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015041956107954">Mund të hapësh faqeshënuesit, modalitetin e leximit etj. nga menyja e Chrome në krye djathtas</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

@@ -112,7 +112,6 @@
 <translation id="107450319332239199">Iets het skeefgeloop. Maak eerder die vensters handmatig oop.</translation>
 <translation id="1075920807995555452">Laat loop nutsdinge, redigeerders en IDE’s in ’n omgewing wat deur jou onderneming bestuur word op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">Navigeer deur bladsye met 'n tekspyltjie.</translation>
-<translation id="1076382954055048850">Wys ander uitsaaisessies</translation>
 <translation id="1076698951459398590">Aktiveer tema</translation>
 <translation id="1076766328672150609">Jou kind kan 'n PIN gebruik om die toestel te ontsluit.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -251,6 +250,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1176471985365269981">Mag nie lêers of vouers op jou toestel wysig nie</translation>
 <translation id="1177073277575830464">Vinnige opstelling vir Android is gedoen. Gaan op jou <ph name="DEVICE_TYPE" /> met die opstelling voort.</translation>
 <translation id="1177440945615690056">Jy kan in instellings aan enige kwalifiserende selnetwerk koppel</translation>
+<translation id="1177548198167638471">Moenie weer vra nie</translation>
 <translation id="1177863135347784049">Gepasmaak</translation>
 <translation id="1178093605842850860">Toegelaat om hierdie werf te lees en te verander</translation>
 <translation id="1178581264944972037">Laat wag</translation>
@@ -2984,7 +2984,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3184536091884214176">Stel CUPS-drukkers op of bestuur hulle. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Hierdie program is geblokkeer}other{Sommige programme is geblokkeer}}</translation>
 <translation id="3187472288455401631">Advertensiemeting</translation>
-<translation id="3188257591659621405">My lêers</translation>
 <translation id="3188465121994729530">Bewegende gemiddeld</translation>
 <translation id="3189187154924005138">Groot skermpyltjie</translation>
 <translation id="3190558889382726167">Wagwoord is gestoor</translation>
@@ -3832,6 +3831,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3810914450553844415">Jou administrateur laat nie bykomende Google-rekeninge toe nie.</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="381202950560906753">Voeg nog een by</translation>
+<translation id="381219490185664296">Ongroepeer oortjiegroep?</translation>
 <translation id="3812525830114410218">Swak sertifikaat</translation>
 <translation id="3813296892522778813">Gaan na <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-hulp<ph name="END_LINK_CHROMIUM" /> as jy nie kan kry wat jy soek nie</translation>
 <translation id="3813358687923336574">Taal wat gebruik word om bladsye en Vinnige Antwoorde te vertaal</translation>
@@ -4271,7 +4271,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-toestel is gekoppel</translation>
 <translation id="4139326893730851150">Fermwareopdaterings</translation>
 <translation id="4142052906269098341">Ontsluit jou <ph name="DEVICE_TYPE" /> met jou foon. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
-<translation id="4144218403971135344">Kry video van beter gehalte en bespaar batterylewe. Video sal net op jou Cast-geaktiveerde skerm speel.</translation>
 <translation id="4146026355784316281">Altyd oop met die stelselkyker</translation>
 <translation id="4146785383423576110">Stel terug en maak skoon</translation>
 <translation id="4147099377280085053">Kies ’n brailletabel</translation>
@@ -4547,7 +4546,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4361745360460842907">Maak as oortjie oop</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> is die verstekrekening op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="4363262124589131906">Nuwe lêers in My Drive sal nie meer outomaties met hierdie Chromebook gesinkroniseer word nie</translation>
-<translation id="4363771538994847871">Geen Cast-bestemmings gevind nie. Het jy hulp nodig?</translation>
 <translation id="4364327530094270451">Spanspek</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> deel tans 'n venster.</translation>
 <translation id="4364830672918311045">Wys kennisgewings</translation>
@@ -5075,6 +5073,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4777458362738635055">Ander gebruikers van hierdie toestel kan hierdie netwerk gebruik</translation>
 <translation id="4777813841994368231">Aan • Hierdie uitbreiding is deur die ontwikkelaar daarvan gedepubliseer</translation>
 <translation id="4777825441726637019">Play Winkel</translation>
+<translation id="4777866634702576038">Vee oortjiegroep uit?</translation>
 <translation id="4777943778632837590">Stel netwerknaambedieners op</translation>
 <translation id="4778653490315793244">Nog niks om te wys nie</translation>
 <translation id="4779083564647765204">Zoem</translation>
@@ -5483,6 +5482,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5093477827231450397">Lys werwe wat jy geblokkeer het wat jy nie wil hê advertensies aan ander werwe moet voorstel nie</translation>
 <translation id="5093569275467863761">Incognito-terug-vorentoe-kasgegeue-subraam: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Jy kan met hierdie program gesteunde lêers uit die Lêers-program of ander programme oopmaak en wysig. <ph name="BEGIN_LINK" />Vind uit hoe om verstekprogramme op jou toestel te stel<ph name="END_LINK" /> om te beheer watter lêers hierdie program by verstek oopmaak.</translation>
+<translation id="5094423602314093681">Verwyder oortjie(s) en vee groep uit?</translation>
 <translation id="5094721898978802975">Kommunikeer met plaaslike programme wat saamwerk</translation>
 <translation id="5095252080770652994">Vordering</translation>
 <translation id="5095507226704905004">Die lêer kan nie gekopieer word nie omdat dit nie meer bestaan nie</translation>
@@ -8083,7 +8083,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7090714929377281710">Skakel warmkol outomaties af</translation>
 <translation id="7093220653036489319">Vinnige Antwoorde</translation>
 <translation id="7093866338626856921">Ruil data uit met die toestelle genaamd: <ph name="HOSTNAMES" /></translation>
-<translation id="7094680343477712655">Aanvaar uitsaaiversoek op jou <ph name="DEVICE_NAME" /></translation>
 <translation id="7098389117866926363">USB C-toestel (linkerpoort aan agterkant)</translation>
 <translation id="7098447629416471489">Ander gestoorde soekenjins sal hier verskyn</translation>
 <translation id="7098936390718461001">{NUM_APPS,plural, =1{Verwyder program}other{Verwyder programme}}</translation>
@@ -9571,7 +9570,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8198457270656084773">Soek jy die stelsel se toestelloglêerbladsy? Besoek<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /></translation>
 <translation id="8199300056570174101">Netwerk- (diens-) en toesteleienskappe</translation>
 <translation id="8200772114523450471">Hervat</translation>
-<translation id="8200789660596905522">Aanvaar die uitsaaiversoek op jou <ph name="DEVICE_NAME" />.</translation>
 <translation id="8202160505685531999">Voer asseblief jou wagwoord weer in om jou <ph name="DEVICE_TYPE" />-profiel op te dateer.</translation>
 <translation id="8202827109322349110">Maak in basiese redigeerder oop</translation>
 <translation id="8203152941016626022">Nabydeling: toestelnaam</translation>

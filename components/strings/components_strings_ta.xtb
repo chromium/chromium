@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">விலை உயர்ந்துள்ளது</translation>
 <translation id="2122719317867821810">இந்தக் கொள்கை எதிர்பார்த்த வகையில் வேலை செய்கிறது. ஆனால் முரண்படும் மதிப்பு ஒன்று வேறு எங்கோ அமைக்கப்பட்டுள்ளதோடு இந்தக் கொள்கை அந்த மதிப்பை மீறிச் செயல்படுகிறது.</translation>
 <translation id="2126374524350484896">PDF தயாரிப்பாளர்:</translation>
+<translation id="2127090458081644412">கடவுச்சொல் இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode கொள்கை அமைக்கப்படாததால் நீங்கள் குறிப்பிட்ட டெம்ப்ளேட்கள் பொருந்தாமல் போகக்கூடும்.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">இவை ரேண்டமாகக் காட்டப்படுகின்றன. இயல்பு விருப்பத்தை எப்போது வேண்டுமானாலும் மாற்றலாம்.</translation>
@@ -1006,7 +1007,6 @@
 <translation id="2928905813689894207">பில்லிங் முகவரி</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">டிரிம் ஆஃப்டர் ஈச் காப்பி</translation>
-<translation id="2932085390869194046">கடவுச்சொல்லைப் பரிந்துரை...</translation>
 <translation id="2933624813161016821">எம்போசிங் ஃபாயில்</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> இணைப்புகளைத் திறக்கும்</translation>
 <translation id="2941878205777356567">என்வெலப் 9 x 12 இன்ச்</translation>
@@ -2027,6 +2027,7 @@
 <translation id="4901778704868714008">சேமி...</translation>
 <translation id="4901952598169637881">கேஷுவல் ஷூக்கள்</translation>
 <translation id="4905659621780993806">உங்கள் நிர்வாகி <ph name="DATE" />, <ph name="TIME" />க்குத் தானாகவே உங்கள் சாதனத்தை மீண்டும் தொடங்குவார். நீங்கள் திறந்திருப்பவற்றைச் சாதனம் மீண்டும் தொடங்குவதற்கு முன் சேமிக்கவும்.</translation>
+<translation id="4913784027728226227">இந்தக் கடவுச்சொல்லை உங்கள் சாதனங்கள் அனைத்திலும் சேமிப்பதற்கும் பயன்படுத்துவதற்கும், இது நீங்கள்தான் என்பதை உறுதிசெய்யவும்</translation>
 <translation id="4913987521957242411">பஞ்ச் டாப் லெஃப்ட்</translation>
 <translation id="4916389289686916969">டிவி ரியாலிட்டி ஷோக்கள்</translation>
 <translation id="4917064667437236721">இமேஜிங் சிலிண்டர்</translation>
@@ -2300,6 +2301,7 @@
 <translation id="5447765697759493033">இந்தத் தளம் மொழிபெயர்க்கப்படாது</translation>
 <translation id="5452270690849572955">இந்த <ph name="HOST_NAME" /> பக்கத்தைக் கண்டறிய முடியவில்லை</translation>
 <translation id="5455374756549232013">தவறான கொள்கை நேரமுத்திரை</translation>
+<translation id="5456428544444655325">எப்போதும் காட்ட வேண்டாம்</translation>
 <translation id="5456839782162429664">தன்னிரப்பியைப் பயன்படுத்திக் கட்டணம் செலுத்தும் ஒவ்வொரு முறையும் நேரடியாகச் சரிபார்த்தல்</translation>
 <translation id="5457113250005438886">தவறானது</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2310,6 +2312,7 @@
 <translation id="5470861586879999274">&amp;மீண்டும் திருத்து</translation>
 <translation id="547963486735802022">ஃபைல்களை மீண்டும் மாற்ற முயலவும்</translation>
 <translation id="5481076368049295676">உங்கள் தகவலைத் திருடும் அல்லது நீக்கும் ஆபத்தான மென்பொருளை உங்கள் சாதனத்தில் இந்த உள்ளடக்கம் நிறுவ முயலலாம். <ph name="BEGIN_LINK" />பரவாயில்லை, காட்டு<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">எழுத உதவி வழங்கு</translation>
 <translation id="54817484435770891">சரியான முகவரியைச் சேர்க்கவும்</translation>
 <translation id="5483838506518938965">எல்லாவற்றையும் அமைத்துவிட்டீர்கள்</translation>
 <translation id="5485973315555778056">கிளவுட் இயந்திரம்</translation>
@@ -2948,6 +2951,7 @@
 <translation id="6709133671862442373">செய்திகள்</translation>
 <translation id="6710213216561001401">முந்தையது</translation>
 <translation id="6710594484020273272">&lt;தேடல் வார்த்தையை உள்ளிடுக&gt;</translation>
+<translation id="6710648923880003133">வலுவான கடவுச்சொல்லைப் பரிந்துரை</translation>
 <translation id="671076103358959139">பதிவு டோக்கன்:</translation>
 <translation id="6711464428925977395">ப்ராக்ஸி சர்வரில் ஏதோ தவறு உள்ளது அல்லது முகவரி தவறாக உள்ளது.</translation>
 <translation id="6716672519412350405">உங்களைச் சுற்றியுள்ள இடங்களின் 3D மேப்பை உருவாக்கவும் கேமரா நிலையை டிராக் செய்யவும் <ph name="URL" /> விரும்புகிறது</translation>

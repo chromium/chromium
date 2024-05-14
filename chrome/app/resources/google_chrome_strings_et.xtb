@@ -33,7 +33,6 @@
 <translation id="1507198376417198979">Kohandage oma uut Chrome'i profiili</translation>
 <translation id="1516530951338665275">Google Chrome vajab sidumise jätkamiseks juurdepääsu Bluetoothile. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS on võimalik tänu <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvarale<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="155168855724261758">Kohanda minu Chrome’i</translation>
 <translation id="1551749261806528781">Kõigis oma seadmetes paroolide ja muu salvestamiseks ning kasutamiseks logige Chrome'i sisse. See parool salvestatakse pärast sisselogimist teie Google'i kontole.</translation>
 <translation id="1553358976309200471">Värskenda Chrome'i</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> on juba sellele Chrome'i profiilile sisse logitud. See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chrome'i profiili.</translation>
@@ -373,7 +372,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6933858244219479645">ChromeOS-i süsteem</translation>
 <translation id="6938166777909186039">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.1.</translation>
 <translation id="6943584222992551122">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
-<translation id="6944202724043006419">Interaktiivse seansi alustamiseks on Chrome’il vaja luba stseeni tuvastamiseks ja käeliigutuste jälgimiseks</translation>
 <translation id="6967962315388095737">Sissetuleku reegel Google Chrome'i beetaversioonile mDNS-liikluse lubamiseks.</translation>
 <translation id="6989339256997917931">Google Chrome'i on värskendatud, aga te pole seda kasutanud vähemalt 30 päeva.</translation>
 <translation id="7011190694940573312">Installimine ebaõnnestus, kuna operatsioonisüsteemi seda versiooni ei toetata.</translation>
@@ -448,7 +446,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8009904340233602924">Kasuta Chrome'i ilma kontota</translation>
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="8019103195866286235">Arendaja tühistas selle laienduse avaldamise ja see võib olla ebaturvaline. Eemaldage see Chrome'ist, et see ei saaks enam näha ja muuta teie andmeid saitidel, mida külastate, sealhulgas teie isiklikku teavet.</translation>
-<translation id="8031641407207794385">Kohanda minu Chrome’i</translation>
 <translation id="80471789339884597">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate taaskäivitama kõik brauserid.</translation>
 <translation id="8064015041956107954">Saate paremas ülaosas Chrome'i menüü kaudu avada järjehoidjad, lugemisrežiimi ja palju muud</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>

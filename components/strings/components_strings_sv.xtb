@@ -615,6 +615,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2122214041802369259">Priset är högt</translation>
 <translation id="2122719317867821810">Den här principen fungerar som avsett, men den har även ställts in på annan plats med ett annat värde och detta andra värde åsidosätts av denna princip.</translation>
 <translation id="2126374524350484896">PDF-källa:</translation>
+<translation id="2127090458081644412">Lösenordet har sparats på den här enheten</translation>
 <translation id="2130448033692577677">Det går inte att tillämpa de angivna mallarna eftersom principen DnsOverHttpsMode inte har ställts in.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2132825047782982803">Dessa visas i slumpmässig ordning. Du kan när som helst ändra standardinställningen.</translation>
@@ -1006,7 +1007,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2928905813689894207">Faktureringsadress</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}}</translation>
 <translation id="2930577230479659665">Beskär efter varje exemplar</translation>
-<translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2933624813161016821">Präglingsfolie</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
 <translation id="2941878205777356567">Kuvert, 9 x 12 tum</translation>
@@ -2031,6 +2031,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4901778704868714008">Spara …</translation>
 <translation id="4901952598169637881">Vardagsskor</translation>
 <translation id="4905659621780993806">Administratören startar om enheten automatiskt kl. <ph name="TIME" /> den <ph name="DATE" />. Spara det som du har öppet innan enheten startas om.</translation>
+<translation id="4913784027728226227">Verifiera din identitet om du vill spara och använda det här lösenordet på alla dina enheter</translation>
 <translation id="4913987521957242411">Häfta uppe till vänster</translation>
 <translation id="4916389289686916969">Reality-tv</translation>
 <translation id="4917064667437236721">Bildcylinder</translation>
@@ -2304,6 +2305,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5447765697759493033">Den här webbplatsen översätts inte</translation>
 <translation id="5452270690849572955">Sidan på <ph name="HOST_NAME" /> kan inte hittas</translation>
 <translation id="5455374756549232013">Felaktig tidsstämpel för policy</translation>
+<translation id="5456428544444655325">Visa aldrig</translation>
 <translation id="5456839782162429664">Verifiera manuellt varje gång du betalar med autofyll</translation>
 <translation id="5457113250005438886">Ogiltigt</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" /> och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
@@ -2314,6 +2316,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5470861586879999274">&amp;Gör om Redigera</translation>
 <translation id="547963486735802022">Testa att överföra filerna igen</translation>
 <translation id="5481076368049295676">Sidan kan ha till syfte att installera farlig mjukvara som stjäl eller raderar information på enheten. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" />.</translation>
+<translation id="5481682542063333508">Erbjud skrivhjälp</translation>
 <translation id="54817484435770891">Lägg till giltig adress</translation>
 <translation id="5483838506518938965">Nu är det klart</translation>
 <translation id="5485973315555778056">Molndator</translation>
@@ -2372,7 +2375,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="55635442646131152">Dokumentdisposition</translation>
 <translation id="5565613213060953222">Öppna inkognitoflik</translation>
 <translation id="5565735124758917034">Aktiv</translation>
-<translation id="5569030697349375295">Redovisnings- och ekonomiprogramvara</translation>
+<translation id="5569030697349375295">Redovisnings- och ekonomimjukvara</translation>
 <translation id="5570825185877910964">Skydda kontot</translation>
 <translation id="5571083550517324815">Utlämning erbjuds inte på den här adressen. Välj en annan adress.</translation>
 <translation id="5572434905385510939">22 x 28 tum</translation>
@@ -2909,7 +2912,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6631133499533814479">Australisk fotboll</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6633405994164965230">Datorutbildning</translation>
-<translation id="6633476656216409494">Företags- och produktivitetsprogramvara</translation>
+<translation id="6633476656216409494">Företags- och produktivitetsmjukvara</translation>
 <translation id="6638353438328951386">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning, som <ph name="BEGIN_LINK" />nyligen hittade skadlig kod<ph name="END_LINK" /> på webbplatsen du försöker besöka.</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6645291930348198241">få åtkomst till cookies och webbplatsdata.</translation>
@@ -2953,6 +2956,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6709133671862442373">Nyheter</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6710594484020273272">&lt;Ange sökterm&gt;</translation>
+<translation id="6710648923880003133">Föreslå ett starkt lösenord</translation>
 <translation id="671076103358959139">Registreringstoken:</translation>
 <translation id="6711464428925977395">Något är fel med proxyservern eller så är adressen felaktig.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
@@ -3304,15 +3308,15 @@ Mer information.
 <translation id="7403392780200267761">Dela den här fliken genom att dela länken, skapa en QR-kod, casta med flera alternativ</translation>
 <translation id="7403591733719184120">Din <ph name="DEVICE_NAME" /> hanteras</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> har installerat appar för ytterligare funktioner. Apparna har åtkomst till en del av din data.</translation>
-<translation id="7407424307057130981">&lt;p&gt;Det här felmeddelandet visas om du har programvaran Superfish på Windows-datorn.&lt;/p&gt;
-      &lt;p&gt;Inaktivera programvaran tillfälligt enligt anvisningarna nedan så att du kan komma ut på internet. Du måste ha administratörsbehörighet.&lt;/p&gt;
+<translation id="7407424307057130981">&lt;p&gt;Det här felmeddelandet visas om du har mjukvaran Superfish på Windows-datorn.&lt;/p&gt;
+      &lt;p&gt;Inaktivera mjukvaran tillfälligt enligt anvisningarna nedan så att du kan komma ut på internet. Du måste ha administratörsbehörighet.&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt;Klicka på &lt;strong&gt;Start&lt;/strong&gt; och sök efter och välj &lt;strong&gt;Visa lokala tjänster&lt;/strong&gt;
       &lt;li&gt;Välj &lt;strong&gt;VisualDiscovery&lt;/strong&gt;
       &lt;li&gt;Under &lt;strong&gt;Starttyp&lt;/strong&gt; väljer du &lt;strong&gt;Inaktiverad&lt;/strong&gt;
       &lt;li&gt;Under &lt;strong&gt;Tjänststatus&lt;/strong&gt; klickar du på &lt;strong&gt;Stoppa&lt;/strong&gt;
       &lt;li&gt;Klicka på &lt;strong&gt;Verkställ&lt;/strong&gt; och sedan på &lt;strong&gt;OK&lt;/strong&gt;
-      &lt;li&gt;Besök &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;hjälpcentret för Chrome&lt;/a&gt; om du vill veta mer om hur du tar bort programvaran från datorn permanent
+      &lt;li&gt;Besök &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;hjälpcentret för Chrome&lt;/a&gt; om du vill veta mer om hur du tar bort mjukvaran från datorn permanent
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Leksaker</translation>
 <translation id="741204030948306876">Ja</translation>
@@ -3506,7 +3510,7 @@ Mer information.
 <translation id="7716147886133743102">Blockerades av administratören</translation>
 <translation id="7716375162095500223">Ignorerad eller ännu inte uppladdad</translation>
 <translation id="7716424297397655342">Det går inte att läsa in webbplatsen från cachelagringen</translation>
-<translation id="7719791801330803993">Foto- och videoprogramvara</translation>
+<translation id="7719791801330803993">Foto- och videomjukvara</translation>
 <translation id="772128550427553158">CVC-koden finns på framsidan av kortet.</translation>
 <translation id="7724603315864178912">Klipp ut</translation>
 <translation id="7730057435797792985">Sortera</translation>

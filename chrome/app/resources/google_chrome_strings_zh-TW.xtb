@@ -33,7 +33,7 @@
 <translation id="1507198376417198979">自訂新的 Chrome 設定檔</translation>
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
-<translation id="155168855724261758">自訂 Chrome</translation>
+<translation id="1551749261806528781">如要在所有裝置上儲存及使用密碼和其他資訊，請登入 Chrome。登入後，這組密碼就會儲存在你的 Google 帳戶中。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
@@ -314,6 +314,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5940385492829620908">你瀏覽的網頁、書籤和其他 Chrome 設定都在這裡。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
+<translation id="5947104538377036631">Chrome 捷徑</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，你可以放心瀏覽網路，掌控一切設定</translation>
 <translation id="6022659036123304283">打造專屬的 Chrome</translation>
@@ -370,7 +371,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8.1。</translation>
 <translation id="6943584222992551122">這位使用者的瀏覽資料將從這個裝置上刪除。如要還原資料，請使用 <ph name="USER_EMAIL" /> 登入 Chrome。</translation>
-<translation id="6944202724043006419">Chrome 需要場景理解和手部追蹤權限，才能啟動混合實境工作階段</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome Beta 版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但你至少已有 30 天未使用該瀏覽器。</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
@@ -445,7 +445,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8009904340233602924">不登入帳戶使用 Chrome</translation>
 <translation id="8013993649590906847">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
 <translation id="8019103195866286235">這項擴充功能已由開發人員取消發布，可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
-<translation id="8031641407207794385">自訂 Chrome</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="8064015041956107954">你可以從右上方的 Chrome 選單開啟書籤、閱讀模式等功能</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
