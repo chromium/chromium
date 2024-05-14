@@ -6664,6 +6664,8 @@ TEST_F(TabletModeOverviewSessionTest, BasicNudging) {
 // if the item to be deleted results in the overview grid to change number of
 // rows.
 TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenNumRowsChange) {
+  UpdateDisplay("800x700");
+
   // Set up four equal windows, which would split into two rows in overview
   // mode. Removing one window would leave us with three windows, which only
   // takes a single row in overview.
@@ -6685,6 +6687,11 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenNumRowsChange) {
   const gfx::RectF item3_bounds = item3->target_bounds();
   const gfx::RectF item4_bounds = item4->target_bounds();
 
+  // Ensure there are two rows in overview.
+  ASSERT_EQ(item1_bounds.y(), item2_bounds.y());
+  ASSERT_EQ(item3_bounds.y(), item4_bounds.y());
+  ASSERT_NE(item1_bounds.y(), item3_bounds.y());
+
   // Drag |item1| past the drag to swipe threshold. None of the other window
   // bounds should change, as none of them should be nudged.
   GetOverviewSession()->InitiateDrag(item1, item1_bounds.CenterPoint(),
@@ -6701,6 +6708,8 @@ TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenNumRowsChange) {
 // from the previous row to drop down to the current row, thus causing the items
 // to the right of the item to be shifted right, which is visually unacceptable.
 TEST_F(TabletModeOverviewSessionTest, NoNudgingWhenLastItemOnPreviousRowDrops) {
+  UpdateDisplay("800x700");
+
   // Set up five equal windows, which would split into two rows in overview
   // mode. Removing one window would cause the rows to rearrange, with the third
   // item dropping down from the first row to the second row. Create the windows
@@ -10390,7 +10399,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 // a maximized window is being dragged.
 TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
        DropTargetBoundsForMaximizedWindowDraggedToOtherDisplay) {
-  UpdateDisplay("1000x400,1000x400/l");
+  UpdateDisplay("1200x400,1200x400/l");
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   WindowState::Get(window.get())->Maximize();
   ToggleOverview();
@@ -10407,7 +10416,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
 
   // Drag to the middle of the secondary display to avoid triggering the drag
   // snap indicator animation.
-  event_generator->MoveMouseTo(gfx::Point(1200, 500));
+  event_generator->MoveMouseTo(gfx::Point(1400, 500));
 
   auto* drop_target = GetDropTarget(1);
   ASSERT_TRUE(drop_target);
