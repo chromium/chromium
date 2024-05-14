@@ -1,4 +1,4 @@
-<style>
+<style include="cr-icons">
   .separator {
     height: 16px;
   }
@@ -8,9 +8,31 @@
     width: 220px;
   }
 
-  .col-card {
-    display: flex;
-    justify-content: flex-start;
+  .col:hover #openTabButton {
+    display: block;
+  }
+
+  img {
+    height: inherit;
+    object-fit: cover;
+  }
+
+  #imgContainer {
+    border-radius: 8px;
+    height: 123px;
+    margin-top: 6px;
+    position: relative;
+  }
+
+  #openTabButton {
+    --cr-icon-button-fill-color: var(--color-product-specifications-icon);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 20px;
+    display: none;
+    position: absolute;
+    top: 11px;
+    right: 11px;
+    z-index: 1;
   }
 
   .row-header {
@@ -30,9 +52,13 @@
             selected-item="[[column.selectedItem]]"
             on-selected-url-change="onSelectedUrlChange_">
         </product-selector>
-        <img is="cr-auto-img"
-            auto-src="[[column.selectedItem.imageUrl]]"
-            draggable="false" />
+        <div id="imgContainer">
+          <img is="cr-auto-img"
+              auto-src="[[column.selectedItem.imageUrl]]"
+              draggable="false" />
+          <cr-icon-button id="openTabButton" class="icon-external">
+          </cr-icon-button>
+        </div>
       </th>
     </template>
   </thead>

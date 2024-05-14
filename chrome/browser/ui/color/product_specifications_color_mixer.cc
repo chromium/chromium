@@ -18,9 +18,12 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
       ui::kColorSysTonalContainer};
   mixer[kColorProductSpecificationsContentBackground] = {
       ui::kColorSysBaseContainer};
+  mixer[kColorProductSpecificationsIcon] = {ui::kColorIcon};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
-  mixer[kColorProductSpecificationsSummaryBackground] = {ui::kColorSysSurface};
-  mixer[kColorProductSpecificationsPrimaryTitle] = {ui::kColorSysOnSurface};
+  mixer[kColorProductSpecificationsSummaryBackground] = {
+      ui::kColorPrimaryBackground};
+  mixer[kColorProductSpecificationsPrimaryTitle] = {
+      ui::kColorPrimaryForeground};
   mixer[kColorProductSpecificationsSecondaryTitle] = {
       ui::kColorSysOnSurfaceSecondary};
   mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
