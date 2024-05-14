@@ -64,11 +64,6 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
         base::BindRepeating(&OverviewTracingHandlerTest::OnGraphicsModelReady,
                             weak_ptr_factory_.GetWeakPtr()));
 
-    local_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(
-        local_pref_service_.get());
-    arc::prefs::RegisterLocalStatePrefs(local_pref_service_->registry());
-
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kEnableArcVm);
 
@@ -82,9 +77,6 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
 
   void TearDown() override {
     icu::TimeZone::setDefault(*saved_tz_);
-
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-    local_pref_service_.reset();
 
     handler_.reset();
     wm_helper_.reset();
@@ -128,8 +120,6 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
   std::unique_ptr<icu::TimeZone> saved_tz_;
   std::vector<std::string> events_;
   base::Value model_;
-
-  std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
 
   base::WeakPtrFactory<OverviewTracingHandlerTest> weak_ptr_factory_;
 };
