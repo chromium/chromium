@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {HttpsFirstModeSetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SafeBrowsingInteractions, SecureDnsMode, SecurityPageInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -60,6 +60,7 @@ suite('Main', function() {
       enableSecurityKeysSubpage: true,
       enableHttpsFirstModeNewSettings: true,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -269,6 +270,7 @@ suite('FlagsDisabled', function() {
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -923,9 +925,9 @@ suite('SafeBrowsing', function() {
   });
 
   test('UpdatedStandardProtectionDropdown', async () => {
-    loadTimeData.overrideValues({
-      enableHashPrefixRealTimeLookups: false,
-    });
+    loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: false});
+    resetRouterForTesting();
+
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
     const updatedSpSubLabel =
@@ -990,9 +992,9 @@ suite('SafeBrowsing', function() {
 
   // <if expr="_google_chrome">
   test('StandardProtectionDropdownWithProxyString', async () => {
-    loadTimeData.overrideValues({
-      enableHashPrefixRealTimeLookups: true,
-    });
+    loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: true});
+    resetRouterForTesting();
+
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
     const subLabel =
@@ -1009,6 +1011,8 @@ suite('SafeBrowsing', function() {
           enableFriendlierSafeBrowsingSettings: false,
           enableHashPrefixRealTimeLookups: true,
         });
+        resetRouterForTesting();
+
         await resetPage();
         const standardProtection = page.$.safeBrowsingStandard;
         const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
@@ -1034,18 +1038,18 @@ suite('SafeBrowsing', function() {
   // </if>
 
   test('FriendlierSettingsPopulatedOnEsbOptIn', async function() {
-    loadTimeData.overrideValues({
-      enableFriendlierSafeBrowsingSettings: false,
-    });
+    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: false});
+    resetRouterForTesting();
+
     await resetPage();
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     assertFalse(
         page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
 
-    loadTimeData.overrideValues({
-      enableFriendlierSafeBrowsingSettings: true,
-    });
+    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
+    resetRouterForTesting();
+
     await resetPage();
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
