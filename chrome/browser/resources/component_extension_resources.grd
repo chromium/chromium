@@ -84,6 +84,9 @@
         <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_KEY_EDIT_NUDGE_JSON" file="chromeos/arc_input_overlay/key_edit_nudge.json" compress="gzip" />
         <structure type="lottie" name="IDR_ARC_INPUT_OVERLAY_BUTTON_PLACEMENT_MODE_NUDGE_JSON" file="chromeos/arc_input_overlay/button_placement_mode_nudge.json" compress="gzip" />
       </if>
+
+       <!-- Mahi -->
+      <structure type="lottie" name="IDR_MAGIC_BOOST_DISCLAIMER_IMAGE" file="chromeos/mahi/magic_boost_disclaimer_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>
