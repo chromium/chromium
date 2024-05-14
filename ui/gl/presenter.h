@@ -30,10 +30,6 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
-#endif
-
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -152,7 +148,6 @@ class GL_EXPORT Presenter : public base::RefCounted<Presenter> {
   virtual void InitDelegatedInkPointRendererReceiver(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver) {}
-  virtual HWND GetWindow() const = 0;
 #endif
 
   // Tells the presenter to rely on implicit sync when presenting buffers.

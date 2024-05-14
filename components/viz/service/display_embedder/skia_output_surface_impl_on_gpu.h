@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -94,7 +95,8 @@ struct RenderPassGeometry;
 // The SkiaOutputSurface implementation running on the GPU thread. This class
 // should be created, used and destroyed on the GPU thread.
 class SkiaOutputSurfaceImplOnGpu
-    : public gpu::SharedContextState::ContextLostObserver {
+    : public gpu::ImageTransportSurfaceDelegate,
+      public gpu::SharedContextState::ContextLostObserver {
  public:
   using DidSwapBufferCompleteCallback =
       base::RepeatingCallback<void(gpu::SwapBuffersCompleteParams,
@@ -241,10 +243,12 @@ class SkiaOutputSurfaceImplOnGpu
   // gpu::SharedContextState::ContextLostObserver implementation:
   void OnContextLost() override;
 
+  // gpu::ImageTransportSurfaceDelegate implementation:
 #if BUILDFLAG(IS_WIN)
-  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window);
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
 #endif
-  const gpu::gles2::FeatureInfo* GetFeatureInfo() const;
+  const gpu::gles2::FeatureInfo* GetFeatureInfo() const override;
+  const gpu::GpuPreferences& GetGpuPreferences() const override;
 
   void PostTaskToClientThread(base::OnceClosure closure) {
     dependency_->PostTaskToClientThread(std::move(closure));

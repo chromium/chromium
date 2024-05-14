@@ -16,8 +16,7 @@
 #include "ui/gl/presenter.h"
 
 namespace gpu {
-class GpuDriverBugWorkarounds;
-struct GpuFeatureInfo;
+class ImageTransportSurfaceDelegate;
 
 // The GPU process is agnostic as to how it displays results. On some platforms
 // it renders directly to window. On others it renders offscreen and transports
@@ -32,8 +31,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   // presentation using GLSurface by calling `CreateNativeGLSurface` below.
   static scoped_refptr<gl::Presenter> CreatePresenter(
       gl::GLDisplay* display,
-      const GpuDriverBugWorkarounds& workarounds,
-      const GpuFeatureInfo& gpu_feature_info,
+      base::WeakPtr<ImageTransportSurfaceDelegate> stub,
       SurfaceHandle surface_handle);
 
   // Creates the appropriate native surface depending on the GL implementation.
@@ -41,6 +39,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   // scoped_refptr should be returned.
   static scoped_refptr<gl::GLSurface> CreateNativeGLSurface(
       gl::GLDisplay* display,
+      base::WeakPtr<ImageTransportSurfaceDelegate> stub,
       SurfaceHandle surface_handle,
       gl::GLSurfaceFormat format);
 

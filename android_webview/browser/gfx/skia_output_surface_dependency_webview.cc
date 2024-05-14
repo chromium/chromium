@@ -110,11 +110,13 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyWebView::GetSurfaceHandle() {
 }
 
 scoped_refptr<gl::Presenter>
-SkiaOutputSurfaceDependencyWebView::CreatePresenter() {
+SkiaOutputSurfaceDependencyWebView::CreatePresenter(
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
   return nullptr;
 }
 scoped_refptr<gl::GLSurface>
 SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
+    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
   return gl_surface_.get();
 }

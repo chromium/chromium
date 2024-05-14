@@ -2131,7 +2131,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    presenter_ = dependency_->CreatePresenter();
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
     if (!presenter_) {
       gl::GLSurfaceFormat format;
 #if BUILDFLAG(IS_ANDROID)
@@ -2140,7 +2140,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         format.SetRGB565();
       }
 #endif
-      gl_surface_ = dependency_->CreateGLSurface(format);
+      gl_surface_ =
+          dependency_->CreateGLSurface(weak_ptr_factory_.GetWeakPtr(), format);
       if (!gl_surface_) {
         return false;
       }
@@ -2165,7 +2166,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback(), GetReleaseOverlaysCallback());
 #else   // !BUILDFLAG(IS_WIN)
-        AddChildWindowToBrowser(presenter_->GetWindow());
         output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
             dependency_, shared_image_factory_.get(),
             shared_image_representation_factory_.get(), context_state_.get(),
@@ -2237,7 +2237,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   output_presenter =
       OutputPresenterFuchsia::Create(window_surface_.get(), dependency_);
 #else
-  presenter_ = dependency_->CreatePresenter();
+  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
   if (presenter_) {
     output_presenter = std::make_unique<OutputPresenterGL>(
         presenter_, dependency_, shared_image_factory_.get(),
@@ -2318,7 +2318,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   }
 
 #elif BUILDFLAG(IS_WIN)
-  presenter_ = dependency_->CreatePresenter();
+  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
   if (presenter_) {
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
         dependency_, shared_image_factory_.get(),
@@ -2339,7 +2339,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
   return true;
 
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  presenter_ = dependency_->CreatePresenter();
+  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
 
 #if BUILDFLAG(IS_ANDROID)
   if (!presenter_) {
@@ -2385,7 +2385,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    presenter_ = dependency_->CreatePresenter();
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
     CHECK(presenter_);
 
 #if BUILDFLAG(IS_MAC)
@@ -2629,6 +2629,11 @@ void SkiaOutputSurfaceImplOnGpu::AddChildWindowToBrowser(
 const gpu::gles2::FeatureInfo* SkiaOutputSurfaceImplOnGpu::GetFeatureInfo()
     const {
   return feature_info_.get();
+}
+
+const gpu::GpuPreferences& SkiaOutputSurfaceImplOnGpu::GetGpuPreferences()
+    const {
+  return gpu_preferences_;
 }
 
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(

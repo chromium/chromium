@@ -7,8 +7,10 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
+#include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace gpu {
@@ -16,7 +18,8 @@ namespace gpu {
 struct Mailbox;
 
 class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
-    : public CommandBufferStub {
+    : public CommandBufferStub,
+      public ImageTransportSurfaceDelegate {
  public:
   GLES2CommandBufferStub(GpuChannel* channel,
                          const mojom::CreateCommandBufferParams& init_params,
@@ -43,6 +46,13 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub final
 
   // DecoderClient implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+
+// ImageTransportSurfaceDelegate implementation:
+#if BUILDFLAG(IS_WIN)
+  void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) override;
+#endif
+  const gles2::FeatureInfo* GetFeatureInfo() const override;
+  const GpuPreferences& GetGpuPreferences() const override;
 
  private:
   // CommandBufferStub overrides:

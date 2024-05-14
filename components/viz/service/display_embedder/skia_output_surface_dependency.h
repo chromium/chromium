@@ -30,6 +30,7 @@ namespace gpu {
 
 class DawnContextProvider;
 class GpuDriverBugWorkarounds;
+class ImageTransportSurfaceDelegate;
 class MailboxManager;
 class SharedContextState;
 class SharedImageManager;
@@ -79,8 +80,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // return kNullSurfaceHandle.
   virtual bool IsOffscreen() = 0;
   virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
-  virtual scoped_refptr<gl::Presenter> CreatePresenter() = 0;
+  virtual scoped_refptr<gl::Presenter> CreatePresenter(
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) = 0;
   virtual scoped_refptr<gl::GLSurface> CreateGLSurface(
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) = 0;
   // Hold a ref of the given surface until the returned closure is fired.
   virtual base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) = 0;
