@@ -328,10 +328,6 @@ uint64_t FileTypePolicies::GetMaxFileSizeToAnalyze(
     case DownloadFileType::DMG:
       inspection_ext = "dmg";
       break;
-    case DownloadFileType::OFFICE_DOCUMENT:
-      // Office documents don't currently check a max file size to analyze, so
-      // they don't need an `inspection_ext` here.
-      break;
     case DownloadFileType::SEVEN_ZIP:
       inspection_ext = "7z";
       break;

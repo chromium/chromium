@@ -626,9 +626,6 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     case DownloadFileType::DMG:
       metrics_suffix = ".Dmg";
       break;
-    case DownloadFileType::OFFICE_DOCUMENT:
-      metrics_suffix = ".Document";
-      break;
     case DownloadFileType::SEVEN_ZIP:
       if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled))
         metrics_suffix = ".SevenZip";

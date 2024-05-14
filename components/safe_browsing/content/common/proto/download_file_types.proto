@@ -67,7 +67,7 @@ message DownloadFileType {
     ZIP = 1;
     RAR = 2;
     DMG = 3;
-    OFFICE_DOCUMENT = 4;
+    // Deprecated: OFFICE_DOCUMENT = 4;
     SEVEN_ZIP = 5;
   }
   optional InspectionType inspection_type = 6;

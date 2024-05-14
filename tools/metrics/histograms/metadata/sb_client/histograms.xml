@@ -166,7 +166,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Analysis">
     <variant name="Dmg"/>
-    <variant name="Document" summary="Office document"/>
     <variant name="None" summary="executable"/>
     <variant name="Rar"/>
     <variant name="SevenZip"/>
@@ -192,7 +191,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Analysis">
     <variant name="Dmg"/>
-    <variant name="Document" summary="Office document"/>
     <variant name="None" summary="executable"/>
     <variant name="Rar"/>
     <variant name="SevenZip"/>
@@ -257,7 +255,6 @@ chromium-metrics-reviews@google.com.
   <token key="Analysis">
     <variant name="" summary="any file type, aggregated"/>
     <variant name=".Dmg"/>
-    <variant name=".Document" summary="Office documents"/>
     <variant name=".Executable" summary="executables"/>
     <variant name=".Rar"/>
     <variant name=".SevenZip"/>
