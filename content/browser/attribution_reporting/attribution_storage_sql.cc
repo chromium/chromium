@@ -1468,25 +1468,40 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityEventLevelReport(
           report, num_conversions, event_level_data->priority, replaced_report);
-  if (maybe_replace_lower_priority_report_result ==
-      ReplaceReportResult::kError) {
-    return EventLevelResult::kInternalError;
-  }
 
-  if (maybe_replace_lower_priority_report_result ==
-          ReplaceReportResult::kDropNewReport ||
-      maybe_replace_lower_priority_report_result ==
-          ReplaceReportResult::kDropNewReportSourceDeactivated) {
-    if (!transaction.Commit()) {
+  switch (maybe_replace_lower_priority_report_result) {
+    case ReplaceReportResult::kError:
       return EventLevelResult::kInternalError;
+    case ReplaceReportResult::kDropNewReport:
+    case ReplaceReportResult::kDropNewReportSourceDeactivated:
+      if (!transaction.Commit()) {
+        return EventLevelResult::kInternalError;
+      }
+
+      dropped_report = std::move(report);
+
+      return maybe_replace_lower_priority_report_result ==
+                     ReplaceReportResult::kDropNewReport
+                 ? EventLevelResult::kPriorityTooLow
+                 : EventLevelResult::kExcessiveReports;
+    case ReplaceReportResult::kAddNewReport: {
+      // Only increment the number of conversions associated with the source if
+      // we are adding a new one, rather than replacing a dropped one.
+      static constexpr char kUpdateImpressionForConversionSql[] =
+          "UPDATE sources SET num_attributions=num_attributions+1 "
+          "WHERE source_id=?";
+      sql::Statement impression_update_statement(db_.GetCachedStatement(
+          SQL_FROM_HERE, kUpdateImpressionForConversionSql));
+
+      // Update the attributed source.
+      impression_update_statement.BindInt64(0, *source.source_id());
+      if (!impression_update_statement.Run()) {
+        return EventLevelResult::kInternalError;
+      }
+      break;
     }
-
-    dropped_report = std::move(report);
-
-    return maybe_replace_lower_priority_report_result ==
-                   ReplaceReportResult::kDropNewReport
-               ? EventLevelResult::kPriorityTooLow
-               : EventLevelResult::kExcessiveReports;
+    case ReplaceReportResult::kReplaceOldReport:
+      break;
   }
 
   // Reports with `AttributionLogic::kNever` should be included in all
@@ -1508,23 +1523,6 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
       !StoreDedupKey(source.source_id(), *dedup_key,
                      AttributionReport::Type::kEventLevel)) {
     return EventLevelResult::kInternalError;
-  }
-
-  // Only increment the number of conversions associated with the source if
-  // we are adding a new one, rather than replacing a dropped one.
-  if (maybe_replace_lower_priority_report_result ==
-      ReplaceReportResult::kAddNewReport) {
-    static constexpr char kUpdateImpressionForConversionSql[] =
-        "UPDATE sources SET num_attributions=num_attributions+1 "
-        "WHERE source_id=?";
-    sql::Statement impression_update_statement(db_.GetCachedStatement(
-        SQL_FROM_HERE, kUpdateImpressionForConversionSql));
-
-    // Update the attributed source.
-    impression_update_statement.BindInt64(0, *source.source_id());
-    if (!impression_update_statement.Run()) {
-      return EventLevelResult::kInternalError;
-    }
   }
 
   if (!transaction.Commit()) {
