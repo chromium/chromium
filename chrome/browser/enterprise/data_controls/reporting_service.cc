@@ -82,7 +82,7 @@ void ReportingService::ReportPaste(
       GetEventResult(verdict.level()));
 }
 
-void ReportingService::ReportPasteWarningBypass(
+void ReportingService::ReportPasteWarningBypassed(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const content::ClipboardMetadata& metadata,

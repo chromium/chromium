@@ -32,10 +32,10 @@ class ReportingService : public KeyedService {
                    const content::ClipboardEndpoint& destination,
                    const content::ClipboardMetadata& metadata,
                    const Verdict& verdict);
-  void ReportPasteWarningBypass(const content::ClipboardEndpoint& source,
-                                const content::ClipboardEndpoint& destination,
-                                const content::ClipboardMetadata& metadata,
-                                const Verdict& verdict);
+  void ReportPasteWarningBypassed(const content::ClipboardEndpoint& source,
+                                  const content::ClipboardEndpoint& destination,
+                                  const content::ClipboardMetadata& metadata,
+                                  const Verdict& verdict);
 
  protected:
   friend class ReportingServiceFactory;

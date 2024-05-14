@@ -271,6 +271,28 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 
   helper.WaitForDialogToInitialize();
 
+  // The first warn event should already be reported before the dialog has been
+  // initialized, so it can be reassigned so that the bypass event can be
+  // validated.
+  event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url=*/
+      kGoogleUrl,
+      /*expected_tab_url=*/kGoogleUrl,
+      /*source=*/"",
+      /*destination=*/kGoogleUrl,
+      /*mime_types=*/
+      []() {
+        static std::set<std::string> set = {"image/svg+xml"};
+        return &set;
+      }(),
+      /*trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/{{"warn_rule_ID", "warn_rule_name"}},
+      /*event_result=*/"EVENT_RESULT_BYPASSED",
+      /*profile_username=*/kUserName,
+      /*profile_identifier=*/browser()->profile()->GetPath().AsUTF8Unsafe(),
+      /*content_size=*/1234);
+
   // The dialog will stay up until a user action dismisses it, so `future`
   // shouldn't be ready yet.
   EXPECT_FALSE(future.IsReady());

@@ -148,7 +148,7 @@ TEST_F(DataControlsReportingServiceTest, NoReportInUnmanagedProfile) {
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
       Verdict::Warn({{"rule_1_id", "rule_1_name"}}));
-  service->ReportPasteWarningBypass(
+  service->ReportPasteWarningBypassed(
       managed_endpoint(GURL(kGoogleUrl)),
       unmanaged_endpoint(GURL(kChromiumUrl)), {},
       Verdict::Warn({{"rule_1_id", "rule_1_name"}}));
@@ -172,7 +172,7 @@ TEST_F(DataControlsReportingServiceTest, NoReportWithoutTriggeredRules) {
   {
     auto validator = helper_->CreateValidator();
     validator.ExpectNoReport();
-    service->ReportPasteWarningBypass(
+    service->ReportPasteWarningBypassed(
         incognito_managed_endpoint(GURL(kGoogleUrl)),
         managed_endpoint(GURL(kChromiumUrl)),
         {
@@ -254,7 +254,7 @@ TEST_F(DataControlsReportingServiceTest,
 
   auto* service =
       ReportingServiceFactory::GetForBrowserContext(managed_profile_);
-  service->ReportPasteWarningBypass(
+  service->ReportPasteWarningBypassed(
       incognito_managed_endpoint(GURL(kGoogleUrl)),
       managed_endpoint(GURL(kChromiumUrl)),
       {
