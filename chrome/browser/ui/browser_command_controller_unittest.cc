@@ -569,3 +569,61 @@ TEST_F(BrowserCommandControllerWithBookmarksTest,
                                                    TabCloseTypes::CLOSE_NONE);
   EXPECT_FALSE(command_controller.IsCommandEnabled(IDC_BOOKMARK_ALL_TABS));
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+class CreateShortcutBrowserCommandControllerTest
+    : public BrowserCommandControllerTest {
+ public:
+  CreateShortcutBrowserCommandControllerTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kShortcutsNotApps};
+};
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, BrowserNoSiteNotEnabled) {
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForOTRProfile) {
+  // Set up a profile with an off the record profile.
+  std::unique_ptr<TestingProfile> profile1 = TestingProfile::Builder().Build();
+  Profile* incognito_profile =
+      profile1->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_EQ(incognito_profile->GetOriginalProfile(), profile1.get());
+
+  // Create a new browser based on the off the record profile.
+  Browser::CreateParams profile_params(incognito_profile, true);
+  std::unique_ptr<Browser> incognito_browser =
+      CreateBrowserWithTestWindowForParams(profile_params);
+
+  EXPECT_FALSE(
+      chrome::IsCommandEnabled(incognito_browser.get(), IDC_CREATE_SHORTCUT));
+}
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForGuestProfile) {
+  TestingProfile* test_profile = browser()->profile()->AsTestingProfile();
+  EXPECT_TRUE(test_profile);
+  test_profile->SetGuestSession(true);
+
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForSystemProfile) {
+  TestingProfile* test_profile = browser()->profile()->AsTestingProfile();
+  EXPECT_TRUE(test_profile);
+
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, EnabledValidUrl) {
+  AddTab(browser(), GURL("https://example.com"));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+TEST_F(CreateShortcutBrowserCommandControllerTest, InvalidSchemeDisabled) {
+  AddTab(browser(), GURL("abc://apps"));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));
+}
+
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

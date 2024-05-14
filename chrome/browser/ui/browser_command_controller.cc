@@ -136,6 +136,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/shortcuts/desktop_shortcuts_utils.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 namespace chrome {
@@ -1589,8 +1593,19 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 
   bool can_create_web_app = web_app::CanCreateWebApp(browser_);
   command_updater_.UpdateCommandEnabled(IDC_INSTALL_PWA, can_create_web_app);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
+    command_updater_.UpdateCommandEnabled(
+        IDC_CREATE_SHORTCUT, shortcuts::CanCreateDesktopShortcut(browser_));
+  } else {
+    command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
+                                          can_create_web_app);
+  }
+#else
   command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
                                         can_create_web_app);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF,
                                         CanSendTabToSelf(browser_));

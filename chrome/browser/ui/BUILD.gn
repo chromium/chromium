@@ -734,6 +734,11 @@ static_library("ui") {
   ]
 
   if (is_win || is_linux || is_mac) {
+    sources += [
+      "shortcuts/desktop_shortcuts_utils.cc",
+      "shortcuts/desktop_shortcuts_utils.h",
+    ]
+
     deps += [ "//chrome/browser/shortcuts:shortcuts" ]
   }
 
