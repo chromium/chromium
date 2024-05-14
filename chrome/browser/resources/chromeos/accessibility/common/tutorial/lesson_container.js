@@ -71,10 +71,9 @@ export class LessonContainer extends PolymerElement {
     const elements = this.$.lessonContainer.children;
     for (let i = 0; i < elements.length; ++i) {
       const element = elements[i];
-      if (element.is !== 'tutorial-lesson') {
+      if (element.constructor.is !== 'tutorial-lesson') {
         continue;
       }
-
       lessons.push(element);
     }
 
