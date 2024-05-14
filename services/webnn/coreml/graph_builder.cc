@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cstdint>
-#include <fstream>
 #include <memory>
 #include <optional>
 #include <string>
