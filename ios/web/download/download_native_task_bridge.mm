@@ -130,6 +130,12 @@ void DownloadDidFinishWithSize(
     return;
   }
 
+  // TODO(crbug.com/339626229): Fix early return workaround.
+  CHECK(_startDownloadBlock, base::NotFatalUntil::M129);
+  if (!_startDownloadBlock) {
+    return;
+  }
+
   [self responseReceived:_response];
   [self startObservingDownloadProgress];
   _startDownloadBlock(_urlForDownload);
