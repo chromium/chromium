@@ -320,6 +320,7 @@
         "mask",
         "opacity",
         "table",
+        "text-decoration",
         "z-index",
       ],
     },
@@ -5333,6 +5334,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "text-decoration-skip-ink",
@@ -5352,6 +5354,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "text-decoration-style",
@@ -5369,6 +5372,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "text-decoration-thickness",
@@ -5390,6 +5394,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "text-indent",
@@ -5507,6 +5512,7 @@
       valid_for_formatted_text_run: true,
       valid_for_highlight: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "text-underline-position",
@@ -5526,6 +5532,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["text-decoration"],
     },
     {
       name: "timeline-scope",

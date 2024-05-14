@@ -380,21 +380,13 @@
             predicate: "a.BorderVisualOverflowEqual(b)",
             field_dependencies: ["border-image"]
           },
-          {
-            predicate: "a.TextDecorationVisualOverflowEqual(b)",
-            field_dependencies: ["text-decoration-thickness", "text-decoration-style",
-                                 "text-decoration-line", "text-underline-offset", "text-underline-position",
-                                 "BaseTextDecorationData"]
-          },
         ]
     },
     {
         name: "UpdatePropertySpecificDifferencesTextDecorationOrColor",
-        fields_to_diff: ["color", "-internal-visited-color", "text-decoration-line",
-                "text-decoration-style", "text-decoration-color",
-                "text-decoration-thickness", "text-underline-offset",
-                "-internal-visited-text-decoration-color", "TextEmphasisFill",
-                "text-underline-position", "text-decoration-skip-ink", "BaseTextDecorationData"],
+        fields_to_diff: ["color", "-internal-visited-color",
+                         "text-decoration-color", "-internal-visited-text-decoration-color",
+                         "TextEmphasisFill"],
         methods_to_diff: [
           {
             method: "TextFillColor()",

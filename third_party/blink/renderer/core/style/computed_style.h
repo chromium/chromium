@@ -1747,7 +1747,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Text decoration utility functions.
-  bool TextDecorationVisualOverflowEqual(const ComputedStyle& o) const;
+  bool TextDecorationVisualOverflowChanged(const ComputedStyle& o) const;
   CORE_EXPORT TextDecorationLine TextDecorationsInEffect() const;
   CORE_EXPORT const Vector<AppliedTextDecoration, 1>& AppliedTextDecorations()
       const;

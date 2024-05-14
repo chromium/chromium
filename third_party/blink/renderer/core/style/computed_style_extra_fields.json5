@@ -470,6 +470,7 @@
       wrapper_pointer_name: "scoped_refptr",
       field_group: "visual",
       computed_style_custom_functions: ["getter"],
+      invalidate: ["text-decoration"],
     },
     {
       name: "InheritedVariables",
