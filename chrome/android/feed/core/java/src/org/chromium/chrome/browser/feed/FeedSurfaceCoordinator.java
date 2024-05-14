@@ -495,9 +495,13 @@ public class FeedSurfaceCoordinator
                 optionsCoordinator.getView());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-            int padding =
+            int bottomPadding =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.feed_header_top_margin);
-            mNtpHeader.setPadding(0, 0, 0, padding);
+            mNtpHeader.setPadding(
+                    mNtpHeader.getPaddingLeft(),
+                    mNtpHeader.getPaddingTop(),
+                    mNtpHeader.getPaddingRight(),
+                    bottomPadding);
         }
 
         // Mediator should be created before any Stream changes.
