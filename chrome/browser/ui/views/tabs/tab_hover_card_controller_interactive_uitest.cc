@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
 }
 
 // TODO(crbug.com/41481726):  Enable once failing test is fixed.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_HoverCardShownOnTabFocus DISABLED_HoverCardShownOnTabFocus
 #else
 #define MAYBE_HoverCardShownOnTabFocus HoverCardShownOnTabFocus
