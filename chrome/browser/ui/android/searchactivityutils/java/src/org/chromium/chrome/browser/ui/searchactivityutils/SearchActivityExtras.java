@@ -23,6 +23,10 @@ public @interface SearchActivityExtras {
     /** The package name (String) on behalf of which the search was requested. */
     String EXTRA_REFERRER = "org.chromium.chrome.browser.ui.searchactivityutils.referrer";
 
+    // Only alpha-numeric characters, including dots and dashes.
+    // Must be at least 2 characters long, and begin and end with an alphanumeric character.
+    String REFERRER_VALIDATION_REGEX = "^[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]$";
+
     /** ID of the calling component */
     @IntDef({
         IntentOrigin.UNKNOWN,

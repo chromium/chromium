@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
+import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
@@ -463,9 +463,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         if (resultCode != Activity.RESULT_OK) return;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_IN_CCT)
-                && SearchActivityUtils.isOmniboxResult(requestCode, data)) {
+                && SearchActivityClientImpl.isOmniboxResult(requestCode, data)) {
             LoadUrlParams params =
-                    SearchActivityUtils.getOmniboxResult(requestCode, resultCode, data);
+                    SearchActivityClientImpl.getOmniboxResult(requestCode, resultCode, data);
 
             RecordHistogram.recordBooleanHistogram(
                     "CustomTabs.Omnibox.FocusResultedInNavigation", params != null);

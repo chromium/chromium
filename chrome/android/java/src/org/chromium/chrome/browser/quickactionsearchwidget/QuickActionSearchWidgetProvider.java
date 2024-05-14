@@ -29,7 +29,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
+import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
@@ -58,7 +58,11 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 int areaHeightDp) {
             return getDelegate()
                     .createSearchWidgetRemoteViews(
-                            context, new SearchActivityUtils(), prefs, areaWidthDp, areaHeightDp);
+                            context,
+                            new SearchActivityClientImpl(),
+                            prefs,
+                            areaWidthDp,
+                            areaHeightDp);
         }
     }
 
@@ -97,7 +101,11 @@ public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider 
                 int areaHeightDp) {
             return getDelegate()
                     .createDinoWidgetRemoteViews(
-                            context, new SearchActivityUtils(), prefs, areaWidthDp, areaHeightDp);
+                            context,
+                            new SearchActivityClientImpl(),
+                            prefs,
+                            areaWidthDp,
+                            areaHeightDp);
         }
     }
 

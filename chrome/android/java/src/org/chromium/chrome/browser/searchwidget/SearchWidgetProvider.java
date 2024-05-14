@@ -119,7 +119,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
-        SearchActivityClient client = new SearchActivityUtils();
+        SearchActivityClient client = new SearchActivityClientImpl();
         // Launch the SearchActivity.
         Intent searchIntent =
                 client.createIntent(
