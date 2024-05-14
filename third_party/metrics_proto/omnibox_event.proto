@@ -386,6 +386,9 @@ message OmniboxEventProto {
       FEATURED_ENTERPRISE_SEARCH = 37;  // Search engine set by the organization
                                         // via the SiteSearchSettings policy and
                                         // marked as featured.
+      NULL_RESULT_MESSAGE = 38;         // Informational messages that cannot be
+                                        // navigated to. IPH suggestions which
+                                        // use this type are deletable.
     }
     optional ResultType result_type = 2;
 
