@@ -39,6 +39,7 @@ var TestRunner = class {
       'documentURL',
       'styleSheetId',
       'executionContextId',
+      'executionContextUniqueId',
       'openerId',
       'targetId',
       'browserContextId',
