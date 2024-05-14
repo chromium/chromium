@@ -79,11 +79,19 @@ void WaylandDragDropTest::SendDndMotion(const gfx::Point& location) {
   });
 }
 
-void WaylandDragDropTest::SendDndDrop() {
+void WaylandDragDropTest::SendDndFinished() {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* data_source = server->data_device_manager()->data_source();
     ASSERT_TRUE(data_source);
     data_source->OnFinished();
+  });
+}
+
+void WaylandDragDropTest::SendDndDropPerformed() {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    ASSERT_TRUE(data_source);
+    data_source->OnDndDropPerformed();
   });
 }
 

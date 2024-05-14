@@ -1145,7 +1145,7 @@ TEST_P(WaylandDataDragControllerTest, SuppressPointerButtonReleasesAfterEnter) {
   EXPECT_TRUE(drag_controller()->data_source_);
 
   // Ok, we're done.
-  SendDndDrop();
+  SendDndFinished();
   EXPECT_FALSE(drag_controller()->data_source_);
   EXPECT_FALSE(drag_controller()->origin_window_);
   EXPECT_FALSE(drag_controller()->nested_dispatcher_);

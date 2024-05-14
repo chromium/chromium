@@ -121,6 +121,10 @@ void TestSelectionSource::OnDndAction(uint32_t action) {
   delegate_->SendDndAction(action);
 }
 
+void TestSelectionSource::OnDndDropPerformed() {
+  delegate_->SendDndDropPerformed();
+}
+
 void TestSelectionSource::Offer(struct wl_client* client,
                                 struct wl_resource* resource,
                                 const char* mime_type) {

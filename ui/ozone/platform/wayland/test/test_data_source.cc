@@ -57,6 +57,11 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
     wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
+  void SendDndDropPerformed() override {
+    wl_data_source_send_dnd_drop_performed(source_->resource());
+    wl_client_flush(wl_resource_get_client(source_->resource()));
+  }
+
  private:
   const raw_ptr<TestDataSource> source_;
 };
