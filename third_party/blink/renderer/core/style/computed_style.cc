@@ -915,7 +915,17 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetClipPathChanged();
   }
 
-  AdjustDiffForNeedsPaintInvalidation(other, field_diff, diff, document);
+  // If the background color change is not due to a composited animation, then
+  // paint invalidation is required; but we can defer the decision until we
+  // know whether the color change will be rendered by the compositor.
+  if (field_diff & kBackgroundColor) {
+    diff.SetBackgroundColorChanged();
+  }
+
+  if (!diff.NeedsNormalPaintInvalidation() &&
+      DiffNeedsNormalPaintInvalidation(document, other, field_diff)) {
+    diff.SetNeedsNormalPaintInvalidation();
+  }
 
   UpdatePropertySpecificDifferences(other, field_diff, diff);
 
@@ -1053,54 +1063,31 @@ bool ComputedStyle::DiffNeedsFullLayoutForLayoutCustomChild(
   return false;
 }
 
-void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
+bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
+    const Document& document,
     const ComputedStyle& other,
-    uint32_t field_diff,
-    StyleDifference& diff,
-    const Document& document) const {
-  if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other) ||
-      !BorderVisuallyEqual(other) || (field_diff & kBorderRadius) ||
-      ((field_diff & kOutline) && !OutlineVisuallyEqual(other))) {
-    diff.SetNeedsNormalPaintInvalidation();
+    uint32_t field_diff) const {
+  if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other)) {
+    return true;
   }
 
-  AdjustDiffForBackgroundVisuallyEqual(other, diff);
-
-  if (diff.NeedsNormalPaintInvalidation()) {
-    return;
+  if (field_diff & kBorderRadius) {
+    return true;
   }
 
-  if (PaintImagesInternal()) {
-    for (const auto& image : PaintImagesInternal()->Images()) {
-      DCHECK(image);
-      if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
-        diff.SetNeedsNormalPaintInvalidation();
-        return;
-      }
-    }
-  }
-}
-
-void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
-    const ComputedStyle& other,
-    StyleDifference& diff) const {
-  if (BackgroundColor() != other.BackgroundColor()) {
-    // If the background color change is not due to a composited animation, then
-    // paint invalidation is required; but we can defer the decision until we
-    // know whether the color change will be rendered by the compositor.
-    diff.SetBackgroundColorChanged();
-  }
-  // The rendered color may differ from the reported color for a link to prevent
-  // leaking the visited status of a link.
-  if (InternalVisitedBackgroundColor() !=
-      other.InternalVisitedBackgroundColor()) {
-    diff.SetBackgroundColorChanged();
+  if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
+    return true;
   }
 
-  if (!BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
-    diff.SetNeedsNormalPaintInvalidation();
-    return;
+  if ((field_diff & kBackground) &&
+      !BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
+    return true;
   }
+
+  if (!BorderVisuallyEqual(other)) {
+    return true;
+  }
+
   // If the background image depends on currentColor
   // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
   // color has changed, we need to recompute it even though VisuallyEqual()
@@ -1109,8 +1096,19 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
       (GetCurrentColor() != other.GetCurrentColor() ||
        GetInternalVisitedCurrentColor() !=
            other.GetInternalVisitedCurrentColor())) {
-    diff.SetNeedsNormalPaintInvalidation();
+    return true;
   }
+
+  if (PaintImagesInternal()) {
+    for (const auto& image : PaintImagesInternal()->Images()) {
+      DCHECK(image);
+      if (DiffNeedsPaintInvalidationForPaintImage(*image, other, document)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 bool ComputedStyle::DiffNeedsPaintInvalidationForPaintImage(

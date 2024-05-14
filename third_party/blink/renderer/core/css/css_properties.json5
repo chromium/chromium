@@ -313,6 +313,8 @@
       default: [],
       valid_type: "list",
       valid_values: [
+        "background",
+        "background-color",
         "blend-mode",
         "border-radius",
         "clip-path",
@@ -1938,6 +1940,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["background-color"],
     },
     {
       name: "background-image",
@@ -8168,6 +8171,7 @@
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
+      invalidate: ["background-color"],
     },
     {
       name: "-internal-visited-border-left-color",

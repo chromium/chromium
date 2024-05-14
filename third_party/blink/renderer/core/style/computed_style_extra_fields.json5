@@ -338,6 +338,7 @@
       default_value: "FillLayer(EFillLayerType::kBackground, true)",
       field_group: "background",
       computed_style_custom_functions: ["initial", "getter", "setter"],
+      invalidate: ["background"],
     },
     {
       name: "HasClipPath",

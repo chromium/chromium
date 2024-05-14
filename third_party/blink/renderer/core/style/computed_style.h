@@ -1333,9 +1333,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return BorderImage().Outset() == o.BorderImage().Outset();
   }
 
-  void AdjustDiffForBackgroundVisuallyEqual(const ComputedStyle& o,
-                                            StyleDifference& diff) const;
-
   bool CanRenderBorderImage() const;
 
   // Float utility functions.
@@ -2511,10 +2508,9 @@ class ComputedStyle final : public ComputedStyleBase {
   bool DiffNeedsFullLayoutForLayoutCustomChild(
       const Document&,
       const ComputedStyle& other) const;
-  void AdjustDiffForNeedsPaintInvalidation(const ComputedStyle& other,
-                                           uint32_t field_diff,
-                                           StyleDifference&,
-                                           const Document&) const;
+  bool DiffNeedsNormalPaintInvalidation(const Document&,
+                                        const ComputedStyle& other,
+                                        uint32_t field_diff) const;
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
                                                const ComputedStyle& other,
                                                const Document&) const;
