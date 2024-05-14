@@ -16611,6 +16611,7 @@ from previous Chrome versions.
   <int value="-2033225430" label="NTPMostLikelyFaviconsFromServer:disabled"/>
   <int value="-2033136855" label="MessagesForAndroidPasswords:disabled"/>
   <int value="-2032870269" label="PrivacyGuideAndroid3:disabled"/>
+  <int value="-2032557005" label="SurfacePolishForToolbarKillSwitch:disabled"/>
   <int value="-2032292269" label="ImprovedIncognitoScreenshot:enabled"/>
   <int value="-2032013236"
       label="AutofillEnforceDelaysInStrikeDatabase:disabled"/>
@@ -21545,6 +21546,7 @@ from previous Chrome versions.
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
   <int value="126341641" label="EnableDrDcVulkan:enabled"/>
+  <int value="126485278" label="SurfacePolishForToolbarKillSwitch:enabled"/>
   <int value="127338155" label="NtpSafeBrowsingModule:disabled"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>

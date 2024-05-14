@@ -289,8 +289,8 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * Set hover tooltip text for buttons shared between phones and tablets.
-     * @TODO: Remove and use the method in UiUtils.java instead once JaCoCo issue is resolved.
+     * Set hover tooltip text for buttons shared between phones and tablets. @TODO: Remove and use
+     * the method in UiUtils.java instead once JaCoCo issue is resolved.
      */
     protected void setTooltipText(View button, String text) {
         if (button != null && VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -561,13 +561,14 @@ public abstract class ToolbarLayout extends FrameLayout
     public void onPrimaryColorChanged(boolean shouldAnimate) {}
 
     /**
-     * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides
-     * it if {@code drawable} is {@code null}.
+     * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides it
+     * if {@code drawable} is {@code null}.
      */
     protected void setCloseButtonImageResource(@Nullable Drawable drawable) {}
 
     /**
      * Adds a custom action button to the toolbar layout, if it is supported.
+     *
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
@@ -600,6 +601,9 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /** Triggered when the content view for the specified tab has changed. */
     void onTabContentViewChanged() {}
+
+    /** Triggered when the page of the specified tab had painted something non-empty. */
+    public void onDidFirstVisuallyNonEmptyPaint() {}
 
     protected abstract CaptureReadinessResult isReadyForTextureCapture();
 

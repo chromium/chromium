@@ -445,6 +445,8 @@ public abstract class ChromeFeatureList {
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SURFACE_POLISH = "SurfacePolish";
+    public static final String SURFACE_POLISH_FOR_TOOLBAR_KILL_SWITCH =
+            "SurfacePolishForToolbarKillSwitch";
     public static final String SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS =
             "SyncAndroidLimitNTPPromoImpressions";
     public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE =
@@ -635,6 +637,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStopAppIndexingReport =
             newCachedFlag(STOP_APP_INDEXING_REPORT, true);
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
+    public static final CachedFlag sSurfacePolishForToolbarKillSwitch =
+            newCachedFlag(SURFACE_POLISH_FOR_TOOLBAR_KILL_SWITCH, true);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabGroupPaneAndroid =
@@ -746,6 +750,7 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sStopAppIndexingReport,
                     sSurfacePolish,
+                    sSurfacePolishForToolbarKillSwitch,
                     sTabDragDropAsWindowAndroid,
                     sTabGroupPaneAndroid,
                     sTabGroupParityAndroid,

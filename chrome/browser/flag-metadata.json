@@ -3852,6 +3852,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-surface-polish-for-toolbar-kill-switch",
+    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-suspend-state-machine",
     "owners": [
       "dpad@chromium.org",

@@ -51,8 +51,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * A {@link Layout} controller for the more complicated Chrome browser.  This is currently a
- * superset of {@link LayoutManagerImpl}.
+ * A {@link Layout} controller for the more complicated Chrome browser. This is currently a superset
+ * of {@link LayoutManagerImpl}.
  */
 public class LayoutManagerChrome extends LayoutManagerImpl
         implements ChromeAccessibilityUtil.Observer {
@@ -75,7 +75,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     // Event Filter Handlers
     private final SwipeHandler mToolbarSwipeHandler;
 
-    /** Whether or not animations are enabled.  This can disable certain layouts or effects. */
+    /** Whether or not animations are enabled. This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
 
     private LayoutStateObserver mTabSwitcherFocusLayoutStateObserver;
@@ -188,9 +188,10 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * Creates {@link org.chromium.chrome.features.tasks.tab_management.TabSwitcherLayout}
+     *
      * @param tabSwitcher An interface to talk to the Grid Tab Switcher.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *         controls.
+     *     controls.
      * @param scrimCoordinator scrim coordinator for GTS
      * @param tabSwitcherScrimAnchor scrim anchor view for GTS
      */
@@ -389,13 +390,13 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         try {
             final ViewGroup containerView = mCreateTabSwitcherOrStartSurfaceCallable.call();
 
-                final TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
-                assert tabSwitcher != null;
-                createTabSwitcherLayout(
-                        tabSwitcher,
-                        mHost.getBrowserControlsManager(),
-                        mScrimCoordinator,
-                        containerView);
+            final TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
+            assert tabSwitcher != null;
+            createTabSwitcherLayout(
+                    tabSwitcher,
+                    mHost.getBrowserControlsManager(),
+                    mScrimCoordinator,
+                    containerView);
 
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mHost.getContext())) {
                 mThemeColorObserver =
@@ -533,7 +534,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * @param enabled Whether or not to allow model-reactive animations (tab creation, closing,
-     *                etc.).
+     *     etc.).
      */
     public void setEnableAnimations(boolean enabled) {
         mEnableAnimations = enabled;
@@ -554,6 +555,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /** A {@link SwipeHandler} meant to respond to edge events for the toolbar. */
     protected class ToolbarSwipeHandler implements SwipeHandler {
+
         /** The scroll direction of the current gesture. */
         private @ScrollDirection int mScrollDirection;
 
@@ -631,6 +633,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
         /**
          * Compute the direction of the scroll.
+         *
          * @param dx The distance traveled on the X axis.
          * @param dy The distance traveled on the Y axis.
          * @return The direction of the scroll.
@@ -669,7 +672,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     /**
      * @param id The id of the {@link Tab} to search for.
-     * @return   A {@link Tab} instance or {@code null} if it could be found.
+     * @return A {@link Tab} instance or {@code null} if it could be found.
      */
     protected Tab getTabById(int id) {
         TabModelSelector selector = getTabModelSelector();

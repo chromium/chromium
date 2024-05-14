@@ -636,6 +636,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * Sets whether a title should be shown within the Toolbar.
+     *
      * @param showTitle Whether a title should be shown.
      */
     public void setShowTitle(boolean showTitle) {
@@ -652,6 +653,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * Adds a custom action button to the toolbar layout, if it is supported.
+     *
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link View.OnClickListener} to use for clicks to the button.
@@ -683,6 +685,11 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Triggered when the content view for the specified tab has changed. */
     public void onTabContentViewChanged() {
         mToolbarLayout.onTabContentViewChanged();
+    }
+
+    /** Triggered when the page of the specified tab had painted something non-empty. */
+    public void onDidFirstVisuallyNonEmptyPaint() {
+        mToolbarLayout.onDidFirstVisuallyNonEmptyPaint();
     }
 
     @Override
@@ -892,7 +899,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     /**
      * @return A {@link TopToolbarInteractabilityManager} which allows non toolbar clients to toggle
-     *         the interactability of elements present in the top toolbar.
+     *     the interactability of elements present in the top toolbar.
      */
     public @NonNull TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
         return mStartSurfaceToolbarCoordinator != null

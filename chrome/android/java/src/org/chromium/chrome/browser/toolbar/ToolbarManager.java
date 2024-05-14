@@ -201,7 +201,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /**
- * Contains logic for managing the toolbar visual component.  This class manages the interactions
+ * Contains logic for managing the toolbar visual component. This class manages the interactions
  * with the rest of the application to ensure the toolbar is always visually up to date.
  */
 public class ToolbarManager
@@ -1131,6 +1131,11 @@ public class ToolbarManager
                     public void onNavigationStateChanged() {
                         onBackPressStateChanged();
                     }
+
+                    @Override
+                    public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                        mToolbar.onDidFirstVisuallyNonEmptyPaint();
+                    }
                 };
 
         mTabModelSelectorObserver =
@@ -1358,6 +1363,7 @@ public class ToolbarManager
 
     /**
      * Set container view on which GTS toolbar needs to inflate.
+     *
      * @param containerView view containing GTS fullscreen toolbar.
      */
     public void setTabSwitcherFullScreenView(ViewGroup containerView) {
@@ -1368,6 +1374,7 @@ public class ToolbarManager
 
     /**
      * Handle a layout change event.
+     *
      * @param layoutType The layout being switched to.
      */
     private void updateForLayout(@LayoutType int layoutType) {
@@ -1874,6 +1881,7 @@ public class ToolbarManager
 
     /**
      * Adds a custom action button to the {@link Toolbar}, if it is supported.
+     *
      * @param drawable The {@link Drawable} to use as the background for the button.
      * @param description The content description for the custom action button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
@@ -2648,6 +2656,7 @@ public class ToolbarManager
 
     /**
      * Sets the top margin for the control container.
+     *
      * @param margin The margin in pixels.
      */
     private void setControlContainerTopMargin(int margin) {

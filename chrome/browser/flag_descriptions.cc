@@ -4494,6 +4494,11 @@ const char kSurfacePolishName[] = "Surface Polish";
 const char kSurfacePolishDescription[] =
     "Enable clank home surface polish for Start surface and NTP.";
 
+const char kSurfacePolishForToolbarKillSwitchName[] =
+    "Surface Polish For Toolbar Kill Switch";
+const char kSurfacePolishForToolbarKillSwitchDescription[] =
+    "Enable clank home surface polish for toolbar, this is a kill switch.";
+
 const char kTabletToolbarReorderingAndroidName[] =
     "Tablet Toolbar Reordering Android.";
 const char kTabletToolbarReorderingAndroidDescription[] =
