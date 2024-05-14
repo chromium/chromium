@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.MigrateTabTask;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
@@ -625,6 +626,28 @@ public class TabPersistentStoreTest {
                         tabState.contentsState = new WebContentsState(buffer);
                         TabStateExtractor.setTabStateForTesting(tab.getId(), tabState);
                     }
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
+    public void testRemoveMigration_crbug_340580707() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.setMigrateTabTaskForTesting(store.new MigrateTabTask(tabs[0], 1));
+                    store.removeTabFromQueues(tabs[0]);
                     helper.notifyCalled();
                 });
         helper.waitForCallback(0);

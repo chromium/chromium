@@ -919,8 +919,9 @@ public class TabPersistentStore {
 
         if (mMigrateTabTask != null && mMigrateTabTask.mId == tab.getId()) {
             mMigrateTabTask.cancel(false);
+            int nextNumMigration = mMigrateTabTask.mNumMigration + 1;
             mMigrateTabTask = null;
-            migrateNextTabIfApplicable(mMigrateTabTask.mNumMigration + 1);
+            migrateNextTabIfApplicable(nextNumMigration);
         }
         cleanupPersistentData(tab.getId(), tab.isIncognito());
     }
@@ -1418,8 +1419,9 @@ public class TabPersistentStore {
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     /** Migrate Tab to new FlatBuffer format. */
-    private class MigrateTabTask extends AsyncTask<Void> {
+    class MigrateTabTask extends AsyncTask<Void> {
         Tab mTab;
         int mId;
         TabState mState;
@@ -1971,6 +1973,10 @@ public class TabPersistentStore {
 
     public MigrateTabTask getMigrateTabTaskForTesting() {
         return mMigrateTabTask;
+    }
+
+    public void setMigrateTabTaskForTesting(MigrateTabTask migrateTabTask) {
+        mMigrateTabTask = migrateTabTask;
     }
 
     protected Deque<Tab> getTabsToMigrateForTesting() {
