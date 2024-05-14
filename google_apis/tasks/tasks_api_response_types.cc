@@ -27,6 +27,8 @@ constexpr char kTaskKind[] = "tasks#task";
 constexpr char kTaskListsKind[] = "tasks#taskLists";
 constexpr char kTasksKind[] = "tasks#tasks";
 
+constexpr char kApiResponseAssignmentInfoKey[] = "assignmentInfo";
+constexpr char kApiResponseAssignmentInfoSurfaceTypeKey[] = "surfaceType";
 constexpr char kApiResponseDueKey[] = "due";
 constexpr char kApiResponseLinksKey[] = "links";
 constexpr char kApiResponseLinkTypeKey[] = "type";
@@ -38,6 +40,11 @@ constexpr char kApiResponseTitleKey[] = "title";
 constexpr char kApiResponseUpdatedKey[] = "updated";
 constexpr char kApiResponseWebViewLinkKey[] = "webViewLink";
 
+// Known values of `kApiResponseAssignmentInfoSurfaceTypeKey`.
+constexpr char kAssignmentInfoSurfaceTypeDocument[] = "DOCUMENT";
+constexpr char kAssignmentInfoSurfaceTypeSpace[] = "SPACE";
+
+// Known values of `kApiResponseLinkTypeKey`.
 constexpr char kLinkTypeEmail[] = "email";
 
 bool ConvertTaskStatus(std::string_view input, TaskStatus* output) {
@@ -66,6 +73,34 @@ bool ConvertTaskWebViewLink(std::string_view input, GURL* output) {
   return true;
 }
 
+bool ConvertTaskAssignmentInfo(const base::Value* input,
+                               std::optional<TaskAssignmentInfo>* output) {
+  if (!input) {
+    return true;
+  }
+
+  output->emplace();
+  JSONValueConverter<TaskAssignmentInfo> converter;
+  if (!converter.Convert(*input, &output->value())) {
+    DVLOG(1) << "Unable to construct `TaskAssignmentInfo` from parsed json.";
+    output->reset();
+    return false;
+  }
+  return true;
+}
+
+bool ConvertAssignmentInfoSurfaceType(std::string_view input,
+                                      TaskAssignmentInfo::SurfaceType* output) {
+  if (input == kAssignmentInfoSurfaceTypeDocument) {
+    *output = TaskAssignmentInfo::SurfaceType::kDocument;
+  } else if (input == kAssignmentInfoSurfaceTypeSpace) {
+    *output = TaskAssignmentInfo::SurfaceType::kSpace;
+  } else {
+    *output = TaskAssignmentInfo::SurfaceType::kUnknown;
+  }
+  return true;
+}
+
 }  // namespace
 
 // ----- TaskList -----
@@ -77,8 +112,8 @@ TaskList::~TaskList() = default;
 void TaskList::RegisterJSONConverter(JSONValueConverter<TaskList>* converter) {
   converter->RegisterStringField(kApiResponseIdKey, &TaskList::id_);
   converter->RegisterStringField(kApiResponseTitleKey, &TaskList::title_);
-  converter->RegisterCustomField<base::Time>(
-      kApiResponseUpdatedKey, &TaskList::updated_, &util::GetTimeFromString);
+  converter->RegisterCustomField(kApiResponseUpdatedKey, &TaskList::updated_,
+                                 &util::GetTimeFromString);
 }
 
 // ----- TaskLists -----
@@ -91,8 +126,7 @@ void TaskLists::RegisterJSONConverter(
     JSONValueConverter<TaskLists>* converter) {
   converter->RegisterStringField(kApiResponseNextPageTokenKey,
                                  &TaskLists::next_page_token_);
-  converter->RegisterRepeatedMessage<TaskList>(kApiResponseItemsKey,
-                                               &TaskLists::items_);
+  converter->RegisterRepeatedMessage(kApiResponseItemsKey, &TaskLists::items_);
 }
 
 // static
@@ -109,10 +143,26 @@ std::unique_ptr<TaskLists> TaskLists::CreateFrom(const base::Value& value) {
 
 // ----- TaskLink -----
 
+TaskLink::TaskLink() = default;
+TaskLink::~TaskLink() = default;
+
 // static
 void TaskLink::RegisterJSONConverter(JSONValueConverter<TaskLink>* converter) {
-  converter->RegisterCustomField<Type>(kApiResponseLinkTypeKey,
-                                       &TaskLink::type_, &ConvertTaskLinkType);
+  converter->RegisterCustomField(kApiResponseLinkTypeKey, &TaskLink::type_,
+                                 &ConvertTaskLinkType);
+}
+
+// ----- TaskAssignmentInfo -----
+
+TaskAssignmentInfo::TaskAssignmentInfo() = default;
+TaskAssignmentInfo::~TaskAssignmentInfo() = default;
+
+// static
+void TaskAssignmentInfo::RegisterJSONConverter(
+    JSONValueConverter<TaskAssignmentInfo>* converter) {
+  converter->RegisterCustomField(kApiResponseAssignmentInfoSurfaceTypeKey,
+                                 &TaskAssignmentInfo::surface_type_,
+                                 &ConvertAssignmentInfoSurfaceType);
 }
 
 // ----- Task -----
@@ -124,20 +174,22 @@ Task::~Task() = default;
 void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterStringField(kApiResponseIdKey, &Task::id_);
   converter->RegisterStringField(kApiResponseTitleKey, &Task::title_);
-  converter->RegisterCustomField<TaskStatus>(
-      kApiResponseStatusKey, &Task::status_, &ConvertTaskStatus);
+  converter->RegisterCustomField(kApiResponseStatusKey, &Task::status_,
+                                 &ConvertTaskStatus);
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
   converter->RegisterStringField(kApiResponsePositionKey, &Task::position_);
-  converter->RegisterCustomField<std::optional<base::Time>>(
-      kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
-  converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
-                                               &Task::links_);
+  converter->RegisterCustomField(kApiResponseDueKey, &Task::due_,
+                                 &ConvertTaskDueDate);
+  converter->RegisterRepeatedMessage(kApiResponseLinksKey, &Task::links_);
   converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
-  converter->RegisterCustomField<base::Time>(
-      kApiResponseUpdatedKey, &Task::updated_, &util::GetTimeFromString);
-  converter->RegisterCustomField<GURL>(kApiResponseWebViewLinkKey,
-                                       &Task::web_view_link_,
-                                       &ConvertTaskWebViewLink);
+  converter->RegisterCustomField(kApiResponseUpdatedKey, &Task::updated_,
+                                 &util::GetTimeFromString);
+  converter->RegisterCustomField(kApiResponseWebViewLinkKey,
+                                 &Task::web_view_link_,
+                                 &ConvertTaskWebViewLink);
+  converter->RegisterCustomValueField(kApiResponseAssignmentInfoKey,
+                                      &Task::assignment_info_,
+                                      &ConvertTaskAssignmentInfo);
 }
 
 // static
@@ -161,8 +213,7 @@ Tasks::~Tasks() = default;
 void Tasks::RegisterJSONConverter(JSONValueConverter<Tasks>* converter) {
   converter->RegisterStringField(kApiResponseNextPageTokenKey,
                                  &Tasks::next_page_token_);
-  converter->RegisterRepeatedMessage<Task>(kApiResponseItemsKey,
-                                           &Tasks::items_);
+  converter->RegisterRepeatedMessage(kApiResponseItemsKey, &Tasks::items_);
 }
 
 // static

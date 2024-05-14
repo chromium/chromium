@@ -15,6 +15,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
@@ -424,7 +425,8 @@ void TasksClientImpl::FetchTasksPage(
         accumulated_raw_tasks) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(std::make_unique<ListTasksRequest>(
-      request_sender, task_list_id, page_token,
+      request_sender, task_list_id, page_token, /*include_assigned=*/
+      features::IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled(),
       base::BindOnce(&TasksClientImpl::OnTasksPageFetched,
                      weak_factory_.GetWeakPtr(), task_list_id,
                      std::move(accumulated_raw_tasks), base::Time::Now(),

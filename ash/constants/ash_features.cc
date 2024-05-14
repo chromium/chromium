@@ -1302,6 +1302,11 @@ BASE_FEATURE(kGlanceablesTimeManagementTasksView,
              "GlanceablesTimeManagementTasksView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables fetching assigned (shared) tasks for Google Tasks integration.
+BASE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks,
+             "GlanceablesTimeManagementTasksViewAssignedTasks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables logging new Gaia account creation event.
 BASE_FEATURE(kGaiaRecordAccountCreation,
              "GaiaRecordAccountCreation",
@@ -3709,6 +3714,11 @@ bool IsGlanceablesTimeManagementTasksViewEnabled() {
   }
 
   return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
+}
+
+bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled() {
+  return base::FeatureList::IsEnabled(
+      kGlanceablesTimeManagementTasksViewAssignedTasks);
 }
 
 bool AreAnyGlanceablesTimeManagementViewsEnabled() {

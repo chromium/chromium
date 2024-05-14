@@ -87,10 +87,10 @@ class TaskLink {
     kUnknown,
   };
 
-  TaskLink() = default;
+  TaskLink();
   TaskLink(const TaskLink&) = delete;
   TaskLink& operator=(const TaskLink&) = delete;
-  ~TaskLink() = default;
+  ~TaskLink();
 
   // Registers the mapping between JSON field names and the members in this
   // class.
@@ -102,6 +102,39 @@ class TaskLink {
  private:
   // Type of the link.
   Type type_ = Type::kUnknown;
+};
+
+// https://developers.google.com/tasks/reference/rest/v1/tasks (see
+// "assignmentInfo").
+class TaskAssignmentInfo {
+ public:
+  // The type of surface an assigned task originates from.
+  enum class SurfaceType {
+    // The task is assigned from a document.
+    kDocument,
+
+    // The task is assigned from a Chat Space.
+    kSpace,
+
+    // Default / fallback option for unknown values.
+    kUnknown,
+  };
+
+  TaskAssignmentInfo();
+  TaskAssignmentInfo(const TaskAssignmentInfo&) = delete;
+  TaskAssignmentInfo& operator=(const TaskAssignmentInfo&) = delete;
+  ~TaskAssignmentInfo();
+
+  // Registers the mapping between JSON field names and the members in this
+  // class.
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<TaskAssignmentInfo>* converter);
+
+  SurfaceType surface_type() const { return surface_type_; }
+
+ private:
+  // The type of surface this assigned task originates from.
+  SurfaceType surface_type_ = SurfaceType::kUnknown;
 };
 
 // https://developers.google.com/tasks/reference/rest/v1/tasks
@@ -129,6 +162,9 @@ class Task {
   const std::string& notes() const { return notes_; }
   const base::Time& updated() const { return updated_; }
   const GURL& web_view_link() const { return web_view_link_; }
+  const std::optional<TaskAssignmentInfo>& assignment_info() const {
+    return assignment_info_;
+  }
 
  private:
   // Task identifier.
@@ -162,6 +198,9 @@ class Task {
 
   // Absolute link to the task in the Google Tasks Web UI.
   GURL web_view_link_;
+
+  // Information about the source of the task assignment.
+  std::optional<TaskAssignmentInfo> assignment_info_;
 };
 
 // Container for multiple `Task`s.

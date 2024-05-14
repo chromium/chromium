@@ -421,6 +421,8 @@ BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentData);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksViewAssignedTasks);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGaiaRecordAccountCreation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGaiaReauthEndpoint);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGameDashboard);
@@ -1101,6 +1103,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementClassroomStudentDataEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesTimeManagementTasksViewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGlanceablesTimeManagementTasksViewAssignedTasksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
