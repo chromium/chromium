@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bluetooth {
@@ -231,7 +230,7 @@ void FakeAdapter::CreateLocalGattService(
     CreateLocalGattServiceCallback callback) {
   mojo::PendingRemote<mojom::GattService> pending_gatt_service;
   fake_gatt_service_->SetObserver(std::move(observer));
-  mojo::MakeSelfOwnedReceiver(
+  gatt_service_receiver_ = mojo::MakeSelfOwnedReceiver(
       std::move(fake_gatt_service_),
       pending_gatt_service.InitWithNewPipeAndPassReceiver());
   std::move(callback).Run(std::move(pending_gatt_service));

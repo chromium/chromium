@@ -14,18 +14,39 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
-
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
-
 namespace nearby::chrome {
 
 class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
                         public bluetooth::mojom::GattServiceObserver {
  public:
-  explicit BleV2GattServer(
-      const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter);
+  // Representation of the local GattServices hosted in the BleV2GattServer.
+  struct GattService {
+    class Factory {
+     public:
+      virtual std::unique_ptr<GattService> Create();
+
+      virtual ~Factory();
+    };
+
+    GattService();
+    virtual ~GattService();
+    GattService(GattService&) = delete;
+    GattService& operator=(GattService&) = delete;
+
+    mojo::SharedRemote<bluetooth::mojom::GattService> gatt_service_remote;
+    base::flat_map<Uuid, api::ble_v2::GattCharacteristic>
+        characteristic_uuid_to_characteristic_map;
+
+    // Characteristic UUID to value map. The value is set
+    // in `UpdateCharacteristic()`, and this class is responsible for storing
+    // the value of a GATT characteristic. See documentation in
+    // `UpdateCharacteristic()`.
+    base::flat_map<Uuid, nearby::ByteArray> characteristic_uuid_to_value_map;
+  };
+
+  BleV2GattServer(const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter,
+                  std::unique_ptr<GattService::Factory> gatt_service_factory =
+                      std::make_unique<GattService::Factory>());
   ~BleV2GattServer() override;
 
   BleV2GattServer(const BleV2GattServer&) = delete;
@@ -60,21 +81,6 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   }
 
  private:
-  struct GattService {
-    GattService();
-    ~GattService();
-
-    mojo::SharedRemote<bluetooth::mojom::GattService> gatt_service_remote;
-    base::flat_map<Uuid, api::ble_v2::GattCharacteristic>
-        characteristic_uuid_to_characteristic_map;
-
-    // Characteristic UUID to value map. The value is set
-    // in `UpdateCharacteristic()`, and this class is responsible for storing
-    // the value of a GATT characteristic. See documentation in
-    // `UpdateCharacteristic()`.
-    base::flat_map<Uuid, nearby::ByteArray> characteristic_uuid_to_value_map;
-  };
-
   // bluetooth::mojom::GattServiceObserver:
   void OnLocalCharacteristicRead(
       bluetooth::mojom::DeviceInfoPtr remote_device,
@@ -87,6 +93,8 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   void DoRegisterGattService(GattService* gatt_service);
   void OnRegisterGattService(
       std::optional<device::BluetoothGattService::GattErrorCode> error_code);
+
+  void OnGattServiceDisconnected(const Uuid& gatt_service_id);
 
   // Indicates whether registration of this `BleV2GattServer` via `Register` has
   // been initiated. If so, this boolean helps enforce that calls to create
@@ -103,8 +111,6 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   // future-proofed and support multiple `GattService`s created at a time.
   bool did_any_gatt_services_fail_to_register_ = false;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // `registration_barrier_` is initialized during `RegisterGattServices()`
   // with the number of `GattService`s that need to be registered via
   // `RegisterGattService()`. This is needed because `RegisterGattServices()`
@@ -120,6 +126,7 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   std::unique_ptr<base::AtomicRefCount> registration_barrier_;
   base::OnceCallback<void(bool)> on_registration_complete_callback_;
 
+  std::unique_ptr<GattService::Factory> gatt_service_factory_;
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
   base::flat_map<Uuid, std::unique_ptr<GattService>> uuid_to_gatt_service_map_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_remote_;

@@ -44,6 +44,7 @@ class FakeGattService : public mojom::GattService {
   }
 
   void SetShouldRegisterSucceed(bool should_register_succeed);
+  void CloseReceiver();
 
  private:
   void OnLocalCharacteristicReadResponse(
@@ -55,7 +56,7 @@ class FakeGattService : public mojom::GattService {
   bool set_create_characteristic_result_ = false;
   base::OnceClosure on_destroyed_callback_;
   bool should_register_succeed_ = false;
-  mojo::Receiver<mojom::GattService> gatt_server_{this};
+  mojo::Receiver<mojom::GattService> gatt_service_{this};
 };
 
 }  // namespace bluetooth

@@ -51,6 +51,10 @@ void FakeGattService::SetShouldRegisterSucceed(bool should_register_succeed) {
   should_register_succeed_ = should_register_succeed;
 }
 
+void FakeGattService::CloseReceiver() {
+  gatt_service_.reset();
+}
+
 void FakeGattService::TriggerReadCharacteristicRequest(
     const device::BluetoothUUID& service_uuid,
     const device::BluetoothUUID& characteristic_uuid,

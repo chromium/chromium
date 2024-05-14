@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace bluetooth {
 
@@ -86,6 +87,7 @@ class FakeAdapter : public mojom::Adapter {
   bool discoverable_ = false;
   bool discovering_ = false;
   bool is_dual_role_supported_ = false;
+  mojo::SelfOwnedReceiverRef<mojom::GattService> gatt_service_receiver_;
 
  private:
   void OnAdvertisementDestroyed(const device::BluetoothUUID& service_uuid);

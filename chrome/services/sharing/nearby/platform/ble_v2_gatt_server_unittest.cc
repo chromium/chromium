@@ -32,6 +32,38 @@ const char kNewCharacteristicValue[] = "1010101";
 
 namespace nearby::chrome {
 
+class FakeGattService : public BleV2GattServer::GattService {
+ public:
+  explicit FakeGattService(base::OnceClosure on_destroyed_callback)
+      : on_destroyed_callback_(std::move(on_destroyed_callback)) {}
+
+  ~FakeGattService() override {
+    if (on_destroyed_callback_) {
+      std::move(on_destroyed_callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_destroyed_callback_;
+};
+
+class FakeGattServiceFactory : public BleV2GattServer::GattService::Factory {
+ public:
+  std::unique_ptr<BleV2GattServer::GattService> Create() override {
+    return std::make_unique<FakeGattService>(
+        std::move(next_fake_gatt_service_destroyed_callback_));
+  }
+
+  void SetNextFakeGattServiceDestroyedCallback(
+      base::OnceClosure on_destroyed_callback) {
+    next_fake_gatt_service_destroyed_callback_ =
+        std::move(on_destroyed_callback);
+  }
+
+ private:
+  base::OnceClosure next_fake_gatt_service_destroyed_callback_;
+};
+
 class BleV2GattServerTest : public testing::Test {
  public:
   BleV2GattServerTest() = default;
@@ -45,7 +77,11 @@ class BleV2GattServerTest : public testing::Test {
     mojo::PendingRemote<bluetooth::mojom::Adapter> pending_adapter;
     mojo::MakeSelfOwnedReceiver(std::move(fake_adapter),
                                 remote_adapter_.BindNewPipeAndPassReceiver());
-    ble_v2_gatt_server_ = std::make_unique<BleV2GattServer>(remote_adapter_);
+
+    auto fake_gatt_service_factory = std::make_unique<FakeGattServiceFactory>();
+    fake_gatt_service_factory_ = fake_gatt_service_factory.get();
+    ble_v2_gatt_server_ = std::make_unique<BleV2GattServer>(
+        remote_adapter_, std::move(fake_gatt_service_factory));
   }
 
   void CallCreateCharacteristic(
@@ -84,6 +120,7 @@ class BleV2GattServerTest : public testing::Test {
   raw_ptr<bluetooth::FakeAdapter> fake_adapter_;
   mojo::SharedRemote<bluetooth::mojom::Adapter> remote_adapter_;
   std::unique_ptr<BleV2GattServer> ble_v2_gatt_server_;
+  raw_ptr<FakeGattServiceFactory> fake_gatt_service_factory_;
 };
 
 TEST_F(BleV2GattServerTest, GetBlePeripheral) {
@@ -312,6 +349,32 @@ TEST_F(BleV2GattServerTest, Register_Failure) {
   base::test::TestFuture<bool> future;
   ble_v2_gatt_server_->RegisterGattServices(future.GetCallback());
   EXPECT_FALSE(future.Take());
+}
+
+TEST_F(BleV2GattServerTest, MojoGattServiceDisconnect) {
+  auto fake_gatt_service = std::make_unique<bluetooth::FakeGattService>();
+  fake_gatt_service->SetShouldRegisterSucceed(false);
+  fake_gatt_service->SetCreateCharacteristicResult(/*success=*/true);
+  fake_adapter_->SetCreateLocalGattServiceResult(
+      /*gatt_service=*/std::move(fake_gatt_service));
+
+  base::RunLoop run_loop;
+  bool fake_gatt_service_destroyed = false;
+  fake_gatt_service_factory_->SetNextFakeGattServiceDestroyedCallback(
+      base::BindLambdaForTesting([&]() {
+        fake_gatt_service_destroyed = true;
+        run_loop.Quit();
+      }));
+
+  CallCreateCharacteristic(
+      /*characteristic_uuid=*/kCharacteristicUuid1,
+      /*expected_success=*/true);
+
+  // Close the Mojo pipe.
+  fake_adapter_->gatt_service_receiver_->Close();
+
+  run_loop.Run();
+  EXPECT_TRUE(fake_gatt_service_destroyed);
 }
 
 }  // namespace nearby::chrome
