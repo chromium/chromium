@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
 import {CookieControlsMode, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -46,9 +46,9 @@ suite('CookiesPageTest', function() {
 
   suiteSetup(function() {
     // This test is for the pre-3PCD cookies page.
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
+    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -211,9 +211,9 @@ suite('CookiesPageTest', function() {
 
   test('privacySandboxToast_restrictedSandbox', async function() {
     // No toast should be shown if the privacy sandbox is restricted
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: true,
-    });
+    loadTimeData.overrideValues({isPrivacySandboxRestricted: true});
+    resetRouterForTesting();
+
     page.set('prefs.privacy_sandbox.m1.topics_enabled.value', true);
     blockThirdParty().click();
     assertEquals(
@@ -351,6 +351,8 @@ suite('FirstPartySetsUIDisabled', function() {
       // FirstPartySetsUI does not exist in 3PCD.
       is3pcdCookieSettingsRedesignEnabled: false,
     });
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -386,6 +388,8 @@ suite('TrackingProtectionSettings', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -452,6 +456,8 @@ suite('IpProtectionToggle', function() {
       is3pcdCookieSettingsRedesignEnabled: false,
       isIpProtectionV1Enabled: true,
     });
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -494,9 +500,9 @@ suite('FingerprintingProtectionToggle', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isFingerprintingProtectionEnabled: true,
-    });
+    loadTimeData.overrideValues({isFingerprintingProtectionEnabled: true});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -547,6 +553,8 @@ suite('TrackingProtectionSettingsRollbackNotice', function() {
       // This notice only shows outside of 3PCD.
       is3pcdCookieSettingsRedesignEnabled: false,
     });
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
