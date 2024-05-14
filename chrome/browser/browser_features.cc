@@ -137,6 +137,11 @@ const base::FeatureParam<std::string>
         &kDevToolsConsoleInsightsSettingVisible, "blocked_reason",
         /*default*/ ""};
 
+// Whether the DevTools styling assistant dogfood is enabled.
+BASE_FEATURE(kDevToolsFreestylerDogfood,
+             "DevToolsFreestylerDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",

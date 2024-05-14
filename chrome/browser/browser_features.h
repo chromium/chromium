@@ -56,6 +56,9 @@ extern const base::FeatureParam<bool> kDevToolsConsoleInsightsDogfoodOptIn;
 BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsSettingVisible);
 extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsSettingVisibleBlockedReason;
+
+BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
+
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);

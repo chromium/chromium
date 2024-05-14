@@ -1341,6 +1341,10 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (blocked_reason.blocked_by_rollout) {
         url += "&ci_blockedByRollout=true";
       }
+      if (base::FeatureList::IsEnabled(
+              ::features::kDevToolsFreestylerDogfood)) {
+        url += "&freestyler_dogfood=true";
+      }
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;
