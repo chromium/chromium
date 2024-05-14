@@ -176,11 +176,13 @@ ci.builder(
             "updater",
             "debug_static_builder",
             "reclient",
+            "x64",
         ],
     ),
     builderless = True,
     cores = None,
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
         short_name = "bld",
