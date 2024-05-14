@@ -878,8 +878,19 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if (!diff.NeedsFullLayout() && DiffNeedsFullLayout(document, other)) {
+  if (field_diff & kLayout) {
     diff.SetNeedsFullLayout();
+  }
+
+  if (!diff.NeedsFullLayout()) {
+    if (IsDisplayLayoutCustomBox() &&
+        DiffNeedsFullLayoutForLayoutCustom(document, other)) {
+      diff.SetNeedsFullLayout();
+    }
+    if (DisplayLayoutCustomParentName() &&
+        DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
+      diff.SetNeedsFullLayout();
+    }
   }
 
   if (HasOutOfFlowPosition()) {
@@ -979,27 +990,6 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
 
   // Movement of non-static-positioned object is special cased in
   // ComputedStyle::VisualInvalidationDiff().
-
-  return false;
-}
-
-bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
-                                        const ComputedStyle& other) const {
-  if (ComputedStyleBase::DiffNeedsFullLayout(*this, other)) {
-    return true;
-  }
-
-  if (IsDisplayLayoutCustomBox()) {
-    if (DiffNeedsFullLayoutForLayoutCustom(document, other)) {
-      return true;
-    }
-  }
-
-  if (DisplayLayoutCustomParentName()) {
-    if (DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
-      return true;
-    }
-  }
 
   return false;
 }

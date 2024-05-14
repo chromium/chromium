@@ -2506,7 +2506,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool DiffNeedsFullLayoutAndPaintInvalidation(const ComputedStyle& other,
                                                uint32_t field_diff) const;
-  bool DiffNeedsFullLayout(const Document&, const ComputedStyle& other) const;
   bool DiffNeedsFullLayoutForLayoutCustom(const Document&,
                                           const ComputedStyle& other) const;
   bool DiffNeedsFullLayoutForLayoutCustomChild(

@@ -319,6 +319,7 @@
         "color",
         "filter-data",
         "inset",
+        "layout",
         "list-item",
         "margin",
         "mask",
@@ -1639,6 +1640,7 @@
       keywords: ["fixed", "content"],
       default_value: "fixed",
       typedom_types: ["Keyword"],
+      invalidate: ["layout"],
       runtime_flag: "CssFieldSizing",
     },
     {
@@ -1761,6 +1763,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
+      invalidate: ["layout"],
     },
     {
       name: "align-items",
@@ -1771,6 +1774,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kNormal, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      invalidate: ["layout"],
     },
     {
       name: "alignment-baseline",
@@ -1794,6 +1798,7 @@
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "anchor-name",
@@ -1809,6 +1814,7 @@
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "aspect-ratio",
@@ -1823,6 +1829,7 @@
       include_paths: ["third_party/blink/renderer/core/style/style_aspect_ratio.h"],
       computable: false,
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "backdrop-filter",
@@ -2051,6 +2058,7 @@
       default_value: "auto",
       keywords: ["auto", "first", "last"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout"],
     },
     {
       name: "border-bottom-color",
@@ -2541,6 +2549,7 @@
       default_value: "content-box",
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["layout"],
     },
     {
       name: "break-after",
@@ -2555,6 +2564,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       type_name: "EBreakBetween",
+      invalidate: ["layout"],
     },
     {
       name: "break-before",
@@ -2569,6 +2579,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       type_name: "EBreakBetween",
+      invalidate: ["layout"],
     },
     {
       name: "break-inside",
@@ -2579,6 +2590,7 @@
       keywords: ["auto", "avoid", "avoid-column", "avoid-page"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      invalidate: ["layout"],
     },
     {
       name: "buffered-rendering",
@@ -2746,6 +2758,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "contain-intrinsic-width",
@@ -2759,7 +2772,7 @@
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "contain-intrinsic-height",
@@ -2773,7 +2786,7 @@
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "container-name",
@@ -2800,6 +2813,7 @@
       converter: "ConvertFlags<EContainerType, CSSValueID::kNormal>",
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "content",
@@ -3269,7 +3283,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "hyphenate-limit-chars",
@@ -3395,6 +3409,7 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
+      invalidate: ["layout"],
     },
     {
       name: "justify-items",
@@ -3405,6 +3420,7 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kLegacy, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
+      invalidate: ["layout"],
     },
     {
       name: "justify-self",
@@ -3417,6 +3433,7 @@
       converter: "ConvertSelfOrDefaultAlignmentData",
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "left",
@@ -3723,7 +3740,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "max-width",
@@ -3744,7 +3761,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "min-height",
@@ -3764,7 +3781,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "min-width",
@@ -3784,7 +3801,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "mix-blend-mode",
@@ -3955,6 +3972,7 @@
       type_name: "short",
       typedom_types: ["Number"],
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "outline-color",
@@ -4094,6 +4112,7 @@
       default_value: "std::nullopt",
       type_name: "std::optional<StyleOverflowClipMargin>",
       converter: "ConvertOverflowClipMargin",
+      invalidate: ["layout"],
     },
     {
       name: "overflow-x",
@@ -4370,7 +4389,7 @@
       // have a priority higher than inset-area which is already at priority:1.
       priority: 2,
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "position-anchor",
@@ -4456,6 +4475,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+      invalidate: ["layout"],
     },
     {
       name: "reading-order-items",
@@ -4465,6 +4485,7 @@
       keywords: ["normal", "flex-visual", "flex-flow", "grid-rows", "grid-columns", "grid-order"],
       typedom_types: ["Keyword"],
       default_value: "normal",
+      invalidate: ["layout"],
       runtime_flag: "CSSReadingOrderItems",
     },
     {
@@ -4574,6 +4595,7 @@
         "auto", "stable", "both-edges"
       ],
       typedom_types: ["Keyword"],
+      invalidate: ["layout"],
     },
     {
       name: "scrollbar-width",
@@ -4963,6 +4985,7 @@
         resolver: "horizontal"
       },
       keywords: ["none", "auto"],
+      invalidate: ["layout"],
       runtime_flag: "CSSScrollStart",
     },
     {
@@ -4977,6 +5000,7 @@
         resolver: "vertical"
       },
       keywords: ["none", "auto"],
+      invalidate: ["layout"],
       runtime_flag: "CSSScrollStart",
     },
     {
@@ -5880,6 +5904,7 @@
       default_value: "none",
       name_for_methods: "DraggableRegionMode",
       style_builder_custom_functions: ["initial", "inherit", "value"],
+      invalidate: ["layout"],
     },
     {
       name: "-webkit-app-region",
@@ -6580,6 +6605,7 @@
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_page_context: true,
+      invalidate: ["layout"],
     },
     {
       name: "widows",
@@ -6592,6 +6618,7 @@
       default_value: "2",
       type_name: "short",
       typedom_types: ["Number"],
+      invalidate: ["layout"],
     },
     {
       name: "width",
@@ -6615,7 +6642,7 @@
       affected_by_zoom: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "scroll-anchor"],
     },
     {
       name: "will-change",
@@ -8490,6 +8517,7 @@
       default_value: "false",
       name_for_methods: "AlignContentBlockCenter",
       converter: "ConvertInternalAlignContentBlock",
+      invalidate: ["layout"],
     },
     // Aliases; these map to the same CSSPropertyID
     {

@@ -197,46 +197,6 @@
         ]
     },
     {
-        name: "DiffNeedsFullLayout",
-        fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
-                "max-height", "VerticalAlignLength", "box-sizing", "align-content",
-                "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain", "contain-intrinsic-width",
-                "contain-intrinsic-height", "container-type", "field-sizing",
-                "content-visibility", "aspect-ratio", "overflow-clip-margin",
-                "-internal-align-content-block", "orphans", "widows",
-                "scrollbar-gutter", "break-after", "break-before",
-                "break-inside", "baseline-source", "text-wrap", "app-region", "reading-order-items"],
-        methods_to_diff: [
-          {
-            method: "VerticalAlign()",
-            field_dependencies: ["VerticalAlign"]
-          },
-          {
-            method: "GetPosition()",
-            field_dependencies: ["position"]
-          },
-          {
-            method: "SkipsContents()",
-            field_dependencies: ["content-visibility"]
-          },
-          {
-            method: "ScrollStartTargetX()",
-            field_dependencies: ["scroll-start-target-x"]
-          },
-          {
-            method: "ScrollStartTargetY()",
-            field_dependencies: ["scroll-start-target-y"]
-          }
-        ],
-	predicates_to_test: [
-	  {
-	    predicate: "a.AnchorNameDataEquivalent(b)",
-	    field_dependencies: ["anchor-name"],
-	  },
-	]
-    },
-    {
         name: "DiffNeedsPaintInvalidation",
         fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
                 "dynamic-range-limit", "column-rule-style", "column-rule-width",

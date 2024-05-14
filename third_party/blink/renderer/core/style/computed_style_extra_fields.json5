@@ -309,6 +309,7 @@
       type_name: "unsigned",
       default_value: "static_cast<unsigned>(EVerticalAlign::kBaseline)",
       computed_style_custom_functions: ["initial", "getter", "setter"],
+      invalidate: ["layout"],
     },
     {
       name: "VerticalAlignLength",
@@ -319,6 +320,7 @@
       field_group: "box",
       getter: "GetVerticalAlignLength",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["layout"],
     },
     {
       name: "border-image",
@@ -1137,6 +1139,7 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",
+      invalidate: ["layout"],
     },
     {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
