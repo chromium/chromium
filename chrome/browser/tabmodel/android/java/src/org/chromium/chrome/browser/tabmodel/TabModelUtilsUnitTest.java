@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for {@link TabModelUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,6 +45,7 @@ public class TabModelUtilsUnitTest {
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
     @Mock private Callback<TabModelSelector> mTabModelSelectorCallback;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private MockTabModelSelector mTabModelSelector;
     private MockTabModel mTabModel;
@@ -53,9 +55,11 @@ public class TabModelUtilsUnitTest {
     public void setUp() {
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mIncognitoTab.getId()).thenReturn(INCOGNITO_TAB_ID);
         when(mIncognitoTab.isIncognito()).thenReturn(true);
         mTabModelSelector = new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
 
         mTabModel = (MockTabModel) mTabModelSelector.getModel(false);
         mTabModel.addTab(
@@ -122,5 +126,14 @@ public class TabModelUtilsUnitTest {
         verify(mTabModelSelectorCallback, never()).onResult(mTabModelSelector);
         mTabModelSelector.markTabStateInitialized();
         verify(mTabModelSelectorCallback, times(1)).onResult(mTabModelSelector);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabModelFilterByTab() {
+        assertEquals(TabList.INVALID_TAB_INDEX, mTabModel.index());
+        TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(mTab);
+        assertEquals(
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(), filter);
     }
 }

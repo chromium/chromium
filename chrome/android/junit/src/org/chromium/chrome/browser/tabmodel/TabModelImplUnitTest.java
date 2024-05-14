@@ -15,6 +15,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.Context;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -37,10 +40,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 /** Unit tests for {@link TabModelImpl}. */
@@ -74,6 +81,11 @@ public class TabModelImplUnitTest {
     @Mock private TabModelFilter mTabModelFilter;
 
     @Mock private Callback<Tab> mTabSupplierObserver;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private TabDelegateFactory mTabDelegateFactory;
+    @Mock private WeakReference<Context> mWeakReferenceContext;
+    @Mock private WeakReference<Activity> mWeakReferenceActivity;
 
     private int mNextTabId;
 
@@ -96,6 +108,13 @@ public class TabModelImplUnitTest {
         when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mTabModelFilter);
         when(mTabModelFilter.getValidPosition(any(), anyInt()))
                 .thenAnswer(i -> i.getArguments()[1]);
+
+        when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
+        when(mWindowAndroid.getContext()).thenReturn(mWeakReferenceContext);
+        when(mTabGroupModelFilter.getValidPosition(any(), anyInt()))
+                .thenAnswer(i -> i.getArguments()[1]);
+
+        TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
 
         mNextTabId = 0;
     }
@@ -384,7 +403,8 @@ public class TabModelImplUnitTest {
     @Test
     @SmallTest
     public void testGetTabsNavigatedInTimeWindow() {
-        TabModelImpl tabModel = (TabModelImpl) createTabModel(true, false);
+        TabModelImpl tabModel =
+                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
         MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
         tab1.setLastNavigationCommittedTimestampMillis(200);
 
@@ -402,5 +422,35 @@ public class TabModelImplUnitTest {
         tab5.setLastNavigationCommittedTimestampMillis(10);
 
         assertEquals(Arrays.asList(tab2, tab5), tabModel.getTabsNavigatedInTimeWindow(10, 100));
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseTabsNavigatedInTimeWindow() {
+        when(mTabModelFilterProvider.getTabModelFilter(/* isIncognito= */ false))
+                .thenReturn(mTabGroupModelFilter);
+
+        TabModelImpl tabModel =
+                (TabModelImpl) createTabModel(/* isActive= */ true, /* isIncognito= */ false);
+
+        MockTab tab1 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab1.setLastNavigationCommittedTimestampMillis(200);
+        tab1.updateAttachment(mWindowAndroid, mTabDelegateFactory);
+
+        MockTab tab2 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab2.setLastNavigationCommittedTimestampMillis(30);
+        tab2.updateAttachment(mWindowAndroid, mTabDelegateFactory);
+
+        MockTab tab3 = (MockTab) createTab(tabModel, 0, Tab.INVALID_TAB_ID);
+        tab3.setLastNavigationCommittedTimestampMillis(20);
+        tab3.updateAttachment(mWindowAndroid, mTabDelegateFactory);
+
+        tabModel.closeTabsNavigatedInTimeWindow(20, 50);
+        verify(mTabGroupModelFilter)
+                .closeMultipleTabs(
+                        Arrays.asList(tab2, tab3),
+                        /* canUndo= */ false,
+                        /* hideTabGroups= */ true,
+                        /* canRestore= */ false);
     }
 }

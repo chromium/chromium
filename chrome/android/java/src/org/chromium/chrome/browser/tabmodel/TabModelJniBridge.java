@@ -12,7 +12,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -177,24 +175,12 @@ public abstract class TabModelJniBridge implements TabModel {
     @CalledByNative
     @VisibleForTesting
     static boolean isTabInTabGroup(@NonNull Tab tab) {
-        assert tab != null;
-        final WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) return false;
-
-        final ObservableSupplier<TabModelSelector> supplier =
-                TabModelSelectorSupplier.from(windowAndroid);
-        if (supplier == null) return false;
-
-        final TabModelSelector selector = supplier.get();
-        if (selector == null) return false;
-
-        final TabModelFilter filter =
-                selector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
-        // Filter may still be null for CCTs.
+        final TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(tab);
         if (filter == null) return false;
 
         assert filter instanceof TabGroupModelFilter;
         final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+
         return groupingFilter.isTabInTabGroup(tab);
     }
 
