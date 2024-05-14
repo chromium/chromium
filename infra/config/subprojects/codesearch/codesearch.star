@@ -21,21 +21,24 @@ luci.bucket(
     ],
 )
 
-try_.defaults.bucket.set("codesearch")
-try_.defaults.build_numbers.set(True)
-try_.defaults.builder_group.set("tryserver.chromium.codesearch")
-try_.defaults.builderless.set(True)
-try_.defaults.cores.set(8)
-try_.defaults.cpu.set(cpu.X86_64)
-try_.defaults.cq_group.set("cq")
-try_.defaults.executable.set("recipe:chromium_codesearch")
-try_.defaults.execution_timeout.set(9 * time.hour)
-try_.defaults.expiration_timeout.set(2 * time.hour)
-try_.defaults.os.set(os.LINUX_DEFAULT)
-try_.defaults.pool.set("luci.chromium.try")
-try_.defaults.reclient_instance.set(reclient.instance.DEFAULT_UNTRUSTED)
-try_.defaults.reclient_jobs.set(reclient.jobs.LOW_JOBS_FOR_CQ)
-try_.defaults.service_account.set("chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com")
+try_.defaults.set(
+    bucket = "codesearch",
+    executable = "recipe:chromium_codesearch",
+    builder_group = "tryserver.chromium.codesearch",
+    pool = "luci.chromium.try",
+    builderless = True,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    build_numbers = True,
+    cq_group = "cq",
+    execution_timeout = 9 * time.hour,
+    expiration_timeout = 2 * time.hour,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
+)
 
 consoles.list_view(
     name = "tryserver.chromium.codesearch",
