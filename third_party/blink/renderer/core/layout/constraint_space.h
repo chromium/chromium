@@ -312,11 +312,6 @@ class CORE_EXPORT ConstraintSpace final {
     return LogicalSize(cb_inline_size, cb_inline_size);
   }
 
-  std::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
-    return HasRareData() ? rare_data_->OverrideMinMaxBlockSizes()
-                         : std::nullopt;
-  }
-
   // True if we're using the "fallback" available inline-size. This typically
   // means that we depend on the size of the initial containing block.
   bool UsesOrthogonalFallbackInlineSize() const {
@@ -942,7 +937,6 @@ class CORE_EXPORT ConstraintSpace final {
               other.replaced_percentage_resolution_block_size),
           block_start_annotation_space(other.block_start_annotation_space),
           bfc_offset(other.bfc_offset),
-          override_min_max_block_sizes(other.override_min_max_block_sizes),
           page_name(other.page_name),
           fragmentainer_block_size(other.fragmentainer_block_size),
           fragmentainer_offset(other.fragmentainer_offset),
@@ -965,8 +959,6 @@ class CORE_EXPORT ConstraintSpace final {
           is_past_break(other.is_past_break),
           min_block_size_should_encompass_intrinsic_size(
               other.min_block_size_should_encompass_intrinsic_size),
-          has_override_min_max_block_sizes(
-              other.has_override_min_max_block_sizes),
           uses_orthogonal_fallback_inline_size(
               other.uses_orthogonal_fallback_inline_size),
           min_break_appeal(other.min_break_appeal),
@@ -1173,22 +1165,6 @@ class CORE_EXPORT ConstraintSpace final {
                  : LayoutUnit::Min();
     }
 
-    std::optional<MinMaxSizes> OverrideMinMaxBlockSizes() const {
-      if (has_override_min_max_block_sizes)
-        return override_min_max_block_sizes;
-      return std::nullopt;
-    }
-
-    void SetOverrideMinMaxBlockSizes(const MinMaxSizes& min_max_sizes) {
-      if (min_max_sizes.IsEmpty()) {
-        has_override_min_max_block_sizes = false;
-        return;
-      }
-      DCHECK_GE(min_max_sizes.max_size, min_max_sizes.min_size);
-      has_override_min_max_block_sizes = true;
-      override_min_max_block_sizes = min_max_sizes;
-    }
-
     void SetClearanceOffset(LayoutUnit clearance_offset) {
       EnsureBlockData()->clearance_offset = clearance_offset;
     }
@@ -1343,7 +1319,6 @@ class CORE_EXPORT ConstraintSpace final {
     LayoutUnit replaced_percentage_resolution_block_size;
     LayoutUnit block_start_annotation_space;
     BfcOffset bfc_offset;
-    MinMaxSizes override_min_max_block_sizes;
 
     AtomicString page_name;
     LayoutUnit fragmentainer_block_size = kIndefiniteSize;
@@ -1366,7 +1341,6 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_in_column_bfc : 1 = false;
     unsigned is_past_break : 1 = false;
     unsigned min_block_size_should_encompass_intrinsic_size : 1 = false;
-    unsigned has_override_min_max_block_sizes : 1 = false;
     unsigned uses_orthogonal_fallback_inline_size : 1 = false;
     unsigned min_break_appeal
         : kBreakAppealBitsNeeded =

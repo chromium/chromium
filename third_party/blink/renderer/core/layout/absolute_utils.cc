@@ -718,9 +718,6 @@ const LayoutResult* ComputeOofBlockDimensions(
   const auto alignment_position = alignment.block_alignment.GetPosition();
   const LayoutResult* result = nullptr;
 
-  MinMaxSizes min_max_block_sizes =
-      ComputeMinMaxBlockSizes(space, style, border_padding, imcb.BlockSize());
-
   auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
     DCHECK(!node.IsReplaced());
     DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);
@@ -734,10 +731,6 @@ const LayoutResult* ComputeOofBlockDimensions(
           {dimensions->size.inline_size, imcb.BlockSize()});
       builder.SetIsFixedInlineSize(true);
       builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
-
-      // Use the computed |MinMaxSizes| because |node.Layout()| can't resolve
-      // the `anchor-size()` function.
-      builder.SetOverrideMinMaxBlockSizes(min_max_block_sizes);
 
       // Tables need to know about the explicit stretch constraint to produce
       // the correct result.
@@ -797,6 +790,9 @@ const LayoutResult* ComputeOofBlockDimensions(
     const LayoutUnit main_block_size = ResolveMainBlockLength(
         space, style, border_padding, main_block_length, &auto_length,
         IntrinsicBlockSizeFunc, imcb.BlockSize());
+
+    MinMaxSizes min_max_block_sizes =
+        ComputeMinMaxBlockSizes(space, style, border_padding, imcb.BlockSize());
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

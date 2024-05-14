@@ -231,11 +231,6 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     }
   }
 
-  void SetOverrideMinMaxBlockSizes(const MinMaxSizes& min_max_sizes) {
-    if (!min_max_sizes.IsEmpty() || space_.HasRareData())
-      space_.EnsureRareData()->SetOverrideMinMaxBlockSizes(min_max_sizes);
-  }
-
   void SetIsPaintedAtomically(bool b) {
     space_.bitfields_.is_painted_atomically = b;
   }
