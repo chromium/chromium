@@ -11,11 +11,11 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
@@ -30,12 +30,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
-
-using SidePanelWebUIViewT_LensUntrustedUI =
-    SidePanelWebUIViewT<lens::LensUntrustedUI>;
-BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_LensUntrustedUI,
-                        SidePanelWebUIViewT)
-END_METADATA
 
 namespace lens {
 
@@ -276,13 +270,8 @@ std::unique_ptr<views::View>
 LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
   // TODO(b/328295358): Change task manager string ID in view creation when
   // available.
-  auto view = std::make_unique<SidePanelWebUIViewT<lens::LensUntrustedUI>>(
-      base::RepeatingClosure(), base::RepeatingClosure(),
-      std::make_unique<WebUIContentsWrapperT<lens::LensUntrustedUI>>(
-          GURL(chrome::kChromeUILensUntrustedSidePanelURL),
-          tab_browser_->profile(), IDS_SIDE_PANEL_COMPANION_TITLE,
-          /*webui_resizes_host=*/false,
-          /*esc_closes_ui=*/false));
+  auto view =
+      std::make_unique<LensOverlaySidePanelWebView>(tab_browser_->profile());
   view->SetProperty(views::kElementIdentifierKey,
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();

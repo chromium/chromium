@@ -3830,6 +3830,10 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 }
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
+  if (!GetBrowser()) {
+    return false;
+  }
+
   if (LensOverlayController::IsEnabled(GetProfile())) {
     return GetBrowser()->is_type_normal();
   }
