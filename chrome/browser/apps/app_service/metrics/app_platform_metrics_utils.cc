@@ -430,7 +430,7 @@ std::string GetInstallReason(InstallReason install_reason) {
   }
 }
 
-bool ShouldRecordUkm(Profile* profile) {
+bool ShouldRecordAppKM(Profile* profile) {
   // Bypass AppKM App Sync check for Demo Mode devices to collect app metrics.
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     return true;
@@ -453,10 +453,10 @@ bool ShouldRecordUkm(Profile* profile) {
   }
 }
 
-bool ShouldRecordUkmForAppId(Profile* profile,
-                             const AppRegistryCache& cache,
-                             const std::string& app_id) {
-  if (!ShouldRecordUkm(profile)) {
+bool ShouldRecordAppKMForAppId(Profile* profile,
+                               const AppRegistryCache& cache,
+                               const std::string& app_id) {
+  if (!ShouldRecordAppKM(profile)) {
     return false;
   }
 
@@ -467,7 +467,7 @@ bool ShouldRecordUkmForAppId(Profile* profile,
   return true;
 }
 
-bool ShouldRecordUkmForAppTypeName(AppType app_type) {
+bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
   switch (app_type) {
     case AppType::kArc:
     case AppType::kBuiltIn:

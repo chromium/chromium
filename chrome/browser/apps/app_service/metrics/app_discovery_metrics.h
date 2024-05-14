@@ -63,8 +63,8 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
 
  private:
   // Returns whether app sync is enabled for |profile_| and it's allowed to
-  // record UKM for |app_id|.
-  bool ShouldRecordUkmForAppId(const std::string& app_id);
+  // record AppKM for |app_id|.
+  bool ShouldRecordAppKMForAppId(const std::string& app_id);
 
   // Returns true if there is an active instance of an app other than
   // |exclude_instance_id|. If |exclude_instance_id| is nullopt, then all

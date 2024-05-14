@@ -102,7 +102,7 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
   }
 
   // Do not record cros-events if app-sync is disabled.
-  if (!ShouldRecordUkmForAppId(app_id)) {
+  if (!ShouldRecordAppKMForAppId(app_id)) {
     return;
   }
 
@@ -118,7 +118,7 @@ void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
                                         AppType app_type,
                                         LaunchSource launch_source) {
   // Do not record if app-sync is disabled.
-  if (!ShouldRecordUkmForAppId(app_id)) {
+  if (!ShouldRecordAppKMForAppId(app_id)) {
     return;
   }
 
@@ -149,7 +149,7 @@ void AppDiscoveryMetrics::OnAppUninstalled(
   base::UmaHistogramEnumeration("Apps.AppDiscovery.Uninstall", app_type_name);
 
   // Do not record cros-events if app-sync is disabled.
-  if (!ShouldRecordUkmForAppId(app_id)) {
+  if (!ShouldRecordAppKMForAppId(app_id)) {
     return;
   }
 
@@ -180,7 +180,7 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
   // Check whether the app is installed or not since there is a maximum
   // number of apps we want to kepp track of. If the app is not in the installed
   // apps list, do not emit state changes of the app.
-  if (ShouldRecordUkmForAppId(app_id) &&
+  if (ShouldRecordAppKMForAppId(app_id) &&
       IsAppInstalled(GetAppStringToRecord(app_id, app_type))) {
     RecordAppState(instance_update);
   }
@@ -220,9 +220,9 @@ void AppDiscoveryMetrics::OnInstanceRegistryWillBeDestroyed(
   instance_registry_observation_.Reset();
 }
 
-bool AppDiscoveryMetrics::ShouldRecordUkmForAppId(const std::string& app_id) {
-  return ::apps::ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(),
-                                         app_id);
+bool AppDiscoveryMetrics::ShouldRecordAppKMForAppId(const std::string& app_id) {
+  return ::apps::ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                           app_id);
 }
 
 bool AppDiscoveryMetrics::IsAnyAppInstanceActive(

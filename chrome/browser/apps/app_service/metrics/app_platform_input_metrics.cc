@@ -184,14 +184,14 @@ void AppPlatformInputMetrics::OnFiveMinutes() {
   // been recorded yet, read the input events saved in the user pref, and record
   // the input events UKM, then save the new input events to the user pref.
   if (should_record_ukm_from_pref_) {
-    RecordInputEventsUkmFromPref();
+    RecordInputEventsAppKMFromPref();
     should_record_ukm_from_pref_ = false;
   }
   SaveInputEvents();
 }
 
 void AppPlatformInputMetrics::OnTwoHours() {
-  RecordInputEventsUkm();
+  RecordInputEventsAppKM();
 }
 
 void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
@@ -231,7 +231,7 @@ void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
 
 void AppPlatformInputMetrics::OnStartingShutdown() {
   CHECK(chromeos::IsManagedGuestSession());
-  RecordInputEventsUkm();
+  RecordInputEventsAppKM();
 }
 
 void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
@@ -316,7 +316,7 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
     return;
   }
 
-  if (!ShouldRecordUkmForApp(it->second.app_id)) {
+  if (!ShouldRecordAppKMForApp(it->second.app_id)) {
     return;
   }
 
@@ -324,24 +324,24 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
                                         [it->second.app_type_name];
 }
 
-void AppPlatformInputMetrics::RecordInputEventsUkm() {
-  if (!ShouldRecordUkm(profile_)) {
+void AppPlatformInputMetrics::RecordInputEventsAppKM() {
+  if (!ShouldRecordAppKM(profile_)) {
     return;
   }
 
   for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
-    if (!ShouldRecordUkmForApp(event_counts.first)) {
+    if (!ShouldRecordAppKMForApp(event_counts.first)) {
       continue;
     }
     // `event_counts.second` is the map from InputEventSource to the event
     // counts.
-    RecordInputEventsUkmForApp(event_counts.first, event_counts.second);
+    RecordInputEventsAppKMForApp(event_counts.first, event_counts.second);
   }
 
   app_id_to_event_count_per_two_hours_.clear();
 }
 
-void AppPlatformInputMetrics::RecordInputEventsUkmForApp(
+void AppPlatformInputMetrics::RecordInputEventsAppKMForApp(
     const std::string& app_id,
     const EventSourceToCounts& event_counts) {
   for (const auto& counts : event_counts) {
@@ -374,8 +374,8 @@ void AppPlatformInputMetrics::SaveInputEvents() {
   }
 }
 
-void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
-  if (!ShouldRecordUkm(profile_)) {
+void AppPlatformInputMetrics::RecordInputEventsAppKMFromPref() {
+  if (!ShouldRecordAppKM(profile_)) {
     return;
   }
 
@@ -383,7 +383,7 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
                                            kAppInputEventsKey);
 
   for (const auto [app_id, events] : *input_events_update) {
-    if (!ShouldRecordUkmForApp(app_id)) {
+    if (!ShouldRecordAppKMForApp(app_id)) {
       continue;
     }
 
@@ -394,13 +394,15 @@ void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
 
     EventSourceToCounts event_counts =
         ConvertDictValueToEventCounts(*events_dict);
-    RecordInputEventsUkmForApp(app_id, event_counts);
+    RecordInputEventsAppKMForApp(app_id, event_counts);
   }
 }
 
-bool AppPlatformInputMetrics::ShouldRecordUkmForApp(const std::string& app_id) {
-  return ShouldRecordUkmForAppId(profile_, app_registry_cache_.get(), app_id) &&
-         ShouldRecordUkmForAppTypeName(GetAppType(profile_, app_id));
+bool AppPlatformInputMetrics::ShouldRecordAppKMForApp(
+    const std::string& app_id) {
+  return ShouldRecordAppKMForAppId(profile_, app_registry_cache_.get(),
+                                   app_id) &&
+         ShouldRecordAppKMForAppTypeName(GetAppType(profile_, app_id));
 }
 
 }  // namespace apps
