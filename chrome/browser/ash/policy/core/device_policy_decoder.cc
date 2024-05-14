@@ -275,112 +275,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_device_local_accounts()) {
-    const em::DeviceLocalAccountsProto& container(
-        policy.device_local_accounts());
-    const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
-        container.account();
-    base::Value::List account_list;
-    for (const auto& entry : accounts) {
-      base::Value::Dict entry_dict;
-      if (entry.has_type()) {
-        if (entry.has_account_id()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
-                         entry.account_id());
-        }
-        entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
-                       static_cast<int>(entry.type()));
-        if (entry.kiosk_app().has_app_id()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                         entry.kiosk_app().app_id());
-        }
-        if (entry.kiosk_app().has_update_url()) {
-          entry_dict.Set(
-              ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-              entry.kiosk_app().update_url());
-        }
-        if (entry.android_kiosk_app().has_package_name()) {
-          entry_dict.Set(
-              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-              entry.android_kiosk_app().package_name());
-        }
-        if (entry.android_kiosk_app().has_class_name()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                         entry.android_kiosk_app().class_name());
-        }
-        if (entry.android_kiosk_app().has_action()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                         entry.android_kiosk_app().action());
-        }
-        if (entry.android_kiosk_app().has_display_name()) {
-          entry_dict.Set(
-              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-              entry.android_kiosk_app().display_name());
-        }
-        if (entry.web_kiosk_app().has_url()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-                         entry.web_kiosk_app().url());
-        }
-        if (entry.web_kiosk_app().has_title()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
-                         entry.web_kiosk_app().title());
-        }
-        if (entry.web_kiosk_app().has_icon_url()) {
-          entry_dict.Set(
-              ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-              entry.web_kiosk_app().icon_url());
-        }
-        if (entry.has_ephemeral_mode()) {
-          entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
-                         static_cast<int>(entry.ephemeral_mode()));
-        } else {
-          entry_dict.Set(
-              ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
-              static_cast<int>(
-                  em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET));
-        }
-
-      } else if (entry.has_deprecated_public_session_id()) {
-        // Deprecated public session specification.
-        entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
-                       entry.deprecated_public_session_id());
-        entry_dict.Set(
-            ash::kAccountsPrefDeviceLocalAccountsKeyType,
-            static_cast<int>(DeviceLocalAccount::TYPE_PUBLIC_SESSION));
-      }
-      account_list.Append(std::move(entry_dict));
-    }
-    policies->Set(key::kDeviceLocalAccounts, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                  base::Value(std::move(account_list)), nullptr);
-    if (container.has_auto_login_id()) {
-      policies->Set(key::kDeviceLocalAccountAutoLoginId, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.auto_login_id()), nullptr);
-    }
-    if (container.has_auto_login_delay()) {
-      std::unique_ptr<base::Value> value(
-          DecodeIntegerValue(container.auto_login_delay()));
-      if (value) {
-        policies->Set(key::kDeviceLocalAccountAutoLoginDelay,
-                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
-      }
-    }
-    if (container.has_enable_auto_login_bailout()) {
-      policies->Set(
-          key::kDeviceLocalAccountAutoLoginBailoutEnabled,
-          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-          base::Value(container.enable_auto_login_bailout()), nullptr);
-    }
-    if (container.has_prompt_for_network_when_offline()) {
-      policies->Set(
-          key::kDeviceLocalAccountPromptForNetworkWhenOffline,
-          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-          base::Value(container.prompt_for_network_when_offline()), nullptr);
-    }
-  }
-
   if (policy.has_saml_settings()) {
     const em::SAMLSettingsProto& container(policy.saml_settings());
     if (container.has_transfer_saml_cookies()) {
@@ -763,6 +657,120 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                       POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
       }
     }
+  }
+}
+
+base::Value::Dict DecodeDeviceLocalAccountInfoProto(
+    const em::DeviceLocalAccountInfoProto& entry) {
+  if (!entry.has_type()) {
+    if (entry.has_deprecated_public_session_id()) {
+      // Deprecated public session specification.
+      return base::Value::Dict()
+          .Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
+               entry.deprecated_public_session_id())
+          .Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
+               static_cast<int>(DeviceLocalAccount::TYPE_PUBLIC_SESSION));
+    } else {
+      return base::Value::Dict();
+    }
+  }
+
+  base::Value::Dict entry_dict;
+  if (entry.has_account_id()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyId,
+                   entry.account_id());
+  }
+  entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyType,
+                 static_cast<int>(entry.type()));
+  if (entry.kiosk_app().has_app_id()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                   entry.kiosk_app().app_id());
+  }
+  if (entry.kiosk_app().has_update_url()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
+                   entry.kiosk_app().update_url());
+  }
+  if (entry.android_kiosk_app().has_package_name()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                   entry.android_kiosk_app().package_name());
+  }
+  if (entry.android_kiosk_app().has_class_name()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                   entry.android_kiosk_app().class_name());
+  }
+  if (entry.android_kiosk_app().has_action()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                   entry.android_kiosk_app().action());
+  }
+  if (entry.android_kiosk_app().has_display_name()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                   entry.android_kiosk_app().display_name());
+  }
+  if (entry.web_kiosk_app().has_url()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                   entry.web_kiosk_app().url());
+  }
+  if (entry.web_kiosk_app().has_title()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                   entry.web_kiosk_app().title());
+  }
+  if (entry.web_kiosk_app().has_icon_url()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                   entry.web_kiosk_app().icon_url());
+  }
+  if (entry.has_ephemeral_mode()) {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                   static_cast<int>(entry.ephemeral_mode()));
+  } else {
+    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                   static_cast<int>(
+                       em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET));
+  }
+  return entry_dict;
+}
+
+void DecodeDeviceLocalAccountsPolicy(
+    const em::ChromeDeviceSettingsProto& policy,
+    PolicyMap* policies) {
+  if (!policy.has_device_local_accounts()) {
+    return;
+  }
+  const em::DeviceLocalAccountsProto& container(policy.device_local_accounts());
+  const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
+      container.account();
+  base::Value::List account_list;
+  for (const auto& entry : accounts) {
+    account_list.Append(DecodeDeviceLocalAccountInfoProto(entry));
+  }
+
+  policies->Set(key::kDeviceLocalAccounts, POLICY_LEVEL_MANDATORY,
+                POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                base::Value(std::move(account_list)), nullptr);
+  if (container.has_auto_login_id()) {
+    policies->Set(key::kDeviceLocalAccountAutoLoginId, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(container.auto_login_id()), nullptr);
+  }
+  if (container.has_auto_login_delay()) {
+    std::unique_ptr<base::Value> value(
+        DecodeIntegerValue(container.auto_login_delay()));
+    if (value) {
+      policies->Set(key::kDeviceLocalAccountAutoLoginDelay,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+    }
+  }
+  if (container.has_enable_auto_login_bailout()) {
+    policies->Set(key::kDeviceLocalAccountAutoLoginBailoutEnabled,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_CLOUD,
+                  base::Value(container.enable_auto_login_bailout()), nullptr);
+  }
+  if (container.has_prompt_for_network_when_offline()) {
+    policies->Set(
+        key::kDeviceLocalAccountPromptForNetworkWhenOffline,
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+        base::Value(container.prompt_for_network_when_offline()), nullptr);
   }
 }
 
@@ -2337,6 +2345,7 @@ void DecodeDevicePolicy(
     PolicyMap* policies) {
   // Decode the various groups of policies.
   DecodeLoginPolicies(policy, policies);
+  DecodeDeviceLocalAccountsPolicy(policy, policies);
   DecodeNetworkPolicies(policy, policies);
   DecodeReportingPolicies(policy, policies);
   DecodeAutoUpdatePolicies(policy, policies);
