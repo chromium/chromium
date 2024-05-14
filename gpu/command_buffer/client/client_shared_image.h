@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -88,7 +89,8 @@ class GPU_EXPORT ClientSharedImage
     // implementations  as the end goal after all clients using GMB are
     // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
     // removed.
-    raw_ptr<gfx::GpuMemoryBuffer> buffer_;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+    RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
   };
 
   // Tests sometimes "fake" GMBs that are conceptually native with shared

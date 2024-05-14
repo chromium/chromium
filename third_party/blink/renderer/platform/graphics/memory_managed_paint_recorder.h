@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -133,7 +134,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // Points to the current canvas we are recording into, either `main_canvas_`
   // or `side_canvas_`.
-  raw_ptr<MemoryManagedPaintCanvas> current_canvas_ = &main_canvas_;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION MemoryManagedPaintCanvas* current_canvas_ = &main_canvas_;
 };
 
 }  // namespace blink

@@ -18,6 +18,7 @@
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -405,6 +406,8 @@ class ScopedResetPixelUnpackBuffer{
 };
 
 class ScopedMemTrackerChange {
+  STACK_ALLOCATED();
+
  public:
   explicit ScopedMemTrackerChange(Texture* texture)
       : texture_(texture),
@@ -422,8 +425,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  raw_ptr<Texture> texture_;
-  raw_ptr<MemoryTypeTracker> previous_tracker_;
+  Texture* texture_;
+  MemoryTypeTracker* previous_tracker_;
   uint32_t previous_size_;
 };
 

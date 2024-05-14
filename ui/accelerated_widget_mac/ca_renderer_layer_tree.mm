@@ -420,8 +420,8 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
   if (matched_content_layer->ca_layer_used_)
     return;
 
-  auto matched_transform_layer = matched_content_layer->parent_layer_;
-  auto matched_clip_layer = matched_transform_layer->parent_layer_;
+  auto* matched_transform_layer = matched_content_layer->parent_layer_;
+  auto* matched_clip_layer = matched_transform_layer->parent_layer_;
 
   // If the parent is different, the superlayer must have changed. It should be
   // removed from its superlayer and inserted back to the new superlayer in
@@ -451,12 +451,11 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
     }
   }
 
-  if (matched_clip_layer.get() !=
-      parent_layer_->parent_layer_->old_layer_.get()) {
+  if (matched_clip_layer != parent_layer_->parent_layer_->old_layer_.get()) {
     [matched_transform_layer->ca_layer_ removeFromSuperlayer];
   }
 
-  if (matched_transform_layer.get() != parent_layer_->old_layer_.get()) {
+  if (matched_transform_layer != parent_layer_->old_layer_.get()) {
     [matched_content_layer->ca_layer_ removeFromSuperlayer];
   } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
     // For the content layers with the same superlayer, if the order changes.
