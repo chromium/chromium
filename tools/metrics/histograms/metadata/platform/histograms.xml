@@ -1556,7 +1556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Resourced.VmmsReclaimMemoryDuration.{PressureLevel}"
-    units="ms" expires_after="2024-08-23">
+    units="ms" expires_after="2024-11-10">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>

@@ -4296,7 +4296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
-    units="hours" expires_after="2024-07-31">
+    units="hours" expires_after="2024-11-10">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -6720,7 +6720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Import.ImporterType.AutoImport" enum="ImporterType"
-    expires_after="2024-08-30">
+    expires_after="2024-11-10">
   <owner>robliao@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

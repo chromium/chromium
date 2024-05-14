@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Android.MediaPlayerWatchTime"
-    enum="MediaPlayerWatchTimeType" expires_after="2024-09-01">
+    enum="MediaPlayerWatchTimeType" expires_after="2024-11-10">
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

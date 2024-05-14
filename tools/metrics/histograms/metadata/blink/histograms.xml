@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2024-09-01">
+    expires_after="2024-11-10">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.PreventSilentAccessFrameType"
-    enum="FedCmRequesterFrameType" expires_after="2024-08-21">
+    enum="FedCmRequesterFrameType" expires_after="2024-11-10">
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>

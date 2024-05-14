@@ -1295,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher"
-    enum="Boolean" expires_after="2024-09-05">
+    enum="Boolean" expires_after="2024-11-10">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

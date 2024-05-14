@@ -2614,7 +2614,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.TailoredSecurity.ShouldRetryOutcome"
     enum="SafeBrowsingTailoredSecurityShouldRetryOutcome"
-    expires_after="2024-09-06">
+    expires_after="2024-11-10">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2953,7 +2953,7 @@ Safe Browsing lookup mechanism is working as expected -->
 
 <histogram
     name="SafeBrowsing.V4LocalDatabaseManager.TimeSinceLastUpdateResponse"
-    units="ms" expires_after="2024-09-10">
+    units="ms" expires_after="2024-11-10">
   <owner>ajuma@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

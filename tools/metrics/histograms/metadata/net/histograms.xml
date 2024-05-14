@@ -3722,7 +3722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PacketLossRate" units="1/10th Percent"
-    expires_after="2024-09-06">
+    expires_after="2024-11-10">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3771,7 +3771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PathValidationSuccess" enum="BooleanSuccess"
-    expires_after="2024-08-25">
+    expires_after="2024-11-10">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5083,7 +5083,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsDecoderStatus.Bypassed"
-    enum="AlpsDecoderError" expires_after="2024-09-11">
+    enum="AlpsDecoderError" expires_after="2024-11-10">
   <owner>arichiv@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.CachedOfflineStatusValid" enum="BooleanMatched"
-    expires_after="2024-07-28">
+    expires_after="2024-11-10">
   <owner>pnoland@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

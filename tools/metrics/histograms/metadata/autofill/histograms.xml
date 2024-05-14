@@ -5869,7 +5869,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.VirtualCardEnrollBubble.ConfirmationResult.{IsCardEnrolled}"
-    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-08-01">
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-11-10">
   <owner>darwinyang@google.com</owner>
   <owner>kavitasoni@google.com</owner>
   <owner>chrome-payments-team@google.com</owner>

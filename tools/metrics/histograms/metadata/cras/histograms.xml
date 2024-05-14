@@ -1032,7 +1032,7 @@ This collects each top-level device metric type. For example,
 
 <histogram
     name="Cras.StreamRuntimeWithMinimum{Duration}{Direction}{ClientType}{StreamType}"
-    units="seconds" expires_after="2024-09-08">
+    units="seconds" expires_after="2024-11-10">
   <owner>pteerapong@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

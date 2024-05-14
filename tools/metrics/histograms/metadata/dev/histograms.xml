@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
-    expires_after="2024-07-07">
+    expires_after="2024-11-10">
   <owner>changhaohan@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
   <owner>yangguo@chromium.org</owner>

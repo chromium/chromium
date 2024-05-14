@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BringAndroidTabs.ActionOnPrompt"
-    enum="IOSBringAndroidTabsPromptActionType" expires_after="2024-09-01">
+    enum="IOSBringAndroidTabsPromptActionType" expires_after="2024-11-10">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -980,7 +980,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DockingPromo.Action" enum="IOSDockingPromoAction"
-    expires_after="2024-09-10">
+    expires_after="2024-11-10">
   <owner>bwwilliams@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <owner>bling-team@google.com</owner>
@@ -990,7 +990,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DockingPromo.LastForegroundTimeViaAppState"
-    units="minutes" expires_after="2024-09-10">
+    units="minutes" expires_after="2024-11-10">
   <owner>bwwilliams@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <owner>bling-team@google.com</owner>
@@ -1002,7 +1002,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DockingPromo.LostToCompetingPromo"
-    enum="IOSPromosManagerPromo" expires_after="2024-09-10">
+    enum="IOSPromosManagerPromo" expires_after="2024-11-10">
   <owner>bwwilliams@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <owner>bling-team@google.com</owner>
@@ -1014,7 +1014,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.DockingPromoRemindMeLater.LostToCompetingPromo"
-    enum="IOSPromosManagerPromo" expires_after="2024-09-10">
+    enum="IOSPromosManagerPromo" expires_after="2024-11-10">
   <owner>bwwilliams@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <owner>bling-team@google.com</owner>
@@ -2421,7 +2421,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationRemoved"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2430,7 +2430,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.DestinationsCustomized"
-    units="bitfield value" expires_after="2024-09-01">
+    units="bitfield value" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2442,7 +2442,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2453,7 +2453,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2464,7 +2464,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2475,7 +2475,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition"
-    enum="IOSOverflowMenuDestination" expires_after="2024-09-01">
+    enum="IOSOverflowMenuDestination" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -2505,7 +2505,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.OverflowMenu.SmartSortingStateChange"
-    enum="IOSOverflowMenuSmartSortingChange" expires_after="2024-09-01">
+    enum="IOSOverflowMenuSmartSortingChange" expires_after="2024-11-10">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>

@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectCount"
-    units="count" expires_after="2024-09-07">
+    units="count" expires_after="2024-11-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectWithTopicsInvokedCount"
-    units="count" expires_after="2024-09-07">
+    units="count" expires_after="2024-11-10">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
