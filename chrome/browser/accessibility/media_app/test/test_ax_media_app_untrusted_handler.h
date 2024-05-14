@@ -85,6 +85,8 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
 
   void DisableStatusNodesForTesting() { has_landmark_node_ = false; }
 
+  void DisablePostamblePageForTesting() { has_postamble_page_ = false; }
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty);
   void FlushForTesting();

@@ -119,6 +119,7 @@ class AXMediaAppUntrustedHandler
   // `AXMediaApp` should outlive this handler.
   raw_ptr<AXMediaApp> media_app_;
   bool has_landmark_node_ = true;
+  bool has_postamble_page_ = true;
   ui::AXTreeManager document_;
   std::unique_ptr<TreeSource> document_source_;
   std::unique_ptr<TreeSerializer> document_serializer_;
@@ -134,6 +135,7 @@ class AXMediaAppUntrustedHandler
  private:
   size_t ComputePagesPerBatch() const;
   std::vector<ui::AXNodeData> CreateStatusNodesWithLandmark() const;
+  std::vector<ui::AXNodeData> CreatePostamblePage() const;
   void SendAXTreeToAccessibilityService(const ui::AXTreeManager& manager,
                                         TreeSerializer& serializer);
   void UpdateDocumentTree();

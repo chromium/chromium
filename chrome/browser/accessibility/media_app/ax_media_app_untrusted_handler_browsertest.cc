@@ -75,8 +75,7 @@ constexpr std::string_view kTestPageIds = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 constexpr std::string_view kLoadingMessage =
     "AXTree has_parent_tree title=PDF document\n"
-    "id=1 pdfRoot FOCUSABLE name=PDF document containing 0 pages "
-    "name_from=attribute clips_children child_ids=10000 (0, 0)-(0, 0) "
+    "id=1 pdfRoot FOCUSABLE clips_children child_ids=10000 (0, 0)-(0, 0) "
     "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
     "scrollable=true is_line_breaking_object=true\n"
     "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
@@ -189,6 +188,7 @@ void AXMediaAppUntrustedHandlerTest::WaitForOcringPages(
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const std::vector<std::string> kPageIds{"four", "ids", "in", "list"};
   const size_t kTestNumPages = kPageIds.size();
   constexpr gfx::RectF kRect(0, 0, 10, 15);
@@ -239,6 +239,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedNoDuplicatePageIds) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr std::string kDuplicateId = "duplicate";
   std::vector<PageMetadataPtr> fake_metadata;
   PageMetadataPtr page1 = ash::media_app_ui::mojom::PageMetadata::New();
@@ -262,6 +263,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedWithDeleteAndUndoDelete) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const std::string kDocumentTree(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
@@ -372,6 +374,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedWithNewPages) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   const std::vector<std::string> kPageIds{"pageX", "pageY"};
@@ -406,6 +409,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   mojo::FakeMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
   const std::vector<std::string> kPageIds{"pageW", "pageX", "pageY", "pageZ"};
@@ -441,6 +445,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, DirtyPageOcrOrder) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedPagesRelocated) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const size_t kTestNumPages = 3;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -543,6 +548,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageContentsUpdatedEdit) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const size_t kTestNumPages = 3;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -569,6 +575,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdated_PageRotated) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr size_t kTestNumPages = 4u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -621,6 +628,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdated_PagesReordered) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -694,6 +702,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const char* html = R"HTML(
       <!DOCTYPE html>
       <html>
@@ -783,6 +792,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        SendAXTreeToAccessibilityService) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   handler_->SetMinPagesPerBatchForTesting(4u);
   handler_->EnablePendingSerializedUpdatesForTesting();
   constexpr size_t kTestNumPages = 3u;
@@ -898,6 +908,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollUpAndDown) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr size_t kTestNumPages = 3u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -954,6 +965,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollUpAndDown) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollLeftAndRight) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr float kTestViewportWidth = kTestPageWidth / 3.0f;
   constexpr float kTestViewportHeight = kTestPageHeight;
   constexpr size_t kTestNumPages = 3u;
@@ -1011,6 +1023,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollLeftAndRight) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr float kPageX = 0.0f;
   constexpr float kPageY = 0.0f;
   constexpr float kViewportWidth = 2.0f;
@@ -1093,6 +1106,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        ScrollToMakeVisiblePagesReordered) {
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   constexpr size_t kTestNumPages = 2u;
   constexpr float kViewportWidth = 2.0f;
   constexpr float kViewportHeight = 4.0f;
@@ -1146,6 +1161,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
   handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
   const size_t kTestNumPages = 4u;
   handler_->SetMinPagesPerBatchForTesting(2u);
   std::vector<PageMetadataPtr> fake_metadata =
@@ -1271,6 +1287,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
+  handler_->DisablePostamblePageForTesting();
   const size_t kTestNumPages = 2u;
   std::vector<PageMetadataPtr> fake_metadata =
       CreateFakePageMetadata(kTestNumPages);
@@ -1284,7 +1301,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
       "name_from=attribute clips_children child_ids=10000,2,3 (0, 0)-(3, 18) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
       "-1)-(1, 1) text_align=left is_page_breaking_object=true "
@@ -1304,14 +1321,15 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StatusNodes) {
       "extracted, powered by Google AI offset_container_id=10002 (0, 0)-(1, 1) "
       "text_align=left\n"
       "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
-      "8) restriction=readonly is_page_breaking_object=true\n  id=3 region "
-      "name=Page 2 name_from=attribute has_child_tree (0, 10)-(3, 8) "
-      "restriction=readonly is_page_breaking_object=true\n",
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        StatusNodesNoTextExtracted) {
+  handler_->DisablePostamblePageForTesting();
   handler_->CreateFakeOpticalCharacterRecognizerForTesting(
       /*return_empty*/ true);
   const size_t kTestNumPages = 2u;
@@ -1327,7 +1345,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
       "name_from=attribute clips_children child_ids=10000,2,3 (0, 0)-(3, 18) "
-      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
       "scrollable=true is_line_breaking_object=true\n"
       "  id=10000 banner <div> child_ids=10001 offset_container_id=1 (-1, "
       "-1)-(1, 1) text_align=left is_page_breaking_object=true "
@@ -1389,6 +1407,79 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                  kTestPageWidth * kViewportScale,
                  kTestPageHeight * kViewportScale),
       document_root->data().relative_bounds.transform->MapRect(page_a_rect));
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
+  handler_->DisableStatusNodesForTesting();
+  const size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE clips_children child_ids=10004 (0, 0)-(0, 0) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=10004 region child_ids=10005 (0, 0)-(0, 0) restriction=readonly "
+      "is_page_breaking_object=true\n"
+      "    id=10005 paragraph child_ids=10006 (0, 0)-(0, 0) "
+      "is_line_breaking_object=true\n"
+      "      id=10006 staticText name=Extracting text in next few pages "
+      "child_ids=10007 (0, 0)-(0, 0) restriction=readonly\n"
+      "        id=10007 inlineTextBox name=Extracting text in next few pages "
+      "(0, 0)-(0, 0) restriction=readonly\n",
+      handler_->GetDocumentTreeToStringForTesting());
+  WaitForOcringPages(1u);
+  // No change from the previous one because of the fact that pages are OCRed in
+  // batches.
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE clips_children child_ids=10004 (0, 0)-(0, 0) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=10004 region child_ids=10005 (0, 0)-(0, 0) restriction=readonly "
+      "is_page_breaking_object=true\n"
+      "    id=10005 paragraph child_ids=10006 (0, 0)-(0, 0) "
+      "is_line_breaking_object=true\n"
+      "      id=10006 staticText name=Extracting text in next few pages "
+      "child_ids=10007 (0, 0)-(0, 0) restriction=readonly\n"
+      "        id=10007 inlineTextBox name=Extracting text in next few pages "
+      "(0, 0)-(0, 0) restriction=readonly\n",
+      handler_->GetDocumentTreeToStringForTesting());
+  WaitForOcringPages(1u);
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
+      "name_from=attribute clips_children child_ids=2,3,10004 (0, 0)-(3, 18) "
+      "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=10004 region child_ids=10005 (0, 0)-(0, 0) restriction=readonly "
+      "is_page_breaking_object=true\n"
+      "    id=10005 paragraph child_ids=10006 (0, 0)-(0, 0) "
+      "is_line_breaking_object=true\n"
+      "      id=10006 staticText name=Extracting text in next few pages "
+      "child_ids=10007 (0, 0)-(0, 0) restriction=readonly\n"
+      "        id=10007 inlineTextBox name=Extracting text in next few pages "
+      "(0, 0)-(0, 0) restriction=readonly\n",
+      handler_->GetDocumentTreeToStringForTesting());
+  WaitForOcringPages(1u);
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 3 pages "
+      "name_from=attribute clips_children child_ids=2,3,4 (0, 0)-(3, 28) "
+      "scroll_x_min=0 scroll_y_min=0 restriction=readonly text_align=left "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
