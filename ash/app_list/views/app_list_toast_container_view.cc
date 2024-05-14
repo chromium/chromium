@@ -49,7 +49,7 @@ const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
       return &kSortColorIcon;
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -455,7 +455,7 @@ std::u16string AppListToastContainerView::CalculateToastTextFromOrder(
           IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_COLOR_SORT);
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return u"";
   }
 }
@@ -472,7 +472,7 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
           IDS_ASH_LAUNCHER_UNDO_COLOR_SORT_TOAST_SPOKEN_TEXT);
     case AppListSortOrder::kCustom:
     case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return u"";
   }
 }

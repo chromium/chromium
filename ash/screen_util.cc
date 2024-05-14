@@ -172,8 +172,9 @@ gfx::Rect GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
     ::wm::ConvertRectToScreen(window->parent(), &bounds);
     return bounds;
   }
-  NOTREACHED() << "The window is not maximzied or fullscreen or pinned. state="
-               << window_state->GetStateType();
+  NOTREACHED_IN_MIGRATION()
+      << "The window is not maximzied or fullscreen or pinned. state="
+      << window_state->GetStateType();
   return window->GetBoundsInScreen();
 }
 

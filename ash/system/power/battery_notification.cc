@@ -55,7 +55,7 @@ const gfx::VectorIcon& GetBatteryImageMD(
              PowerNotificationController::NOTIFICATION_CRITICAL) {
     return kNotificationBatteryCriticalIcon;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::kNoneIcon;
   }
 }
@@ -70,7 +70,7 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
              PowerNotificationController::NOTIFICATION_CRITICAL) {
     return message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return message_center::SystemNotificationWarningLevel::NORMAL;
   }
 }

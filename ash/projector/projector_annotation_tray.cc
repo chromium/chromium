@@ -91,7 +91,7 @@ const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
       }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kPaletteTrayIconProjectorIcon;
 }
 
@@ -344,7 +344,7 @@ int ProjectorAnnotationTray::GetAccessibleNameForColor(SkColor color) {
     case kProjectorMagentaPenColor:
       return IDS_MAGENTA_COLOR_BUTTON;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IDS_RED_COLOR_BUTTON;
 }
 

@@ -693,30 +693,30 @@ void FastPairPairerImpl::OnUpdateOptInStatus(bool success) {
 }
 
 void FastPairPairerImpl::RequestPinCode(device::BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::RequestPasskey(device::BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::DisplayPinCode(device::BluetoothDevice* device,
                                         const std::string& pincode) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::DisplayPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::KeysEntered(device::BluetoothDevice* device,
                                      uint32_t entered) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::AuthorizePairing(device::BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,

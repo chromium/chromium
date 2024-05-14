@@ -71,7 +71,7 @@ class MagnetismEdgeMatcher {
       case MAGNETISM_EDGE_RIGHT:
         return bounds.right();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -86,7 +86,7 @@ class MagnetismEdgeMatcher {
       case MAGNETISM_EDGE_RIGHT:
         return MAGNETISM_EDGE_LEFT;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MAGNETISM_EDGE_LEFT;
   }
 
@@ -99,7 +99,7 @@ class MagnetismEdgeMatcher {
       case MAGNETISM_EDGE_RIGHT:
         return Range(bounds.x(), bounds.right());
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Range();
   }
 
@@ -112,7 +112,7 @@ class MagnetismEdgeMatcher {
       case MAGNETISM_EDGE_RIGHT:
         return Range(bounds.y(), bounds.bottom());
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Range();
   }
 

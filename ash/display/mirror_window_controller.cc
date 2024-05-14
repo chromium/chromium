@@ -84,7 +84,7 @@ class MirroringScreenPositionClient
   void SetBounds(aura::Window* window,
                  const gfx::Rect& bounds,
                  const display::Display& display) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  protected:

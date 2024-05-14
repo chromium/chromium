@@ -115,7 +115,7 @@ void KeyboardBacklightToggleController::SliderValueChanged(
     float value,
     float old_value,
     views::SliderChangeReason reason) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace ash

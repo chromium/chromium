@@ -112,7 +112,7 @@ const char* AlignmentToPref(ShelfAlignment alignment) {
       // lock the shelf during login or when adding a user.
       return nullptr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -138,7 +138,7 @@ const char* AutoHideBehaviorToPref(ShelfAutoHideBehavior behavior) {
       // hide the shelf (e.g. SessionAbortedDialog).
       return nullptr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

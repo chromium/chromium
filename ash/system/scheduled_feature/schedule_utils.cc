@@ -107,8 +107,9 @@ std::vector<Slot> BuildSchedule(const base::Time now,
       break;
     }
     case ScheduleType::kNone:
-      NOTREACHED() << "kNone ScheduleType does not support any automatic "
-                      "feature changes";
+      NOTREACHED_IN_MIGRATION()
+          << "kNone ScheduleType does not support any automatic "
+             "feature changes";
       break;
   }
   //    6:00 10:00   16:00 18:00         3:00    6:00
@@ -166,9 +167,9 @@ Position GetCurrentPosition(const base::Time now,
               next_slot.time - now};
     }
   }
-  NOTREACHED() << "Failed to find ScheduleCheckpoint for now=" << now
-               << " schedule:\n"
-               << ToString(schedule);
+  NOTREACHED_IN_MIGRATION()
+      << "Failed to find ScheduleCheckpoint for now=" << now << " schedule:\n"
+      << ToString(schedule);
   return Position();
 }
 

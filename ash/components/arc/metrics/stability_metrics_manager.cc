@@ -54,7 +54,8 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
   // prevent going into a crash loop.
   if (const auto* pref = local_state_->FindPreference(prefs::kStabilityMetrics);
       !pref || pref->GetType() != base::Value::Type::DICT) {
-    NOTREACHED() << "Local state unavailable, not recording stability metrics.";
+    NOTREACHED_IN_MIGRATION()
+        << "Local state unavailable, not recording stability metrics.";
     return;
   }
 

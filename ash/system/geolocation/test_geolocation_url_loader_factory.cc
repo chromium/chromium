@@ -56,12 +56,12 @@ void TestGeolocationUrlLoaderFactory::CreateLoaderAndStart(
 
 void TestGeolocationUrlLoaderFactory::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 TestGeolocationUrlLoaderFactory::Clone() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

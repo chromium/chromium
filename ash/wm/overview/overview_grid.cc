@@ -364,7 +364,7 @@ float GetWantedDropTargetOpacity(
     case SplitViewDragIndicators::WindowDraggingState::kFromShelf:
       return 1.f;
     case SplitViewDragIndicators::WindowDraggingState::kFromFloat:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0.f;
   }
 }
@@ -827,7 +827,7 @@ void OverviewGrid::PositionWindows(
       animation_type = OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW;
       break;
     case OverviewTransition::kExit:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   int animate_count = 0;

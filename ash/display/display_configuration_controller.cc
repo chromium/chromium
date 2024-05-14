@@ -55,7 +55,7 @@ display::DisplayPositionInUnifiedMatrix GetUnifiedModeShelfCellPosition() {
       return display::DisplayPositionInUnifiedMatrix::kTopRight;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::DisplayPositionInUnifiedMatrix::kBottomLeft;
 }
 

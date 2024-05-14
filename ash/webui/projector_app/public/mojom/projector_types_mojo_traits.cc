@@ -21,7 +21,7 @@ EnumTraits<MojomNewScreencastPreconditionState,
     case ash::NewScreencastPreconditionState::kHidden:
       return MojomNewScreencastPreconditionState::kHidden;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool EnumTraits<MojomNewScreencastPreconditionState,
@@ -88,7 +88,7 @@ EnumTraits<MojomNewScreencastPreconditionReason,
           kEnabledByServerSideSpeechRecognition;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool EnumTraits<MojomNewScreencastPreconditionReason,

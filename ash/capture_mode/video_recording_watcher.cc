@@ -168,7 +168,7 @@ class RecordedWindowRootObserver : public aura::WindowObserver {
     // We should never get here, as the recorded window gets moved to a
     // different display before the root of another is destroyed. So this root
     // observer should have been destroyed already.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -424,7 +424,7 @@ void VideoRecordingWatcher::OnWindowDestroyed(aura::Window* window) {
   // We should never get here, since OnWindowDestroying() calls
   // `EndVideoRecording()` which calls `ShutDown()` which takes care of removing
   // the window observation.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void VideoRecordingWatcher::OnWindowRemovingFromRootWindow(

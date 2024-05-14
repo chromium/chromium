@@ -111,7 +111,7 @@ size_t GetMenuIndexOfSortingOrder(ash::AppListSortOrder order) {
     case ash::AppListSortOrder::kNameReverseAlphabetical:
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -132,7 +132,7 @@ views::MenuItemView* GetReorderOptionForAppListOrFolderItemMenu(
     case ash::AppListSortOrder::kNameReverseAlphabetical:
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
   return reorder_option;

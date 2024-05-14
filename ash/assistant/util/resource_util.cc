@@ -100,7 +100,7 @@ std::string ToString(IconName name) {
     case IconName::kTranslate:
       return kTranslateIconName;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -113,7 +113,7 @@ std::string ToString(ResourceLinkParam param) {
     case ResourceLinkParam::kType:
       return kTypeParamKey;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -124,7 +124,7 @@ std::string ToString(ResourceLinkType type) {
     case ResourceLinkType::kUnsupported:
       return std::string();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -155,7 +155,7 @@ const gfx::VectorIcon& ToVectorIcon(IconName name) {
     case IconName::kTranslate:
       return chromeos::kTranslateIcon;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::kNoneIcon;
 }
 

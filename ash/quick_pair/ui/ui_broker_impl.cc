@@ -42,7 +42,7 @@ void UIBrokerImpl::ShowDiscovery(scoped_refptr<Device> device) {
                               weak_pointer_factory_.GetWeakPtr(), device));
       break;
     case Protocol::kFastPairRetroactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -84,7 +84,7 @@ void UIBrokerImpl::ShowAssociateAccount(scoped_refptr<Device> device) {
                               weak_pointer_factory_.GetWeakPtr(), device));
       break;
     case Protocol::kFastPairSubsequent:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -157,8 +157,8 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
       return target_root->GetChildById(
           kShellWindowId_DragImageAndTooltipContainer);
     default:
-      NOTREACHED() << "Window " << window->GetId() << " has unhandled type "
-                   << window->GetType();
+      NOTREACHED_IN_MIGRATION() << "Window " << window->GetId()
+                                << " has unhandled type " << window->GetType();
       break;
   }
   return nullptr;

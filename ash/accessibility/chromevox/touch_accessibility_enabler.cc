@@ -97,7 +97,8 @@ void TouchAccessibilityEnabler::HandleTouchEvent(const ui::TouchEvent& event) {
       return;
     }
   } else {
-    NOTREACHED() << "Unexpected event type received: " << event.GetName();
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected event type received: " << event.GetName();
     return;
   }
 

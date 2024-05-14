@@ -185,7 +185,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
@@ -204,7 +204,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
@@ -223,12 +223,12 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

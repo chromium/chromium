@@ -693,7 +693,7 @@ void EcheTray::InitBubble(
             eche_app::mojom::StreamStatus::kStreamStatusInitializing);
         break;
       case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

@@ -142,7 +142,8 @@ struct EnumTraits<arc::mojom::BluetoothAdvertisementType,
         *type = device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST;
         return true;
     }
-    NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
+    NOTREACHED_IN_MIGRATION()
+        << "Invalid type: " << static_cast<uint32_t>(mojom_type);
     return false;
   }
 };

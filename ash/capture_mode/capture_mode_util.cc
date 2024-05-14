@@ -182,7 +182,7 @@ gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Point();
 }
 

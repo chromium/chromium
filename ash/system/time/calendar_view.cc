@@ -1876,7 +1876,7 @@ void CalendarView::OnEvent(ui::Event* event) {
       return;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -2148,8 +2148,8 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
           (event_list_view_ ? GetExpandedCalendarPadding() : 0))) {
     ++row_index;
     if (row_index > kMaxRowsInOneMonth) {
-      NOTREACHED() << "CalendarMonthView's cannot have more than "
-                   << kMaxRowsInOneMonth << " rows.";
+      NOTREACHED_IN_MIGRATION() << "CalendarMonthView's cannot have more than "
+                                << kMaxRowsInOneMonth << " rows.";
       return kMaxRowsInOneMonth;
     }
   }

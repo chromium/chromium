@@ -107,7 +107,7 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
       break;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

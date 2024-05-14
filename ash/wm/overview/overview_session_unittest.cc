@@ -7059,7 +7059,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         start_location = item->target_bounds().bottom_left();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     GetOverviewSession()->InitiateDrag(item, start_location,

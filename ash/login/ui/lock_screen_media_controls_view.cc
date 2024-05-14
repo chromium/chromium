@@ -140,11 +140,11 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::kNoneIcon;
 }
 
@@ -658,8 +658,8 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
       break;
     }
     case media_session::mojom::MediaSessionImageType::kChapter: {
-      NOTREACHED() << " The chpater images should be updated in "
-                      "`MediaControllerChapterImageChanged` ";
+      NOTREACHED_IN_MIGRATION() << " The chpater images should be updated in "
+                                   "`MediaControllerChapterImageChanged` ";
     }
   }
 }

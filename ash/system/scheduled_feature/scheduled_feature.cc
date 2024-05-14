@@ -164,7 +164,7 @@ void ScheduledFeature::SetScheduleType(ScheduleType type) {
 
   if (type == ScheduleType::kCustom && (prefs_path_custom_start_time_.empty() ||
                                         prefs_path_custom_end_time_.empty())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

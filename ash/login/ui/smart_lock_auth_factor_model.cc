@@ -148,7 +148,7 @@ int SmartLockAuthFactorModel::GetLabelId() const {
     case SmartLockState::kPhoneAuthenticated:
       return IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool SmartLockAuthFactorModel::ShouldAnnounceLabel() const {

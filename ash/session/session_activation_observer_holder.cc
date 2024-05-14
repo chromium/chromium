@@ -32,7 +32,7 @@ void SessionActivationObserverHolder::RemoveForAccountId(
     SessionActivationObserver* observer) {
   auto it = observer_map_.find(account_id);
   if (it == observer_map_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   it->second->RemoveObserver(observer);

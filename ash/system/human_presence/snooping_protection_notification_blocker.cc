@@ -227,7 +227,7 @@ void SnoopingProtectionNotificationBlocker::Click(
       Shell::Get()->system_tray_model()->client()->ShowSmartPrivacySettings();
       break;
     default:
-      NOTREACHED() << "Unknown button index value";
+      NOTREACHED_IN_MIGRATION() << "Unknown button index value";
   }
 }
 

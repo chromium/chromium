@@ -546,7 +546,7 @@ std::string PrefKeyForSwitchAccessCommand(SwitchAccessCommand command) {
     case SwitchAccessCommand::kPrevious:
       return prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes;
     case SwitchAccessCommand::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -560,7 +560,7 @@ std::string UmaNameForSwitchAccessCommand(SwitchAccessCommand command) {
     case SwitchAccessCommand::kPrevious:
       return "Accessibility.CrosSwitchAccess.PreviousKeyCode";
     case SwitchAccessCommand::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1015,8 +1015,8 @@ void AccessibilityController::Feature::ObserveConflictingFeature() {
     default:
       // No other features are used as conflicting features at the moment,
       // but this could be populated if needed in the future.
-      NOTREACHED() << "No pref name for conflicting feature "
-                   << static_cast<int>(conflicting_feature_);
+      NOTREACHED_IN_MIGRATION() << "No pref name for conflicting feature "
+                                << static_cast<int>(conflicting_feature_);
   }
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(owner_->active_user_prefs_);
@@ -2765,7 +2765,7 @@ void AccessibilityController::UpdateSwitchAccessKeyCodesFromPref(
   for (const auto v : key_codes_pref) {
     int key_code;
     if (!base::StringToInt(v.first, &key_code)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -3218,7 +3218,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   NotifyAccessibilityStatusChanged();
 }

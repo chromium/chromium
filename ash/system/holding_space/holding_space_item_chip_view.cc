@@ -525,7 +525,7 @@ void HoldingSpaceItemChipView::OnSecondaryActionPressed() {
   if (!holding_space_util::ExecuteInProgressCommand(
           item(), command_id,
           holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

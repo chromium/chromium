@@ -472,7 +472,7 @@ bool ContentsView::Back() {
       break;
     case AppListState::kStateStart_DEPRECATED:
     case AppListState::kInvalidState:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return true;

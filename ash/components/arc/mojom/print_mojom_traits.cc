@@ -31,7 +31,7 @@ arc::mojom::PrintDuplexMode ToArcDuplexMode(printing::mojom::DuplexMode mode) {
     case printing::mojom::DuplexMode::kSimplex:
       return arc::mojom::PrintDuplexMode::NONE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return arc::mojom::PrintDuplexMode::NONE;
 }

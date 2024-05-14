@@ -19,7 +19,7 @@ EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
     case storage::WatcherManager::DELETED:
       return arc::mojom::ChangeType::DELETED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return arc::mojom::ChangeType::CHANGED;
 }
 
@@ -35,7 +35,7 @@ bool EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
       *type = storage::WatcherManager::DELETED;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

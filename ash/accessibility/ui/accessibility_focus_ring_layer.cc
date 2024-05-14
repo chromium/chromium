@@ -157,7 +157,7 @@ void AccessibilityFocusRingLayer::DrawSolidFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -176,7 +176,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -199,7 +199,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
 void AccessibilityFocusRingLayer::DrawGlowFocusRing(ui::PaintRecorder& recorder,
                                                     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   SkColor base_color = custom_color();
 
   SkPath path;

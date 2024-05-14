@@ -48,7 +48,8 @@ struct EnumTraits<arc::mojom::BluetoothDeviceType, device::BluetoothTransport> {
         *type = device::BLUETOOTH_TRANSPORT_DUAL;
         break;
       default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid type: " << static_cast<uint32_t>(mojom_type);
         return false;
     }
     return true;
@@ -71,7 +72,8 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
       case bluez::BluetoothServiceAttributeValueBlueZ::URL:
         return static_cast<arc::mojom::BluetoothSdpAttributeType>(input);
       default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid type: " << static_cast<uint32_t>(input);
         return arc::mojom::BluetoothSdpAttributeType::NULLTYPE;
     }
   }
@@ -92,7 +94,8 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
             input);
         return true;
       default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid type: " << static_cast<uint32_t>(input);
         return false;
     }
   }
@@ -115,19 +118,19 @@ struct StructTraits<arc::mojom::BluetoothAdvertisementDataView,
   // Dummy methods.
   static arc::mojom::BluetoothAdvertisementType type(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return arc::mojom::BluetoothAdvertisementType::ADV_TYPE_NON_CONNECTABLE;
   }
 
   static bool include_tx_power(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   static std::vector<arc::mojom::BluetoothAdvertisingDataPtr> data(
       const std::unique_ptr<device::BluetoothAdvertisement::Data>& input) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::vector<arc::mojom::BluetoothAdvertisingDataPtr>();
   }
 };

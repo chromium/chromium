@@ -902,7 +902,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
       anchor_view = active_vc_tray->audio_icon();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -929,7 +929,7 @@ VideoConferenceTrayController::GetUsedWhileDisabledNudgeType(
           kMicrophone;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       type = VideoConferenceTrayController::UsedWhileDisabledNudgeType::kCamera;
   }
 

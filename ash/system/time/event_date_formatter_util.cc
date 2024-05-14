@@ -143,7 +143,7 @@ ASH_EXPORT const std::u16string GetMultiDayText(
                                       end_time, day_text);
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "The `selected_date_midnight` is past the end of the event. Value is: "
       << selected_date_midnight;
   return u"";

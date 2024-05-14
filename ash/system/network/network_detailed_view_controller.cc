@@ -63,7 +63,7 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
     case NetworkType::kWireless:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

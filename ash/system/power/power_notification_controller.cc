@@ -76,7 +76,7 @@ std::string GetNotificationStateString(
     case PowerNotificationController::NOTIFICATION_CRITICAL:
       return "critical power";
   }
-  NOTREACHED() << "Unknown state " << notification_state;
+  NOTREACHED_IN_MIGRATION() << "Unknown state " << notification_state;
   return "Unknown state";
 }
 
@@ -573,7 +573,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -615,7 +615,7 @@ bool PowerNotificationController::
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -662,7 +662,7 @@ bool PowerNotificationController::
     case NOTIFICATION_CRITICAL:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

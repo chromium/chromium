@@ -42,7 +42,7 @@ camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
     case ScreenBacklightState::OFF_AUTO:
       return camera_app::mojom::ScreenState::kOffAuto;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -56,7 +56,7 @@ camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
     case CameraAppUIDelegate::FileMonitorResult::kError:
       return camera_app::mojom::FileMonitorResult::kError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -88,8 +88,8 @@ std::string FromMojoSecurityType(
     case camera_app::mojom::WifiSecurityType::kWpa:
       return onc::wifi::kWPA_PSK;
     default:
-      NOTREACHED() << "Unexpected security type: "
-                   << static_cast<int>(security_type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected security type: " << static_cast<int>(security_type);
   }
 }
 
@@ -104,7 +104,8 @@ std::string FromMojoEapMethod(camera_app::mojom::WifiEapMethod eap_method) {
     case camera_app::mojom::WifiEapMethod::kPeap:
       return onc::eap::kPEAP;
     default:
-      NOTREACHED() << "Unexpected EAP method: " << static_cast<int>(eap_method);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected EAP method: " << static_cast<int>(eap_method);
   }
 }
 
@@ -126,8 +127,8 @@ std::string FromMojoEapPhase2Method(
     case camera_app::mojom::WifiEapPhase2Method::kPap:
       return onc::eap::kPAP;
     default:
-      NOTREACHED() << "Unexpected EAP Phase2 method: "
-                   << static_cast<int>(eap_phase2_method);
+      NOTREACHED_IN_MIGRATION() << "Unexpected EAP Phase2 method: "
+                                << static_cast<int>(eap_phase2_method);
   }
 }
 
@@ -333,7 +334,8 @@ void CameraAppHelperImpl::OnConvertedToDocument(
       return;
     }
     default:
-      NOTREACHED() << "Unsupported output format: " << output_format;
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported output format: " << output_format;
   }
 }
 
@@ -403,7 +405,7 @@ void CameraAppHelperImpl::NotifyTote(const ToteMetricFormat format,
           HoldingSpaceItem::Type::kCameraAppVideoMp4, file_path);
       return;
     default:
-      NOTREACHED() << "Unexpected new metric format.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected new metric format.";
   }
 }
 

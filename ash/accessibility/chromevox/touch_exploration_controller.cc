@@ -210,7 +210,8 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
 
     touch_locations_[*it] = gfx::PointF(location);
   } else {
-    NOTREACHED() << "Unexpected event type received: " << event.GetName();
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected event type received: " << event.GetName();
     return SendEvent(continuation, &event);
   }
   VLOG_EVENT(touch_event);
@@ -281,7 +282,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     case TWO_FINGER_TAP:
       return InTwoFingerTap(touch_event_dip, continuation);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SendEvent(continuation, &event);
 }
 
@@ -290,7 +291,8 @@ ui::EventDispatchDetails TouchExplorationController::InNoFingersDown(
     const Continuation continuation) {
   const ui::EventType type = event.type();
   if (type != ui::ET_TOUCH_PRESSED) {
-    NOTREACHED() << "Unexpected event type received: " << event.GetName();
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected event type received: " << event.GetName();
     return SendEvent(continuation, &event);
   }
 
@@ -358,7 +360,7 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
     SET_STATE(TOUCH_EXPLORATION);
     return InTouchExploration(event, continuation);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SendEvent(continuation, &event);
 }
 
@@ -437,7 +439,7 @@ ui::EventDispatchDetails TouchExplorationController::InDoubleTapPending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SendEvent(continuation, &event);
 }
 
@@ -455,7 +457,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SendEvent(continuation, &event);
 }
 
@@ -478,7 +480,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     MaybeSendSimulatedTapInLiftActivationBounds(event, continuation);
     SET_STATE(TOUCH_EXPLORE_RELEASED);
   } else if (type != ui::ET_TOUCH_MOVED) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return SendEvent(continuation, &event);
   }
 
@@ -569,7 +571,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
                initial_press_->pointer_details().id) {
       original_touch = initial_press_.get();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       SET_STATE(WAIT_FOR_NO_FINGERS);
       return DiscardEvent(continuation);
     }
@@ -605,7 +607,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     EnterTouchToMouseMode();
     return DiscardEvent(continuation);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SendEvent(continuation, &event);
 }
 

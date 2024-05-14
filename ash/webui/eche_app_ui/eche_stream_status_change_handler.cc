@@ -74,7 +74,7 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
               eche_app::mojom::StreamStatus::kStreamStatusStarted);
           break;
         case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

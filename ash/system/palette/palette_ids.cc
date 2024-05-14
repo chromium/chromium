@@ -21,7 +21,7 @@ PaletteTrayOptions PaletteToolIdToPaletteTrayOptions(PaletteToolId tool_id) {
       return PALETTE_ENTER_CAPTURE_MODE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PALETTE_OPTIONS_COUNT;
 }
 

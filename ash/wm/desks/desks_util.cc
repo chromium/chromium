@@ -73,7 +73,7 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 
 const char* GetDeskContainerName(int container_id) {
   if (!IsDeskContainerId(container_id)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

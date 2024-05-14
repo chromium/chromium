@@ -73,7 +73,7 @@ bool IsPinnedShelfItemType(ShelfItemType type) {
     case TYPE_UNDEFINED:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -1408,7 +1408,7 @@ TEST_F(DragDropControllerTest, DragTabDoesNotCrashOnSourceWindowDestruction) {
             generator.ReleaseLeftButton();
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }),
       base::DoNothing());

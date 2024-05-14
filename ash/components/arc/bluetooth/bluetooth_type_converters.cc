@@ -124,7 +124,7 @@ TypeConverter<arc::mojom::BluetoothSdpAttributePtr,
       result->type_size = result->sequence.size();
       return result;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -160,7 +160,7 @@ TypeConverter<bluez::BluetoothServiceAttributeValueBlueZ,
       return bluez::BluetoothServiceAttributeValueBlueZ(std::move(sequence));
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -210,7 +210,7 @@ TypeConverter<bluez::BluetoothServiceRecordBlueZ,
             pair.second.To<bluez::BluetoothServiceAttributeValueBlueZ>());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

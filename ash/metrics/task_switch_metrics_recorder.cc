@@ -33,7 +33,7 @@ const char* GetHistogramName(TaskSwitchSource task_switch_source) {
     case TaskSwitchSource::SHELF:
       return nullptr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

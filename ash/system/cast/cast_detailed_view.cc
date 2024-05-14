@@ -66,7 +66,7 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
       return kSystemMenuCastGenericIcon;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSystemMenuCastGenericIcon;
 }
 

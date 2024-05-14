@@ -69,7 +69,7 @@ FloatingAccessibilityController::~FloatingAccessibilityController() {
 void FloatingAccessibilityController::Show(FloatingMenuPosition position) {
   // Kiosk check.
   if (!Shell::Get()->session_controller()->IsRunningInAppMode()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Floating accessibility menu can only be run in a kiosk session.";
     return;
   }

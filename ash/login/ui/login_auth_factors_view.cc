@@ -412,7 +412,7 @@ void LoginAuthFactorsView::UpdateState() {
       }
       return;
     case PrioritizedAuthFactorViewState::kUnavailable:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -474,7 +474,7 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
 
   if (ready_factor_count == 0u) {
     LOG(ERROR) << "GetReadyLabelId() called without any ready auth factors.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return GetDefaultLabelId();
   }
 
@@ -488,7 +488,7 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
       return IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetDefaultLabelId();
 }
 

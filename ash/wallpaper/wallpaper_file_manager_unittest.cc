@@ -118,7 +118,7 @@ TEST_P(WallpaperFileManagerTest, SaveAndLoadSameWallpaper) {
     case WallpaperType::kThirdParty:
     case WallpaperType::kOneShot:
     case WallpaperType::kCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   base::test::TestFuture<const gfx::ImageSkia&> load_wallpaper_future;

@@ -123,7 +123,8 @@ gfx::Matrix3F ComputeColorVisionFilterMatrix(ColorVisionCorrectionType type,
       correction_matrix.set(1.0, 0.0, 0.7, 0.0, 1.0, 0.7, 0.0, 0.0, 0.0);
       break;
     case ash::ColorVisionCorrectionType::kGrayscale:
-      NOTREACHED() << "Grayscale should be handled in SetGreyscaleAmount";
+      NOTREACHED_IN_MIGRATION()
+          << "Grayscale should be handled in SetGreyscaleAmount";
   }
 
   // For Daltonization of an image `original_img`, we would calculate the

@@ -93,7 +93,7 @@ std::string ToString(ItemAction action) {
     case ItemAction::kViewDetailsInBrowser:
       return "ViewDetailsInBrowser";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

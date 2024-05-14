@@ -562,11 +562,11 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
                   item, command_id,
                   holding_space_metrics::EventSource::
                       kHoldingSpaceItemContextMenu)) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }
         }
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       break;
   }

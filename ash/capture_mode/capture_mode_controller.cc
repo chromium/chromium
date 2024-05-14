@@ -317,7 +317,7 @@ int GetDisabledNotificationMessageId(CaptureAllowance allowance,
       return for_title ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
                        : IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
     case CaptureAllowance::kAllowed:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
   }
 }
@@ -1728,7 +1728,7 @@ void CaptureModeController::HandleNotificationClicked(
                             std::move(on_file_deleted_callback_for_test_));
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
       } else {
@@ -1751,7 +1751,7 @@ void CaptureModeController::HandleNotificationClicked(
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

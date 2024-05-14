@@ -164,7 +164,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       break;
     default:
       snap_region = SnapRegion::kInvalid;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -221,7 +221,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       snap_bounds.set_y(work_area.bottom() - axis_length);
       break;
     case SnapRegion::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return snap_bounds;

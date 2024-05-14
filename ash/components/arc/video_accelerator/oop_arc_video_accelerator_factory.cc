@@ -162,7 +162,7 @@ void OOPArcVideoAcceleratorFactory::CreateEncodeAccelerator(
 
 void OOPArcVideoAcceleratorFactory::CreateProtectedBufferAllocator(
     mojo::PendingReceiver<mojom::VideoProtectedBufferAllocator> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OOPArcVideoAcceleratorFactory::OnDecoderDisconnected() {

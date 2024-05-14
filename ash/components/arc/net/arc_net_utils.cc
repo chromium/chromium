@@ -492,7 +492,7 @@ arc::mojom::ConnectionStateType TranslateConnectionState(
 
   // The remaining cases defined in shill dbus-constants are legacy values from
   // Flimflam and are not expected to be encountered.
-  NOTREACHED() << "Unknown connection state: " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown connection state: " << state;
   return arc::mojom::ConnectionStateType::NOT_CONNECTED;
 }
 
@@ -517,7 +517,7 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type) {
     return arc::mojom::NetworkType::CELLULAR;
   }
 
-  NOTREACHED() << "Unknown network type: " << type;
+  NOTREACHED_IN_MIGRATION() << "Unknown network type: " << type;
   return arc::mojom::NetworkType::ETHERNET;
 }
 

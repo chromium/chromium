@@ -68,7 +68,7 @@ SearchResultListView::SearchResultListType CategoryToListType(
     case ash::AppListSearchResultCategory::kGames:
       return SearchResultListView::SearchResultListType::kGames;
     case ash::AppListSearchResultCategory::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SearchResultListView::SearchResultListType::kBestMatch;
   }
 }
@@ -385,7 +385,7 @@ SearchResult::Category SearchResultListView::GetSearchCategory() {
     case SearchResultListType::kAnswerCard:
       // Categories are undefined for |KBestMatch|, and
       // |kAnswerCard| list types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SearchResult::Category::kUnknown;
     case SearchResultListType::kApps:
       return SearchResult::Category::kApps;

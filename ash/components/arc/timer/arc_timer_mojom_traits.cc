@@ -17,7 +17,7 @@ arc::mojom::ClockId EnumTraits<arc::mojom::ClockId, clockid_t>::ToMojom(
     case CLOCK_BOOTTIME_ALARM:
       return arc::mojom::ClockId::BOOTTIME_ALARM;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return arc::mojom::ClockId::BOOTTIME_ALARM;
 }
 
@@ -33,7 +33,7 @@ bool EnumTraits<arc::mojom::ClockId, clockid_t>::FromMojom(
       *output = CLOCK_BOOTTIME_ALARM;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

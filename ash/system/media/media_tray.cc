@@ -179,7 +179,7 @@ bool MediaTray::IsPinnedToShelf() {
       return GetIsPinnedToShelfByDefault();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -85,7 +85,7 @@ void ScopedOverviewHideWindows::OnWindowVisibilityChanged(aura::Window* window,
   // It's expected that windows hidden in overview, unless they are forcefully
   // hidden should not be shown while in overview.
   if (!force_hidden_)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   // Do not let |window| change to visible during the lifetime of |this|. Also
   // update |window_visibility_| so that we can restore the window visibility

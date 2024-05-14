@@ -93,8 +93,9 @@ AmbientAnimationProgressTracker::GetGlobalProgress() const {
               *animation->GetCurrentProgress()};
     }
   }
-  NOTREACHED() << "HasActiveAnimations() must be true before calling "
-                  "GetGlobalProgress()";
+  NOTREACHED_IN_MIGRATION()
+      << "HasActiveAnimations() must be true before calling "
+         "GetGlobalProgress()";
   return Progress();
 }
 

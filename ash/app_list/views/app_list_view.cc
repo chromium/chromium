@@ -349,7 +349,7 @@ bool AppListView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       Back();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

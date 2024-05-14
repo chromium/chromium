@@ -198,7 +198,7 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event,
       HandleDragEvent(screen_location);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

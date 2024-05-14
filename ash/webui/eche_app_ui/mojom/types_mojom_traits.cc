@@ -19,7 +19,7 @@ ash::eche_app::mojom::ScreenBacklightState EnumTraits<
       return ash::eche_app::mojom::ScreenBacklightState::OFF_AUTO;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -38,7 +38,7 @@ bool EnumTraits<ash::eche_app::mojom::ScreenBacklightState,
       *output = ash::ScreenBacklightState::OFF_AUTO;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

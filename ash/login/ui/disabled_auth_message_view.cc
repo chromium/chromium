@@ -133,7 +133,7 @@ LockScreenMessage GetLockScreenMessage(AuthDisabledReason lock_reason,
     case AuthDisabledReason::kTimeLimitOverride:
       return GetOverrideMessage();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

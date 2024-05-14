@@ -37,8 +37,9 @@ constexpr char kLearnMoreUrl[] =
     "https://support.google.com/chromebook/?p=privacy_hub";
 
 void LogInvalidSensor(const Sensor sensor) {
-  NOTREACHED() << "Invalid sensor: "
-               << static_cast<std::underlying_type_t<Sensor>>(sensor);
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid sensor: "
+      << static_cast<std::underlying_type_t<Sensor>>(sensor);
 }
 
 // Throttler for geolocation notification. Limits notification to be displayed

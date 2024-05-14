@@ -370,7 +370,8 @@ void KeyboardBacklightColorController::DisplayBacklightZoneColor(
       break;
     }
     case personalization_app::mojom::BacklightColor::kRainbow: {
-      NOTREACHED() << " Attempted to display an invalid color option";
+      NOTREACHED_IN_MIGRATION()
+          << " Attempted to display an invalid color option";
       break;
     }
   }

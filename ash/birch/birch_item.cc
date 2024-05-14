@@ -280,7 +280,7 @@ void BirchAttachmentItem::PerformAction() {
 }
 
 void BirchAttachmentItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
@@ -344,7 +344,7 @@ void BirchFileItem::PerformAction() {
 }
 
 void BirchFileItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
@@ -400,7 +400,7 @@ void BirchWeatherItem::PerformAction() {
 }
 
 void BirchWeatherItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
@@ -458,7 +458,7 @@ void BirchTabItem::PerformAction() {
 }
 
 void BirchTabItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
@@ -543,7 +543,7 @@ void BirchSelfShareItem::PerformAction() {
 }
 
 void BirchSelfShareItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
@@ -613,7 +613,7 @@ void BirchReleaseNotesItem::PerformAction() {
 }
 
 void BirchReleaseNotesItem::PerformSecondaryAction() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) const {

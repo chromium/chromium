@@ -162,7 +162,7 @@ int CoordinateAlongSecondaryAxis(SecondaryMagnetismEdge edge,
     case SECONDARY_MAGNETISM_EDGE_NONE:
       return none;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return none;
 }
 
@@ -916,7 +916,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
         window_state()->TrackDragToMaximizeBehavior();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         type = WM_EVENT_MAXIMIZE;
         break;
     }
@@ -1528,7 +1528,7 @@ int WorkspaceWindowResizer::PrimaryAxisCoordinate(int x, int y) const {
     case HTBOTTOM:
       return y;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }
@@ -1605,7 +1605,7 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
       phantom_bounds = display.work_area();
       break;
     case SnapType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1754,7 +1754,7 @@ void WorkspaceWindowResizer::SetWindowStateTypeFromGesture(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

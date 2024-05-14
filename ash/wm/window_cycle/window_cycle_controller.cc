@@ -192,7 +192,7 @@ void WindowCycleController::HandleKeyboardNavigation(
       break;
     case KeyboardNavDirection::kInvalid:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -374,7 +374,7 @@ void WindowCycleController::OnModeChanged(bool per_desk,
               " "));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -106,7 +106,7 @@ gfx::Size SavedDeskIconView::CalculatePreferredSize(
 void SavedDeskIconView::UpdateCount(int count) {
   // We should never get there. We only update `count_` for the overflow icon.
   // For the regular icon, `count_` remains unchanged after initializing it.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SavedDeskIconView::CreateCountLabelChildView(bool show_plus,

@@ -152,7 +152,7 @@ void UserSwitchAnimator::AdvanceUserTransitionAnimation() {
       animation_step_ = ANIMATION_STEP_ENDED;
       break;
     case ANIMATION_STEP_ENDED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -323,7 +323,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
       break;
     }
     case ANIMATION_STEP_ENDED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

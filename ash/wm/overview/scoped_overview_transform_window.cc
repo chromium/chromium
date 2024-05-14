@@ -197,7 +197,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
           if (window == window->parent()->children()[i])
             return i;
         }
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0u;
       };
 

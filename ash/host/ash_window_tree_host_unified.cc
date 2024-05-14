@@ -44,7 +44,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED() << "event type:" << event->type();
+      NOTREACHED_IN_MIGRATION() << "event type:" << event->type();
       return aura::WindowTargeter::FindTargetForEvent(root, event);
     }
   }

@@ -2952,7 +2952,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
               std::move(fetch_callback))) {
         // Could not start fetch of wallpaper variants. Likely because the
         // chrome client isn't ready. Schedule for later.
-        NOTREACHED() << "Failed to initiate daily wallpaper fetch";
+        NOTREACHED_IN_MIGRATION() << "Failed to initiate daily wallpaper fetch";
       }
     }
   } else {
@@ -3071,7 +3071,7 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
   if (!variant_info_fetcher_->FetchDailyWallpaper(
           account_id, info,
           std::move(callback))) {
-    NOTREACHED() << "Fetch of daily wallpaper info failed.";
+    NOTREACHED_IN_MIGRATION() << "Fetch of daily wallpaper info failed.";
   }
 }
 

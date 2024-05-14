@@ -90,7 +90,7 @@ crosapi::mojom::DisplayLayoutPosition GetMojomDisplayLayoutPosition(
     case display::DisplayPlacement::LEFT:
       return crosapi::mojom::DisplayLayoutPosition::kLeft;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return crosapi::mojom::DisplayLayoutPosition::kLeft;
 }
 
@@ -106,7 +106,7 @@ display::DisplayPlacement::Position GetDisplayPlacementPosition(
     case crosapi::mojom::DisplayLayoutPosition::kLeft:
       return display::DisplayPlacement::LEFT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::DisplayPlacement::LEFT;
 }
 

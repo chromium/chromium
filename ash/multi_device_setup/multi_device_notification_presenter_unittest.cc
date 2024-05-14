@@ -346,7 +346,7 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
             kTestDeviceType);
         break;
       case MultiDeviceNotificationPresenter::Status::kNoNotificationVisible:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     EXPECT_EQ(title, kVisibleNotification->title());
     EXPECT_EQ(message, kVisibleNotification->message());

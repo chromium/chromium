@@ -481,7 +481,7 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
     if (!holding_space_util::ExecuteInProgressCommand(
             item(), HoldingSpaceCommandId::kCancelItem,
             holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return;
   }

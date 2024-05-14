@@ -378,7 +378,7 @@ WindowCycleEventFilter::GetKeyboardNavDirection(ui::KeyEvent* event) const {
     case ui::VKEY_RIGHT:
       return WindowCycleController::KeyboardNavDirection::kRight;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WindowCycleController::KeyboardNavDirection::kInvalid;
   }
 }

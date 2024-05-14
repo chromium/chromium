@@ -78,7 +78,7 @@ std::string GetAlarmTimerActionParamValue(AlarmTimerAction action) {
     case AlarmTimerAction::kResumeTimer:
       return kResumeTimer;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -115,7 +115,7 @@ std::string GetDeepLinkParamKey(DeepLinkParam param) {
     case DeepLinkParam::kVeId:
       return kVeIdParamKey;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -402,7 +402,7 @@ std::optional<GURL> GetAssistantUrl(
       by_id_url = std::string("https://assistant.google.com/reminders/id/");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 
@@ -467,11 +467,11 @@ std::optional<GURL> GetWebUrl(
     case DeepLinkType::kQuery:
     case DeepLinkType::kScreenshot:
     case DeepLinkType::kTaskManager:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

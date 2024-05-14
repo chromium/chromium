@@ -408,7 +408,7 @@ float NightLightControllerImpl::RemapAmbientColorTemperature(
                   kTable[i].output_temperature);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -637,7 +637,7 @@ void NightLightControllerImpl::ReapplyColorTemperatures() {
     if (temperature_animation_->target_temperature() == target_temperature)
       return;
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     temperature_animation_->Stop();
   }
 

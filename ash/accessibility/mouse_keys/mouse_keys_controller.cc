@@ -256,7 +256,7 @@ void MouseKeysController::PressKey(MouseKey key) {
       SelectNextButton();
       break;
     case kKeyCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

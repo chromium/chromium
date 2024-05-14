@@ -114,7 +114,7 @@ NotificationTypeDetailed GetNotificationTypeForArc(
       case 2:
         return ARC_PRIORITY_TWO_PINNED;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return OTHER;
     }
   } else {
@@ -130,7 +130,7 @@ NotificationTypeDetailed GetNotificationTypeForArc(
       case 2:
         return ARC_PRIORITY_TWO;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return OTHER;
     }
   }
@@ -207,7 +207,7 @@ NotificationTypeDetailed GetNotificationTypeForCros(
       case 2:
         return CROS_PRIORITY_TWO_PINNED;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return OTHER;
     }
   } else {
@@ -223,7 +223,7 @@ NotificationTypeDetailed GetNotificationTypeForCros(
       case 2:
         return CROS_PRIORITY_TWO;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return OTHER;
     }
   }
@@ -251,7 +251,7 @@ NotificationTypeDetailed GetNotificationTypeForPhoneHub(
     case 2:
       return PHONEHUB_PRIORITY_TWO;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return OTHER;
   }
 }

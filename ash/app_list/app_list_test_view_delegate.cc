@@ -69,7 +69,7 @@ void AppListTestViewDelegate::OpenSearchResult(
       case ash::AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
         return;
       case ash::AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

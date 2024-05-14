@@ -78,7 +78,7 @@ SkBitmap Resize(const gfx::ImageSkia image,
         }
         break;
       case NUM_WALLPAPER_LAYOUT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

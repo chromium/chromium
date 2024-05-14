@@ -291,7 +291,7 @@ void LoginBaseBubbleView::OnLayerAnimationEnded(
 void LoginBaseBubbleView::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   // The animation for this view should never be aborted.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gfx::Size LoginBaseBubbleView::CalculatePreferredSize(
@@ -339,7 +339,7 @@ views::View* LoginBaseBubbleView::GetAnchorView() const {
     // pointers. This should not cause a crash, but is still indicative of UI
     // bugs.
     base::debug::DumpWithoutCrashing();
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return anchor_view_.get();
 }

@@ -87,7 +87,7 @@ std::optional<std::u16string> GetPortalStateSubtext(
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN);
     case PortalState::kDeprecatedProxyAuthRequired:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

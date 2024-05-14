@@ -163,7 +163,7 @@ bool PrivacyHubController::CrosToArcGeolocationPermissionMapping(
     case GeolocationAccessLevel::kDisallowed:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

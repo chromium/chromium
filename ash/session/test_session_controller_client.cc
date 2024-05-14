@@ -292,7 +292,7 @@ void TestSessionControllerClient::CycleActiveUser(
         return session && session->session_id == session_id;
       });
   if (it == sessions.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

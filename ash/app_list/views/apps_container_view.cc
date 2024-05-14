@@ -1302,7 +1302,7 @@ void AppsContainerView::SetShowState(ShowState show_state,
       app_list_folder_view_->ScheduleShowHideAnimation(false, true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

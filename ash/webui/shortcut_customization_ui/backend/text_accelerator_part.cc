@@ -21,7 +21,7 @@ std::u16string GetTextForModifier(ui::EventFlags modifier) {
     case ui::EF_COMMAND_DOWN:
       return u"meta";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

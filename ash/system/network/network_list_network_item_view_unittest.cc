@@ -731,7 +731,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
                 IDS_ASH_STATUS_TRAY_WIFI_NETWORK_A11Y_DESC_WITH_CONNECTION_STATUS;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
         switch (connection) {
           case ConnectionStateType::kPortal: {
@@ -747,7 +747,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
                       IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED_NO_INTERNET);
                   break;
                 default:
-                  NOTREACHED();
+                  NOTREACHED_IN_MIGRATION();
               }
               AssertA11yDescription(
                   wifi_network, l10n_util::GetStringFUTF16(
@@ -785,7 +785,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForWiFi) {
                 desc_id = IDS_ASH_STATUS_TRAY_WIFI_NETWORK_A11Y_DESC;
                 break;
               default:
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
             }
             AssertA11yDescription(wifi_network,
                                   l10n_util::GetStringFUTF16(

@@ -48,7 +48,7 @@ gfx::Rect GetOnScreenBoundsForFloatingMenuPosition(
                        work_area.y() + 2 * kCollisionWindowWorkAreaInsetsDp,
                        menu_bounds.width(), menu_bounds.height());
     case FloatingMenuPosition::kSystemDefault:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::Rect();
   }
 }
@@ -78,7 +78,7 @@ views::BubbleBorder::Arrow GetAnchorAlignmentForFloatingMenuPosition(
     case FloatingMenuPosition::kSystemDefault:
       // It's not possible for position to be kSystemDefault here because we've
       // set it via DefaultSystemPosition() above if it was kSystemDefault.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return views::BubbleBorder::Arrow::TOP_LEFT;
   }
 }

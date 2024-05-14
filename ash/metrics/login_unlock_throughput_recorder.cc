@@ -329,7 +329,7 @@ void LoginUnlockThroughputRecorder::AddScheduledRestoreWindow(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

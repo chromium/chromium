@@ -158,7 +158,7 @@ void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
         return assistant::util::CreateIconResourceLink(
             assistant::util::IconName::kScreenshot);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return GURL();
     }
   };

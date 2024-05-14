@@ -58,7 +58,7 @@ std::optional<ArcContainerLifetimeEvent> GetArcContainerLifetimeEvent(
                          : ArcContainerLifetimeEvent::CONTAINER_CRASHED_EARLY;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -92,7 +92,7 @@ bool IsRestartNeeded(std::optional<ArcInstanceMode> target_mode,
       return was_running;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

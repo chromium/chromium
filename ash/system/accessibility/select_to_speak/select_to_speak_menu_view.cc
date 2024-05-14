@@ -77,7 +77,7 @@ SelectToSpeakPanelAction PanelActionForButtonID(int button_id, bool is_paused) {
       return SelectToSpeakPanelAction::kChangeSpeed;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SelectToSpeakPanelAction::kNone;
 }
 

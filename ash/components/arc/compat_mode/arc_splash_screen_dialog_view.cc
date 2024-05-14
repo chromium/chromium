@@ -339,7 +339,7 @@ void ArcSplashScreenDialogView::OnViewIsDeleting(View* observed_view) {
   else if (observed_view == highlight_border_)
     highlight_border_ = nullptr;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   anchor_highlight_observations_.RemoveObservation(observed_view);
 }

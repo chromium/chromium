@@ -86,7 +86,7 @@ gfx::Insets RotateInsets(display::Display::Rotation rotation,
       return gfx::Insets::TLBR(insets.left(), insets.bottom(), insets.right(),
                                insets.top());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::move(insets);
 }
 

@@ -31,7 +31,7 @@ std::string GetRestartMarkerFromId(int animation_id) {
     return kOutlineLoadingAnimationRestartMarker;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::EmptyString();
 }
 

@@ -31,12 +31,12 @@ CpuStats GetProcStatCPU() {
   const std::string stat = ReadProcFile(base::FilePath(kProcStatFile));
   // First string should be total Cpu statistics.
   if (!base::StartsWith(stat, "cpu ", base::CompareCase::SENSITIVE)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CpuStats();
   }
   const size_t newline_pos = stat.find('\n');
   if (newline_pos == std::string::npos) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CpuStats();
   }
 

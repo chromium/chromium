@@ -79,7 +79,7 @@ int PowerSourceToMessageID(
     case power_manager::PowerSupplyProperties_PowerSource_Port_BACK_RIGHT:
       return IDS_ASH_POWER_SOURCE_PORT_BACK_RIGHT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

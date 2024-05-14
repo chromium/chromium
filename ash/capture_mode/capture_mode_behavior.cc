@@ -393,7 +393,7 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
 
 void CaptureModeBehavior::CreateCaptureFolder(
     OnCaptureFolderCreatedCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
@@ -408,7 +408,7 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
 
 void CaptureModeBehavior::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {

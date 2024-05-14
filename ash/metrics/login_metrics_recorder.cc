@@ -180,11 +180,13 @@ void LoginMetricsRecorder::RecordUserTrayClick(TrayClickTarget target) {
         LogUserClickInOobe(el.oobe);
         return;
       default:
-        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected session state: " << static_cast<int>(state);
         return;
     }
   }
-  NOTREACHED() << "Tray click target wasn't found in the |kTrayTargets|.";
+  NOTREACHED_IN_MIGRATION()
+      << "Tray click target wasn't found in the |kTrayTargets|.";
 }
 
 void LoginMetricsRecorder::RecordUserShelfButtonClick(
@@ -215,11 +217,13 @@ void LoginMetricsRecorder::RecordUserShelfButtonClick(
         LogUserClickInOobe(el.oobe);
         return;
       default:
-        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected session state: " << static_cast<int>(state);
         return;
     }
   }
-  NOTREACHED() << "Shelf click target wasn't found in the |kShelfTargets|.";
+  NOTREACHED_IN_MIGRATION()
+      << "Shelf click target wasn't found in the |kShelfTargets|.";
 }
 
 }  // namespace ash

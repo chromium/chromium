@@ -175,7 +175,7 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
       source = kMouseDrag;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   RecordPageSwitcherSource(source);
@@ -212,7 +212,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
     case AppListShowSource::kWelcomeTour:
       return "Others";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RecordAppListUserJourneyTime(AppListShowSource source,
@@ -446,10 +446,10 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::DEPRECATED_LAUNCH_TYPE_FULLSCREEN:
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -39,7 +39,7 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
     case manta::MantaStatusCode::kPerUserQuotaExceeded:
       return MojomMantaStatusCode::kPerUserQuotaExceeded;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return MojomMantaStatusCode::kGenericError;
   }
 }
@@ -85,7 +85,7 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
       *output = manta::MantaStatusCode::kPerUserQuotaExceeded;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 }  // namespace mojo

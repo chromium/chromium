@@ -531,7 +531,7 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
 
   switch (state_) {
     case State::NOT_STARTED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case State::WAITING_FOR_NUM_CORES:
     case State::STARTING_MINI_INSTANCE:
@@ -546,7 +546,7 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
     case State::STOPPED:
       // These mean RequestUpgrade() is called twice or called after
       // stopped, which are invalid operations.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -906,7 +906,7 @@ std::ostream& operator<<(std::ostream& os, ArcSessionImpl::State state) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(state);
+  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(state);
   return os;
 }
 

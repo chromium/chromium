@@ -2360,7 +2360,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
       // item.
       MaybeCreateDragReorderAccessibilityEvent();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -3110,7 +3110,7 @@ void AppsGridView::AddPendingPromiseAppRemoval(
     const ui::ImageModel& default_image) {
   auto found = pending_promise_apps_removals_.find(id);
   if (found != pending_promise_apps_removals_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -59,7 +59,7 @@ void OAuthHttpFetcher::StartRequest(const GURL& url,
         << __func__
         << ": Attempted to make an API call, but there is already a "
            "request in progress.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -68,7 +68,7 @@ void OAuthHttpFetcher::StartRequest(const GURL& url,
   if (!identity_manager) {
     CD_LOG(ERROR, Feature::FP)
         << __func__ << ": IdentityManager is not available.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

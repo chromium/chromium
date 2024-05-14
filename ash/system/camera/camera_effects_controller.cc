@@ -114,7 +114,7 @@ CameraHalBackgroundBlurState MapBackgroundBlurPrefValueToCameraHalState(
       return std::make_pair(cros::mojom::BlurLevel::kMaximum, true);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::make_pair(cros::mojom::BlurLevel::kLowest, false);
 }
 
@@ -141,7 +141,7 @@ MapBackgroundBlurCameraHalStateToPrefValue(cros::mojom::BlurLevel level,
       return CameraEffectsController::BackgroundBlurPrefValue::kMaximum;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CameraEffectsController::BackgroundBlurPrefValue::kLowest;
 }
 
@@ -166,7 +166,7 @@ CameraEffectsController::BackgroundBlurState MapBackgroundBlurPrefValueToState(
       return CameraEffectsController::BackgroundBlurState::kImage;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CameraEffectsController::BackgroundBlurState::kOff;
 }
 
@@ -631,7 +631,7 @@ std::optional<int> CameraEffectsController::GetEffectState(
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -687,7 +687,7 @@ void CameraEffectsController::OnEffectControlActivated(
     case VcEffectId::kNoiseCancellation:
     case VcEffectId::kLiveCaption:
     case VcEffectId::kTestEffect:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

@@ -498,7 +498,7 @@ void PhoneHubTray::ExecuteCommand(int command_id, int event_flags) {
     phone_hub_manager_->GetOnboardingUiTracker()->DismissSetupUi();
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {

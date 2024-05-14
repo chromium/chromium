@@ -39,7 +39,7 @@ void RecordStartSessionSourceHistogram(
               kFeaturePod);
       break;
     case ash::focus_mode_histogram_names::ToggleSource::kContextualPanel:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

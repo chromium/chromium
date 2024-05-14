@@ -68,7 +68,7 @@ T SelectValueByShelfAlignment(ShelfAlignment alignment,
     case ShelfAlignment::kRight:
       return right;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return bottom;
 }
 

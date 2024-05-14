@@ -27,8 +27,8 @@ void ParseDynamicAssetsIdsInAnimation(
     }
 
     if (!ambient::util::ParseDynamicLottieAssetId(asset_id, parsed_asset_id)) {
-      NOTREACHED() << "Lottie file contains invalid dynamic asset id "
-                   << asset_id;
+      NOTREACHED_IN_MIGRATION()
+          << "Lottie file contains invalid dynamic asset id " << asset_id;
     }
 
     auto iter =

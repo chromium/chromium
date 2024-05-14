@@ -693,7 +693,7 @@ void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
           Shell::Get()->session_controller()->GetActivePrefService(), true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -236,7 +236,7 @@ gfx::Rect GetGridBoundsInScreen(
       case SplitViewController::State::kBothSnapped:
         // When this function is called, SplitViewController should have
         // already handled the state change.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

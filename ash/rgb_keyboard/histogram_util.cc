@@ -12,7 +12,7 @@ namespace ash::rgb_keyboard::metrics {
 std::string GetCapabilityTypeStr(rgbkbd::RgbKeyboardCapabilities capabilities) {
   switch (capabilities) {
     case rgbkbd::RgbKeyboardCapabilities::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
     case rgbkbd::RgbKeyboardCapabilities::kFourZoneFortyLed:
       return "FourZoneFortyLed";

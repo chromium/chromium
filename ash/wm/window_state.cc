@@ -207,8 +207,8 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
       return WM_EVENT_SHOW_INACTIVE;
 
     case ui::SHOW_STATE_END:
-      NOTREACHED() << "No WMEvent defined for the show state:"
-                   << requested_show_state;
+      NOTREACHED_IN_MIGRATION()
+          << "No WMEvent defined for the show state:" << requested_show_state;
   }
   return WM_EVENT_NORMAL;
 }

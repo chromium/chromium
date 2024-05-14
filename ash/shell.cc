@@ -1982,7 +1982,7 @@ std::unique_ptr<ui::EventTargetIterator> Shell::GetChildIterator() const {
 }
 
 ui::EventTargeter* Shell::GetEventTargeter() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

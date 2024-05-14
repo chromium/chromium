@@ -101,7 +101,7 @@ void GeolocationPrivacySwitchController::TrackGeolocationRelinquished(
     LOG(ERROR) << "Geolocation usage termination without start: count("
                << app_name << ") = " << usage_per_app_[app_name]
                << ", total count = " << usage_cnt_;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   UpdateNotification();

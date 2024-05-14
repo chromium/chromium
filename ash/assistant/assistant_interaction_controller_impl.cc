@@ -431,7 +431,7 @@ void AssistantInteractionControllerImpl::OnInteractionFinished(
     case AssistantInteractionResolution::kMicTimeout:
       // Interactions resolving due to mic timeout are already handled above
       // outside the switch.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case AssistantInteractionResolution::kInterruption:  // fallthrough
     case AssistantInteractionResolution::kNormal:

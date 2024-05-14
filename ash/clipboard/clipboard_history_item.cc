@@ -97,7 +97,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
   std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 

@@ -928,7 +928,7 @@ void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
                           ->GetNetworkList(NetworkType::kTether)
                           ->AddChildView(std::move(info));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

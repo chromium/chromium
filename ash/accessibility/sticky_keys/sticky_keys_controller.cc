@@ -145,7 +145,7 @@ ui::EventRewriteStatus StickyKeysController::RewriteEvent(
   if (event.IsScrollEvent())
     return RewriteScrollEvent(*event.AsScrollEvent(), rewritten_event);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::EVENT_REWRITE_CONTINUE;
 }
 
@@ -270,7 +270,7 @@ bool StickyKeysHandler::HandleKeyEvent(const ui::KeyEvent& event,
     case STICKY_KEY_STATE_LOCKED:
       return HandleLockedState(event, mod_down_flags, released);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -407,7 +407,7 @@ bool StickyKeysHandler::HandleDisabledState(const ui::KeyEvent& event) {
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -432,7 +432,7 @@ bool StickyKeysHandler::HandleEnabledState(const ui::KeyEvent& event,
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -453,7 +453,7 @@ bool StickyKeysHandler::HandleLockedState(const ui::KeyEvent& event,
     case OTHER_MODIFIER_UP:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -63,7 +63,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
       case ui::TEXT_INPUT_TYPE_NULL:
         return MojoType::NONE;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MojoType::TEXT;
   }
 
@@ -106,7 +106,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         *out = ui::TEXT_INPUT_TYPE_NULL;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

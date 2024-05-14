@@ -94,7 +94,7 @@ RoundedDisplayProvider::~RoundedDisplayProvider() {
 void RoundedDisplayProvider::Init(const gfx::RoundedCornersF& panel_radii,
                                   Strategy strategy) {
   if (host_) {
-    NOTREACHED() << "Provider is already initialized";
+    NOTREACHED_IN_MIGRATION() << "Provider is already initialized";
   }
 
   DCHECK(IsRadiiValid(panel_radii));

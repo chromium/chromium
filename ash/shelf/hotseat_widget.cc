@@ -931,7 +931,7 @@ int HotseatWidget::CalculateHotseatYInScreen(
           ShelfConfig::Get()->hotseat_bottom_padding() + hotseat_size;
       break;
     case HotseatState::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   const int target_shelf_size =
       shelf_->shelf_widget()->GetTargetBounds().size().height();
@@ -1373,7 +1373,7 @@ void HotseatWidget::StartHotseatTransitionAnimation(
       break;
     case StateTransition::kHiddenAndExtended:
     case StateTransition::kOther:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   auto* sequence =

@@ -196,7 +196,7 @@ void UnifiedVolumeView::Update(bool by_user) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Updates the tooltip for `slider_button()` based on the mute state.
