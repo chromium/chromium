@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="resources/variant-class.js"></script>
+<style>
+@font-face {
+  font-family: test-font;
+  src: url(resources/cap-x-height.ttf);
+}
+.spacer {
+  background: lightgray;
+  height: 100px;
+}
+.target {
+  font-family: test-font;
+  font-size: 100px;
+  line-height: 2;
+}
+.offset {
+  position: relative;
+}
+.text .target { line-height: 150px; }
+.text .offset { top: -25px; }
+.cap .target { line-height: 130px; }
+.cap .offset { top: -35px; }
+.ex .target { line-height: 90px; }
+.ex .offset { top: -55px; }
+</style>
+<div class="spacer"></div>
+<div class="target">
+  <span class="offset">A</span>
+</div>
+<div class="spacer"></div>

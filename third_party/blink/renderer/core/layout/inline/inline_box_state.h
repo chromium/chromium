@@ -141,6 +141,14 @@ struct InlineBoxState {
   // inline box.
   bool CanAddTextOfStyle(const ComputedStyle&) const;
 
+  // Adjust `metrics` for `text-box-trim` and `text-box-edge` properties.
+  static void AdjustEdges(const ComputedStyle& style,
+                          const Font& font,
+                          FontBaseline baseline_type,
+                          bool should_apply_over,
+                          bool should_apply_under,
+                          FontHeight& metrics);
+
 #if DCHECK_IS_ON()
   void CheckSame(const InlineBoxState&) const;
 #endif

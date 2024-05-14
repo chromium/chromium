@@ -587,27 +587,50 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
 void InlineLayoutAlgorithm::ApplyTextBoxTrim(const LineInfo& line_info) {
   const ConstraintSpace& space = GetConstraintSpace();
-  DCHECK(space.ShouldTextBoxTrimStart() || space.ShouldTextBoxTrimEnd());
-  if (space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine()) {
+  const bool should_apply_start =
+      space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
+  const bool should_apply_end =
+      space.ShouldTextBoxTrimEnd() && !line_info.GetBreakToken();
+  if (!should_apply_start && !should_apply_end) {
+    return;
+  }
+
+  const ComputedStyle& line_style = line_info.LineStyle();
+  const bool is_flipped_line = line_style.IsFlippedLinesWritingMode();
+  bool should_apply_over = should_apply_start;
+  bool should_apply_under = should_apply_end;
+  if (UNLIKELY(is_flipped_line)) {
+    should_apply_over = should_apply_end;
+    should_apply_under = should_apply_start;
+  }
+
+  const FontHeight line_box_metrics = container_builder_.Metrics();
+  FontHeight intrinsic_metrics = line_box_metrics;
+  InlineBoxState::AdjustEdges(line_style, line_style.GetFont(), baseline_type_,
+                              should_apply_over, should_apply_under,
+                              intrinsic_metrics);
+
+  container_builder_.SetIntrinsicMetrics(intrinsic_metrics);
+  container_builder_.SetIsTextBoxTrimApplied();
+
+  if (should_apply_start) {
     // Apply `text-box-trim: start` if this is the first formatted line.
-    // TODO(crbug.com/40254880): The edge should be determined by
-    // `text-box-edge` property.
-    const FontHeight line_box_metrics = container_builder_.Metrics();
-    FontHeight intrinsic_metrics = Node().Style().GetFontHeight(baseline_type_);
-    LayoutUnit offset_for_trimming_box =
-        intrinsic_metrics.ascent - line_box_metrics.ascent;
-    container_builder_.SetIntrinsicMetrics(intrinsic_metrics);
+    const LayoutUnit offset_for_trimming_box =
+        UNLIKELY(is_flipped_line)
+            ? intrinsic_metrics.descent - line_box_metrics.descent
+            : intrinsic_metrics.ascent - line_box_metrics.ascent;
     container_builder_.SetLineBoxBfcBlockOffset(
         container_builder_.LineBoxBfcBlockOffset()
             ? offset_for_trimming_box +
                   container_builder_.LineBoxBfcBlockOffset().value()
             : offset_for_trimming_box);
-    container_builder_.SetIsTextBoxTrimApplied();
   }
-  if (space.ShouldTextBoxTrimEnd() && !line_info.GetBreakToken()) {
+
+  if (should_apply_end) {
     // Apply `text-box-trim: end` if this is the last line.
-    container_builder_.SetIsTextBoxTrimApplied();
+    // TODO(crbug.com/40254880): Not supported yet.
   }
+
   // TODO(crbug.com/40254880): Block-in-inline case probably needs a logic.
 }
 

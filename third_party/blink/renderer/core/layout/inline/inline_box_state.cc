@@ -25,6 +25,17 @@ namespace blink {
 
 namespace {
 
+FontHeight FontHeightWithLeading(const ComputedStyle& style,
+                                 const Font& font,
+                                 const SimpleFontData& font_data,
+                                 FontBaseline baseline_type) {
+  FontHeight metrics = font_data.GetFontMetrics().GetFontHeight(baseline_type);
+  const LayoutUnit line_height = style.ComputedLineHeightAsFixed(font);
+  const FontHeight leading = CalculateLeadingSpace(line_height, metrics);
+  metrics.AddLeading(leading);
+  return metrics;
+}
+
 FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
                                       const Font& font) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
@@ -158,6 +169,68 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   metrics.Unite(text_metrics);
 
   include_used_fonts = styleref.LineHeight().IsAuto();
+}
+
+void InlineBoxState::AdjustEdges(const ComputedStyle& style,
+                                 const Font& font,
+                                 FontBaseline baseline_type,
+                                 bool should_apply_over,
+                                 bool should_apply_under,
+                                 FontHeight& metrics) {
+  DCHECK(should_apply_over || should_apply_under);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  if (UNLIKELY(!font_data)) {
+    return;
+  }
+  std::optional<FontHeight> font_height_with_leading;
+  const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
+  if (should_apply_over) {
+    switch (text_box_edge.Over()) {
+      case TextBoxEdge::Type::kLeading:
+        font_height_with_leading =
+            FontHeightWithLeading(style, font, *font_data, baseline_type);
+        metrics.ascent = font_height_with_leading->ascent;
+        break;
+      case TextBoxEdge::Type::kText:
+        metrics.ascent = font_data->GetFontMetrics().FixedAscent(baseline_type);
+        break;
+      case TextBoxEdge::Type::kCap:
+        // TODO(crbug.com/40254880): Support vertical.
+        metrics.ascent =
+            LayoutUnit::FromFloatCeil(font_data->GetFontMetrics().CapHeight());
+        break;
+      case TextBoxEdge::Type::kEx:
+        // TODO(crbug.com/40254880): Support vertical.
+        metrics.ascent =
+            LayoutUnit::FromFloatCeil(font_data->GetFontMetrics().XHeight());
+        break;
+      case TextBoxEdge::Type::kAlphabetic:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  if (should_apply_under) {
+    switch (text_box_edge.Under()) {
+      case TextBoxEdge::Type::kLeading:
+        if (!font_height_with_leading) {
+          font_height_with_leading =
+              FontHeightWithLeading(style, font, *font_data, baseline_type);
+        }
+        metrics.descent = font_height_with_leading->descent;
+        break;
+      case TextBoxEdge::Type::kText:
+        metrics.descent =
+            font_data->GetFontMetrics().FixedDescent(baseline_type);
+        break;
+      case TextBoxEdge::Type::kAlphabetic:
+        // TODO(crbug.com/40254880): Support vertical.
+        metrics.descent = LayoutUnit();
+        break;
+      case TextBoxEdge::Type::kCap:
+      case TextBoxEdge::Type::kEx:
+        NOTREACHED_NORETURN();
+    }
+  }
 }
 
 void InlineBoxState::ResetTextMetrics() {
