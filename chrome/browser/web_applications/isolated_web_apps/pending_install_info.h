@@ -23,8 +23,6 @@ class IsolatedWebAppPendingInstallInfo {
   static IsolatedWebAppPendingInstallInfo& FromWebContents(
       content::WebContents& web_contents);
 
-  static bool HasPendingInstallSource(content::WebContents& web_contents);
-
   IsolatedWebAppPendingInstallInfo(const IsolatedWebAppPendingInstallInfo&) =
       delete;
   IsolatedWebAppPendingInstallInfo& operator=(

@@ -55,13 +55,6 @@ IsolatedWebAppPendingInstallInfo::FromWebContents(
   return holder->pending_install_info();
 }
 
-// static
-bool IsolatedWebAppPendingInstallInfo::HasPendingInstallSource(
-    content::WebContents& web_contents) {
-  auto* holder = PendingInstallInfoHolder::FromWebContents(&web_contents);
-  return holder && holder->pending_install_info().source().has_value();
-}
-
 IsolatedWebAppPendingInstallInfo::IsolatedWebAppPendingInstallInfo() = default;
 IsolatedWebAppPendingInstallInfo::~IsolatedWebAppPendingInstallInfo() = default;
 

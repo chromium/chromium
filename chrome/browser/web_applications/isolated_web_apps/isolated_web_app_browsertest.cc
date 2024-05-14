@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -51,8 +50,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
-#include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -71,9 +68,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace web_app {
 
@@ -207,15 +201,6 @@ class ServiceWorkerVersionStoppedRunningWaiter
   base::RunLoop run_loop_;
 };
 
-std::string CreateSerializedIcon() {
-  SkBitmap icon = CreateSquareIcon(256, SK_ColorBLUE);
-  SkDynamicMemoryWStream stream;
-  CHECK(SkPngEncoder::Encode(&stream, icon.pixmap(), {}));
-  sk_sp<SkData> icon_skdata = stream.detachAsData();
-  return std::string(static_cast<const char*>(icon_skdata->data()),
-                     icon_skdata->size());
-}
-
 }  // namespace
 
 class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
@@ -247,58 +232,6 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
  private:
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
-
-// TODO(crbug.com/325132780): Remove when manifest fallback logic is gone.
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NewManifestPathPreferred) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder().SetName("new path used"))
-          .AddResource("/manifest.webmanifest",
-                       ManifestBuilder().SetName("old path used").ToJson(),
-                       "application/manifest+json")
-          .BuildBundle();
-
-  app->TrustSigningKey();
-  IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
-
-  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(url_info.app_id()),
-            "new path used");
-}
-
-// TODO(crbug.com/325132780): Remove when manifest fallback logic is gone.
-IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, FallsBackToOldManifestPath) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  auto key_pair = web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          key_pair.public_key);
-
-  // We don't use IsolatedWebAppBuilder here becuause it can't create a bundle
-  // without a manifest.
-  web_package::WebBundleBuilder builder;
-  builder.AddExchange(
-      "/manifest.webmanifest",
-      {{":status", "200"}, {"content-type", "application/manifest+json"}},
-      ManifestBuilder()
-          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
-          .SetName("fallback manifest")
-          .ToJson());
-  builder.AddExchange("/", {{":status", "200"}, {"content-type", "text/html"}},
-                      "Test html");
-  builder.AddExchange("/icon.png",
-                      {{":status", "200"}, {"content-type", "image/png"}},
-                      CreateSerializedIcon());
-
-  auto app = ScopedBundledIsolatedWebApp::Create(
-      web_bundle_id, web_package::WebBundleSigner::SignBundle(
-                         builder.CreateBundle(), {key_pair}));
-  app->TrustSigningKey();
-  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
-
-  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(url_info.app_id()),
-            "fallback manifest");
-}
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
   web_app::IsolatedWebAppUrlInfo url_info1 = InstallDevModeProxyIsolatedWebApp(

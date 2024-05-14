@@ -76,33 +76,9 @@ const char kInstallPageContent[] = R"(
       <head>
         <meta charset="utf-8" />
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
-        <!--<link rel="manifest" href="/.well-known/manifest.webmanifest" />-->
-        <script src="/.well-known/_generated_install_page.js"></script>
+        <link rel="manifest" href="/.well-known/manifest.webmanifest" />
       </head>
     </html>
-)";
-
-// TODO(crbug.com/325132780): Remove when manifest fallback logic is gone.
-const char kInstallPageJsPath[] = "/.well-known/_generated_install_page.js";
-const char kInstallPageJsContent[] = R"(
-    function get(url) {
-      const request = new XMLHttpRequest();
-      request.open('GET', url, /*async=*/false);
-      request.send(null);
-      return request.status == 200;
-    }
-
-    const has_new_manifest = get('/.well-known/manifest.webmanifest');
-    const has_old_manifest = get('/manifest.webmanifest');
-
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'manifest');
-    if (!has_new_manifest && has_old_manifest) {
-      link.setAttribute('href', '/manifest.webmanifest');
-    } else {
-      link.setAttribute('href', '/.well-known/manifest.webmanifest');
-    }
-    document.head.appendChild(link);
 )";
 
 const char kIsolatedAppCSP[] =
@@ -599,13 +575,6 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
     CompleteWithGeneratedResponse(
         mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
         net::HTTP_OK, kInstallPageContent);
-    return;
-  }
-
-  if (is_pending_install && resource_request.url.path() == kInstallPageJsPath) {
-    CompleteWithGeneratedResponse(
-        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_OK, kInstallPageJsContent, "text/javascript");
     return;
   }
 
