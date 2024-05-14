@@ -26,11 +26,12 @@
 
 namespace {
 
-void StopAndReleaseDeviceOnDeviceThread(media::VideoCaptureDevice* device,
-                                        base::OnceClosure done_cb) {
+void StopAndReleaseDeviceOnDeviceThread(
+    std::unique_ptr<media::VideoCaptureDevice> device,
+    base::OnceClosure done_cb) {
   device->StopAndDeAllocate();
   DVLOG(3) << "StopAndReleaseDeviceOnDeviceThread";
-  delete device;
+  device.reset();
   std::move(done_cb).Run();
 }
 
@@ -47,10 +48,9 @@ InProcessLaunchedVideoCaptureDevice::InProcessLaunchedVideoCaptureDevice(
 InProcessLaunchedVideoCaptureDevice::~InProcessLaunchedVideoCaptureDevice() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(device_);
-  media::VideoCaptureDevice* device_ptr = device_.release();
   device_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&StopAndReleaseDeviceOnDeviceThread, device_ptr,
+      base::BindOnce(&StopAndReleaseDeviceOnDeviceThread, std::move(device_),
                      base::DoNothingWithBoundArgs(device_task_runner_)));
 }
 
@@ -178,8 +178,7 @@ void InProcessLaunchedVideoCaptureDevice::
                                             base::OnceClosure done_cb) {
   DCHECK(device_task_runner_->BelongsToCurrentThread());
 #if defined(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID)
-  DesktopCaptureDevice* desktop_device =
-      static_cast<DesktopCaptureDevice*>(device);
+  auto* desktop_device = static_cast<DesktopCaptureDevice*>(device);
   desktop_device->SetNotificationWindowId(window_id);
   VLOG(2) << "Screen capture notification window passed on device thread.";
 #endif
