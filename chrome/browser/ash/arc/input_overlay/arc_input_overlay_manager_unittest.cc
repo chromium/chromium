@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_manager.h"
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "ash/components/arc/test/fake_compatibility_mode_instance.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -22,7 +24,9 @@
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -65,6 +69,24 @@ void ToggleGameControls(aura::Window* window, bool is_feature) {
                            ash::ArcGameControlsFlag::kHint)
                      : ash::ArcGameControlsFlag::kHint,
                  toggle_on));
+}
+
+// Verifies UKM event entry size of ToggleWithMappingSource is
+// `expected_entry_size` and the entry of `index` matches
+// `expected_event_values`.
+void VerifyToggleWithMappingSourceUkmEvent(
+    const ukm::TestAutoSetUkmRecorder& ukm_recorder,
+    size_t expected_entry_size,
+    size_t index,
+    std::map<std::string, int64_t> expected_event_values) {
+  DCHECK_LT(index, expected_entry_size);
+  const auto ukm_entries = ukm_recorder.GetEntriesByName(
+      BuildGameControlsUkmEventName(kToggleWithMappingSourceHistogram));
+  EXPECT_EQ(expected_entry_size, ukm_entries.size());
+  for (const auto& value_item : expected_event_values) {
+    ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+        ukm_entries[index], value_item.first, value_item.second);
+  }
 }
 
 }  // namespace
@@ -718,6 +740,7 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
   }
 
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   std::map<MappingSource, int> expected_histogram_values_for_hint_on;
   std::map<MappingSource, int> expected_histogram_values_for_hint_off;
   std::map<MappingSource, int> expected_histogram_values_for_feature_on;
@@ -769,12 +792,31 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         MappingSource::kDefault);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u, /*index=*/0u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
+
   // Toggle hint on.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/false);
   MapIncreaseValueByOne(expected_histogram_values_for_hint_on,
                         MappingSource::kDefault);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u, /*index=*/1u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
+
   // Toggle feature off.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_off,
@@ -786,6 +828,22 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_off);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/4u, /*index=*/2u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/4u, /*index=*/3u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
   // Toggle feature on.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_on,
@@ -797,6 +855,22 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_on);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/6u, /*index=*/4u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/6u, /*index=*/5u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefault)}});
 
   // 2. Add the default mapping with extra user-added mapping.
   auto* injector = GetTouchInjector(arc_window->GetNativeWindow());
@@ -808,12 +882,28 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         MappingSource::kDefaultAndUserAdded);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/7u, /*index=*/6u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
   // Toggle hint on.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/false);
   MapIncreaseValueByOne(expected_histogram_values_for_hint_on,
                         MappingSource::kDefaultAndUserAdded);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/8u, /*index=*/7u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
   // Toggle feature off.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_off,
@@ -825,6 +915,23 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_off);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/10u, /*index=*/8u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/10u, /*index=*/9u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
+
   // Toggle feature on.
   ToggleGameControls(arc_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_on,
@@ -836,6 +943,22 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_on);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/12u, /*index=*/10u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/12u, /*index=*/11u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kDefaultAndUserAdded)}});
 
   // 3. Test with user-added mapping only.
   auto game_window = CreateArcWindowSyncAndWait(
@@ -850,12 +973,28 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         MappingSource::kUserAdded);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/13u, /*index=*/12u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
   // Toggle hint on.
   ToggleGameControls(game_window->GetNativeWindow(), /*is_feature=*/false);
   MapIncreaseValueByOne(expected_histogram_values_for_hint_on,
                         MappingSource::kUserAdded);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/14u, /*index=*/13u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
   // Toggle feature off.
   ToggleGameControls(game_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_off,
@@ -867,6 +1006,22 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_off);
   VerifyHistogramValues(histograms, hint_off_histogram_name,
                         expected_histogram_values_for_hint_off);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/16u, /*index=*/14u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/16u, /*index=*/15u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/0},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
   // Toggle feature on.
   ToggleGameControls(game_window->GetNativeWindow(), /*is_feature=*/true);
   MapIncreaseValueByOne(expected_histogram_values_for_feature_on,
@@ -878,6 +1033,22 @@ TEST_P(VersionArcInputOverlayManagerTest, TestHistograms) {
                         expected_histogram_values_for_feature_on);
   VerifyHistogramValues(histograms, hint_on_histogram_name,
                         expected_histogram_values_for_hint_on);
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/18u, /*index=*/16u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kFeature)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
+  VerifyToggleWithMappingSourceUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/18u, /*index=*/17u,
+      {{ukm::builders::GameControls_ToggleWithMappingSource::kFunctionName,
+        static_cast<int64_t>(GameControlsToggleFunction::kMappingHint)},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kToggleOnName,
+        /*toggle_on=*/1},
+       {ukm::builders::GameControls_ToggleWithMappingSource::kMappingSourceName,
+        static_cast<int64_t>(MappingSource::kUserAdded)}});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

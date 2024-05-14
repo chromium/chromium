@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 
+#include <cstdint>
 #include <vector>
 
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -397,6 +399,7 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestDeleteEditMenu) {
 
 TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Check button options histograms.
   const std::string button_options_histogram_name =
@@ -411,6 +414,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
                         ButtonOptionsMenuFunction::kDone);
   VerifyHistogramValues(histograms, button_options_histogram_name,
                         expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u, /*index=*/0u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kDone));
 
   ShowButtonOptionsMenu(move_action_);
   PressDeleteButtonOnButtonOptionsMenu();
@@ -418,6 +424,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
                         ButtonOptionsMenuFunction::kDelete);
   VerifyHistogramValues(histograms, button_options_histogram_name,
                         expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u, /*index=*/1u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kDelete));
 
   // Check editing list histograms.
   const std::string editing_list_histogram_name =
@@ -428,6 +437,9 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestHistograms) {
                         EditingListFunction::kDone);
   VerifyHistogramValues(histograms, editing_list_histogram_name,
                         expected_editing_list_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u,
+      static_cast<int64_t>(EditingListFunction::kDone));
 }
 
 }  // namespace arc::input_overlay

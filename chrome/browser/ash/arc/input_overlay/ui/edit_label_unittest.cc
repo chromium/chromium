@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/view_utils.h"
 
@@ -312,6 +313,7 @@ TEST_F(EditLabelTest, TestEditingNewAction) {
 TEST_F(EditLabelTest, TestHistograms) {
   widget_->GetNativeWindow()->SetBounds(gfx::Rect(310, 10, 300, 500));
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Check histograms for editing list.
   const std::string editing_list_histogram_name =
@@ -322,6 +324,10 @@ TEST_F(EditLabelTest, TestHistograms) {
                         EditingListFunction::kEditLabelFocused);
   VerifyHistogramValues(histograms, editing_list_histogram_name,
                         expected_editing_list_histogram_values);
+  // There is a hover event recorded before this.
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u,
+      static_cast<int64_t>(EditingListFunction::kEditLabelFocused));
 
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_M, ui::EF_NONE);
@@ -329,6 +335,9 @@ TEST_F(EditLabelTest, TestHistograms) {
                         EditingListFunction::kKeyAssigned);
   VerifyHistogramValues(histograms, editing_list_histogram_name,
                         expected_editing_list_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u,
+      static_cast<int64_t>(EditingListFunction::kKeyAssigned));
 
   // Check histograms for button options menu.
   const std::string button_options_histogram_name =
@@ -342,6 +351,9 @@ TEST_F(EditLabelTest, TestHistograms) {
                         ButtonOptionsMenuFunction::kEditLabelFocused);
   VerifyHistogramValues(histograms, button_options_histogram_name,
                         expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u, /*index=*/0u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kEditLabelFocused));
 
   event_generator->PressAndReleaseKey(ui::VKEY_N, ui::EF_NONE);
   // After assign a key, the focus is automatically moved to the next one.
@@ -351,6 +363,12 @@ TEST_F(EditLabelTest, TestHistograms) {
                         ButtonOptionsMenuFunction::kKeyAssigned);
   VerifyHistogramValues(histograms, button_options_histogram_name,
                         expected_button_options_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u, /*index=*/1u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kKeyAssigned));
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u, /*index=*/2u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kEditLabelFocused));
 }
 
 }  // namespace arc::input_overlay

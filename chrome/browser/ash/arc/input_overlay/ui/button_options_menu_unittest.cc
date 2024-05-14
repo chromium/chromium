@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -286,6 +287,7 @@ TEST_F(ButtonOptionsMenuTest, TestDisplayRelatedToShelf) {
 
 TEST_F(ButtonOptionsMenuTest, TestHistograms) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   const std::string histogram_name = BuildGameControlsHistogramName(
       kButtonOptionsMenuFunctionTriggeredHistogram);
   std::map<ButtonOptionsMenuFunction, int> expected_histogram_values;
@@ -295,11 +297,17 @@ TEST_F(ButtonOptionsMenuTest, TestHistograms) {
   MapIncreaseValueByOne(expected_histogram_values,
                         ButtonOptionsMenuFunction::kOptionJoystick);
   VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u, /*index=*/0u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kOptionJoystick));
 
   PressTapButton(menu);
   MapIncreaseValueByOne(expected_histogram_values,
                         ButtonOptionsMenuFunction::kOptionSingleButton);
   VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u, /*index=*/1u,
+      static_cast<int64_t>(ButtonOptionsMenuFunction::kOptionSingleButton));
 }
 
 }  // namespace arc::input_overlay

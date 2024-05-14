@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -531,6 +532,7 @@ TEST_F(EditingListTest, TestMaximumActions) {
 
 TEST_F(EditingListTest, TestHistograms) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   const std::string histogram_name =
       BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram);
   std::map<EditingListFunction, int> expected_histogram_values;
@@ -538,17 +540,26 @@ TEST_F(EditingListTest, TestHistograms) {
   PressAddButton();
   MapIncreaseValueByOne(expected_histogram_values, EditingListFunction::kAdd);
   VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/1u,
+      static_cast<int64_t>(EditingListFunction::kAdd));
 
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
   HoverAtActionViewListItem(/*index=*/0u);
   MapIncreaseValueByOne(expected_histogram_values,
                         EditingListFunction::kHoverListItem);
   VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/2u,
+      static_cast<int64_t>(EditingListFunction::kHoverListItem));
 
   LeftClickAtActionViewListItem(/*index=*/0);
   MapIncreaseValueByOne(expected_histogram_values,
                         EditingListFunction::kPressListItem);
   VerifyHistogramValues(histograms, histogram_name, expected_histogram_values);
+  VerifyEditingListFunctionTriggeredUkmEvent(
+      ukm_recorder, /*expected_entry_size=*/3u,
+      static_cast<int64_t>(EditingListFunction::kPressListItem));
 }
 
 }  // namespace arc::input_overlay

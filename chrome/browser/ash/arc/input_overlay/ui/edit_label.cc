@@ -277,9 +277,11 @@ void EditLabel::OnFocus() {
   SetToFocused();
   if (for_editing_list_) {
     controller_->AddActionHighlightWidget(action_);
-    RecordEditingListFunctionTriggered(EditingListFunction::kEditLabelFocused);
+    RecordEditingListFunctionTriggered(controller_->GetPackageName(),
+                                       EditingListFunction::kEditLabelFocused);
   } else {
     RecordButtonOptionsMenuFunctionTriggered(
+        controller_->GetPackageName(),
         ButtonOptionsMenuFunction::kEditLabelFocused);
   }
 }
@@ -338,11 +340,13 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   SetTextLabel(new_bind);
+  const std::string& package_name = controller_->GetPackageName();
   if (for_editing_list_) {
-    RecordEditingListFunctionTriggered(EditingListFunction::kKeyAssigned);
+    RecordEditingListFunctionTriggered(package_name,
+                                       EditingListFunction::kKeyAssigned);
   } else {
     RecordButtonOptionsMenuFunctionTriggered(
-        ButtonOptionsMenuFunction::kKeyAssigned);
+        package_name, ButtonOptionsMenuFunction::kKeyAssigned);
   }
 
   std::unique_ptr<InputElement> input;

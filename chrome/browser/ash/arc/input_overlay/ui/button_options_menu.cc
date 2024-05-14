@@ -282,13 +282,15 @@ void ButtonOptionsMenu::AddDoneButton() {
 }
 
 void ButtonOptionsMenu::OnTrashButtonPressed() {
-  RecordButtonOptionsMenuFunctionTriggered(ButtonOptionsMenuFunction::kDelete);
+  RecordButtonOptionsMenuFunctionTriggered(controller_->GetPackageName(),
+                                           ButtonOptionsMenuFunction::kDelete);
   controller_->RemoveAction(action_);
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   controller_->SaveToProtoFile();
-  RecordButtonOptionsMenuFunctionTriggered(ButtonOptionsMenuFunction::kDone);
+  RecordButtonOptionsMenuFunctionTriggered(controller_->GetPackageName(),
+                                           ButtonOptionsMenuFunction::kDone);
 
   controller_->SetEditingListVisibility(/*visible=*/true);
 

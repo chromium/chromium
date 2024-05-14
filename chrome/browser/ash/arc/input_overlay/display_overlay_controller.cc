@@ -1086,12 +1086,14 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
       const auto mapping_source = GetMappingSource();
       if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kEnabled)) {
         RecordToggleWithMappingSource(
+            GetPackageName(),
             /*is_feature=*/true,
             /*is_on=*/IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled),
             mapping_source);
       }
       if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kHint)) {
         RecordToggleWithMappingSource(
+            GetPackageName(),
             /*is_feature=*/false,
             /*is_on=*/IsFlagSet(flags, ash::ArcGameControlsFlag::kHint),
             mapping_source);

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 
+#include <cstdint>
+
 #include "ash/wm/window_state.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -17,6 +19,7 @@ namespace arc::input_overlay {
 namespace {
 
 constexpr char kGameControlsHistogramNameRoot[] = "Arc.GameControls";
+constexpr char kGameControlsUkmEventNameRoot[] = "GameControls";
 
 }  // namespace
 
@@ -86,10 +89,56 @@ class InputOverlayUkm {
         .SetWindowStateType(static_cast<int64_t>(state_type))
         .Record(ukm::UkmRecorder::Get());
   }
+
+  static void RecordToggleWithMappingSource(const std::string& package_name,
+                                            bool is_feature,
+                                            bool is_on,
+                                            MappingSource source) {
+    ukm::builders::GameControls_ToggleWithMappingSource(
+        ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+        .SetFunction(static_cast<int64_t>(
+            is_feature ? GameControlsToggleFunction::kFeature
+                       : GameControlsToggleFunction::kMappingHint))
+        .SetToggleOn(is_on)
+        .SetMappingSource(static_cast<int64_t>(source))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  static void RecordEditingListFunctionTriggered(
+      const std::string& package_name,
+      EditingListFunction function) {
+    ukm::builders::GameControls_EditingListFunctionTriggered(
+        ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+        .SetFunction(static_cast<int64_t>(function))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  static void RecordButtonOptionsMenuFunctionTriggered(
+      const std::string& package_name,
+      ButtonOptionsMenuFunction function) {
+    ukm::builders::GameControls_ButtonOptionsMenuFunctionTriggered(
+        ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+        .SetFunction(static_cast<int64_t>(function))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  static void RecordEditDeleteMenuFunctionTriggered(
+      const std::string& package_name,
+      EditDeleteMenuFunction function) {
+    ukm::builders::GameControls_EditDeleteMenuFuctionTriggered(
+        ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name))
+        .SetFunction(static_cast<int64_t>(function))
+        .Record(ukm::UkmRecorder::Get());
+  }
 };
 
 std::string BuildGameControlsHistogramName(const std::string& name) {
   return base::JoinString({kGameControlsHistogramNameRoot, name},
+                          kGameControlsHistogramSeparator);
+}
+
+std::string BuildGameControlsUkmEventName(const std::string& name) {
+  return base::JoinString({kGameControlsUkmEventNameRoot, name},
                           kGameControlsHistogramSeparator);
 }
 
@@ -146,27 +195,37 @@ void RecordInputOverlayButtonGroupReposition(
       package_name, reposition_type, state_type);
 }
 
-void RecordEditingListFunctionTriggered(EditingListFunction function) {
+void RecordEditingListFunctionTriggered(const std::string& package_name,
+                                        EditingListFunction function) {
   base::UmaHistogramEnumeration(
       BuildGameControlsHistogramName(kEditingListFunctionTriggeredHistogram),
       function);
+  InputOverlayUkm::RecordEditingListFunctionTriggered(package_name, function);
 }
 
 void RecordButtonOptionsMenuFunctionTriggered(
+    const std::string& package_name,
     ButtonOptionsMenuFunction function) {
   base::UmaHistogramEnumeration(
       BuildGameControlsHistogramName(
           kButtonOptionsMenuFunctionTriggeredHistogram),
       function);
+  InputOverlayUkm::RecordButtonOptionsMenuFunctionTriggered(package_name,
+                                                            function);
 }
 
-void RecordEditDeleteMenuFunctionTriggered(EditDeleteMenuFunction function) {
+void RecordEditDeleteMenuFunctionTriggered(const std::string& package_name,
+                                           EditDeleteMenuFunction function) {
   base::UmaHistogramEnumeration(
       BuildGameControlsHistogramName(kEditDeleteMenuFunctionTriggeredHistogram),
       function);
+
+  InputOverlayUkm::RecordEditDeleteMenuFunctionTriggered(package_name,
+                                                         function);
 }
 
-void RecordToggleWithMappingSource(bool is_feature,
+void RecordToggleWithMappingSource(const std::string& package_name,
+                                   bool is_feature,
                                    bool is_on,
                                    MappingSource source) {
   base::UmaHistogramEnumeration(
@@ -178,6 +237,8 @@ void RecordToggleWithMappingSource(bool is_feature,
           .append(kGameControlsHistogramSeparator)
           .append(is_on ? kToggleOnHistogramName : kToggleOffHistogramName),
       source);
+  InputOverlayUkm::RecordToggleWithMappingSource(package_name, is_feature,
+                                                 is_on, source);
 }
 
 }  // namespace arc::input_overlay
