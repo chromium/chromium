@@ -837,6 +837,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
           "runMochaSuite('CompletionFragmentWithoutTrackingProtection')");
 }
 
+// TODO(crbug.com/40942110): Re-enable when no longer flaky.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_3pcdOff DISABLED_3pcdOff
 #else
