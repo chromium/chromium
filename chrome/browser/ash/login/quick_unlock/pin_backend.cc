@@ -175,7 +175,7 @@ void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED() << "IsSet called with invalid user";
+      NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
       std::move(result).Run(false);
       return;
     }
@@ -272,7 +272,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED() << "IsSet called with invalid user";
+    NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
     std::move(did_set).Run(false);
     return;
   }
@@ -341,7 +341,7 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED() << "CanAuthenticate called with invalid user";
+      NOTREACHED_IN_MIGRATION() << "CanAuthenticate called with invalid user";
       std::move(result).Run(false);
       return;
     }

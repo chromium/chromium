@@ -1424,7 +1424,7 @@ void DeviceSettingsProvider::DoSet(const std::string& path,
   }
 
   if (!IsDeviceSetting(path)) {
-    NOTREACHED() << "Try to set unhandled cros setting " << path;
+    NOTREACHED_IN_MIGRATION() << "Try to set unhandled cros setting " << path;
     return;
   }
 
@@ -1632,7 +1632,7 @@ const base::Value* DeviceSettingsProvider::Get(std::string_view path) const {
     if (values_cache_.GetValue(path, &value))
       return value;
   } else {
-    NOTREACHED() << "Trying to get non cros setting.";
+    NOTREACHED_IN_MIGRATION() << "Trying to get non cros setting.";
   }
 
   return nullptr;

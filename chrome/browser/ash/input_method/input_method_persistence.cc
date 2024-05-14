@@ -125,7 +125,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
       // We use a special set of input methods on the screen. Do not update.
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

@@ -179,7 +179,7 @@ void SetOneTimeAutoLaunchKioskAppId(PrefService& local_state,
 
   switch (kiosk_app_id.type) {
     case KioskAppType::kArcApp:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case KioskAppType::kChromeApp:
       dict_update->Set(kOneTimeAutoLaunchChromeAppAccountId,

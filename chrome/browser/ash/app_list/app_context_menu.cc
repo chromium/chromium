@@ -146,7 +146,7 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       return gfx::kNoneIcon;
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::kNoneIcon;
     case ash::REORDER_SUBMENU:
       return ash::kReorderIcon;
@@ -155,13 +155,14 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::REORDER_BY_COLOR:
       return ash::kSortColorIcon;
     case ash::NOTIFICATION_CONTAINER:
-      NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
-                      "added to the model by NotificationMenuController.";
+      NOTREACHED_IN_MIGRATION()
+          << "NOTIFICATION_CONTAINER does not have an icon, and it is "
+             "added to the model by NotificationMenuController.";
       return gfx::kNoneIcon;
     case ash::SHUTDOWN_GUEST_OS:
       return kShutdownGuestOsIcon;
     default:
-      NOTREACHED() << "No icon for command_id: " << command_id;
+      NOTREACHED_IN_MIGRATION() << "No icon for command_id: " << command_id;
       return gfx::kNoneIcon;
   }
 }
@@ -209,7 +210,7 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
     return;
   }
   if (command_id == ash::NOTIFICATION_CONTAINER) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "NOTIFICATION_CONTAINER is added by NotificationMenuController.";
     return;
   }

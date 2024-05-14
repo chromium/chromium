@@ -255,7 +255,7 @@ TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
       target_paths = base::span<const char* const>(kNeedCopyForCopyDataPaths);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   TargetItems target_items;

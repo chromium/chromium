@@ -166,7 +166,7 @@ SkColor GetOutsideStrokeColor(const ui::ColorProvider* color_provider,
                             cros_tokens::kCrosSysGamingControlButtonBorderHover)
                       : kOutsideStrokeColorDrag;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -183,7 +183,7 @@ SkColor GetInsideStrokeColor(const ui::ColorProvider* color_provider,
       return IsBeta() ? SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.4f))
                       : kInsideStrokeColorDrag;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -205,7 +205,7 @@ SkColor GetCenterColor(const ui::ColorProvider* color_provider,
                       : color_utils::GetResultingPaintColor(
                             kCenterColorDrag30White, kCenterColor);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -286,7 +286,7 @@ TouchPoint* TouchPoint::Show(views::View* parent,
       touch_point = std::make_unique<CrossTouchPoint>(center_pos);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   auto* touch_point_ptr =
@@ -308,7 +308,7 @@ int TouchPoint::GetEdgeLength(ActionType action_type) {
                kCrossOutsideStrokeThickness * 2;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return length;
 }
@@ -375,7 +375,7 @@ void TouchPoint::DrawTouchPoint(gfx::Canvas* canvas,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

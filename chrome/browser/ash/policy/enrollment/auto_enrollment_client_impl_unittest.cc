@@ -183,7 +183,7 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
       return kDeviceStateInitialModeEnrollmentEnforced;
     if (restore_state == kDeviceStateRestoreModeReEnrollmentZeroTouch)
       return kDeviceStateInitialModeEnrollmentZeroTouch;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

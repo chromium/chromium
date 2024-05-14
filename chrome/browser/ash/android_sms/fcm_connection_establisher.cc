@@ -92,7 +92,7 @@ FcmConnectionEstablisher::GetMessageTypeForConnectionMode(
     case ConnectionMode::kResumeExistingConnection:
       return MessageType::kResume;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -106,7 +106,7 @@ std::string FcmConnectionEstablisher::GetMessageStringForType(
     case MessageType::kStop:
       return kStopFcmMessage;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

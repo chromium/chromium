@@ -713,7 +713,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
   wallpaper_provider_remote()->FetchGooglePhotosAlbums(
       kResumeToken, base::BindLambdaForTesting(
                         [](mojom::FetchGooglePhotosAlbumsResponsePtr response) {
-                          NOTREACHED();
+                          NOTREACHED_IN_MIGRATION();
                         }));
   EXPECT_EQ(
       "Cannot call `FetchGooglePhotosAlbums()` without confirming that the "
@@ -776,7 +776,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       item_id, album_id, kResumeToken,
       base::BindLambdaForTesting(
           [](mojom::FetchGooglePhotosPhotosResponsePtr response) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }));
   EXPECT_EQ(
       "Cannot call `FetchGooglePhotosPhotos()` without confirming that the "

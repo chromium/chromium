@@ -49,7 +49,7 @@ std::ostream& operator<<(std::ostream& out, const ValidationError& value) {
       out << "kInfoFileInvalid";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return out;
@@ -66,7 +66,7 @@ base::File::Error ValidationErrorToFileError(ValidationError error) {
     case ValidationError::kInfoFileInvalid:
       return base::File::FILE_ERROR_INVALID_OPERATION;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::File::FILE_ERROR_FAILED;
   }
 }

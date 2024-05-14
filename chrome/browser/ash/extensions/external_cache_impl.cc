@@ -231,8 +231,8 @@ void ExternalCacheImpl::UpdateExtensionsList(base::Value::Dict prefs) {
 void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
   for (const auto [key, value] : cached_extensions_) {
     if (!value.is_dict()) {
-      NOTREACHED() << "ExternalCacheImpl found bad entry with type "
-                   << value.type();
+      NOTREACHED_IN_MIGRATION()
+          << "ExternalCacheImpl found bad entry with type " << value.type();
       continue;
     }
 

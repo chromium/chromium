@@ -142,7 +142,7 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kErrorUnknown;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 SetupResult InstallStateToCancelledSetupResult(
@@ -168,7 +168,7 @@ SetupResult InstallStateToCancelledSetupResult(
       return SetupResult::kUserCancelledConfiguringContainer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 crostini::mojom::InstallerError CrostiniResultToInstallerError(
@@ -185,7 +185,7 @@ crostini::mojom::InstallerError CrostiniResultToInstallerError(
   switch (installer_state) {
     default:
     case InstallerState::kStart:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return InstallerError::kErrorUnknown;
     case InstallerState::kInstallImageLoader:
       if (offline) {
@@ -452,7 +452,7 @@ void CrostiniInstaller::RunProgressCallback() {
       state_max_time = base::Seconds(140 + 300);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   double state_fraction = time_in_state / state_max_time;

@@ -180,7 +180,7 @@ int FindNewCustomActionID(const std::vector<int>& id_list) {
     } else {
       // This is unlikely to happen because there is no repeated number in
       // `id_list`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -198,7 +198,7 @@ std::unique_ptr<Action> CreateRawAction(ActionType type,
     case ActionType::MOVE:
       return std::make_unique<ActionMove>(injector);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

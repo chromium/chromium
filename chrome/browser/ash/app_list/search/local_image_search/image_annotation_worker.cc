@@ -491,7 +491,7 @@ void ImageAnnotationWorker::OnDecodeImageFile(
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ImageAnnotationWorker::OnPerformOcr(

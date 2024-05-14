@@ -379,7 +379,7 @@ class AccessibilityServiceClientTest : public InProcessBrowserTest {
   void TurnOnAccessibilityService(AssistiveTechnologyType type) {
     switch (type) {
       case ax::mojom::AssistiveTechnologyType::kUnknown:
-        NOTREACHED() << "Unknown AT type";
+        NOTREACHED_IN_MIGRATION() << "Unknown AT type";
         break;
       case ax::mojom::AssistiveTechnologyType::kChromeVox:
         Client()->SetChromeVoxEnabled(true);

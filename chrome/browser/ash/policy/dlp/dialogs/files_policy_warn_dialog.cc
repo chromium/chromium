@@ -77,7 +77,7 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE);
     case data_controls::Component::kUnknownComponent:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return u"";
   }
 }

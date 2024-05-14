@@ -665,7 +665,7 @@ void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
 }
 
 void LoginDisplayHostMojo::ShowEnableConsumerKioskScreen() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
@@ -769,7 +769,7 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
 }
 
 bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

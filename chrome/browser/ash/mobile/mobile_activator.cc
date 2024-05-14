@@ -245,8 +245,9 @@ void MobileActivator::HandlePortalLoaded(bool success) {
                   ActivationError::kNone);
     }
   } else {
-    NOTREACHED() << "Called paymentPortalLoad while in unexpected state: "
-                 << GetStateDescription(state_);
+    NOTREACHED_IN_MIGRATION()
+        << "Called paymentPortalLoad while in unexpected state: "
+        << GetStateDescription(state_);
   }
 }
 

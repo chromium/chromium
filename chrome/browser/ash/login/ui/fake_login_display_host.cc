@@ -166,7 +166,7 @@ SigninUI* FakeLoginDisplayHost::GetSigninUI() {
 
 void FakeLoginDisplayHost::AddWizardCreatedObserverForTests(
     base::RepeatingClosure on_created) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
@@ -174,7 +174,7 @@ bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
 }
 
 WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

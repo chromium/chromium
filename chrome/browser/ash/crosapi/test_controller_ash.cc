@@ -580,7 +580,7 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
   switch (type) {
     case mojom::TouchEventType::kUnknown:
       // |type| is not optional, so kUnknown is never expected.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case mojom::TouchEventType::kPressed:
       event_type = ui::ET_TOUCH_PRESSED;

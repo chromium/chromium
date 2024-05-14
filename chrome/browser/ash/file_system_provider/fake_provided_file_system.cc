@@ -590,7 +590,7 @@ const ProvidedFileSystemInfo& FakeProvidedFileSystem::GetFileSystemInfo()
 }
 
 OperationRequestManager* FakeProvidedFileSystem::GetRequestManager() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -620,13 +620,13 @@ void FakeProvidedFileSystem::Notify(
     std::unique_ptr<ProvidedFileSystemObserver::Changes> changes,
     const std::string& tag,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }
 
 void FakeProvidedFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }
 

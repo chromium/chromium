@@ -296,7 +296,7 @@ std::ostream& operator<<(std::ostream& os, Status status) {
       return os << "CANCELLED";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 

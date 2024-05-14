@@ -1157,15 +1157,18 @@ class LocalTestVolume : public TestVolume {
             << "Failed to create a symlink: " << target_path.value();
         break;
       case AddEntriesMessage::TEAM_DRIVE:
-        NOTREACHED() << "Can't create a team drive in a local volume: "
-                     << target_path.value();
+        NOTREACHED_IN_MIGRATION()
+            << "Can't create a team drive in a local volume: "
+            << target_path.value();
         break;
       case AddEntriesMessage::COMPUTER:
-        NOTREACHED() << "Can't create a computer in a local volume: "
-                     << target_path.value();
+        NOTREACHED_IN_MIGRATION()
+            << "Can't create a computer in a local volume: "
+            << target_path.value();
         break;
       default:
-        NOTREACHED() << "Unsupported entry type for: " << target_path.value();
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported entry type for: " << target_path.value();
     }
 
     ASSERT_TRUE(UpdateModifiedTime(entry, target_path));
@@ -2194,7 +2197,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     } else if (vm_type == "unknown") {
       vm_type_ = guest_os::VmType::UNKNOWN;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       vm_type_ = guest_os::VmType::UNKNOWN;
     }
   }
@@ -2308,7 +2311,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCrashed(
   if (devtools_agent_.find(host) == devtools_agent_.end()) {
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FileManagerBrowserTestBase::SetUp() {
@@ -3112,7 +3115,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       }
     }
     // Fail the test if the chrome-untrusted:// frame wasn't found.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -3655,7 +3658,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     } else if (*status == "connected") {
       SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
     } else {
-      NOTREACHED() << "Unknown status (" << *status << ") provided";
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown status (" << *status << ") provided";
     }
 
     auto* const service =

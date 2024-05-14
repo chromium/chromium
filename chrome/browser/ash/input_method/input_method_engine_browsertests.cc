@@ -132,7 +132,7 @@ class InputMethodEngineBrowserTest
         return LoadExtensionAsComponent(
             test_data_dir_.AppendASCII(extension_name));
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

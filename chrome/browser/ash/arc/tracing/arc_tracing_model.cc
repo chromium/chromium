@@ -515,7 +515,7 @@ bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

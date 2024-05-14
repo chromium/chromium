@@ -120,7 +120,7 @@ class LoginLogoutTestHelper {
       case user_manager::UserType::kWebKioskApp:
         return CreateWebKioskAppProfile();
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
   }

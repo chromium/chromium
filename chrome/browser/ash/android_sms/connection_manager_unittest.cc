@@ -60,7 +60,7 @@ class ConnectionManagerTest : public testing::Test {
       if (url == GetAndroidMessagesURLOld())
         return old_url_service_worker_;
 
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
 

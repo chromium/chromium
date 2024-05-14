@@ -678,7 +678,7 @@ base::FilePath GuestOsRegistryService::GetIconPath(
     case ui::kScaleFactorNone:
       return app_path.AppendASCII("icon.svg");
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::FilePath();
   }
 }

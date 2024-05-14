@@ -55,7 +55,7 @@ std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
   if (extension->id() == "oclffehlkdgibkainkilopaalpdobkan") {
     return kExtensionNameImprivataTest;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kExtensionNameUnknown;
 }
 

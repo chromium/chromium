@@ -69,7 +69,7 @@ DeviceStateMode GetDeviceStateMode() {
     return INITIAL_MODE_ENROLLMENT_TOKEN_ENROLLMENT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RESTORE_MODE_NONE;
 }
 

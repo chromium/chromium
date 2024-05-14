@@ -270,7 +270,8 @@ void PinStorageCryptohome::TryAuthenticate(
       << "Webauth dialog uses direct interaction with cryptohome";
 
   if (!user_context->GetAuthSessionId().empty()) {
-    NOTREACHED() << "TryAuthenticate called with existing auth session";
+    NOTREACHED_IN_MIGRATION()
+        << "TryAuthenticate called with existing auth session";
     user_context->ResetAuthSessionIds();
   }
 

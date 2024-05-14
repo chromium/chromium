@@ -321,7 +321,7 @@ void StartupUtils::SetInitialLocale(const std::string& locale) {
   if (l10n_util::IsValidLocaleSyntax(locale))
     SaveStringPreferenceForced(::prefs::kInitialLocale, locale);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 // static

@@ -607,7 +607,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       case TestSessionType::kUnaffiliatedUserSession:
       case TestSessionType::kNoSession:
         // Unsupported session types
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }();
@@ -672,7 +672,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
       case TestSessionType::kUnaffiliatedUserSession:
       case TestSessionType::kNoSession:
         // Unsupported session types
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }();

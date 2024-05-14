@@ -68,7 +68,7 @@ ServiceConfiguration GetServiceConfigurationFromAutomaticDetectionPolicy() {
       return SHOULD_START;
   }
   // Default for unknown policy value.
-  NOTREACHED() << "Unrecognized policy value: " << policy_value;
+  NOTREACHED_IN_MIGRATION() << "Unrecognized policy value: " << policy_value;
   return SHOULD_STOP;
 }
 
@@ -425,7 +425,7 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
       case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
         return TimeZoneResolveMethod::SEND_ALL_LOCATION_INFO;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return TimeZoneResolveMethod::DISABLED;
     }
   }

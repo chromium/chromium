@@ -122,7 +122,7 @@ void CupsPrintJobNotification::Click(
           profile_, ContentSettingsType::WEB_PRINTING);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

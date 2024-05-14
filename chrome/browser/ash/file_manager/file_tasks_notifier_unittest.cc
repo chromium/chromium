@@ -51,7 +51,7 @@ ui::SelectedFileInfo CreateSelectedFileInfo(
 class FakeDriveFs : public drivefs::mojom::DriveFsInterceptorForTesting {
  public:
   DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

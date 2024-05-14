@@ -129,7 +129,7 @@ bool UnpackSigningScheme(
       *hash_algorithm = HashAlgorithm::HASH_ALGORITHM_SHA512;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

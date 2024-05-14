@@ -71,7 +71,7 @@ void DeviceCloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
         &DeviceCloudExternalDataPolicyObserver::OnDeviceExternalDataFetched,
         weak_factory_.GetWeakPtr()));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

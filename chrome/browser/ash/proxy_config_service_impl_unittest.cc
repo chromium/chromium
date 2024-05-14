@@ -342,7 +342,7 @@ class ProxyConfigServiceImplTest : public testing::Test {
         return ProxyConfigDictionary::CreateFixedServers(input.server,
                                                          input.bypass_rules);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Value::Dict();
   }
 

@@ -37,7 +37,7 @@ std::string CertScopeToString(CertScope cert_scope) {
     case CertScope::kDevice:
       return "google/chromeos/device";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // "Static" flow:

@@ -178,7 +178,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
       case BulkPrintersCalculator::AccessMode::UNSET:
         return false;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -192,7 +192,7 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
 
     switch (mode_) {
       case BulkPrintersCalculator::UNSET:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case BulkPrintersCalculator::ALLOWLIST_ONLY:
         for (const auto& printer : *printers_cache_) {

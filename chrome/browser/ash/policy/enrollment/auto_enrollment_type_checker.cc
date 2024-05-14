@@ -399,7 +399,7 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
       LOG(ERROR) << "VPD could not be read, forcing auto-enrollment check.";
       return FRERequirement::kExplicitlyRequired;
     case ash::system::StatisticsProvider::VpdStatus::kUnknown:
-      NOTREACHED() << "VPD status is unknown";
+      NOTREACHED_IN_MIGRATION() << "VPD status is unknown";
       return FRERequirement::kRequired;
   }
 }

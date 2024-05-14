@@ -218,7 +218,7 @@ std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     }
 
     if (response_error_code == kResponseErrorNotFirstTimeChromebookUser) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     } else if (response_error_code == kResponseErrorNotEnoughApps) {
       // TODO(thanhdng): Add a UMA histogram here.
     } else {

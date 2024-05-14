@@ -67,7 +67,7 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       // This method should only be called for disallowed user types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
   }
 }

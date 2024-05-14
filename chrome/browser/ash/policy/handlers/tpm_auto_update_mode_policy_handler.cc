@@ -66,8 +66,8 @@ AutoUpdateMode GetTPMAutoUpdateModeSetting(
   // Verify that the value is within range.
   if (*auto_update_mode < static_cast<int>(AutoUpdateMode::kNever) ||
       *auto_update_mode > static_cast<int>(AutoUpdateMode::kEnrollment)) {
-    NOTREACHED() << "Invalid value for device policy key "
-                    "TPMFirmwareUpdateSettings.AutoUpdateMode";
+    NOTREACHED_IN_MIGRATION() << "Invalid value for device policy key "
+                                 "TPMFirmwareUpdateSettings.AutoUpdateMode";
     return AutoUpdateMode::kNever;
   }
 

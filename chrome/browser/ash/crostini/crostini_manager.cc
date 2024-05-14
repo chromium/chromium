@@ -953,7 +953,7 @@ void CrostiniManager::CrostiniRestarter::LogRestarterResult(
   // separate histograms in Crostini.SetupResult.
   switch (request.options.restart_source) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case RestartSource::kOther:
       if (is_initial_install_) {
@@ -2747,7 +2747,7 @@ void CrostiniManager::OnInstallLinuxPackageProgress(
       status = InstallLinuxPackageProgressStatus::INSTALLING;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
@@ -2783,7 +2783,7 @@ void CrostiniManager::OnUninstallPackageProgress(
       status = UninstallPackageProgressStatus::UNINSTALLING;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   guest_os::GuestId container_id(kCrostiniDefaultVmType, signal.vm_name(),
@@ -2825,7 +2825,7 @@ void CrostiniManager::OnUpgradeContainerProgress(
       status = UpgradeContainerProgressStatus::UPGRADING;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::vector<std::string> progress_messages;
@@ -2982,7 +2982,7 @@ void CrostiniManager::OnStartLxdContainer(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (response->has_os_release()) {
@@ -3026,7 +3026,7 @@ void CrostiniManager::OnStopLxdContainer(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -3084,7 +3084,7 @@ void CrostiniManager::OnSetUpLxdContainerUser(
       std::move(callback).Run(/*success=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

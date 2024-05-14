@@ -158,13 +158,13 @@ void CloudExternalDataPolicyObserver::OnUserProfileLoaded(
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   if (base::Contains(logged_in_user_observers_, user_id)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -283,7 +283,7 @@ void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
         base::BindOnce(&CloudExternalDataPolicyObserver::OnExternalDataFetched,
                        weak_ptr_factory->GetWeakPtr(), user_id));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

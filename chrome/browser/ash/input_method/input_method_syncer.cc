@@ -260,7 +260,7 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
     }
     CheckAndResolveInputMethodIDs(supported_descriptors, &new_token_values);
   } else if (pref_name != language::prefs::kPreferredLanguages) {
-    NOTREACHED() << "Attempting to merge an invalid preference.";
+    NOTREACHED_IN_MIGRATION() << "Attempting to merge an invalid preference.";
     // kPreferredLanguages is checked in CheckAndResolveLocales().
   }
 

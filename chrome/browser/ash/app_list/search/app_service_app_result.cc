@@ -114,7 +114,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
     case apps::AppType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }

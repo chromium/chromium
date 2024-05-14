@@ -793,7 +793,7 @@ void KioskLaunchController::HandleProfileLoadError(
 void KioskLaunchController::HandleOldEncryption(
     std::unique_ptr<UserContext> user_context) {
   if (kiosk_app_id_.type != KioskAppType::kArcApp) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (!host_) {

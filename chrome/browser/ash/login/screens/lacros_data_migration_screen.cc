@@ -122,7 +122,7 @@ void LacrosDataMigrationScreen::ShowImpl() {
   }
 
   if (mode_str != browser_data_migrator_util::kMoveSwitchValue) {
-    NOTREACHED() << "Unsupported mode";
+    NOTREACHED_IN_MIGRATION() << "Unsupported mode";
 
     LOG(ERROR) << "Unsupported mode " << switches::kBrowserDataMigrationMode
                << " = " << mode_str << ". Aborting migration.";

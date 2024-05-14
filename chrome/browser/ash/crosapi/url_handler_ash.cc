@@ -105,7 +105,7 @@ bool UrlHandlerAsh::OpenUrlInternal(GURL url) {
     DVLOG(1)
         << "UrlHandlerAsh::OpenUrl is called when the primary user profile "
            "does not exist. This is a bug.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

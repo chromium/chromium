@@ -173,7 +173,7 @@ void AnsibleManagementService::OnInstallLinuxPackageProgress(
       }
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -295,7 +295,7 @@ void AnsibleManagementService::OnApplyAnsiblePlaybookProgress(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

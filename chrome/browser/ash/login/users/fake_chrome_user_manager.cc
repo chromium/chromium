@@ -346,7 +346,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeChromeUserManager::IsKnownUser(const AccountId& account_id) const {
@@ -400,7 +400,7 @@ const user_manager::User* FakeChromeUserManager::GetPrimaryUser() const {
 void FakeChromeUserManager::SaveUserOAuthStatus(
     const AccountId& account_id,
     user_manager::User::OAuthTokenStatus oauth_token_status) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
@@ -440,7 +440,7 @@ void FakeChromeUserManager::SaveUserDisplayEmail(
 }
 
 void FakeChromeUserManager::SaveUserType(const user_manager::User* user) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::optional<std::string> FakeChromeUserManager::GetOwnerEmail() {
@@ -556,7 +556,7 @@ void FakeChromeUserManager::SimulateUserProfileLoad(
 
 void FakeChromeUserManager::LoadDeviceLocalAccounts(
     std::set<AccountId>* users_set) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(

@@ -411,7 +411,7 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
           // The ownership check is only triggered if
           // `auto_enrollment_check_type_` indicates that an auto-enrollment
           // check should be done.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       return;

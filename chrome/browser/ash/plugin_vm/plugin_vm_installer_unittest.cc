@@ -247,7 +247,7 @@ class PluginVmInstallerTestBase : public testing::Test {
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Helper functions for starting and progressing the installer.

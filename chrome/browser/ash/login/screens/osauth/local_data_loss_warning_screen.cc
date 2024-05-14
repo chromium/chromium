@@ -116,7 +116,7 @@ void LocalDataLossWarningScreen::OnBack() {
   }
   switch (context()->knowledge_factor_setup.data_loss_back_option) {
     case WizardContext::DataLossBackOptions::kNone:
-      NOTREACHED() << "Back button should not be shown";
+      NOTREACHED_IN_MIGRATION() << "Back button should not be shown";
       return;
     case WizardContext::DataLossBackOptions::kBackToOnlineAuth:
       exit_callback_.Run(Result::kBackToOnlineAuth);

@@ -104,7 +104,8 @@ void ImageContentAnnotator::ConnectToImageAnnotator() {
               LOG(ERROR) << "Language not supported error.";
               LogStatusUma(Status::kLanguageNotSupportedError);
             } else {
-              NOTREACHED() << "Implement logging for new error codes.";
+              NOTREACHED_IN_MIGRATION()
+                  << "Implement logging for new error codes.";
             }
             *ica_dlc_initialized = false;
           },

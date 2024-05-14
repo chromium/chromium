@@ -65,7 +65,7 @@ void LocaleChangeGuard::OnLogin() {
 
 void LocaleChangeGuard::RevertLocaleChange() {
   if (from_locale_.empty() || to_locale_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (reverted_)
@@ -100,13 +100,13 @@ void LocaleChangeGuard::OwnershipStatusChanged() {
 void LocaleChangeGuard::Check() {
   std::string cur_locale = g_browser_process->GetApplicationLocale();
   if (cur_locale.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   PrefService* prefs = profile_->GetPrefs();
   if (prefs == nullptr) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -164,7 +164,7 @@ void LocaleChangeGuard::OnResult(LocaleNotificationResult result) {
 
 void LocaleChangeGuard::AcceptLocaleChange() {
   if (from_locale_.empty() || to_locale_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -174,7 +174,7 @@ void LocaleChangeGuard::AcceptLocaleChange() {
     return;
   PrefService* prefs = profile_->GetPrefs();
   if (prefs == nullptr) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (prefs->GetString(language::prefs::kApplicationLocale) != to_locale_)

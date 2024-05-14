@@ -66,7 +66,7 @@ bool BaseScreen::HandleAccelerator(LoginAcceleratorAction action) {
 
 void BaseScreen::OnUserAction(const base::Value::List& args) {
   CHECK_GE(args.size(), 1u);
-  NOTREACHED() << "Unhandled user action: action_id=" << args[0];
+  NOTREACHED_IN_MIGRATION() << "Unhandled user action: action_id=" << args[0];
 }
 
 ScreenSummary BaseScreen::GetScreenSummary() {

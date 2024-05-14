@@ -268,9 +268,9 @@ AssistiveWindowController::WindowOrientationFor(
     case ash::ime::AssistiveWindowType::kGrammarSuggestion:
       return ui::ime::SuggestionWindowView::Orientation::kVertical;
     case ash::ime::AssistiveWindowType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ime::SuggestionWindowView::Orientation::kVertical;
 }
 

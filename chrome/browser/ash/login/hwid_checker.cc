@@ -162,8 +162,9 @@ bool IsMachineHWIDCorrect() {
       return false;
     if (check_result == "success")
       return true;
-    NOTREACHED() << "Wrong " << switches::kForceHWIDCheckResultForTest
-                 << "value: " << check_result;
+    NOTREACHED_IN_MIGRATION()
+        << "Wrong " << switches::kForceHWIDCheckResultForTest
+        << "value: " << check_result;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (cmd_line->HasSwitch(::switches::kTestType))

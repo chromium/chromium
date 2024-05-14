@@ -523,7 +523,8 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
   if (total_bytes <= 0 || available_bytes < 0) {
     // We can't get useful information from the storage page if total_bytes <=
     // 0 or available_bytes is less than 0. This is not expected to happen.
-    NOTREACHED() << "Unable to retrieve total or available disk space";
+    NOTREACHED_IN_MIGRATION()
+        << "Unable to retrieve total or available disk space";
     return;
   }
   CreateStorageAnswerCard();

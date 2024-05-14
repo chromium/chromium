@@ -100,7 +100,7 @@ class AccessibilityFeaturesApiTest
       return kTestExtensionPathReadPermissionV3;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

@@ -1237,7 +1237,7 @@ void BrowserManager::OnResumeLaunchComplete(
         SetState(State::STOPPED);
         return;
       case BrowserLauncher::LaunchFailureReason::kUnknown:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
   }

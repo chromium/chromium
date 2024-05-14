@@ -343,7 +343,7 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
       portal_state = NetworkState::PortalState::kPortal;
       break;
     case captive_portal::RESULT_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

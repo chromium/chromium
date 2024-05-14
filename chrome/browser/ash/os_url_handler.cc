@@ -25,7 +25,7 @@ bool TryLaunchOsUrlHandler(const GURL& url) {
     base::debug::DumpWithoutCrashing();
     DVLOG(1) << "TryLaunchOsUrlHandler is called when the primary user profile "
                 "does not exist. This is a bug.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

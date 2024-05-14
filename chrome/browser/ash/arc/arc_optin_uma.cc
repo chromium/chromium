@@ -297,7 +297,7 @@ ProvisioningStatus GetProvisioningStatus(
 #undef MAP_GENERAL_ERROR
   }
 
-  NOTREACHED() << "unexpected provisioning result";
+  NOTREACHED_IN_MIGRATION() << "unexpected provisioning result";
   return ProvisioningStatus::UNKNOWN_ERROR;
 }
 
@@ -327,7 +327,7 @@ std::ostream& operator<<(std::ostream& os, const ProvisioningStatus& status) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(status);
+  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(status);
   return os;
 }
 

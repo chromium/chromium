@@ -133,7 +133,7 @@ void LogContinueMetrics(const std::vector<Result>& results) {
       case ash::SearchResultType::DESKS_ADMIN_TEMPLATE:
         break;
       default:
-        NOTREACHED() << static_cast<int>(result.type);
+        NOTREACHED_IN_MIGRATION() << static_cast<int>(result.type);
     }
   }
 

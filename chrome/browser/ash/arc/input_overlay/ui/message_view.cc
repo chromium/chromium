@@ -94,7 +94,7 @@ MessageView::MessageView(DisplayOverlayController* controller,
                                                    kInfoIconColor, kIconSize));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

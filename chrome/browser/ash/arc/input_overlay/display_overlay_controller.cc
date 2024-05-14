@@ -543,7 +543,7 @@ void DisplayOverlayController::SetDisplayModeAlpha(DisplayMode mode) {
       SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

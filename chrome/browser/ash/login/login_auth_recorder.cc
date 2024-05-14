@@ -33,7 +33,7 @@ std::optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
       return AuthMethodSwitchType::kPasswordToChallengeResponse;
     case AuthMethod::kPassword:
     case AuthMethod::kNothing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -50,7 +50,7 @@ std::optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
     case AuthMethod::kPin:
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -67,7 +67,7 @@ std::optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
     case AuthMethod::kSmartlock:
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -85,7 +85,7 @@ std::optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
     case AuthMethod::kFingerprint:
     case AuthMethod::kChallengeResponse:
     case AuthMethod::kNothing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -104,7 +104,7 @@ std::optional<AuthMethodSwitchType> SwitchFromNothingTo(AuthMethod current) {
     case AuthMethod::kChallengeResponse:
       return AuthMethodSwitchType::kNothingToChallengeResponse;
     case AuthMethod::kNothing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -124,7 +124,7 @@ std::optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
     case AuthMethod::kNothing:
       return SwitchFromNothingTo(current);
     case AuthMethod::kChallengeResponse:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

@@ -98,7 +98,7 @@ class DiskSpaceCalculator {
   void StartCalculation() {
     base::FilePath path;
     if (!base::PathService::Get(base::DIR_HOME, &path)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -182,7 +182,7 @@ void PeriodicMetricsService::RecordDiskSpaceUsage() const {
 void PeriodicMetricsService::RecordChromeProcessCount() const {
   base::FilePath chrome_path;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_path)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   base::FilePath::StringType exe_name = chrome_path.BaseName().value();

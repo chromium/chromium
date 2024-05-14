@@ -1616,7 +1616,8 @@ void AppListSyncableService::ProcessNewSyncItem(SyncItem* sync_item) {
     case sync_pb::AppListSpecifics::TYPE_PAGE_BREAK:
       return;
   }
-  NOTREACHED() << "Unrecognized sync item type: " << sync_item->ToString();
+  NOTREACHED_IN_MIGRATION()
+      << "Unrecognized sync item type: " << sync_item->ToString();
 }
 
 void AppListSyncableService::ProcessExistingSyncItem(SyncItem* sync_item) {

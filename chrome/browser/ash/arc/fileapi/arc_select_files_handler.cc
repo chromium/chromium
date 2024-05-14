@@ -96,7 +96,7 @@ ui::SelectFileDialog::Type GetDialogType(
     case mojom::SelectFilesActionType::CREATE_DOCUMENT:
       return ui::SelectFileDialog::SELECT_SAVEAS_FILE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 base::FilePath GetInitialFilePath(const mojom::SelectFilesRequestPtr& request) {

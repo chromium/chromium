@@ -157,10 +157,10 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kVerifiedAccessFlowUnsupportedErrorMsg;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
-  NOTREACHED() << static_cast<int>(result_code);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(result_code);
 }
 
 bool TpmChallengeKeyResult::IsSuccess() const {

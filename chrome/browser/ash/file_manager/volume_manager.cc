@@ -687,7 +687,7 @@ void VolumeManager::OnAutoMountableDiskEvent(
 
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void VolumeManager::OnDeviceEvent(
@@ -712,7 +712,7 @@ void VolumeManager::OnDeviceEvent(
       DVLOG(1) << "Ignore SCANNED event: " << device_path;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void VolumeManager::OnMountEvent(
@@ -742,7 +742,7 @@ void VolumeManager::OnMountEvent(
       return;
   }
 
-  NOTREACHED() << "Unexpected event type " << event;
+  NOTREACHED_IN_MIGRATION() << "Unexpected event type " << event;
 }
 
 void VolumeManager::OnFormatEvent(
@@ -780,7 +780,7 @@ void VolumeManager::OnFormatEvent(
       return;
   }
 
-  NOTREACHED() << "Unexpected FormatEvent " << event;
+  NOTREACHED_IN_MIGRATION() << "Unexpected FormatEvent " << event;
 }
 
 void VolumeManager::OnPartitionEvent(
@@ -818,7 +818,7 @@ void VolumeManager::OnPartitionEvent(
       return;
   }
 
-  NOTREACHED() << "Unexpected PartitionEvent " << event;
+  NOTREACHED_IN_MIGRATION() << "Unexpected PartitionEvent " << event;
 }
 
 void VolumeManager::OnRenameEvent(
@@ -866,7 +866,7 @@ void VolumeManager::OnRenameEvent(
       return;
   }
 
-  NOTREACHED() << "Unexpected RenameEvent " << event;
+  NOTREACHED_IN_MIGRATION() << "Unexpected RenameEvent " << event;
 }
 
 void VolumeManager::OnProvidedFileSystemMount(
@@ -1410,7 +1410,7 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
         break;
       }
       case ash::MountType::kInvalid: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }

@@ -37,7 +37,7 @@ VolumeType MountTypeToVolumeType(ash::MountType type) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VOLUME_TYPE_DOWNLOADS_DIRECTORY;
 }
 
@@ -76,8 +76,9 @@ std::string_view VolumeTypeToString(const VolumeType type) {
       break;
   }
 
-  NOTREACHED() << "Unexpected VolumeType value "
-               << static_cast<std::underlying_type_t<VolumeType>>(type);
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected VolumeType value "
+      << static_cast<std::underlying_type_t<VolumeType>>(type);
   return "";
 }
 
@@ -107,7 +108,7 @@ std::string MediaViewRootIdToLabel(std::string_view root_id) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
   }
 
-  NOTREACHED() << "Unexpected root ID: " << root_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected root ID: " << root_id;
   return "";
 }
 

@@ -305,7 +305,7 @@ void SimpleWebViewDialog::ExecuteCommandWithDisposition(int id,
                                            true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

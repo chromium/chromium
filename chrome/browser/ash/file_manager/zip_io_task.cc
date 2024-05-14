@@ -255,7 +255,7 @@ void ZipIOTask::OnZipComplete() {
       // Cancelled state already gets reported so don't call Complete().
       break;
     case ZipFileCreator::kInProgress:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   zip_file_creator_.reset();
 }

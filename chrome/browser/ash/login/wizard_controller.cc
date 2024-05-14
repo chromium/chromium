@@ -1581,7 +1581,7 @@ void WizardController::OnPasswordChangeLegacyScreenExit(
       LoginDisplayHost::default_host()->ResyncUserData();
       break;
     case GaiaPasswordChangedScreenLegacy::Result::MIGRATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1606,7 +1606,7 @@ void WizardController::OnPasswordChangeScreenExit(
     }
     case GaiaPasswordChangedScreen::Result::CRYPTOHOME_ERROR:
       // TODO(b/239420684): Send an error to the UI.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
   }
 }
@@ -1776,7 +1776,8 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kAuthenticated: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED() << "Recovery can not be used during initial setup.";
+          NOTREACHED_IN_MIGRATION()
+              << "Recovery can not be used during initial setup.";
           return;
         case WizardContext::AuthChangeFlow::kRecovery:
           ShowPasswordSelectionScreen();
@@ -1800,7 +1801,8 @@ void WizardController::OnCryptohomeRecoveryScreenExit(
     case CryptohomeRecoveryScreen::Result::kFallbackLocal: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED() << "Recovery is not used during initial setup";
+          NOTREACHED_IN_MIGRATION()
+              << "Recovery is not used during initial setup";
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
           AttemptLocalAuthenticationWithContext(
@@ -1864,7 +1866,8 @@ void WizardController::OnEnterOldPasswordScreenExit(
     case EnterOldPasswordScreen::Result::kAuthenticated: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED() << "Old password is not used during initial setup";
+          NOTREACHED_IN_MIGRATION()
+              << "Old password is not used during initial setup";
           break;
         case WizardContext::AuthChangeFlow::kRecovery:
         case WizardContext::AuthChangeFlow::kReauthentication:
@@ -2052,7 +2055,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
         ShowWelcomeScreen();
         break;
       case NetworkScreen::Result::QUICK_START:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     return;
@@ -2071,7 +2074,7 @@ void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
         ShowOsTrialScreen();
         break;
       case NetworkScreen::Result::QUICK_START:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     return;
@@ -2439,8 +2442,9 @@ void WizardController::OnApplyOnlinePasswordScreenExit(
           ShowFactorSetupSuccessScreen();
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
-          NOTREACHED() << "Reauthentication should have been switched to "
-                          "Recovery if there was password update";
+          NOTREACHED_IN_MIGRATION()
+              << "Reauthentication should have been switched to "
+                 "Recovery if there was password update";
       }
     }
       return;
@@ -2458,7 +2462,8 @@ void WizardController::OnOSAuthErrorScreenExit(
     case OSAuthErrorScreen::Result::kFallbackLocal: {
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          NOTREACHED() << "Recovery is not used during initial setup";
+          NOTREACHED_IN_MIGRATION()
+              << "Recovery is not used during initial setup";
           return;
         case WizardContext::AuthChangeFlow::kReauthentication:
           AttemptLocalAuthenticationWithContext(
@@ -3168,7 +3173,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == QuickStartView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

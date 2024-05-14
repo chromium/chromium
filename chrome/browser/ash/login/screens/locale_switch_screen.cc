@@ -125,7 +125,7 @@ void LocaleSwitchScreen::ShowImpl() {
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     exit_callback_.Run(Result::kNotApplicable);
     return;
   }

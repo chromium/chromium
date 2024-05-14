@@ -426,7 +426,7 @@ int GetAppListIconDimensionForScaleFactor(
                  .default_grid_icon_dimension() *
              2;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -1407,7 +1407,7 @@ class ArcPlayStoreManagedUserAppTest : public ArcPlayStoreAppTest {
       case ArcState::ARC_WITHOUT_PLAY_STORE:
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

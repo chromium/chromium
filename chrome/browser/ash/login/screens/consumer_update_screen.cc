@@ -236,7 +236,7 @@ void ConsumerUpdateScreen::FinishExitUpdate(VersionUpdater::Result result) {
       break;
     case VersionUpdater::Result::UPDATE_OPT_OUT_INFO_SHOWN:
       // the opt_out_info_shown is displayed only for FAU
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -517,7 +517,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   UpdateBatteryWarningVisibility();
 }

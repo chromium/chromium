@@ -126,7 +126,7 @@ void GuestOsDlcInstallation::OnGetDlcStateCompleted(
           kBetweenRetryDelay);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

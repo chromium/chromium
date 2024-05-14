@@ -618,11 +618,11 @@ WizardController* LoginDisplayHostWebUI::GetWizardController() {
 }
 
 void LoginDisplayHostWebUI::OnStartUserAdding() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::CancelUserAdding() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::OnStartSignInScreen() {
@@ -1059,11 +1059,11 @@ void LoginDisplayHostWebUI::ShowEnableConsumerKioskScreen() {
 }
 
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::RequestSystemInfoUpdate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool LoginDisplayHostWebUI::HasUserPods() {
@@ -1071,7 +1071,7 @@ bool LoginDisplayHostWebUI::HasUserPods() {
 }
 
 void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::UseAlternativeAuthentication(
@@ -1082,11 +1082,11 @@ void LoginDisplayHostWebUI::UseAlternativeAuthentication(
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::StartBrowserDataMigration() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {

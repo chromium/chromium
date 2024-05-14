@@ -185,7 +185,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
       AddCommonChildrenViews();
       AddChildrenViewsForAppLaunchType();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

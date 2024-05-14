@@ -37,7 +37,8 @@ const char* CertScopeToString(CertScope scope) {
       return "device";
   }
 
-  NOTREACHED() << "Unknown cert scope: " << static_cast<int>(scope);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown cert scope: " << static_cast<int>(scope);
   return "";
 }
 

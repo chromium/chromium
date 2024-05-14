@@ -1279,7 +1279,7 @@ void SignRSAOnWorkerThread(std::unique_ptr<SignState> state) {
       sign_alg_tag = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
       break;
     case HashAlgorithm::HASH_ALGORITHM_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

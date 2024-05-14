@@ -76,7 +76,7 @@ InputElement* GetInputBindingByBindingOption(Action* action,
       input_binding = action->pending_input();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return input_binding;
 }

@@ -869,8 +869,9 @@ void AutoEnrollmentClientImpl::Retry() {
     case State::kFinished:
       break;
     case State::kRequestServerStateAvailabilitySuccess:
-      NOTREACHED() << "kRequestServerStateAvailabilitySuccess supposed to "
-                      "immediately resolve to kRequestingStateRetrieval.";
+      NOTREACHED_IN_MIGRATION()
+          << "kRequestServerStateAvailabilitySuccess supposed to "
+             "immediately resolve to kRequestingStateRetrieval.";
       break;
   }
 }

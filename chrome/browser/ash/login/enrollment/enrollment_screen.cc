@@ -200,7 +200,7 @@ void EnrollmentScreen::SetEnrollmentConfig(
       next_auth_ = AUTH_OAUTH;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   SetConfig();
@@ -371,7 +371,7 @@ void EnrollmentScreen::ShowImpl() {
       AuthenticateUsingEnrollmentToken();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -415,7 +415,7 @@ void EnrollmentScreen::OnTpmStatusResponse(
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -457,7 +457,7 @@ void EnrollmentScreen::CheckInstallAttributesState() {
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

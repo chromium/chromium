@@ -1083,7 +1083,7 @@ class EnrollmentStateFetcherImpl::Sequence {
           return ReportResult(
               base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
         case ServerBackedStateKeysBroker::ErrorType::kNoError:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,

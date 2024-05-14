@@ -52,7 +52,7 @@ const char* const kOwner = policy::PolicyBuilder::kFakeUsername;
 constexpr char kUser1[] = "h@xxor";
 
 void NotReached() {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "This should not be called: cros settings should already be trusted";
 }
 

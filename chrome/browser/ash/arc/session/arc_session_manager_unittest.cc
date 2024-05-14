@@ -1748,7 +1748,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Value();
   }
 
@@ -1761,7 +1761,7 @@ class ArcSessionManagerPolicyTest
       case 2:
         return base::Value(true);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Value();
   }
 

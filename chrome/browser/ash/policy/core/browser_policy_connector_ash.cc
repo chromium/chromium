@@ -104,7 +104,7 @@ MarketSegment TranslateMarketSegment(
     case em::PolicyData::ENROLLED_ENTERPRISE:
       return MarketSegment::ENTERPRISE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MarketSegment::UNKNOWN;
 }
 
@@ -368,7 +368,7 @@ bool BrowserPolicyConnectorAsh::IsDeviceEnterpriseManaged() const {
 }
 
 bool BrowserPolicyConnectorAsh::HasMachineLevelPolicies() {
-  NOTREACHED() << "This method is only defined for desktop Chrome";
+  NOTREACHED_IN_MIGRATION() << "This method is only defined for desktop Chrome";
   return false;
 }
 

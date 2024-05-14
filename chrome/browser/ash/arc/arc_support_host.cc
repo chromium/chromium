@@ -166,7 +166,7 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
 
   // Some compiler reports an error even if all values of an enum-class are
   // covered individually in a switch statement.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 
@@ -196,7 +196,7 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
 
   // Some compiler reports an error even if all values of an enum-class are
   // covered individually in a switch statement.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 
@@ -303,7 +303,7 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
       message.Set(kPage, "arc-loading");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   message_host_->SendMessage(message);
@@ -672,7 +672,7 @@ void ArcSupportHost::SetWindowBound(const display::Display& display) {
 void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   const std::string* event = message.FindString(kEvent);
   if (!event) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -705,7 +705,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
         !is_backup_restore_managed.has_value() ||
         !is_location_service_enabled.has_value() ||
         !is_location_service_managed.has_value()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -823,6 +823,6 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     SetWindowBound(display::Screen::GetScreen()->GetDisplayForNewWindows());
   } else {
     LOG(ERROR) << "Unknown message: " << *event;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }

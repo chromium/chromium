@@ -193,7 +193,7 @@ void OAuth2LoginManager::OnStateChanged(
     case signin_metrics::AccountReconcilorState::kRunning:
     case signin_metrics::AccountReconcilorState::kScheduled:
     case signin_metrics::AccountReconcilorState::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

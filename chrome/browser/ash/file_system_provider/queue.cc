@@ -98,7 +98,7 @@ void Queue::Abort(size_t token) {
   }
 
   // The task is already removed, marked as completed or aborted.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace ash::file_system_provider

@@ -162,7 +162,7 @@ CrostiniPackageNotification::GetNotificationSettingsForTypeAndAppName(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return result;
@@ -254,7 +254,7 @@ void CrostiniPackageNotification::UpdateProgress(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   notification_->set_title(title);

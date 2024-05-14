@@ -369,7 +369,7 @@ bool SecurityTokenSessionController::ShouldApplyPolicyInCurrentSessionState()
       }
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -403,7 +403,7 @@ void SecurityTokenSessionController::TriggerAction() {
       ScheduleLogoutNotification();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurityTokenSessionController::ExtensionProvidesAllRequiredCertificates(

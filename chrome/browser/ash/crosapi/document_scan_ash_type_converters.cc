@@ -20,7 +20,7 @@ struct TypeConverter<crosapi::mojom::ScannerInfo_ConnectionType,
 
     switch (input) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case lorgnette::ConnectionType::CONNECTION_UNSPECIFIED:
         return ConnectionType::kUnspecified;
@@ -61,7 +61,7 @@ struct TypeConverter<crosapi::mojom::OptionType, lorgnette::OptionType> {
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case lorgnette::TYPE_UNKNOWN:
         return crosapi::mojom::OptionType::kUnknown;
@@ -112,7 +112,7 @@ struct TypeConverter<crosapi::mojom::OptionUnit, lorgnette::OptionUnit> {
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case lorgnette::UNIT_NONE:
         return crosapi::mojom::OptionUnit::kUnitless;
@@ -143,7 +143,7 @@ struct TypeConverter<crosapi::mojom::OptionConstraintType,
     switch (input) {
       default:
         // Default case included to cover protobuf sentinel values.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case lorgnette::OptionConstraint::CONSTRAINT_NONE:
         return crosapi::mojom::OptionConstraintType::kNone;
@@ -428,7 +428,7 @@ crosapi::mojom::ScannerOperationResult TypeConverter<
     lorgnette::OperationResult>::Convert(lorgnette::OperationResult input) {
   switch (input) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case lorgnette::OPERATION_RESULT_UNKNOWN:
       return crosapi::mojom::ScannerOperationResult::kUnknown;

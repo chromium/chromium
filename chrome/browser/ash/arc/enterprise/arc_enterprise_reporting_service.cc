@@ -46,7 +46,7 @@ class ArcEnterpriseReportingServiceFactory
 const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
   switch (op) {
     case mojom::TimedCloudDpcOp::UNKNOWN_OP:
-      NOTREACHED();  // handled by if-statement in calling method
+      NOTREACHED_IN_MIGRATION();  // handled by if-statement in calling method
       return "";
     case mojom::TimedCloudDpcOp::SETUP_TOTAL:
       return "SetupService.Total";
@@ -70,7 +70,7 @@ const char* TimedCloudDpcOpToString(mojom::TimedCloudDpcOp op) {
       return ""; // Deprecated and unused
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

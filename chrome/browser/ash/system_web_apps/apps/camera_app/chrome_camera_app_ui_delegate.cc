@@ -550,7 +550,7 @@ std::string ChromeCameraAppUIDelegate::GetFilePathInArcByName(
   }
   if (requires_sharing) {
     LOG(ERROR) << "File path should be in MyFiles and not require any sharing";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   return arc_url_out.spec();
@@ -699,8 +699,8 @@ void ChromeCameraAppUIDelegate::OpenWifiDialog(WifiConfig wifi_config) {
   } else if (wifi_config.security == onc::wifi::kWPA_EAP) {
     config->security = SecurityType::kWpaEap;
   } else {
-    NOTREACHED() << "Unexpected network security type: "
-                 << wifi_config.security;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected network security type: " << wifi_config.security;
   }
   config->passphrase = wifi_config.password;
   if (config->security == SecurityType::kWpaEap) {

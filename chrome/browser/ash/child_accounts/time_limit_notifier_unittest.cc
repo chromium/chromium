@@ -45,7 +45,7 @@ class TimeLimitNotifierTest : public testing::Test {
         notification_id = "time-limit-override-updated";
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return notification_tester_.GetNotification(notification_id).has_value();
   }

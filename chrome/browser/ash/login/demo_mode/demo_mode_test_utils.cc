@@ -61,7 +61,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }));
 }

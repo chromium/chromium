@@ -33,7 +33,7 @@ ConsistencyGoldenPolicy ConvertProcessorPolicyToGoldenPolicy(
       return NO_ACTIVE_POLICY;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNSPECIFIED_POLICY;
 }
 
@@ -56,7 +56,7 @@ const char* ConvertGoldenDayToProcessorDay(ConsistencyGoldenEffectiveDay day) {
     case SUNDAY:
       return utils::kSunday;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

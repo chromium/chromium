@@ -43,7 +43,8 @@ UserAuthConfig UserAuthConfig::Create(
       factors.Has(ash::AshAuthFactor::kSmartUnlock) ||
       factors.Has(ash::AshAuthFactor::kLegacyPin) ||
       factors.Has(ash::AshAuthFactor::kLegacyFingerprint)) {
-    NOTREACHED() << "These factors are not supported by test mixins yet";
+    NOTREACHED_IN_MIGRATION()
+        << "These factors are not supported by test mixins yet";
   }
   return result;
 }

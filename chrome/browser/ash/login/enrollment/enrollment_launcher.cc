@@ -484,7 +484,7 @@ void EnrollmentLauncherImpl::ReportAuthStatus(
       LOG(WARNING) << "Network error " << error.state();
       break;
     case GoogleServiceAuthError::NUM_STATES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -499,7 +499,7 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::Code::kPolicyFetchFailed:
       switch (status.client_status()) {
         case policy::DM_STATUS_SUCCESS:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case policy::DM_STATUS_REQUEST_INVALID:
           UMA(policy::kMetricEnrollmentRegisterPolicyPayloadInvalid);
@@ -554,10 +554,10 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
           UMA(policy::kMetricEnrollmentRegisterCannotSignRequest);
           break;
         case policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case policy::DM_STATUS_SERVICE_ARC_DISABLED:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case policy::DM_STATUS_SERVICE_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE:
           UMA(policy::
@@ -595,7 +595,7 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
       switch (status.lock_status()) {
         case InstallAttributes::LOCK_SUCCESS:
         case InstallAttributes::LOCK_NOT_READY:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case InstallAttributes::LOCK_TIMEOUT:
           UMA(policy::kMetricEnrollmentLockboxTimeoutError);
@@ -641,7 +641,7 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
       UMA(policy::kMetricEnrollmentRegistrationCertificateFetchFailed);
       switch (status.attestation_status()) {
         case attestation::ATTESTATION_SUCCESS:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
           UMA(policy::

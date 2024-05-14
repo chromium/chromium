@@ -185,7 +185,7 @@ void AppLaunchHandler::LaunchApp(apps::AppType app_type,
     case apps::AppType::kBruschetta:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   restore_data_->RemoveApp(app_id);

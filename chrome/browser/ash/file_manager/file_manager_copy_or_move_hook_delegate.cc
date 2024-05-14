@@ -108,7 +108,7 @@ std::ostream& operator<<(
       return out << "kError";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return out << "Unknown type";
 }
 

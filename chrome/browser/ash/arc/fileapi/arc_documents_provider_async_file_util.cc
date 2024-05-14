@@ -435,7 +435,7 @@ void ArcDocumentsProviderAsyncFileUtil::CopyInForeignFile(
     const storage::FileSystemURL& dest_url,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  NOTREACHED();  // Read-only file system.
+  NOTREACHED_IN_MIGRATION();  // Read-only file system.
   std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
 }
 

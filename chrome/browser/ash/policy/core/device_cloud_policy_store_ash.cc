@@ -244,7 +244,7 @@ void DeviceCloudPolicyStoreAsh::UpdateStatusFromService() {
       status_ = STATUS_LOAD_ERROR;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceCloudPolicyStoreAsh::CheckDMToken() {

@@ -234,7 +234,7 @@ bool AppTimeControllerTest::HasNotificationFor(
       notification_id = "time-limit-updated-id-";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

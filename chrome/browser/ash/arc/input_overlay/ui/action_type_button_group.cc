@@ -96,7 +96,7 @@ void ActionTypeButtonGroup::Init() {
       move_button->SetSelected(true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);

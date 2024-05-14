@@ -89,7 +89,7 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
         mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
   }
   void Decode(mojom::BitstreamBufferPtr bitstream_buffer) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void AssignPictureBuffers(uint32_t count) override { NOTREACHED(); }
   void ImportBufferForPicture(int32_t picture_buffer_id,
@@ -97,7 +97,7 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
                               mojo::ScopedHandle handle,
                               std::vector<VideoFramePlane> planes,
                               mojom::BufferModifierPtr modifier) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReusePictureBuffer(int32_t picture_buffer_id) override { NOTREACHED(); }
   void Flush(FlushCallback callback) override { NOTREACHED(); }

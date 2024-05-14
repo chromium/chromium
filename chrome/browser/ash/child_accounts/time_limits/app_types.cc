@@ -44,7 +44,7 @@ std::string AppTypeToString(apps::AppType app_type) {
     case apps::AppType::kSystemWeb:
       return "SystemWeb";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

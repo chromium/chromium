@@ -211,8 +211,8 @@ bool ConvertToPrinter(const std::string& service_type,
   } else {
     // Since we only register for these services, we should never get back
     // a service other than the ones above.
-    NOTREACHED() << "Zeroconf printer with unknown service type "
-                 << service_description.service_type();
+    NOTREACHED_IN_MIGRATION() << "Zeroconf printer with unknown service type "
+                              << service_description.service_type();
     return false;
   }
 

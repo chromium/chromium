@@ -74,7 +74,7 @@ const char* OobeAuthPageWaiter::GetAuthenticator() {
     case AuthPageType::ENROLLMENT:
       return kEnrollmentAuthenticator;
   }
-  NOTREACHED() << "Unexpected value for auth_page_type_";
+  NOTREACHED_IN_MIGRATION() << "Unexpected value for auth_page_type_";
   return kGaiaAuthenticator;
 }
 

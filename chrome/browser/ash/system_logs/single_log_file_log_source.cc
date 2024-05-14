@@ -56,7 +56,7 @@ base::FilePath::StringType GetLogFileSourceRelativeFilePathValue(
     case SupportedSource::kPowerdPrevious:
       return "power_manager/powerd.PREVIOUS";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::FilePath::StringType();
 }
 

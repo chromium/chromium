@@ -247,7 +247,7 @@ class LoggingObserver : public VolumeManagerObserver {
     // by the time VolumeManager shuts down, and this handler is never reached.
     // In fact, it's more likely for UAF crash to happen before this code is
     // reached.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

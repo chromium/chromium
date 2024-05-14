@@ -38,7 +38,7 @@ const std::string StatusReportEventToString(
         kUsageTimeLimitWarning:
       return "Request status report before usage time limit finish.";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

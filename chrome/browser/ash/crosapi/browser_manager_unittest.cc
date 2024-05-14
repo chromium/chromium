@@ -57,7 +57,7 @@ constexpr char kSampleLacrosPath[] =
 class MockBrowserService : public mojom::BrowserServiceInterceptorForTesting {
  public:
   BrowserService* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

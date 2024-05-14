@@ -165,7 +165,7 @@ bool ShouldDelayRequestForProfile(Profile* profile) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

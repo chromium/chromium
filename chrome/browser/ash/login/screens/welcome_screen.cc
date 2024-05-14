@@ -151,7 +151,7 @@ void RecordA11yUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED() << "Unexpected action id: " << action_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
 // Returns true if is a Meet Device or the remora requisition bit has been set

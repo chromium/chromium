@@ -59,7 +59,7 @@ AuthDisabledReason ConvertLockReason(
     case usage_time_limit::PolicyType::kNoPolicy:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AuthDisabledReason();
 }
 

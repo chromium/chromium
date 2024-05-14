@@ -364,7 +364,7 @@ void UpdateRequiredScreen::UpdateInfoChanged(
       version_updater_->StartExitUpdate(VersionUpdater::Result::UPDATE_ERROR);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   RefreshView(update_info);
 }

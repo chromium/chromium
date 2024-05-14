@@ -245,7 +245,7 @@ void StatusUploader::OnUploadCompleted(CloudPolicyClient::Result result) {
   } else if (result.IsDMServerError()) {
     SYSLOG(ERROR) << "Error uploading status: " << result.GetDMServerError();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   ScheduleNextStatusUpload();

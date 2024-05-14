@@ -177,7 +177,8 @@ crosapi::mojom::ProxyConfigPtr ProxyConfigToCrosapiProxy(
       // This mode means Chrome is getting the settings from the operating
       // system. On Chrome OS, ash-chrome is the source of truth for proxy
       // settings so this mode is never used.
-      NOTREACHED() << "The system mode doesn't apply to Ash-Chrome";
+      NOTREACHED_IN_MIGRATION()
+          << "The system mode doesn't apply to Ash-Chrome";
       break;
     default:
       LOG(ERROR) << "Incorrect proxy mode.";

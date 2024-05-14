@@ -108,7 +108,7 @@ void RecordStoredSessionLength() {
   } else {
     // NOTREACHED() since session length for other session types should not
     // be recorded.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

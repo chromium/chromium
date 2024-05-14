@@ -323,7 +323,7 @@ void ResetScreen::OnPowerwash() {
   SetShouldShowConfirmationDialog(false);
 
   if (is_rollback_requested_ && !is_rollback_available_) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Rollback was checked but not available. Starting powerwash.";
   }
 

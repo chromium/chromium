@@ -672,7 +672,7 @@ std::string_view GetLacrosDataBackwardMigrationModeName(
       return entry.first;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string_view();
 }
 

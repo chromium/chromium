@@ -55,7 +55,7 @@ bool MaybeReturnCachedStatus(
     return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -72,7 +72,7 @@ bool IsReauthRequired(const TokenHandleUtil::Status& status,
       // only if the user is using their Gaia password for logging in.
       return user_has_gaia_password;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -252,7 +252,7 @@ void TokenHandleUtil::OnStatusChecked(TokenValidationCallback callback,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED() << "Invalid user";
+    NOTREACHED_IN_MIGRATION() << "Invalid user";
     FinishWithStatus(std::move(callback), token, account_id, status,
                      /*user_has_gaia_password=*/true);
     return;

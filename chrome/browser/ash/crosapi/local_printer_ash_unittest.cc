@@ -340,7 +340,7 @@ class LocalPrinterAshTestBase : public testing::Test {
       service_manager_client_id_ =
           PrintBackendServiceManager::GetInstance().RegisterQueryClient();
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which

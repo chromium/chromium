@@ -59,7 +59,7 @@ apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return apps::WindowMode::kUnknown;
   }
 }

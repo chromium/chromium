@@ -66,7 +66,7 @@ void KioskEnableScreen::HandleClose() {
 
 void KioskEnableScreen::HandleEnable() {
   if (!is_configurable_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     HandleClose();
     return;
   }

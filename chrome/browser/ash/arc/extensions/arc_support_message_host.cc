@@ -78,7 +78,7 @@ void ArcSupportMessageHost::OnMessage(const std::string& message_string) {
   // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md.
   std::optional<base::Value> message = base::JSONReader::Read(message_string);
   if (!message || !message->is_dict()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -73,7 +73,7 @@ std::string CertificateExpiryStatusToString(CertificateExpiryStatus status) {
       return "InvalidX509";
   }
 
-  NOTREACHED() << "Unknown certificate status";
+  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
 }
 
 }  // namespace attestation

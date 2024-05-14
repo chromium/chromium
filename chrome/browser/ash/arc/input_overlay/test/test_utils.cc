@@ -107,7 +107,7 @@ std::u16string GetControlName(ActionType action_type,
       control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (key_string.empty()) {

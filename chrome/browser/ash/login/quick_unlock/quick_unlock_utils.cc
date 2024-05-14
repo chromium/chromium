@@ -193,7 +193,7 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
     case PasswordConfirmationFrequency::WEEK:
       return base::Days(7);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::TimeDelta();
 }
 
@@ -263,7 +263,7 @@ FingerprintLocation GetFingerprintLocation() {
     return FingerprintLocation::LEFT_SIDE;
   if (location_info == "left-of-power-button-top-right")
     return FingerprintLocation::LEFT_OF_POWER_BUTTON_TOP_RIGHT;
-  NOTREACHED() << "Not handled value: " << location_info;
+  NOTREACHED_IN_MIGRATION() << "Not handled value: " << location_info;
   return default_location;
 }
 

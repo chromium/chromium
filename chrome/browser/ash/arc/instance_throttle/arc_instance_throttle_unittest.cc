@@ -174,7 +174,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       else
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -185,7 +185,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcBootPhaseThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -196,7 +196,7 @@ class ArcInstanceThrottleTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -528,7 +528,7 @@ class ArcInstanceThrottleVMTest : public testing::Test {
       if (observer->name() == kArcPowerThrottleObserverName)
         return observer.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

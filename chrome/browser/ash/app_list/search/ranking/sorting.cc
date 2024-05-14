@@ -81,7 +81,7 @@ void SortResults(
           }
           // Any category associated with a result should also be present
           // in |categories_|.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return false;
         }
 

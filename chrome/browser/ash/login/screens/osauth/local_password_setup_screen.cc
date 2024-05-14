@@ -100,7 +100,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kReauthentication:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return;
   } else if (action_id == kUserActionBack) {

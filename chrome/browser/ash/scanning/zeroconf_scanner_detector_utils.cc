@@ -31,8 +31,8 @@ void SetSchemeAndProtocol(const std::string& service_type,
              ZeroconfScannerDetector::kGenericScannerServiceType) {
     protocol_out = ScanProtocol::kLegacyNetwork;
   } else {
-    NOTREACHED() << "Zeroconf scanner with unknown service type: "
-                 << service_type;
+    NOTREACHED_IN_MIGRATION()
+        << "Zeroconf scanner with unknown service type: " << service_type;
   }
 }
 

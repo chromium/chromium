@@ -302,7 +302,7 @@ DriveMountStatus ConvertMountFailure(
     case drivefs::DriveFsHost::MountObserver::MountFailure::kUnknown:
       return DriveMountStatus::kUnknownFailure;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UmaEmitMountStatus(DriveMountStatus status) {
@@ -715,7 +715,7 @@ void DriveIntegrationService::SetEnabled(bool enabled) {
         AddDriveMountPoint();
         return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else {
     RemoveDriveMountPoint();
     enabled_ = false;

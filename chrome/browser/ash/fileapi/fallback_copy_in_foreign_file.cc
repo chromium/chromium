@@ -286,7 +286,7 @@ void Copier::OnWrite(scoped_refptr<net::DrainableIOBuffer> drainable_buffer,
     Finish(storage::NetErrorToFileError(result));
     return;
   } else if (result > drainable_buffer->BytesRemaining()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   drainable_buffer->DidConsume(result);

@@ -78,7 +78,7 @@ file_manager_private::SyncStatus ConvertSyncStatus(drivefs::SyncStatus status) {
     case drivefs::SyncStatus::kError:
       return file_manager_private::SyncStatus::kError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return file_manager_private::SyncStatus::kNotFound;
   }
 }

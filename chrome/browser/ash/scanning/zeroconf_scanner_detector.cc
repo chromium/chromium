@@ -300,7 +300,8 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
                    scanner->device_names.end()) {
           protocol = ScanProtocol::kLegacyNetwork;
         } else {
-          NOTREACHED() << "Zeroconf scanner with unknown protocol.";
+          NOTREACHED_IN_MIGRATION()
+              << "Zeroconf scanner with unknown protocol.";
         }
 
         it->second.device_names[protocol].insert(

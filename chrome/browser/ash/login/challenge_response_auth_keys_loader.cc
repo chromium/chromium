@@ -303,7 +303,7 @@ class ExtensionLoadObserver final
         GetProcessManager()->GetBackgroundHostForExtension(extension_id);
     if (!extension_host) {
       // Generally this should not happen, but better safe than sorry.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -320,7 +320,7 @@ class ExtensionLoadObserver final
 
   void StopWaitingOnExtension(const std::string& extension_id) {
     if (!extensions_waited_for_.contains(extension_id)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 

@@ -67,7 +67,7 @@ std::u16string GetAccessibleNameSuffixForDirection(Direction direction) {
       return l10n_util ::GetStringUTF16(
           IDS_INPUT_OVERLAY_JOYSTICK_DIRECTION_RIGHT_A11Y_LABEL);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -242,7 +242,7 @@ void EditLabel::UpdateAccessibleName() {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -365,7 +365,7 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   DCHECK(input);
   controller_->OnInputBindingChange(action_, std::move(input));

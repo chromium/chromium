@@ -715,7 +715,7 @@ void Server::FuseFileMapEntry::Do(PendingOp& op,
              base::BindOnce(&Server::OnWrite2, weak_ptr_server, fuse_handle,
                             std::move(pending.second)));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -929,7 +929,7 @@ void Server::Close2(const Close2RequestProto& request_proto,
       std::move(absl::get<PendingWrite2>(pending_op).second)
           .Run(write2_response_proto);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

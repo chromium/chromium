@@ -249,7 +249,7 @@ void ApplyBadge(gfx::ImageSkia* icon_out, ChromeAppIcon::Badge badge_type) {
       badge_res = IDR_HOURGLASS_ICON_BADGE;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   const gfx::ImageSkia* badge_image =

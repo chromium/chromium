@@ -35,7 +35,7 @@ void KioskExternalUpdateValidator::Start() {
           FROM_HERE,
           base::BindOnce(&extensions::SandboxedUnpacker::StartWithCrx,
                          unpacker.get(), crx_file_))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

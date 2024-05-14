@@ -66,7 +66,7 @@ void RecordUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED() << "Unexpected action id: " << action_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
 }  // namespace

@@ -136,7 +136,7 @@ class ActionLabelTap : public ActionLabel {
                                                touch_point_size_.height() / 2));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -269,7 +269,7 @@ std::vector<raw_ptr<ActionLabel, VectorExperimental>> ActionLabel::Show(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -360,7 +360,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       SetToEditDefault();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

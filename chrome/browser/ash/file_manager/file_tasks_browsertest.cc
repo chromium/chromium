@@ -1731,7 +1731,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override {
     // Never called in these tests.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Launch(const std::string& app_id,
@@ -1739,7 +1739,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
               apps::LaunchSource launch_source,
               apps::WindowInfoPtr window_info) override {
     // Never called in these tests.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void LaunchAppWithIntent(const std::string& app_id,
@@ -1757,7 +1757,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
   void LaunchAppWithParams(apps::AppLaunchParams&& params,
                            apps::LaunchCallback callback) override {
     // Never called in these tests.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ClearPastLaunches() { launches_.clear(); }

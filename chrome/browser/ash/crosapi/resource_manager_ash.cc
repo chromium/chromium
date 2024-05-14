@@ -47,7 +47,7 @@ void ResourceManagerAsh::AddMemoryPressureObserver(
 
 void ResourceManagerAsh::DEPRECATED_ReportBackgroundProcesses(
     const std::vector<int32_t>& pids) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ResourceManagerAsh::ReportPageProcesses(

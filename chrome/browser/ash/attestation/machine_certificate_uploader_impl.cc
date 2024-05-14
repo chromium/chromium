@@ -207,7 +207,7 @@ void MachineCertificateUploaderImpl::CheckCertificateExpiry(
       CheckIfUploaded(reply);
       return;
   }
-  NOTREACHED() << "Unknown certificate status";
+  NOTREACHED_IN_MIGRATION() << "Unknown certificate status";
 }
 
 void MachineCertificateUploaderImpl::UploadCertificate(
@@ -305,7 +305,7 @@ void MachineCertificateUploaderImpl::HandleGetCertificateFailure(
       break;
 
     case ATTESTATION_SUCCESS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

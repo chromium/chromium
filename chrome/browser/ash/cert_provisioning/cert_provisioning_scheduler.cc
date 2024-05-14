@@ -502,7 +502,7 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
 
   auto worker_iter = workers_.find(profile.profile_id);
   if (worker_iter == workers_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     LOG(WARNING) << "Finished worker is not found";
     return;
   }

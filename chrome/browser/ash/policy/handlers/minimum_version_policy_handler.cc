@@ -506,7 +506,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
     VLOG(2) << "Showing no network notification.";
     button_click_callback = base::BindOnce(&OpenNetworkSettings);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   notification_handler_->Show(type, warning, manager, device_type,

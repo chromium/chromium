@@ -88,7 +88,7 @@ void AddTestURLDataSource(const std::string& source_name,
             else if (id == "page2.html")
               ref_contents->as_string() = kPage2Html;
             else
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
 
             std::move(callback).Run(ref_contents);
           }));

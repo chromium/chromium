@@ -290,7 +290,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
     case RequestType::kLinkedPage:
       return BuildResponseForLinkedPage(request, request_url);
     case RequestType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

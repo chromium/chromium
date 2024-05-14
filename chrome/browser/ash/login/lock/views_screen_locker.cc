@@ -150,14 +150,14 @@ bool ViewsScreenLocker::HandleFocusLockScreenApps(bool reverse) {
 }
 
 void ViewsScreenLocker::HandleFocusOobeDialog() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ViewsScreenLocker::HandleLaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ViewsScreenLocker::SuspendDone(base::TimeDelta sleep_duration) {

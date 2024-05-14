@@ -56,7 +56,7 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
     case policy::DeviceLocalAccount::TYPE_WEB_KIOSK_APP:
       return LoginLogoutSessionType::KIOSK_SESSION;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
   }
 }
@@ -227,7 +227,7 @@ void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   const auto* pref =
       GetLocalState()->FindPreference(kLoginLogoutReporterDictionary);
   if (!pref) {
-    NOTREACHED() << "Cannot find pref.";
+    NOTREACHED_IN_MIGRATION() << "Cannot find pref.";
     return;
   }
 

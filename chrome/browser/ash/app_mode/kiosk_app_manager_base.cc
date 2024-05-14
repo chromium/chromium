@@ -71,7 +71,7 @@ void KioskAppManagerBase::OnKioskAppDataLoadFailure(const std::string& app_id) {
 
 void KioskAppManagerBase::OnExternalCacheDamaged(const std::string& app_id) {
   // Should be implemented only in those kiosks that use ExternalCache.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool KioskAppManagerBase::GetDisableBailoutShortcut() const {

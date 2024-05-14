@@ -141,7 +141,7 @@ void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
       std::move(is_file_arc_writable_callback).Run(false);
       return;
     case VolumeType::NUM_VOLUME_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

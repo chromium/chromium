@@ -144,7 +144,8 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kArcError, RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED() << "Demo mode setup received unsupported client status";
+  NOTREACHED_IN_MIGRATION()
+      << "Demo mode setup received unsupported client status";
   return DemoSetupController::DemoSetupError(
       ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
 }
@@ -172,7 +173,8 @@ DemoSetupController::DemoSetupError CreateFromLockStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kAlreadyLocked, RecoveryMethod::kPowerwash, debug_message);
   }
-  NOTREACHED() << "Demo mode setup received unsupported lock status";
+  NOTREACHED_IN_MIGRATION()
+      << "Demo mode setup received unsupported lock status";
   return DemoSetupController::DemoSetupError(
       ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
 }
@@ -235,7 +237,8 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED() << "Demo mode setup received unsupported enrollment status";
+  NOTREACHED_IN_MIGRATION()
+      << "Demo mode setup received unsupported enrollment status";
   return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
                         debug_message);
 }
@@ -254,7 +257,8 @@ DemoSetupController::DemoSetupError::CreateFromOtherEnrollmentError(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED() << "Demo mode setup received unsupported enrollment error";
+  NOTREACHED_IN_MIGRATION()
+      << "Demo mode setup received unsupported enrollment error";
   return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
                         debug_message);
 }
@@ -359,7 +363,8 @@ std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
     case ErrorCode::kUnexpectedError:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_UNEXPECTED_ERROR);
   }
-  NOTREACHED() << "No localized error message available for demo setup error.";
+  NOTREACHED_IN_MIGRATION()
+      << "No localized error message available for demo setup error.";
   return std::u16string();
 }
 
@@ -379,7 +384,7 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
     case RecoveryMethod::kUnknown:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_RECOVERY_FATAL);
   }
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "No localized error message available for demo setup recovery method.";
   return std::u16string();
 }
@@ -479,7 +484,7 @@ std::string DemoSetupController::GetDemoSetupStepString(
       return "complete";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DemoSetupController::DemoSetupController() = default;
@@ -518,7 +523,7 @@ void DemoSetupController::Enroll(
       return;
     case DemoSession::DemoModeConfig::kNone:
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
-      NOTREACHED() << "No valid demo mode config specified";
+      NOTREACHED_IN_MIGRATION() << "No valid demo mode config specified";
   }
 }
 
@@ -607,7 +612,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
 }
 
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DemoSetupController::OnEnrollmentError(policy::EnrollmentStatus status) {
@@ -635,11 +640,11 @@ void DemoSetupController::OnDeviceEnrolled() {
 }
 
 void DemoSetupController::OnDeviceAttributeUploadCompleted(bool success) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(

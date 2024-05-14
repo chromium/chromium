@@ -987,7 +987,7 @@ void ArcSessionManager::CancelAuthCode() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (state_ == State::NOT_INITIALIZED) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -2065,7 +2065,7 @@ std::ostream& operator<<(std::ostream& os,
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED() << "Invalid value " << static_cast<int>(state);
+  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(state);
   return os;
 }
 

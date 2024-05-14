@@ -245,7 +245,7 @@ void OpenSystemSettings(Profile* profile, ContentType type) {
     }
     default: {
       // This should only be called for camera, microphone, or geolocation.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

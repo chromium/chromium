@@ -54,7 +54,7 @@ void EditLabels::Init() {
       InitForActionMoveKeyboard();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   UpdateNameTag();
@@ -119,7 +119,7 @@ std::u16string EditLabels::CalculateActionName() {
       control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (all_unassigned) {

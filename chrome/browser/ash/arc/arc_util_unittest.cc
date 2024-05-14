@@ -104,7 +104,7 @@ class ScopedLogIn {
         LogInArcKioskApp();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

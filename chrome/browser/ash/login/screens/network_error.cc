@@ -42,7 +42,7 @@ const char* NetworkError::ErrorReasonString(ErrorReason reason) {
     case ERROR_REASON_FRAME_ERROR:
       return kErrorReasonFrameError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

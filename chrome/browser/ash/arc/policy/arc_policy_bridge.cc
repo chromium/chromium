@@ -73,7 +73,8 @@ void MapBoolToBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::BOOLEAN);
   if (!policy_value) {
-    NOTREACHED() << "Policy " << policy_name << " is not a boolean.";
+    NOTREACHED_IN_MIGRATION()
+        << "Policy " << policy_name << " is not a boolean.";
     return;
   }
   filtered_policies->Set(arc_policy_name,
@@ -94,7 +95,8 @@ void MapIntToBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::INTEGER);
   if (!policy_value) {
-    NOTREACHED() << "Policy " << policy_name << " is not an integer.";
+    NOTREACHED_IN_MIGRATION()
+        << "Policy " << policy_name << " is not an integer.";
     return;
   }
   filtered_policies->Set(arc_policy_name, policy_value->GetInt() == int_true);
@@ -130,7 +132,8 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::DICT);
   if (!policy_value) {
-    NOTREACHED() << "Policy " << policy_name << " is not an object.";
+    NOTREACHED_IN_MIGRATION()
+        << "Policy " << policy_name << " is not an object.";
     return;
   }
   for (const auto& field : fields) {
@@ -203,7 +206,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     bool web_trust_flag = false;
     for (const auto& list_val : *trust_list) {
       if (!list_val.is_string()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       if (list_val.GetString() == ::onc::certificate::kWeb) {

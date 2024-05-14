@@ -180,7 +180,7 @@ fmp::IoTaskState GetIoTaskState(io_task::State state) {
     case io_task::State::kCancelled:
       return fmp::IoTaskState::kCancelled;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::IoTaskState::kError;
   }
 }
@@ -207,7 +207,7 @@ fmp::IoTaskType GetIoTaskType(io_task::OperationType type) {
     case io_task::OperationType::kZip:
       return fmp::IoTaskType::kZip;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::IoTaskType::kCopy;
   }
 }
@@ -225,7 +225,7 @@ fmp::PolicyErrorType GetPolicyErrorType(
     case io_task::PolicyErrorType::kDlpWarningTimeout:
       return fmp::PolicyErrorType::kDlpWarningTimeout;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::PolicyErrorType::kNone;
   }
 }

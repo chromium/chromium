@@ -62,7 +62,7 @@ class TerminalIntegrationTest : public AshIntegrationTest {
                                     ui::Accelerator::KeyState::PRESSED)));
       } else {
         // Unsupported input.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
     return steps;

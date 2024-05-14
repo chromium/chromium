@@ -140,7 +140,7 @@ void IdleEventNotifier::OnUserActivity(const ui::Event* event) {
 
 void IdleEventNotifier::OnVideoActivityStarted() {
   if (video_playing_) {
-    NOTREACHED() << "Duplicate start of video activity";
+    NOTREACHED_IN_MIGRATION() << "Duplicate start of video activity";
     return;
   }
   video_playing_ = true;
@@ -149,7 +149,7 @@ void IdleEventNotifier::OnVideoActivityStarted() {
 
 void IdleEventNotifier::OnVideoActivityEnded() {
   if (!video_playing_) {
-    NOTREACHED() << "Duplicate end of video activity";
+    NOTREACHED_IN_MIGRATION() << "Duplicate end of video activity";
     return;
   }
   video_playing_ = false;

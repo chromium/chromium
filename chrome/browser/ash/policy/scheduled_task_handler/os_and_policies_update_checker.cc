@@ -190,7 +190,7 @@ void OsAndPoliciesUpdateChecker::UpdateStatusChanged(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -434,7 +434,7 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   for (const AccountId& account_id : device_local_accounts) {
     auto type = policy::GetDeviceLocalAccountType(account_id.GetUserEmail());
     if (!type.has_value()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

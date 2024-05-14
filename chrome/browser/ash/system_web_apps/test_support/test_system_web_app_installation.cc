@@ -49,7 +49,7 @@ WebUIType GetWebUIType(const GURL& url) {
     return WebUIType::kChrome;
   if (url.SchemeIs(content::kChromeUIUntrustedScheme))
     return WebUIType::kChromeUntrusted;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebUIType::kChrome;
 }
 

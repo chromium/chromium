@@ -32,7 +32,7 @@ SmbFsFileSystemBackendDelegate::CreateFileStreamReader(
     int64_t max_bytes_to_read,
     const base::Time& expected_modification_time,
     storage::FileSystemContext* context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -41,13 +41,13 @@ SmbFsFileSystemBackendDelegate::CreateFileStreamWriter(
     const storage::FileSystemURL& url,
     int64_t offset,
     storage::FileSystemContext* context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 storage::WatcherManager* SmbFsFileSystemBackendDelegate::GetWatcherManager(
     storage::FileSystemType type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -328,7 +328,7 @@ storage::AsyncFileUtil* FileSystemBackend::GetAsyncFileUtil(
     case storage::kFileSystemTypeSmbFs:
       return smbfs_delegate_->GetAsyncFileUtil(type);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -424,7 +424,7 @@ bool FileSystemBackend::HasInplaceCopyImplementation(
     case storage::kFileSystemTypeFuseBox:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return true;
 }
@@ -475,7 +475,7 @@ FileSystemBackend::CreateFileStreamReader(
       return arc_documents_provider_delegate_->CreateFileStreamReader(
           url, offset, max_bytes_to_read, expected_modification_time, context);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -514,7 +514,7 @@ FileSystemBackend::CreateFileStreamWriter(
     case storage::kFileSystemTypeArcContent:
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

@@ -68,7 +68,7 @@ void RecordUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED() << "Unexpected action id: " << action_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
 // The max number of fingerprints that can be stored.
@@ -88,7 +88,7 @@ std::string GetDefaultFingerprintName(int enrolled_finger_count) {
       return l10n_util::GetStringUTF8(
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME_3);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }

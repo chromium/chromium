@@ -50,7 +50,7 @@ void DeviceDisabledScreen::HideImpl() {
     return;
   }
 
-  NOTREACHED() << "Device disabled screen can't be hidden";
+  NOTREACHED_IN_MIGRATION() << "Device disabled screen can't be hidden";
   DeviceDisablingManager()->RemoveObserver(this);
 }
 

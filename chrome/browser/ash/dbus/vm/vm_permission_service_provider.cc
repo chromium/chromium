@@ -342,7 +342,7 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
       UpdateBorealisPermissions(vm);
       break;
     case VmInfo::CrostiniVm:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -39,8 +39,9 @@ std::u16string InputMethodDelegateImpl::GetLocalizedString(
 
 void InputMethodDelegateImpl::SetHardwareKeyboardLayoutForTesting(
     const std::string& layout) {
-  NOTREACHED() << "Use FakeInputMethodDelegate for hardware keyboard layout "
-               << "testing purpose.";
+  NOTREACHED_IN_MIGRATION()
+      << "Use FakeInputMethodDelegate for hardware keyboard layout "
+      << "testing purpose.";
 }
 
 }  // namespace input_method

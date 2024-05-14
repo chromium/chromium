@@ -344,7 +344,7 @@ void ArcInstanceThrottle::OnBootTypeRetrieved(mojom::BootType boot_type) {
       never_enforce_quota_ = true;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ArcInstanceThrottle::ThrottleInstance(bool should_throttle) {

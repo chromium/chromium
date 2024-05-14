@@ -345,7 +345,7 @@ void CertProvisioningWorkerStatic::DoStep() {
       CHECK(false);
       return;
   }
-  NOTREACHED() << " " << static_cast<uint>(state_);
+  NOTREACHED_IN_MIGRATION() << " " << static_cast<uint>(state_);
 }
 
 void CertProvisioningWorkerStatic::MarkWorkerForReset() {
