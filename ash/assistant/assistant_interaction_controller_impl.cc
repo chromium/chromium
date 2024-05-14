@@ -502,9 +502,9 @@ void AssistantInteractionControllerImpl::OnSuggestionPressed(
   AssistantQuerySource query_source;
   switch (suggestion->type) {
     case AssistantSuggestionType::kBetterOnboarding:
+      // There should be no more `AssistantSuggestionType::KBetterOnboarding` as
+      // the ui gets removed. Leave the code as is.
       query_source = AssistantQuerySource::kBetterOnboarding;
-      base::UmaHistogramEnumeration("Assistant.BetterOnboarding.Click",
-                                    suggestion->better_onboarding_type);
       break;
     case AssistantSuggestionType::kConversationStarter:
       query_source = AssistantQuerySource::kConversationStarter;

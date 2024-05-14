@@ -22,15 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Assistant.BetterOnboarding.Click"
-    enum="AssistantBetterOnboardingType" expires_after="2024-05-19">
-  <owner>xiaohuic@chromium.org</owner>
-  <owner>croissant-eng@chromium.org</owner>
-  <summary>
-    The number of times Assistant better onboarding buttons are clicked.
-  </summary>
-</histogram>
-
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
     expires_after="2025-04-28">
   <owner>xiaohuic@chromium.org</owner>
