@@ -116,6 +116,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_validation_message.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_virtual_object.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/accessibility/ax_common.h"
@@ -788,6 +789,7 @@ void AXObjectCacheImpl::Dispose() {
 
   // Destroy any pending task to serialize the tree.
   weak_factory_for_serialization_pipeline_.Invalidate();
+  weak_factory_for_loc_updates_pipeline_.Invalidate();
 }
 
 void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
@@ -1963,7 +1965,7 @@ void AXObjectCacheImpl::UpdateNumTreeUpdatesQueuedBeforeLayoutHistogram() {
 
 void AXObjectCacheImpl::InvalidateBoundingBoxForFixedOrStickyPosition() {
   for (AXID id : fixed_or_sticky_node_ids_)
-    changed_bounds_ids_.insert(id);
+    InvalidateBoundingBox(id);
 }
 
 bool AXObjectCacheImpl::CanDeferTreeUpdate(Document* tree_update_document) {
@@ -2906,6 +2908,28 @@ int AXObjectCacheImpl::GetDeferredEventsDelay() const {
              : kDelayForDeferredUpdatesBeforePageLoad;
 }
 
+int AXObjectCacheImpl::GetLocationSerializationDelay() {
+  // The amount of time, in milliseconds, to wait in between location updates
+  // when the changed nodes don't include the focused node.
+  constexpr int kDelayForLocationUpdatesNonFocused = 500;
+
+  // The amount of time, in milliseconds, to wait in between location updates
+  // when the changed nodes includes the focused node.
+  constexpr int kDelayForLocationUpdatesFocused = 75;
+
+  // It's important for the user to have access to any changes to the
+  // currently focused object, so schedule serializations (almost )immediately
+  // if that object changes. The root is an exception because it often has focus
+  // while the page is loading.
+  DOMNodeId focused_node_id = FocusedObject()->GetDOMNodeId();
+  if (focused_node_id != document_->GetDomNodeId() &&
+      changed_bounds_ids_.Contains(focused_node_id)) {
+    return kDelayForLocationUpdatesFocused;
+  }
+
+  return kDelayForLocationUpdatesNonFocused;
+}
+
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
                                                            bool force) {
   if (IsPopup(document)) {
@@ -3113,7 +3137,10 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     }
 
     // ***** Serialize Location Changes *****
-    if (reset_token_ && !changed_bounds_ids_.empty()) {
+    // Even if there are no dirty objects, we ensure pending location changes
+    // are sent. However, we wait until the document load is complete because
+    // layout often shifts during the load process.
+    if (reset_token_ && GetDocument().IsLoadCompleted()) {
       SerializeLocationChanges();
     }
 
@@ -5077,11 +5104,40 @@ Element* AXObjectCacheImpl::GetActiveAriaModalDialog() const {
 
 void AXObjectCacheImpl::SerializeLocationChanges() {
   CHECK(GetDocument().IsActive());
-  DCHECK(!changed_bounds_ids_.empty());
+  if (changed_bounds_ids_.empty()) {
+    return;
+  }
 
-  TRACE_EVENT0("accessibility", "SerializeLocationChanges");
+  TRACE_EVENT0("accessibility", "ProcessLocationChanges");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-      "Accessibility.Performance.SerializeLocationChanges");
+      "Accessibility.Performance.ProcessLocationChanges");
+
+  // Ensure enough time has passed since last locations serialization.
+  Document& document = GetDocument();
+  const auto& now = base::Time::Now();
+  const auto& delay_between_serializations =
+      base::Milliseconds(GetLocationSerializationDelay());
+  const auto& elapsed_since_last_serialization =
+      now - last_location_serialization_time_;
+  const auto& delay_until_next_serialization =
+      delay_between_serializations - elapsed_since_last_serialization;
+  if (delay_until_next_serialization.is_positive()) {
+    // No serialization needed yet, will serialize after a delay.
+    // Set a timer to call this method again, if one isn't already set.
+    if (!weak_factory_for_loc_updates_pipeline_.HasWeakCells()) {
+      document.GetTaskRunner(blink::TaskType::kInternalDefault)
+          ->PostDelayedTask(
+              FROM_HERE,
+              WTF::BindOnce(
+                  &AXObjectCacheImpl::ScheduleAXUpdate,
+                  WrapPersistent(
+                      weak_factory_for_loc_updates_pipeline_.GetWeakCell())),
+              delay_until_next_serialization);
+    }
+    return;
+  }
+
+  weak_factory_for_loc_updates_pipeline_.Invalidate();
 
   Vector<mojom::blink::LocationChangesPtr> changes;
   changes.reserve(changed_bounds_ids_.size());
@@ -5109,6 +5165,7 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
     CHECK(reset_token_);
     GetOrCreateRemoteRenderAccessibilityHost()->HandleAXLocationChanges(
         std::move(changes), *reset_token_);
+    last_location_serialization_time_ = base::Time::Now();
   }
 }
 
@@ -5562,8 +5619,7 @@ void AXObjectCacheImpl::HandleValueChanged(Node* node) {
   if (ax_object && ax_object->RoleValue() == ax::mojom::blink::Role::kSlider &&
       !ax_object->NeedsToUpdateChildren() &&
       ax_object->ChildCountIncludingIgnored() == 1) {
-    changed_bounds_ids_.insert(
-        ax_object->ChildAtIncludingIgnored(0)->AXObjectID());
+    InvalidateBoundingBox(ax_object->ChildAtIncludingIgnored(0)->AXObjectID());
   }
 }
 
@@ -5662,8 +5718,12 @@ void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
 void AXObjectCacheImpl::InvalidateBoundingBox(
     const LayoutObject* layout_object) {
   if (AXObject* obj = Get(const_cast<LayoutObject*>(layout_object))) {
-    changed_bounds_ids_.insert(obj->AXObjectID());
+    InvalidateBoundingBox(obj->AXObjectID());
   }
+}
+
+void AXObjectCacheImpl::InvalidateBoundingBox(const AXID& id) {
+  changed_bounds_ids_.insert(id);
 }
 
 void AXObjectCacheImpl::SetCachedBoundingBox(
@@ -5682,7 +5742,12 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   }
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
+
+  // When the scroll position position changes, mark the bounding boxes of all
+  // fixed/sticky positioned objects for reserialization, because they are
+  // relative to the top left of the document.
   InvalidateBoundingBoxForFixedOrStickyPosition();
+
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
     if (!nodes_with_pending_scroll_changed_.insert(node->GetDomNodeId())
@@ -5851,6 +5916,7 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(dirty_objects_);
   visitor->Trace(node_to_parse_before_more_tree_updates_);
   visitor->Trace(weak_factory_for_serialization_pipeline_);
+  visitor->Trace(weak_factory_for_loc_updates_pipeline_);
 
   AXObjectCache::Trace(visitor);
 }

@@ -302,6 +302,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // in order to more efficiently batch changes.
   int GetDeferredEventsDelay() const;
 
+  // Get the amount of time, in ms, that location serialization should be
+  // deferred in order to more efficiently batch changes.
+  int GetLocationSerializationDelay();
+
   // Called during the accessibility lifecycle to refresh the AX tree.
   void ProcessDeferredAccessibilityEvents(Document&, bool force) override;
   // Remove AXObject subtrees (once flat tree traversal is safe).
@@ -319,6 +323,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Invalidates the bounding box, which can be later retrieved by
   // SerializeLocationChanges.
   void InvalidateBoundingBox(const LayoutObject*) override;
+  void InvalidateBoundingBox(const AXID&);
 
   void SetCachedBoundingBox(AXID id, const ui::AXRelativeBounds& bounds);
 
@@ -1104,6 +1109,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // animations.
   base::Time last_serialization_timestamp_ = base::Time::UnixEpoch();
 
+  // The last time dirty_objects_from_location_change_ were serialized and sent.
+  base::Time last_location_serialization_time_ = base::Time::UnixEpoch();
+
   // If true, will not attempt to batch and will serialize at the next
   // opportunity.
   bool serialize_immediately_ = false;
@@ -1210,6 +1218,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // remaining to be serialized.
   blink::WeakCellFactory<AXObjectCacheImpl>
       weak_factory_for_serialization_pipeline_{this};
+
+  // So we can ensure the location changes pipeline never stalls with location
+  // changes remaining to be serialized.
+  blink::WeakCellFactory<AXObjectCacheImpl>
+      weak_factory_for_loc_updates_pipeline_{this};
 };
 
 // This is the only subclass of AXObjectCache.
