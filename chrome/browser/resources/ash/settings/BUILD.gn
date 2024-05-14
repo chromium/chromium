@@ -367,6 +367,7 @@ build_webui("build") {
     "common/route_origin_mixin.ts",
     "common/setting_id_param_util.ts",
     "common/types.ts",
+    "controls/v2/base_row_mixin.ts",
     "controls/v2/pref_control_mixin_internal.ts",
     "os_apps_page/app_management_page/privacy_hub_mixin.ts",
     "os_files_page/google_drive_browser_proxy.ts",

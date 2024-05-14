@@ -138,6 +138,7 @@ export {ExtensionControlledIndicatorElement} from './controls/extension_controll
 export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
+export {BaseRowMixin} from './controls/v2/base_row_mixin.js';
 export {PrefControlMixinInternal} from './controls/v2/pref_control_mixin_internal.js';
 export {SettingsDropdownV2Element} from './controls/v2/settings_dropdown_v2.js';
 export {SettingsSliderV2Element} from './controls/v2/settings_slider_v2.js';
