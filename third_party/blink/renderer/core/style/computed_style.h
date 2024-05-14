@@ -1308,10 +1308,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return false;
   }
 
-  bool BorderRadiusEqual(const ComputedStyle& o) const {
-    return !DiffBorderRadius(*this, o);
-  }
-
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
     auto BorderSideVisuallyEqual =
         [&](const StyleColor& color, const StyleColor& other_color,

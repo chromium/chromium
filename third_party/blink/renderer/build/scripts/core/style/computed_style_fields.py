@@ -54,6 +54,8 @@ class Group(object):
         self.all_subgroups = _flatten_list(
             subgroup.all_subgroups for subgroup in subgroups) + subgroups
 
+        self.needs_diff = any(field.needs_diff for field in self.all_fields)
+
         # Ensure that all fields/subgroups on this group link to it
         for field in fields:
             field.group = self
@@ -141,9 +143,9 @@ class Field(object):
 
     def __init__(self, field_role, name_for_methods, property_name, type_name,
                  wrapper_pointer_name, field_template, size, default_value,
-                 derived_from, reset_on_new_style, custom_compare, mutable,
-                 getter_method_name, setter_method_name, initial_method_name,
-                 computed_style_custom_functions,
+                 derived_from, invalidate, reset_on_new_style, custom_compare,
+                 mutable, getter_method_name, setter_method_name,
+                 initial_method_name, computed_style_custom_functions,
                  computed_style_protected_functions, **kwargs):
         name_source = NameStyleConverter(name_for_methods)
         self.name = name_source.to_class_data_member()
@@ -156,6 +158,10 @@ class Field(object):
         self.size = size
         self.default_value = default_value
         self.derived_from = derived_from
+        self.invalidate = [
+            NameStyleConverter(value).to_enum_value() for value in invalidate
+        ]
+        self.needs_diff = bool(invalidate)
         self.reset_on_new_style = reset_on_new_style
         self.custom_compare = custom_compare
         self.mutable = mutable

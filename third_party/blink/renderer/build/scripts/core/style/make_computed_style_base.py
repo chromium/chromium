@@ -338,6 +338,7 @@ def _create_property_field(property_):
         field_template=property_.field_template,
         size=size,
         default_value=property_.default_value,
+        invalidate=property_.invalidate,
         derived_from=property_.derived_from,
         reset_on_new_style=property_.reset_on_new_style,
         custom_compare=property_.custom_compare,
@@ -371,6 +372,7 @@ def _create_inherited_flag_field(property_):
         size=1,
         default_value='true',
         derived_from=None,
+        invalidate=[],
         reset_on_new_style=False,
         custom_compare=False,
         mutable=False,
@@ -614,6 +616,11 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
         self._longhands = [p for p in properties if p.is_longhand]
 
         self._generated_enums = _create_enums(self._properties)
+        self._diff_enum = [
+            NameStyleConverter(value).to_enum_value()
+            for value in self._css_properties.default_parameters["invalidate"]
+            ["valid_values"]
+        ]
 
         # Organise fields into a tree structure where the root group
         # is ComputedStyleBase.
@@ -674,6 +681,7 @@ class ComputedStyleBaseWriter(json5_generator.Writer):
             'computed_style': self._root_group,
             'computed_style_builder': self._root_builder_group,
             'diff_functions_map': self._diff_functions_map,
+            'diff_enum': self._diff_enum,
         }
 
     @template_expander.use_jinja(

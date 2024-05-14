@@ -105,7 +105,6 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
   {% endfor %}
 
  public:
-
   inline bool IndependentInheritedEqual(const ComputedStyleBase& o) const {
     return (
         {{fieldwise_compare(computed_style, computed_style.all_fields
@@ -252,6 +251,14 @@ class ComputedStyleBase : public GarbageCollected<ComputedStyleBase> {
     {{declare_storage(field)}}
     {% endfor %}
   };
+
+  enum FieldDifference : uint32_t {
+  {% for value in diff_enum %}
+    {{value}} = 1u << {{loop.index0}},
+  {% endfor %}
+  };
+
+  static uint32_t FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b);
 
  private:
   friend class ComputedStyleBuilder;

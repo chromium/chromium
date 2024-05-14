@@ -1,5 +1,5 @@
 {% from 'templates/macros.tmpl' import license, print_if, source_files_for_generated_file %}
-{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, fieldwise_diff, group_source_expression, field_source_expression, group_getter_expression %}
+{% from 'templates/fields/field.tmpl' import encode, const_ref, getter_expression, getter_method_name, setter_expression, fieldwise_debug_diff, field_invalidation_diff, fieldwise_diff, group_source_expression, field_source_expression, group_getter_expression %}
 {% from 'templates/fields/group.tmpl' import define_field_group_class %}
 {% import 'templates/fields/derived_flag.tmpl' as derived_flag %}
 {{license()}}
@@ -73,6 +73,13 @@ ComputedStyleBase::FindChangedGroups(const ComputedStyleBase &other_style) const
 
 void ComputedStyleBase::Trace(Visitor* visitor) const {
   static_cast<const ComputedStyle*>(this)->TraceAfterDispatch(visitor);
+}
+
+
+uint32_t ComputedStyleBase::FieldInvalidationDiff(const ComputedStyle& a, const ComputedStyle& b) {
+  uint32_t diff = 0u;
+  {{field_invalidation_diff(computed_style)|indent(2)}}
+  return diff;
 }
 
 {% for name, groups_to_diff in diff_functions_map.items() %}

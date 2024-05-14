@@ -320,3 +320,18 @@ if (!{{predicate}})
   return true;
 {% endfor %}
 {% endmacro %}
+
+{% macro field_invalidation_diff(group_to_diff) %}
+{% for subgroup in group_to_diff.subgroups|selectattr("needs_diff") %}
+if (a.{{group_getter_expression(subgroup)}}.Get() != b.{{group_getter_expression(subgroup)}}.Get()) {
+{{field_invalidation_diff(subgroup)|indent(2, true)}}
+}
+{% endfor %}
+{% for field in group_to_diff.fields|selectattr("needs_diff") %}
+if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
+{% for invalidate in field.invalidate %}
+  diff |= {{invalidate}};
+{% endfor %}
+}
+{% endfor %}
+{% endmacro %}

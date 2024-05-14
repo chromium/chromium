@@ -293,6 +293,30 @@
       ]
     },
 
+    // When specified on a property/field, this will generate code within
+    // ComputedStyleBase::FieldInvalidationDiff to check if the property/field
+    // has changed, and if so set a flag indicating this.
+    //
+    // Example usage:
+    // if (field_diff & kBorderRadius) {
+    //   diff.SetBorderRadiusChanged();
+    // }
+    //
+    // The diff can also be used to "guard" against more expensive checks, e.g:
+    // if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
+    //   return true;
+    // }
+    //
+    // This is to be **only** used within ComputedStyle::VisualInvalidationDiff
+    // and will generally be more efficient than comparing fields directly.
+    invalidate: {
+      default: [],
+      valid_type: "list",
+      valid_values: [
+        "border-radius",
+      ],
+    },
+
     // Valid for field_template:derived_flag only. This specifies the function
     // on ComputedStyle used to calculate the flag.
     derived_from: {
@@ -2055,6 +2079,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-radius"],
     },
     {
       name: "border-bottom-right-radius",
@@ -2076,6 +2101,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-radius"],
     },
     {
       name: "border-bottom-style",
@@ -2380,6 +2406,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-radius"],
     },
     {
       name: "border-top-right-radius",
@@ -2401,6 +2428,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-radius"],
     },
     {
       name: "border-top-style",

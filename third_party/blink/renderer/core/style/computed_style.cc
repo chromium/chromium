@@ -896,6 +896,11 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsPositionedMovementLayout();
   }
 
+  uint32_t field_diff = FieldInvalidationDiff(*this, other);
+  if (field_diff & kBorderRadius) {
+    diff.SetBorderRadiusChanged();
+  }
+
   AdjustDiffForNeedsPaintInvalidation(other, diff, document);
 
   UpdatePropertySpecificDifferences(other, diff);
@@ -1077,7 +1082,7 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     StyleDifference& diff,
     const Document& document) const {
   if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other) ||
-      !BorderVisuallyEqual(other) || !BorderRadiusEqual(other)) {
+      !BorderVisuallyEqual(other) || diff.BorderRadiusChanged()) {
     diff.SetNeedsNormalPaintInvalidation();
   }
 
