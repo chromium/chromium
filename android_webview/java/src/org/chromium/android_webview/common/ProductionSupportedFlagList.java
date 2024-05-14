@@ -342,6 +342,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_TEXT_AREA_CHANGE_EVENTS,
                 "When enabled, autofill responds to textarea change events."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_CARET_EXTRACTION,
+                "When enabled, autofill extracts the caret position on certain events."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_CONTENT_EDITABLE_CHANGE_EVENTS,
                 "When enabled, autofill responds to content editable change events."),
         Flag.baseFeature(

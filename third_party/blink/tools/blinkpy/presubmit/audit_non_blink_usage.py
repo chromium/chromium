@@ -1099,6 +1099,7 @@ _CONFIG = [
         ],
         'allowed': [
             'base::OnceCallback',
+            'gfx::Rect',
         ],
     },
     {

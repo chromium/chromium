@@ -419,6 +419,7 @@ class BrowserAutofillManager : public AutofillManager {
   void OnAskForValuesToFillImpl(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
                                     const FormFieldData& field) override;

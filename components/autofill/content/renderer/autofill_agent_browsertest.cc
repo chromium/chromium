@@ -46,6 +46,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
@@ -56,6 +57,7 @@ using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Property;
+using ::testing::SaveArg;
 using ::testing::SizeIs;
 
 class MockAutofillAgent : public AutofillAgent {
@@ -606,7 +608,6 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
 // Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
 TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestionsForContenteditable) {
   LoadHTML("<body><div id=ce contenteditable></div></body>");
-
   FormRendererId form_id = GetFormRendererIdById("ce");
   EXPECT_CALL(autofill_driver(), AskForValuesToFill);
   autofill_agent().TriggerSuggestions(
@@ -1273,6 +1274,85 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsForNullElement) {
   FocusedElementChanged("contenteditable");
   checkpoint.Call("null");
   FocusedElementChanged(blink::WebElement());
+}
+
+// Test fixture for caret position extraction and movement detection.
+class AutofillAgentTestCaret
+    : public AutofillAgentTest,
+      public ::testing::WithParamInterface<FormControlType> {
+ public:
+  FormControlType form_control_type() const { return GetParam(); }
+
+  void SetUp() override {
+    AutofillAgentTest::SetUp();
+    switch (form_control_type()) {
+      case FormControlType::kContentEditable:
+        LoadHTML(
+            R"(<div id=f contenteditable
+               style="width: 10em; height: 3ex;">012345</div>)");
+        break;
+      case FormControlType::kInputText:
+        LoadHTML(R"(<input id=f value=012345>)");
+        break;
+      case FormControlType::kTextArea:
+        LoadHTML(R"(<textarea id=f>012345</textarea>)");
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  blink::WebElement GetElement() { return GetWebElementById("f"); }
+
+  void Focus() {
+    ExecuteJavaScriptForTests(R"(
+      document.getElementById('f').focus();
+    )");
+    task_environment_.FastForwardBy(base::Milliseconds(500));
+    task_environment_.RunUntilIdle();
+  }
+
+  void TriggerAskForValuesToFill() {
+    switch (form_control_type()) {
+      case FormControlType::kContentEditable:
+        test_api(autofill_agent())
+            .ShowSuggestionsForContentEditable(GetElement(), {});
+        break;
+      case FormControlType::kInputText:
+      case FormControlType::kTextArea:
+        test_api(autofill_agent())
+            .QueryAutofillSuggestions(
+                GetElement().DynamicTo<blink::WebFormControlElement>(), {});
+        break;
+      default:
+        NOTREACHED_NORETURN();
+    }
+    task_environment_.RunUntilIdle();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      autofill::features::kAutofillCaretExtraction};
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillAgentTest,
+                         AutofillAgentTestCaret,
+                         ::testing::Values(FormControlType::kInputText,
+                                           FormControlType::kTextArea,
+                                           FormControlType::kContentEditable));
+
+// Tests that AskForValuesToFill() is parameterized with the caret position.
+TEST_P(AutofillAgentTestCaret, AskForValuesToFillContainsCaret) {
+  FormFieldData field;
+  gfx::Rect caret_bounds;
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill)
+      .WillOnce(DoAll(SaveArg<1>(&field), SaveArg<2>(&caret_bounds)));
+  Focus();
+  TriggerAskForValuesToFill();
+  EXPECT_FALSE(field.bounds().IsEmpty());
+  EXPECT_FALSE(caret_bounds.origin().IsOrigin());
+  EXPECT_GT(caret_bounds.height(), 0);
+  EXPECT_TRUE(field.bounds().Contains(gfx::RectF(caret_bounds)));
 }
 
 }  // namespace

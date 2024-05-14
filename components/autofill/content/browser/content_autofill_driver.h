@@ -246,6 +246,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void AskForValuesToFill(
       const FormData& form,
       const FormFieldData& field,
+      const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source) override;
   void DidFillAutofillFormData(const FormData& form,
                                base::TimeTicks timestamp) override;
@@ -284,6 +285,8 @@ class ContentAutofillDriver : public AutofillDriver,
   // Transform bounding box coordinates to real viewport coordinates. In the
   // case of a page spanning multiple renderer processes, subframe renderers
   // cannot do this transformation themselves.
+  [[nodiscard]] gfx::Rect TransformBoundingBoxToViewportCoordinates(
+      const gfx::Rect& bounding_box) const;
   [[nodiscard]] gfx::RectF TransformBoundingBoxToViewportCoordinates(
       const gfx::RectF& bounding_box) const;
 

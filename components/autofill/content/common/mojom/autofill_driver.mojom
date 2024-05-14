@@ -72,8 +72,16 @@ interface AutofillDriver {
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.
+  //
+  // `caret_bounds` is the bounds of the caret if the selection is empty and
+  // otherwise the bounds of the focus
+  // (https://w3c.github.io/selection-api/#dfn-focus). That is, its width is
+  // typically zero or near-zero, and its height is about one line. It is not
+  // validated in any way; in particular, the coordinates may be negative or
+  // otherwise outside of the bounds of the viewport.
   AskForValuesToFill(FormData form,
                      FormFieldData field,
+                     gfx.mojom.Rect caret_bounds,
                      AutofillSuggestionTriggerSource trigger_source);
 
   // Instructs the browser to hide the Autofill popup if it is open.

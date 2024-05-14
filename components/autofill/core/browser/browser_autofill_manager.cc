@@ -1088,6 +1088,7 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
+    const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source) {
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
