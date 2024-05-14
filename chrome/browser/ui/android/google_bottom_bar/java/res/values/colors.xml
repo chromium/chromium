@@ -6,5 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+  <!-- TODO(b/340434096): Finalize UI -->
   <color name="google_bottom_bar_background_color">@color/default_bg_color_baseline</color>
 </resources>
