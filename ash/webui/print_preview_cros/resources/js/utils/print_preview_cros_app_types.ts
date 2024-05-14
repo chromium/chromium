@@ -271,8 +271,17 @@ export interface PrintPreviewPageHandler {
   cancel(): void;
 }
 
+export interface FakeDestinationObserverInterface {
+  onDestinationsChanged(destinations: Destination[]): void;
+}
+
 // Placeholder for the DestinationProvider mojo interface.
 export interface DestinationProvider {
   // Retrieve a list of local print destinations; usually provided by CUPS.
   getLocalDestinations(): Promise<Destination[]>;
+
+  // Registers an observer which is notified every time the set of known
+  // destinations are appended or updated;
+  // TODO(b/323421684): Replace observer type with observer mojo interface.
+  observeDestinationChanges(observer: FakeDestinationObserverInterface): void;
 }
