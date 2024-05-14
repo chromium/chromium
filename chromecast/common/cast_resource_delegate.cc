@@ -47,7 +47,7 @@ base::FilePath CastResourceDelegate::GetPathForLocalePack(
     const std::string& locale) {
   base::FilePath product_dir;
   if (!base::PathService::Get(base::DIR_ASSETS, &product_dir)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return product_dir.
       Append(FILE_PATH_LITERAL("chromecast_locales")).

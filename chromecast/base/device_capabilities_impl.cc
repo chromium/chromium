@@ -314,7 +314,8 @@ void DeviceCapabilitiesImpl::SetPublicValidatedValue(const std::string& path,
   bool is_private = all_data_->dictionary().Find(path) &&
                     !public_data_->dictionary().Find(path);
   if (is_private) {
-    NOTREACHED() << "Cannot make a private capability '" << path << "' public.";
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot make a private capability '" << path << "' public.";
     return;
   }
 
@@ -372,7 +373,8 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(const std::string& path,
   // We cannot change the privacy of an already existing capability.
   const auto* is_public = public_data_->dictionary().Find(path);
   if (is_public) {
-    NOTREACHED() << "Cannot make a public capability '" << path << "' private.";
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot make a public capability '" << path << "' private.";
     return;
   }
 

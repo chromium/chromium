@@ -179,7 +179,7 @@ bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
     case CastSysInfo::BUILD_PRODUCTION:
       return ::metrics::SystemProfileProto::CHANNEL_STABLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ::metrics::SystemProfileProto::CHANNEL_UNKNOWN;
 #else
   // Use the system (or signed) release channel here to avoid the noise in the

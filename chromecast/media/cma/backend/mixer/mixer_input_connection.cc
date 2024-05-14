@@ -538,7 +538,7 @@ bool MixerInputConnection::HandleAudioData(char* data,
       memcpy(dest, data, size);
       break;
     default:
-      NOTREACHED() << "Unhandled sample format " << sample_format_;
+      NOTREACHED_IN_MIGRATION() << "Unhandled sample format " << sample_format_;
   }
 
   WritePcm(std::move(buffer));

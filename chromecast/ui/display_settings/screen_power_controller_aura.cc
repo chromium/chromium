@@ -105,7 +105,7 @@ void ScreenPowerControllerAura::TriggerPendingTask() {
   switch (pending_task_) {
     case PendingTask::kOn:
       if (screen_on_) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       } else if (screen_power_on_) {
         SetScreenBrightnessOn(true);
         pending_task_ = PendingTask::kNone;
@@ -130,11 +130,11 @@ void ScreenPowerControllerAura::TriggerPendingTask() {
       } else if (screen_power_on_) {
         SetScreenPowerOff();
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       return;
     case PendingTask::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -182,7 +182,7 @@ void ScreenPowerControllerAura::OnScreenPoweredOn(bool succeeded) {
       TriggerPendingTask();
       return;
     case PendingTask::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -204,7 +204,7 @@ void ScreenPowerControllerAura::OnScreenPoweredOff(bool succeeded) {
       pending_task_ = PendingTask::kNone;
       return;
     case PendingTask::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -219,7 +219,7 @@ void ScreenPowerControllerAura::OnDisplayOnTimeoutCompleted() {
       TriggerPendingTask();
       return;
     case PendingTask::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -238,7 +238,7 @@ void ScreenPowerControllerAura::OnDisplayOffTimeoutCompleted() {
                          weak_factory_.GetWeakPtr()));
       return;
     case PendingTask::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

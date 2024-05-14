@@ -26,40 +26,40 @@ bool ExternalAudioPipelineShlib::IsSupported() {
 
 void ExternalAudioPipelineShlib::AddExternalMediaVolumeChangeRequestObserver(
     ExternalMediaVolumeChangeRequestObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalMediaVolumeChangeRequestObserver(
     ExternalMediaVolumeChangeRequestObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::SetExternalMediaVolume(float level) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::SetExternalMediaMuted(bool muted) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(
     LoopbackAudioObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalLoopbackAudioObserver(
     LoopbackAudioObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::AddExternalMediaMetadataChangeObserver(
     ExternalMediaMetadataChangeObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalMediaMetadataChangeObserver(
     ExternalMediaMetadataChangeObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<MixerOutputStream>

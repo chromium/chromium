@@ -169,7 +169,7 @@ class DummyEventBuilder : public CastEventBuilder {
   }
 
   ::metrics::CastLogsProto_CastEventProto* Build() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

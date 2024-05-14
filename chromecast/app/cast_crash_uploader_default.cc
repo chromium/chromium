@@ -16,7 +16,8 @@ void CastCrashUploaderDefault::UploadDumps(
     const std::string& uuid,
     const std::string& application_feedback,
     const bool can_send_usage_stats) {
-  NOTREACHED() << "TODO(b/258269114): Move non-android implementations of "
-                  "crash reporting here.";
+  NOTREACHED_IN_MIGRATION()
+      << "TODO(b/258269114): Move non-android implementations of "
+         "crash reporting here.";
 }
 }  // namespace chromecast

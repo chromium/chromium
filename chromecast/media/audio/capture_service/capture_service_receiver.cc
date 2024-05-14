@@ -108,7 +108,7 @@ bool CaptureServiceReceiver::Socket::SendRequest() {
 void CaptureServiceReceiver::Socket::OnSendUnblocked() {
   // The request is the first buffer sent, so it should be always accepted by
   // the socket.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CaptureServiceReceiver::Socket::ReportErrorAndStop() {

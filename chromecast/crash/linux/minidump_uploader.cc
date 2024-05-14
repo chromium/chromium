@@ -147,7 +147,7 @@ bool MinidumpUploader::DoWork() {
       LOG(INFO) << "OptInStats is false, removing crash dump";
       ignore_and_erase_dump = true;
     } else if (IsDumpObsolete(dump)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       LOG(INFO) << "DumpInfo belongs to older version, removing crash dump";
       ignore_and_erase_dump = true;
     }

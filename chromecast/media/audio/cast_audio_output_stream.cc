@@ -79,7 +79,7 @@ audio_service::ContentType ConvertContentType(AudioContentType content_type) {
     case AudioContentType::kCommunication:
       return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return audio_service::CONTENT_TYPE_MEDIA;
   }
 }

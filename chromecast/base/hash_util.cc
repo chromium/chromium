@@ -49,7 +49,7 @@ uint64_t HashGUID64(const std::string& guid) {
   DCHECK_EQ(hex.size(), 32u);
   if (base::HexStringToUInt64(hex.substr(0, 16), &output))
     return output;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

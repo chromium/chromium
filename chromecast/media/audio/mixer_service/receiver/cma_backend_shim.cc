@@ -59,7 +59,7 @@ AudioChannel ConvertChannelSelection(int channel_selection) {
     case 1:
       return AudioChannel::kRight;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AudioChannel::kAll;
   }
 }

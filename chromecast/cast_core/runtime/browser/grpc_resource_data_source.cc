@@ -163,7 +163,7 @@ std::string GrpcResourceDataSource::GetMimeType(const GURL& url) {
     return kMimeTypeHtml;
   }
 
-  NOTREACHED() << "Unknown Mime type of file " << path;
+  NOTREACHED_IN_MIGRATION() << "Unknown Mime type of file " << path;
   return std::string();
 }
 

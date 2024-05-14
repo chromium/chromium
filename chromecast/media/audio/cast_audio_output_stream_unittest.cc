@@ -111,7 +111,7 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
         delegate_->OnDecoderError();
         return CmaBackend::BufferStatus::kBufferSuccess;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CmaBackend::BufferStatus::kBufferFailed;
     }
   }
@@ -177,7 +177,7 @@ class FakeCmaBackend : public CmaBackend {
     return audio_decoder_.get();
   }
   VideoDecoder* CreateVideoDecoder() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

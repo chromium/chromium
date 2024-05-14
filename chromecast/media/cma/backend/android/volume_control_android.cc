@@ -88,7 +88,7 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
                                      AudioContentType type,
                                      float level) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED() << "Can't set volume for content type kOther";
+    NOTREACHED_IN_MIGRATION() << "Can't set volume for content type kOther";
     return;
   }
 
@@ -111,7 +111,7 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
                                     AudioContentType type,
                                     bool muted) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED() << "Can't set mute state for content type kOther";
+    NOTREACHED_IN_MIGRATION() << "Can't set mute state for content type kOther";
     return;
   }
 
@@ -123,7 +123,8 @@ void VolumeControlAndroid::SetMuted(VolumeChangeSource source,
 
 void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   if (type == AudioContentType::kOther) {
-    NOTREACHED() << "Can't set output limit for content type kOther";
+    NOTREACHED_IN_MIGRATION()
+        << "Can't set output limit for content type kOther";
     return;
   }
 

@@ -103,9 +103,9 @@ static const char* StateToString(BufferingState::State state) {
     case BufferingState::kEosReached:
       return "kEosReached";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

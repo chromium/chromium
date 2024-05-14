@@ -249,7 +249,8 @@ class ObservableInternals
       }
     }
 
-    NOTREACHED() << "Tried to remove observer from unknown task runner";
+    NOTREACHED_IN_MIGRATION()
+        << "Tried to remove observer from unknown task runner";
   }
 
  private:

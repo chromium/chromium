@@ -27,7 +27,7 @@ void FakeSharedURLLoaderFactory::CreateLoaderAndStart(
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 FakeSharedURLLoaderFactory::Clone() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -88,7 +88,7 @@ int HdcpVersionX10(::media::HdcpVersion hdcp_version) {
       return 23;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

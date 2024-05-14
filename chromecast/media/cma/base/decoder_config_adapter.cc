@@ -83,7 +83,7 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     case ::media::kSampleFormatPlanarS32:
       return kSampleFormatPlanarS32;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kUnknownSampleFormat;
 }
 
@@ -110,7 +110,7 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
     case kSampleFormatPlanarS32:
       return ::media::kSampleFormatPlanarS32;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ::media::kUnknownSampleFormat;
   }
 }
@@ -160,7 +160,7 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
     case ::media::EncryptionScheme::kCbcs:
       return EncryptionScheme::kAesCbc;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return EncryptionScheme::kUnencrypted;
   }
 }
@@ -174,7 +174,7 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
     case EncryptionScheme::kAesCbc:
       return ::media::EncryptionScheme::kCbcs;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ::media::EncryptionScheme::kUnencrypted;
   }
 }
@@ -200,7 +200,7 @@ ChannelLayout DecoderConfigAdapter::ToChannelLayout(
       return ChannelLayout::DISCRETE;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ChannelLayout::UNSUPPORTED;
   }
 }
@@ -223,7 +223,7 @@ ChannelLayout DecoderConfigAdapter::ToChannelLayout(
       return ::media::ChannelLayout::CHANNEL_LAYOUT_DISCRETE;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED;
   }
 }

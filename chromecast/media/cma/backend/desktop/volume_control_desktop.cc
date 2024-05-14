@@ -68,7 +68,7 @@ class VolumeControlInternal {
                  AudioContentType type,
                  float level) {
     if (type == AudioContentType::kOther) {
-      NOTREACHED() << "Can't set volume for content type kOther";
+      NOTREACHED_IN_MIGRATION() << "Can't set volume for content type kOther";
       return;
     }
 
@@ -87,7 +87,8 @@ class VolumeControlInternal {
                 AudioContentType type,
                 bool muted) {
     if (type == AudioContentType::kOther) {
-      NOTREACHED() << "Can't set mute state for content type kOther";
+      NOTREACHED_IN_MIGRATION()
+          << "Can't set mute state for content type kOther";
       return;
     }
 
