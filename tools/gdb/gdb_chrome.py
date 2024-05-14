@@ -518,11 +518,10 @@ class ReverseCallback(gdb.Command):
 
     # Find the stack frame which extracts the bind state from the task.
     bind_state_frame = find_nearest_frame_matching(
-        gdb.selected_frame(),
-        lambda frame : frame.function() and
-            re.match('^base::internal::Invoker<base::internal::BindState<.*>' +
-                     '::RunOnce\(base::internal::BindStateBase\*\)$',
-                     frame.function().name))
+        gdb.selected_frame(), lambda frame: frame.function() and re.match(
+            '^base::internal::Invoker<.*>' +
+            '::RunOnce\(base::internal::BindStateBase\*\)$',
+            frame.function().name))
     if bind_state_frame is None:
       raise Exception(
           'base::internal::Invoker frame not found; are you in a callback?')
