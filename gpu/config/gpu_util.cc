@@ -928,6 +928,8 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
         return IntelGpuSeriesType::kRaptorlake;
       case 0x7d00:
         return IntelGpuSeriesType::kMeteorlake;
+      case 0x6400:
+        return IntelGpuSeriesType::kLunarlake;
       default:
         break;
     }
@@ -976,6 +978,8 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kRaptorlake:
       case IntelGpuSeriesType::kMeteorlake:
         return "12";
+      case IntelGpuSeriesType::kLunarlake:
+        return "13";
       default:
         break;
     }
