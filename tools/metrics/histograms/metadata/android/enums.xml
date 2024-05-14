@@ -1811,6 +1811,14 @@ chromium-metrics-reviews@google.com.
   <int value="219" label="WebSettings.setAlgorithmicDarkeningAllowed"/>
   <int value="220" label="WebSettings.isAlgorithmicDarkeningAllowed"/>
   <int value="221" label="CookieManager.allowFileSchemeCookies"/>
+  <int value="222" label="WebIconDatabase.bulkRequestIconForPageUrl"/>
+  <int value="223" label="WebIconDatabase.close"/>
+  <int value="224" label="WebIconDatabase.getInstance"/>
+  <int value="225" label="WebIconDatabase.open"/>
+  <int value="226" label="WebIconDatabase.releaseIconForPageUrl"/>
+  <int value="227" label="WebIconDatabase.removeAllIcons"/>
+  <int value="228" label="WebIconDatabase.requestIconForPageUrl"/>
+  <int value="229" label="WebIconDatabase.retainIconForPageUrl"/>
 </enum>
 
 <enum name="WebViewApiCallStatic">
