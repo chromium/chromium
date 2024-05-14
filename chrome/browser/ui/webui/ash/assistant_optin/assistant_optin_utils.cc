@@ -55,7 +55,7 @@ AssistantNativeIconType SettingIdToIconType(
     case assistant::SettingSetId::DA:
       return AssistantNativeIconType::kDA;
     case assistant::SettingSetId::UNKNOWN_SETTING_SET_ID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AssistantNativeIconType::kNone;
   }
 }

@@ -568,7 +568,7 @@ void ContentSettingRPHBubbleModel::PerformActionForSelectedItem() {
   else if (selected_item() == RPH_IGNORE)
     IgnoreProtocolHandler();
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 // ContentSettingSingleRadioGroup ----------------------------------------------
@@ -1655,7 +1655,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       bubble_title_string_id = IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason) {
@@ -1729,7 +1729,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
               IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       set_message(l10n_util::GetStringUTF16(bubble_message_string_id));
       set_done_button_text(
@@ -1775,7 +1775,7 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
             "Permissions.Prompt.QuietBubble.Geolocation.ManageClicked"));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -1908,8 +1908,8 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
       return std::make_unique<ContentSettingStorageAccessBubbleModel>(
           delegate, web_contents);
     default:
-      NOTREACHED() << "No bubble for the content type "
-                   << static_cast<int32_t>(content_type) << ".";
+      NOTREACHED_IN_MIGRATION() << "No bubble for the content type "
+                                << static_cast<int32_t>(content_type) << ".";
   }
   return nullptr;
 }

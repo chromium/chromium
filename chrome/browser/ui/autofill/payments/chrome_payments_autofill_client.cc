@@ -336,7 +336,7 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       // Do nothing
       break;
     case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -491,7 +491,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
     case FillingProduct::kPassword:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
@@ -510,7 +510,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case FillingProduct::kPassword:
       case FillingProduct::kPlusAddresses:
       case FillingProduct::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -842,7 +842,7 @@ void ChromeAutofillClient::HideTouchToFillCreditCard() {
   touch_to_fill_payment_method_controller_.Hide();
 #else
   // Touch To Fill is not supported on Desktop.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

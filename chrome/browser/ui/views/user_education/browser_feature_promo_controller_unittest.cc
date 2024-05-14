@@ -338,7 +338,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         failure_action_name.append("ExceededMaxShowCount");
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     EXPECT_EQ(not_shown_count,

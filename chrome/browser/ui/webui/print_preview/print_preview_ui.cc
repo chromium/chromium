@@ -855,7 +855,7 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
     int32_t request_id) {
   if (printable_area_in_points.width() <= 0 ||
       printable_area_in_points.height() <= 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // Save printable_area_in_points information for N-up conversion.

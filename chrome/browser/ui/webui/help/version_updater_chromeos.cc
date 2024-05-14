@@ -95,7 +95,7 @@ std::u16string GetConnectionTypeAsUTF16(const ash::NetworkState* network,
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_MOBILE_DATA);
   if (ash::NetworkTypePattern::VPN().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -373,7 +373,7 @@ void VersionUpdaterCros::UpdateStatusChanged(
       my_status = DEFERRED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // If the current auto update is non-interactive and will be deferred, ignore

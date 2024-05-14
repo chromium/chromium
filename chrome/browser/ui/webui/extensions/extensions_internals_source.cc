@@ -60,7 +60,7 @@ const char* TypeToString(extensions::Manifest::Type type) {
     case extensions::Manifest::NUM_LOAD_TYPES:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -89,7 +89,7 @@ const char* LocationToString(ManifestLocation loc) {
     case ManifestLocation::kExternalComponent:
       return "EXTERNAL_COMPONENT";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -360,7 +360,7 @@ bool AppBrowserController::CanUserUninstall() const {
 
 void AppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppBrowserController::UpdateCustomTabBarVisibility(bool animate) const {

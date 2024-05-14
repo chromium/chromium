@@ -588,7 +588,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
     if (name == "AboutThisSite") {
       // No further action needed, default case.
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

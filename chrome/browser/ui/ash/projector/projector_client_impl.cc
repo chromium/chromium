@@ -99,7 +99,7 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
     case ash::OnDeviceRecognitionAvailability::kAvailable:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::OnDeviceToServerSpeechRecognitionFallbackReason::kMaxValue;
 }
 

@@ -115,7 +115,7 @@ permissions::ElementAnchoredBubbleVariant GetVariant(
       return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
 }
 }  // namespace
@@ -268,7 +268,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED);
       break;
     case Variant::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (prompt_view) {
@@ -524,7 +524,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemMediaPermissionResponse(
       RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
       break;
     case system_media_permissions::SystemPermission::kNotDetermined:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   // Do not finalize request until all the necessary system permissions are
   // granted.

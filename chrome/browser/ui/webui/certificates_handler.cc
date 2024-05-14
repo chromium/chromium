@@ -414,7 +414,7 @@ void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
                          weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   select_file_dialog_.reset();
@@ -430,7 +430,7 @@ void CertificatesHandler::FileSelectionCanceled(void* params) {
       RejectCallback(base::Value());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

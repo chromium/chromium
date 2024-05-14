@@ -30,7 +30,8 @@ std::string SigninInterceptTypeToString(SigninInterceptionType type) {
     case SigninInterceptionType::kChromeSignin:
       return "ChromeSignin";
     default:
-      NOTREACHED() << "Interception type not supported in the tests.";
+      NOTREACHED_IN_MIGRATION()
+          << "Interception type not supported in the tests.";
       return std::string();
   }
 }
@@ -49,7 +50,8 @@ std::string SigninInterceptResultToString(SigninInterceptionResult result) {
     case SigninInterceptionResult::kNotDisplayed:
       return "NotDisplayed";
     default:
-      NOTREACHED() << "Interception result not supported in the tests.";
+      NOTREACHED_IN_MIGRATION()
+          << "Interception result not supported in the tests.";
       return std::string();
   }
 }

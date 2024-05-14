@@ -42,7 +42,7 @@ void NearOomInfoBar::OnLinkClicked(
 }
 
 void NearOomInfoBar::ProcessButton(int action) {
-  NOTREACHED();  // No button on this infobar.
+  NOTREACHED_IN_MIGRATION();  // No button on this infobar.
 }
 
 base::android::ScopedJavaLocalRef<jobject> NearOomInfoBar::CreateRenderInfoBar(

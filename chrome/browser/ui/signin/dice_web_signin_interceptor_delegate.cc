@@ -101,7 +101,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         break;
       case signin::SIGNIN_CHOICE_SIZE:
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(

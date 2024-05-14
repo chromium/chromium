@@ -201,7 +201,7 @@ std::string IdentityInternalsUIMessageHandler::GetStatus(
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
       return "Token Present";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

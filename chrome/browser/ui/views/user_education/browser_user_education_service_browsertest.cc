@@ -132,7 +132,7 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
   os << failure.feature->name;
   switch (failure.reason) {
     case IPHFailureReason::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case IPHFailureReason::kUnlisted:
       os << " is not registered in feature_engagement::kAllFeatures in "
@@ -496,7 +496,7 @@ std::ostream& operator<<(std::ostream& os, const TutorialFailure& failure) {
   os << failure.tutorial_id;
   switch (failure.reason) {
     case TutorialFailureReason::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case TutorialFailureReason::kLikelySkippedStep:
       os << " shows a bubble anchored to an always-visible UI element "

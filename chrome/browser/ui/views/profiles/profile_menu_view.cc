@@ -461,7 +461,7 @@ void ProfileMenuView::OnOtherProfileSelected(
     app_profile_switcher_->SwitchToProfile(profile_path);
 #else
     // WebApps can only be installed for the main profile on ChromeOS.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 }

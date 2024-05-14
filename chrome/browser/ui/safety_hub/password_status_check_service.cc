@@ -389,10 +389,11 @@ void PasswordStatusCheckService::OnStartedPasswordCheck(
                          weak_ptr_factory_.GetWeakPtr()));
       return;
     case kOnStartCallbackCompleted:
-      NOTREACHED() << "PasswordCheckState::kOnStartCallbackCompleted";
+      NOTREACHED_IN_MIGRATION()
+          << "PasswordCheckState::kOnStartCallbackCompleted";
       return;
     case kStopped:
-      NOTREACHED() << "PasswordCheckState::kStopped";
+      NOTREACHED_IN_MIGRATION() << "PasswordCheckState::kStopped";
       return;
   }
 }

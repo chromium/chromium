@@ -39,7 +39,7 @@ IconType GetIcon(const media_router::UIMediaSink& sink) {
     case media_router::SinkIconType::WIRED_DISPLAY:
       return IconType::kInput;
     case media_router::SinkIconType::TOTAL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IconType::kTv;
   }
 }

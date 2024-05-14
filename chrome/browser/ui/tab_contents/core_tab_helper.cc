@@ -420,8 +420,9 @@ void CoreTabHelper::SearchByImageImpl(
 bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
                                                 content::WebContents* source) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED() << "If this ends up being used on Android update "
-               << "ChromeContentBrowserClient::OverrideURLLoaderFactoryParams.";
+  NOTREACHED_IN_MIGRATION()
+      << "If this ends up being used on Android update "
+      << "ChromeContentBrowserClient::OverrideURLLoaderFactoryParams.";
   return false;
 #else
 #if BUILDFLAG(ENABLE_EXTENSIONS)

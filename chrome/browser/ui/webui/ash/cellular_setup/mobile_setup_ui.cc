@@ -101,7 +101,7 @@ std::u16string GetActivationErrorMessage(MobileActivator::ActivationError error,
       return base::ReplaceStringPlaceholders(
           kNoCellularServiceError, ui::GetChromeOSDeviceName(), nullptr);
   }
-  NOTREACHED() << "Unexpected activation error";
+  NOTREACHED_IN_MIGRATION() << "Unexpected activation error";
   return GetActivationErrorMessage(
       MobileActivator::ActivationError::kActivationFailed, carrier);
 }

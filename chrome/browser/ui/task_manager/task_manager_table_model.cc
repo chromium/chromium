@@ -468,7 +468,7 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -580,7 +580,7 @@ int TaskManagerTableModel::CompareValues(size_t row1,
           return ValueCompare(stats1.css_style_sheets.size,
                               stats2.css_style_sheets.size);
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return 0;
       }
     }
@@ -636,7 +636,7 @@ int TaskManagerTableModel::CompareValues(size_t row1,
           observed_task_manager()->GetKeepaliveCount(tasks_[row2]));
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -813,7 +813,7 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

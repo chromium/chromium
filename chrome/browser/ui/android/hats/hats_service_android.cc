@@ -125,7 +125,7 @@ void HatsServiceAndroid::DelayedSurveyTask::DismissCallback(
       break;
     case messages::DismissReason::COUNT:
       reason = ShouldShowSurveyReasonsAndroid::kAndroidUnknown;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonAndroidHistogram,
                             reason);

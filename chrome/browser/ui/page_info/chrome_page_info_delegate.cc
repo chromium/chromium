@@ -122,18 +122,18 @@ ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
 #if !BUILDFLAG(IS_ANDROID)
       return SerialChooserContextFactory::GetForProfile(GetProfile());
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif
     case ContentSettingsType::HID_CHOOSER_DATA:
 #if !BUILDFLAG(IS_ANDROID)
       return HidChooserContextFactory::GetForProfile(GetProfile());
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

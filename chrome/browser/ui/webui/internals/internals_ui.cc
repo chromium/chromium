@@ -51,7 +51,7 @@ void HandleWebUIRequestCallback(
         profile, path, std::move(callback));
   }
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

@@ -79,7 +79,7 @@ PermissionToggleRowView::PermissionToggleRowView(
                 url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     row_view_->AddSecondaryLabel(requesting_origin_string);
     toggle_accessible_name = l10n_util::GetStringFUTF16(

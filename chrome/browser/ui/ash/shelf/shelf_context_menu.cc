@@ -203,7 +203,7 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
       UninstallApp(controller_->profile(), item_.id.app_id);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -239,11 +239,12 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return gfx::kNoneIcon;
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::kNoneIcon;
     case ash::NOTIFICATION_CONTAINER:
-      NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
-                      "added to the model by NotificationMenuController.";
+      NOTREACHED_IN_MIGRATION()
+          << "NOTIFICATION_CONTAINER does not have an icon, and it is "
+             "added to the model by NotificationMenuController.";
       return gfx::kNoneIcon;
     case ash::SHUTDOWN_GUEST_OS:
       return kShutdownGuestOsIcon;
@@ -257,10 +258,10 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     case ash::LAUNCH_APP_SHORTCUT_FIRST:
     case ash::LAUNCH_APP_SHORTCUT_LAST:
     case ash::COMMAND_ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::kNoneIcon;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::kNoneIcon;
   }
 }
@@ -281,7 +282,7 @@ void ShelfContextMenu::AddPinMenu(ui::SimpleMenuModel* menu_model) {
     case AppListControllerDelegate::NO_PIN:
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   AddContextMenuOption(menu_model, ash::TOGGLE_PIN, menu_pin_string_id);
@@ -329,7 +330,7 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   }
   // NOTIFICATION_CONTAINER is added by NotificationMenuController.
   if (type == ash::NOTIFICATION_CONTAINER) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "NOTIFICATION_CONTAINER is added by NotificationMenuController.";
     return;
   }

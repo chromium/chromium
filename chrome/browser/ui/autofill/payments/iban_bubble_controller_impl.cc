@@ -121,7 +121,7 @@ std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
     case IbanBubbleType::kManageSavedIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_SAVED);
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -143,7 +143,7 @@ std::u16string IbanBubbleControllerImpl::GetAcceptButtonText() const {
     case IbanBubbleType::kManageSavedIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_DONE);
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -156,7 +156,7 @@ std::u16string IbanBubbleControllerImpl::GetDeclineButtonText() const {
           IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS);
     case IbanBubbleType::kManageSavedIban:
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -216,7 +216,7 @@ void IbanBubbleControllerImpl::OnAcceptButton(const std::u16string& nickname) {
     case IbanBubbleType::kManageSavedIban:
       return;
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -276,7 +276,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
         break;
       case PaymentsBubbleClosedReason::kUnknown:
         metric = autofill_metrics::SaveIbanBubbleResult::kUnknown;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     autofill_metrics::LogSaveIbanBubbleResultMetric(
@@ -392,7 +392,7 @@ void IbanBubbleControllerImpl::DoShowBubble() {
       // TODO(crbug.com/40233611): Add metrics for manage saved IBAN mode.
       break;
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (observer_for_testing_) {
@@ -435,7 +435,7 @@ void IbanBubbleControllerImpl::ShowIconOnly() {
     case IbanBubbleType::kManageSavedIban:
       break;
     case IbanBubbleType::kInactive:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (observer_for_testing_) {

@@ -227,7 +227,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
   // If there is no route for the sink or the route may not be frozen, no freeze
   // button should be displayed.
   if (!sink_.route || !sink_.freeze_info.can_freeze) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 
@@ -259,7 +259,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
 
 std::u16string CastDialogSinkView::GetStopButtonAccessibleName() const {
   if (!sink_.route) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 

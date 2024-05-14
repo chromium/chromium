@@ -77,7 +77,7 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -152,7 +152,7 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   autofill_metrics::LogOfferNotificationBubbleResultMetric(

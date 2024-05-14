@@ -64,7 +64,7 @@ const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
     case SizeCalculator::CalculationType::kSystem:
       return "storage-system-size-changed";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -321,7 +321,8 @@ void StorageHandler::OnSizeCalculated(
       UpdateStorageItem(calculation_type);
       break;
     default:
-      NOTREACHED() << "Unexpected calculation type: " << item_index;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected calculation type: " << item_index;
   }
   UpdateSystemSizeItem();
 }

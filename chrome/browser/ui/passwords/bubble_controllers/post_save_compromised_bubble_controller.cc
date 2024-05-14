@@ -26,7 +26,7 @@ PostSaveCompromisedBubbleController::PostSaveCompromisedBubbleController(
       type_ = BubbleType::kPasswordUpdatedWithMoreToFix;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::UmaHistogramEnumeration("PasswordBubble.CompromisedBubble.Type", type_);
 }
@@ -86,7 +86,7 @@ void PostSaveCompromisedBubbleController::OnAccepted() {
   PasswordCheckReferrer referrer;
   switch (type_) {
     case BubbleType::kPasswordUpdatedSafeState:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case BubbleType::kPasswordUpdatedWithMoreToFix:
       referrer = PasswordCheckReferrer::kMoreToFixBubble;

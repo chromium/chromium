@@ -95,7 +95,7 @@ std::u16string WebauthnDialogModel::GetStepTitle() const {
     case WebauthnDialogState::kUnknown:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -114,7 +114,7 @@ std::u16string WebauthnDialogModel::GetStepDescription() const {
     case WebauthnDialogState::kUnknown:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

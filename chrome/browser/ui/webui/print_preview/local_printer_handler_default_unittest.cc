@@ -263,7 +263,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
       service_manager_client_id_ =
           PrintBackendServiceManager::GetInstance().RegisterQueryClient();
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which
@@ -328,7 +328,7 @@ class LocalPrinterHandlerDefaultTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandboxed_print_backend()->AddAccessDeniedPrinter(id);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
     } else {
       default_print_backend()->AddValidPrinter(id, std::move(caps),

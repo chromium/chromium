@@ -55,7 +55,7 @@ bool ParseProcStatLine(const std::string& line, std::vector<CpuInfo>* infos) {
              "cpu%" PRIu32 " %" PRIu64 " %" PRIu64 " %" PRIu64 " %" PRIu64,
              &cpu_index, &user, &nice, &sys, &idle);
   if (vals != 5 || cpu_index >= infos->size()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -216,7 +216,7 @@ void SysInternalsMessageHandler::HandleGetSysInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

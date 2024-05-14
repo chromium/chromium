@@ -158,7 +158,7 @@ void ParseConfigurationArguments(const base::Value::List& args,
   if ((*callback_id = &args[0]) && !json.empty()) {
     CHECK(GetConfiguration(json, config));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -178,7 +178,7 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
       return "noAction";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -700,11 +700,11 @@ void PeopleHandler::HandleAttemptUserExit(const base::Value::List& args) {
 }
 
 void PeopleHandler::HandleTurnOnSync(const base::Value::List& args) {
-  NOTREACHED() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
 }
 
 void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
-  NOTREACHED() << "It is not possible to toggle Sync on Ash";
+  NOTREACHED_IN_MIGRATION() << "It is not possible to toggle Sync on Ash";
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -750,7 +750,7 @@ void PeopleHandler::HandleSignout(const base::Value::List& args) {
   if (!is_clear_primary_account_allowed) {
     // 'Signout' should not be offered in the UI if clear primary account is
     // not allowed.
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Signout should not be offered if clear primary account is not "
            "allowed.";
     return;

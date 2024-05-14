@@ -273,7 +273,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SyncConfirmationDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -304,7 +304,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SigninEmailConfirmationDialog::Action action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -339,7 +339,7 @@ class SigninViewControllerTestUtil {
   static bool TryCompleteReauthConfirmationDialog(Browser* browser,
                                                   ReauthDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -369,7 +369,7 @@ class SigninViewControllerTestUtil {
 
   static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -397,7 +397,7 @@ class SigninViewControllerTestUtil {
 
   static bool ShowsModalDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     return browser->signin_view_controller()->ShowsModalDialog();
@@ -473,7 +473,7 @@ bool SignInWithUI(Browser* browser,
                   const std::string& password,
                   signin::ConsentLevel consent_level) {
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #else
   SignInObserver signin_observer;

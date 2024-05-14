@@ -354,7 +354,7 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return true;
 }
@@ -505,7 +505,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -520,7 +520,7 @@ void IsolatedWebAppInstallerViewController::OnStepChanged() {
 
   switch (model_->step()) {
     case IsolatedWebAppInstallerModel::Step::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case IsolatedWebAppInstallerModel::Step::kDisabled:
       IsolatedWebAppInstallerView::SetDialogButtons(

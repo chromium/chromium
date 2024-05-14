@@ -370,7 +370,7 @@ void GetIconChromeRefresh(ContentSettingsType type,
           blocked ? &vector_icons::kIframeOffIcon : &vector_icons::kIframeIcon;
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -456,7 +456,7 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1298,7 +1298,7 @@ ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     return std::make_unique<ContentSettingNotificationsBubbleModel>(
         delegate, web_contents);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
 #endif
   } else {
@@ -1386,6 +1386,6 @@ size_t ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
     if (image_type == models[i]->image_type())
       return i;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return models.size();
 }

@@ -209,8 +209,9 @@ void DriveUploadObserver::OnIOTaskStatus(
 
   switch (status.state) {
     case file_manager::io_task::State::kCancelled:
-      NOTREACHED() << "Deletion of source or destination file should not have "
-                      "been cancelled.";
+      NOTREACHED_IN_MIGRATION()
+          << "Deletion of source or destination file should not have "
+             "been cancelled.";
       ABSL_FALLTHROUGH_INTENDED;
     case file_manager::io_task::State::kError:
       LOG(ERROR) << "Deleting the file from the local cache failed.";

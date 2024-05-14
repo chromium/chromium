@@ -116,7 +116,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
 
     switch (blocking_step) {
       case BlockingStep::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case BlockingStep::kMergeData:
         ASSERT_TRUE(choices_.merge_data_choice.has_value());
@@ -145,7 +145,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   void AdvanceFlowOrCapture(BlockingStep step, CallbackVariant callback) {
     switch (step) {
       case BlockingStep::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case BlockingStep::kMergeData:
         if (!choices_.merge_data_choice.has_value()) {
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
       // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
       // test suite, since this mode is used only when Uno Desktop is enabled.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

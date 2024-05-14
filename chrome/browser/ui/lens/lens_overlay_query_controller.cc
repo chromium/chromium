@@ -495,7 +495,7 @@ LensOverlayQueryController::CreateInteractionRequest(
         ->set_object_id(*object_id);
   } else {
     // There should be a region or an object id in the request.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   server_request.mutable_interaction_request()

@@ -337,7 +337,7 @@ base::Value WebRtcLogsDOMHandler::EventLogUploadInfoToValue(
     case UploadList::UploadInfo::State::Uploaded:
       return FromUploadSuccessfulLog(info);
     case UploadList::UploadInfo::State::Pending_UserRequested:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   LOG(ERROR) << "Unrecognized state (" << static_cast<int>(info.state) << ").";

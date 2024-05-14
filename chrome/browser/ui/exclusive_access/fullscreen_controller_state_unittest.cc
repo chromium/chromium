@@ -122,7 +122,7 @@ const char* FullscreenControllerTestWindow::GetWindowStateString(
     ENUM_TO_STRING(TO_FULLSCREEN);
     ENUM_TO_STRING(TO_NORMAL);
     default:
-      NOTREACHED() << "No string for state " << state;
+      NOTREACHED_IN_MIGRATION() << "No string for state " << state;
       return "WindowState-Unknown";
   }
 }
@@ -279,7 +279,7 @@ void FullscreenControllerStateUnitTest::VerifyWindowState() {
       break;
 
     default:
-      NOTREACHED() << GetAndClearDebugLog();
+      NOTREACHED_IN_MIGRATION() << GetAndClearDebugLog();
   }
 
   FullscreenControllerStateTest::VerifyWindowState();

@@ -105,7 +105,7 @@ class AuthenticatorRequestBubbleDelegate
       case AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved:
         return &kGPMPasskeySavedContents;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
   }

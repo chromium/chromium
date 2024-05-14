@@ -294,7 +294,7 @@ class StartupWebAppCreator
       case ApiApprovalState::kDisallowed:
         // The disallowed case should have been handled by
         // `GetMatchingFileHandlerURL()`.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     return LaunchResult::kHandled;
@@ -401,7 +401,7 @@ void FinalizeWebAppLaunch(std::optional<OpenMode> app_open_mode,
       mode = OpenMode::kInTab;
       break;
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case apps::LaunchContainer::kLaunchContainerNone:
       DCHECK(!browser->is_type_app());

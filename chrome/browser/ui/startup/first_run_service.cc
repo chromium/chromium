@@ -345,7 +345,8 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
       outcome = ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies;
       break;
     case FinishedReason::kForceSignin:
-      NOTREACHED() << "Force Signin policy value is not active on Lacros.";
+      NOTREACHED_IN_MIGRATION()
+          << "Force Signin policy value is not active on Lacros.";
       break;
   }
 

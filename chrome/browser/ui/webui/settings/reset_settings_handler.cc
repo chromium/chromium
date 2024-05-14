@@ -60,7 +60,7 @@ ResetRequestOriginFromString(const std::string& request_origin) {
         RESET_REQUEST_ORIGIN_TRIGGERED_RESET;
   }
   if (!request_origin.empty())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_UNKNOWN;
 }

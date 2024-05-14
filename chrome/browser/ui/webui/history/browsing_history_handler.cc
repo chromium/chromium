@@ -149,7 +149,7 @@ bool IsUrlInLocalDatabase(const BrowsingHistoryService::HistoryEntry& entry) {
     case BrowsingHistoryService::HistoryEntry::EntryType::COMBINED_ENTRY:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -165,7 +165,7 @@ bool IsEntryInRemoteUserData(
     case BrowsingHistoryService::HistoryEntry::EntryType::COMBINED_ENTRY:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -389,7 +389,7 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::Value::List& args) {
 
   const base::Value& count = args[2];
   if (!count.is_int()) {
-    NOTREACHED() << "Failed to convert argument 2.";
+    NOTREACHED_IN_MIGRATION() << "Failed to convert argument 2.";
     return;
   }
 
@@ -451,7 +451,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
   for (size_t i = 0; i < list.size(); ++i) {
     // Each argument is a dictionary with properties "url" and "timestamps".
     if (!list[i].is_dict()) {
-      NOTREACHED() << "Unable to extract arguments";
+      NOTREACHED_IN_MIGRATION() << "Unable to extract arguments";
       return;
     }
 
@@ -459,7 +459,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
     const base::Value::List* timestamps_ptr =
         list[i].GetDict().FindList("timestamps");
     if (!url_ptr || !timestamps_ptr) {
-      NOTREACHED() << "Unable to extract arguments";
+      NOTREACHED_IN_MIGRATION() << "Unable to extract arguments";
       return;
     }
 
@@ -469,7 +469,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::Value::List& args) {
 
     for (const base::Value& timestamp : *timestamps_ptr) {
       if (!timestamp.is_double() && !timestamp.is_int()) {
-        NOTREACHED() << "Unable to extract visit timestamp.";
+        NOTREACHED_IN_MIGRATION() << "Unable to extract visit timestamp.";
         continue;
       }
 

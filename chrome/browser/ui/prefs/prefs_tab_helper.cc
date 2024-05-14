@@ -274,7 +274,8 @@ void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
   else if (generic_family == "math")
     map = &prefs->math_font_family_map;
   else
-    NOTREACHED() << "Unknown generic font family: " << generic_family;
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown generic font family: " << generic_family;
   (*map)[script] = base::UTF8ToUTF16(pref_value);
 }
 

@@ -315,7 +315,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     // Deprecated
     case FailState::NETWORK_INSTABILITY:
     case FailState::CANNOT_DOWNLOAD:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case FailState::NO_FAILURE:
       return;
@@ -336,7 +336,7 @@ void DownloadBubbleRowViewInfo::PopulateForTailoredWarning(
     case TailoredWarningType::kCookieTheftWithAccountInfo:
       return PopulateDangerousUiPattern();
     case TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

@@ -146,7 +146,7 @@ class ChromeOSTermsHandler
     } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
       LOG(WARNING) << "Could not load offline Play Store privacy policy.";
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       ResponseOnUIThread();
     }
   }
@@ -671,7 +671,7 @@ void AboutUIHTMLSource::StartDataRequest(
       } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
         HandleBorealisCredits(profile(), std::move(callback));
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       return;
     }

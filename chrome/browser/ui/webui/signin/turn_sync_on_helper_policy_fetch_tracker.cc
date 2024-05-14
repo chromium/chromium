@@ -159,7 +159,7 @@ class LacrosPrimaryProfilePolicyFetchTracker
   void SwitchToProfile(Profile* new_profile) override {
     // Sign in intercept and syncing with a different account are not supported
     // use cases for the Lacros primary profile.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void RegisterForPolicy(

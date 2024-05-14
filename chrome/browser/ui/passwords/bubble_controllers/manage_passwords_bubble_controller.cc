@@ -207,7 +207,7 @@ void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
   }
   if (updated_form.username_value.empty()) {
     // The UI doesn't allow clearing the username.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // The UI allows updating the username for credentials with an empty username.

@@ -763,7 +763,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMConfirmOffTheRecordCreate);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     controller_->StartFlow(std::move(transport_availability),
                            /*is_conditional_mediation=*/false);

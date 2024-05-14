@@ -97,7 +97,7 @@ void WebauthnDialogControllerImpl::OnCancelButtonClicked() {
     case WebauthnDialogState::kUnknown:
     case WebauthnDialogState::kInactive:
     case WebauthnDialogState::kOfferError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

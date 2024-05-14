@@ -533,7 +533,7 @@ void AccountSelectionModalView::ShowFailureDialog(
     const std::optional<std::u16string>& iframe_for_display,
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "ShowFailureDialog is only implemented for AccountSelectionBubbleView";
 }
 
@@ -543,7 +543,7 @@ void AccountSelectionModalView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "ShowErrorDialog is only implemented for AccountSelectionBubbleView";
 }
 
@@ -591,8 +591,9 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
     const std::vector<IdentityProviderDisplayData>& idp_data_list) {
-  NOTREACHED() << "ShowSingleReturningAccountDialog is only implemented for "
-                  "AccountSelectionBubbleView";
+  NOTREACHED_IN_MIGRATION()
+      << "ShowSingleReturningAccountDialog is only implemented for "
+         "AccountSelectionBubbleView";
 }
 
 std::unique_ptr<views::View>

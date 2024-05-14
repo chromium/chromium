@@ -58,7 +58,7 @@ void AutofillClientProvider::CreateClientForWebContents(
 #if BUILDFLAG(IS_ANDROID)
     android_autofill::AndroidAutofillClient::CreateForWebContents(web_contents);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     ChromeAutofillClient::CreateForWebContents(web_contents);

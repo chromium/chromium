@@ -52,7 +52,7 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
                     void* params) override {
     // Since we always cancel the dialog as soon as it is initialized, this
     // should never be called.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void FileSelectionCanceled(void* params) override {

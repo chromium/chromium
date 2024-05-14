@@ -163,8 +163,9 @@ void OdfsSkyvaultUploader::OnIOTaskStatus(
       OnEndUpload(/*success=*/false);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED() << "Encrypted file should not need password to be copied or "
-                      "moved. Case should not be reached.";
+      NOTREACHED_IN_MIGRATION()
+          << "Encrypted file should not need password to be copied or "
+             "moved. Case should not be reached.";
       return;
   }
 }

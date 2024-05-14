@@ -386,7 +386,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     case WindowOpenDisposition::IGNORE_ACTION:
       return {nullptr, -1};
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return {nullptr, -1};
 }

@@ -97,7 +97,7 @@ void ConstrainedWebDialogUI::OnDialogCloseMessage(
     if (args[0].is_string()) {
       json_retval = args[0].GetString();
     } else {
-      NOTREACHED() << "Could not read JSON argument";
+      NOTREACHED_IN_MIGRATION() << "Could not read JSON argument";
     }
   }
 

@@ -264,7 +264,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       RecordBookmarkEdited(opened_from_);
 
       if (selection_.size() != 1) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
 
@@ -427,7 +427,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // It's possible executing the command resulted in deleting |this|.
@@ -462,7 +462,7 @@ std::u16string BookmarkContextMenuController::GetLabelForCommandId(
                                       managed->managed_node()->GetTitle());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

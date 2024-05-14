@@ -43,7 +43,7 @@ class TestSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   }
   std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

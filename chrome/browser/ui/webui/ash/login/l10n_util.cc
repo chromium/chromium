@@ -476,7 +476,7 @@ std::string FindMostRelevantLocale(
         available_locale = entry.GetDict().FindString("value");
 
       if (!available_locale) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 
@@ -516,7 +516,7 @@ base::Value::List GetAndActivateLoginKeyboardLayouts(
       input_methods_added.insert(hardware_login_input_method);
       input_methods_list.Append(CreateInputMethodsEntry(*ime, selected, util));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

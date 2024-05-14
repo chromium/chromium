@@ -504,7 +504,7 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(*profile_path);
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -785,7 +785,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::Value::List& args) {
       base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   std::u16string profile_name = base::UTF8ToUTF16(args[1].GetString());
@@ -806,7 +806,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::Value::List& args) {
       base::ValueToFilePath(profile_path_value);
 
   if (!profile_path) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

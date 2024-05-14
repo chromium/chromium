@@ -70,7 +70,8 @@ void DefaultBrowserPromptManager::RemoveObserver(Observer *observer) {
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported platforms for showing default browser prompts.";
 #endif
 
   if (features::kShowDefaultBrowserAppMenuItem.Get()) {
@@ -94,7 +95,8 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported platforms for showing default browser prompts.";
 #endif
 
   CloseAllInfoBars();

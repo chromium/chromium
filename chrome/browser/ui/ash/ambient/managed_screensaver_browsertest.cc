@@ -383,7 +383,7 @@ class ManagedScreensaverBrowserTestForAnyScreen
              ambient::prefs::kAmbientModeManagedScreensaverIdleTimeoutSeconds});
         return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetPolicy(bool enabled) {
@@ -418,7 +418,7 @@ class ManagedScreensaverBrowserTestForAnyScreen
         }
         return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetImages(const std::vector<std::string>& images,

@@ -176,7 +176,7 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
     }
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 TemplateURL* ClearBrowsingDataHandlerUnitTest::AddSearchEngine(

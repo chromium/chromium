@@ -60,7 +60,7 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
       break;
     }
     case BookmarkEditor::EditDetails::EXISTING_NODE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return node;
@@ -90,7 +90,7 @@ BookmarkNode::Type BookmarkEditor::EditDetails::GetNodeType() const {
       node_type = BookmarkNode::FOLDER;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return node_type;
 }
@@ -111,7 +111,7 @@ int BookmarkEditor::EditDetails::GetWindowTitleId() const {
                          : IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return dialog_title;
 }

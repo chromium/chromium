@@ -354,7 +354,7 @@ void OnWaitingForAndroidUnsupportedPathFallbackChoiceReceived(
     std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics,
     std::optional<const std::string> choice) {
   if (!IsOpenInOfficeTask(task)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -656,7 +656,7 @@ bool CloudOpenTask::ShouldShowConfirmationDialog() {
     return force_show_confirmation_dialog ||
            !fm_tasks::GetAlwaysMoveOfficeFilesToOneDrive(profile_);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -1489,7 +1489,7 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
     size->set_width(kDialogWidthForConnectToOneDrive);
     size->set_height(kDialogHeightForConnectToOneDrive);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

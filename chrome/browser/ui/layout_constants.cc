@@ -153,7 +153,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -211,6 +211,6 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     case WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN:
       return gfx::Insets::VH(4, 0);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Insets();
 }

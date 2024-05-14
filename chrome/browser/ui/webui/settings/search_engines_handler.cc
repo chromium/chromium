@@ -397,7 +397,7 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
   else if (field_name.compare(kQueryUrlField) == 0)
     is_valid = edit_controller_->IsURLValid(field_value);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return is_valid;
 }

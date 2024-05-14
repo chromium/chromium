@@ -201,7 +201,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
                     disposition);
       break;
     default:
-      NOTREACHED() << "Unspecified behavior for command " << id;
+      NOTREACHED_IN_MIGRATION() << "Unspecified behavior for command " << id;
       break;
   }
 }

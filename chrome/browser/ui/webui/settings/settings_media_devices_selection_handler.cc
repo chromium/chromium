@@ -108,7 +108,7 @@ void MediaDevicesSelectionHandler::InitializeCaptureDevices(
     const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   if (!args[0].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const std::string& type = args[0].GetString();
@@ -127,7 +127,7 @@ void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
     const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   if (!args[0].is_string() || !args[1].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const std::string& type = args[0].GetString();
@@ -148,7 +148,7 @@ void MediaDevicesSelectionHandler::SetPreferredCaptureDevice(
     media_prefs::UpdateVideoDevicePreferenceRanking(*prefs, preferred_iter,
                                                     video_device_infos_);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -233,7 +233,7 @@ std::string MediaDevicesSelectionHandler::GetDeviceDisplayName(
     case media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 #endif

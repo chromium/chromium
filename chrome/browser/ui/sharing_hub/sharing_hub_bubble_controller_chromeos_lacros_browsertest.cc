@@ -51,7 +51,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
       sharesheet::LaunchSource source,
       crosapi::mojom::IntentPtr intent,
       crosapi::mojom::Sharesheet::ShowBubbleCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ShowBubbleWithOnClosed(
       const std::string& window_id,

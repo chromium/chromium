@@ -132,7 +132,7 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       fake_server_response.mutable_interaction_response()->CopyFrom(
           fake_interaction_response_);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     EndpointResponse fake_endpoint_response;

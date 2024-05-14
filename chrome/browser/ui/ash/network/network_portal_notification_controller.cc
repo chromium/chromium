@@ -68,7 +68,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
       data.buttons.emplace_back(std::move(button));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 

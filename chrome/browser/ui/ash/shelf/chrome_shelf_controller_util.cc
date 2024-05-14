@@ -199,8 +199,8 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED() << "Type " << (int)app_type
-                   << " should not appear in shelf.";
+      NOTREACHED_IN_MIGRATION()
+          << "Type " << (int)app_type << " should not appear in shelf.";
       return false;
     case apps::AppType::kBruschetta:
       return true;

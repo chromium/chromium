@@ -107,7 +107,7 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ProfilePickerSignedInFlowController::SwitchToLacrosIntro(
     signin::SigninChoiceCallback proceed_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

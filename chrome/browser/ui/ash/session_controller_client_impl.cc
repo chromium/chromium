@@ -527,7 +527,8 @@ void SessionControllerClientImpl::DoCycleActiveUser(
       it = logged_in_users.end();
     account_id = (*(--it))->GetAccountId();
   } else {
-    NOTREACHED() << "Invalid direction=" << static_cast<int>(direction);
+    NOTREACHED_IN_MIGRATION()
+        << "Invalid direction=" << static_cast<int>(direction);
     return;
   }
 

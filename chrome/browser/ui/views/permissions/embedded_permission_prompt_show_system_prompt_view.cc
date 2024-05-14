@@ -46,7 +46,7 @@ std::u16string EmbeddedPermissionPromptShowSystemPromptView::GetWindowTitle()
 void EmbeddedPermissionPromptShowSystemPromptView::RunButtonCallback(
     int button_id) {
   // This view has no buttons.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 

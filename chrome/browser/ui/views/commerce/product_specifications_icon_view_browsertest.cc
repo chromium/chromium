@@ -31,7 +31,7 @@ class ProductSpecificationsIconViewBrowserTest : public UiBrowserTest {
     } else if (name == "forced_show_added") {
       icon_view->ForceVisibleForTesting(/*is_added=*/true);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

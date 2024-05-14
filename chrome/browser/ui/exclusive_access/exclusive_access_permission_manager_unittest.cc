@@ -76,7 +76,7 @@ class ExclusiveAccessPermissionManagerTest : public BrowserWithTestWindowTest {
                   }
                   break;
                 default:
-                  NOTREACHED();
+                  NOTREACHED_IN_MIGRATION();
               }
             })));
     task_environment()->FastForwardBy(base::Milliseconds(200));

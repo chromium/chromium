@@ -49,7 +49,7 @@ void PasswordManagerHandler::HandleShowPasswordManager(
       chrome::ShowPasswordCheck(current_broswer);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

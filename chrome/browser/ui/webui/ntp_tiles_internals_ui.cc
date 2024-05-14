@@ -103,7 +103,7 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::DoesSourceExist(
       return true;
 #endif
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

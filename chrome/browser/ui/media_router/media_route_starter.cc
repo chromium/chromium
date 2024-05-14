@@ -212,7 +212,7 @@ void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
           &WebContentsPresentationManager::OnPresentationResponse,
           presentation_manager_, *presentation_request_);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

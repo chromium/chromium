@@ -494,7 +494,7 @@ void MediaRouterUI::SendIssueForScreenPermission(const MediaSink::Id& sink_id) {
   IssueInfo issue_info(issue_title, IssueInfo::Severity::WARNING, sink_id);
   AddIssue(issue_info);
 #else
-  NOTREACHED() << "Only valid for MAC OS!";
+  NOTREACHED_IN_MIGRATION() << "Only valid for MAC OS!";
 #endif
 }
 

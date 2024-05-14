@@ -109,7 +109,7 @@ class TabSharingInfoBarDelegate::ShareTabInsteadButton
       case TabSharingInfoBarDelegate::TabShareType::CAPTURE:
         return l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 

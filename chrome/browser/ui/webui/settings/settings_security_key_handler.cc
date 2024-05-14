@@ -285,7 +285,7 @@ void SecurityKeysResetHandler::HandleCompleteReset(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -314,7 +314,7 @@ void SecurityKeysResetHandler::OnResetFinished(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -430,7 +430,7 @@ void SecurityKeysCredentialHandler::HandleDelete(
   for (const base::Value& el : args[1].GetList()) {
     std::vector<uint8_t> credential_id_bytes;
     if (!base::HexStringToBytes(el.GetString(), &credential_id_bytes)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     device::PublicKeyCredentialDescriptor credential_id(
@@ -456,14 +456,14 @@ void SecurityKeysCredentialHandler::HandleUpdateUserInformation(
 
   std::vector<uint8_t> credential_id_bytes;
   if (!base::HexStringToBytes(args[1].GetString(), &credential_id_bytes)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   device::PublicKeyCredentialDescriptor credential_id(
       device::CredentialType::kPublicKey, credential_id_bytes);
 
   std::vector<uint8_t> user_handle;
   if (!base::HexStringToBytes(args[2].GetString(), &user_handle)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   std::string new_username = args[3].GetString();
   std::string new_displayname = args[4].GetString();
@@ -519,7 +519,7 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
       base::Value::Dict credential_dict;
       std::string credential_id = base::HexEncode(credential.credential_id.id);
       if (credential_id.empty()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       std::string userHandle = base::HexEncode(credential.user.id);
@@ -932,7 +932,7 @@ void SecurityKeysBioEnrollmentHandler::HandleDelete(
   callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
   if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   bio_->DeleteTemplate(
@@ -960,7 +960,7 @@ void SecurityKeysBioEnrollmentHandler::HandleRename(
   callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
   if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   bio_->RenameTemplate(

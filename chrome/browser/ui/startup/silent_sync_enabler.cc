@@ -51,7 +51,7 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
           callback) override {
     // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
     // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
@@ -59,7 +59,7 @@ class SilentTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
   void ShowMergeSyncDataConfirmation(const std::string&,
                                      const std::string&,
                                      signin::SigninChoiceCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ShowSyncSettings() override { NOTREACHED(); }

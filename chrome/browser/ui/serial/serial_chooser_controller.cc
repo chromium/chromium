@@ -282,7 +282,7 @@ bool SerialChooserController::DisplayDevice(
               port.bluetooth_service_class_id->value().c_str(),
               port.display_name ? port.display_name.value().c_str() : ""));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return false;
   }

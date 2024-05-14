@@ -751,7 +751,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
   if (profile_info.mode == StartupProfileMode::kProfilePicker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
@@ -807,7 +807,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 
     // Show ProfilePicker if `profile` can't be auto opened.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #else
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         process_startup == chrome::startup::IsProcessStartup::kYes
@@ -1105,7 +1105,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       // to validate the flag sets and reliably determine the startup mode.
       LOG(ERROR)
           << "Failed to launch a native message host: couldn't pick a profile";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       base::debug::DumpWithoutCrashing();
     } else {
       extensions::LaunchNativeMessageHostFromNativeApp(

@@ -110,13 +110,13 @@ std::u16string RecentlyUsedFoldersComboModel::GetItemAt(size_t index) const {
       return l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS);
     case Item::TYPE_SEPARATOR:
       // This function should not be called for separators.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
     case Item::TYPE_CHOOSE_ANOTHER_FOLDER:
       return l10n_util::GetStringUTF16(
           IDS_BOOKMARK_BUBBLE_CHOOSER_ANOTHER_FOLDER);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

@@ -65,7 +65,7 @@ discards::mojom::LifecycleUnitVisibility GetLifecycleUnitVisibility(
       return discards::mojom::LifecycleUnitVisibility::VISIBLE;
   }
 #if defined(COMPILER_MSVC)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return discards::mojom::LifecycleUnitVisibility::VISIBLE;
 #endif
 }

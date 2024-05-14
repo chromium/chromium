@@ -78,9 +78,9 @@ LegacyFingerprintEngine::FromQuickUnlockPurpose(
     case quick_unlock::Purpose::kWebAuthn:
       return LegacyFingerprintEngine::Purpose::kWebAuthn;
     case quick_unlock::Purpose::kNumOfPurposes:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LegacyFingerprintEngine::Purpose::kAny;
 }
 
@@ -94,7 +94,7 @@ quick_unlock::Purpose LegacyFingerprintEngine::ToQuickUnlockPurpose(
     case LegacyFingerprintEngine::Purpose::kWebAuthn:
       return quick_unlock::Purpose::kWebAuthn;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return quick_unlock::Purpose::kAny;
 }
 

@@ -1021,7 +1021,7 @@ void NewTabPageHandler::MaybeShowFeaturePromo(
           web_contents_.get());
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1138,7 +1138,7 @@ void NewTabPageHandler::OnCustomizeDialogAction(
       event = NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   LogEvent(event);
 }
@@ -1158,7 +1158,7 @@ void NewTabPageHandler::OnDoodleImageClicked(
       event = NTP_STATIC_LOGO_CLICKED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   LogEvent(event);
@@ -1207,7 +1207,7 @@ void NewTabPageHandler::OnDoodleShared(
       channel_id = 6;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   std::string query =

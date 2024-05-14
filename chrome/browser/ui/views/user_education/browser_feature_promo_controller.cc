@@ -160,7 +160,7 @@ std::u16string BrowserFeaturePromoController::GetTutorialScreenReaderHint()
     // before everything was changed to CHECKs. This bug will continue to be
     // researched for a more correct fix.
     accelerator_text = u"F6";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return l10n_util::GetStringFUTF16(IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION,
                                     accelerator.GetShortcutText());

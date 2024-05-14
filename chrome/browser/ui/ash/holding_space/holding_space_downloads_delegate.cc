@@ -455,7 +455,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
         delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
         break;
       case crosapi::mojom::DownloadState::kUnknown:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -757,7 +757,7 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
       file_manager::util::GetDownloadsFolderForProfile(profile()));
   if (!base::FilePath("Download/")
            .AppendRelativePath(relative_path.Append(display_name), &path)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

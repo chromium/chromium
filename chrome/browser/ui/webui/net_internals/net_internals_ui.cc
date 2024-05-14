@@ -155,10 +155,10 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
                              endpoint_results_with_metadata, this);
   }
   void OnTextResults(const std::vector<std::string>& text_results) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void OnHostnameResults(const std::vector<net::HostPortPair>& hosts) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

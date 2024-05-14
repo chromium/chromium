@@ -134,7 +134,7 @@ OldLaunchMode GetOldLaunchModeFast() {
 }
 
 OldLaunchMode GetOldLaunchModeSlow() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return OldLaunchMode::kToBeDecided;
 }
 #else                    // BUILDFLAG(IS_WIN)
@@ -143,7 +143,7 @@ OldLaunchMode GetOldLaunchModeFast() {
 }
 
 OldLaunchMode GetOldLaunchModeSlow() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return OldLaunchMode::kOtherOS;
 }
 #endif                   // BUILDFLAG(IS_WIN)
@@ -376,7 +376,7 @@ std::optional<LaunchMode> GetLaunchModeFast(
 #elif BUILDFLAG(IS_MAC)
 std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -414,7 +414,7 @@ std::optional<LaunchMode> GetLaunchModeFast(
 #else  //  !IS_WIN && !IS_MAC
 std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

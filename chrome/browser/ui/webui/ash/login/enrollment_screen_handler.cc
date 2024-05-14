@@ -267,7 +267,7 @@ void EnrollmentScreenHandler::ShowAuthError(
     case GoogleServiceAuthError::NUM_STATES:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EnrollmentScreenHandler::ShowOtherError(
@@ -282,7 +282,7 @@ void EnrollmentScreenHandler::ShowOtherError(
                 /*retry=*/true);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void EnrollmentScreenHandler::Shutdown() {
@@ -441,7 +441,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                     /*retry=*/true);
           return;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case policy::EnrollmentStatus::Code::kStoreError:
       ShowErrorMessage(
@@ -468,7 +468,7 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                 /*retry=*/false);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // EnrollmentScreenHandler BaseScreenHandler implementation -----
@@ -620,7 +620,7 @@ void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   } else if (reason == "done") {
     controller_->OnConfirmationClosed();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

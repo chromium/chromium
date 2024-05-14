@@ -80,7 +80,7 @@ AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
     case MediaCastMode::REMOTE_PLAYBACK:
       return AccessCodeCastCastMode::kRemotePlayback;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AccessCodeCastCastMode::kPresentation;
   }
 }

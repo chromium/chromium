@@ -316,7 +316,7 @@ class ContentSettingSourceSetter {
         return prefs::kManagedDefaultNotificationsSetting;
       default:
         // Add support as needed.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
     }
   }
@@ -4269,7 +4269,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                  GetDevicesFromVendor18D2DisplayName()));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -4331,7 +4331,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -4372,7 +4372,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -4431,7 +4431,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -4486,7 +4486,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetDevicesFromVendor18D2DisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 
@@ -4550,7 +4550,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 
@@ -4618,7 +4618,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       EXPECT_FALSE(ChooserExceptionContainsSiteException(
@@ -4661,7 +4661,7 @@ class SiteSettingsHandlerChooserExceptionTest
                           GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       EXPECT_TRUE(ChooserExceptionContainsSiteException(
@@ -4705,7 +4705,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       EXPECT_FALSE(ChooserExceptionContainsSiteException(
@@ -4743,7 +4743,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -4780,7 +4780,7 @@ class SiteSettingsHandlerChooserExceptionTest
                                    GetUnknownProductDisplayName()));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

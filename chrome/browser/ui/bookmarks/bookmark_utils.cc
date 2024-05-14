@@ -245,7 +245,7 @@ bool IsValidBookmarkDropLocation(Profile* profile,
                                  const BookmarkNode* drop_parent,
                                  size_t index) {
   if (!drop_parent->is_folder()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

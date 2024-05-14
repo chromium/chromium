@@ -315,7 +315,7 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kPreference;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SiteSettingSource::kPreference;
 }
 
@@ -501,8 +501,8 @@ std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
     }
   }
 
-  NOTREACHED() << static_cast<int32_t>(type)
-               << " is not a recognized content settings type.";
+  NOTREACHED_IN_MIGRATION() << static_cast<int32_t>(type)
+                            << " is not a recognized content settings type.";
   return std::string_view();
 }
 
@@ -645,7 +645,7 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
     case SiteSettingSource::kPreference:
       return "preference";
     case SiteSettingSource::kNumSources:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -672,7 +672,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case content_settings::ProviderType::kNotificationAndroidProvider:
     case content_settings::ProviderType::kProviderForTests:
     case content_settings::ProviderType::kOtherProviderForTests:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SiteSettingSource::kPreference;
   }
 }

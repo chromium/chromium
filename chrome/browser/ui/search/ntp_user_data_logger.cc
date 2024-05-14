@@ -54,7 +54,7 @@ CustomizedFeature LoggingEventToCustomizedFeature(NTPLoggingEventType event) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CustomizedFeature::CUSTOMIZED_FEATURE_BACKGROUND;
 }
 
@@ -78,7 +78,7 @@ CustomizeChromeBackgroundAction LoggingEventToCustomizeChromeBackgroundAction(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CustomizeChromeBackgroundAction::
       CUSTOMIZE_CHROME_BACKGROUND_ACTION_SELECT_COLLECTION;
 }
@@ -97,7 +97,7 @@ LoggingEventToCustomizeLocalImageBackgroundAction(NTPLoggingEventType event) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CustomizeLocalImageBackgroundAction::
       CUSTOMIZE_LOCAL_IMAGE_BACKGROUND_ACTION_CANCEL;
 }
@@ -129,7 +129,7 @@ CustomizeShortcutAction LoggingEventToCustomizeShortcutAction(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_REMOVE;
 }
 
@@ -160,7 +160,7 @@ const char* LoggingEventToBackgroundUserActionName(NTPLoggingEventType event) {
     case NTP_BACKGROUND_DAILY_REFRESH_ENABLED:
       return "NTPRicherPicker.Backgrounds.DailyRefreshEnabled";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -176,7 +176,7 @@ const char* LoggingEventToMenuUserActionName(NTPLoggingEventType event) {
     case NTP_CUSTOMIZATION_MENU_DONE:
       return "NTPRicherPicker.DoneClicked";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -192,7 +192,7 @@ const char* LoggingEventToShortcutUserActionName(NTPLoggingEventType event) {
     case NTP_CUSTOMIZE_SHORTCUT_VISIBILITY_TOGGLE_CLICKED:
       return "NTPRicherPicker.Shortcuts.VisibilityToggleClicked";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -234,7 +234,7 @@ LogoClickType LoggingEventToLogoClick(NTPLoggingEventType event) {
     case NTP_ANIMATED_LOGO_CLICKED:
       return LOGO_CLICK_TYPE_ANIMATED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LOGO_CLICK_TYPE_MAX;
   }
 }

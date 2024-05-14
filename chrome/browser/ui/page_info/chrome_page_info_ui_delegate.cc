@@ -302,11 +302,11 @@ void ChromePageInfoUiDelegate::SettingsLinkClicked(ContentSettingsType type) {
       return;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

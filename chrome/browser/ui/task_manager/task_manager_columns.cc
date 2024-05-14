@@ -144,7 +144,7 @@ std::string GetColumnIdAsString(int column_id) {
     COLUMN_CASE(IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN);
     COLUMN_CASE(IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

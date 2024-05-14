@@ -64,7 +64,7 @@ class ScopedLogIn {
         LogInGuestUser();
         return;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

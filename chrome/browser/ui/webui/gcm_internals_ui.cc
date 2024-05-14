@@ -80,7 +80,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::Value::List& list) {
   AllowJavascript();
   if (list.size() != 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const bool clear_logs = list[0].GetBool();
@@ -105,7 +105,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& list) {
   if (list.size() != 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const bool recording = list[0].GetBool();

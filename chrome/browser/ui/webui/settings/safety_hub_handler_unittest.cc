@@ -249,7 +249,8 @@ class SafetyHubHandlerTest : public testing::Test {
                                 std::make_unique<base::Value>(is_enhanced));
         break;
       default:
-        NOTREACHED() << "Unexpected value for managed_by argument. \n";
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected value for managed_by argument. \n";
     }
   }
 
@@ -349,7 +350,7 @@ class SafetyHubHandlerTest : public testing::Test {
                   base::Value::List());
         break;
       default:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Unexpected SafetyHubModule for test setup. A proper setup for "
                "the module can be done only for supported modules.\n";
     }

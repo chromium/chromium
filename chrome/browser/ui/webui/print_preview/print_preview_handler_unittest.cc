@@ -173,7 +173,7 @@ base::Value::List ConstructPreviewArgs(std::string_view callback_id,
 UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
   switch (type) {
     case mojom::PrinterType::kPrivetDeprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Return value doesn't matter.
       return UserActionBuckets::kPrintToPrinter;
     case mojom::PrinterType::kExtension:
@@ -183,7 +183,7 @@ UserActionBuckets GetUserActionForPrinterType(mojom::PrinterType type) {
     case mojom::PrinterType::kLocal:
       return UserActionBuckets::kPrintToPrinter;
     case mojom::PrinterType::kCloudDeprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Return value doesn't matter.
       return UserActionBuckets::kPrintWithCloudPrint;
   }

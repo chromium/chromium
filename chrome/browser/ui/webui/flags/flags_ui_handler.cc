@@ -159,13 +159,13 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     return;
 
   if (!args[0].is_string() || !args[1].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const std::string& entry_internal_name = args[0].GetString();
   const std::string& enable_str = args[1].GetString();
   if (entry_internal_name.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -178,7 +178,7 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -190,7 +190,7 @@ void FlagsUIHandler::HandleSetStringFlagMessage(const base::Value::List& args) {
   DCHECK(flags_storage_);
   std::string entry_internal_name, value_str;
   if (!ExtractKeyValue(args, entry_internal_name, value_str)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

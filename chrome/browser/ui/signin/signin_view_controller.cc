@@ -342,7 +342,7 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
           show_link_data_option, std::move(callback)),
       GetOnModalDialogClosedCallback());
 #else
-  NOTREACHED() << "Managed user notice dialog modal not supported";
+  NOTREACHED_IN_MIGRATION() << "Managed user notice dialog modal not supported";
 #endif
 }
 
@@ -397,7 +397,7 @@ void SigninViewController::ShowDiceSigninTab(
 
     // Account consistency mode does not support signing in to Chrome due to
     // some other unexpected reason. Signing in to Chrome is not supported.
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "OAuth client ID and client secret is configured, but "
            "the account consistency mode does not support signing in to "
            "Chromium.";

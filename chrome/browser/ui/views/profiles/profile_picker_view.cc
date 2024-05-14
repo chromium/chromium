@@ -552,7 +552,7 @@ void ProfilePickerView::OnLocalProfileInitialized(
     base::OnceCallback<void(bool)> switch_finished_callback,
     Profile* profile) {
   if (!profile) {
-    NOTREACHED() << "Local fail in creating new profile";
+    NOTREACHED_IN_MIGRATION() << "Local fail in creating new profile";
     std::move(switch_finished_callback).Run(false);
     return;
   }

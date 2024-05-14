@@ -198,7 +198,7 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
   }
 
   void OnInstanceRegistryWillBeDestroyed(apps::InstanceRegistry*) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const raw_ref<apps::InstanceRegistry> registry_;

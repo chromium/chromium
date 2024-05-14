@@ -327,8 +327,9 @@ void DriveUploadHandler::OnCopyStatus(
       ShowIOTaskError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
-      NOTREACHED() << "Encrypted file should not need password to be copied or "
-                      "moved. Case should not be reached.";
+      NOTREACHED_IN_MIGRATION()
+          << "Encrypted file should not need password to be copied or "
+             "moved. Case should not be reached.";
       return;
   }
 }
@@ -337,8 +338,9 @@ void DriveUploadHandler::OnDeleteStatus(
     const ::file_manager::io_task::ProgressStatus& status) {
   switch (status.state) {
     case file_manager::io_task::State::kCancelled:
-      NOTREACHED() << "Deletion of source or destination file should not have "
-                      "been cancelled.";
+      NOTREACHED_IN_MIGRATION()
+          << "Deletion of source or destination file should not have "
+             "been cancelled.";
       ABSL_FALLTHROUGH_INTENDED;
     case file_manager::io_task::State::kError:
     case file_manager::io_task::State::kSuccess:
@@ -454,7 +456,7 @@ void DriveUploadHandler::OnSyncingStatusUpdate(
         OnEndCopy(OfficeFilesUploadResult::kSyncError);
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndDeleted:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case drivefs::mojom::ItemEvent::State::kCancelledAndTrashed:
         LOG(ERROR) << "Drive sync error: cancelled and trashed";

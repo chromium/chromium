@@ -127,7 +127,7 @@ scoped_refptr<net::HttpResponseHeaders> GetHeadersForResponseCode(int code) {
     return base::MakeRefCounted<net::HttpResponseHeaders>(
         "HTTP/1.1 404 Not Found\r\n");
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

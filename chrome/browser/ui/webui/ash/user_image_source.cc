@@ -151,7 +151,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
-    NOTREACHED() << "User with custom image missing data bytes";
+    NOTREACHED_IN_MIGRATION() << "User with custom image missing data bytes";
   } else {
     LOG(ERROR) << "User not found: " << account_id.GetUserEmail();
   }

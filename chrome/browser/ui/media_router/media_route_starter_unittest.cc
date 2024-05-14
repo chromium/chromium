@@ -107,7 +107,7 @@ class PresentationRequestCallbacks {
   void Success(const blink::mojom::PresentationInfo&,
                mojom::RoutePresentationConnectionPtr,
                const MediaRoute&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Error(const blink::mojom::PresentationError& error) {

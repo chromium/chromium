@@ -52,7 +52,7 @@ base::FilePath ConvertDrivePathToAbsoluteFilePath(
     if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
       return absolute_file_path;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::FilePath();
 }
 
@@ -487,7 +487,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     if (src.IsParent(item->file().file_path)) {
       base::FilePath target_path(dst);
       if (!src.AppendRelativePath(item->file().file_path, &target_path)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       items_to_move.push_back(std::make_pair(item->id(), target_path));

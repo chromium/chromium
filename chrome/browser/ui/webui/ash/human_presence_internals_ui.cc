@@ -92,7 +92,7 @@ hps::FeatureConfig ParseFeatureConfigFromList(const base::Value::List& args) {
     return config;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return config;
 }
 

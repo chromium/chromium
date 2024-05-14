@@ -407,7 +407,8 @@ std::string GetDisplayType(const GURL& url) {
   std::string path = url.path().size() ? url.path().substr(1) : "";
 
   if (!base::Contains(kKnownDisplayTypes, path)) {
-    NOTREACHED() << "Unknown display type '" << path << "'. Setting default.";
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown display type '" << path << "'. Setting default.";
     return OobeUI::kOobeDisplay;
   }
   return path;

@@ -110,8 +110,9 @@ void SigninInterceptFirstRunExperienceDialog::
         const std::string& previous_email,
         const std::string& new_email,
         signin::SigninChoiceCallback callback) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a profile for an "
-                  "account known to Chrome";
+  NOTREACHED_IN_MIGRATION()
+      << "Sign-in intercept shouldn't create a profile for an "
+         "account known to Chrome";
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -170,7 +171,7 @@ void SigninInterceptFirstRunExperienceDialog::
             callback) {
   // If Sync is disabled, the `TurnSyncOnHelper` should quit earlier due to
   // `ShouldAbortBeforeShowSyncDisabledConfirmation()`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -184,8 +185,9 @@ void SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::
     InterceptTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED() << "Sign-in intercept shouldn't create a new profile for an "
-                  "account known to Chrome";
+  NOTREACHED_IN_MIGRATION()
+      << "Sign-in intercept shouldn't create a new profile for an "
+         "account known to Chrome";
 }
 
 void SigninInterceptFirstRunExperienceDialog::
@@ -282,7 +284,7 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
 
   switch (step) {
     case Step::kStart:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case Step::kTurnOnSync:
       DoTurnOnSync();

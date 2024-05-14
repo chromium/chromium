@@ -959,14 +959,14 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       ShowChromeTips(browser_);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
     case IDC_CHROME_WHATS_NEW:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       ShowChromeWhatsNew(browser_);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       break;
     case IDC_SHOW_BETA_FORUM:

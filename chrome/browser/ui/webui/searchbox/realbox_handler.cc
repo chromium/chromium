@@ -540,7 +540,7 @@ searchbox::mojom::SelectionLineState ConvertLineState(
       return searchbox::mojom::SelectionLineState::
           kFocusedButtonRemoveSuggestion;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return searchbox::mojom::SelectionLineState::kNormal;

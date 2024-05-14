@@ -1552,7 +1552,7 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return true;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -1814,7 +1814,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

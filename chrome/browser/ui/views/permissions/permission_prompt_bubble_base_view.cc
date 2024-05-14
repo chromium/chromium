@@ -269,7 +269,7 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       delegate_->Deny();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::u16string PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting()

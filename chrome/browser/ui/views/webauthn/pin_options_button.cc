@@ -22,7 +22,7 @@ std::u16string GetCommandIdLabel(int command_id) {
       // TODO(enclave): Replace `and` with `&amp;` when adding translation.
       return u"Letters and numbers (UT)";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return u"";
   }
 }
@@ -75,7 +75,7 @@ void PinOptionsButton::ExecuteCommand(int command_id, int event_flags) {
       callback_.Run(/*is_arbitrary=*/true);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

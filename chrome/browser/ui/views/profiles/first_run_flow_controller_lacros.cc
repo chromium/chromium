@@ -147,7 +147,7 @@ class LacrosFirstRunSignedInFlowController
   void SwitchToManagedUserProfileNotice(
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SwitchToSyncConfirmation() override {

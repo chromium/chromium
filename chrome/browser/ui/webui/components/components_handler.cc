@@ -86,12 +86,12 @@ void ComponentsHandler::HandleRequestComponentsData(
 // button. (https://code.google.com/p/chromium/issues/detail?id=272540)
 void ComponentsHandler::HandleCheckUpdate(const base::Value::List& args) {
   if (args.size() != 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   if (!args[0].is_string()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   const std::string& component_id = args[0].GetString();

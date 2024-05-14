@@ -125,7 +125,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         reading_list_model_->RemoveEntryByURL(url_, FROM_HERE);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

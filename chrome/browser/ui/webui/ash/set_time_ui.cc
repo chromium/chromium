@@ -115,7 +115,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // appears in the time zone option values.
   void OnSetTimezone(const base::Value::List& args) {
     if (args.empty() || !args[0].is_string()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     std::string timezone_id = args[0].GetString();

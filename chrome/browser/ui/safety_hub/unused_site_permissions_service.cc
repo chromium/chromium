@@ -224,7 +224,7 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
     } else if (origin_val.is_string()) {
       origin_str = &origin_val.GetString();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     ContentSettingsPattern origin =
         ContentSettingsPattern::FromString(*origin_str);
@@ -374,9 +374,10 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
           info.primary_pattern, info.secondary_pattern, type,
           base::Value(std::move(*revoked_value)));
     } else {
-      NOTREACHED() << "Unable to find ContentSettingsType in neither "
-                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-                   << ConvertContentSettingsTypeToKey(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unable to find ContentSettingsType in neither "
+          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+          << ConvertContentSettingsTypeToKey(type);
     }
   }
 
@@ -410,9 +411,10 @@ void UnusedSitePermissionsService::UndoRegrantPermissionsForOrigin(
           permissions_data.origin.ToRepresentativeUrl(), GURL(), permission,
           base::Value());
     } else {
-      NOTREACHED() << "Unable to find ContentSettingsType in neither "
-                   << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
-                   << ConvertContentSettingsTypeToKey(permission);
+      NOTREACHED_IN_MIGRATION()
+          << "Unable to find ContentSettingsType in neither "
+          << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
+          << ConvertContentSettingsTypeToKey(permission);
     }
   }
 
@@ -647,7 +649,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
                                                entry.source.secondary_pattern,
                                                entry.type, base::Value());
         } else {
-          NOTREACHED()
+          NOTREACHED_IN_MIGRATION()
               << "Unable to find ContentSettingsType in neither "
               << "ContentSettingsRegistry nor WebsiteSettingsRegistry: "
               << ConvertContentSettingsTypeToKey(entry.type);

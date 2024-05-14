@@ -152,7 +152,7 @@ void MediaRouterContextualMenu::ExecuteCommand(int command_id,
       ToggleMediaRemoting();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

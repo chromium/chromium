@@ -303,7 +303,7 @@ TetherNotificationPresenter::GetMetricValueForClickOnNotificationBody(
     return TetherNotificationPresenter::
         NOTIFICATION_BODY_TAPPED_CONNECTION_FAILED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TetherNotificationPresenter::NOTIFICATION_INTERACTION_TYPE_MAX;
 }
 

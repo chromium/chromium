@@ -159,7 +159,7 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
     case DeviceReportingType::kWebsiteInfoAndActivity:
       return "website info and activity";
     default:
-      NOTREACHED() << "Unknown device reporting type";
+      NOTREACHED_IN_MIGRATION() << "Unknown device reporting type";
       return "device";
   }
 }

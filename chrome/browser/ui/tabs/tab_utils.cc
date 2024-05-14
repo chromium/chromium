@@ -140,7 +140,7 @@ std::u16string GetTabAlertStateText(const TabAlertState alert_state) {
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

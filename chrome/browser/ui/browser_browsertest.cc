@@ -386,7 +386,7 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
       if (extension->name() == "App Test")
         return extension.get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

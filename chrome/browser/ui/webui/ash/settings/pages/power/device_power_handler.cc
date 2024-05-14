@@ -77,7 +77,7 @@ int PowerSourceToDisplayId(
     case power_manager::PowerSupplyProperties_PowerSource_Port_BACK_RIGHT:
       return IDS_POWER_SOURCE_PORT_BACK_RIGHT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -292,7 +292,7 @@ void PowerHandler::HandleSetIdleBehavior(const base::Value::List& args) {
       prefs_->SetInteger(screen_lock_delay_pref, 0);
       break;
     default:
-      NOTREACHED() << "Invalid idle behavior " << value;
+      NOTREACHED_IN_MIGRATION() << "Invalid idle behavior " << value;
   }
 }
 
@@ -311,7 +311,7 @@ void PowerHandler::HandleSetLidClosedBehavior(const base::Value::List& args) {
                          PowerPolicyController::ACTION_DO_NOTHING);
       break;
     default:
-      NOTREACHED() << "Unsupported lid-closed behavior " << value;
+      NOTREACHED_IN_MIGRATION() << "Unsupported lid-closed behavior " << value;
   }
 }
 
@@ -603,9 +603,10 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
                                  ? IdleBehavior::DISPLAY_OFF
                                  : IdleBehavior::DISPLAY_ON);
   } else {
-    NOTREACHED() << "Idle behavior is set to a enterprise-only value, but "
-                 << "the setting is not enterprise managed. Defaulting to "
-                 << "DISPLAY_OFF_SLEEP behavior.";
+    NOTREACHED_IN_MIGRATION()
+        << "Idle behavior is set to a enterprise-only value, but "
+        << "the setting is not enterprise managed. Defaulting to "
+        << "DISPLAY_OFF_SLEEP behavior.";
     current_idle_behavior = IdleBehavior::DISPLAY_OFF_SLEEP;
   }
 

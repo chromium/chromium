@@ -614,7 +614,7 @@ bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
 
   // When a new menu item is introduced, it should be added to one of the cases
   // above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

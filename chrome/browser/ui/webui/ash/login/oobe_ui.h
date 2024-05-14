@@ -152,7 +152,8 @@ class OobeUI : public ui::MojoWebUIController {
         return static_cast<THandler*>(handler);
     }
 
-    NOTREACHED() << "Unable to find handler for screen " << expected_screen;
+    NOTREACHED_IN_MIGRATION()
+        << "Unable to find handler for screen " << expected_screen;
     return nullptr;
   }
 

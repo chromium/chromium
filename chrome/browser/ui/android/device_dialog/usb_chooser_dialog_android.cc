@@ -155,15 +155,15 @@ void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
 }
 
 void UsbChooserDialogAndroid::OnOptionUpdated(size_t index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UsbChooserDialogAndroid::OnAdapterEnabledChanged(bool enabled) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UsbChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void UsbChooserDialogAndroid::OnItemSelected(

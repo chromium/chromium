@@ -602,7 +602,7 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   } else if (flag_name == kHTML) {
     new_mode = ui::AXMode::kHTML;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

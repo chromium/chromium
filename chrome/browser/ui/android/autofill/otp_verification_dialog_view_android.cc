@@ -30,7 +30,7 @@ OtpVerificationDialogViewAndroid::~OtpVerificationDialogViewAndroid() = default;
 void OtpVerificationDialogViewAndroid::ShowPendingState() {
   // For Android, the Java code takes care of showing the pending state after
   // user submits the OTP.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OtpVerificationDialogViewAndroid::ShowInvalidState(

@@ -51,7 +51,7 @@ std::string GetStringFromDeletePageResult(
     case offline_pages::DeletePageResult::DEPRECATED_NOT_FOUND:
       return "Not found";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 
