@@ -12,8 +12,16 @@
 
 namespace syncer {
 
+inline constexpr char kTrustedVaultAutoUpgradeSyntheticFieldTrialName[] =
+    "SyncTrustedVaultAutoUpgradeSyntheticTrial";
+
 class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup {
  public:
+  // Special group name for the case where the existence of multiple browser
+  // contexts (multiprofile) leads to the co-existence of two or more active
+  // synthetic trial group names.
+  static std::string GetMultiProfileConflictGroupName();
+
   // Constructs an instance from a protobuf. Returns an invalid instance,
   // detectable via `is_valid()`, if the input is invalid.
   static TrustedVaultAutoUpgradeSyntheticFieldTrialGroup FromProto(

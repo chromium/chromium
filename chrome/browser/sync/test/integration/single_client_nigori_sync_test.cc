@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/metrics/metrics_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -49,6 +51,7 @@
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/trusted_vault/command_line_switches.h"
@@ -59,6 +62,8 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "crypto/ec_private_key.h"
@@ -264,6 +269,8 @@ class FakeSecurityDomainsServerMemberStatusChecker
   const raw_ptr<trusted_vault::FakeSecurityDomainsServer> server_;
 };
 
+}  // namespace
+
 class SingleClientNigoriSyncTest : public SyncTest {
  public:
   SingleClientNigoriSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -278,6 +285,19 @@ class SingleClientNigoriSyncTest : public SyncTest {
       const std::vector<password_manager::PasswordForm>& forms) const {
     return PasswordFormsChecker(0, forms).Wait();
   }
+
+  std::vector<variations::ActiveGroupId> GetSyntheticFieldTrials() {
+    std::vector<variations::ActiveGroupId> synthetic_trials;
+    g_browser_process->metrics_service()
+        ->GetSyntheticTrialRegistry()
+        ->GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
+                                           &synthetic_trials);
+    return synthetic_trials;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial};
 };
 
 class SingleClientNigoriSyncTestWithNotAwaitQuiescence
@@ -781,6 +801,45 @@ IN_PROC_BROWSER_TEST_F(
                   {password_form1, password_form2}, kKeystoreKeyParams.password,
                   kKeystoreKeyParams.derivation_params)
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
+                       PRE_ShouldRegisterTrustedVaultSyntheticFieldTrial) {
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(keystore_keys.back());
+  sync_pb::NigoriSpecifics nigori_specifics = BuildKeystoreNigoriSpecifics(
+      /*keybag_keys_params=*/{kKeystoreKeyParams},
+      /*keystore_decryptor_params=*/kKeystoreKeyParams,
+      /*keystore_key_params=*/kKeystoreKeyParams);
+
+  sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo* auto_upgrade_debug_info =
+      nigori_specifics.mutable_trusted_vault_debug_info()
+          ->mutable_auto_upgrade_debug_info();
+  auto_upgrade_debug_info->set_auto_upgrade_cohort_id(7);
+  auto_upgrade_debug_info->set_auto_upgrade_experiment_group(
+      sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo::CONTROL);
+
+  SetNigoriInFakeServer(nigori_specifics, GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_TRUE(ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(),
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, "Control_7"));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
+                       ShouldRegisterTrustedVaultSyntheticFieldTrial) {
+  ASSERT_TRUE(SetupClients());
+
+  // Upon browser restart, the group should be re-registered automatically.
+  EXPECT_TRUE(ContainsTrialAndGroupName(
+      GetSyntheticFieldTrials(),
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, "Control_7"));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2392,5 +2451,3 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "Explicit" : "Implicit";
     });
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-}  // namespace

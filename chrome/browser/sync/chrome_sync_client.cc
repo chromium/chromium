@@ -20,6 +20,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/variations/google_groups_updater_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
@@ -157,6 +158,10 @@ using content::BrowserThread;
 namespace browser_sync {
 
 namespace {
+
+// A global variable is needed to detect multiprofile scenarios where more than
+// one profile try to register a synthetic field trial.
+bool trusted_vault_synthetic_field_trial_registered = false;
 
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kLoopbackServerBackendFilename[] =
@@ -816,7 +821,27 @@ void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
 
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(
+          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
+    // Disabled via variations, as additional safeguard.
+    return;
+  }
+
+  // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
+  // each SyncService invokes this function at most once, it means that multiple
+  // profiles are trying to register a synthetic field trial. In that case,
+  // register a special "conflict" group.
+  const std::string group_name =
+      trusted_vault_synthetic_field_trial_registered
+          ? syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
+                GetMultiProfileConflictGroupName()
+          : group.name();
+
+  trusted_vault_synthetic_field_trial_registered = true;
+
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
