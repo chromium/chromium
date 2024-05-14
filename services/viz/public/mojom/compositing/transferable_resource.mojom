@@ -38,7 +38,10 @@ struct TransferableResource {
   SynchronizationType synchronization_type;
   bool is_software;
   bool is_overlay_candidate;
+
+  [EnableIf=is_android]
   bool is_backed_by_surface_texture;
+
   bool wants_promotion_hint;
   gfx.mojom.ColorSpace color_space;
   gfx.mojom.HDRMetadata hdr_metadata;
