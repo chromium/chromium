@@ -240,9 +240,9 @@ void ToJavaMediaSources(
 
   auto media_source_class = base::android::GetClass(env, kMediaSourceClass);
   *video = base::android::ToTypedJavaArrayOfObjects(env, video_sources,
-                                                    media_source_class);
+                                                    media_source_class.obj());
   *audio = base::android::ToTypedJavaArrayOfObjects(env, audio_sources,
-                                                    media_source_class);
+                                                    media_source_class.obj());
 }
 
 // this method is copied from

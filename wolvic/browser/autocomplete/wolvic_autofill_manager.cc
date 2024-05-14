@@ -8,9 +8,8 @@
 
 namespace wolvic {
 
-WolvicAutofillManager::WolvicAutofillManager(autofill::AutofillDriver* driver,
-                                             autofill::AutofillClient* client)
-    : autofill::AutofillManager(driver, client) {}
+WolvicAutofillManager::WolvicAutofillManager(autofill::AutofillDriver* driver)
+    : autofill::AutofillManager(driver) {}
 
 WolvicAutofillManager::~WolvicAutofillManager() = default;
 

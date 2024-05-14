@@ -22,9 +22,11 @@ WolvicContentRendererClient::WolvicContentRendererClient() = default;
 
 WolvicContentRendererClient::~WolvicContentRendererClient() = default;
 
-void WolvicContentRendererClient::GetSupportedKeySystems(
+std::unique_ptr<media::KeySystemSupportObserver>
+WolvicContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
-  cdm::GetSupportedKeySystemsUpdates(/*can_persist_data=*/true, std::move(cb));
+  return cdm::GetSupportedKeySystemsUpdates(/*can_persist_data=*/true,
+                                            std::move(cb));
 }
 
 void WolvicContentRendererClient::RenderThreadStarted() {
@@ -47,7 +49,10 @@ void WolvicContentRendererClient::RenderFrameCreated(
   if (!render_frame->IsInFencedFrameTree() ||
       base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
     auto password_autofill_agent =
-        std::make_unique<autofill::PasswordAutofillAgent>(render_frame, associated_interfaces);
+        std::make_unique<autofill::PasswordAutofillAgent>(
+            render_frame, associated_interfaces,
+            autofill::PasswordAutofillAgent::EnableHeavyFormDataScraping(
+                false));
     new autofill::AutofillAgent(
         render_frame,
         {

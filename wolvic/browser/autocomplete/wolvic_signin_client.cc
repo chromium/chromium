@@ -99,16 +99,14 @@ version_info::Channel WolvicSigninClient::GetClientChannel() {
   return version_info::Channel::UNKNOWN;
 }
 
-void WolvicSigninClient::OnPrimaryAccountChangedWithEventSource(
-    signin::PrimaryAccountChangeEvent event_details,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-        event_source) {
+void WolvicSigninClient::OnPrimaryAccountChanged(
+    signin::PrimaryAccountChangeEvent event_details) {
   NOTIMPLEMENTED();
 }
 
 SigninClient::SignoutDecision WolvicSigninClient::GetSignoutDecision(
     bool has_sync_account,
-    const absl::optional<signin_metrics::ProfileSignout> signout_source) const {
+    const std::optional<signin_metrics::ProfileSignout> signout_source) const {
   return SigninClient::SignoutDecision::ALLOW;
 }
 

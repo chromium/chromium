@@ -11,8 +11,7 @@ namespace wolvic {
 
 class WolvicAutofillManager : public autofill::AutofillManager {
  public:
-  WolvicAutofillManager(autofill::AutofillDriver* driver,
-                        autofill::AutofillClient* client);
+  explicit WolvicAutofillManager(autofill::AutofillDriver* driver);
 
   WolvicAutofillManager(const WolvicAutofillManager&) = delete;
   WolvicAutofillManager& operator=(const WolvicAutofillManager&) = delete;
@@ -35,9 +34,6 @@ class WolvicAutofillManager : public autofill::AutofillManager {
       const autofill::FormData& form) override {}
 
   void Reset() override {}
-  void OnContextMenuShownInField(
-      const autofill::FormGlobalId& form_global_id,
-      const autofill::FieldGlobalId& field_global_id) override {}
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 

@@ -151,9 +151,9 @@ bool WolvicPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 
   ScopedJavaLocalRef<jobject> j_form = CreatePasswordFormJavaObject(env, form);
 
-  for (const auto match_form : form_to_save->GetBestMatches()) {
-    if (match_form->username_value == form.username_value) {
-      SetGuidToPasswordFormJavaObject(env, j_form, match_form->keychain_identifier);
+  for (const auto& match_form : form_to_save->GetBestMatches()) {
+    if (match_form.username_value == form.username_value) {
+      SetGuidToPasswordFormJavaObject(env, j_form, match_form.keychain_identifier);
     }
   }
 
@@ -249,19 +249,18 @@ void WolvicPasswordManagerClient::AutomaticPasswordSave(
 }
 
 void WolvicPasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& best_matches,
+    base::span<const password_manager::PasswordForm> best_matches,
     const url::Origin& origin,
     const std::vector<raw_ptr<const password_manager::PasswordForm,
                               VectorExperimental>>* federated_matches,
     bool was_autofilled_on_pageload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!best_matches.size() || !best_matches[0]->primary_key.has_value())
+  if (!best_matches.size() || !best_matches[0].primary_key.has_value())
     return;
 
   JNIEnv* env = AttachCurrentThread();
   Java_PasswordManager_onPasswordAutofilled(
-      env, java_obj_, CreatePasswordFormJavaObject(env, *best_matches[0]));
+      env, java_obj_, CreatePasswordFormJavaObject(env, best_matches[0]));
 }
 
 void WolvicPasswordManagerClient::AutofillHttpAuth(

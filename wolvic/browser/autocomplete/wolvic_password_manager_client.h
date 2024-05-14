@@ -87,8 +87,7 @@ class WolvicPasswordManagerClient
           saved_form_manager,
       bool is_update_confirmation) override;
   void PasswordWasAutofilled(
-      const std::vector<raw_ptr<const password_manager::PasswordForm,
-                                VectorExperimental>>& best_matches,
+      base::span<const password_manager::PasswordForm> best_matches,
       const url::Origin& origin,
       const std::vector<raw_ptr<const password_manager::PasswordForm,
                                 VectorExperimental>>* federated_matches,

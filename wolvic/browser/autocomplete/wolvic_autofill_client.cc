@@ -62,7 +62,7 @@ void WolvicAutofillClient::CreateForWebContents(
 
 WolvicAutofillClient::~WolvicAutofillClient() = default;
 
-bool WolvicAutofillClient::IsOffTheRecord() {
+bool WolvicAutofillClient::IsOffTheRecord() const {
   return web_contents()->GetBrowserContext()->IsOffTheRecord();
 }
 
@@ -119,11 +119,6 @@ autofill::FormDataImporter* WolvicAutofillClient::GetFormDataImporter() {
 
 autofill::payments::PaymentsAutofillClient*
 WolvicAutofillClient::GetPaymentsAutofillClient() {
-  return nullptr;
-}
-
-autofill::payments::PaymentsNetworkInterface*
-WolvicAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
 
@@ -232,7 +227,7 @@ void WolvicAutofillClient::ConfirmSaveAddressProfile(
     AddressProfileSavePromptCallback callback) {
   // Not implemented
   std::move(callback).Run(
-      SaveAddressProfileOfferUserDecision::kIgnored,
+      AddressPromptUserDecision::kIgnored,
       autofill::AutofillProfile(AddressCountryCode("")));
 }
 
@@ -306,12 +301,6 @@ WolvicAutofillClient::GetPopupSuggestions() const {
 }
 
 void WolvicAutofillClient::PinPopupView() {}
-
-autofill::AutofillClient::PopupOpenArgs
-WolvicAutofillClient::GetReopenPopupArgs(
-    autofill::AutofillSuggestionTriggerSource trigger_source) const {
-  return autofill::AutofillClient::PopupOpenArgs();
-}
 
 void WolvicAutofillClient::UpdatePopup(
     const std::vector<autofill::Suggestion>& suggestions,
@@ -398,12 +387,8 @@ WolvicAutofillClient::GetCurrentFormInteractionsFlowId() {
 std::unique_ptr<autofill::AutofillManager> WolvicAutofillClient::CreateManager(
     base::PassKey<autofill::ContentAutofillDriver> pass_key,
     autofill::ContentAutofillDriver& driver) {
-  return std::make_unique<WolvicAutofillManager>(&driver, this);
+  return std::make_unique<WolvicAutofillManager>(&driver);
 }
-
-void WolvicAutofillClient::InitAgent(
-    base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-    const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>& agent) {}
 
 WolvicAutofillClient::WolvicAutofillClient(content::WebContents* web_contents)
     : autofill::ContentAutofillClient(web_contents),

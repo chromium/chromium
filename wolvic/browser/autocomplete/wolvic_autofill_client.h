@@ -34,7 +34,7 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   ~WolvicAutofillClient() override;
 
   // autofill::AutofillClient:
-  bool IsOffTheRecord() override;
+  bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
@@ -47,8 +47,6 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   signin::IdentityManager* GetIdentityManager() override;
   autofill::FormDataImporter* GetFormDataImporter() override;
   autofill::payments::PaymentsAutofillClient* GetPaymentsAutofillClient()
-      override;
-  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
       override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
@@ -107,9 +105,6 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
       base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
-  PopupOpenArgs GetReopenPopupArgs(
-      autofill::AutofillSuggestionTriggerSource trigger_source)
-            const override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,
       autofill::FillingProduct main_filling_product,
@@ -132,9 +127,6 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   std::unique_ptr<autofill::AutofillManager> CreateManager(
       base::PassKey<autofill::ContentAutofillDriver> pass_key,
       autofill::ContentAutofillDriver& driver) override;
-  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
-                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
-                     agent) override;
 
   void OnLoginSelected(JNIEnv* env, jint index);
 

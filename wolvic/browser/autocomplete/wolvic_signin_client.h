@@ -53,10 +53,8 @@ class WolvicSigninClient : public SigninClient {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
   version_info::Channel GetClientChannel() override;
-  void OnPrimaryAccountChangedWithEventSource(
-      signin::PrimaryAccountChangeEvent event_details,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-          event_source) override;
+  void OnPrimaryAccountChanged(
+      signin::PrimaryAccountChangeEvent event_details) override;
 
  private:
   // Returns what kind of signout is possible given `has_sync_account` and the
@@ -65,7 +63,7 @@ class WolvicSigninClient : public SigninClient {
   // restriction, otherwise the decision is made based on the profile's status.
   SigninClient::SignoutDecision GetSignoutDecision(
       bool has_sync_account,
-      const absl::optional<signin_metrics::ProfileSignout> signout_source)
+      const std::optional<signin_metrics::ProfileSignout> signout_source)
       const;
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
