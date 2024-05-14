@@ -405,11 +405,6 @@
   color: var(--cros-sys-on_primary);
 }
 
-/* Tabs */
-:host-context(body.jelly-enabled) cr-tabs {
-  --cr-tabs-selected-color: var(--cros-sys-primary);
-}
-
 /* Toggle */
 :host-context(body.jelly-enabled) cr-toggle {
   --cr-toggle-checked-bar-color: var(--cros-sys-primary_container);

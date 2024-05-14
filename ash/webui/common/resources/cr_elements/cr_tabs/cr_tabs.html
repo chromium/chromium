@@ -1,5 +1,7 @@
 <style include="cr-hidden-style">
   :host {
+    --cr-tabs-selected-color: var(--cros-sys-primary);
+
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -33,14 +35,8 @@
   }
 
   .selected {
-    color: var(--cr-tabs-selected-color, var(--google-blue-600));
+    color: var(--cr-tabs-selected-color);
     opacity: 1;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .selected {
-      color: var(--cr-tabs-selected-color, var(--google-blue-300));
-    }
   }
 
   .tab-icon {
@@ -55,17 +51,11 @@
   }
 
   .selected .tab-icon {
-    background-color: var(--cr-tabs-selected-color, var(--google-blue-600));
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .selected .tab-icon {
-      background-color: var(--cr-tabs-selected-color, var(--google-blue-300));
-    }
+    background-color: var(--cr-tabs-selected-color);
   }
 
   .tab-indicator {
-    background: var(--cr-tabs-unselected-color, var(--google-blue-600));
+    background: var(--cr-tabs-unselected-color);
     border-top-left-radius: var(--cr-tabs-selection-bar-radius,
         var(--cr-tabs-selection-bar-width, 2px));
     border-top-right-radius: var(--cr-tabs-selection-bar-radius,
@@ -81,7 +71,7 @@
   }
 
   .selected .tab-indicator {
-    background: var(--cr-tabs-selected-color, var(--google-blue-600));
+    background: var(--cr-tabs-selected-color);
     opacity: 1;
   }
 
@@ -93,16 +83,6 @@
   .tab-indicator.contract {
     transition-duration: 180ms;
     transition-timing-function: cubic-bezier(0, 0, .2, 1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .tab-indicator {
-      background: var(--cr-tabs-unselected-color, var(--google-blue-300));
-    }
-
-    .selected .tab-indicator {
-      background: var(--cr-tabs-selected-color, var(--google-blue-300));
-    }
   }
 
   @media (forced-colors: active) {
