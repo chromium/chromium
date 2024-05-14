@@ -34,6 +34,13 @@ bool ShouldShowMediaPreview(content::BrowserContext& browser_context,
   content::OriginTrialsControllerDelegate* origin_trials =
       browser_context.GetOriginTrialsControllerDelegate();
 
+  // Incognito and guest profiles don't have an origin trials controller, so
+  // they will just depend on the feature flag.
+  if (!origin_trials) {
+    media_preview_metrics::RecordOriginTrialAllowed(ui_location, true);
+    return true;
+  }
+
   // The URLs passed in originate a url::Origin, so this is safe.
   url::Origin requesting_origin = url::Origin::Create(requesting_origin_url);
   url::Origin embedding_origin = url::Origin::Create(embedding_origin_url);
