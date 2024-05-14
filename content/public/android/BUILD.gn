@@ -331,7 +331,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/selection/MagnifierSurfaceControl.java",
     "java/src/org/chromium/content/browser/selection/MagnifierWrapper.java",
     "java/src/org/chromium/content/browser/selection/MagnifierWrapperImpl.java",
-    "java/src/org/chromium/content/browser/selection/PasteActionModeCallback.java",
     "java/src/org/chromium/content/browser/selection/SelectActionMenuHelper.java",
     "java/src/org/chromium/content/browser/selection/SelectionIndicesConverter.java",
     "java/src/org/chromium/content/browser/selection/SelectionMenuCachedResult.java",
