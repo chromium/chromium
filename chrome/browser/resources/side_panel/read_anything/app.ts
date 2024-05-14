@@ -387,6 +387,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
     // onConnected should always be called first in connectedCallback to ensure
     // we're not blocking onConnected on anything else during WebUI setup.
     if (chrome.readingMode) {
@@ -412,6 +413,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.showLoading();
 
     if (this.isReadAloudEnabled_) {
+      // Clear state. We don't do this in disconnectedCallback because that's
+      // not always reliabled called.
+      this.synth.cancel();
+      this.hasContent_ = false;
+      this.firstUtteranceSpoken = false;
+      this.firstTextNodeSetForReadAloud = null;
+      this.domNodeToAxNodeIdMap_.clear();
+      this.clearReadAloudState();
+
       this.synth.onvoiceschanged = () => {
         this.getVoices(/*refresh =*/ true);
         // If the selected voice is now unavailable, such as after an install,
