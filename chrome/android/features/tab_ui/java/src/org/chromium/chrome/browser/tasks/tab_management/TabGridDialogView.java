@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -753,9 +754,10 @@ public class TabGridDialogView extends FrameLayout {
         params.height = view.getHeight();
         if (view.findViewById(R.id.tab_title) == null) return;
 
-        mAnimationCardView
-                .findViewById(R.id.card_view)
-                .setBackground(view.findViewById(R.id.card_view).getBackground());
+        // Sometimes we get clip artifacting when sharing a drawable, unclear why, so make a copy.
+        Drawable backgroundCopy =
+                view.findViewById(R.id.card_view).getBackground().getConstantState().newDrawable();
+        mAnimationCardView.findViewById(R.id.card_view).setBackground(backgroundCopy);
 
         ImageView sourceCardFavicon = view.findViewById(R.id.tab_favicon);
         ImageView animationCardFavicon = mAnimationCardView.findViewById(R.id.tab_favicon);
