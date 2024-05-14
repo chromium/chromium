@@ -203,8 +203,6 @@ crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthr
 # Flaky failure to restore context
 crbug.com/338071088 [ amd-0x67ef angle-opengl graphite-disabled no-asan passthrough release sonoma ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
-# Flaky 3rd GPU crash
-crbug.com/338570701 [ win angle-d3d11 graphite-enabled passthrough qualcomm-0x41333430 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
