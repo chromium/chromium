@@ -16252,14 +16252,8 @@ TEST_P(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
 TEST_P(HttpNetworkTransactionTest,
        HonorAlternativeServiceHeaderWithNetworkAnonymizationKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // SpdySessionKeys to include NetworkAnonymizationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   session_deps_.http_server_properties =
@@ -23433,7 +23427,7 @@ class HttpNetworkTransactionReportingTest
  protected:
   HttpNetworkTransactionReportingTest() {
     std::vector<base::test::FeatureRef> required_features = {
-        features::kPartitionNelAndReportingByNetworkIsolationKey};
+        features::kPartitionConnectionsByNetworkIsolationKey};
     if (UseDocumentReporting()) {
       required_features.push_back(features::kDocumentReporting);
     }
@@ -25956,9 +25950,9 @@ TEST_P(HttpNetworkTransactionTest, ClientCertSocketReuse) {
   EXPECT_EQ(200, trans->GetResponseInfo()->headers->response_code());
 }
 
-// Test for kPartitionConnectionsByNetworkIsolationKey. Runs 3 requests in
-// sequence with two different NetworkAnonymizationKeys, the first and last have
-// the same key, the second a different one. Checks that the requests are
+// Test for partitioning connections by NetworkAnonymizationKey. Runs 3 requests
+// in sequence with two different NetworkAnonymizationKeys, the first and last
+// have the same key, the second a different one. Checks that the requests are
 // partitioned across sockets as expected.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
@@ -26483,10 +26477,8 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
 // session cache is isolated.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kPartitionSSLSessionsByNetworkIsolationKey},
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
@@ -26609,10 +26601,8 @@ TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSL) {
 // session cache is isolated, for both origins and proxies.
 TEST_P(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kPartitionSSLSessionsByNetworkIsolationKey},
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(

@@ -40,10 +40,10 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
  protected:
   ReportingDeliveryAgentTest() {
     // This is a private API of the reporting service, so no need to test the
-    // case kPartitionNelAndReportingByNetworkIsolationKey is disabled - the
+    // case kPartitionConnectionsByNetworkIsolationKey is disabled - the
     // feature is only applied at the entry points of the service.
     feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
 
     ReportingPolicy policy;
     policy.endpoint_backoff_policy.num_errors_to_ignore = 0;

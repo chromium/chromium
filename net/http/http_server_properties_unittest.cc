@@ -110,7 +110,7 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     std::unique_ptr<base::test::ScopedFeatureList> feature_list =
         std::make_unique<base::test::ScopedFeatureList>();
     feature_list->InitAndDisableFeature(
-        features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
     return feature_list;
   }
 
@@ -279,7 +279,7 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -854,7 +854,7 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -1432,7 +1432,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -1566,7 +1566,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -1701,7 +1701,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -1837,7 +1837,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -1948,7 +1948,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
        CanonicalWithNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -2137,7 +2137,7 @@ TEST_F(AlternateProtocolServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -2836,7 +2836,7 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,
@@ -2928,7 +2928,7 @@ TEST_F(HttpServerPropertiesTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   HttpServerProperties properties(nullptr /* pref_delegate */,

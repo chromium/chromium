@@ -59,7 +59,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
  public:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kSplitHostCacheByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
     network_anoymization_key_ = NetworkAnonymizationKey::CreateTransient();
 #if BUILDFLAG(IS_WIN)
     auto auth_library =

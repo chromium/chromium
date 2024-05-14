@@ -170,15 +170,8 @@ class NET_EXPORT NetworkAnonymizationKey {
       NetworkAnonymizationKey* out_network_anonymization_key);
 
   // Determine whether network state partitioning is enabled. This is true if
-  // any of the features
-  //
-  // * `SplitHostCacheByNetworkIsolationKey`
-  // * `PartitionConnectionsByNetworkIsolationKey`
-  // * `PartitionHttpServerPropertiesByNetworkIsolationKey`
-  // * `PartitionSSLSessionsByNetworkIsolationKey`
-  // * `PartitionNelAndReportingByNetworkIsolationKey`
-  //
-  // is enabled, or if `PartitionByDefault()` has been called.
+  // the `PartitionConnectionsByNetworkIsolationKey` feature is enabled, or if
+  // `PartitionByDefault()` has been called.
   static bool IsPartitioningEnabled();
 
   // Default partitioning to enabled, regardless of feature settings. This must

@@ -3612,15 +3612,11 @@ TEST_P(HttpStreamFactoryJobControllerTest,
        PreconnectMultipleStreamsToH2ServerWithNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   // It's not strictly necessary to enable
-  // |kPartitionConnectionsByNetworkIsolationKey|, but the second phase of the
+  // `kPartitionConnectionsByNetworkIsolationKey`, but the second phase of the
   // test would only make 4 connections, reusing the first connection, without
   // it.
-  feature_list.InitWithFeatures(
-      {// enabled_features
-       features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Need to re-create HttpServerProperties after enabling the field trial,
   // since it caches the field trial value on construction.
   session_deps_.http_server_properties =
@@ -4082,12 +4078,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
 TEST_F(JobControllerLimitMultipleH2Requests,
        MultipleRequestsNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {// enabled_features
-       features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
   // Need to re-create HttpServerProperties after enabling the field trial,
   // since it caches the field trial value on construction.
   session_deps_.http_server_properties =

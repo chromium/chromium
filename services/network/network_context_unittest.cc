@@ -1516,7 +1516,7 @@ TEST_F(NetworkContextTest, HostResolutionFailure) {
 TEST_F(NetworkContextTest, P2PHostResolution) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      net::features::kSplitHostCacheByNetworkIsolationKey);
+      net::features::kPartitionConnectionsByNetworkIsolationKey);
 
   const char kHostname[] = "foo.test.";
   net::IPAddress ip_address;

@@ -44,7 +44,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 
   NetworkErrorLoggingServiceTest() {
     feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
 
     if (GetParam()) {
       store_ = std::make_unique<MockPersistentNelStore>();
@@ -418,7 +418,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
 TEST_P(NetworkErrorLoggingServiceTest, NetworkAnonymizationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Need to re-create the service, since it caches the feature value on
   // creation.
@@ -1456,7 +1456,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
        SignedExchangeNetworkAnonymizationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Need to re-create the service, since it caches the feature value on
   // creation.

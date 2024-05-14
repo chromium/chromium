@@ -240,12 +240,8 @@ TEST_F(PacFileFetcherImplTest, ContentDisposition) {
 // the DNS cache.
 TEST_F(PacFileFetcherImplTest, IsolationInfo) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
   const char kHost[] = "foo.test";
 
   ASSERT_TRUE(test_server_.Start());

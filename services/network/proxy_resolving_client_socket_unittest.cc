@@ -56,12 +56,8 @@ class ProxyResolvingClientSocketTest
       public testing::WithParamInterface<bool> {
  protected:
   ProxyResolvingClientSocketTest() : use_tls_(GetParam()) {
-    feature_list_.InitWithFeatures(
-        // enabled_features
-        {net::features::kPartitionConnectionsByNetworkIsolationKey,
-         net::features::kSplitHostCacheByNetworkIsolationKey},
-        // disabled_features
-        {});
+    feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ~ProxyResolvingClientSocketTest() override {}

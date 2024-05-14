@@ -39,10 +39,10 @@ const char kHostname[] = "www.foo.test";
 class SocketsTcpApiTest : public ShellApiTest {
  public:
   SocketsTcpApiTest() {
-    // Enable kSplitHostCacheByNetworkIsolationKey so the test can verify that
-    // the correct NetworkAnonymizationKey was used for the DNS lookup.
+    // Enable kPartitionConnectionsByNetworkIsolationKey so the test can verify
+    // that the correct NetworkAnonymizationKey was used for the DNS lookup.
     scoped_feature_list_.InitAndEnableFeature(
-        net::features::kSplitHostCacheByNetworkIsolationKey);
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseMockCertVerifierForTesting);

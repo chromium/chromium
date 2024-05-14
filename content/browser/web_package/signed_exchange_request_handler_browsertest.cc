@@ -1440,13 +1440,8 @@ class SignedExchangeReportingBrowserTest
     : public SignedExchangeRequestHandlerBrowserTest {
  public:
   SignedExchangeReportingBrowserTest() {
-    feature_list_.InitWithFeatures(
-        // enabled_features
-        {net::features::kPartitionNelAndReportingByNetworkIsolationKey,
-         net::features::kPartitionConnectionsByNetworkIsolationKey,
-         net::features::kPartitionSSLSessionsByNetworkIsolationKey},
-        // disabled_features
-        {});
+    feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ~SignedExchangeReportingBrowserTest() override = default;

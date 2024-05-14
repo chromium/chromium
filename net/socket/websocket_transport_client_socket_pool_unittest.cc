@@ -1258,12 +1258,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
       NetworkAnonymizationKey::CreateSameSite(kSite);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kSplitHostCacheByNetworkIsolationKey},
-      // disabled_features
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   host_resolver_->set_ondemand_mode(true);
 

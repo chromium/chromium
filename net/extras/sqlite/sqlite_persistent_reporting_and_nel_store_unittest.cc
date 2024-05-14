@@ -90,7 +90,7 @@ class SQLitePersistentReportingAndNelStoreTest
  public:
   SQLitePersistentReportingAndNelStoreTest() {
     feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   void CreateStore() {
@@ -640,12 +640,12 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   event.Signal();
   RunUntilIdle();
 
-  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // Close the database, disable kPartitionConnectionsByNetworkIsolationKey,
   // and re-open it.
   DestroyStore();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   CreateStore();
   std::vector<NetworkErrorLoggingService::NelPolicy> policies;
   LoadNelPolicies(&policies);
@@ -653,7 +653,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   // No entries should be restored.
   ASSERT_EQ(0u, policies.size());
 
-  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // Now reload the store with kPartitionConnectionsByNetworkIsolationKey
   // enabled again.
   DestroyStore();
   feature_list.Reset();
@@ -1586,12 +1586,12 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   event.Signal();
   RunUntilIdle();
 
-  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // Close the database, disable kPartitionConnectionsByNetworkIsolationKey,
   // and re-open it.
   DestroyStore();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   CreateStore();
 
   std::vector<ReportingEndpoint> endpoints;
@@ -1600,7 +1600,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   // No entries should be restored.
   ASSERT_EQ(0u, endpoints.size());
 
-  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // Now reload the store with kPartitionConnectionsByNetworkIsolationKey
   // enabled again.
   DestroyStore();
   feature_list.Reset();
@@ -1645,12 +1645,12 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   event.Signal();
   RunUntilIdle();
 
-  // Close the database, disable kPartitionNelAndReportingByNetworkIsolationKey,
+  // Close the database, disable kPartitionConnectionsByNetworkIsolationKey,
   // and re-open it.
   DestroyStore();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
   CreateStore();
 
   std::vector<ReportingEndpoint> endpoints;
@@ -1659,7 +1659,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   LoadReportingClients(&endpoints, &groups);
   EXPECT_TRUE(groups.empty());
 
-  // Now reload the store with kPartitionNelAndReportingByNetworkIsolationKey
+  // Now reload the store with kPartitionConnectionsByNetworkIsolationKey
   // enabled again.
   DestroyStore();
   feature_list.Reset();

@@ -5867,14 +5867,11 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnActiveStream) {
 TEST_F(AltSvcFrameTest,
        ProcessAltSvcFrameOnActiveStreamWithNetworkAnonymizationKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // SpdySessionKeys to include NetworkAnonymizationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  // Need to partition connections by NetworkAnonymizationKey for
+  // SpdySessionKeys to include NetworkAnonymizationKeys.
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
   session_deps_.http_server_properties =

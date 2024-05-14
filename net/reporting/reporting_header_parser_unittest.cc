@@ -112,10 +112,10 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
  protected:
   ReportingHeaderParserTest() {
     // This is a private API of the reporting service, so no need to test the
-    // case kPartitionNelAndReportingByNetworkIsolationKey is disabled - the
+    // case kPartitionConnectionsByNetworkIsolationKey is disabled - the
     // feature is only applied at the entry points of the service.
     feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ReportingEndpointGroup MakeEndpointGroup(
@@ -1745,7 +1745,7 @@ class ReportingHeaderParserStructuredHeaderTest
     // Enable kDocumentReporting to support new StructuredHeader-based
     // Reporting-Endpoints header.
     feature_list_.InitWithFeatures(
-        {features::kPartitionNelAndReportingByNetworkIsolationKey,
+        {features::kPartitionConnectionsByNetworkIsolationKey,
          features::kDocumentReporting},
         {});
   }

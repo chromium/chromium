@@ -752,11 +752,7 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     enable_features.push_back(features::kSignedHTTPExchange);
     // Needed for reporting test. Doesn't significantly impact other tests.
     enable_features.push_back(
-        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
-    enable_features.push_back(
         net::features::kPartitionConnectionsByNetworkIsolationKey);
-    enable_features.push_back(
-        net::features::kPartitionSSLSessionsByNetworkIsolationKey);
 
     feature_list_.InitWithFeatures(enable_features, disabled_features);
 

@@ -144,8 +144,7 @@ PPAPITestBase::PPAPITestBase() {
   // These are needed to test that the right NetworkAnonymizationKey is used.
   scoped_feature_list_.InitWithFeatures(
       // enabled_features
-      {net::features::kSplitHostCacheByNetworkIsolationKey,
-       net::features::kPartitionConnectionsByNetworkIsolationKey, kNaclAllow},
+      {net::features::kPartitionConnectionsByNetworkIsolationKey, kNaclAllow},
       // disabled_features
       {});
 }

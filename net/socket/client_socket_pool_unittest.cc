@@ -174,7 +174,7 @@ TEST(ClientSocketPool, GroupIdToString) {
                 .ToString());
 }
 
-TEST(ClientSocketPool, PartitionConnectionsByNetworkIsolationKeyDisabled) {
+TEST(ClientSocketPool, SplitHostCacheByNetworkIsolationKeyDisabled) {
   const SchemefulSite kSiteFoo(GURL("https://foo.com"));
   const SchemefulSite kSiteBar(GURL("https://bar.com"));
   base::test::ScopedFeatureList feature_list;

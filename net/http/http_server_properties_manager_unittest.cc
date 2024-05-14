@@ -60,11 +60,11 @@ std::unique_ptr<base::test::ScopedFeatureList> SetNetworkAnonymizationKeyMode(
   switch (mode) {
     case NetworkAnonymizationKeyMode::kDisabled:
       feature_list->InitAndDisableFeature(
-          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+          features::kPartitionConnectionsByNetworkIsolationKey);
       break;
     case NetworkAnonymizationKeyMode::kEnabled:
       feature_list->InitAndEnableFeature(
-          features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+          features::kPartitionConnectionsByNetworkIsolationKey);
       break;
   }
   return feature_list;
@@ -2109,8 +2109,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
           SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
 
-      // This parameter is normally calculated by HttpServerProperties based on
-      // the kPartitionHttpServerPropertiesByNetworkIsolationKey feature, but
+      // This parameter is normally calculated by HttpServerProperties, but
       // this test doesn't use that class.
       bool use_network_anonymization_key =
           save_network_anonymization_key_mode !=
@@ -2203,7 +2202,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyIntegration) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2281,7 +2280,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create three alt service vectors of different lengths.
   base::Time expiration = base::Time::Now() + base::Days(1);
@@ -2645,7 +2644,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties, must be done after
   // setting the feature.
@@ -2870,7 +2869,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2973,7 +2972,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties, must be done after
   // setting the feature.
@@ -3073,7 +3072,7 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Create and initialize an HttpServerProperties with no state.
   std::unique_ptr<MockPrefDelegate> pref_delegate =

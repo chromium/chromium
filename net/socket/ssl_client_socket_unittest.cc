@@ -3028,7 +3028,7 @@ TEST_P(SSLClientSocketVersionTest,
        SessionResumptionNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionSSLSessionsByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
@@ -3084,7 +3084,7 @@ TEST_P(SSLClientSocketVersionTest,
        SessionResumptionNetworkIsolationKeyEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kPartitionSSLSessionsByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   const SchemefulSite kSiteA(GURL("https://a.test"));
   const SchemefulSite kSiteB(GURL("https://b.test"));

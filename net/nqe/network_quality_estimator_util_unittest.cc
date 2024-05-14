@@ -143,7 +143,7 @@ TEST(NetworkQualityEstimatorUtilTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kSplitHostCacheByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   base::test::TaskEnvironment task_environment;
 

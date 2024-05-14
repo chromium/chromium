@@ -197,7 +197,7 @@ TEST_F(ThroughputAnalyzerTest,
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      features::kSplitHostCacheByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   for (bool use_network_isolation_key : {false, true}) {
     const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance();

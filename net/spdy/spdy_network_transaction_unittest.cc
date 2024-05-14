@@ -4412,14 +4412,10 @@ TEST_P(SpdyNetworkTransactionTest,
       kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // SpdySessionKeys to include NetworkAnonymizationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  // Need to partition connections by NetworkAnonymizationKey for
+  // SpdySessionKeys to include NetworkAnonymizationKeys.
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Do not force SPDY so that sockets can negotiate HTTP/1.1.
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
@@ -4631,14 +4627,10 @@ TEST_P(SpdyNetworkTransactionTest,
       kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkAnonymizationKey for
-       // SpdySessionKeys to include NetworkAnonymizationKeys.
-       features::kPartitionConnectionsByNetworkIsolationKey},
-      // disabled_features
-      {});
+  // Need to partition connections by NetworkAnonymizationKey for
+  // SpdySessionKeys to include NetworkAnonymizationKeys.
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   request_.method = "GET";
   auto session_deps = std::make_unique<SpdySessionDependencies>(

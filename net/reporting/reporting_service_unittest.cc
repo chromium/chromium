@@ -71,7 +71,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 
   ReportingServiceTest() {
     feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+        features::kPartitionConnectionsByNetworkIsolationKey);
     Init();
   }
 
@@ -160,7 +160,7 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
 TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.
   Init();
@@ -225,7 +225,7 @@ TEST_P(ReportingServiceTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {net::features::kDocumentReporting},
-      {features::kPartitionNelAndReportingByNetworkIsolationKey});
+      {features::kPartitionConnectionsByNetworkIsolationKey});
 
   // Re-create the store, so it reads the new feature value.
   Init();
@@ -403,7 +403,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader_TooDeep) {
 TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
-      features::kPartitionNelAndReportingByNetworkIsolationKey);
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.
   Init();

@@ -122,7 +122,7 @@ struct NET_EXPORT SSLConfig {
   // Keys which do not appear in |alpn_protos| are ignored.
   ApplicationSettings application_settings;
 
-  // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
+  // If the PartitionConnectionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
   NetworkAnonymizationKey network_anonymization_key;
 
@@ -139,7 +139,7 @@ struct NET_EXPORT SSLConfig {
   // is moved into SSLClientContext. With client certificates are disabled, the
   // current session cache partitioning behavior will be needed to correctly
   // implement it. For now, it acts as an incomplete version of
-  // PartitionSSLSessionsByNetworkIsolationKey.
+  // PartitionConnectionsByNetworkIsolationKey.
   PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
 
   // True if the post-handshake peeking of the transport should be skipped. This

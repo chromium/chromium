@@ -162,7 +162,7 @@ class ReportingBrowserTest : public BaseReportingBrowserTest {
  public:
   ReportingBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   ReportingBrowserTest(const ReportingBrowserTest&) = delete;
@@ -178,7 +178,7 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
  public:
   NonIsolatedReportingBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        net::features::kPartitionNelAndReportingByNetworkIsolationKey);
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
 
   NonIsolatedReportingBrowserTest(const NonIsolatedReportingBrowserTest&) =

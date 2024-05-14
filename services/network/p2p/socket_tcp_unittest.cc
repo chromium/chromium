@@ -531,7 +531,7 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
 TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      net::features::kSplitHostCacheByNetworkIsolationKey);
+      net::features::kPartitionConnectionsByNetworkIsolationKey);
 
   const char kHostname[] = "foo.test";
   base::test::TaskEnvironment task_environment(

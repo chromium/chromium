@@ -192,15 +192,7 @@ bool NetworkAnonymizationKey::IsPartitioningEnabled() {
   g_partition_by_default_locked.store(true, std::memory_order_relaxed);
   return g_partition_by_default ||
          base::FeatureList::IsEnabled(
-             features::kSplitHostCacheByNetworkIsolationKey) ||
-         base::FeatureList::IsEnabled(
-             features::kPartitionConnectionsByNetworkIsolationKey) ||
-         base::FeatureList::IsEnabled(
-             features::kPartitionHttpServerPropertiesByNetworkIsolationKey) ||
-         base::FeatureList::IsEnabled(
-             features::kPartitionSSLSessionsByNetworkIsolationKey) ||
-         base::FeatureList::IsEnabled(
-             features::kPartitionNelAndReportingByNetworkIsolationKey);
+             features::kPartitionConnectionsByNetworkIsolationKey);
 }
 
 // static
@@ -208,15 +200,7 @@ void NetworkAnonymizationKey::PartitionByDefault() {
   DCHECK(!g_partition_by_default_locked.load(std::memory_order_relaxed));
   // Only set the global if none of the relevant features are overridden.
   if (!base::FeatureList::GetInstance()->IsFeatureOverridden(
-          "SplitHostCacheByNetworkIsolationKey") &&
-      !base::FeatureList::GetInstance()->IsFeatureOverridden(
-          "PartitionConnectionsByNetworkIsolationKey") &&
-      !base::FeatureList::GetInstance()->IsFeatureOverridden(
-          "PartitionHttpServerPropertiesByNetworkIsolationKey") &&
-      !base::FeatureList::GetInstance()->IsFeatureOverridden(
-          "PartitionSSLSessionsByNetworkIsolationKey") &&
-      !base::FeatureList::GetInstance()->IsFeatureOverridden(
-          "PartitionNelAndReportingByNetworkIsolationKey")) {
+          "PartitionConnectionsByNetworkIsolationKey")) {
     g_partition_by_default = true;
   }
 }
