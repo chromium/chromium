@@ -125,8 +125,9 @@ class ArcAppPerformanceTracing : public KeyedService,
   // creation is reported.
   void MaybeStartTracing();
 
-  // Stops tracing session if it was active and cancels any scheduled session.
-  void MaybeStopTracing();
+  // Stops jankiness and session tracing session if either was active and
+  // cancels any scheduled session.
+  void MaybeCancelTracing();
 
   // Checks if |active_window_| is an ARC task, and if so, observes its root
   // surface and records its task ID in |active_task_|.
@@ -139,9 +140,6 @@ class ArcAppPerformanceTracing : public KeyedService,
   // Starts timer for jankiness tracing. Called by OnWindowActivation() and
   // FinalizeJankinessTracing().
   void StartJankinessTracing();
-
-  // Cancels jankiness tracing without reporting partial results.
-  void CancelJankinessTracing();
 
   // Retrieves and reports jankiness metrics and restarts timer. May be called
   // early by OnWindowActivation() and OnWindowDestroying().

@@ -180,10 +180,14 @@ void ArcAppPerformanceTracing::SetCustomSessionReadyCallbackForTesting(
   custom_session_ready_callback_ = std::move(callback);
 }
 
-void ArcAppPerformanceTracing::Shutdown() {
-  CancelJankinessTracing();
 
-  MaybeStopTracing();
+void ArcAppPerformanceTracing::MaybeCancelTracing() {
+  jankiness_timer_.Stop();
+  session_.reset();
+}
+
+void ArcAppPerformanceTracing::Shutdown() {
+  MaybeCancelTracing();
 
   // |session_|. Make sure that |active_window_| is detached.
   DetachActiveWindow();
@@ -262,7 +266,7 @@ void ArcAppPerformanceTracing::OnWindowActivated(ActivationReason reason,
                                                  aura::Window* gained_active,
                                                  aura::Window* lost_active) {
   // Discard any active tracing if any.
-  MaybeStopTracing();
+  session_.reset();
 
   // Stop and report previous active window's jankiness tracing so far.
   FinalizeJankinessTracing(true /* stopped_early */);
@@ -320,9 +324,7 @@ void ArcAppPerformanceTracing::OnWindowDestroying(aura::Window* window) {
   // ARC++ window will be destroyed.
   DCHECK_EQ(active_window_, window);
 
-  CancelJankinessTracing();
-
-  MaybeStopTracing();
+  MaybeCancelTracing();
 
   DetachActiveWindow();
 }
@@ -381,10 +383,6 @@ void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
   // first.
   DCHECK(!active_task_ || (active_task_->root_surface.get() == surface));
   DetachActiveWindow();
-}
-
-void ArcAppPerformanceTracing::CancelJankinessTracing() {
-  jankiness_timer_.Stop();
 }
 
 void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
@@ -540,11 +538,6 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   session_ = std::make_unique<ArcAppPerformanceTracingSession>(
       active_window_, *ticks_now_callback());
   reporting_.Schedule(session_.get(), category);
-}
-
-void ArcAppPerformanceTracing::MaybeStopTracing() {
-  // Reset tracing if it was set.
-  session_.reset();
 }
 
 void ArcAppPerformanceTracing::DetachActiveWindow() {
