@@ -376,10 +376,10 @@ public class TabGridDialogView extends FrameLayout {
         mItemView = sourceView;
         Rect rect = new Rect();
         mItemView.getGlobalVisibleRect(rect);
-        // Offset by CompositeViewHolder top offset.
+        // Offset for status bar (top) and nav bar when landscape (left).
         Rect parentRect = new Rect();
         mParent.getGlobalVisibleRect(parentRect);
-        rect.offset(0, -parentRect.top);
+        rect.offset(-parentRect.left, -parentRect.top);
         // Setup a stand-in animation card that looks the same as the original tab grid card for
         // animation.
         updateAnimationCardView(mItemView);
