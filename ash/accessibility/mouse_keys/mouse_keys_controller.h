@@ -66,7 +66,17 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kKeyDown,
     kKeyDownRight,
     kKeyClick,
+    kKeySelectLeftButton,
+    kKeySelectRightButton,
+    kKeySelectBothButtons,
+    kKeySelectNextButton,
     kKeyCount,
+  };
+
+  enum MouseButton {
+    kLeft,
+    kRight,
+    kBoth,
   };
 
  private:
@@ -83,6 +93,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
                                    MouseKey output);
   void PressKey(MouseKey key);
   void ReleaseKey(MouseKey key);
+  void SelectNextButton();
   void RefreshVelocity();
   void UpdateState();
 
@@ -93,6 +104,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   double max_speed_;
   gfx::Vector2d move_direction_;
   double speed_ = 0;
+  MouseButton current_mouse_button_ = kLeft;
 
   bool pressed_keys_[kKeyCount];
   gfx::Point last_mouse_position_dips_ = gfx::Point(-1, -1);

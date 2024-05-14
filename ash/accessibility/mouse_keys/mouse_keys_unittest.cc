@@ -158,6 +158,18 @@ class MouseKeysTest : public AshTestBase {
     EXPECT_EQ(mouse_events[7].location(), position);
   }
 
+  void ExpectClick(const std::vector<ui::MouseEvent>& mouse_events,
+                   int buttons,
+                   const gfx::Point& position) {
+    ASSERT_EQ(2u, mouse_events.size());
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+    EXPECT_TRUE(buttons & mouse_events[0].flags());
+    EXPECT_EQ(mouse_events[0].location(), position);
+    EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+    EXPECT_TRUE(buttons & mouse_events[1].flags());
+    EXPECT_EQ(mouse_events[1].location(), position);
+  }
+
   MouseKeysController* GetMouseKeysController() {
     return Shell::Get()->mouse_keys_controller();
   }
@@ -349,6 +361,117 @@ TEST_F(MouseKeysTest, Click) {
   EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
+}
+
+TEST_F(MouseKeysTest, SelectButtonRightHand) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  SetLeftHanded(false);
+
+  // Initial click should be the left button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be the right button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be both buttons.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(),
+              ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be the left button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+  PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
+}
+
+TEST_F(MouseKeysTest, SelectButtonLeftHand) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+  SetLeftHanded(true);
+
+  // Initial click should be the left button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_W);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be the right button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_X);
+  PressAndReleaseKey(ui::VKEY_W);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be both buttons.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_W);
+  PressAndReleaseKey(ui::VKEY_X);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(),
+              ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press , and the mouse action should be the left button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_W);
+  PressAndReleaseKey(ui::VKEY_X);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
+}
+
+TEST_F(MouseKeysTest, SelectButtonNumPad) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  SetEnabled(true);
+
+  // TODO(zork): SetUsePrimaryKeys(false);
+
+  // Press - and the mouse action should be the right button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_SUBTRACT);
+  PressAndReleaseKey(ui::VKEY_NUMPAD5);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press * and the mouse action should be both buttons.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_MULTIPLY);
+  PressAndReleaseKey(ui::VKEY_NUMPAD5);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(),
+              ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON,
+              kDefaultPosition);
+
+  // Press / and the mouse action should be the left button.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_DIVIDE);
+  PressAndReleaseKey(ui::VKEY_NUMPAD5);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 }
 
 TEST_F(MouseKeysTest, IgnoreKeyRepeat) {

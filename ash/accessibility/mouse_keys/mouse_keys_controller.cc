@@ -32,6 +32,7 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
         {ui::DomCode::US_A, MouseKeysController::kKeyDownLeft},
         {ui::DomCode::US_S, MouseKeysController::kKeyDown},
         {ui::DomCode::US_D, MouseKeysController::kKeyDownRight},
+        {ui::DomCode::US_X, MouseKeysController::kKeySelectNextButton},
     });
 
 const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
@@ -45,6 +46,7 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
         {ui::DomCode::US_J, MouseKeysController::kKeyDownLeft},
         {ui::DomCode::US_K, MouseKeysController::kKeyDown},
         {ui::DomCode::US_L, MouseKeysController::kKeyDownRight},
+        {ui::DomCode::COMMA, MouseKeysController::kKeySelectNextButton},
     });
 
 const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
@@ -57,6 +59,9 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
     {ui::DomCode::NUMPAD1, MouseKeysController::kKeyDownLeft},
     {ui::DomCode::NUMPAD2, MouseKeysController::kKeyDown},
     {ui::DomCode::NUMPAD3, MouseKeysController::kKeyDownRight},
+    {ui::DomCode::NUMPAD_DIVIDE, MouseKeysController::kKeySelectLeftButton},
+    {ui::DomCode::NUMPAD_SUBTRACT, MouseKeysController::kKeySelectRightButton},
+    {ui::DomCode::NUMPAD_MULTIPLY, MouseKeysController::kKeySelectBothButtons},
 });
 
 }  // namespace
@@ -142,7 +147,18 @@ void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
 
 void MouseKeysController::SendMouseEventToLocation(ui::EventType type,
                                                    const gfx::Point& location) {
-  const int button = ui::EF_LEFT_MOUSE_BUTTON;
+  int button = 0;
+  switch (current_mouse_button_) {
+    case kLeft:
+      button = ui::EF_LEFT_MOUSE_BUTTON;
+      break;
+    case kRight:
+      button = ui::EF_RIGHT_MOUSE_BUTTON;
+      break;
+    case kBoth:
+      button = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON;
+      break;
+  }
   aura::Window* root_window = window_util::GetRootWindowAt(location);
   DCHECK(root_window)
       << "Root window not found while attempting mouse keys click.";
@@ -212,11 +228,36 @@ bool MouseKeysController::CheckFlagsAndMaybeSendEvent(
 }
 
 void MouseKeysController::PressKey(MouseKey key) {
-  if (key == kKeyClick) {
-    SendMouseEventToLocation(ui::ET_MOUSE_PRESSED, last_mouse_position_dips_);
-  } else {
-    pressed_keys_[key] = true;
-    RefreshVelocity();
+  switch (key) {
+    case kKeyUpLeft:
+    case kKeyUp:
+    case kKeyUpRight:
+    case kKeyLeft:
+    case kKeyRight:
+    case kKeyDownLeft:
+    case kKeyDown:
+    case kKeyDownRight:
+      pressed_keys_[key] = true;
+      RefreshVelocity();
+      break;
+    case kKeyClick:
+      SendMouseEventToLocation(ui::ET_MOUSE_PRESSED, last_mouse_position_dips_);
+      break;
+    case kKeySelectLeftButton:
+      current_mouse_button_ = kLeft;
+      break;
+    case kKeySelectRightButton:
+      current_mouse_button_ = kRight;
+      break;
+    case kKeySelectBothButtons:
+      current_mouse_button_ = kBoth;
+      break;
+    case kKeySelectNextButton:
+      SelectNextButton();
+      break;
+    case kKeyCount:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -226,6 +267,20 @@ void MouseKeysController::ReleaseKey(MouseKey key) {
   } else {
     pressed_keys_[key] = false;
     RefreshVelocity();
+  }
+}
+
+void MouseKeysController::SelectNextButton() {
+  switch (current_mouse_button_) {
+    case kLeft:
+      current_mouse_button_ = kRight;
+      break;
+    case kRight:
+      current_mouse_button_ = kBoth;
+      break;
+    case kBoth:
+      current_mouse_button_ = kLeft;
+      break;
   }
 }
 
