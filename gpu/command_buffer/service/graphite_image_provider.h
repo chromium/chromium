@@ -5,7 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_IMAGE_PROVIDER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_IMAGE_PROVIDER_H_
 
-#include "base/containers/flat_map.h"
+#include "base/containers/lru_cache.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkTiledImageUtils.h"
 #include "third_party/skia/include/gpu/graphite/ImageProvider.h"
 
@@ -27,6 +28,10 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
       skgpu::graphite::Recorder* recorder,
       const SkImage* image,
       SkImage::RequiredProperties required_props) override;
+
+  void PurgeImagesNotUsedSince(base::TimeDelta last_use_delta);
+
+  void ClearImageCache();
 
  private:
   // This class caches images based on a Skia utility that maps images to keys
@@ -53,6 +58,16 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
     SkImage::RequiredProperties required_properties_;
   };
 
+  struct ImageHolder {
+    explicit ImageHolder(sk_sp<SkImage>);
+    ImageHolder(ImageHolder&&);
+    ImageHolder& operator=(ImageHolder&&);
+    ~ImageHolder();
+
+    sk_sp<SkImage> image;
+    base::TimeTicks last_use_time;
+  };
+
   // Ensures that the cache is reduced to a size such that it can support the
   // addition of `new_bytes` while ideally remaining <=
   // `preferred_max_cache_bytes_` overall. The only case in which the latter
@@ -60,7 +75,8 @@ class GraphiteImageProvider : public skgpu::graphite::ImageProvider {
   // case the cache will be emptied.
   void PurgeCacheIfNecessaryToAllowForNewImage(size_t new_bytes);
 
-  base::flat_map<ImageKey, sk_sp<SkImage>> cache_;
+  using ImageCache = base::LRUCache<ImageKey, ImageHolder>;
+  ImageCache cache_{ImageCache::NO_AUTO_EVICT};
 
   // The current size of the cache in bytes.
   size_t current_cache_bytes_ = 0;

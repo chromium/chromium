@@ -8,6 +8,13 @@
 
 namespace gpu {
 
+GraphiteImageProvider::ImageHolder::ImageHolder(sk_sp<SkImage> image)
+    : image(std::move(image)), last_use_time(base::TimeTicks::Now()) {}
+GraphiteImageProvider::ImageHolder::ImageHolder(ImageHolder&&) = default;
+GraphiteImageProvider::ImageHolder&
+GraphiteImageProvider::ImageHolder::operator=(ImageHolder&&) = default;
+GraphiteImageProvider::ImageHolder::~ImageHolder() = default;
+
 GraphiteImageProvider::GraphiteImageProvider(size_t max_cache_bytes)
     : preferred_max_cache_bytes_(max_cache_bytes) {
   CHECK(preferred_max_cache_bytes_);
@@ -28,22 +35,24 @@ sk_sp<SkImage> GraphiteImageProvider::findOrCreate(
     auto mipmapped_props = required_props;
     mipmapped_props.fMipmapped = true;
     ImageKey mipmapped_key(image, mipmapped_props);
-    auto result = cache_.find(mipmapped_key);
+    auto result = cache_.Get(mipmapped_key);
     if (result != cache_.end()) {
-      return result->second;
+      result->second.last_use_time = base::TimeTicks::Now();
+      return result->second.image;
     }
   }
 
   ImageKey key(image, required_props);
 
   // Check whether this image has an entry in the cache and return it if so.
-  auto result = cache_.find(key);
-  bool hit_in_cache = result != cache_.end();
+  auto it = cache_.Get(key);
+  bool hit_in_cache = it != cache_.end();
   UMA_HISTOGRAM_BOOLEAN("Gpu.Graphite.GraphiteImageProviderAccessHitInCache",
                         hit_in_cache);
 
   if (hit_in_cache) {
-    return result->second;
+    it->second.last_use_time = base::TimeTicks::Now();
+    return it->second.image;
   }
 
   // Create a Graphite-backed image for `image`.
@@ -56,8 +65,7 @@ sk_sp<SkImage> GraphiteImageProvider::findOrCreate(
   // Add the just-created Graphite-backed image to the cache.
   size_t new_image_bytes = new_image->textureSize();
   PurgeCacheIfNecessaryToAllowForNewImage(new_image_bytes);
-  auto [iter, success] = cache_.insert({key, new_image});
-  CHECK(success);
+  cache_.Put(key, ImageHolder(new_image));
 
   // Update the current size of the cache, which should not have overflowed its
   // max size unless the new image is itself larger than the maximum allowed
@@ -74,20 +82,32 @@ void GraphiteImageProvider::PurgeCacheIfNecessaryToAllowForNewImage(
   // Check for the corner case of the new image being larger than the maximum
   // allowed size, in which case we just empty the cache.
   if (new_bytes > preferred_max_cache_bytes_) {
-    cache_.clear();
-    current_cache_bytes_ = 0;
+    ClearImageCache();
     return;
   }
 
-  // Remove entries from the cache until it is small enough to admit `new_bytes`
-  // while remaining at or below the maximum allowed size.
-  // TODO(crbug.com/40273649): A smarter strategy such as LRU could be used
-  // here.
+  // Remove entries from the cache in LRU order until it is small enough to
+  // admit `new_bytes` while remaining at or below the maximum allowed size.
   while (current_cache_bytes_ + new_bytes > preferred_max_cache_bytes_) {
-    auto image = cache_.begin()->second;
-    current_cache_bytes_ -= image->textureSize();
-    cache_.erase(cache_.begin());
+    CHECK(!cache_.empty());
+    current_cache_bytes_ -= cache_.rbegin()->second.image->textureSize();
+    cache_.Erase(cache_.rbegin());
   }
+}
+
+void GraphiteImageProvider::PurgeImagesNotUsedSince(
+    base::TimeDelta last_use_delta) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  while (!cache_.empty() &&
+         cache_.rbegin()->second.last_use_time + last_use_delta < now) {
+    current_cache_bytes_ -= cache_.rbegin()->second.image->textureSize();
+    cache_.Erase(cache_.rbegin());
+  }
+}
+
+void GraphiteImageProvider::ClearImageCache() {
+  cache_.Clear();
+  current_cache_bytes_ = 0;
 }
 
 }  // namespace gpu

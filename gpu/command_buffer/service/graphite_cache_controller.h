@@ -29,8 +29,8 @@ namespace gpu::raster {
 class GPU_GLES2_EXPORT GraphiteCacheController final
     : public base::RefCounted<GraphiteCacheController> {
  public:
-  // |recorder| and |context| are optional, GraphiteCacheController only purges
-  // resources in non-null |recorder| and |context|.
+  // |context| is optional e.g. Viz thread GraphiteCacheController won't cleanup
+  // the Graphite context which lives on GPU main thread.
   explicit GraphiteCacheController(skgpu::graphite::Recorder* recorder,
                                    skgpu::graphite::Context* context = nullptr);
 

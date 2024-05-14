@@ -7,20 +7,26 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 
 namespace gpu::raster {
 namespace {
-constexpr base::TimeDelta kCleanupDelay = base::Seconds(5);
+// Any resources not used in the last 5 seconds should be purged.
+constexpr base::TimeDelta kResourceNotUsedSinceDelay = base::Seconds(5);
+
+// All unused resources should be purged after an idle time delay of 5 seconds.
+constexpr base::TimeDelta kPerformCleanupDelay = base::Seconds(5);
 }
 
 GraphiteCacheController::GraphiteCacheController(
     skgpu::graphite::Recorder* recorder,
     skgpu::graphite::Context* context)
     : recorder_(recorder), context_(context) {
+  CHECK(recorder_);
   timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, kCleanupDelay,
+      FROM_HERE, kPerformCleanupDelay,
       base::BindRepeating(&GraphiteCacheController::PerformCleanup,
                           weak_ptr_factory_.GetWeakPtr()));
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -32,14 +38,15 @@ GraphiteCacheController::~GraphiteCacheController() {
 
 void GraphiteCacheController::ScheduleCleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Cleanup resources which are not used in 5 seconds.
-  constexpr std::chrono::seconds kNotUseTime{5};
   if (context_) {
-    context_->performDeferredCleanup(kNotUseTime);
+    context_->performDeferredCleanup(
+        std::chrono::seconds(kResourceNotUsedSinceDelay.InSeconds()));
   }
-  if (recorder_) {
-    recorder_->performDeferredCleanup(kNotUseTime);
-  }
+  auto* image_provider =
+      static_cast<GraphiteImageProvider*>(recorder_->clientImageProvider());
+  image_provider->PurgeImagesNotUsedSince(kResourceNotUsedSinceDelay);
+  recorder_->performDeferredCleanup(
+      std::chrono::seconds(kResourceNotUsedSinceDelay.InSeconds()));
   // Reset the timer, so PerformCleanup() will be called until ScheduleCleanup()
   // is not called for 5 seconds.
   timer_->Reset();
@@ -51,9 +58,10 @@ void GraphiteCacheController::PerformCleanup() {
   if (context_) {
     context_->freeGpuResources();
   }
-  if (recorder_) {
-    recorder_->freeGpuResources();
-  }
+  auto* image_provider =
+      static_cast<GraphiteImageProvider*>(recorder_->clientImageProvider());
+  image_provider->ClearImageCache();
+  recorder_->freeGpuResources();
 }
 
 }  // namespace gpu::raster
