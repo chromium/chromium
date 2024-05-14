@@ -314,6 +314,7 @@
       valid_type: "list",
       valid_values: [
         "border-radius",
+        "clip-path",
         "filter-data",
         "list-item",
         "mask",
@@ -2643,6 +2644,7 @@
       converter: "ConvertClipPath",
       keywords: ["border-box", "padding-box", "content-box", "margin-box", "fill-box", "stroke-box", "view-box", "none"],
       typedom_types: ["Keyword"],
+      invalidate: ["clip-path"],
     },
     {
       name: "clip-rule",

@@ -754,11 +754,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // reporting)
   int EffectiveZIndex() const { return EffectiveZIndexZero() ? 0 : ZIndex(); }
 
-  // -webkit-clip-path
-  bool ClipPathDataEquivalent(const ComputedStyle& other) const {
-    return base::ValuesEquivalent(ClipPath(), other.ClipPath());
-  }
-
   // Mask properties.
   // -webkit-mask-box-image-outset
   bool HasMaskBoxImageOutsets() const {
@@ -1343,9 +1338,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool BorderVisualOverflowEqual(const ComputedStyle& o) const {
     return BorderImage().Outset() == o.BorderImage().Outset();
   }
-
-  void AdjustDiffForClipPath(const ComputedStyle& o,
-                             StyleDifference& diff) const;
 
   void AdjustDiffForBackgroundVisuallyEqual(const ComputedStyle& o,
                                             StyleDifference& diff) const;

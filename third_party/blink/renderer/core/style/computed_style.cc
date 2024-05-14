@@ -900,6 +900,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kBorderRadius) {
     diff.SetBorderRadiusChanged();
   }
+  if (field_diff & kClipPath) {
+    diff.SetClipPathChanged();
+  }
 
   AdjustDiffForNeedsPaintInvalidation(other, diff, document);
 
@@ -1083,7 +1086,6 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  AdjustDiffForClipPath(other, diff);
   AdjustDiffForBackgroundVisuallyEqual(other, diff);
 
   if (diff.NeedsNormalPaintInvalidation()) {
@@ -1098,16 +1100,6 @@ void ComputedStyle::AdjustDiffForNeedsPaintInvalidation(
         return;
       }
     }
-  }
-}
-
-void ComputedStyle::AdjustDiffForClipPath(const ComputedStyle& other,
-                                          StyleDifference& diff) const {
-  if (!this->ClipPathDataEquivalent(other)) {
-    // Paint invalidation may not be necessary in the case of a composited
-    // clip-path animation, so this dcision needs to be deferred until we know
-    // whether the clip is being handled by the compositor or not
-    diff.SetClipPathChanged();
   }
 }
 
