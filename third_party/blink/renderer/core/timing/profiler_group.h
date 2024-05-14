@@ -29,8 +29,7 @@ class ScriptState;
 
 // A ProfilerGroup represents a set of profilers sharing an underlying
 // v8::CpuProfiler attached to a common isolate.
-class CORE_EXPORT ProfilerGroup
-    : public V8PerIsolateData::GarbageCollectedData {
+class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
  public:
   // Determines whether or not the given frame can profile. Logs an exception
   // in the given ExceptionState (if non-null) if profiling is not permitted,

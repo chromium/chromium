@@ -101,16 +101,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     const bool original_use_counter_disabled_;
   };
 
-  // Pointers to core/ objects that are garbage collected. Receives callback
-  // when V8PerIsolateData will be destroyed.
-  class PLATFORM_EXPORT GarbageCollectedData
-      : public GarbageCollected<GarbageCollectedData> {
-   public:
-    virtual ~GarbageCollectedData() = default;
-    virtual void WillBeDestroyed() {}
-    virtual void Trace(Visitor*) const {}
-  };
-
   static v8::Isolate* Initialize(scoped_refptr<base::SingleThreadTaskRunner>,
                                  scoped_refptr<base::SingleThreadTaskRunner>,
                                  V8ContextSnapshotMode,
@@ -196,12 +186,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   ThreadDebugger* GetThreadDebugger() const { return thread_debugger_.get(); }
   void SetThreadDebugger(std::unique_ptr<ThreadDebugger> thread_debugger);
 
-  void SetProfilerGroup(V8PerIsolateData::GarbageCollectedData*);
-  V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
-
-  void SetCanvasResourceTracker(V8PerIsolateData::GarbageCollectedData*);
-  V8PerIsolateData::GarbageCollectedData* CanvasResourceTracker();
-
   void SetPasswordRegexp(ScriptRegexp*);
   ScriptRegexp* GetPasswordRegexp();
 
@@ -235,6 +219,30 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   // TaskAttributionInfrastructureDisabledForTesting feature is enabled.
   scheduler::TaskAttributionTracker* GetTaskAttributionTracker() {
     return task_attribution_tracker_.get();
+  }
+
+  // Pointers to objects that are garbage collected that are logically
+  // associated with an Isolate. Receives callback when V8PerIsolateData
+  // will be destroyed.
+  class PLATFORM_EXPORT UserData : public GarbageCollected<UserData> {
+   public:
+    enum class Key : uint32_t {
+      kProfileGroup,
+      kCanvasResourceTracker,
+      kNumberOfKeys
+    };
+
+    virtual ~UserData() = default;
+    virtual void WillBeDestroyed() {}
+    virtual void Trace(Visitor*) const {}
+  };
+
+  UserData* GetUserData(UserData::Key key) const {
+    return user_data_[static_cast<size_t>(key)];
+  }
+
+  void SetUserData(UserData::Key key, UserData* data) {
+    user_data_[static_cast<size_t>(key)] = data;
   }
 
  private:
@@ -298,9 +306,9 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   bool is_handling_recursion_level_error_ = false;
 
   std::unique_ptr<ThreadDebugger> thread_debugger_;
-  Persistent<GarbageCollectedData> profiler_group_;
-  Persistent<GarbageCollectedData> canvas_resource_tracker_;
   Persistent<ScriptRegexp> password_regexp_;
+  Persistent<UserData>
+      user_data_[static_cast<size_t>(UserData::Key::kNumberOfKeys)];
 
   Persistent<ActiveScriptWrappableManager> active_script_wrappable_manager_;
 

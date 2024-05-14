@@ -95,10 +95,12 @@ void ProfilerGroup::InitializeIfEnabled(LocalDOMWindow* local_window) {
 ProfilerGroup* ProfilerGroup::From(v8::Isolate* isolate) {
   auto* isolate_data = V8PerIsolateData::From(isolate);
   auto* profiler_group =
-      reinterpret_cast<ProfilerGroup*>(isolate_data->ProfilerGroup());
+      reinterpret_cast<ProfilerGroup*>(isolate_data->GetUserData(
+          V8PerIsolateData::UserData::Key::kProfileGroup));
   if (!profiler_group) {
     profiler_group = MakeGarbageCollected<ProfilerGroup>(isolate);
-    isolate_data->SetProfilerGroup(profiler_group);
+    isolate_data->SetUserData(V8PerIsolateData::UserData::Key::kProfileGroup,
+                              profiler_group);
   }
   return profiler_group;
 }
@@ -240,7 +242,7 @@ void ProfilerGroup::WillBeDestroyed() {
 void ProfilerGroup::Trace(Visitor* visitor) const {
   visitor->Trace(profilers_);
   visitor->Trace(context_observers_);
-  V8PerIsolateData::GarbageCollectedData::Trace(visitor);
+  V8PerIsolateData::UserData::Trace(visitor);
 }
 
 void ProfilerGroup::OnProfilingContextDestroyed(

@@ -14,10 +14,11 @@ namespace blink {
 CanvasResourceTracker* CanvasResourceTracker::For(v8::Isolate* isolate) {
   auto* isolate_data = V8PerIsolateData::From(isolate);
   auto* canvas_resource_tracker = static_cast<CanvasResourceTracker*>(
-      isolate_data->CanvasResourceTracker());
+      isolate_data->GetUserData(UserData::Key::kCanvasResourceTracker));
   if (!canvas_resource_tracker) {
     canvas_resource_tracker = MakeGarbageCollected<CanvasResourceTracker>();
-    isolate_data->SetCanvasResourceTracker(canvas_resource_tracker);
+    isolate_data->SetUserData(UserData::Key::kCanvasResourceTracker,
+                              canvas_resource_tracker);
   }
   return canvas_resource_tracker;
 }
@@ -33,7 +34,7 @@ CanvasResourceTracker::GetResourceMap() const {
 }
 
 void CanvasResourceTracker::Trace(Visitor* visitor) const {
-  V8PerIsolateData::GarbageCollectedData::Trace(visitor);
+  V8PerIsolateData::UserData::Trace(visitor);
   visitor->Trace(resource_map_);
 }
 

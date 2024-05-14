@@ -200,9 +200,10 @@ void V8PerIsolateData::WillBeDestroyed(v8::Isolate* isolate) {
 
   data->thread_debugger_.reset();
 
-  if (data->profiler_group_) {
-    data->profiler_group_->WillBeDestroyed();
-    data->profiler_group_ = nullptr;
+  for (auto& item : data->user_data_) {
+    if (item) {
+      item->WillBeDestroyed();
+    }
   }
 
   data->ClearScriptRegexpContext();
@@ -395,25 +396,6 @@ void V8PerIsolateData::SetThreadDebugger(
     std::unique_ptr<ThreadDebugger> thread_debugger) {
   DCHECK(!thread_debugger_);
   thread_debugger_ = std::move(thread_debugger);
-}
-
-void V8PerIsolateData::SetProfilerGroup(
-    V8PerIsolateData::GarbageCollectedData* profiler_group) {
-  profiler_group_ = profiler_group;
-}
-
-V8PerIsolateData::GarbageCollectedData* V8PerIsolateData::ProfilerGroup() {
-  return profiler_group_;
-}
-
-void V8PerIsolateData::SetCanvasResourceTracker(
-    V8PerIsolateData::GarbageCollectedData* canvas_resource_tracker) {
-  canvas_resource_tracker_ = canvas_resource_tracker;
-}
-
-V8PerIsolateData::GarbageCollectedData*
-V8PerIsolateData::CanvasResourceTracker() {
-  return canvas_resource_tracker_;
 }
 
 void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
