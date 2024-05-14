@@ -355,6 +355,17 @@ class DriveIntegrationService : public KeyedService,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
 
+  // Gets the mirror sync status for a specific file.
+  void GetMirrorSyncStatusForFile(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::GetMirrorSyncStatusForFileCallback callback);
+
+  // Gets the mirror sync status for a specific directory.
+  void GetMirrorSyncStatusForDirectory(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::GetMirrorSyncStatusForDirectoryCallback
+          callback);
+
   void OnNetworkChanged();
 
   // Register the drive related profile prefs.

@@ -172,6 +172,14 @@ interface DriveFs {
 
   // Gets counts of files in docs offline extension.
   GetDocsOfflineStats() => (FileError error, DocsOfflineStats counts);
+
+  // Gets the mirror sync status for a specific file.
+  GetMirrorSyncStatusForFile(mojo_base.mojom.FilePath path) =>
+      (MirrorItemSyncingStatus status);
+
+  // Gets the mirror sync status for a specific directory.
+  GetMirrorSyncStatusForDirectory(mojo_base.mojom.FilePath path) =>
+      (MirrorItemSyncingStatus status);
 };
 
 [Extensible]
@@ -932,4 +940,13 @@ struct DocsOfflineStats {
 
   // The number of files available offline. -1 when extension is not available.
   int32 available_offline;
+};
+
+// Mirror sync status for a specific file or directory, should match:
+// google3/apps/drive/fs/proto/mirror_sync_status.proto
+enum MirrorItemSyncingStatus {
+  kUnknown,
+  kSynced,
+  kSyncing,
+  kSyncError,
 };

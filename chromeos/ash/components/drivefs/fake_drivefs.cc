@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -722,6 +723,18 @@ void FakeDriveFs::GetDocsOfflineStats(
   drivefs::mojom::DocsOfflineStatsPtr stats =
       drivefs::mojom::DocsOfflineStats::New();
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(stats));
+}
+
+void FakeDriveFs::GetMirrorSyncStatusForFile(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::GetMirrorSyncStatusForFileCallback callback) {
+  std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kSynced);
+}
+
+void FakeDriveFs::GetMirrorSyncStatusForDirectory(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::GetMirrorSyncStatusForDirectoryCallback callback) {
+  std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kSynced);
 }
 
 }  // namespace drivefs

@@ -276,6 +276,15 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback) override;
 
+  void GetMirrorSyncStatusForFile(
+      const base::FilePath& path,
+      GetMirrorSyncStatusForFileCallback callback) override;
+
+  void GetMirrorSyncStatusForDirectory(
+      const base::FilePath& path,
+      GetMirrorSyncStatusForDirectoryCallback callback)
+      override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

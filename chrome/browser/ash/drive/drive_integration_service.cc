@@ -1726,6 +1726,29 @@ void DriveIntegrationService::GetDocsOfflineStats(
   GetDriveFsInterface()->GetDocsOfflineStats(std::move(callback));
 }
 
+void DriveIntegrationService::GetMirrorSyncStatusForFile(
+    const base::FilePath& path,
+    DriveFs::GetMirrorSyncStatusForFileCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kUnknown);
+    return;
+  }
+
+  GetDriveFsInterface()->GetMirrorSyncStatusForFile(path, std::move(callback));
+}
+
+void DriveIntegrationService::GetMirrorSyncStatusForDirectory(
+    const base::FilePath& path,
+    DriveFs::GetMirrorSyncStatusForDirectoryCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kUnknown);
+    return;
+  }
+
+  GetDriveFsInterface()->GetMirrorSyncStatusForDirectory(path,
+                                                         std::move(callback));
+}
+
 void DriveIntegrationService::OnNetworkChanged() {
   const ConnectionStatus status = util::GetDriveConnectionStatus(profile_);
   VLOG(1) << "OnNetworkChanged: " << status;
