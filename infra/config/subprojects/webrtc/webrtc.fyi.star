@@ -36,19 +36,22 @@ luci.gitiles_poller(
     refs = ["refs/heads/main"],
 )
 
-defaults.bucket.set("webrtc.fyi")
-defaults.builder_group.set("chromium.webrtc.fyi")
-defaults.builderless.set(None)
-defaults.build_numbers.set(True)
-defaults.cpu.set(cpu.X86_64)
-defaults.executable.set("recipe:chromium")
-defaults.execution_timeout.set(2 * time.hour)
-defaults.os.set(os.LINUX_DEFAULT)
-defaults.pool.set("luci.chromium.webrtc.fyi")
-defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.triggered_by.set(["webrtc-gitiles-trigger"])
-defaults.reclient_instance.set(reclient.instance.DEFAULT_TRUSTED)
-defaults.reclient_jobs.set(reclient.jobs.DEFAULT)
+defaults.set(
+    bucket = "webrtc.fyi",
+    executable = "recipe:chromium",
+    triggered_by = ["webrtc-gitiles-trigger"],
+    builder_group = "chromium.webrtc.fyi",
+    pool = "luci.chromium.webrtc.fyi",
+    builderless = None,
+    os = os.LINUX_DEFAULT,
+    cpu = cpu.X86_64,
+    build_numbers = True,
+    execution_timeout = 2 * time.hour,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
+)
 
 # Builders are defined in lexicographic order by name
 
