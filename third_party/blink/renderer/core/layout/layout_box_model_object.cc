@@ -196,7 +196,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       CreateLayerAfterStyleChange();
     }
   } else if (Layer() && Layer()->Parent()) {
-    Layer()->UpdateFilters(old_style, StyleRef());
+    Layer()->UpdateFilters(diff, old_style, StyleRef());
     Layer()->UpdateBackdropFilters(old_style, StyleRef());
     Layer()->UpdateClipPath(old_style, StyleRef());
     Layer()->UpdateOffsetPath(old_style, StyleRef());

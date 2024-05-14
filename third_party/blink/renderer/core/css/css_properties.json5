@@ -314,6 +314,7 @@
       valid_type: "list",
       valid_values: [
         "border-radius",
+        "filter-data",
       ],
     },
 
@@ -2987,6 +2988,7 @@
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["filter-data"],
     },
     {
       name: "flex-basis",
@@ -5933,6 +5935,7 @@
       default_value: "nullptr",
       type_name: "StyleReflection",
       converter: "ConvertBoxReflect",
+      invalidate: ["filter-data"],
     },
     {
       name: "column-count",

@@ -2000,13 +2000,13 @@ PaintLayer* PaintLayer::EnclosingSelfPaintingLayer() {
   return layer;
 }
 
-void PaintLayer::UpdateFilters(const ComputedStyle* old_style,
+void PaintLayer::UpdateFilters(StyleDifference diff,
+                               const ComputedStyle* old_style,
                                const ComputedStyle& new_style) {
   if (!filter_on_effect_node_dirty_) {
-    filter_on_effect_node_dirty_ =
-        old_style ? old_style->Filter() != new_style.Filter() ||
-                        !old_style->ReflectionDataEquivalent(new_style)
-                  : new_style.HasFilterInducingProperty();
+    filter_on_effect_node_dirty_ = old_style
+                                       ? diff.FilterChanged()
+                                       : new_style.HasFilterInducingProperty();
   }
 
   if (!new_style.HasFilterInducingProperty() &&
@@ -2153,7 +2153,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     MarkAncestorChainForFlagsUpdate();
 
   UpdateTransformAfterStyleChange(old_style, new_style);
-  UpdateFilters(old_style, new_style);
+  UpdateFilters(diff, old_style, new_style);
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);
   UpdateOffsetPath(old_style, new_style);

@@ -377,7 +377,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   gfx::RRectF BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();
-  void UpdateFilters(const ComputedStyle* old_style,
+  void UpdateFilters(StyleDifference,
+                     const ComputedStyle* old_style,
                      const ComputedStyle& new_style);
   void UpdateBackdropFilters(const ComputedStyle* old_style,
                              const ComputedStyle& new_style);

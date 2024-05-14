@@ -416,16 +416,6 @@
         fields_to_diff: ["opacity"],
     },
     {
-        name: "UpdatePropertySpecificDifferencesFilter",
-        fields_to_diff: ["filter"],
-        predicates_to_test: [
-          {
-            predicate: "a.ReflectionDataEquivalent(b)",
-            field_dependencies: ["-webkit-box-reflect"]
-          },
-        ]
-    },
-    {
         name: "UpdatePropertySpecificDifferencesMask",
         fields_to_diff: ["Mask", "MaskBoxImage"],
     },

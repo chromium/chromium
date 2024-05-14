@@ -1056,9 +1056,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return FlexDirection() == EFlexDirection::kRowReverse;
   }
   bool HasBoxReflect() const { return BoxReflect(); }
-  bool ReflectionDataEquivalent(const ComputedStyle& other) const {
-    return base::ValuesEquivalent(BoxReflect(), other.BoxReflect());
-  }
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
     if (box_style.IsDeprecatedWebkitBox()) {
       return BoxFlex() > 0 ? BoxFlex() : 0.0f;
@@ -2557,6 +2554,7 @@ class ComputedStyle final : public ComputedStyleBase {
                                                const ComputedStyle& other,
                                                const Document&) const;
   void UpdatePropertySpecificDifferences(const ComputedStyle& other,
+                                         uint32_t field_diff,
                                          StyleDifference&) const;
   bool PotentialCompositingReasonsFor3DTransformChanged(
       const ComputedStyle& other) const;

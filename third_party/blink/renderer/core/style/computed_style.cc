@@ -903,7 +903,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 
   AdjustDiffForNeedsPaintInvalidation(other, diff, document);
 
-  UpdatePropertySpecificDifferences(other, diff);
+  UpdatePropertySpecificDifferences(other, field_diff, diff);
 
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
@@ -1229,6 +1229,7 @@ bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(
 
 void ComputedStyle::UpdatePropertySpecificDifferences(
     const ComputedStyle& other,
+    uint32_t field_diff,
     StyleDifference& diff) const {
   if (ComputedStyleBase::UpdatePropertySpecificDifferencesZIndex(*this,
                                                                  other)) {
@@ -1250,8 +1251,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetOpacityChanged();
   }
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesFilter(*this,
-                                                                 other)) {
+  if (field_diff & kFilterData) {
     diff.SetFilterChanged();
   }
 
