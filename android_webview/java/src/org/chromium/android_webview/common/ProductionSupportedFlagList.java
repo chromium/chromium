@@ -994,6 +994,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.STATIC_ANIMATION_OPTIMIZATION,
                 "Optimize handling of static properties during animations."),
         Flag.baseFeature("LazyBindJsInjection"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_MUTE_AUDIO,
+                "Enables WebView audio to be muted."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
