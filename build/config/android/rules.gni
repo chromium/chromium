@@ -1928,7 +1928,6 @@ if (!is_robolectric && enable_java_templates) {
         defines += [ "USE_FINAL" ]
         defines += [ "_MIN_SDK_VERSION=${invoker.min_sdk_version}" ]
         defines += [ "_VERSION_CODE=${invoker.version_code}" ]
-        defines += [ "_IS_PROGUARD_ENABLED=${invoker.proguard_enabled}" ]
         if (defined(invoker.resources_version_variable)) {
           defines += [
             "_RESOURCES_VERSION_VARIABLE=${invoker.resources_version_variable}",
@@ -1938,10 +1937,6 @@ if (!is_robolectric && enable_java_templates) {
 
       if (defined(testonly) && testonly) {
         defines += [ "_IS_FOR_TEST" ]
-      }
-
-      if (is_cronet_build) {
-        defines += [ "_IS_CRONET_BUILD" ]
       }
 
       if (defined(invoker.write_clang_profiling_data) &&
@@ -2618,7 +2613,6 @@ if (!is_robolectric && enable_java_templates) {
         use_final_fields = true
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
-        proguard_enabled = _proguard_enabled
         version_code = _version_code
         min_sdk_version = _min_sdk_version
         write_clang_profiling_data =

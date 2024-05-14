@@ -4,7 +4,6 @@
 
 package org.chromium.base;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.AlwaysInline;
 import org.chromium.build.annotations.CheckDiscard;
 
@@ -75,13 +74,18 @@ public class Log {
         return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, tr, params);
     }
 
+    private static boolean isDebug() {
+        // Proguard sets value to false in release builds.
+        return true;
+    }
+
     /**
-     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but always In
-     * release: Always returns false (via proguard rule).
+     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but always
+     * In release: Always returns false (via proguard rule).
      */
     public static boolean isLoggable(String tag, int level) {
         // Early return helps optimizer eliminate calls to isLoggable().
-        if (BuildConfig.IS_PROGUARD_ENABLED && level <= INFO) {
+        if (!isDebug() && level <= INFO) {
             return false;
         }
         return android.util.Log.isLoggable(tag, level);
@@ -90,16 +94,16 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#VERBOSE} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output (see
-     *     {@link #normalizeTag(String)})
+     * @param tag Used to identify the source of a log message. Might be modified in the output
+     *            (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
-     *     string.
+     *                        string.
      * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *     one is a {@link Throwable}, its trace will be printed.
+     *             one is a {@link Throwable}, its trace will be printed.
      */
     @CheckDiscard("crbug.com/1231625")
     public static void v(String tag, String messageTemplate, Object... args) {
-        if (BuildConfig.IS_PROGUARD_ENABLED) return;
+        if (!isDebug()) return;
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
@@ -114,16 +118,16 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#DEBUG} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output (see
-     *     {@link #normalizeTag(String)})
+     * @param tag Used to identify the source of a log message. Might be modified in the output
+     *            (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
-     *     string.
+     *                        string.
      * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *     one is a {@link Throwable}, its trace will be printed.
+     *             one is a {@link Throwable}, its trace will be printed.
      */
     @CheckDiscard("crbug.com/1231625")
     public static void d(String tag, String messageTemplate, Object... args) {
-        if (BuildConfig.IS_PROGUARD_ENABLED) return;
+        if (!isDebug()) return;
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLogWithStack(messageTemplate, tr, args);
