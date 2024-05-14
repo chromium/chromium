@@ -1097,18 +1097,11 @@ void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
 }
 
 void SidePanelCoordinator::MaybeQueuePinPromo() {
-  // Which feature is shown and on what delay depends on the specific side
-  // panel that is showing.
-  constexpr base::TimeDelta kImpressionSuccessDuration = base::Seconds(6);
-  const base::Feature* iph_feature = nullptr;
-  base::TimeDelta delay;
-  if (current_entry_->key().id() == SidePanelEntryId::kLensOverlayResults) {
-    iph_feature = &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature;
-    delay = kImpressionSuccessDuration;
-  } else {
-    iph_feature = &feature_engagement::kIPHSidePanelGenericPinnableFeature;
-    // No delay (current behavior).
-  }
+  // Which feature is shown depends on the specific side panel that is showing.
+  const base::Feature* const iph_feature =
+      (current_entry_->key().id() == SidePanelEntryId::kLensOverlayResults)
+          ? &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature
+          : &feature_engagement::kIPHSidePanelGenericPinnableFeature;
 
   // If the desired promo hasn't changed, there's nothing to do.
   if (pending_pin_promo_ == iph_feature) {
@@ -1124,7 +1117,9 @@ void SidePanelCoordinator::MaybeQueuePinPromo() {
   pending_pin_promo_ = iph_feature;
   if (iph_feature && !browser_view_->CanShowFeaturePromo(*iph_feature)
                           .is_blocked_this_instance()) {
-    pin_promo_timer_.Start(FROM_HERE, delay,
+    // This is the standard "minimum successful impression" time.
+    constexpr base::TimeDelta kImpressionSuccessDuration = base::Seconds(6);
+    pin_promo_timer_.Start(FROM_HERE, kImpressionSuccessDuration,
                            base::BindOnce(&SidePanelCoordinator::ShowPinPromo,
                                           base::Unretained(this)));
   }
