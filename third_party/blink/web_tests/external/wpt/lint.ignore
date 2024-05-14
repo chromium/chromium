@@ -812,6 +812,7 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-no-button-no-datalist.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-writing-mode-vertical-lr.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-writing-mode-vertical-rl.tentative.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-dark-mode.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-selectlist-element/selectlist-option-arbitrary-content-displayed.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/popovers/popover-dialog-crash.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/popovers/popover-hint-crash.tentative.html
