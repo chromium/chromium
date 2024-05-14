@@ -2497,7 +2497,7 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForPixmap(
                                            va_format);
 }
 
-scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
+std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
     const gfx::Size& size,
     uintptr_t* buffers,
     size_t buffer_size) {
@@ -2540,8 +2540,8 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
                          nullptr);
   }
   DVLOG(2) << __func__ << " " << va_surface_id;
-  return new VASurface(va_surface_id, size, va_format,
-                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+  return std::make_unique<ScopedVASurface>(this, va_surface_id, size,
+                                           va_format);
 }
 
 std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(

@@ -424,15 +424,17 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       scoped_refptr<const gfx::NativePixmap> pixmap,
       bool protected_content = false);
 
-  // Creates a self-releasing VASurface from |buffers|. The ownership of the
-  // surface is transferred to the caller.  |buffers| should be a pointer array
-  // of size 1, with |buffer_size| corresponding to its size. |size| should be
-  // the desired surface dimensions (which does not need to map to |buffer_size|
-  // in any relevant way). |buffers| should be kept alive when using the
-  // VASurface and for accessing the data after the operation is complete.
-  scoped_refptr<VASurface> CreateVASurfaceForUserPtr(const gfx::Size& size,
-                                                     uintptr_t* buffers,
-                                                     size_t buffer_size);
+  // Creates a self-releasing ScopedVASurface from |buffers|. The ownership of
+  // the surface is transferred to the caller.  |buffers| should be a pointer
+  // array of size 1, with |buffer_size| corresponding to its size. |size|
+  // should be the desired surface dimensions (which does not need to map to
+  // |buffer_size| in any relevant way). |buffers| should be kept alive when
+  // using the VASurface and for accessing the data after the operation is
+  // complete.
+  std::unique_ptr<ScopedVASurface> CreateVASurfaceForUserPtr(
+      const gfx::Size& size,
+      uintptr_t* buffers,
+      size_t buffer_size);
 
   // Creates a self-releasing ScopedVASurface with specified usage hints. The
   // ownership of the surface is transferred to the caller. |size| should be

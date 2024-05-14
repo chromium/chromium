@@ -330,8 +330,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::ParseEncryptedSliceHeader(
 
     constexpr int kCencStatusSurfaceDimension = 64;
     auto buffer_ptr_alloc = std::make_unique<uintptr_t>();
-    uintptr_t* buffer_ptr =
-        reinterpret_cast<uintptr_t*>(buffer_ptr_alloc.get());
+    uintptr_t* buffer_ptr = buffer_ptr_alloc.get();
     buffer_ptr[0] = reinterpret_cast<uintptr_t>(surface_memory.get());
 
     auto surface = vaapi_wrapper_->CreateVASurfaceForUserPtr(
