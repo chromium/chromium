@@ -555,6 +555,36 @@ suite('sea pen', () => {
         'waiting for sea-pen-template-query');
   }
 
+  function getSeaPenTemplatePrompt(
+      seaPenTemplateQuery: SeaPenTemplateQueryElement): string {
+    const templateTokens =
+        seaPenTemplateQuery.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.chip-container, .template-text');
+    assertTrue(
+        templateTokens.length > 0, 'template tokens should be available');
+
+    const templateText: string[] = [];
+    for (const token of templateTokens) {
+      if (token.style.display === 'none') {
+        continue;
+      }
+      if (token.classList.contains('template-text')) {
+        templateText.push(token.innerText);
+        continue;
+      }
+      const chipTextElement =
+          (token as HTMLElement)
+              .querySelector<HTMLElement>('sea-pen-chip-text');
+      assertTrue(!!chipTextElement, 'sea-pen-chip-text should be available');
+      const chipText =
+          chipTextElement.shadowRoot?.getElementById('chipText')?.innerText;
+      if (chipText) {
+        templateText.push(chipText);
+      }
+    }
+    return templateText.join(' ');
+  }
+
   setup(async () => {
     // Disables transition animation for tests.
     setTransitionsEnabled(false);
@@ -881,6 +911,96 @@ suite('sea pen', () => {
         `.recent-image-container:not([hidden])`);
     assertTrue(!!images, 'images should still exist');
     assertGT(numImages, images.length, 'a recent image has been deleted');
+  });
+
+  test('switch template update prompt', async () => {
+    await getSeaPenRouter();
+
+    const seaPenTemplateQuery = await getSeaPenTemplateQuery(6);
+    assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
+
+    assertEquals(
+        getSeaPenTemplatePrompt(seaPenTemplateQuery),
+        'pink lemons on a purple background',
+        'default prompt of Characters template should display');
+
+    setTransitionsEnabled(true);
+
+    const seaPenChips = await waitUntil(
+        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLDivElement>(
+            '#template > .chip-container > .chip-text'),
+        'waiting for chips');
+    assertEquals(
+        3, seaPenChips.length,
+        'there should be 3 chips in the Characters template');
+    assertEquals(
+        seaPenChips[1]?.shadowRoot?.querySelector('#chipText')?.textContent,
+        'lemons');
+    seaPenChips[1]!.click();
+
+    const seaPenOptions = await waitUntil(
+        () => seaPenTemplateQuery.shadowRoot?.querySelector('sea-pen-options'),
+        'waiting for sea-pen-options to load');
+
+    const options = await waitUntil(
+        () => seaPenOptions.shadowRoot?.querySelectorAll<CrButtonElement>(
+            '.option'),
+        'waiting for options to load');
+    // Select "cherries" option.
+    options[3]!.click();
+
+    await waitUntil(
+        () => seaPenChips[1]
+                  ?.shadowRoot?.querySelector('#chipText')
+                  ?.textContent === 'cherries',
+        'chip text changed to the selected option');
+
+    // Switch to Classic Art template using breadcrumb.
+    const breadcrumb =
+        getRouter().shadowRoot?.querySelector('personalization-breadcrumb');
+    assertTrue(!!breadcrumb, 'personalization-breadcrumb should be found');
+
+    const dropdownIcon = await waitUntil(
+        () => breadcrumb.shadowRoot?.querySelector<HTMLElement>(
+            '#seaPenDropdown'),
+        'SeaPen breadcrumb drop down icon available');
+    dropdownIcon!.click();
+
+    let dropdownMenu = await waitUntil(
+        () => breadcrumb.shadowRoot?.querySelector('cr-action-menu'),
+        'wait for drop down menu open');
+    const classicArtTemplate =
+        dropdownMenu!.querySelectorAll<HTMLElement>('button')[4];
+    assertTrue(
+        !!classicArtTemplate, 'Classic Art option is avaiable to select');
+    classicArtTemplate!.click();
+
+    const classicArtDefaultPrompt =
+        'A painting of a field of flowers in the avant-garde style';
+    await waitUntil(
+        () => getSeaPenTemplatePrompt(seaPenTemplateQuery) ===
+            classicArtDefaultPrompt,
+        'default prompt of Classic Art template should display');
+
+    // Switch to Dreamscapes template using breadcrumb.
+    dropdownIcon!.click();
+
+    dropdownMenu = await waitUntil(
+        () => breadcrumb.shadowRoot?.querySelector('cr-action-menu'),
+        'wait for drop down menu open again');
+    // Switch to Classic Art template.
+    const dreamscapeTemplate =
+        dropdownMenu!.querySelectorAll<HTMLElement>('button')[1];
+    assertTrue(
+        !!dreamscapeTemplate, 'Dreamscapes option is avaiable to select');
+    dreamscapeTemplate!.click();
+
+    const dreamscapeDefaultPrompt =
+        'A surreal bicycle made of flowers in pink and purple';
+    await waitUntil(
+        () => getSeaPenTemplatePrompt(seaPenTemplateQuery) ===
+            dreamscapeDefaultPrompt,
+        'default prompt of Dreamscape template should display');
   });
 });
 

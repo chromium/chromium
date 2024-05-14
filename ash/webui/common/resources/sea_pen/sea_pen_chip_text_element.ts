@@ -121,6 +121,10 @@ export class SeaPenChipTextElement extends PolymerElement {
       // option of the new template.
       if (chip.childElementCount > 0) {
         this.removeLetterElementsFromChip_(chip.childElementCount);
+      }
+      // Update the chip innerHTML with the new chip text value if its value is
+      // not automatically updated.
+      if (chip!.innerHTML !== newText) {
         chip!.innerHTML = sanitizeInnerHtml(newText);
       }
       return;
