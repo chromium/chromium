@@ -110,7 +110,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
                       CrxStateChangeCallback crx_state_change_callback,
                       bool is_foreground,
                       update_client::Callback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   bool GetCrxUpdateState(

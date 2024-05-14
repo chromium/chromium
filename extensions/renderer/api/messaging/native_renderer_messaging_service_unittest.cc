@@ -57,8 +57,8 @@ class RuntimeMessageValidationIgnorer {
   // Hard-fail on any unexpected validation errors.
   static void HardValidationFailure(const std::string& name,
                                     const std::string& failure) {
-    NOTREACHED() << "Unexpected validation failure: " << name << ", "
-                 << failure;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected validation failure: " << name << ", " << failure;
   }
 
   APIResponseValidator::TestHandler test_handler_;

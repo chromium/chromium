@@ -239,7 +239,7 @@ void AppViewGuest::DidInitialize(const base::Value::Dict& create_params) {
 void AppViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for AppView.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const char* AppViewGuest::GetAPINamespace() const {

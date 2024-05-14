@@ -228,7 +228,7 @@ dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
     case WebRequestResourceType::WEBBUNDLE:
       return dnr_api::ResourceType::kWebbundle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return dnr_api::ResourceType::kOther;
 }
 
@@ -267,10 +267,10 @@ WebRequestResourceType GetWebRequestResourceType(
     case dnr_api::ResourceType::kWebbundle:
       return WebRequestResourceType::WEBBUNDLE;
     case dnr_api::ResourceType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebRequestResourceType::OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebRequestResourceType::OTHER;
 }
 
@@ -339,7 +339,7 @@ flat::ActionType ConvertToFlatActionType(dnr_api::RuleActionType action_type) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat::ActionType_block;
 }
 
@@ -716,7 +716,7 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
           kErrorResponseHeaderRuleCannotModifyRequestHeaders,
           base::NumberToString(rule_id));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -753,7 +753,7 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
     case WebRequestResourceType::WEB_TRANSPORT:
       return flat_rule::ElementType_WEBTRANSPORT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::ElementType_OTHER;
 }
 
@@ -792,7 +792,7 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
     case dnr_api::ResourceType::kOther:
       return flat_rule::ElementType_OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::ElementType_NONE;
 }
 
@@ -836,7 +836,7 @@ flat_rule::RequestMethod GetRequestMethod(
     dnr_api::RequestMethod request_method) {
   switch (request_method) {
     case dnr_api::RequestMethod::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return flat_rule::RequestMethod_NONE;
     case dnr_api::RequestMethod::kConnect:
       return flat_rule::RequestMethod_CONNECT;
@@ -857,7 +857,7 @@ flat_rule::RequestMethod GetRequestMethod(
     case dnr_api::RequestMethod::kPut:
       return flat_rule::RequestMethod_PUT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::RequestMethod_NONE;
 }
 

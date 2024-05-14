@@ -87,7 +87,8 @@ api::automation::EventType AXEventToAutomationEventType(
       api::automation::EventType automation_event_type =
           api::automation::ParseEventType(val);
       if (automation_event_type == api::automation::EventType::kNone) {
-        NOTREACHED() << "Missing mapping from ax::mojom::Event: " << val;
+        NOTREACHED_IN_MIGRATION()
+            << "Missing mapping from ax::mojom::Event: " << val;
       }
 
       enum_map->emplace_back(automation_event_type);
@@ -113,8 +114,8 @@ api::automation::EventType AXGeneratedEventToAutomationEventType(
       api::automation::EventType automation_event_type =
           api::automation::ParseEventType(val);
       if (automation_event_type == api::automation::EventType::kNone) {
-        NOTREACHED() << "Missing mapping from ui::AXEventGenerator::Event: "
-                     << val;
+        NOTREACHED_IN_MIGRATION()
+            << "Missing mapping from ui::AXEventGenerator::Event: " << val;
       }
 
       enum_map->emplace_back(automation_event_type);

@@ -168,7 +168,7 @@ void TestExtensionsBrowserClient::LoadResourceFromResourceBundle(
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   // Should not be called because GetBundleResourcePath() returned empty path.
-  NOTREACHED() << "Resource is not from a bundle.";
+  NOTREACHED_IN_MIGRATION() << "Resource is not from a bundle.";
 }
 
 bool TestExtensionsBrowserClient::AllowCrossRendererResourceLoad(

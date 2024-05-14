@@ -1067,7 +1067,7 @@ void MessageService::OnOpenChannelAllowed(
 
   auto pending_for_incognito = pending_incognito_channels_.find(channel_id);
   if (pending_for_incognito == pending_incognito_channels_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   PendingMessagesQueue pending_messages;

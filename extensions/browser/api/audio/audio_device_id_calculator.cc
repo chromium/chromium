@@ -41,7 +41,7 @@ void AudioDeviceIdCalculator::LoadStableIdMap() {
   for (size_t i = 0; i < ids_list.size(); ++i) {
     const std::string* audio_service_stable_id = ids_list[i].GetIfString();
     if (!audio_service_stable_id) {
-      NOTREACHED() << "Non string stable device ID.";
+      NOTREACHED_IN_MIGRATION() << "Non string stable device ID.";
       continue;
     }
     stable_id_map_[*audio_service_stable_id] = base::NumberToString(i);

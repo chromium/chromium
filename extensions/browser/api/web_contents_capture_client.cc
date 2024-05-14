@@ -96,7 +96,7 @@ bool WebContentsCaptureClient::EncodeBitmap(const SkBitmap& bitmap,
       mime_type = kMimeTypePng;
       break;
     default:
-      NOTREACHED() << "Invalid image format.";
+      NOTREACHED_IN_MIGRATION() << "Invalid image format.";
   }
 
   if (!encoded)

@@ -499,7 +499,8 @@ void ExtensionPrefs::MakePathsRelative() {
   for (const std::string& key : absolute_keys) {
     std::unique_ptr<prefs::DictionaryValueUpdate> extension_dict;
     if (!update_dict->GetDictionaryWithoutPathExpansion(key, &extension_dict)) {
-      NOTREACHED() << "Control should never reach here for extension " << key;
+      NOTREACHED_IN_MIGRATION()
+          << "Control should never reach here for extension " << key;
       continue;
     }
     std::string path_string;
@@ -585,7 +586,7 @@ void ExtensionPrefs::UpdateExtensionPref(
     std::string_view key,
     std::optional<base::Value> data_value) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {
-    NOTREACHED() << "Invalid extension_id " << extension_id;
+    NOTREACHED_IN_MIGRATION() << "Invalid extension_id " << extension_id;
     return;
   }
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
@@ -1491,7 +1492,7 @@ std::optional<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
       location != ManifestLocation::kComponent &&
       !Manifest::IsUnpackedLocation(location) &&
       !Manifest::IsExternalLocation(location)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::nullopt;
   }
 
@@ -2318,7 +2319,7 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
       *id_container_out, id_container_out->end());
   for (const auto& entry : user_pref_value->GetList()) {
     if (!entry.is_string()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     insert_iterator = entry.GetString();

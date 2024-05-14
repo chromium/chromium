@@ -138,7 +138,7 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
       case extensions::mojom::HostID::HostType::kExtensions:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     fetchers_.push_back(std::move(fetcher));

@@ -205,7 +205,7 @@ AppCurrentWindowInternalSetBoundsFunction::Run() {
 
   bounds::BoundsType bounds_type = bounds::GetBoundsType(params->bounds_type);
   if (bounds_type == bounds::INVALID_TYPE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RespondNow(Error(kInvalidParameters));
   }
 
@@ -242,7 +242,7 @@ AppCurrentWindowInternalSetBoundsFunction::Run() {
       break;
     }
     case bounds::INVALID_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (original_window_bounds != window_bounds) {
@@ -272,7 +272,7 @@ AppCurrentWindowInternalSetSizeConstraintsFunction::Run() {
   bounds::BoundsType bounds_type = bounds::GetBoundsType(params->bounds_type);
   if (bounds_type != bounds::INNER_BOUNDS &&
       bounds_type != bounds::OUTER_BOUNDS) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RespondNow(Error(kInvalidParameters));
   }
 

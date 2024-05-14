@@ -73,7 +73,7 @@ void LastErrorGetter(v8::Local<v8::Name> property,
   if (!holder->GetPrivate(context, last_error_key).ToLocal(&last_error) ||
       last_error != info.Data()) {
     // Something funny happened - our private properties aren't set right.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -112,7 +112,7 @@ void LastErrorSetter(v8::Local<v8::Name> property,
   v8::Maybe<bool> set_private =
       holder->SetPrivate(context, script_value_key, value);
   if (!set_private.IsJust() || !set_private.FromJust())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -184,7 +184,7 @@ void APILastError::ClearError(v8::Local<v8::Context> context,
 
   v8::Maybe<bool> delete_private = parent->DeletePrivate(context, private_key);
   if (!delete_private.IsJust() || !delete_private.FromJust()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // These Delete()s can fail, but there's nothing to do if it does (the
@@ -287,7 +287,7 @@ void APILastError::SetErrorOnPrimaryParent(v8::Local<v8::Context> context,
     v8::Maybe<bool> set_private = parent->SetPrivate(
         context, v8::Private::ForApi(isolate, key), last_error);
     if (!set_private.IsJust() || !set_private.FromJust()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     DCHECK(!last_error.IsEmpty());

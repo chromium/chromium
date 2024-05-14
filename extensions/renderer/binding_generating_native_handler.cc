@@ -45,7 +45,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   // through the v8 APIs.
   v8::Local<v8::String> v8_api_name;
   if (!v8_helpers::ToV8String(isolate, api_name_, &v8_api_name)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
 
@@ -54,7 +54,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   // require('binding');
   v8::Local<v8::Object> binding_module;
   if (!context_->module_system()->Require("binding").ToLocal(&binding_module)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
 
@@ -63,7 +63,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Object> binding;
   if (!GetProperty(v8_context, binding_module, "Binding", &binding_value) ||
       !binding_value->ToObject(v8_context).ToLocal(&binding)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
 
@@ -71,7 +71,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Value> create_binding_value;
   if (!GetProperty(v8_context, binding, "create", &create_binding_value) ||
       !create_binding_value->IsFunction()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
   v8::Local<v8::Function> create_binding =
@@ -90,7 +90,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
              .ToLocal(&binding_instance_value) ||
         !binding_instance_value->ToObject(v8_context)
              .ToLocal(&binding_instance)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return v8::Local<v8::Object>();
     }
   }
@@ -99,7 +99,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Value> generate_value;
   if (!GetProperty(v8_context, binding_instance, "generate", &generate_value) ||
       !generate_value->IsFunction()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
   v8::Local<v8::Function> generate = generate_value.As<v8::Function>();
@@ -113,7 +113,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
     // Instead, we should use JSRunner once it's used outside native bindings.
     if (!generate->Call(v8_context, binding_instance, 0, nullptr)
              .ToLocal(&compiled_schema)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return v8::Local<v8::Object>();
     }
   }

@@ -74,7 +74,7 @@ EmbedderUserScriptLoader* UserScriptManager::GetUserScriptLoaderForEmbedder(
     case mojom::HostID::HostType::kExtensions:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

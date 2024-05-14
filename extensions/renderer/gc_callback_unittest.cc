@@ -99,7 +99,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
       case NATIVE_WITH_NO_FALLBACK:
         return false;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

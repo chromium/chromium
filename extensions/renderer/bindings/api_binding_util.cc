@@ -141,7 +141,7 @@ std::string GetPlatformString() {
 #elif BUILDFLAG(IS_FUCHSIA)
   return "fuchsia";
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 #endif
 }

@@ -46,7 +46,7 @@ const char* Activity::ToString(Type type) {
     case DEBUGGER:
       return "DEBUGGER";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -250,7 +250,7 @@ void HandleListenerAddedOrRemoved(content::BrowserContext* context,
     return;
   }
 
-  NOTREACHED() << "Unknown event name: " << event_name;
+  NOTREACHED_IN_MIGRATION() << "Unknown event name: " << event_name;
 }
 
 }  // namespace

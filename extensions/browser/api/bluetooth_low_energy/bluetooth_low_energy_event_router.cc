@@ -240,11 +240,11 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
       return extensions::BluetoothLowEnergyEventRouter::kStatusErrorTimeout;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return extensions::BluetoothLowEnergyEventRouter::
           kStatusErrorInvalidArguments;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
 }
 

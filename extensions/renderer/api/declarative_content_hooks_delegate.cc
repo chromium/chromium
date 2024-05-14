@@ -222,7 +222,7 @@ void DeclarativeContentHooksDelegate::HandleCall(
   v8::Local<v8::Object> this_object = info.This();
   if (this_object.IsEmpty()) {
     // Crazy script (e.g. declarativeContent.Foo.apply(null, args);).
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

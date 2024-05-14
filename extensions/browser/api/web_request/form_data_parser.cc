@@ -346,7 +346,8 @@ std::unique_ptr<FormDataParser> FormDataParser::CreateFromContentTypeHeader(
     case ERROR_CHOICE:
       return nullptr;
   }
-  NOTREACHED();  // Some compilers do not believe this is unreachable.
+  NOTREACHED_IN_MIGRATION();  // Some compilers do not believe this is
+                              // unreachable.
   return nullptr;
 }
 

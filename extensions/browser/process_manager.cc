@@ -168,7 +168,7 @@ struct ProcessManager::ExtensionRenderFrameData {
       case extensions::mojom::ViewType::kExtensionSidePanel:
         return false;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

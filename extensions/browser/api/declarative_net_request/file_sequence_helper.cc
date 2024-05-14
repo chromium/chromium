@@ -160,7 +160,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UpdateDynamicRulesStatus::kSuccess;
 }
 

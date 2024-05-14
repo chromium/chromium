@@ -162,7 +162,8 @@ std::unique_ptr<UserScript> ParseSerializedUserScript(
           serialized_script.id, UserScript::kManifestContentScriptPrefix);
       break;
     case api::scripts_internal::Source::kNone:
-      NOTREACHED();  // This should have been caught by our parsing.
+      NOTREACHED_IN_MIGRATION();  // This should have been caught by our
+                                  // parsing.
   }
 
   if (!source_matches_id) {

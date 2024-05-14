@@ -18,12 +18,14 @@ NetworkingPrivateDelegate::~NetworkingPrivateDelegate() = default;
 
 void NetworkingPrivateDelegate::AddObserver(
     NetworkingPrivateDelegateObserver* observer) {
-  NOTREACHED() << "Class does not use NetworkingPrivateDelegateObserver";
+  NOTREACHED_IN_MIGRATION()
+      << "Class does not use NetworkingPrivateDelegateObserver";
 }
 
 void NetworkingPrivateDelegate::RemoveObserver(
     NetworkingPrivateDelegateObserver* observer) {
-  NOTREACHED() << "Class does not use NetworkingPrivateDelegateObserver";
+  NOTREACHED_IN_MIGRATION()
+      << "Class does not use NetworkingPrivateDelegateObserver";
 }
 
 void NetworkingPrivateDelegate::StartActivate(

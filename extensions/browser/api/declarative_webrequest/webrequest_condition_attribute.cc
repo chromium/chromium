@@ -427,7 +427,7 @@ bool HeaderMatcher::StringMatchTest::Matches(
       }
   }
   // We never get past the "switch", but the compiler worries about no return.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -479,7 +479,8 @@ HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
     } else if (entry.first == keys::kValueEqualsKey) {
       match_type = StringMatchTest::kEquals;
     } else {
-      NOTREACHED();  // JSON schema type checking should prevent this.
+      NOTREACHED_IN_MIGRATION();  // JSON schema type checking should prevent
+                                  // this.
       return nullptr;
     }
     const base::Value* content = &entry.second;
@@ -501,7 +502,8 @@ HeaderMatcher::HeaderMatchTest::Create(const base::Value::Dict& tests) {
         break;
       }
       default: {
-        NOTREACHED();  // JSON schema type checking should prevent this.
+        NOTREACHED_IN_MIGRATION();  // JSON schema type checking should prevent
+                                    // this.
         return nullptr;
       }
     }
@@ -732,7 +734,7 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     } else if (stage_name == keys::kOnAuthRequiredEnum) {
       stages |= ON_AUTH_REQUIRED;
     } else {
-      NOTREACHED();  // JSON schema checks prevent getting here.
+      NOTREACHED_IN_MIGRATION();  // JSON schema checks prevent getting here.
       return false;
     }
   }

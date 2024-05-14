@@ -175,7 +175,7 @@ std::string Warning::GetLocalizedMessage(const ExtensionSet* extensions) const {
       return l10n_util::GetStringFUTF8(message_id_, final_parameters[0],
           final_parameters[1], final_parameters[2], final_parameters[3]);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

@@ -77,12 +77,12 @@ url::Origin BrowserFrameContextData::GetOrigin() const {
 // BrowserFrameContextData::CanAccess is unable to replicate all of the
 // WebSecurityOrigin::CanAccess checks, so these methods should not be called.
 bool BrowserFrameContextData::CanAccess(const url::Origin& target) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
 bool BrowserFrameContextData::CanAccess(const FrameContextData& target) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

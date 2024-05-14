@@ -331,7 +331,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
 
   if (!v8::Function::New(context, &OneTimeMessageResponseHelper, external)
            .ToLocal(&response_function)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return handled;
   }
 

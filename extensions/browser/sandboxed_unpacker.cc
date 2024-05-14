@@ -673,7 +673,7 @@ void SandboxedUnpacker::OnImageSanitizationDone(
                                          u"ERROR_SAVING_THEME_IMAGE");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -739,7 +739,7 @@ void SandboxedUnpacker::MessageCatalogsSanitized(
                                          u"ERROR_SAVING_CATALOG");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -924,7 +924,7 @@ std::u16string SandboxedUnpacker::FailureReasonToString16(
     case SandboxedUnpackerFailureReason::DEPRECATED_ERROR_PARSING_DNR_RULESET:
     case SandboxedUnpackerFailureReason::NUM_FAILURE_REASONS:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }

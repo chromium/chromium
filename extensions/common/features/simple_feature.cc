@@ -95,9 +95,9 @@ std::string GetDisplayName(Manifest::Type type) {
     case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
       return "chromeos system extension";
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -132,7 +132,7 @@ std::string GetDisplayName(mojom::ContextType context) {
     case mojom::ContextType::kUserScript:
       return "user script";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -149,7 +149,7 @@ std::string GetDisplayName(version_info::Channel channel) {
     case version_info::Channel::STABLE:
       return "stable";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -424,7 +424,7 @@ std::string SimpleFeature::GetAvailabilityMessage(
                                 name().c_str());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -533,7 +533,7 @@ bool SimpleFeature::MatchesManifestLocation(
     case SimpleFeature::UNPACKED_LOCATION:
       return Manifest::IsUnpackedLocation(manifest_location);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

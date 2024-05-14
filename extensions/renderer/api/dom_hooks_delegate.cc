@@ -49,7 +49,7 @@ APIBindingHooks::RequestResult DOMHooksDelegate::HandleRequest(
     result.return_value =
         OpenOrClosedShadowRoot(script_context, *parse_result.arguments);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return result;

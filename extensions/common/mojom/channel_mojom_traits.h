@@ -27,7 +27,7 @@ struct EnumTraits<extensions::mojom::Channel, version_info::Channel> {
       case version_info::Channel::STABLE:
         return extensions::mojom::Channel::kStable;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return extensions::mojom::Channel::kUnknown;
   }
 
@@ -50,7 +50,7 @@ struct EnumTraits<extensions::mojom::Channel, version_info::Channel> {
         *out = version_info::Channel::STABLE;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     *out = version_info::Channel::UNKNOWN;
     return false;
   }

@@ -23,7 +23,7 @@ std::string GetErrorString(lock_screen_data::OperationResult result) {
   switch (result) {
     case lock_screen_data::OperationResult::kSuccess:
     case lock_screen_data::OperationResult::kCount:
-      NOTREACHED() << "Expected a failure code.";
+      NOTREACHED_IN_MIGRATION() << "Expected a failure code.";
       return "Unknown";
     case lock_screen_data::OperationResult::kFailed:
       return "Unknown";
@@ -36,7 +36,7 @@ std::string GetErrorString(lock_screen_data::OperationResult result) {
     case lock_screen_data::OperationResult::kUnknownExtension:
       return "Not found";
   }
-  NOTREACHED() << "Unknown operation status";
+  NOTREACHED_IN_MIGRATION() << "Unknown operation status";
   return "Unknown";
 }
 

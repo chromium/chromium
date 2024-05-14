@@ -139,7 +139,7 @@ void AppFirewallHoleManager::Close(AppFirewallHole* hole) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppFirewallHoleManager::OnAppWindowRemoved(AppWindow* app_window) {

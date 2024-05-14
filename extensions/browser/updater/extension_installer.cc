@@ -75,7 +75,7 @@ bool ExtensionInstaller::GetInstalledFile(const std::string& file,
 }
 
 bool ExtensionInstaller::Uninstall() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

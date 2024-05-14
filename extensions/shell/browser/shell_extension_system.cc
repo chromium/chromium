@@ -142,20 +142,20 @@ void ShellExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   base::DeletePathRecursively(temp_dir);
 }
 
 void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool ShellExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

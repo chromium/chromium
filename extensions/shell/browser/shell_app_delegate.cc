@@ -114,12 +114,12 @@ bool ShellAppDelegate::TakeFocus(content::WebContents* web_contents,
 
 content::PictureInPictureResult ShellAppDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return content::PictureInPictureResult::kNotSupported;
 }
 
 void ShellAppDelegate::ExitPictureInPicture() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace extensions

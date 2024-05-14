@@ -93,7 +93,7 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
         base::StringPrintf("%s.%s", api_name_.c_str(), method_name.c_str());
     v8::Global<v8::Function>& entry = (*map)[qualified_method_name];
     if (!entry.IsEmpty()) {
-      NOTREACHED() << "Hooks can only be set once.";
+      NOTREACHED_IN_MIGRATION() << "Hooks can only be set once.";
       return;
     }
     entry.Reset(isolate, hook);
@@ -233,7 +233,8 @@ void CompleteHandleRequestHelper(
     // TODO(tjudkins): Audit existing handle request custom hooks to see if this
     // could happen in any of them. crbug.com/1298409 seemed to indicate this
     // was happening, hence why we fail gracefully here to avoid a crash.
-    NOTREACHED() << "No callback found for the specified request ID.";
+    NOTREACHED_IN_MIGRATION()
+        << "No callback found for the specified request ID.";
     return;
   }
   auto callback = std::move(iter->second);

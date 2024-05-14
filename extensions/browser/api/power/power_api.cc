@@ -28,7 +28,8 @@ device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
     case api::power::Level::kNone:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED() << "Unhandled power level: " << api::power::ToString(level);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled power level: " << api::power::ToString(level);
   return device::mojom::WakeLockType::kPreventDisplaySleep;
 }
 

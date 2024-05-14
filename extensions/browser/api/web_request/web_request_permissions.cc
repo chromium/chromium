@@ -174,7 +174,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
                  : PermissionsData::PageAccess::kDenied;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PermissionsData::PageAccess::kDenied;
 }
 

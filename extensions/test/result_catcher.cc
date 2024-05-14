@@ -33,7 +33,7 @@ bool ResultCatcher::GetNextResult() {
     return ret;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

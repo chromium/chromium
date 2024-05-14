@@ -25,7 +25,7 @@ std::string GetDefaultPort(const std::string& scheme) {
     return "80";
   if (scheme == url::kHttpsScheme)
     return "443";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

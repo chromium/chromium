@@ -155,7 +155,7 @@ std::string WindowOpenDispositionToString(
     case WindowOpenDisposition::NEW_POPUP:
       return "new_popup";
     default:
-      NOTREACHED() << "Unknown Window Open Disposition";
+      NOTREACHED_IN_MIGRATION() << "Unknown Window Open Disposition";
       return "ignore";
   }
 }
@@ -186,7 +186,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
-  NOTREACHED() << "Unknown Termination Status.";
+  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
   return "unknown";
 }
 
@@ -1053,7 +1053,7 @@ void WebViewGuest::ReportFrameNameChange(const std::string& name) {
 void WebViewGuest::PushWebViewStateToIOThread(
     content::RenderFrameHost* guest_host) {
   if (!guest_host->GetSiteInstance()->IsGuest()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   auto storage_partition_config =

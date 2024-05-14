@@ -74,7 +74,7 @@ NetworkingPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
   delegate =
       std::make_unique<NetworkingPrivateServiceClient>(std::move(wifi_service));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   delegate = nullptr;
 #endif
 

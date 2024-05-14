@@ -356,7 +356,7 @@ void LoadUserScripts(
         dynamic_script_length += script_files_length;
         break;
       case UserScript::Source::kWebUIScript:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

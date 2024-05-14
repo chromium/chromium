@@ -51,7 +51,7 @@ bool ShouldResizeImageRepresentation(
     case ImageLoader::ImageRepresentation::NEVER_RESIZE:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

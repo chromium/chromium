@@ -164,7 +164,7 @@ BindingsSystemPerContextData* GetBindingsDataFromContext(
       per_context_data->GetUserData(kBindingsSystemPerContextKey));
   CHECK(data);
   if (!data->bindings_system) {
-    NOTREACHED() << "Context outlived bindings system.";
+    NOTREACHED_IN_MIGRATION() << "Context outlived bindings system.";
     return nullptr;
   }
 
@@ -815,7 +815,7 @@ void NativeExtensionBindingsSystem::GetInternalAPI(
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
   if (!feature || !script_context->IsAnyFeatureAvailableToContext(
                       *feature, CheckAliasStatus::NOT_ALLOWED)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

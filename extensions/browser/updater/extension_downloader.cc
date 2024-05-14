@@ -1466,9 +1466,9 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
       }
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

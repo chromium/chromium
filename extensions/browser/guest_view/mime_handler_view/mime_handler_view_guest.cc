@@ -227,7 +227,7 @@ void MimeHandlerViewGuest::DidInitialize(
 void MimeHandlerViewGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for MimeHandlerView.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MimeHandlerViewGuest::EmbedderFullscreenToggled(bool entered_fullscreen) {
@@ -381,7 +381,7 @@ bool MimeHandlerViewGuest::IsFullscreenForTabOrPending(
 
 bool MimeHandlerViewGuest::ShouldResumeRequestsForCreatedWindow() {
   // Not reached due to the use of `CreateCustomWebContents`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

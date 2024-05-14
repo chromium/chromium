@@ -510,7 +510,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     if (!script_context->module_system()
              ->Require("fileEntryBindingUtil")
              .ToLocal(&file_entry_binding_util)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Abort, and consider the request handled.
       return RequestResult(RequestResult::HANDLED);
     }
@@ -520,12 +520,12 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
              ->Get(v8_context, gin::StringToSymbol(
                                    isolate, "getBindDirectoryEntryCallback"))
              .ToLocal(&get_bind_directory_entry_callback_value)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return RequestResult(RequestResult::THROWN);
     }
 
     if (!get_bind_directory_entry_callback_value->IsFunction()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Abort, and consider the request handled.
       return RequestResult(RequestResult::HANDLED);
     }
@@ -540,12 +540,12 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
   }  // End modules enabled scope.
   v8::Local<v8::Value> callback;
   if (!maybe_custom_callback.ToLocal(&callback)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RequestResult(RequestResult::THROWN);
   }
 
   if (!callback->IsFunction()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // Abort, and consider the request handled.
     return RequestResult(RequestResult::HANDLED);
   }

@@ -105,12 +105,12 @@ void DisplayInfoProvider::SetDisplayProperties(
     const std::string& display_id,
     const api::system_display::DisplayProperties& properties,
     ErrorCallback callback) {
-  NOTREACHED() << "SetDisplayProperties not implemented";
+  NOTREACHED_IN_MIGRATION() << "SetDisplayProperties not implemented";
 }
 
 void DisplayInfoProvider::SetDisplayLayout(const DisplayLayoutList& layouts,
                                            ErrorCallback callback) {
-  NOTREACHED() << "SetDisplayLayout not implemented";
+  NOTREACHED_IN_MIGRATION() << "SetDisplayLayout not implemented";
 }
 
 void DisplayInfoProvider::EnableUnifiedDesktop(bool enable) {}
@@ -147,7 +147,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
 
 void DisplayInfoProvider::GetDisplayLayout(
     base::OnceCallback<void(DisplayLayoutList result)> callback) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), DisplayLayoutList()));
 }
@@ -180,30 +180,30 @@ bool DisplayInfoProvider::OverscanCalibrationComplete(const std::string& id) {
 
 void DisplayInfoProvider::ShowNativeTouchCalibration(const std::string& id,
                                                      ErrorCallback callback) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
 }
 
 bool DisplayInfoProvider::StartCustomTouchCalibration(const std::string& id) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
   return false;
 }
 
 bool DisplayInfoProvider::CompleteCustomTouchCalibration(
     const api::system_display::TouchCalibrationPairQuad& pairs,
     const api::system_display::Bounds& bounds) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
   return false;
 }
 
 bool DisplayInfoProvider::ClearTouchCalibration(const std::string& id) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
   return false;
 }
 
 void DisplayInfoProvider::SetMirrorMode(
     const api::system_display::MirrorModeInfo& info,
     ErrorCallback callback) {
-  NOTREACHED();  // Implemented on Chrome OS only in override.
+  NOTREACHED_IN_MIGRATION();  // Implemented on Chrome OS only in override.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), "Not supported"));
 }

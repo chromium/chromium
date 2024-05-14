@@ -36,7 +36,7 @@ base::FilePath GetValueStoreDir(
       dir = base::FilePath(kManagedSettingsDirectoryName);
       break;
     case settings_namespace::INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return dir.AppendASCII(id);
 }

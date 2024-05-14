@@ -132,7 +132,7 @@ bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
     case device::BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
       return bt_private::ConnectResultType::kNonAuthTimeout;
     case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return bt_private::ConnectResultType::kNone;
@@ -402,7 +402,7 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
         device->CancelPairing();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

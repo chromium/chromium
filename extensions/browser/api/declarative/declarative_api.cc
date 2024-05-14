@@ -225,7 +225,7 @@ void EventsEventAddRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewAddRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   RecordUMAHelper(type);
@@ -266,7 +266,7 @@ void EventsEventRemoveRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewRemoveRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   RecordUMAHelper(type);
@@ -311,7 +311,7 @@ void EventsEventGetRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewGetRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   RecordUMAHelper(type);

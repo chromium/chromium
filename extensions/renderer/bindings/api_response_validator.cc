@@ -91,8 +91,8 @@ void APIResponseValidator::ValidateResponse(
   if (g_handler_for_testing) {
     g_handler_for_testing->HandleFailure(method_name, error);
   } else {
-    NOTREACHED() << "Error validating response to `" << method_name
-                 << "`: " << error;
+    NOTREACHED_IN_MIGRATION()
+        << "Error validating response to `" << method_name << "`: " << error;
   }
 }
 
@@ -147,8 +147,8 @@ void APIResponseValidator::ValidateEvent(
   if (g_handler_for_testing) {
     g_handler_for_testing->HandleFailure(event_name, error);
   } else {
-    NOTREACHED() << "Error validating event arguments to `" << event_name
-                 << "`: " << error;
+    NOTREACHED_IN_MIGRATION() << "Error validating event arguments to `"
+                              << event_name << "`: " << error;
   }
 }
 

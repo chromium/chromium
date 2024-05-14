@@ -38,7 +38,7 @@ APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
   v8::Maybe<bool> result = wrapper->SetPrivate(
       context, GetPrivatePropertyName(isolate, kApiObjectKey), api_object);
   if (!result.IsJust() || !result.FromJust()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   v8::Local<v8::Object> js_hook_interface = hooks->GetJSHookInterface(context);

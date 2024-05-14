@@ -39,7 +39,7 @@ bool ConvertVendorIDSourceToApi(const BluetoothDevice::VendorIDSource& input,
       *output = bluetooth::VendorIdSource::kUsb;
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -195,7 +195,7 @@ device::BluetoothFilterType ToBluetoothDeviceFilterType(FilterType type) {
     case FilterType::kKnown:
       return device::BluetoothFilterType::KNOWN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 #endif

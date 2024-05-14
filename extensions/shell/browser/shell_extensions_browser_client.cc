@@ -166,7 +166,7 @@ void ShellExtensionsBrowserClient::LoadResourceFromResourceBundle(
     int resource_id,
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  NOTREACHED() << "Load resources from bundles not supported.";
+  NOTREACHED_IN_MIGRATION() << "Load resources from bundles not supported.";
 }
 
 bool ShellExtensionsBrowserClient::AllowCrossRendererResourceLoad(

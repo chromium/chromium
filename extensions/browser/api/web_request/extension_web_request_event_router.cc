@@ -132,7 +132,8 @@ events::HistogramValue GetEventHistogramValue(const std::string& event_name) {
 
   // There is no histogram value for this event name. It should be added to
   // either the mapping here, or in guest_view_events.
-  NOTREACHED() << "Event " << event_name << " must have a histogram value";
+  NOTREACHED_IN_MIGRATION()
+      << "Event " << event_name << " must have a histogram value";
   return events::UNKNOWN;
 }
 
@@ -159,7 +160,7 @@ const char* GetRequestStageAsString(WebRequestEventRouter::EventTypes type) {
     case WebRequestEventRouter::kOnCompleted:
       return keys::kOnCompleted;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Not reached";
 }
 
@@ -577,7 +578,7 @@ helpers::EventResponseDelta CalculateDelta(
           response->extension_id, response->extension_install_time,
           response->cancel, response->auth_credentials);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return helpers::EventResponseDelta("", base::Time());
   }
 }
@@ -2402,7 +2403,7 @@ int WebRequestEventRouter::ExecuteDeltas(
         blocked_request.response_deltas, blocked_request.auth_credentials,
         &ignored_actions);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   SendMessages(browser_context, blocked_request);

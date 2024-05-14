@@ -236,45 +236,45 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
     size_t GetBytesInUse() override { return bytes_in_use_; }
 
     ReadResult Get(const std::string& key) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ReadResult(Status());
     }
 
     ReadResult Get(const std::vector<std::string>& keys) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ReadResult(Status());
     }
 
     ReadResult Get() override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ReadResult(Status());
     }
 
     WriteResult Set(WriteOptions options,
                     const std::string& key,
                     const base::Value& value) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WriteResult(Status());
     }
 
     WriteResult Set(WriteOptions options,
                     const base::Value::Dict& values) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WriteResult(Status());
     }
 
     WriteResult Remove(const std::string& key) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WriteResult(Status());
     }
 
     WriteResult Remove(const std::vector<std::string>& keys) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WriteResult(Status());
     }
 
     WriteResult Clear() override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WriteResult(Status());
     }
 

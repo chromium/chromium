@@ -268,7 +268,7 @@ base::Value::Dict GetDictFromArray(
           entry->GetList().Append(*value);
           break;
         default:
-          NOTREACHED();  // We never put other Values here.
+          NOTREACHED_IN_MIGRATION();  // We never put other Values here.
           return base::Value::Dict();
       }
     } else {

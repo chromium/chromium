@@ -424,7 +424,7 @@ FlatRulesetIndexer::GetBuilders(const IndexedRule& indexed_rule) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

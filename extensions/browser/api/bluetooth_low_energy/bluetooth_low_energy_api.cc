@@ -127,7 +127,7 @@ std::string StatusToString(BluetoothLowEnergyEventRouter::Status status) {
     case BluetoothLowEnergyEventRouter::kStatusErrorInvalidServiceId:
       return kErrorInvalidServiceId;
     case BluetoothLowEnergyEventRouter::kStatusSuccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     default:
       return kErrorOperationFailed;

@@ -190,7 +190,7 @@ v8::Local<v8::Value> GinPort::GetSender(gin::Arguments* arguments) {
   v8::Local<v8::Value> sender;
   if (!wrapper->GetPrivate(arguments->GetHolderCreationContext(), key)
            .ToLocal(&sender)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Undefined(isolate);
   }
 
@@ -212,7 +212,7 @@ v8::Local<v8::Object> GinPort::GetEvent(v8::Local<v8::Context> context,
       v8::Private::ForApi(isolate, gin::StringToSymbol(isolate, event_name));
   v8::Local<v8::Value> event_val;
   if (!wrapper->GetPrivate(context, key).ToLocal(&event_val)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Object>();
   }
 
@@ -223,7 +223,7 @@ v8::Local<v8::Object> GinPort::GetEvent(v8::Local<v8::Context> context,
     v8::Maybe<bool> set_result =
         wrapper->SetPrivate(context, key, event_object);
     if (!set_result.IsJust() || !set_result.FromJust()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return v8::Local<v8::Object>();
     }
   } else {
