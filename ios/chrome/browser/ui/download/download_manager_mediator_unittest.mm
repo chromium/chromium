@@ -42,10 +42,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
         task_(GURL(kTestUrl), kTestMimeType) {
     OCMStub([application_ sharedApplication]).andReturn(application_);
   }
-  ~DownloadManagerMediatorTest() override {
-    mediator_.Disconnect();
-    [application_ stopMocking];
-  }
+  ~DownloadManagerMediatorTest() override { [application_ stopMocking]; }
 
   web::FakeDownloadTask* task() { return &task_; }
 
