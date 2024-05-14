@@ -169,6 +169,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       const blink::ViewTransitionToken& transition_token) override;
   void HasUnclaimedViewTransitionResourcesForTest(
       HasUnclaimedViewTransitionResourcesForTestCallback callback) override;
+  void SetSameDocNavigationScreenshotSizeForTesting(
+      const gfx::Size& result_size,
+      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override;
 
   void DestroyFrameSinkBundle(const FrameSinkBundleId& id);
 
@@ -308,6 +311,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   ReservedResourceIdTracker* reserved_resource_id_tracker() {
     return &reserved_resource_id_tracker_;
+  }
+
+  const gfx::Size& copy_output_request_result_size_for_testing() const {
+    return copy_output_request_result_size_for_testing_;
   }
 
  private:
@@ -500,6 +507,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       nullptr;
 
   ReservedResourceIdTracker reserved_resource_id_tracker_;
+
+  gfx::Size copy_output_request_result_size_for_testing_;
 
   base::WeakPtrFactory<FrameSinkManagerImpl> weak_factory_{this};
 };

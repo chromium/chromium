@@ -25,6 +25,8 @@ VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
 VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 
+class CopyOutputRequest;
+
 // This takes a gfx::Rect and a clip region quad in the same space,
 // and returns a quad with the same proportions in the space -0.5->0.5.
 VIZ_COMMON_EXPORT bool GetScaledRegion(const gfx::Rect& rect,
@@ -70,6 +72,13 @@ VIZ_COMMON_EXPORT gfx::Transform GetViewTransitionTransform(
 VIZ_COMMON_EXPORT bool QuadRoundedCornersBoundsIntersects(
     const DrawQuad* quad,
     const gfx::RectF& target_quad);
+
+// Customizes the output sizes of a `CopyOutputRequest`.
+VIZ_COMMON_EXPORT void SetCopyOutoutRequestResultSize(
+    CopyOutputRequest* request,
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    const gfx::Size& surface_size_in_pixels);
 
 }  // namespace viz
 

@@ -135,15 +135,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // possibly because a renderer process has crashed.
   void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id);
 
-  // Register a relationship between two namespaces.  This relationship means
-  // that surfaces from the child namespace will be displayed in the parent.
-  // Children are allowed to use any begin frame source that their parent can
-  // use.
-  void RegisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
-                                  const FrameSinkId& child_frame_sink_id);
-  void UnregisterFrameSinkHierarchy(const FrameSinkId& parent_frame_sink_id,
-                                    const FrameSinkId& child_frame_sink_id);
-
   // Returns the top level root SurfaceId. Surfaces that are not reachable
   // from the top level root may be garbage collected. It will not be a valid
   // SurfaceId and will never correspond to a surface.

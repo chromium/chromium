@@ -23,6 +23,7 @@ import "services/viz/public/mojom/hit_test/aggregated_hit_test_region.mojom";
 import "services/viz/public/mojom/compositing/copy_output_result.mojom";
 import "services/viz/public/mojom/compositing/video_detector_observer.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Initialization parameters for a RootCompositorFrameSink.
 struct RootCompositorFrameSinkParams {
@@ -220,6 +221,11 @@ interface FrameSinkManager {
   // testing only.
   [Sync]
   HasUnclaimedViewTransitionResourcesForTest() => (bool has_resources);
+
+  // Customizes the CopyOutputRequest's result size during tests.
+  [Sync]
+  SetSameDocNavigationScreenshotSizeForTesting(
+    gfx.mojom.Size result_size) => ();
 };
 
 // The FrameSinkManagerClient interface is implemented by the Display
