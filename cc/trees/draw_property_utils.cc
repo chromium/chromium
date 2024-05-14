@@ -829,12 +829,22 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   return result;
 }
 
-void UpdateRenderTarget(EffectTree* effect_tree) {
+void UpdateRenderTarget(LayerTreeImpl* layer_tree_impl,
+                        EffectTree* effect_tree) {
   int last_backdrop_filter = kInvalidNodeId;
+  base::flat_map<viz::ViewTransitionElementResourceId, int> resource_to_node;
 
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree->size()); ++i) {
     EffectNode* node = effect_tree->Node(i);
+
+    if (node->view_transition_element_resource_id.IsValid()) {
+      CHECK(!resource_to_node.contains(
+          node->view_transition_element_resource_id));
+      resource_to_node[node->view_transition_element_resource_id] = i;
+    }
+    node->view_transition_target_id = kInvalidPropertyNodeId;
+
     if (i == kContentsRootPropertyNodeId) {
       // Render target of the node corresponding to root is itself.
       node->target_id = kContentsRootPropertyNodeId;
@@ -847,6 +857,28 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
         node->has_potential_backdrop_filter_animation)
       last_backdrop_filter = node->id;
     node->affected_by_backdrop_filter = false;
+  }
+
+  if (!resource_to_node.empty()) {
+    for (auto* layer : *layer_tree_impl) {
+      auto resource_id = layer->ViewTransitionResourceId();
+      if (!resource_id.IsValid()) {
+        continue;
+      }
+
+      auto it = resource_to_node.find(resource_id);
+      if (it == resource_to_node.end()) {
+        continue;
+      }
+
+      auto* resource_node = effect_tree->Node(it->second);
+      auto* layer_node = effect_tree->Node(layer->effect_tree_index());
+      if (layer_node->HasRenderSurface()) {
+        resource_node->view_transition_target_id = layer_node->id;
+      } else {
+        resource_node->view_transition_target_id = layer_node->target_id;
+      }
+    }
   }
 
   if (last_backdrop_filter == kInvalidNodeId)
@@ -929,7 +961,25 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
   RenderSurfaceImpl* target = render_surface->render_target();
   bool is_root =
       render_surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
-  if (!is_root && !target->is_render_surface_list_member()) {
+
+  // If this node is producing a snapshot for a ViewTransition then the target
+  // surface (where its surface will be drawn) corresponds to the node where the
+  // ViewTransitionContentLayer rendering this snapshot is drawn.
+  if (render_surface->OwningEffectNode()->view_transition_target_id !=
+      kInvalidPropertyNodeId) {
+    CHECK(!is_root);
+    CHECK(render_surface->OwningEffectNode()
+              ->view_transition_element_resource_id.IsValid());
+
+    auto* vt_target = property_trees->effect_tree_mutable().GetRenderSurface(
+        render_surface->OwningEffectNode()->view_transition_target_id);
+    CHECK(vt_target);
+
+    if (!vt_target->is_render_surface_list_member()) {
+      AddSurfaceToRenderSurfaceList(vt_target, render_surface_list,
+                                    property_trees);
+    }
+  } else if (!is_root && !target->is_render_surface_list_member()) {
     AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees);
   }
   render_surface->ClearAccumulatedContentRect();
@@ -1025,23 +1075,6 @@ void ComputeInitialRenderSurfaceList(LayerTreeImpl* layer_tree_impl,
   // The root surface always gets added to the render surface  list.
   AddSurfaceToRenderSurfaceList(root_surface, render_surface_list,
                                 property_trees);
-
-  // Add all of the render surfaces for the transition pseudo elements early,
-  // since they will need to be added before the shared elements in the layer
-  // lists below, which isn't reflected in the dependency. This can't be done
-  // with dependency ordering because other things require correct dependency
-  // ordering (the AppendQuads pass). By adding the render surfaces right after
-  // the root, we guarantee that the pseudo element tree's render surfaces will
-  // come _after_ any render passes that they reference in the render pass
-  // order.
-  auto transition_pseudo_render_surfaces =
-      effect_tree.GetTransitionPseudoElementRenderSurfaces();
-  for (auto* surface : transition_pseudo_render_surfaces) {
-    if (!surface->is_render_surface_list_member()) {
-      AddSurfaceToRenderSurfaceList(surface, render_surface_list,
-                                    property_trees);
-    }
-  }
 
   // For all non-skipped layers, add their target to the render surface list if
   // it's not already been added, and add their content rect to the target
@@ -1497,7 +1530,7 @@ void UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
     property_trees->clip_tree_mutable().set_needs_update(true);
     property_trees->effect_tree_mutable().set_needs_update(true);
   }
-  UpdateRenderTarget(&property_trees->effect_tree_mutable());
+  UpdateRenderTarget(layer_tree_impl, &property_trees->effect_tree_mutable());
 
   ComputeTransforms(&property_trees->transform_tree_mutable(),
                     layer_tree_impl->viewport_property_ids());

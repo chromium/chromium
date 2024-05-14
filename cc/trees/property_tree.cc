@@ -895,7 +895,6 @@ void EffectTree::clear() {
   PropertyTree<EffectNode>::clear();
   render_surfaces_.clear();
   render_surfaces_.push_back(nullptr);
-  transition_pseudo_element_effect_nodes_.clear();
 
 #if DCHECK_IS_ON()
   EffectTree tree;
@@ -1270,28 +1269,6 @@ int EffectTree::LowestCommonAncestorWithRenderSurface(int id_1,
   return id_1;
 }
 
-void EffectTree::ClearTransitionPseudoElementEffectNodes() {
-  transition_pseudo_element_effect_nodes_.clear();
-}
-
-void EffectTree::AddTransitionPseudoElementEffectId(int id) {
-  transition_pseudo_element_effect_nodes_.insert(id);
-}
-
-std::vector<RenderSurfaceImpl*>
-EffectTree::GetTransitionPseudoElementRenderSurfaces() {
-  std::vector<RenderSurfaceImpl*> result;
-  for (auto effect_id : transition_pseudo_element_effect_nodes_) {
-    // Add the render surface if there is one. Otherwise, add the target render
-    // surface.
-    if (auto* render_surface = GetRenderSurface(effect_id))
-      result.push_back(render_surface);
-    else if (auto* target = GetRenderSurface(Node(effect_id)->target_id))
-      result.push_back(target);
-  }
-  return result;
-}
-
 bool EffectTree::ContributesToDrawnSurface(int id) const {
   // All drawn nodes contribute to drawn surface.
   // Exception : Nodes that are hidden and are drawn only for the sake of
@@ -1446,8 +1423,6 @@ bool ClipTree::operator==(const ClipTree& other) const {
 EffectTree& EffectTree::operator=(const EffectTree& from) {
   PropertyTree::operator=(from);
   render_surfaces_.resize(size());
-  transition_pseudo_element_effect_nodes_ =
-      from.transition_pseudo_element_effect_nodes_;
   // copy_requests_ are omitted here, since these need to be moved rather
   // than copied or assigned.
 
@@ -1456,9 +1431,7 @@ EffectTree& EffectTree::operator=(const EffectTree& from) {
 
 #if DCHECK_IS_ON()
 bool EffectTree::operator==(const EffectTree& other) const {
-  return PropertyTree::operator==(other) &&
-         transition_pseudo_element_effect_nodes_ ==
-             other.transition_pseudo_element_effect_nodes_;
+  return PropertyTree::operator==(other);
 }
 #endif
 

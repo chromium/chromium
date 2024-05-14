@@ -427,10 +427,6 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
     return render_surfaces_[static_cast<size_t>(id)].get();
   }
 
-  void ClearTransitionPseudoElementEffectNodes();
-  void AddTransitionPseudoElementEffectId(int id);
-  std::vector<RenderSurfaceImpl*> GetTransitionPseudoElementRenderSurfaces();
-
   bool ContributesToDrawnSurface(int id) const;
 
   void ResetChangeTracking();
@@ -473,8 +469,6 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
 
   // Indexed by node id.
   std::vector<std::unique_ptr<RenderSurfaceImpl>> render_surfaces_;
-
-  std::unordered_set<int> transition_pseudo_element_effect_nodes_;
 };
 
 // These callbacks are called in the main thread to notify changes of scroll

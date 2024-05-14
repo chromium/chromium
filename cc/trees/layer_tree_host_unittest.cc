@@ -10750,11 +10750,6 @@ class LayerTreeHostTestDamagePropagatesFromViewTransitionSurface
     view_transition_layer_->SetEffectTreeIndex(view_transition_layer_node.id);
     view_transition_layer_node.render_surface_reason =
         RenderSurfaceReason::kBlendMode;
-
-    layer_tree_host()
-        ->property_trees()
-        ->effect_tree_mutable()
-        .AddTransitionPseudoElementEffectId(view_transition_layer_node.id);
   }
 
   void BeginTest() override { layer_tree_host()->SetNeedsCommit(); }

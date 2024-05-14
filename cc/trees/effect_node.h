@@ -164,6 +164,12 @@ struct CC_EXPORT EffectNode {
   // RenderSurfaceImpl.
   // This is set and used for the impl-side effect tree only.
   int target_id = 1;
+  // If this node is tagged with a ViewTransitionElementResourceId, it means it
+  // produces a snapshot for an element participating in a transition. This
+  // target id corresponds to the effect node where the
+  // ViewTransitionContentLayer using this resource draws. Can be unset if no
+  // layer using this resource is being drawn.
+  int view_transition_target_id = kInvalidPropertyNodeId;
   int closest_ancestor_with_cached_render_surface_id = kInvalidPropertyNodeId;
   int closest_ancestor_with_copy_request_id = kInvalidPropertyNodeId;
   int closest_ancestor_being_captured_id = kInvalidPropertyNodeId;

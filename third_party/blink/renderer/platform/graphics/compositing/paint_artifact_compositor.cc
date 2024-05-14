@@ -865,9 +865,6 @@ void PaintArtifactCompositor::Update(
     property_tree_manager.EnsureCompositorScrollAndTransformNode(*node);
   }
 
-  host->property_trees()
-      ->effect_tree_mutable()
-      .ClearTransitionPseudoElementEffectNodes();
   cc::LayerSelection layer_selection;
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
@@ -914,13 +911,6 @@ void PaintArtifactCompositor::Update(
 
     if (layer.subtree_property_changed())
       root_layer_->SetNeedsCommit();
-
-    auto transition_resource_id = layer.ViewTransitionResourceId();
-    if (transition_resource_id.IsValid()) {
-      host->property_trees()
-          ->effect_tree_mutable()
-          .AddTransitionPseudoElementEffectId(effect_id);
-    }
   }
 
   root_layer_->layer_tree_host()->RegisterSelection(layer_selection);
