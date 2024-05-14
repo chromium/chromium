@@ -1833,15 +1833,6 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
 
   DCHECK(GetLayoutObject());
 
-  Node* node = GetNode();  // Can be null in the case of pseudo content.
-
-  if (IsA<HTMLLIElement>(node)) {
-    if (ShouldIgnoreListItem(node)) {
-      return ax::mojom::blink::Role::kNone;
-    }
-    return ax::mojom::blink::Role::kListItem;
-  }
-
   if (GetLayoutObject()->IsListMarker()) {
     Node* list_item = GetLayoutObject()->GeneratingNode();
     if (list_item && ShouldIgnoreListItem(list_item)) {
@@ -1859,6 +1850,8 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   if (GetLayoutObject()->IsText()) {
     return ax::mojom::blink::Role::kStaticText;
   }
+
+  Node* node = GetNode();  // Can be null in the case of pseudo content.
 
   // Chrome exposes both table markup and table CSS as a tables, letting
   // the screen reader determine what to do for CSS tables. If this line
@@ -2130,6 +2123,13 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     // exposing as a role=menu, because if it's just used semantically, it won't
     // be interactive. If used as a widget, the author must provide role=menu.
     return ax::mojom::blink::Role::kList;
+  }
+
+  if (IsA<HTMLLIElement>(*GetNode())) {
+    if (ShouldIgnoreListItem(GetNode())) {
+      return ax::mojom::blink::Role::kNone;
+    }
+    return ax::mojom::blink::Role::kListItem;
   }
 
   if (IsA<HTMLMeterElement>(*GetNode()))

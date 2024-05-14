@@ -1,17 +1,9 @@
 This is a testharness.js-based test.
-Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] td as child of tr with display: contents, within table with display: flex, has cell role
   assert_equals: <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with display: flex, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
 [FAIL] td as child of tr with display: contents, within table with role=table with display: flex, has cell role
   assert_equals: <td data-expectedrole="cell" data-testname="td as child of tr with display: contents, within table with role=table with display: flex, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
-[FAIL] li as child of ul with role list, both with display: contents, has listitem role
-  assert_equals: <li style="display: contents;" data-expectedrole="listitem" data-testname="li as child of ul with role list, both with display: contents, has listitem role" class="ex-role">x</li> expected "listitem" but got "none"
-[FAIL] li with display: contents, as child of ul with role list, has listitem role
-  assert_equals: <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display: contents, as child of ul with role list, has listitem role" class="ex-role">y</li> expected "listitem" but got "none"
-[FAIL] li as child of ol with role list, both with display: contents, has listitem role
-  assert_equals: <li style="display: contents;" data-expectedrole="listitem" data-testname="li as child of ol with role list, both with display: contents, has listitem role" class="ex-role">x</li> expected "listitem" but got "none"
-[FAIL] li with display: contents, as child of ol with role list, has listitem role
-  assert_equals: <li style="display: contents;" data-expectedrole="listitem" data-testname="li with display: contents, as child of ol with role list, has listitem role" class="ex-role">y</li> expected "listitem" but got "none"
 [FAIL] td within tr in table with role table, all with display: contents, has cell role
   assert_equals: <td style="display: contents;" data-expectedrole="cell" data-testname="td within tr in table with role table, all with display: contents, has cell role" class="ex-role">x</td> expected "cell" but got "gridcell"
 [FAIL] Label: div with listitem role, as child of div with display: contents, has listitem role
