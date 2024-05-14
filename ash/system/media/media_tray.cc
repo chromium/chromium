@@ -105,12 +105,21 @@ class GlobalMediaControlsTitleView : public views::View {
         l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_TITLE));
     title_label_->SetAutoColorReadabilityEnabled(false);
 
+    // Media tray should always be pinned to shelf when we are opening the
+    // dialog.
+    DCHECK(MediaTray::IsPinnedToShelf());
+    pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
+
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI)) {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                             *title_label_);
       SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
+
+      // Makes the title in the center of the card horizontally.
+      title_label_->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(0, pin_button_->GetPreferredSize().width(), 0, 0)));
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -118,12 +127,6 @@ class GlobalMediaControlsTitleView : public views::View {
           gfx::Font::Weight::MEDIUM));
       SetPreferredSize(gfx::Size(kTrayMenuWidth, kTitleViewHeight));
     }
-
-    // Media tray should always be pinned to shelf when we are opening the
-    // dialog.
-    DCHECK(MediaTray::IsPinnedToShelf());
-    pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
-
     box_layout->SetFlexForView(title_label_, 1);
   }
 
