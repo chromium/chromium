@@ -763,6 +763,8 @@ TabGroupEditorBubbleView::Footer::Footer(const Browser* browser) {
   std::u16string styled_text =
       base::ReplaceStringPlaceholders(u"$1 $2", footer_text_substr, &offsets);
   footer_label->SetText(styled_text);
+  footer_label->SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_5);
+  footer_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
 
   gfx::Range details_range(offsets[1], styled_text.length());
 
