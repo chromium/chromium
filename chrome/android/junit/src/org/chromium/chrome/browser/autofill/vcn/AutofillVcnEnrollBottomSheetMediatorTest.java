@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
-import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
@@ -42,9 +40,6 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     @Mock private ManagedBottomSheetController mBottomSheetController;
 
     private WindowAndroid mWindow;
-    private View mContentView;
-    private ScrollView mScrollView;
-    private boolean mDismissed;
     private AutofillVcnEnrollBottomSheetMediator mMediator;
 
     @Before
@@ -54,10 +49,6 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         when(mLifecycle.canBegin()).thenReturn(true);
         mMediator = new AutofillVcnEnrollBottomSheetMediator(mContent, mLifecycle);
-    }
-
-    private void onDismiss() {
-        mDismissed = true;
     }
 
     @After
@@ -81,6 +72,30 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.requestShowContent(mWindow);
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    public void testOnAccept() {
+        mMediator.requestShowContent(mWindow);
+        mMediator.onAccept();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testOnCancel() {
+        mMediator.requestShowContent(mWindow);
+        mMediator.onCancel();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        eq(mContent),
+                        /* animate= */ eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
     @Test

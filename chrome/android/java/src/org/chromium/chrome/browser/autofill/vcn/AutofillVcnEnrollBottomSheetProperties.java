@@ -10,6 +10,7 @@ import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 import java.util.LinkedList;
 
@@ -155,6 +156,8 @@ import java.util.LinkedList;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         MESSAGE_TEXT,
         DESCRIPTION,
@@ -165,7 +168,8 @@ import java.util.LinkedList;
         GOOGLE_LEGAL_MESSAGES,
         ISSUER_LEGAL_MESSAGES,
         ACCEPT_BUTTON_LABEL,
-        CANCEL_BUTTON_LABEL
+        CANCEL_BUTTON_LABEL,
+        SHOW_LOADING_STATE,
     };
 
     /** Do not instantiate. */

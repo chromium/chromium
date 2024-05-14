@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.autofill.vcn;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
@@ -16,6 +19,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -98,6 +102,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     private void requestShowContent(WebContents webContents) {
+        LinkedList<LegalMessageLine> googleLegalMessages = new LinkedList<>();
+        googleLegalMessages.add(new LegalMessageLine("Google legal messages."));
+        LinkedList<LegalMessageLine> issuerLegalMessages = new LinkedList<>();
+        issuerLegalMessages.add(new LegalMessageLine("Issuer legal messages."));
+
         mBridge.requestShowContent(
                 NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE,
                 webContents,
@@ -105,11 +114,15 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 "Description text. Learn more",
                 "Learn more",
                 "Card container accessibility description",
-                /* issuerIcon= */ null,
+                /* issuerIcon= */ Bitmap.createBitmap(
+                        /* colors= */ new int[1],
+                        /* width= */ 1,
+                        /* height= */ 1,
+                        Bitmap.Config.ARGB_8888),
                 "Card label",
                 "Card description",
-                /* googleLegaleMessages= */ new LinkedList<LegalMessageLine>(),
-                /* issuerLegalMessages= */ new LinkedList<LegalMessageLine>(),
+                googleLegalMessages,
+                issuerLegalMessages,
                 "Accept button label",
                 "Cancel button label");
     }
@@ -150,6 +163,104 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .requestShowContent(
                         any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    public void testInitialModelValues() {
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
+
+        requestShowContent(mWebContents);
+
+        assertEquals(
+                "Message text",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT));
+        assertEquals(
+                "Description text. Learn more",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)
+                        .mText);
+        assertEquals(
+                "Learn more",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION)
+                        .mLearnMoreLinkText);
+        assertEquals(
+                "Card container accessibility description",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(
+                                AutofillVcnEnrollBottomSheetProperties
+                                        .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
+        assertTrue(
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)
+                        .mBitmap
+                        .sameAs(
+                                Bitmap.createBitmap(
+                                        /* colors= */ new int[1],
+                                        /* width= */ 1,
+                                        /* height= */ 1,
+                                        Bitmap.Config.ARGB_8888)));
+        assertEquals(
+                "Card label",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL));
+        assertEquals(
+                "Card description",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION));
+        assertEquals(
+                1,
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES)
+                        .mLines
+                        .size());
+        assertEquals(
+                "Google legal messages.",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES)
+                        .mLines
+                        .get(0)
+                        .text);
+        assertEquals(
+                1,
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES)
+                        .mLines
+                        .size());
+        assertEquals(
+                "Issuer legal messages.",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES)
+                        .mLines
+                        .get(0)
+                        .text);
+        assertEquals(
+                "Accept button label",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL));
+        assertEquals(
+                "Cancel button label",
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        assertFalse(
+                mBridge.getCoordinatorForTesting()
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
     }
 
     @Test

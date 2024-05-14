@@ -14,6 +14,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.ui.widget.LoadingView;
 
 /** The view of the autofill virtual card enrollment bottom sheet UI. */
 /*package*/ class AutofillVcnEnrollBottomSheetView {
@@ -53,6 +54,9 @@ import org.chromium.chrome.R;
     /** The button that cancels the enrollment. */
     final Button mCancelButton;
 
+    /** The view shown while enrolling the card. */
+    final LoadingView mLoadingView;
+
     /**
      * Creates the view of the autofill virtual card enrollment bottom sheet UI.
      *
@@ -74,5 +78,6 @@ import org.chromium.chrome.R;
         mIssuerLegalMessage = mContentView.findViewById(R.id.issuer_legal_message);
         mAcceptButton = mContentView.findViewById(R.id.accept_button);
         mCancelButton = mContentView.findViewById(R.id.cancel_button);
+        mLoadingView = mContentView.findViewById(R.id.loading_view);
     }
 }

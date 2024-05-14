@@ -47,6 +47,16 @@ import org.chromium.ui.base.WindowAndroid;
         return didShow;
     }
 
+    /** Callback for when the user hits the [accept] button. */
+    void onAccept() {
+        hide();
+    }
+
+    /** Callback for when the user hits the [cancel] button. */
+    void onCancel() {
+        hide();
+    }
+
     /** Hides the bottom sheet, if present. */
     void hide() {
         if (mLifecycle.hasBegun()) mLifecycle.end();

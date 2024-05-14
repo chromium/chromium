@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.junit.Assert.assertEquals;
 
 import android.graphics.Bitmap;
 import android.view.View;
@@ -21,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
@@ -29,35 +31,69 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.widget.LoadingView;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AutofillVcnEnrollBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTestActivityTestCase
         implements LinkOpener {
-    private PropertyModel.Builder mModel;
+    private PropertyModel.Builder mModelBuilder;
+    private PropertyModel mModel;
     private AutofillVcnEnrollBottomSheetView mView;
+
+    private static class LoadingViewObserver implements LoadingView.Observer {
+        private final CallbackHelper mOnShowHelper = new CallbackHelper();
+
+        private final CallbackHelper mOnHideHelper = new CallbackHelper();
+
+        @Override
+        public void onShowLoadingUIComplete() {
+            mOnShowHelper.notifyCalled();
+        }
+
+        @Override
+        public void onHideLoadingUIComplete() {
+            mOnHideHelper.notifyCalled();
+        }
+
+        public CallbackHelper getOnShowLoadingUICompleteHelper() {
+            return mOnShowHelper;
+        }
+
+        public CallbackHelper getOnHideLoadingUICompleteHelper() {
+            return mOnHideHelper;
+        }
+    }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        mModel = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
+        mModelBuilder = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
         mView = new AutofillVcnEnrollBottomSheetView(getActivity());
-        bind(mModel);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> getActivity().setContentView(mView.mContentView));
+        bind(mModelBuilder);
     }
 
     // Builds the model from the given builder and binds it to the view.
     private void bind(PropertyModel.Builder modelBuilder) {
-        PropertyModelChangeProcessor.create(
-                modelBuilder.build(), mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = modelBuilder.build();
+                    PropertyModelChangeProcessor.create(
+                            mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
+                });
     }
 
     // LinkOpener:
@@ -69,10 +105,12 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     public void testMessageTextInDialogTitle() {
         assertThat(String.valueOf(mView.mDialogTitle.getText()), isEmptyString());
 
-        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, null));
+        bind(mModelBuilder.with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, null));
         assertThat(String.valueOf(mView.mDialogTitle.getText()), isEmptyString());
 
-        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, "Message text"));
+        bind(
+                mModelBuilder.with(
+                        AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, "Message text"));
         assertThat(String.valueOf(mView.mDialogTitle.getText()), equalTo("Message text"));
     }
 
@@ -81,11 +119,11 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     public void testDescriptionText() {
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
-        bind(mModel.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION, null));
+        bind(mModelBuilder.with(AutofillVcnEnrollBottomSheetProperties.DESCRIPTION, null));
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                         new Description(
                                 null,
@@ -97,7 +135,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                         new Description(
                                 "",
@@ -109,7 +147,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                         new Description(
                                 "Description text",
@@ -121,7 +159,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                         new Description(
                                 "Description text",
@@ -133,7 +171,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(String.valueOf(mView.mVirtualCardDescription.getText()), isEmptyString());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.DESCRIPTION,
                         new Description(
                                 "Description text",
@@ -153,10 +191,10 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         ReadableObjectPropertyKey<String> descriptionProperty =
                 AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION;
 
-        bind(mModel.with(descriptionProperty, ""));
+        bind(mModelBuilder.with(descriptionProperty, ""));
         assertThat(String.valueOf(mView.mCardContainer.getContentDescription()), isEmptyString());
 
-        bind(mModel.with(descriptionProperty, "Content description"));
+        bind(mModelBuilder.with(descriptionProperty, "Content description"));
         assertThat(
                 String.valueOf(mView.mCardContainer.getContentDescription()),
                 equalTo("Content description"));
@@ -168,7 +206,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
                         new IssuerIcon(
                                 createBitmap(/* dimensions= */ 10, /* color= */ 0xFFFF0000),
@@ -199,10 +237,10 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     private void runTextViewTest(TextView view, ReadableObjectPropertyKey<String> property) {
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, null));
+        bind(mModelBuilder.with(property, null));
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, "Text view content"));
+        bind(mModelBuilder.with(property, "Text view content"));
         assertThat(String.valueOf(view.getText()), equalTo("Text view content"));
     }
 
@@ -226,12 +264,12 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
             TextView view, ReadableObjectPropertyKey<LegalMessages> property) {
         assertThat(String.valueOf(view.getText()), isEmptyString());
 
-        bind(mModel.with(property, null));
+        bind(mModelBuilder.with(property, null));
         assertThat(String.valueOf(view.getText()), isEmptyString());
         assertThat(view.getVisibility(), equalTo(View.GONE));
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         property,
                         new LegalMessages(
                                 null,
@@ -242,7 +280,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertThat(view.getVisibility(), equalTo(View.GONE));
 
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         property,
                         new LegalMessages(
                                 new LinkedList<LegalMessageLine>(),
@@ -255,7 +293,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         LinkedList<LegalMessageLine> lines = new LinkedList<>();
         lines.add(new LegalMessageLine("Legal message line"));
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         property,
                         new LegalMessages(
                                 lines,
@@ -270,7 +308,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         lines = new LinkedList<>();
         lines.add(line);
         bind(
-                mModel.with(
+                mModelBuilder.with(
                         property,
                         new LegalMessages(
                                 lines,
@@ -298,10 +336,39 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     private void runButtonLabelTest(Button button, ReadableObjectPropertyKey<String> property) {
         assertThat(String.valueOf(button.getText()), isEmptyString());
 
-        bind(mModel.with(property, null));
+        bind(mModelBuilder.with(property, null));
         assertThat(String.valueOf(button.getText()), isEmptyString());
 
-        bind(mModel.with(property, "Button Action Text"));
+        bind(mModelBuilder.with(property, "Button Action Text"));
         assertThat(String.valueOf(button.getText()), equalTo("Button Action Text"));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowLoadingState() throws TimeoutException {
+        LoadingViewObserver observer = new LoadingViewObserver();
+        mView.mLoadingView.addObserver(observer);
+
+        assertEquals(View.GONE, mView.mLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
+
+        int onShowLoadingUICompleteCount =
+                observer.getOnShowLoadingUICompleteHelper().getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
+        observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
+        assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.GONE, mView.mCancelButton.getVisibility());
+
+        int onHideLoadingUICompleteCount =
+                observer.getOnHideLoadingUICompleteHelper().getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
+        observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        assertEquals(View.GONE, mView.mLoadingView.getVisibility());
+        assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
+        assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
     }
 }

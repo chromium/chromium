@@ -159,6 +159,19 @@ found in the LICENSE file.
                 android:ellipsize="end"
                 android:singleLine="true"
                 style="@style/TextButton" />
+
+            <!-- Loading spinner. -->
+            <!-- The bottom margin is set as "min_touch_target_size" to match
+            the height of the cancel button. This prevents the bottom sheet from
+            changing height when going into a loading state.-->
+            <org.chromium.ui.widget.LoadingView
+                android:id="@+id/loading_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
+                android:layout_marginBottom="@dimen/min_touch_target_size"
+                android:layout_gravity="center"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

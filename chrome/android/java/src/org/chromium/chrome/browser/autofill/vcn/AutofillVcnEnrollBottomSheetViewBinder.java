@@ -79,6 +79,16 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL == propertyKey) {
             view.mCancelButton.setText(
                     model.get(AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        } else if (AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE == propertyKey) {
+            if (model.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE)) {
+                view.mAcceptButton.setVisibility(View.GONE);
+                view.mCancelButton.setVisibility(View.GONE);
+                view.mLoadingView.showLoadingUI(/* skipDelay= */ true);
+            } else {
+                view.mLoadingView.hideLoadingUI();
+                view.mAcceptButton.setVisibility(View.VISIBLE);
+                view.mCancelButton.setVisibility(View.VISIBLE);
+            }
         }
     }
 

@@ -149,7 +149,8 @@ import java.util.LinkedList;
                                 acceptButtonLabel)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL,
-                                cancelButtonLabel);
+                                cancelButtonLabel)
+                        .with(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false);
 
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(
@@ -222,6 +223,10 @@ import java.util.LinkedList;
         if (mCoordinator == null) return;
         mCoordinator.hide();
         mCoordinator = null;
+    }
+
+    AutofillVcnEnrollBottomSheetCoordinator getCoordinatorForTesting() {
+        return mCoordinator;
     }
 
     @NativeMethods
