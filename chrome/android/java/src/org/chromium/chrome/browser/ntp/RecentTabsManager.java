@@ -434,6 +434,11 @@ public class RecentTabsManager
 
     private @SyncPromoState int calculatePromoState() {
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
+            if (!mSyncPromoController.canShowSyncPromo()) {
+                return SyncPromoState.NO_PROMO;
+            }
+            // TODO(crbug.com/338541375): Move this check inside
+            //  SyncPromoController#canShowSyncPromo().
             if (!mSignInManager.isSyncOptInAllowed()) {
                 return SyncPromoState.NO_PROMO;
             }
