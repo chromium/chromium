@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Consume String request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume ArrayBuffer request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume Uint8Array request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume Int8Array request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume Float32Array request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume DataView request's body as bytes
+  request.bytes is not a function
+[FAIL] Consume blob response's body as bytes
+  request.bytes is not a function
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] realm of the Uint8Array from Response bytes()
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'call')"
+Harness: the test ran to completion.
+
