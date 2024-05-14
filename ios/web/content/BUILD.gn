@@ -27,8 +27,6 @@ source_set("content") {
     "navigation/content_navigation_item.mm",
     "navigation/content_navigation_manager.h",
     "navigation/content_navigation_manager.mm",
-    "ui/web_contents_view_delegate_impl.h",
-    "ui/web_contents_view_delegate_impl.mm",
     "web_state/content_web_state.h",
     "web_state/content_web_state.mm",
     "web_state/content_web_state_builder.h",
@@ -73,6 +71,18 @@ source_set("threads") {
     "//base",
     "//content/public/browser",
     "//ios/web/public/thread",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "ui/web_contents_view_delegate_impl.h",
+    "ui/web_contents_view_delegate_impl.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
   ]
 }
 
