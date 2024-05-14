@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
@@ -29,13 +30,18 @@ public class GoogleBottomBarViewCreator {
      *
      * @param activity An Android activity.
      * @param tabProvider Supplier for the current activity tab.
+     * @param shareDelegateSupplier Supplier for the the share delegate.
      * @param config Bottom bar configuration for the buttons that will be displayed.
      */
     public GoogleBottomBarViewCreator(
-            Activity activity, Supplier<Tab> tabProvider, BottomBarConfig config) {
+            Activity activity,
+            Supplier<Tab> tabProvider,
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            BottomBarConfig config) {
         mContext = activity;
         mConfig = config;
-        mActionsHandler = new GoogleBottomBarActionsHandler(activity, tabProvider);
+        mActionsHandler =
+                new GoogleBottomBarActionsHandler(activity, tabProvider, shareDelegateSupplier);
     }
 
     /**

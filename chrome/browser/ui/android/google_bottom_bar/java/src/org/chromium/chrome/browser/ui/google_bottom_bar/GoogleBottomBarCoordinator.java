@@ -12,6 +12,7 @@ import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 
@@ -46,6 +47,7 @@ public class GoogleBottomBarCoordinator {
      *
      * @param activity The associated {@link Activity}.
      * @param tabProvider Supplier for the current activity tab.
+     * @param shareDelegateSupplier Supplier for the the share delegate.
      * @param googleBottomBarIntentParams The encoded button list provided through IntentParams
      * @param customButtonsOnGoogleBottomBar List of {@link CustomButtonParams} provided by the
      *     embedder to be displayed in the Bottom Bar.
@@ -53,6 +55,7 @@ public class GoogleBottomBarCoordinator {
     public GoogleBottomBarCoordinator(
             Activity activity,
             Supplier<Tab> tabProvider,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             GoogleBottomBarIntentParams googleBottomBarIntentParams,
             List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         mContext = activity;
@@ -60,6 +63,7 @@ public class GoogleBottomBarCoordinator {
                 new GoogleBottomBarViewCreator(
                         activity,
                         tabProvider,
+                        shareDelegateSupplier,
                         getButtonConfig(
                                 googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }
