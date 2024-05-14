@@ -3339,6 +3339,15 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabStateFlatBufferMigrateStaleTabs[] = {
+    {"migrate_stale_tabs", "true"}};
+
+const FeatureEntry::FeatureVariation kTabStateFlatBufferVariations[] = {
+    {"Migrate Stale Tabs", kTabStateFlatBufferMigrateStaleTabs,
+     std::size(kTabStateFlatBufferMigrateStaleTabs), nullptr}};
+#endif
+
 const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator
         [] = {
@@ -7120,7 +7129,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
      flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStateFlatBuffer)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStateFlatBuffer,
+                                    kTabStateFlatBufferVariations,
+                                    "TabStateFlatBuffer")},
 
     {"suppress-toolbar-captures",
      flag_descriptions::kSuppressToolbarCapturesName,
