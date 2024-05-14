@@ -47,10 +47,14 @@ bool ReadRegistryString(const std::wstring& key_path,
 bool DeleteRegistryValue(const std::wstring& key_path,
                          const std::wstring& name,
                          REGSAM reg_view) {
-  const LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, key_path.c_str(),
-                                        reg_view | KEY_READ | KEY_WRITE)
-                          .DeleteValue(name.c_str());
-  if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
+  base::win::RegKey key;
+  if (const LONG result = key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
+                                   reg_view | KEY_SET_VALUE);
+      result != ERROR_SUCCESS) {
+    return result == ERROR_FILE_NOT_FOUND;
+  }
+  if (const LONG result = key.DeleteValue(name.c_str());
+      result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
     VLOG(1) << "Failed to delete registry: " << key_path << "@" << name;
     return false;
   }
