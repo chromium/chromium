@@ -211,6 +211,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPr
 import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
@@ -837,6 +838,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new ChromeDragAndDropBrowserDelegate(this));
 
             assert getToolbarManager() != null;
+
+            ActionConfirmationManager actionConfirmationManager =
+                    new ActionConfirmationManager(
+                            mTabModelProfileSupplier.get(),
+                            this,
+                            null,
+                            getModalDialogManagerSupplier().get());
+
             mLayoutManager =
                     new LayoutManagerChromeTablet(
                             compositorViewHolder,
@@ -859,7 +868,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             tabHoverCardViewStub,
                             getWindowAndroid(),
                             getToolbarManager(),
-                            mRootUiCoordinator.getDesktopWindowStateProvider());
+                            mRootUiCoordinator.getDesktopWindowStateProvider(),
+                            actionConfirmationManager);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

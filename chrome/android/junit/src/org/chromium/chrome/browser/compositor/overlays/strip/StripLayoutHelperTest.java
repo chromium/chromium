@@ -46,6 +46,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -53,6 +55,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -78,6 +81,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -110,6 +115,8 @@ public class StripLayoutHelperTest {
     @Mock private TabDragSource mTabDragSource;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LayerTitleCache mLayerTitleCache;
+    @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -123,6 +130,7 @@ public class StripLayoutHelperTest {
     private static final String EXPECTED_NO_MARGIN = "The tab should not have a trailing margin.";
     private static final String EXPECTED_TAB = "The view should be a tab.";
     private static final String EXPECTED_TITLE = "The view should be a title.";
+    private static final String EXPECTED_NON_TITLE = "The view should not be a title.";
     private static final String CLOSE_TAB = "Close %1$s tab";
     private static final String IDENTIFIER = "Tab";
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
@@ -144,6 +152,7 @@ public class StripLayoutHelperTest {
     private static final float NEW_TAB_BTN_HEIGHT = 100.f;
     private static final float PADDING_LEFT = 10.f;
     private static final float PADDING_RIGHT = 20.f;
+    private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
 
@@ -2765,7 +2774,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testFolioAttached_ReattachAnimationSkipped_TabGroupIndicators() {
+    public void testFolioAttached_ReattachAnimationSkipped() {
         // Arrange
         int tabCount = 6;
         initializeTest(false, false, false, 0, tabCount);
@@ -2869,6 +2878,107 @@ public class StripLayoutHelperTest {
                 expectedEndWidth,
                 (groupTitle).getBottomIndicatorWidth(),
                 EPSILON);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_ImmediateContinue() {
+        // Set up resources for testing tab group delete dialog.
+        setUpSingleGroupAndDragEdgeTabOut(0, 1, 0);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Verify group title is temporarily disappeared from the tab strip
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Verify action confirmation dialog shows.
+        verify(mActionConfirmationManager)
+                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
+
+        // Verify tab is moved out of group as user chooses delete tab group without showing the
+        // dialog.
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+
+        // Verify group title is removed from the tab strip
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_ConfirmationPositive() {
+        // Set up resources for testing tab group delete dialog.
+        setUpSingleGroupAndDragEdgeTabOut(0, 1, 0);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Verify group title is temporarily disappeared from the tab strip
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Verify action confirmation dialog shows.
+        verify(mActionConfirmationManager)
+                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
+
+        // Verify tab is moved out of group as user confirms tab group delete.
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+
+        // Verify group title is removed from the tab strip
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS)
+    public void testTabGroupDeleteDialog_ConfirmationNegative() {
+        // Set up resources for testing tab group delete dialog.
+        setUpSingleGroupAndDragEdgeTabOut(0, 1, 0);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+
+        // Verify group title is temporarily disappeared from the tab strip
+        assertFalse(EXPECTED_NON_TITLE, views[0] instanceof StripLayoutGroupTitle);
+
+        // Verify action confirmation dialog shows.
+        verify(mActionConfirmationManager)
+                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+        mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
+
+        // Verify tab is not moved out of group as user cancels tab group delete.
+        verify(mTabGroupModelFilter, never()).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+
+        // Verify group title is restored back on the tab strip
+        views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+    }
+
+    private void setUpSingleGroupAndDragEdgeTabOut(
+            int groupStartIndex, int groupEndIndex, int tabIndexToDrag) {
+        // Mock 5 tabs. Group tab from start to endIndex.
+        initializeTest(false, false, true, 0, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+        groupTabs(groupStartIndex, groupEndIndex);
+
+        // Assert: View should be group title.
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[groupStartIndex] instanceof StripLayoutGroupTitle);
+
+        // Start drag tab out of group.
+        float dragDistance =
+                (tabs[0].getWidth() - TAB_OVERLAP_WIDTH)
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE
+                        * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+        startDragTabOutOfTabGroup(tabIndexToDrag, dragDistance + 1);
+    }
+
+    private void startDragTabOutOfTabGroup(int index, float dragDistance) {
+        // Start reorder and drag tab out of the tab group through group end.
+        mStripLayoutHelper.startReorderModeAtIndexForTesting(index);
+        float startX = mStripLayoutHelper.getLastReorderXForTesting();
+        mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
     }
 
     @Test
@@ -3480,7 +3590,8 @@ public class StripLayoutHelperTest {
                         mModelSelectorBtn,
                         mTabDragSource,
                         mToolbarContainerView,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mActionConfirmationManager);
         // Initialize StackScroller
         stripLayoutHelper.onContextChanged(mActivity);
         return stripLayoutHelper;

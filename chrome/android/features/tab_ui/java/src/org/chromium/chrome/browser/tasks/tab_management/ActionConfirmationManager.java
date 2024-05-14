@@ -140,6 +140,7 @@ public class ActionConfirmationManager {
     }
 
     private boolean isFullGroup(List<Integer> tabIdList) {
+        assert mTabGroupModelFilter != null : "TabGroupModelFilter has not been set";
         return tabIdList.size() >= mTabGroupModelFilter.getRelatedTabList(tabIdList.get(0)).size();
     }
 

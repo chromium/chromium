@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -111,7 +112,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @NonNull ViewStub tabHoverCardViewStub,
             @NonNull WindowAndroid windowAndroid,
             @NonNull ToolbarManager toolbarManager,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            ActionConfirmationManager actionConfirmationManager) {
         super(
                 host,
                 contentContainer,
@@ -142,7 +144,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         browserControlsStateProvider,
                         windowAndroid,
                         toolbarManager,
-                        desktopWindowStateProvider);
+                        desktopWindowStateProvider,
+                        actionConfirmationManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateProvider = desktopWindowStateProvider;
