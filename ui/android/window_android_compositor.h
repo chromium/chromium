@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/observer_list_types.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/android/ui_android_export.h"
@@ -33,6 +34,11 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
 
    protected:
     ReadbackRef() = default;
+  };
+
+  class FrameSubmissionObserver : public base::CheckedObserver {
+   public:
+    virtual void DidSubmitCompositorFrame() {}
   };
 
   // While there are outstanding ReadbackRefs, Compositor will attempt to
@@ -66,6 +72,10 @@ class UI_ANDROID_EXPORT WindowAndroidCompositor {
       base::OnceCallback<void(const viz::FrameTimingDetails&)>;
   virtual void PostRequestSuccessfulPresentationTimeForNextFrame(
       SuccessfulPresentationTimeCallback callback) = 0;
+  virtual void AddFrameSubmissionObserver(
+      FrameSubmissionObserver* observer) = 0;
+  virtual void RemoveFrameSubmissionObserver(
+      FrameSubmissionObserver* observer) = 0;
 };
 
 }  // namespace ui

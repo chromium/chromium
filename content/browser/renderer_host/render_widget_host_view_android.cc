@@ -1565,6 +1565,7 @@ void RenderWidgetHostViewAndroid::Destroy() {
   UpdateNativeViewTree(/*parent_native_view=*/nullptr,
                        /*parent_layer=*/nullptr);
   delegated_frame_host_.reset();
+  delegated_frame_host_client_.reset();
 
   if (GetTextInputManager() && GetTextInputManager()->HasObserver(this))
     GetTextInputManager()->RemoveObserver(this);

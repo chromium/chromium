@@ -627,6 +627,10 @@ void CompositorImpl::DidSubmitCompositorFrame() {
   TRACE_EVENT0("compositor", "CompositorImpl::DidSubmitCompositorFrame");
   pending_frames_++;
   has_submitted_frame_since_became_visible_ = true;
+
+  for (auto& observer : frame_submission_observers_) {
+    observer.DidSubmitCompositorFrame();
+  }
 }
 
 void CompositorImpl::DidReceiveCompositorFrameAck() {
@@ -944,6 +948,16 @@ void CompositorImpl::MaybeUpdateObserveBeginFrame() {
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   display_private_->SetStandaloneBeginFrameObserver(
       host_begin_frame_observer_->GetBoundRemote());
+}
+
+void CompositorImpl::AddFrameSubmissionObserver(
+    FrameSubmissionObserver* observer) {
+  frame_submission_observers_.AddObserver(observer);
+}
+
+void CompositorImpl::RemoveFrameSubmissionObserver(
+    FrameSubmissionObserver* observer) {
+  frame_submission_observers_.RemoveObserver(observer);
 }
 
 }  // namespace content

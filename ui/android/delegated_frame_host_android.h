@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/android/ui_android_export.h"
+#include "ui/android/window_android_compositor.h"
 
 namespace cc::slim {
 class SurfaceLayer;
@@ -40,9 +41,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     : public viz::HostFrameSinkClient,
       public viz::FrameEvictorClient {
  public:
-  class Client {
+  class Client : public WindowAndroidCompositor::FrameSubmissionObserver {
    public:
-    virtual ~Client() {}
+    ~Client() override {}
     virtual void OnFrameTokenChanged(uint32_t frame_token,
                                      base::TimeTicks activation_time) = 0;
     virtual void WasEvicted() = 0;

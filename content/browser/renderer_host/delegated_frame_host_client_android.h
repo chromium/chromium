@@ -12,6 +12,7 @@
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/render_widget_host.h"
 #include "ui/android/delegated_frame_host_android.h"
 
 namespace content {
@@ -19,7 +20,8 @@ namespace content {
 class RenderWidgetHostViewAndroid;
 
 class CONTENT_EXPORT DelegatedFrameHostClientAndroid
-    : public ui::DelegatedFrameHostAndroid::Client {
+    : public RenderWidgetHost::InputEventObserver,
+      public ui::DelegatedFrameHostAndroid::Client {
  public:
   explicit DelegatedFrameHostClientAndroid(
       RenderWidgetHostViewAndroid* render_widget_host_view);
@@ -31,6 +33,9 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
 
   ~DelegatedFrameHostClientAndroid() override;
 
+  void DidSubmitCompositorFrame() override;
+  void OnInputEvent(const blink::WebInputEvent& event) override;
+
  private:
   // DelegatedFrameHostAndroid::Client implementation.
   void OnFrameTokenChanged(uint32_t frame_token,
@@ -38,8 +43,11 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
   void WasEvicted() override;
   void OnSurfaceIdChanged() override;
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  void RecordFrameSubmissionMetrics();
 
   raw_ptr<RenderWidgetHostViewAndroid> render_widget_host_view_;
+
+  int frames_submitted_this_scroll_ = 0u;
 };
 
 }  // namespace content

@@ -97,6 +97,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void RemoveSimpleBeginFrameObserver(
       ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
 
+  void AddFrameSubmissionObserver(FrameSubmissionObserver* observer) override;
+  void RemoveFrameSubmissionObserver(
+      FrameSubmissionObserver* observer) override;
+
  private:
   class AndroidHostDisplayClient;
   class ScopedCachedBackBuffer;
@@ -267,6 +271,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   ui::HostBeginFrameObserver::SimpleBeginFrameObserverList
       simple_begin_frame_observers_;
   std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
+
+  base::ObserverList<FrameSubmissionObserver> frame_submission_observers_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

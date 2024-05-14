@@ -285,6 +285,7 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
     WindowAndroidCompositor* compositor) {
   if (registered_parent_compositor_)
     DetachFromCompositor();
+  compositor->AddFrameSubmissionObserver(client_);
   compositor->AddChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = compositor;
   if (content_to_visible_time_request_) {
@@ -299,6 +300,7 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
 void DelegatedFrameHostAndroid::DetachFromCompositor() {
   if (!registered_parent_compositor_)
     return;
+  registered_parent_compositor_->RemoveFrameSubmissionObserver(client_);
   registered_parent_compositor_->RemoveChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = nullptr;
   content_to_visible_time_request_ = nullptr;

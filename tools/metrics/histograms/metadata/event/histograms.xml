@@ -100,6 +100,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.GestureScrollEnd.BrowserCompositorFrame.Count"
+    units="counts" expires_after="2025-05-02">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records the number of compositor frames submitted by browser main between a
+    GestureScrollBegin and the corresponding GestureScrollEnd event. Recorded
+    when a GestureScrollEnd is received.
+  </summary>
+</histogram>
+
 <histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
     units="pixels" expires_after="2024-10-28">
   <owner>flackr@chromium.org</owner>
