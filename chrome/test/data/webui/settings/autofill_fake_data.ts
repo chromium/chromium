@@ -344,8 +344,6 @@ export class TestPaymentsManager extends TestBrowserProxy implements
 
   saveCreditCard(_creditCard: chrome.autofillPrivate.CreditCardEntry) {}
 
-  setCreditCardFidoAuthEnabledState(_enabled: boolean) {}
-
   addVirtualCard(_cardId: string) {
     this.methodCalled('addVirtualCard');
   }

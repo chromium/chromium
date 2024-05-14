@@ -64,11 +64,6 @@ export interface PaymentsManagerProxy {
   logServerIbanLinkClicked(): void;
 
   /**
-   * Enables FIDO authentication for card unmasking.
-   */
-  setCreditCardFidoAuthEnabledState(enabled: boolean): void;
-
-  /**
    * Enrolls the card into virtual cards.
    */
   addVirtualCard(cardId: string): void;
@@ -163,10 +158,6 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   logServerIbanLinkClicked() {
     chrome.autofillPrivate.logServerIbanLinkClicked();
-  }
-
-  setCreditCardFidoAuthEnabledState(enabled: boolean) {
-    chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState(enabled);
   }
 
   addVirtualCard(cardId: string) {

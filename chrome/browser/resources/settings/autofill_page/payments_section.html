@@ -32,16 +32,14 @@
     pref="{{prefs.autofill.credit_card_enabled}}">
 </settings-toggle-button>
 <if expr="is_win or is_macosx">
-  <template is="dom-if" if="[[mandatoryReauthFeatureEnabled_]]">
-    <settings-toggle-button id="mandatoryAuthToggle"
-        no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
-        sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
-        pref="{{prefs.autofill.payment_methods_mandatory_reauth}}"
-        disabled="[[shouldDisableAuthToggle_(
-                  prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
-        on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button id="mandatoryAuthToggle"
+      no-extension-indicator label="$i18n{enableMandatoryAuthToggleLabel}"
+      sub-label="$i18n{enableMandatoryAuthToggleSublabel}"
+      pref="{{prefs.autofill.payment_methods_mandatory_reauth}}"
+      disabled="[[shouldDisableAuthToggle_(
+                prefs.autofill.credit_card_enabled.value, deviceAuthAvailable_)]]"
+      on-settings-boolean-control-change="onMandatoryAuthToggleChange_">
+  </settings-toggle-button>
 </if>
 <template is="dom-if" if="[[cvcStorageAvailable_]]">
   <settings-toggle-button id="cvcStorageToggle"
@@ -68,19 +66,6 @@
     pref="{{prefs.payments.can_make_payment_enabled}}"
     on-settings-boolean-control-change="onCanMakePaymentChange_">
 </settings-toggle-button>
-<template is="dom-if"
-    if="[[shouldShowFidoToggle_(
-        prefs.autofill.credit_card_enabled.value,
-        userIsFidoVerifiable_, mandatoryReauthFeatureEnabled_)]]">
-  <settings-toggle-button
-      id="autofillCreditCardFIDOAuthToggle"
-      aria-label="$i18n{creditCards}" no-extension-indicator
-      label="$i18n{enableCreditCardFIDOAuthLabel}"
-      sub-label="$i18n{enableCreditCardFIDOAuthSublabel}"
-      pref="{{prefs.autofill.credit_card_fido_auth_enabled}}"
-      on-change="setFidoAuthenticationEnabledState_">
-  </settings-toggle-button>
-</template>
 <template is="dom-if"
     if="[[prefs.autofill.credit_card_enabled.extensionId]]">
   <div class="cr-row continuation">

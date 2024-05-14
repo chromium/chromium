@@ -344,34 +344,9 @@
       <message name="IDS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_DIALOG_TITLE" desc="Title of the remove address confimation dialog" formatter_data="android_java">
         Delete address
       </message>
-      <!-- WebAuthn titles -->
-      <if expr="is_macosx">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="A platform authenticator using device unlock on macOS. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking.">
-          Device unlock
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking on macOS. Sentence-Cased.">
-          Use device unlock to confirm cards faster
-        </message>
-      </if>
-      <if expr="is_win">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The product name of the authentication system on Windows. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
-          Windows Hello
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking on Windows. Sentence-Cased.">
-          Use Windows Hello to confirm cards faster
-        </message>
-      </if>
       <if expr="is_android">
         <message name="IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_ERROR" desc="Validation error message for missing required address field." formatter_data="android_java">
           Enter <ph name="FIELD">$1<ex>ZIP code</ex></ph>
-        </message>
-      </if>
-      <if expr="not is_macosx and not is_win and not is_android">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
-          Biometrics
-        </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Sentence-Cased.">
-          This feature is not available on your device
         </message>
       </if>
     </then>

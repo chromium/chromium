@@ -1011,32 +1011,6 @@ void AddOnStartupStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-bool IsFidoAuthenticationAvailable(autofill::PersonalDataManager* personal_data,
-                                   content::WebContents* web_contents) {
-  // Don't show toggle switch if user is unable to downstream cards.
-  if (!personal_data->payments_data_manager().IsPaymentsDownloadActive()) {
-    return false;
-  }
-
-  // If |autofill_manager| is not available, then don't show toggle switch.
-  autofill::ContentAutofillDriverFactory* autofill_driver_factory =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents);
-  if (!autofill_driver_factory) {
-    return false;
-  }
-  autofill::ContentAutofillDriver* autofill_driver =
-      autofill_driver_factory->DriverForFrame(
-          web_contents->GetPrimaryMainFrame());
-  if (!autofill_driver) {
-    return false;
-  }
-
-  // Show the toggle switch only if FIDO authentication is available. Once
-  // returned, this decision may be overridden (from true to false) by the
-  // caller in the payments section if no platform authenticator is found.
-  return ::autofill::IsCreditCardFidoAuthenticationEnabled();
-}
-
 bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
   // If `client` is not available, then don't show toggle switch.
   autofill::ContentAutofillClient* client =
@@ -1072,9 +1046,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"enableCreditCardsLabel", IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_LABEL},
       {"enableCreditCardsSublabel",
        IDS_AUTOFILL_ENABLE_CREDIT_CARDS_TOGGLE_SUBLABEL},
-      {"enableCreditCardFIDOAuthLabel", IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL},
-      {"enableCreditCardFIDOAuthSublabel",
-       IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL},
       {"enableCvcStorageLabel",
        IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_LABEL},
       {"enableCvcStorageAriaLabelForNoCvcSaved",
@@ -1318,14 +1289,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_SUBLABEL_WITH_LEARN_LINK,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
-
-  // TODO(crbug.com/288458283): Clean up mandatory reauth code branch and remove
-  // the FIDO toggle.
-  html_source->AddBoolean("autofillEnablePaymentsMandatoryReauth", true);
-
-  html_source->AddBoolean(
-      "fidoAuthenticationAvailableForAutofill",
-      IsFidoAuthenticationAvailable(personal_data, web_contents));
 
   ui::Accelerator undo_accelerator(ui::VKEY_Z, ui::EF_PLATFORM_ACCELERATOR);
   html_source->AddString(

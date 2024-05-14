@@ -199,26 +199,6 @@ class AutofillPrivateLogServerIbanLinkClickedFunction
   ResponseAction Run() override;
 };
 
-class AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
-    : public ExtensionFunction {
- public:
-  AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction() = default;
-  AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction(
-      const AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction&) = delete;
-  AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction& operator=(
-      const AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction&) = delete;
-  DECLARE_EXTENSION_FUNCTION(
-      "autofillPrivate.setCreditCardFIDOAuthEnabledState",
-      AUTOFILLPRIVATE_SETCREDITCARDFIDOAUTHENABLEDSTATE)
-
- protected:
-  ~AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction() override =
-      default;
-
-  // ExtensionFunction overrides.
-  ResponseAction Run() override;
-};
-
 class AutofillPrivateSaveIbanFunction : public ExtensionFunction {
  public:
   AutofillPrivateSaveIbanFunction() = default;

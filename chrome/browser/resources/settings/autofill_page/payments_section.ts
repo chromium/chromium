@@ -113,17 +113,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Set to true if user can be verified through FIDO authentication.
-       */
-      userIsFidoVerifiable_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'fidoAuthenticationAvailableForAutofill');
-        },
-      },
-
-      /**
        * Whether IBAN is supported in Settings page.
        */
       showIbanSettingsEnabled_: {
@@ -189,17 +178,6 @@ export class SettingsPaymentsSectionElement extends
       // </if>
 
       /**
-       * Whether the feature flag for mandatory re-auth is enabled.
-       */
-      mandatoryReauthFeatureEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'autofillEnablePaymentsMandatoryReauth');
-        },
-      },
-
-      /**
        * Checks if CVC storage is available based on the feature flag.
        */
       cvcStorageAvailable_: {
@@ -236,7 +214,6 @@ export class SettingsPaymentsSectionElement extends
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
   private showIbanSettingsEnabled_: boolean;
-  private userIsFidoVerifiable_: boolean;
   private updateChromeSettingsLinkToGPayWebEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
@@ -254,7 +231,6 @@ export class SettingsPaymentsSectionElement extends
   private showBulkRemoveCvcConfirmationDialog_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
-  private mandatoryReauthFeatureEnabled_: boolean;
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private cardBenefitsFlagEnabled_: boolean;
   private cardBenefitsSublabel_: string;
@@ -267,17 +243,6 @@ export class SettingsPaymentsSectionElement extends
         (cardList: chrome.autofillPrivate.CreditCardEntry[]) => {
           this.creditCards = cardList;
         };
-
-    // Update |userIsFidoVerifiable_| based on the availability of a platform
-    // authenticator.
-    this.paymentsManager_.isUserVerifyingPlatformAuthenticatorAvailable().then(
-        r => {
-          if (r === null) {
-            return;
-          }
-
-          this.userIsFidoVerifiable_ = this.userIsFidoVerifiable_ && r;
-        });
 
     const setPersonalDataListener: PersonalDataChangedListener =
         (_addressList, cardList, ibanList) => {
@@ -560,24 +525,6 @@ export class SettingsPaymentsSectionElement extends
 
   private onSaveIban_(event: CustomEvent<chrome.autofillPrivate.IbanEntry>) {
     this.paymentsManager_.saveIban(event.detail);
-  }
-
-  /**
-   * @return Whether the user is verifiable through FIDO authentication.
-   */
-  private shouldShowFidoToggle_(creditCardEnabled: boolean): boolean {
-    return creditCardEnabled && this.userIsFidoVerifiable_ &&
-        !this.mandatoryReauthFeatureEnabled_;
-  }
-
-  /**
-   * Listens for the enable-authentication event, and calls the private API.
-   */
-  private setFidoAuthenticationEnabledState_() {
-    this.paymentsManager_.setCreditCardFidoAuthEnabledState(
-        this.shadowRoot!
-            .querySelector<SettingsToggleButtonElement>(
-                '#autofillCreditCardFIDOAuthToggle')!.checked);
   }
 
   /**

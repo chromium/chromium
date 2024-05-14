@@ -612,28 +612,6 @@ AutofillPrivateLogServerIbanLinkClickedFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
-
-ExtensionFunction::ResponseAction
-AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
-  // Getting CreditCardAccessManager from WebContents.
-  autofill::BrowserAutofillManager* autofill_manager =
-      GetBrowserAutofillManager(GetSenderWebContents());
-  if (!autofill_manager)
-    return RespondNow(Error(kErrorDataUnavailable));
-
-  std::optional<
-      api::autofill_private::SetCreditCardFIDOAuthEnabledState::Params>
-      parameters = api::autofill_private::SetCreditCardFIDOAuthEnabledState::
-          Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  autofill_manager->GetCreditCardAccessManager().OnSettingsPageFIDOAuthToggled(
-      parameters->enabled);
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateSaveIbanFunction
 
 ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {

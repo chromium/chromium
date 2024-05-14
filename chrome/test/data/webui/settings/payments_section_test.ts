@@ -26,16 +26,13 @@ suite('PaymentSectionUiTest', function() {
     // Initializing with fake prefs
     const section = document.createElement('settings-payments-section');
     section.prefs = {
-      autofill: {credit_card_enabled: {}, credit_card_fido_auth_enabled: {}},
+      autofill: {credit_card_enabled: {}},
     };
     document.body.appendChild(section);
 
     assertFalse(
         !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
     section.set('prefs.autofill.credit_card_enabled.extensionId', 'test-id-1');
-    section.set(
-        'prefs.autofill.credit_card_fido_auth_enabled.extensionId',
-        'test-id-2');
     flush();
 
     assertTrue(
@@ -53,15 +50,8 @@ suite('PaymentsSection', function() {
       migrationEnabled: true,
       showIbansSettings: true,
       deviceAuthAvailable: true,
-      autofillEnablePaymentsMandatoryReauth: true,
     });
   });
-
-  // Fakes the existence of a platform authenticator.
-  function addFakePlatformAuthenticator() {
-    (PaymentsManagerImpl.getInstance() as TestPaymentsManager)
-        .setIsUserVerifyingPlatformAuthenticatorAvailable(true);
-  }
 
   test('verifyNoCreditCards', async function() {
     const section = await createPaymentsSection(
@@ -178,85 +168,6 @@ suite('PaymentsSection', function() {
     assertFalse(section.$.migrateCreditCards.hidden);
   });
 
-  // Scenario1:
-  // FIDO toggle shown- True
-  // User Verified- True
-  // Mandatory Reauth Flag- False
-  test('FidoAuthScenario1', async function() {
-    loadTimeData.overrideValues({
-      fidoAuthenticationAvailableForAutofill: true,
-      autofillEnablePaymentsMandatoryReauth: false,
-    });
-    addFakePlatformAuthenticator();
-    const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
-
-    assertTrue(!!section.shadowRoot!.querySelector(
-        '#autofillCreditCardFIDOAuthToggle'));
-  });
-
-  // Scenario2:
-  // FIDO toggle shown- False
-  // User Verified- True
-  // Mandatory Reauth Flag- True
-  test('FidoAuthScenario2', async function() {
-    loadTimeData.overrideValues({
-      fidoAuthenticationAvailableForAutofill: true,
-      autofillEnablePaymentsMandatoryReauth: true,
-    });
-    addFakePlatformAuthenticator();
-    const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
-
-    assertFalse(!!section.shadowRoot!.querySelector(
-        '#autofillCreditCardFIDOAuthToggle'));
-  });
-
-  // Scenario3:
-  // FIDO toggle shown- False
-  // User Verified- False
-  // Mandatory Reauth Flag- False
-  test('FidoAuthScenario3', async function() {
-    loadTimeData.overrideValues(
-        {fidoAuthenticationAvailableForAutofill: false});
-    const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {credit_card_enabled: {value: true}});
-    assertFalse(!!section.shadowRoot!.querySelector(
-        '#autofillCreditCardFIDOAuthToggle'));
-  });
-
-  test('verifyFIDOAuthToggleCheckedIfOptedIn', async function() {
-    loadTimeData.overrideValues({
-      fidoAuthenticationAvailableForAutofill: true,
-      autofillEnablePaymentsMandatoryReauth: false,
-    });
-    addFakePlatformAuthenticator();
-    const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {
-          credit_card_enabled: {value: true},
-          credit_card_fido_auth_enabled: {value: true},
-        });
-    assertTrue(section.shadowRoot!
-                   .querySelector<SettingsToggleButtonElement>(
-                       '#autofillCreditCardFIDOAuthToggle')!.checked);
-  });
-
-  test('verifyFIDOAuthToggleUncheckedIfOptedOut', async function() {
-    loadTimeData.overrideValues({
-      fidoAuthenticationAvailableForAutofill: true,
-      autofillEnablePaymentsMandatoryReauth: false,
-    });
-    addFakePlatformAuthenticator();
-    const section = await createPaymentsSection(
-        /*creditCards=*/[], /*ibans=*/[], {
-          credit_card_enabled: {value: true},
-          credit_card_fido_auth_enabled: {value: false},
-        });
-    assertFalse(section.shadowRoot!
-                    .querySelector<SettingsToggleButtonElement>(
-                        '#autofillCreditCardFIDOAuthToggle')!.checked);
-  });
-
   test('CanMakePaymentToggle_RecordsMetrics', async function() {
     const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -341,24 +252,6 @@ suite('PaymentsSection', function() {
         // <if expr="not is_win and not is_macosx">
         assertFalse(!!mandatoryAuthToggle);
         // </if>
-      });
-
-  test(
-      'verifyReauthNotShownIfDeviceUnlockIsAvailableAndReauthIsOnButFlagIsOff',
-      async function() {
-        loadTimeData.overrideValues({
-          deviceAuthAvailable: true,
-          autofillEnablePaymentsMandatoryReauth: false,
-        });
-
-        const section = await createPaymentsSection(
-            /*creditCards=*/[], /*ibans=*/[], {
-              credit_card_enabled: {value: true},
-              payment_methods_mandatory_reauth: {value: true},
-            });
-
-        assertFalse(
-            !!section.shadowRoot!.querySelector('#mandatoryAuthToggle'));
       });
 
   test(

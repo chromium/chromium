@@ -178,8 +178,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillCreditCardEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[autofill::prefs::kAutofillCreditCardFidoAuthEnabled] =
-      settings_api::PrefType::kBoolean;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   (*s_allowlist)[autofill::prefs::kAutofillPaymentMethodsMandatoryReauth] =
       settings_api::PrefType::kBoolean;

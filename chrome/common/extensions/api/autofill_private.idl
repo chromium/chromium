@@ -372,9 +372,6 @@ namespace autofillPrivate {
     // Logs that the server cards edit link was clicked.
     static void logServerCardLinkClicked();
 
-    // Enables or disables FIDO Authentication for credit card unmasking.
-    static void setCreditCardFIDOAuthEnabledState(boolean enabled);
-
     // Enrolls a credit card into virtual cards.
     // |cardId|: The server side id of the credit card to be enrolled. Note it
     // refers to the legacy server id of credit cards, not the instrument ids.
