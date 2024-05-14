@@ -9,6 +9,10 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <org.chromium.chrome.browser.sync.settings.CentralAccountCardPreference
+        android:key="central_account_card"
+        app:isPreferenceVisible="true"/>
+
     <org.chromium.chrome.browser.sync.settings.IdentityErrorCardPreference
         android:key="identity_error_card"
         app:isPreferenceVisible="false"/>

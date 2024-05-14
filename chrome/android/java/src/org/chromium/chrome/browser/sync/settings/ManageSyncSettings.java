@@ -95,6 +95,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
 
     @VisibleForTesting
+    private static final String PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE = "central_account_card";
+
+    @VisibleForTesting
     public static final String PREF_SYNC_ERROR_CARD_PREFERENCE = "sync_error_card";
 
     @VisibleForTesting
@@ -195,6 +198,15 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (shouldReplaceSyncSettingsWithAccountSettings()) {
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
+
+            CentralAccountCardPreference centralAccountCardPreference =
+                    (CentralAccountCardPreference)
+                            findPreference(PREF_CENTRAL_ACCOUNT_CARD_PREFERENCE);
+            centralAccountCardPreference.initialize(
+                    IdentityServicesProvider.get()
+                            .getIdentityManager(getProfile())
+                            .getPrimaryAccountInfo(ConsentLevel.SIGNIN),
+                    ProfileDataCache.createWithDefaultImageSizeAndNoBadge(getContext()));
 
             IdentityErrorCardPreference identityErrorCardPreference =
                     (IdentityErrorCardPreference)

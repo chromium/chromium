@@ -32,6 +32,7 @@ import android.app.Dialog;
 import android.app.Instrumentation.ActivityResult;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -100,6 +101,7 @@ import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -113,7 +115,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ManageSyncSettingsTest {
-    private static final int RENDER_TEST_REVISION = 5;
+    private static final int RENDER_TEST_REVISION = 6;
 
     /** Maps selected types to their UI element IDs. */
     private Map<Integer, String> mUiDataTypes;
@@ -785,6 +787,23 @@ public class ManageSyncSettingsTest {
                         .isVisible());
         Assert.assertNotNull(fragment.getView().findViewById(R.id.bottom_bar_shadow));
         Assert.assertNotNull(fragment.getView().findViewById(R.id.bottom_bar_button_container));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testSigninSettingsTopAvatar() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+
+        ViewUtils.waitForVisibleView(withId(R.id.central_account_card));
+        View view =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return fragment.getActivity().findViewById(R.id.central_account_card);
+                        });
+        mRenderTestRule.render(view, "sign_in_settings_top_avatar");
     }
 
     @Test
