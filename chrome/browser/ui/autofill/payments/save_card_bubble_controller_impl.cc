@@ -694,8 +694,9 @@ int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
 }
 
 // static
-void SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
-  g_ignore_window_activation_for_testing = true;
+base::AutoReset<bool>
+SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting() {
+  return base::AutoReset<bool>(&g_ignore_window_activation_for_testing, true);
 }
 
 void SaveCardBubbleControllerImpl::OnVisibilityChanged(

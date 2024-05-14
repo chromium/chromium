@@ -234,8 +234,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
-
-    SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting();
   }
 
   void TearDownOnMainThread() override {
@@ -768,6 +766,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+
+  base::AutoReset<bool> ignore_window_activation_for_testing_{
+      SaveCardBubbleControllerImpl::IgnoreWindowActivationForTesting()};
 };
 
 // Tests the local save bubble. Ensures that clicking the [No thanks] button

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
@@ -128,7 +129,7 @@ class SaveCardBubbleControllerImpl
   PaymentBubbleType GetPaymentBubbleType() const override;
   int GetSaveSuccessAnimationStringId() const override;
 
-  static void IgnoreWindowActivationForTesting();
+  static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);
