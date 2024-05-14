@@ -590,7 +590,7 @@ class ProxyResolverV8::Context {
         ASCIILiteralToV8String(isolate_, PAC_JS_LIBRARY PAC_JS_LIBRARY_EX),
         kPacUtilityResourceName);
     if (rv != net::OK) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return rv;
     }
 
@@ -789,7 +789,7 @@ class ProxyResolverV8::Context {
         return;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // V8 callback for when "sortIpAddressList()" is invoked by the PAC script.

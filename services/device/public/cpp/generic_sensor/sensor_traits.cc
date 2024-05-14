@@ -41,7 +41,7 @@ double GetSensorMaxAllowedFrequency(SensorType type) {
           SensorType::RELATIVE_ORIENTATION_QUATERNION>::kMaxAllowedFrequency;
     // No default so the compiler will warn us if a new type is added.
   }
-  NOTREACHED() << "Unknown sensor type " << type;
+  NOTREACHED_IN_MIGRATION() << "Unknown sensor type " << type;
   return SensorTraits<SensorType::kMaxValue>::kMaxAllowedFrequency;
 }
 
@@ -77,7 +77,7 @@ double GetSensorDefaultFrequency(mojom::SensorType type) {
           SensorType::RELATIVE_ORIENTATION_QUATERNION>::kDefaultFrequency;
     // No default so the compiler will warn us if a new type is added.
   }
-  NOTREACHED() << "Unknown sensor type " << type;
+  NOTREACHED_IN_MIGRATION() << "Unknown sensor type " << type;
   return SensorTraits<SensorType::kMaxValue>::kDefaultFrequency;
 }
 

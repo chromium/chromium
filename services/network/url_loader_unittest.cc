@@ -4214,7 +4214,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
         std::move(client_cert_responder_remote));
     switch (certificate_response_) {
       case CertificateResponse::INVALID:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case CertificateResponse::URL_LOADER_REQUEST_CANCELLED:
         ASSERT_TRUE(url_loader_remote_);
@@ -6142,7 +6142,7 @@ class MockTrustTokenRequestHelperFactory
         return;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

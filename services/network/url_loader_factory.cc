@@ -129,7 +129,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
 
 void URLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 net::URLRequestContext* URLLoaderFactory::GetUrlRequestContext() const {

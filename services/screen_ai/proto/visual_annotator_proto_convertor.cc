@@ -101,8 +101,9 @@ bool SerializePredictedType(
                                   predicted_type.string_type());
       break;
     case chrome_screen_ai::UIComponent::PredictedType::TYPE_OF_NOT_SET:
-      NOTREACHED() << "Malformed proto message: Required field "
-                      "`chrome_screen_ai::UIComponent::PredictedType` not set.";
+      NOTREACHED_IN_MIGRATION()
+          << "Malformed proto message: Required field "
+             "`chrome_screen_ai::UIComponent::PredictedType` not set.";
       return false;
   }
 
@@ -150,8 +151,8 @@ void SerializeDirection(const chrome_screen_ai::Direction& direction,
       // additions to `chrome_screen_ai::Direction`. However, in this
       // case, both the screen_ai library and this code should always be in
       // sync.
-      NOTREACHED() << "Unrecognized chrome_screen_ai::Direction value: "
-                   << direction;
+      NOTREACHED_IN_MIGRATION()
+          << "Unrecognized chrome_screen_ai::Direction value: " << direction;
       break;
   }
 }
@@ -197,8 +198,9 @@ void SerializeContentType(const chrome_screen_ai::ContentType& content_type,
       // additions to `chrome_screen_ai::ContentType`. However, in this
       // case, both the screen_ai library and this code should always be in
       // sync.
-      NOTREACHED() << "Unrecognized chrome_screen_ai::ContentType value: "
-                   << content_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Unrecognized chrome_screen_ai::ContentType value: "
+          << content_type;
       break;
   }
 }
@@ -419,7 +421,7 @@ screen_ai::mojom::Direction ProtoToMojo(chrome_screen_ai::Direction direction) {
 
     case chrome_screen_ai::Direction_INT_MIN_SENTINEL_DO_NOT_USE_:
     case chrome_screen_ai::Direction_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return screen_ai::mojom::Direction::DIRECTION_UNSPECIFIED;
   }
 }

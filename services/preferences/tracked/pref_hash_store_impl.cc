@@ -190,8 +190,9 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValue(
     case PrefHashCalculator::INVALID:
       return initial_value ? ValueState::CHANGED : ValueState::CLEARED;
   }
-  NOTREACHED() << "Unexpected PrefHashCalculator::ValidationResult: "
-               << validation_result;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected PrefHashCalculator::ValidationResult: "
+      << validation_result;
   return ValueState::UNTRUSTED_UNKNOWN_VALUE;
 }
 

@@ -49,7 +49,7 @@ viz::mojom::FilterType CCFilterTypeToMojo(
     case cc::FilterOperation::OFFSET:
       return viz::mojom::FilterType::OFFSET;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return viz::mojom::FilterType::FILTER_TYPE_LAST;
 }
 
@@ -89,7 +89,7 @@ cc::FilterOperation::FilterType MojoFilterTypeToCC(
     case viz::mojom::FilterType::OFFSET:
       return cc::FilterOperation::OFFSET;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return cc::FilterOperation::FILTER_TYPE_LAST;
 }
 

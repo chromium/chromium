@@ -81,7 +81,7 @@ const char* SilenceStateToString(InputController::SilenceState state) {
     case InputController::SILENCE_STATE_AUDIO_AND_SILENCE:
       return "SILENCE_STATE_AUDIO_AND_SILENCE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }

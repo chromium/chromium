@@ -261,7 +261,7 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
   bool valid = cricket::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
                                           &header_size);
   if (!valid) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -42,7 +42,7 @@ class StructTraits<tracing::mojom::ChromeConfigDataView,
       case perfetto::protos::gen::ChromeConfig::UNKNOWN:
         return tracing::mojom::TracingClientPriority::kUnknown;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return tracing::mojom::TracingClientPriority::kUnknown;
     }
   }

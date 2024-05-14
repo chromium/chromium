@@ -51,7 +51,7 @@ size_t GetBytesPerElement(mojom::Operand::DataType operand_type) {
     case mojom::Operand::DataType::kUint8:
       return sizeof(uint8_t);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 webnn::Operand::DataType MojoOperandTypeToComponent(

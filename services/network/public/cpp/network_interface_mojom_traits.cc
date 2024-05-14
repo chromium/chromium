@@ -64,7 +64,7 @@ EnumTraits<network::mojom::ConnectionType,
     case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
       return network::mojom::ConnectionType::CONNECTION_BLUETOOTH;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::ConnectionType::CONNECTION_UNKNOWN;
 }
 

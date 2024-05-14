@@ -57,7 +57,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
       case gfx::ProtectedVideoType::kSoftwareProtected:
         return viz::mojom::ProtectedVideoState::kSoftwareProtected;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return viz::mojom::ProtectedVideoState::kClear;
   }
 
@@ -74,7 +74,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
         *out = gfx::ProtectedVideoType::kSoftwareProtected;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -90,7 +90,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
       case viz::OverlayPriority::kRequired:
         return viz::mojom::OverlayPriority::kRequired;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return viz::mojom::OverlayPriority::kLow;
   }
 
@@ -107,7 +107,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
         *out = viz::OverlayPriority::kRequired;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -159,7 +159,7 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::DrawQuad::Material::kSharedElement:
         return viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return viz::mojom::DrawQuadStateDataView::Tag::kDebugBorderQuadState;
   }
 
@@ -229,7 +229,7 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState:
         return data.ReadSharedElementQuadState(out);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

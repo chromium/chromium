@@ -265,7 +265,8 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   // added to the `PrivateNetworkRequestPolicy` enum.
   switch (policy) {
     case Policy::kAllow:
-      NOTREACHED();  // Should have been handled by the if statement above.
+      NOTREACHED_IN_MIGRATION();  // Should have been handled by the if
+                                  // statement above.
       return Result::kAllowedByPolicyAllow;
     case Policy::kWarn:
       return Result::kAllowedByPolicyWarn;

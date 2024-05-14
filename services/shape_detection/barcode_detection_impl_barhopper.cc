@@ -64,7 +64,7 @@ mojom::BarcodeFormat BarhopperFormatToMojo(barhopper::BarcodeFormat format) {
     case barhopper::BarcodeFormat::UNRECOGNIZED:
       return mojom::BarcodeFormat::UNKNOWN;
     default:
-      NOTREACHED() << "Invalid barcode format";
+      NOTREACHED_IN_MIGRATION() << "Invalid barcode format";
       return mojom::BarcodeFormat::UNKNOWN;
   }
 }

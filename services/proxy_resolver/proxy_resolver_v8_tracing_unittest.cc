@@ -1008,7 +1008,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
       EXPECT_EQ("[166.155.144.33.test:",
                 proxy_uri.substr(0, proxy_uri.find(':') + 1));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

@@ -278,7 +278,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::WorkerSrc:
     case CSPDirectiveName::Unknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   };
 }
@@ -1245,7 +1245,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::UpgradeInsecureRequests:
       return CSPDirectiveName::Unknown;
     case CSPDirectiveName::Unknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CSPDirectiveName::Unknown;
   }
 }
@@ -1644,7 +1644,7 @@ std::string ToString(CSPDirectiveName name) {
     case CSPDirectiveName::Unknown:
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

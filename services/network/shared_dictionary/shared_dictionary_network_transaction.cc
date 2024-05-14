@@ -513,7 +513,7 @@ int SharedDictionaryNetworkTransaction::ResumeNetworkStart() {
 void SharedDictionaryNetworkTransaction::SetModifyRequestHeadersCallback(
     base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
   // This method should not be called for this class.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharedDictionaryNetworkTransaction::

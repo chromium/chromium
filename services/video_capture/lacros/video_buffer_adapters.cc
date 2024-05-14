@@ -37,7 +37,7 @@ gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
       gfx_buffer_handle.native_pixmap_handle =
           std::move(gfx_native_pixmap_handle);
     } else {
-      NOTREACHED() << "Unexpected new buffer type";
+      NOTREACHED_IN_MIGRATION() << "Unexpected new buffer type";
     }
   }
   return gfx_buffer_handle;
@@ -76,7 +76,7 @@ media::mojom::VideoBufferHandlePtr ConvertToMediaVideoBuffer(
     return media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
         std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
-    NOTREACHED() << "Unexpected new buffer type";
+    NOTREACHED_IN_MIGRATION() << "Unexpected new buffer type";
   }
 
   return nullptr;

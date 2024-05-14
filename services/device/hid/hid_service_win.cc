@@ -453,7 +453,7 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
       report_length = GetCaps().FeatureReportByteLength;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // Whether or not the device includes report IDs in its reports the size

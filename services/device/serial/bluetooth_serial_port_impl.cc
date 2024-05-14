@@ -178,7 +178,7 @@ void BluetoothSerialPortImpl::ReadFromSocketAndWriteOut(
       out_stream_.reset();
       break;
     default:
-      NOTREACHED() << "Unexpected Mojo result: " << result;
+      NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
   }
 }
 
@@ -305,7 +305,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceiveError(
           client_->OnReadError(mojom::SerialReceiveError::DISCONNECTED);
           break;
         case BluetoothSocket::ErrorReason::kIOPending:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case BluetoothSocket::ErrorReason::kSystemError:
           client_->OnReadError(mojom::SerialReceiveError::SYSTEM_ERROR);
@@ -343,7 +343,7 @@ void BluetoothSerialPortImpl::WriteToSocket(
         std::move(drain_callback_).Run();
       break;
     default:
-      NOTREACHED() << "Unexpected Mojo result: " << result;
+      NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
   }
 }
 

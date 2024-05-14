@@ -713,7 +713,7 @@ void ConsumerHost::OnTraceStats(bool success,
 }
 
 void ConsumerHost::OnSessionCloned(const OnSessionClonedArgs&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ConsumerHost::DestructTracingSession() {

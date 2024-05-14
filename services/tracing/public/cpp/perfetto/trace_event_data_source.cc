@@ -585,7 +585,7 @@ void TraceEventDataSource::SetupStartupTracing(
     PerfettoProducer* producer,
     const base::trace_event::TraceConfig& trace_config,
     bool privacy_filtering_enabled) {
-  NOTREACHED() << "This is not expected to run in SDK build.";
+  NOTREACHED_IN_MIGRATION() << "This is not expected to run in SDK build.";
 
   {
     AutoLockWithDeferredTaskPosting lock(lock_);
@@ -739,7 +739,7 @@ void TraceEventDataSource::StartTracingImpl(
 void TraceEventDataSource::StartTracingInternal(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
-  NOTREACHED() << "This is not expected to run in SDK build.";
+  NOTREACHED_IN_MIGRATION() << "This is not expected to run in SDK build.";
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   auto trace_config =
@@ -800,7 +800,7 @@ void TraceEventDataSource::StartTracingInternal(
 void TraceEventDataSource::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-  NOTREACHED() << "This is not expected to run in SDK build.";
+  NOTREACHED_IN_MIGRATION() << "This is not expected to run in SDK build.";
 
   CustomEventRecorder::GetInstance()->OnTracingStopped(base::OnceClosure());
 
@@ -892,7 +892,7 @@ void TraceEventDataSource::Flush(
 }
 
 void TraceEventDataSource::ClearIncrementalState() {
-  NOTREACHED() << "This is not expected to run in SDK build.";
+  NOTREACHED_IN_MIGRATION() << "This is not expected to run in SDK build.";
 
   TrackEventThreadLocalEventSink::ClearIncrementalState();
   EmitRecurringUpdates();

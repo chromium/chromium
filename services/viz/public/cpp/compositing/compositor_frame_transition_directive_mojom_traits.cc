@@ -38,7 +38,7 @@ EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
     case viz::CompositorFrameTransitionDirective::Type::kRelease:
       return viz::mojom::CompositorFrameTransitionDirectiveType::kRelease;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return viz::mojom::CompositorFrameTransitionDirectiveType::kSave;
 }
 

@@ -103,10 +103,10 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
       return;
     case MOJO_RESULT_SHOULD_WAIT:
       // `consumer_handle_` must be readable or closed here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -124,7 +124,7 @@ void SharedDictionaryDataPipeWriter::ContinueReadWrite(
       FinishDataPipeOperation(/*success=*/false);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   writer_->Append(reinterpret_cast<const char*>(buffer), buffer_size);

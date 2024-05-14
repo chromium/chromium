@@ -208,7 +208,7 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
       case network::mojom::DataElementDataView::Tag::kChunkedDataPipe: {
         // This shouldn't happen, as the traits logic should ensure that if
         // there's a chunked pipe, there's one and only one element.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
     }
@@ -1162,7 +1162,7 @@ void URLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   if (!deferred_redirect_url_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

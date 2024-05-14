@@ -33,7 +33,8 @@ namespace {
 
 net::CompletionOnceCallback NoCallback() {
   return base::BindOnce([](int result) {
-    NOTREACHED() << "This callback should not be called. result=" << result;
+    NOTREACHED_IN_MIGRATION()
+        << "This callback should not be called. result=" << result;
   });
 }
 

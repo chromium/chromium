@@ -37,7 +37,7 @@ EnumTraits<network::mojom::NetLogCaptureMode, net::NetLogCaptureMode>::ToMojom(
       return network::mojom::NetLogCaptureMode::EVERYTHING;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::NetLogCaptureMode::DEFAULT;
 }
 
@@ -72,7 +72,7 @@ EnumTraits<network::mojom::NetLogEventPhase, net::NetLogEventPhase>::ToMojom(
       return network::mojom::NetLogEventPhase::NONE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::NetLogEventPhase::NONE;
 }
 

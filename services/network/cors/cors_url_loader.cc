@@ -424,7 +424,8 @@ void CorsURLLoader::FollowRedirect(
 
   if (new_url && (new_url->DeprecatedGetOriginAsURL() !=
                   deferred_redirect_url_->DeprecatedGetOriginAsURL())) {
-    NOTREACHED() << "Can only change the URL within the same origin.";
+    NOTREACHED_IN_MIGRATION()
+        << "Can only change the URL within the same origin.";
     HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
     return;
   }
@@ -1232,7 +1233,7 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
 
     // DCHECK that we never run into this scenario, but fail the request for
     // safety if this ever happens in production.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   status.private_network_access_preflight_result =

@@ -496,7 +496,7 @@ void P2PSocketUdp::Send(base::span<const uint8_t> data,
 bool P2PSocketUdp::SendPacket(base::span<const uint8_t> data,
                               const P2PPacketInfo& packet_info) {
   if (data.size() > kMaximumPacketSize) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     OnError();
     return false;
   }
@@ -555,7 +555,7 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
           static_cast<net::DiffServCodePoint>(value));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

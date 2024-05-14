@@ -29,7 +29,7 @@ EnumTraits<network::mojom::RequestPriority, net::RequestPriority>::ToMojom(
     case net::HIGHEST:
       return network::mojom::RequestPriority::kHighest;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::RequestPriority>(priority);
 }
 
@@ -56,7 +56,7 @@ bool EnumTraits<network::mojom::RequestPriority, net::RequestPriority>::
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   *out = static_cast<net::RequestPriority>(in);
   return true;
 }
@@ -88,7 +88,7 @@ EnumTraits<network::mojom::URLRequestReferrerPolicy,
     case net::ReferrerPolicy::NO_REFERRER:
       return network::mojom::URLRequestReferrerPolicy::kNoReferrer;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::URLRequestReferrerPolicy>(policy);
 }
 
@@ -128,7 +128,7 @@ bool EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy>::
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -228,11 +228,11 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
 
   void OnWebSocketRequest(int connection_id,
                           const HttpServerRequestInfo& info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebSocketMessage(int connection_id, std::string data) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnClose(int connection_id) override {
@@ -325,7 +325,7 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
 class WebSocketTest : public HttpServerTest {
   void OnHttpRequest(int connection_id,
                      const HttpServerRequestInfo& info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebSocketRequest(

@@ -2344,7 +2344,7 @@ class MockURLLoader : public network::mojom::URLLoader {
       const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void PauseReadingBodyFromNet() override {}
   void ResumeReadingBodyFromNet() override {}

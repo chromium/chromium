@@ -18,7 +18,7 @@ const char* RequestModeToString(network::mojom::RequestMode mode) {
     case network::mojom::RequestMode::kNavigate:
       return "navigate";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

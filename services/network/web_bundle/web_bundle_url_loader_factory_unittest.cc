@@ -101,7 +101,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
 
   // mojom::WebBundleHandle
   void Clone(mojo::PendingReceiver<mojom::WebBundleHandle> receiver) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWebBundleError(mojom::WebBundleErrorType type,

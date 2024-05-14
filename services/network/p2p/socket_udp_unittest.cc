@@ -86,7 +86,7 @@ class FakeDatagramServerSocket : public net::DatagramServerSocket {
   void Close() override {}
 
   int GetPeerAddress(net::IPEndPoint* address) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_SOCKET_NOT_CONNECTED;
   }
 

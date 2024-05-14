@@ -190,7 +190,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !unprotected_store_successful_write_callback_.is_null();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -269,7 +269,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return !!protected_prefs_;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -280,7 +280,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       case MOCK_PROTECTED_PREF_STORE:
         return migration_modified_protected_store_;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

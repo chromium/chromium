@@ -56,12 +56,12 @@ class ProtoInputStream : public google::protobuf::io::ZeroCopyInputStream {
   }
 
   bool Skip(int count) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   int64_t ByteCount() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -85,7 +85,7 @@ const NestedValue* FindDictEntry(const NestedValue* dict, const char* name) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

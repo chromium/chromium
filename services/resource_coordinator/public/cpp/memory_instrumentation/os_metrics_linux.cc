@@ -440,12 +440,12 @@ size_t OSMetrics::GetPeakResidentSetSize(base::ProcessId pid) {
       auto split_value_str = base::SplitStringPiece(
           pair.second, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
       }
       size_t res;
       if (!base::StringToSizeT(split_value_str[0], &res)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
       }
       return res;

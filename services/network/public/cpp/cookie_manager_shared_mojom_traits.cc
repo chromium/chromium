@@ -50,7 +50,7 @@ EnumTraits<network::mojom::CookieExemptionReason,
     case net::CookieInclusionStatus::ExemptionReason::kCorsOptIn:
       return network::mojom::CookieExemptionReason::kCorsOptIn;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieExemptionReason>(input);
 }
 

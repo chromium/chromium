@@ -2106,7 +2106,7 @@ void NetworkContext::CreateMdnsResponder(
 
   mdns_responder_manager_->CreateMdnsResponder(std::move(responder_receiver));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_MDNS)
 }
 

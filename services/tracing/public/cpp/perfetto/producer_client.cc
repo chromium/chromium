@@ -336,52 +336,52 @@ void ProducerClient::UnregisterTraceWriter(uint32_t writer_id) {
 }
 
 perfetto::SharedMemory* ProducerClient::shared_memory() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void ProducerClient::NotifyFlushComplete(perfetto::FlushRequestID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::RegisterDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::UpdateDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::UnregisterDataSource(const std::string& name) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::NotifyDataSourceStopped(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::NotifyDataSourceStarted(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::ActivateTriggers(const std::vector<std::string>&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 size_t ProducerClient::shared_buffer_page_size_kb() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool ProducerClient::IsShmemProvidedByProducer() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void ProducerClient::Sync(std::function<void()>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::BindClientAndHostPipesForTesting(

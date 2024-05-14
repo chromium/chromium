@@ -110,7 +110,7 @@ InputServiceLinuxImpl::InputServiceLinuxImpl() {
 
 InputServiceLinuxImpl::~InputServiceLinuxImpl() {
   // Never destroyed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InputServiceLinuxImpl::OnDeviceAdded(udev_device* device) {

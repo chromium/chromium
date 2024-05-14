@@ -350,7 +350,7 @@ void MtpDeviceManager::OnOpenStorage(const std::string& handle) {
     handles_.insert(handle);
     std::move(open_storage_callbacks_.front()).Run(handle, false);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(open_storage_callbacks_.front()).Run(std::string(), true);
   }
   open_storage_callbacks_.pop();
@@ -368,7 +368,7 @@ void MtpDeviceManager::OnCloseStorage() {
     handles_.erase(handle);
     std::move(close_storage_callbacks_.front().first).Run(false);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(close_storage_callbacks_.front().first).Run(true);
   }
   close_storage_callbacks_.pop();

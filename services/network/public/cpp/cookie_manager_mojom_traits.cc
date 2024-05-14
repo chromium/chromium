@@ -58,7 +58,7 @@ EnumTraits<network::mojom::CookiePriority, net::CookiePriority>::ToMojom(
     case net::COOKIE_PRIORITY_HIGH:
       return network::mojom::CookiePriority::HIGH;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookiePriority>(input);
 }
 
@@ -94,7 +94,7 @@ EnumTraits<network::mojom::CookieSameSite, net::CookieSameSite>::ToMojom(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieSameSite>(input);
 }
 
@@ -137,7 +137,7 @@ network::mojom::CookieEffectiveSameSite EnumTraits<
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieEffectiveSameSite>(input);
 }
 
@@ -178,7 +178,7 @@ EnumTraits<network::mojom::CookieSourceScheme,
     case net::CookieSourceScheme::kSecure:
       return network::mojom::CookieSourceScheme::kSecure;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieSourceScheme>(input);
 }
 
@@ -212,7 +212,7 @@ network::mojom::CookieAccessSemantics EnumTraits<
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieAccessSemantics>(input);
 }
 
@@ -252,7 +252,7 @@ EnumTraits<network::mojom::ContextType,
     case net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE:
       return network::mojom::ContextType::CROSS_SITE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return network::mojom::ContextType::CROSS_SITE;
   }
 }
@@ -518,7 +518,7 @@ EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::CookieChangeCause>(input);
 }
 
@@ -632,7 +632,7 @@ bool EnumTraits<network::mojom::AncestorChainBit,
     case network::mojom::AncestorChainBit::kCrossSite:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

@@ -67,7 +67,7 @@ bool RulesContainsProxy(const net::ProxyConfig::ProxyRules& proxy_rules,
              CheckProxyList(proxy_rules.proxies_for_https, target_proxy);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -84,7 +84,7 @@ bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
              !config.rules.proxies_for_https.IsEmpty();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

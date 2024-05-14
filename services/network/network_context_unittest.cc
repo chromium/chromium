@@ -435,7 +435,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
       const net::HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
       bool enable_caching) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -496,7 +496,7 @@ class NetworkContextTest : public testing::Test {
       break;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::URLRequestContextBuilder::HttpCacheParams::IN_MEMORY;
   }
 

@@ -31,7 +31,7 @@ bool StructTraits<
       out->set_client_priority(perfetto::protos::gen::ChromeConfig::UNKNOWN);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

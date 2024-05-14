@@ -50,23 +50,23 @@ class FakeSerialPort : public mojom::SerialPort {
 
   void Flush(device::mojom::SerialPortFlushMode mode,
              FlushCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Drain(DrainCallback callback) override { NOTREACHED(); }
 
   void GetControlSignals(GetControlSignalsCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetControlSignals(mojom::SerialHostControlSignalsPtr signals,
                          SetControlSignalsCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ConfigurePort(mojom::SerialConnectionOptionsPtr options,
                      ConfigurePortCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetPortInfo(GetPortInfoCallback callback) override { NOTREACHED(); }

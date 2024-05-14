@@ -146,7 +146,7 @@ void ExpectAttributes(const ::screenai::UiElementAttribute& attrib1,
       break;
     }
     case screenai::UiElementAttribute::kFloatListValue: {
-      NOTREACHED() << "Chrome has no float list.";
+      NOTREACHED_IN_MIGRATION() << "Chrome has no float list.";
       break;
     }
     case screenai::UiElementAttribute::VALUE_NOT_SET:

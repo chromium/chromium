@@ -591,7 +591,7 @@ class MdnsResponderManager::SocketHandler::ResponseScheduler {
       case MdnsResponseSendOption::ResponseClass::PROBE_RESOLUTION:
         return RateLimitScheme::NO_LIMIT;
       case MdnsResponseSendOption::ResponseClass::UNSPECIFIED:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return RateLimitScheme::PER_RESPONSE;
     }
   }

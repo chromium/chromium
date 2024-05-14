@@ -26,7 +26,7 @@ EnumTraits<proxy_resolver::mojom::HostResolveOperation,
       return proxy_resolver::mojom::HostResolveOperation::MY_IP_ADDRESS_EX;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return proxy_resolver::mojom::HostResolveOperation::kMinValue;
 }
 
@@ -50,7 +50,7 @@ bool EnumTraits<proxy_resolver::mojom::HostResolveOperation,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

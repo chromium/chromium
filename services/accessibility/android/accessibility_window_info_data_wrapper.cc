@@ -104,7 +104,7 @@ void AccessibilityWindowInfoDataWrapper::PopulateAXRole(
       out_data->role = ax::mojom::Role::kWindow;
       return;
     case mojom::AccessibilityWindowType::INVALID_ENUM_VALUE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

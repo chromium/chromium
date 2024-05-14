@@ -502,7 +502,7 @@ HprofParser::ParseResult HprofParser::ParseHeapDumpTag(
       }
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

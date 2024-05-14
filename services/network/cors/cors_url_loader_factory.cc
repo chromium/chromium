@@ -655,14 +655,14 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       // `request_initiator_origin_lock` should always be set in a
       // URLLoaderFactory vended to a renderer process.  See also
       // https://crbug.com/1114906.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: no initiator lock in a renderer request");
       return false;
 
     case InitiatorLockCompatibility::kNoInitiator:
       // Requests from the renderer need to always specify an initiator.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: no initiator in a renderer request");
       return false;

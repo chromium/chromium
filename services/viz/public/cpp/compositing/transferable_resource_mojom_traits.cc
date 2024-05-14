@@ -28,7 +28,7 @@ EnumTraits<viz::mojom::SynchronizationType,
     case viz::TransferableResource::SynchronizationType::kReleaseFence:
       return viz::mojom::SynchronizationType::kReleaseFence;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return viz::mojom::SynchronizationType::kSyncToken;
 }
 

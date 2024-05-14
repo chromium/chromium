@@ -544,7 +544,7 @@ void CoordinatorImpl::RemovePendingResponse(
     QueuedRequest::PendingResponse::Type type) {
   QueuedRequest* request = GetCurrentRequest();
   if (request == nullptr) {
-    NOTREACHED() << "No current dump request.";
+    NOTREACHED_IN_MIGRATION() << "No current dump request.";
     return;
   }
   auto it = request->pending_responses.find({process_id, type});

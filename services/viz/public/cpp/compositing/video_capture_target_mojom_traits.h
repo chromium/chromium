@@ -68,7 +68,7 @@ struct UnionTraits<viz::mojom::VideoCaptureSubTargetDataView,
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

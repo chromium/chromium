@@ -156,7 +156,7 @@ class ResourceSchedulerParamsManagerTest : public testing::Test {
         return;
 
       case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
   }

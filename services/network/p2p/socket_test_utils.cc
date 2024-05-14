@@ -163,7 +163,7 @@ int FakeSocket::Connect(net::CompletionOnceCallback callback) {
 }
 
 void FakeSocket::Disconnect() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeSocket::IsConnected() const {
@@ -185,7 +185,7 @@ int FakeSocket::GetLocalAddress(net::IPEndPoint* address) const {
 }
 
 const net::NetLogWithSource& FakeSocket::NetLog() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net_log_;
 }
 

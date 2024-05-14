@@ -40,7 +40,7 @@ MemoryDumpLevelOfDetailToProto(
     case base::trace_event::MemoryDumpLevelOfDetail::kDetailed:
       return perfetto::protos::pbzero::MemoryTrackerSnapshot::DETAIL_FULL;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return perfetto::protos::pbzero::MemoryTrackerSnapshot::DETAIL_BACKGROUND;
 }
 

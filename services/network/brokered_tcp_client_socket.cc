@@ -43,7 +43,7 @@ int BrokeredTcpClientSocket::Bind(const net::IPEndPoint& address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsConnected() || is_connect_in_progress_) {
     // Cannot bind the socket if we are already connected or connecting.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_UNEXPECTED;
   }
   // Since opening a socket must be done via an asynchronous IPC, we will store

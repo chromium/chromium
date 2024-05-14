@@ -29,7 +29,7 @@ struct EnumTraits<viz::mojom::OverlayStrategy, viz::OverlayStrategy> {
       default:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return viz::mojom::OverlayStrategy::kFullscreen;
   }
 

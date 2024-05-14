@@ -96,7 +96,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void UpdateDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void UnregisterDataSource(const std::string& name) override {
@@ -203,13 +203,13 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void ActivateTriggers(const std::vector<std::string>&) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Sync(std::function<void()> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // mojom::ProducerClient implementation.
@@ -392,7 +392,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
              perfetto::FlushFlags) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement flushing.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ReadBuffers() override {
@@ -445,12 +445,12 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void Detach(const std::string& key) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED() << "Detaching session not supported";
+    NOTREACHED_IN_MIGRATION() << "Detaching session not supported";
   }
 
   void Attach(const std::string& key) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED() << "Attaching session not supported";
+    NOTREACHED_IN_MIGRATION() << "Attaching session not supported";
   }
 
   void GetTraceStats() override {
@@ -497,25 +497,25 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
                          QueryServiceStateCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement service state querying.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void QueryCapabilities(QueryCapabilitiesCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement capability querying.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SaveTraceForBugreport(SaveTraceForBugreportCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Not implemented yet.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CloneSession(perfetto::TracingSessionID, CloneSessionArgs) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Not implemented yet.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // tracing::mojom::TracingSessionClient implementation:

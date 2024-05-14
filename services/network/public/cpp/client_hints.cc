@@ -168,7 +168,7 @@ ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
   switch (type) {
     case MetaCHType::HttpEquivAcceptCH: {
       // ParseClientHintsHeader should have been called instead.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ClientHintToDelegatedThirdPartiesHeader();
     }
     case MetaCHType::HttpEquivDelegateCH: {

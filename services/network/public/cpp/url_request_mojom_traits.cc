@@ -51,7 +51,7 @@ EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
     case net::SourceStream::SourceType::TYPE_UNKNOWN:
       return network::mojom::SourceType::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_cast<network::mojom::SourceType>(type);
 }
 
@@ -79,7 +79,7 @@ bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

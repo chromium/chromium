@@ -282,7 +282,7 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
     case mojom::SensorType::PROXIMITY:
       return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

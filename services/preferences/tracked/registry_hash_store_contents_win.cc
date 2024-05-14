@@ -187,23 +187,23 @@ bool RegistryHashStoreContentsWin::RemoveEntry(const std::string& path) {
 
 void RegistryHashStoreContentsWin::ImportEntry(const std::string& path,
                                                const base::Value* in_value) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RegistryHashStoreContents does not support the ImportEntry operation";
 }
 
 const base::Value::Dict* RegistryHashStoreContentsWin::GetContents() const {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RegistryHashStoreContents does not support the GetContents operation";
   return NULL;
 }
 
 std::string RegistryHashStoreContentsWin::GetSuperMac() const {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RegistryHashStoreContents does not support the GetSuperMac operation";
   return NULL;
 }
 
 void RegistryHashStoreContentsWin::SetSuperMac(const std::string& super_mac) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RegistryHashStoreContents does not support the SetSuperMac operation";
 }

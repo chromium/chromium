@@ -69,7 +69,7 @@ StructTraits<media_session::mojom::MediaImageBitmapDataView,
     case (kBGRA_8888_SkColorType):
       return media_session::mojom::MediaImageBitmapColorType::kBGRA_8888;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return media_session::mojom::MediaImageBitmapColorType::kRGBA_8888;
   }
 }

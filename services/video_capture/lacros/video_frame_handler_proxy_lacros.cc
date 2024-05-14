@@ -54,7 +54,7 @@ class VideoFrameHandlerProxyLacros::AccessPermissionProxyMap
   void EraseAccessPermission(int32_t buffer_id) {
     auto it = access_permissions_by_buffer_ids_.find(buffer_id);
     if (it == access_permissions_by_buffer_ids_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     access_permissions_by_buffer_ids_.erase(it);

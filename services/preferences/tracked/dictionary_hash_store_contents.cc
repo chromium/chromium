@@ -35,7 +35,8 @@ bool DictionaryHashStoreContents::IsCopyable() const {
 
 std::unique_ptr<HashStoreContents> DictionaryHashStoreContents::MakeCopy()
     const {
-  NOTREACHED() << "DictionaryHashStoreContents does not support MakeCopy";
+  NOTREACHED_IN_MIGRATION()
+      << "DictionaryHashStoreContents does not support MakeCopy";
   return nullptr;
 }
 
@@ -81,7 +82,7 @@ bool DictionaryHashStoreContents::GetSplitMacs(
   for (const auto item : *split_macs_dict) {
     const std::string* mac_string = item.second.GetIfString();
     if (!mac_string) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     split_macs->insert(make_pair(item.first, *mac_string));

@@ -65,7 +65,7 @@ void TCPBoundSocket::Listen(
     // Drop unexpected calls on the floor. Could destroy |this|, but as this is
     // currently only reachable from more trusted processes, doesn't seem too
     // useful.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -102,7 +102,7 @@ void TCPBoundSocket::Connect(
     // Drop unexpected calls on the floor. Could destroy |this|, but as this is
     // currently only reachable from more trusted processes, doesn't seem too
     // useful.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

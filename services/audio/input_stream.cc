@@ -46,7 +46,7 @@ const char* ErrorCodeToString(InputController::ErrorCode error) {
     case (InputController::STREAM_OPEN_DEVICE_IN_USE_ERROR):
       return "STREAM_OPEN_DEVICE_IN_USE_ERROR";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "UNKNOWN_ERROR";
 }

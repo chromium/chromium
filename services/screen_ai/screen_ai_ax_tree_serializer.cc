@@ -57,9 +57,10 @@ ui::AXTreeUpdate ScreenAIAXTreeSerializer::Serialize() const {
   DCHECK(tree_);
   ui::AXTreeUpdate out_update;
   if (!serializer_->SerializeChanges(tree_->root(), &out_update)) {
-    NOTREACHED() << "Failure to serialize should have already caused the "
-                    "process to crash due to the `crash_on_error` in "
-                    "`AXTreeSerializer` constructor call.";
+    NOTREACHED_IN_MIGRATION()
+        << "Failure to serialize should have already caused the "
+           "process to crash due to the `crash_on_error` in "
+           "`AXTreeSerializer` constructor call.";
   }
   return out_update;
 }

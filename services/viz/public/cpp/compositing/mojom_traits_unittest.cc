@@ -168,7 +168,7 @@ void ExpectEqual(const cc::FilterOperation& input,
       break;
     }
     case cc::FilterOperation::ALPHA_THRESHOLD:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case cc::FilterOperation::OFFSET:
       EXPECT_EQ(input.offset(), output.offset());

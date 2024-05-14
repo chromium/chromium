@@ -639,7 +639,7 @@ void BuildStandaloneActivation(GraphInfoBuilder& builder,
       builder.BuildTanh(input_operand_id, output_operand_id);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -4278,7 +4278,7 @@ struct UnaryOperatorTester {
         builder.BuildTanh(input_operand_id, output_operand_id);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;

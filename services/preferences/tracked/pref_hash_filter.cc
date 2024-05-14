@@ -147,7 +147,7 @@ base::Time PrefHashFilter::GetResetTime(PrefService* user_prefs) {
           user_prefs->GetString(user_prefs::kPreferenceResetTime),
           &internal_value)) {
     // Somehow the value stored on disk is not a valid int64_t.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Time();
   }
   return base::Time::FromInternalValue(internal_value);

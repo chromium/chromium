@@ -24,7 +24,7 @@ bool ShouldCheckPolicy(const mojom::ContentSecurityPolicyPtr& policy,
     case CSPContext::CHECK_ALL_CSP:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

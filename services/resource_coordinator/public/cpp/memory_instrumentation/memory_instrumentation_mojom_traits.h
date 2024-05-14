@@ -113,7 +113,7 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM) UnionTraits<
         return memory_instrumentation::mojom::
             RawAllocatorDumpEntryValueDataView::Tag::kValueString;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView::
         Tag::kValueUint64;
   }

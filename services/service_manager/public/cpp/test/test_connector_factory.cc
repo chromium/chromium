@@ -72,12 +72,12 @@ class ProxiedServiceConnector : public mojom::Connector {
 
   void WarmService(const ServiceFilter& filter,
                    WarmServiceCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void QueryService(const std::string& service_name,
                     QueryServiceCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void RegisterServiceInstance(
@@ -85,7 +85,7 @@ class ProxiedServiceConnector : public mojom::Connector {
       mojo::ScopedMessagePipeHandle service,
       mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver,
       RegisterServiceInstanceCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Clone(mojo::PendingReceiver<mojom::Connector> receiver) override {

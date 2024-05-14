@@ -244,7 +244,7 @@ void SerialPortImpl::WriteToPort(MojoResult result,
     return;
   }
   // The code should not reach other cases.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SerialPortImpl::OnWriteToPortCompleted(uint32_t bytes_sent,
@@ -293,7 +293,7 @@ void SerialPortImpl::ReadFromPortAndWriteOut(
     return;
   }
   // The code should not reach other cases.
-  NOTREACHED() << "Unexpected Mojo result: " << result;
+  NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
 }
 
 void SerialPortImpl::WriteToOutStream(uint32_t bytes_read,

@@ -143,7 +143,7 @@ void HostResolver::MdnsListen(
     mojo::PendingRemote<mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
 #if !BUILDFLAG(ENABLE_MDNS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // !BUILDFLAG(ENABLE_MDNS)
 
   auto listener = std::make_unique<HostResolverMdnsListener>(internal_resolver_,

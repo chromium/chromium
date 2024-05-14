@@ -137,15 +137,16 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
 
   switch (target_buffer_type) {
     case media::VideoCaptureBufferType::kMailboxHolder:
-      NOTREACHED() << "Cannot convert buffer type to kMailboxHolder from "
-                      "handle type other than mailbox handles.";
+      NOTREACHED_IN_MIGRATION()
+          << "Cannot convert buffer type to kMailboxHolder from "
+             "handle type other than mailbox handles.";
       break;
     case media::VideoCaptureBufferType::kSharedMemory:
       if (buffer_handle_->is_unsafe_shmem_region()) {
         return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
             buffer_handle_->get_unsafe_shmem_region().Duplicate());
       } else {
-        NOTREACHED() << "Unexpected video buffer handle type";
+        NOTREACHED_IN_MIGRATION() << "Unexpected video buffer handle type";
       }
       break;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
@@ -156,7 +157,7 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
           buffer_handle_->get_unsafe_shmem_region().Duplicate());
 #else
-      NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
+      NOTREACHED_IN_MIGRATION() << "Unexpected GpuMemoryBuffer handle type";
       break;
 #endif
   }
@@ -418,7 +419,7 @@ void BroadcastingReceiver::OnClientFinishedConsumingFrame(
     auto it =
         scoped_access_permissions_by_buffer_context_id_.find(buffer_context_id);
     if (it == scoped_access_permissions_by_buffer_context_id_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     scoped_access_permissions_by_buffer_context_id_.erase(it);

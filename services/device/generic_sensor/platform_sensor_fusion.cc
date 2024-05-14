@@ -228,7 +228,7 @@ bool PlatformSensorFusion::GetSourceReading(mojom::SensorType type,
   auto it = source_sensors_.find(type);
   if (it != source_sensors_.end())
     return it->second->GetLatestRawReading(result);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

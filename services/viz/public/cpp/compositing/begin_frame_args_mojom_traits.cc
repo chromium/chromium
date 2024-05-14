@@ -22,7 +22,7 @@ EnumTraits<viz::mojom::BeginFrameArgsType,
     case viz::BeginFrameArgs::BeginFrameArgsType::MISSED:
       return viz::mojom::BeginFrameArgsType::MISSED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return viz::mojom::BeginFrameArgsType::INVALID;
 }
 

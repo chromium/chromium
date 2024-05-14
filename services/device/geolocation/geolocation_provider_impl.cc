@@ -82,7 +82,8 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LocationProviderFactory_useGmsCoreLocationProvider(env);
 #else
-    NOTREACHED() << "GMS core location provider is only available for Android";
+    NOTREACHED_IN_MIGRATION()
+        << "GMS core location provider is only available for Android";
 #endif
   }
 }

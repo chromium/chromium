@@ -85,7 +85,7 @@ void AssistiveTechnologyControllerImpl::BindUserInterface(
 void AssistiveTechnologyControllerImpl::BindAccessibilityFileLoader(
     mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
         file_loader_receiver) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
