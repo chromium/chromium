@@ -94,7 +94,7 @@ export class CertificateManagerV2Element extends PolymerElement {
     // </if>
   }
 
-  private onValueCopied_() {
+  private onHashCopied_() {
     // TODO(crbug.com/40928765): Support localization.
     this.toastMessage_ = 'Hash copied to clipboard';
     this.$.toast.show();

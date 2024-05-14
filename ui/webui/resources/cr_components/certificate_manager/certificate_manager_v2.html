@@ -28,9 +28,10 @@
       <div id="provisioned-client-certs">
         From your administrator
         <template is="dom-repeat" items="[[provisionedClientCerts_]]">
-          <div class="cr-row cr-padded-text cert-row">
-            [[item.displayName]] - [[item.sha256hashHex]]
-          </div>
+          <certificate-entry-v2 display-name="[[item.displayName]]"
+              sha256hash-hex="[[item.sha256hashHex]]"
+              on-hash-copied="onHashCopied_">
+          </certificate-entry-v2>
         </template>
       </div>
     </if>
@@ -38,9 +39,10 @@
     <div id="platform-client-certs">
       Client certificates from platform
       <template is="dom-repeat" items="[[platformClientCerts_]]">
-        <div class="cr-row cr-padded-text cert-row">
-          [[item.displayName]] - [[item.sha256hashHex]]
-        </div>
+        <certificate-entry-v2 display-name="[[item.displayName]]"
+            sha256hash-hex="[[item.sha256hashHex]]"
+            on-hash-copied="onHashCopied_">
+        </certificate-entry-v2>
       </template>
     </div>
   </div>
@@ -62,7 +64,7 @@
       <template is="dom-repeat" items="[[crsCertificates_]]">
         <certificate-entry-v2 display-name="[[item.displayName]]"
             sha256hash-hex="[[item.sha256hashHex]]"
-            on-hash-copied="onValueCopied_">
+            on-hash-copied="onHashCopied_">
         </certificate-entry-v2>
       </template>
     </cr-collapse>

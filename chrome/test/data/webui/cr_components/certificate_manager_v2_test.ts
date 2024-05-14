@@ -116,8 +116,9 @@ suite('CertificateManagerV2Test', () => {
   let certManager: CertificateManagerV2Element;
   let testProxy: TestCertificateManagerProxy;
 
-  setup(() => {
+  setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await navigator.clipboard.writeText('');
     testProxy = new TestCertificateManagerProxy();
     CertificatesV2BrowserProxy.setInstance(testProxy);
   });
@@ -127,7 +128,7 @@ suite('CertificateManagerV2Test', () => {
     document.body.appendChild(certManager);
   }
 
-  test('Copy hash', async () => {
+  test('Copy CRS hash', async () => {
     const certs: SummaryCertInfo[] = [
       {
         'sha256hashHex': 'deadbeef',
@@ -144,8 +145,10 @@ suite('CertificateManagerV2Test', () => {
     const certEntries =
         certManager.$.crsCerts.querySelectorAll('certificate-entry-v2');
     assertEquals(1, certEntries.length, 'no certs found');
+    assertEquals('', await navigator.clipboard.readText());
     certEntries[0]!.$.copy.click();
     assertTrue(certManager.$.toast.open);
+    assertEquals('deadbeef', await navigator.clipboard.readText());
   });
 
   test('CRS list populated', async () => {
@@ -192,8 +195,8 @@ suite('CertificateManagerV2Test', () => {
   test('platform client certs populated', async () => {
     const certs: SummaryCertInfo[] = [
       {
-        'sha256hashHex': 'deadbeef',
-        'displayName': 'cert1',
+        'sha256hashHex': 'deadbeef2',
+        'displayName': 'cert2',
       },
     ];
     testProxy.handler.setPlatformClientCerts(certs);
@@ -201,21 +204,28 @@ suite('CertificateManagerV2Test', () => {
 
     await testProxy.handler.whenCalled('getPlatformClientCerts');
     await microtasksFinished();
+    assertFalse(certManager.$.toast.open);
 
     const parent_element =
         certManager.shadowRoot!.querySelector('#platform-client-certs');
     assertTrue(!!parent_element, 'parent element not found');
-    const matchEls = parent_element.querySelectorAll('.cert-row');
+    const matchEls = parent_element.querySelectorAll('certificate-entry-v2');
     assertEquals(1, matchEls.length, 'no certs displayed');
-    // TODO(crbug.com/40928765): test the displayed name/hash
+    assertEquals('cert2', matchEls[0]!.displayName);
+    assertEquals('deadbeef2', matchEls[0]!.sha256hashHex);
+
+    assertEquals('', await navigator.clipboard.readText());
+    matchEls[0]!.$.copy.click();
+    assertTrue(certManager.$.toast.open);
+    assertEquals('deadbeef2', await navigator.clipboard.readText());
   });
 
   test('provisioned client certs populated', async () => {
     // <if expr="is_win or is_macosx">
     const certs: SummaryCertInfo[] = [
       {
-        'sha256hashHex': 'deadbeef',
-        'displayName': 'cert1',
+        'sha256hashHex': 'deadbeef3',
+        'displayName': 'cert3',
       },
     ];
     testProxy.handler.setProvisionedClientCerts(certs);
@@ -226,15 +236,22 @@ suite('CertificateManagerV2Test', () => {
     await testProxy.handler.whenCalled('getProvisionedClientCerts');
     // </if>
     await microtasksFinished();
+    assertFalse(certManager.$.toast.open);
 
     const parent_element =
         certManager.shadowRoot!.querySelector('#provisioned-client-certs');
 
     // <if expr="is_win or is_macosx">
     assertTrue(!!parent_element, 'parent element not found');
-    const matchEls = parent_element.querySelectorAll('.cert-row');
+    const matchEls = parent_element.querySelectorAll('certificate-entry-v2');
     assertEquals(1, matchEls.length, 'no certs displayed');
-    // TODO(crbug.com/40928765): test the displayed name/hash
+    assertEquals('cert3', matchEls[0]!.displayName);
+    assertEquals('deadbeef3', matchEls[0]!.sha256hashHex);
+
+    assertEquals('', await navigator.clipboard.readText());
+    matchEls[0]!.$.copy.click();
+    assertTrue(certManager.$.toast.open);
+    assertEquals('deadbeef3', await navigator.clipboard.readText());
     // </if>
 
     // <if expr="not (is_win or is_macosx)">
