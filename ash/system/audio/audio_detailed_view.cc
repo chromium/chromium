@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/typography.h"
 #include "ash/system/audio/audio_detailed_view_utils.h"
@@ -416,16 +417,20 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateAgcInfoRow(
   CHECK(text_label);
   text_label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  // Add settings button to link to the audio settings page.
-  auto settings = std::make_unique<views::LabelButton>(
-      base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
-                          weak_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS_SHORT_STRING));
-  if (!TrayPopupUtils::CanOpenWebUISettings()) {
-    settings->SetEnabled(false);
+  if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
+    // Add settings button to link to the audio settings page.
+    auto settings = std::make_unique<PillButton>(
+        base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
+                            weak_factory_.GetWeakPtr()),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS_SHORT_STRING),
+        PillButton::Type::kFloatingWithoutIcon,
+        /*icon=*/nullptr);
+    if (!TrayPopupUtils::CanOpenWebUISettings()) {
+      settings->SetEnabled(false);
+    }
+    agc_info_view->AddRightView(settings.release());
   }
-  agc_info_view->AddRightView(settings.release());
 
   agc_info_view->tri_view()->SetInsets(kToggleButtonRowViewPadding);
   agc_info_view->tri_view()->SetContainerLayout(
