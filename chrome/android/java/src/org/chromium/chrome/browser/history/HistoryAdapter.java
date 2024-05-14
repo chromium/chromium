@@ -462,22 +462,30 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     private void updatePrivacyDisclaimerText() {
         Context context = mPrivacyDisclaimerTextView.getContext();
-        CharSequence text;
-        if (mManager.launchedForApp()) {
-            if (!hasPrivacyDisclaimers()) {
-                text = context.getResources().getString(R.string.android_app_history_open_full);
-            } else {
-                text = getPrivacyDisclaimerClickableSpanString(
-                        context, R.string.android_app_history_open_full_other_forms);
-            }
+        CharSequence text = null;
+        if (!HistoryManager.isAppSpecificHistoryEnabled()) {
+            text =
+                    getPrivacyDisclaimerClickableSpanString(
+                            context, R.string.android_history_other_forms_of_history);
         } else {
-            int res =
-                    HistoryManager.isAppSpecificHistoryEnabled()
-                            ? R.string.android_history_from_other_apps_other_forms_of_history
-                            : R.string.android_history_other_forms_of_history;
-            text = getPrivacyDisclaimerClickableSpanString(context, res);
+            if (mManager.launchedForApp()) { // In-app History UI
+                if (hasPrivacyDisclaimers()) {
+                    int res = R.string.android_app_history_open_full_other_forms;
+                    text = getPrivacyDisclaimerClickableSpanString(context, res);
+                } else {
+                    text = context.getResources().getString(R.string.android_app_history_open_full);
+                }
+            } else if (mManager.showAppFilter()) { // History UI in BrApp
+                if (hasPrivacyDisclaimers()) {
+                    int res = R.string.android_history_from_other_apps_other_forms_of_history;
+                    text = getPrivacyDisclaimerClickableSpanString(context, res);
+                } else {
+                    int res = R.string.android_history_from_other_apps;
+                    text = context.getResources().getString(res);
+                }
+            }
         }
-        mPrivacyDisclaimerTextView.setText(text);
+        if (text != null) mPrivacyDisclaimerTextView.setText(text);
     }
 
     private void updatePrivacyDisclaimerBottomSpace() {
@@ -539,10 +547,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     /** Set text of privacy disclaimer and visibility of its container. */
     void setPrivacyDisclaimer() {
-        boolean shouldShowPrivacyDisclaimers =
-                (hasPrivacyDisclaimers() || mManager.launchedForApp())
-                        && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
-
+        boolean shouldShowPrivacyDisclaimers;
+        if (HistoryManager.isAppSpecificHistoryEnabled()) {
+            shouldShowPrivacyDisclaimers =
+                    !mManager.isIncognito()
+                            && (mManager.launchedForApp() || mManager.showAppFilter())
+                            && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
+        } else {
+            shouldShowPrivacyDisclaimers =
+                    hasPrivacyDisclaimers()
+                            && mManager.getShouldShowPrivacyDisclaimersIfAvailable();
+        }
         // Prevent from refreshing the recycler view if header visibility is not changed.
         if (mPrivacyDisclaimersVisible == shouldShowPrivacyDisclaimers) return;
         mPrivacyDisclaimersVisible = shouldShowPrivacyDisclaimers;

@@ -176,6 +176,8 @@ public class HistoryUITest {
                             mOnBackPressedDispatcher = activity.getOnBackPressedDispatcher();
                             mLifecycleOwner = activity;
                         });
+        boolean isAppSpecificHistoryEnabled =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY);
         mHistoryManager =
                 new HistoryManager(
                         mActivity,
@@ -186,10 +188,10 @@ public class HistoryUITest {
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
-                        null,
-                        true,
-                        false,
-                        ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY));
+                        /* clientPackageName= */ null,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ isAppSpecificHistoryEnabled);
         mContentManager = mHistoryManager.getContentManagerForTests();
         mAdapter = mContentManager.getAdapter();
         mRecyclerView = mContentManager.getRecyclerView();
@@ -202,7 +204,8 @@ public class HistoryUITest {
         mHeight = mRecyclerView.getMeasuredHeight();
         layoutRecyclerView();
 
-        int expectedItemCount = 4;
+        // App-specific history always enables the privacy disclaimer header item.
+        int expectedItemCount = 4 + (isAppSpecificHistoryEnabled ? 1 : 0);
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
@@ -252,6 +255,15 @@ public class HistoryUITest {
     public void testPrivacyDisclaimers_SignedOut() {
         // The user is signed out by default.
         Assert.assertEquals(1, mAdapter.getFirstGroupForTests().size());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testPrivacyDisclaimers_SignedOut_Ash() {
+        // With ASH enabled, the header for disclaimer text is always visible.
+        Assert.assertEquals(2, mAdapter.getFirstGroupForTests().size());
     }
 
     @Test
@@ -457,11 +469,12 @@ public class HistoryUITest {
     @SmallTest
     public void testSearch_AppFilterChipVisible() {
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
-        mAdapter.setPrivacyDisclaimer();
-        Assert.assertFalse(mAdapter.hasListHeader());
+        DateDividedAdapter.ItemGroup headerGroup = mAdapter.getFirstGroupForTests();
+        // Disclaimer header should be present.
+        Assert.assertEquals(1, headerGroup.size());
         performMenuAction(R.id.search_menu_id);
-        // The 'Filter by app' chip is now visible in the header.
-        Assert.assertTrue(mAdapter.hasListHeader());
+        // Now only the header for 'Filter by app' chip is visible.
+        Assert.assertEquals(1, headerGroup.size());
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
@@ -473,7 +486,6 @@ public class HistoryUITest {
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         mAdapter.setPrivacyDisclaimer();
         mContentManager.setPackageManagerForTesting(mPackageManager);
-        Assert.assertFalse(mAdapter.hasListHeader());
         performMenuAction(R.id.search_menu_id);
 
         // Verify the button starts disabled.
