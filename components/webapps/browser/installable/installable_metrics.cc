@@ -230,7 +230,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::SYNC:
       return false;
     case WebappInstallSource::COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -265,7 +265,7 @@ InstallableMetrics::ConvertFromServiceWorkerCapability(
     case content::ServiceWorkerCapability::NO_SERVICE_WORKER:
       return ServiceWorkerOfflineCapability::kNoServiceWorker;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -277,7 +277,7 @@ ServiceWorkerOfflineCapability InstallableMetrics::ConvertFromOfflineCapability(
     case content::OfflineCapability::kUnsupported:
       return ServiceWorkerOfflineCapability::kServiceWorkerNoOfflineSupport;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

@@ -682,7 +682,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
       NOTIMPLEMENTED();
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

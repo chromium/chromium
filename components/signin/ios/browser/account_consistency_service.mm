@@ -260,7 +260,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
         delegate_->OnManageAccounts();
       break;
     case signin::GAIA_SERVICE_TYPE_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

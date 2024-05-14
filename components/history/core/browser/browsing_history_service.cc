@@ -589,7 +589,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
       state->remote_results.assign(std::make_move_iterator(threshold_iter),
                                    std::make_move_iterator(deduped.end()));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     deduped.erase(threshold_iter, deduped.end());
   }
@@ -733,7 +733,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           if (!id_dict ||
               !(timestamp_string = id_dict->FindString("timestamp_usec")) ||
               !base::StringToInt64(*timestamp_string, &timestamp_usec)) {
-            NOTREACHED() << "Unable to extract timestamp.";
+            NOTREACHED_IN_MIGRATION() << "Unable to extract timestamp.";
             continue;
           }
           // The timestamp on the server is a Unix time.

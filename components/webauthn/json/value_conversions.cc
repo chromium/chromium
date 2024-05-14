@@ -148,7 +148,7 @@ base::Value ToValue(
       return base::Value("platform");
     case device::AuthenticatorAttachment::kAny:
       // Any maps to the key being omitted, not a null value.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::Value("invalid");
   }
 }
@@ -220,7 +220,7 @@ base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
 base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
   switch (policy) {
     case blink::mojom::ProtectionPolicy::UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::Value("invalid");
     case blink::mojom::ProtectionPolicy::NONE:
       return base::Value("userVerificationOptional");
@@ -234,7 +234,7 @@ base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
 base::Value ToValue(const device::LargeBlobSupport large_blob) {
   switch (large_blob) {
     case device::LargeBlobSupport::kNotRequested:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::Value("invalid");
     case device::LargeBlobSupport::kRequired:
       return base::Value("required");
@@ -247,7 +247,7 @@ base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
   base::Value::Dict value;
   switch (cable_authentication.version) {
     case device::CableDiscoveryData::Version::INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case device::CableDiscoveryData::Version::V1:
       value.Set("version", 1);

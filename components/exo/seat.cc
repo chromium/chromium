@@ -466,7 +466,7 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

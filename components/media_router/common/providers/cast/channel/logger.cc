@@ -70,7 +70,7 @@ ChallengeReplyError AuthErrorToChallengeReplyError(
     case AuthResult::ERROR_DIGEST_UNSUPPORTED:
       return ChallengeReplyError::DIGEST_UNSUPPORTED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ChallengeReplyError::NONE;
   }
 }

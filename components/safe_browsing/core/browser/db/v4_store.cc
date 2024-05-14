@@ -495,7 +495,8 @@ ApplyUpdateResult V4Store::ProcessUpdate(
       }
       raw_removals = &rice_removals;
     } else {
-      NOTREACHED() << "Unexpected compression_type type: " << compression_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected compression_type type: " << compression_type;
       return UNEXPECTED_COMPRESSION_TYPE_REMOVALS_FAILURE;
     }
   }
@@ -560,8 +561,8 @@ void V4Store::ApplyUpdate(
         new_store->ProcessFullUpdateAndWriteToDisk(metric, std::move(response));
   } else {
     apply_update_result = UNEXPECTED_RESPONSE_TYPE_FAILURE;
-    NOTREACHED() << "Failure: Unexpected response type: "
-                 << response->response_type();
+    NOTREACHED_IN_MIGRATION()
+        << "Failure: Unexpected response type: " << response->response_type();
   }
 
   if (apply_update_result == APPLY_UPDATE_SUCCESS) {
@@ -628,7 +629,8 @@ ApplyUpdateResult V4Store::UpdateHashPrefixMapFromAdditions(
                                                 raw_hashes_size, additions_map);
       }
     } else {
-      NOTREACHED() << "Unexpected compression_type type: " << compression_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected compression_type type: " << compression_type;
       return UNEXPECTED_COMPRESSION_TYPE_ADDITIONS_FAILURE;
     }
 
@@ -655,11 +657,11 @@ ApplyUpdateResult V4Store::AddUnlumpedHashes(PrefixSize prefix_size,
                                              const size_t raw_hashes_length,
                                              HashPrefixMap* additions_map) {
   if (prefix_size < kMinHashPrefixLength) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PREFIX_SIZE_TOO_SMALL_FAILURE;
   }
   if (prefix_size > kMaxHashPrefixLength) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PREFIX_SIZE_TOO_LARGE_FAILURE;
   }
   if (raw_hashes_length % prefix_size != 0) {

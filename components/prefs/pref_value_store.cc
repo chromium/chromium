@@ -233,7 +233,7 @@ bool PrefValueStore::PrefValueInStoreRange(
     PrefValueStore::PrefStoreType first_checked_store,
     PrefValueStore::PrefStoreType last_checked_store) const {
   if (first_checked_store > last_checked_store) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

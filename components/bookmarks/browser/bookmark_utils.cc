@@ -244,7 +244,7 @@ void CloneBookmarkNode(BookmarkModel* model,
                        size_t index_to_add_at,
                        bool reset_node_times) {
   if (!parent->is_folder() || !model) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   for (size_t i = 0; i < elements.size(); ++i) {
@@ -310,7 +310,7 @@ void MakeTitleUnique(const BookmarkModel* model,
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasteFromClipboard(BookmarkModel* model,

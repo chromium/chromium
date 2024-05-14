@@ -117,7 +117,7 @@ void AutofillCounter::OnWebDataServiceRequestDone(
     } else if (handle == addresses_query_) {
       addresses_query_ = 0;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     CancelAllRequests();
@@ -174,7 +174,7 @@ void AutofillCounter::OnWebDataServiceRequestDone(
     addresses_query_ = 0;
 
   } else {
-    NOTREACHED() << "No such query: " << handle;
+    NOTREACHED_IN_MIGRATION() << "No such query: " << handle;
   }
 
   // If we still have pending queries, do not report data yet.

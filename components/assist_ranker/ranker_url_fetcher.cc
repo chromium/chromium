@@ -34,7 +34,7 @@ bool RankerURLFetcher::Request(
   // This function is not supposed to be called if the previous operation is not
   // finished.
   if (state_ == REQUESTING) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

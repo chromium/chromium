@@ -32,7 +32,7 @@ bool IsValidInitialPageState(PageState page_state) {
     case PageState::kBackForwardCache:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -45,7 +45,7 @@ bool IsValidPageStateTransition(PageState old_state, PageState new_state) {
     case PageState::kBackForwardCache:
       return new_state == PageState::kActive;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

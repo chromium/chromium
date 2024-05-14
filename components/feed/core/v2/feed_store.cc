@@ -197,7 +197,7 @@ std::string KeyForRecord(const feedstore::Record& record) {
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
-  NOTREACHED() << "Invalid record case " << record.data_case();
+  NOTREACHED_IN_MIGRATION() << "Invalid record case " << record.data_case();
   return "";
 }
 

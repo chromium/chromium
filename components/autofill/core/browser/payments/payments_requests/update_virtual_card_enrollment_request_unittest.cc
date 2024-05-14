@@ -90,7 +90,7 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, GetRequestContent) {
         channel_type = "CHROME_UPSTREAM";
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     EXPECT_TRUE(GetRequest()->GetRequestContent().find(
                     billable_service_number) != std::string::npos);

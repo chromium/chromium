@@ -374,7 +374,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
 
   switch (specifics.type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case sync_pb::BookmarkSpecifics::URL: {
       const bookmarks::BookmarkNode* node =
@@ -397,7 +397,7 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
                               &metainfo, creation_time, guid);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -113,7 +113,7 @@ gfx::Image FaviconCache::GetFaviconInternal(
                             weak_factory_.GetWeakPtr(), request),
         &task_tracker_);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   pending_requests_[request].push_back(std::move(on_favicon_fetched));

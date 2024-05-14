@@ -217,7 +217,7 @@ void VideoCaptureClient::OnBufferReady(media::mojom::ReadyBufferPtr buffer) {
             &VideoCaptureClient::OnClientBufferFinished,
             weak_factory_.GetWeakPtr(), buffer->buffer_id, MappingKeepAlive()));
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else if (buffer_iter->second->is_unsafe_shmem_region()) {
     base::WritableSharedMemoryMapping mapping =

@@ -45,7 +45,7 @@ supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
     case safe_search_api::Classification::UNSAFE:
       return FilteringBehavior::kBlock;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return FilteringBehavior::kBlock;
 }
 
@@ -380,20 +380,20 @@ SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
         case FilteringBehaviorReason::ASYNC_CHECKER:
           return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
         case FilteringBehaviorReason::ALLOWLIST:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case FilteringBehaviorReason::MANUAL:
           return SupervisedUserFilterTopLevelResult::kBlockManual;
         case FilteringBehaviorReason::DEFAULT:
           return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
         case FilteringBehaviorReason::NOT_SIGNED_IN:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       [[fallthrough]];
     case FilteringBehavior::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SupervisedUserFilterTopLevelResult::kAllow;
 }
 
@@ -418,7 +418,7 @@ int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
           return SupervisedUserSafetyFilterResult::
               FILTERING_BEHAVIOR_BLOCK_SAFESITES;
         case FilteringBehaviorReason::ALLOWLIST:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case FilteringBehaviorReason::MANUAL:
           return SupervisedUserSafetyFilterResult::
@@ -428,11 +428,11 @@ int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
               FILTERING_BEHAVIOR_BLOCK_DEFAULT;
         case FilteringBehaviorReason::NOT_SIGNED_IN:
           // Should never happen, only used for requests from Webview
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       [[fallthrough]];
     case FilteringBehavior::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }

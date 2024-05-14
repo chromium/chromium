@@ -278,7 +278,7 @@ bool HandleForkRequest(std::vector<base::ScopedFD> child_fds,
   if (child_pid == 0) {
     ChildNaClLoaderInit(std::move(child_fds), system_info, nacl_sandbox,
                         channel_id, args);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // I am the parent.
@@ -520,5 +520,5 @@ int main(int argc, char* argv[]) {
     // against malicious IPC requests.
     DCHECK(request_handled);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

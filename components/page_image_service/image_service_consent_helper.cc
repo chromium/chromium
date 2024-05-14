@@ -64,7 +64,7 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
             NewPersonalizedDataCollectionConsentHelper(sync_service),
         timeout_duration_);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -56,7 +56,7 @@ std::string_view StreamPrefix(feed::StreamKind stream_kind) {
     case feed::StreamKind::kSingleWebFeed:
       return kSingleWebFeedStreamKeyPrefix;
     case feed::StreamKind::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kSingleWebFeedStreamKeyPrefix;
   }
 }

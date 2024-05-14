@@ -375,7 +375,7 @@ NSString* const kDefaultScheme = @"https";
                                                    completionHandler(hasImage);
                                                  }];
   } else {
-    NOTREACHED() << contentType;
+    NOTREACHED_IN_MIGRATION() << contentType;
   }
 }
 

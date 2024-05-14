@@ -43,7 +43,7 @@ std::string ToGCMDecryptionResultDetailsString(GCMDecryptionResult result) {
       break;  // deliberate fall-through
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "(invalid result)";
 }
 

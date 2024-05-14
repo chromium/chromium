@@ -159,7 +159,7 @@ void CrashHandlerHostLinux::Init() {
 }
 
 void CrashHandlerHostLinux::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
@@ -632,7 +632,7 @@ void CrashHandlerHost::NotifyCrashSignalObservers(base::ProcessId pid,
 }
 
 void CrashHandlerHost::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CrashHandlerHost::OnFileCanReadWithoutBlocking(int fd) {

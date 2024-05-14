@@ -53,7 +53,7 @@ ChromeBrowserCloudManagementController::Delegate::
 
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ChromeBrowserCloudManagementController::ChromeBrowserCloudManagementController(

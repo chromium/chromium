@@ -574,7 +574,8 @@ bool AutofillProfileComparator::MergeCompanyNames(
   switch (result) {
     case DIFFERENT_TOKENS:
     default:
-      NOTREACHED() << "Unexpected mismatch: '" << c1 << "' vs '" << c2 << "'";
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected mismatch: '" << c1 << "' vs '" << c2 << "'";
       return false;
     case S1_CONTAINS_S2:
       best = &c1;
@@ -955,7 +956,7 @@ bool AutofillProfileComparator::HaveMergeablePhoneNumbers(
     case PhoneNumberUtil::NO_MATCH:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

@@ -40,7 +40,7 @@ V4DecodeResult V4RiceDecoder::ValidateInput(const int32 rice_parameter,
                                             const int32 num_entries,
                                             const std::string& encoded_data) {
   if (num_entries < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return NUM_ENTRIES_NEGATIVE_FAILURE;
   }
 
@@ -49,12 +49,12 @@ V4DecodeResult V4RiceDecoder::ValidateInput(const int32 rice_parameter,
   }
 
   if (rice_parameter <= 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RICE_PARAMETER_NON_POSITIVE_FAILURE;
   }
 
   if (encoded_data.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ENCODED_DATA_UNEXPECTED_EMPTY_FAILURE;
   }
 
@@ -92,7 +92,7 @@ V4DecodeResult V4RiceDecoder::DecodeIntegers(const int64 first_value,
 
     last_value += offset;
     if (!last_value.IsValid()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DECODED_INTEGER_OVERFLOW_FAILURE;
     }
 
@@ -232,7 +232,7 @@ V4DecodeResult V4RiceDecoder::GetNextWord(uint32_t* word) {
 V4DecodeResult V4RiceDecoder::GetNextBits(unsigned int num_requested_bits,
                                           uint32_t* x) {
   if (num_requested_bits > kMaxBitIndex) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DECODE_REQUESTED_TOO_MANY_BITS_FAILURE;
   }
 

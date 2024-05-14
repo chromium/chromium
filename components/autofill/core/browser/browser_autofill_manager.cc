@@ -387,9 +387,9 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressEntry:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return FillDataType::kUndefined;
 }
 
@@ -2920,7 +2920,7 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
                      log_event)) {
         ++num_rationalization_event;
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -2962,7 +2962,7 @@ void BrowserAutofillManager::SetFastCheckoutRunId(
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       // FastCheckout only supports address and credit card forms.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

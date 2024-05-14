@@ -574,7 +574,7 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
       }
     } break;
     case NodeTypeEnum::kInvalidType: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     } break;
   }
 }
@@ -610,7 +610,7 @@ void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
       }
     } break;
     case NodeTypeEnum::kInvalidType: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     } break;
   }
 }

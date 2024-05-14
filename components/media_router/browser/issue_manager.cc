@@ -35,7 +35,7 @@ base::TimeDelta IssueManager::GetAutoDismissTimeout(
     case IssueInfo::Severity::WARNING:
       return base::Minutes(kWarningAutoDismissMins);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::TimeDelta();
 }
 

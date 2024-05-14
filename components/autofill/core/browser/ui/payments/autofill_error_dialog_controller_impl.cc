@@ -82,7 +82,7 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_TITLE);
     case AutofillErrorDialogType::kTypeUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -120,7 +120,7 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_IBAN_UNMASK_ERROR_DIALOG_MESSAGE);
     case AutofillErrorDialogType::kTypeUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }

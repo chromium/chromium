@@ -511,7 +511,7 @@ bool DataTypeManagerImpl::UpdatePreconditionError(ModelType type) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

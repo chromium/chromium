@@ -457,7 +457,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
   }
-  NOTREACHED();  // Win compilers don't believe this is unreachable.
+  NOTREACHED_IN_MIGRATION();  // Win compilers don't believe this is
+                              // unreachable.
   return std::string();
 }
 

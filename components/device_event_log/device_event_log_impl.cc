@@ -89,7 +89,7 @@ std::string GetLogTypeString(LogType type) {
     case LOG_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 
@@ -101,7 +101,7 @@ LogType GetLogTypeFromString(std::string_view desc) {
     if (desc_lc == log_desc_lc)
       return type;
   }
-  NOTREACHED() << "Unrecogized LogType: " << desc;
+  NOTREACHED_IN_MIGRATION() << "Unrecogized LogType: " << desc;
   return LOG_TYPE_UNKNOWN;
 }
 

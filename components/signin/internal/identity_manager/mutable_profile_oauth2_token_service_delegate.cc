@@ -94,7 +94,7 @@ signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
       return signin::LoadCredentialsState::
           LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return signin::LoadCredentialsState::
       LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS;
 }

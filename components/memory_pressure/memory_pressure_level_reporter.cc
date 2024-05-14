@@ -69,7 +69,7 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
       }
       case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE:
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

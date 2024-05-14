@@ -48,7 +48,7 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
     case FilteringBehaviorReason::ASYNC_CHECKER:
       return IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES;
     case FilteringBehaviorReason::ALLOWLIST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case FilteringBehaviorReason::MANUAL:
       return single_parent ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT
@@ -56,7 +56,7 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
     case FilteringBehaviorReason::NOT_SIGNED_IN:
       return IDS_SUPERVISED_USER_NOT_SIGNED_IN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

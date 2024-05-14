@@ -276,7 +276,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "If you're seeing this error in a browser_test, consider "
          "disabling the test while we set up the testing "
          "infrastructure to talk to Ash in a browser_test. Also, please add a "
@@ -288,7 +288,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
 #else
   // UpdateCredentials should not be called on Chrome OS. Credentials should be
   // updated through Chrome OS Account Manager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -502,7 +502,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
       account_info.gaia, account_manager::AccountType::kGaia});
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -514,7 +514,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentialsInternal(
   signin_client_->RemoveAllAccounts();
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

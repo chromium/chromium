@@ -448,7 +448,7 @@ std::optional<int> ShouldDrawPredictedInkPoints() {
   else if (predicted_points == kDraw2Points3Ms)
     return viz::PredictionConfig::k2Points3Ms;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

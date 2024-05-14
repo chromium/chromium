@@ -30,7 +30,8 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
       case media_router::IssueInfo::Severity::NOTIFICATION:
         return media_router::mojom::Issue_Severity::NOTIFICATION;
     }
-    NOTREACHED() << "Unknown issue severity " << static_cast<int>(severity);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown issue severity " << static_cast<int>(severity);
     return media_router::mojom::Issue_Severity::WARNING;
   }
 
@@ -172,7 +173,8 @@ struct EnumTraits<media_router::mojom::SinkIconType,
       case media_router::SinkIconType::TOTAL_COUNT:
         break;
     }
-    NOTREACHED() << "Unknown sink icon type " << static_cast<int>(icon_type);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown sink icon type " << static_cast<int>(icon_type);
     return media_router::mojom::SinkIconType::GENERIC;
   }
 
@@ -246,8 +248,8 @@ struct EnumTraits<media_router::mojom::RouteControllerType,
       case media_router::RouteControllerType::kMirroring:
         return media_router::mojom::RouteControllerType::kMirroring;
     }
-    NOTREACHED() << "Unknown controller type "
-                 << static_cast<int>(controller_type);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown controller type " << static_cast<int>(controller_type);
     return media_router::mojom::RouteControllerType::kNone;
   }
 

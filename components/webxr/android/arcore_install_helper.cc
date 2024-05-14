@@ -105,7 +105,7 @@ void ArCoreInstallHelper::ShowMessage(int render_process_id,
       break;
     }
     case ArCoreAvailability::kSupportedInstalled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

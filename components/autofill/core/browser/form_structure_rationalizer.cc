@@ -740,7 +740,7 @@ void FormStructureRationalizer::RationalizeAddressLineFields(
               << "ADDRESS_HOME_LINE3";
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       ++nb_address_rationalized;

@@ -83,7 +83,8 @@ void VariationsRequestScheduler::ScheduleFetchShortly() {
 }
 
 void VariationsRequestScheduler::OnAppEnterForeground() {
-  NOTREACHED() << "Attempted to OnAppEnterForeground on non-mobile device";
+  NOTREACHED_IN_MIGRATION()
+      << "Attempted to OnAppEnterForeground on non-mobile device";
 }
 
 base::TimeDelta VariationsRequestScheduler::GetFetchPeriod() const {

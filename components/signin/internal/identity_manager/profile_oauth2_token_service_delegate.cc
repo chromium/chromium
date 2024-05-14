@@ -254,7 +254,7 @@ void ProfileOAuth2TokenServiceDelegate::ExtractCredentials(
 void ProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
     ProfileOAuth2TokenService* to_service,
     const CoreAccountId& account_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProfileOAuth2TokenServiceDelegate::RevokeAllCredentials(
@@ -369,8 +369,9 @@ GoogleServiceAuthError ProfileOAuth2TokenServiceDelegate::BackOffError() const {
 
 void ProfileOAuth2TokenServiceDelegate::ResetBackOffEntry() {
   if (!backoff_entry_) {
-    NOTREACHED() << "Should be called only if `use_backoff` was true in the "
-                    "constructor.";
+    NOTREACHED_IN_MIGRATION()
+        << "Should be called only if `use_backoff` was true in the "
+           "constructor.";
     return;
   }
   backoff_entry_->Reset();

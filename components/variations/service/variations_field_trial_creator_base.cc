@@ -120,7 +120,7 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
     }
     return Study::X86_64;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Study::X86_64;
 }
 
@@ -203,7 +203,7 @@ Study::Channel ConvertProductChannelToStudyChannel(
     case version_info::Channel::UNKNOWN:
       return Study::UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Study::UNKNOWN;
 }
 
@@ -272,7 +272,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     case VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY:
       // It should not be possible to have invalid variation ids from the
       // vector param (which corresponds to chrome://flags).
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case VariationsIdsProvider::ForceIdsResult::SUCCESS:
       break;

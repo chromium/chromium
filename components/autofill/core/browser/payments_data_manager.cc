@@ -379,7 +379,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         OnMaskedBankAccountsRefreshed();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1037,7 +1037,7 @@ bool PaymentsDataManager::IsKnownCard(const CreditCard& credit_card) const {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1676,7 +1676,7 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
 
 void PaymentsDataManager::LoadCreditCards() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1704,7 +1704,7 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
 
 void PaymentsDataManager::LoadIbans() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   CancelPendingLocalQuery(&pending_local_ibans_query_);
@@ -1766,7 +1766,7 @@ void PaymentsDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetLocalDatabase()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     database_helper_->GetLocalDatabase()->CancelRequest(*handle);
@@ -1778,7 +1778,7 @@ void PaymentsDataManager::CancelPendingServerQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetServerDatabase()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     database_helper_->GetServerDatabase()->CancelRequest(*handle);

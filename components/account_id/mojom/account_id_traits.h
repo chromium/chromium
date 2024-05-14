@@ -23,7 +23,7 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
       case AccountType::ACTIVE_DIRECTORY:
         return signin::mojom::AccountType::ACTIVE_DIRECTORY;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return signin::mojom::AccountType::UNKNOWN;
   }
 
@@ -39,7 +39,7 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
         *out = AccountType::ACTIVE_DIRECTORY;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -61,7 +61,7 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
         // Return an empty string for such accounts.
         return std::string();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   static std::string user_email(const AccountId& r) { return r.GetUserEmail(); }

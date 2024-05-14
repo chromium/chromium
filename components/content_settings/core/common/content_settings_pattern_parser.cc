@@ -103,7 +103,7 @@ void PatternParser::Parse(std::string_view pattern_spec,
       start = current_pos;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   current_pos = pattern_spec.size();

@@ -89,7 +89,7 @@ bool SerializedRecording::IsValid() const {
   } else if (is_buffer()) {
     return buffer_.has_value();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 }
@@ -108,7 +108,7 @@ std::optional<SkpResult> SerializedRecording::Deserialize() && {
                           /*copyData=*/false);
     result.skp = SkPicture::MakeFromStream(&stream, &procs);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 
@@ -130,7 +130,7 @@ sk_sp<SkPicture> SerializedRecording::DeserializeWithContext(
                           /*copyData=*/false);
     return SkPicture::MakeFromStream(&stream, &procs);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 }

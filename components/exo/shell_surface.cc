@@ -599,7 +599,8 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
                         client_bounds.height() - visible_bounds.height()) -
              visible_bounds.OffsetFromOrigin();
     default:
-      NOTREACHED() << "Unsupported component:" << resize_component_;
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported component:" << resize_component_;
       return gfx::Point();
   }
 }

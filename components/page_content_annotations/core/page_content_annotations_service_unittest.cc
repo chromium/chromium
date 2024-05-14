@@ -116,7 +116,7 @@ class FakeOptimizationGuideDecider
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return optimization_guide::OptimizationGuideDecision::kFalse;
   }
 

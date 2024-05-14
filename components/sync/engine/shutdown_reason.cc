@@ -19,7 +19,7 @@ const char* ShutdownReasonToString(ShutdownReason reason) {
       return "BROWSER_SHUTDOWN_AND_KEEP_DATA";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -136,7 +136,7 @@ PolicyBundle PolicyLoaderLacros::Load() {
         SetEnterpriseUsersSystemWideDefaults(&policy_map);
         break;
       case PolicyPerProfileFilter::kAny:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))

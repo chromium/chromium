@@ -49,7 +49,7 @@ const std::string& PnaclResources::GetUrl(ResourceType type) const {
 PP_NaClFileInfo PnaclResources::TakeFileInfo(ResourceType type) {
   size_t index = static_cast<size_t>(type);
   if (index >= NUM_TYPES) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kInvalidNaClFileInfo;
   }
   PP_NaClFileInfo to_return = resources_[index].file_info;

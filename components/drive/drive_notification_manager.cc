@@ -296,7 +296,7 @@ std::string DriveNotificationManager::NotificationSourceToString(
       return "NOTIFICATION_POLLING";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

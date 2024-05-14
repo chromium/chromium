@@ -482,7 +482,7 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
       case SystemNodeImpl::Type():
       case NodeTypeEnum::kInvalidType:
       default: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
     }

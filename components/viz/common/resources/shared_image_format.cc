@@ -173,7 +173,7 @@ SharedImageFormat GetEquivalentMultiplanarFormat(SharedImageFormat format) {
     return MultiPlaneFormat::kP010;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SinglePlaneFormat::kRGBA_8888;
 }
 
@@ -346,7 +346,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
     case PlaneConfig::kY_UV_A:
       return plane_index == 1 ? 2 : 1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -361,7 +361,7 @@ int SharedImageFormat::MultiplanarBitDepth() const {
     case ChannelFormat::k16F:
       return 16;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

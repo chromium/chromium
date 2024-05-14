@@ -47,7 +47,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
       return it->second[0];
   }
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

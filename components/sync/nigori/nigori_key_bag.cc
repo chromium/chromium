@@ -103,7 +103,7 @@ std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
   DCHECK(nigori);
   const std::string key_name = nigori->GetKeyName();
   if (key_name.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return key_name;
   }
   nigori_map_.emplace(key_name, std::move(nigori));

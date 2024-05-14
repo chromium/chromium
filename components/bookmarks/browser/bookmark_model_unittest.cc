@@ -363,7 +363,7 @@ class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
 
   void BookmarkModelLoaded(bool ids_reassigned) override {
     // We never load from the db, so that this should never get invoked.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void BookmarkNodeMoved(const BookmarkNode* old_parent,

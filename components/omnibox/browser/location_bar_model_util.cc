@@ -49,13 +49,13 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
       return vector_icons::kNotSecureWarningChromeRefreshIcon;
 
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return omnibox::kHttpChromeRefreshIcon;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return omnibox::kHttpChromeRefreshIcon;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   static const gfx::VectorIcon dummy = {};
   return dummy;
 #endif

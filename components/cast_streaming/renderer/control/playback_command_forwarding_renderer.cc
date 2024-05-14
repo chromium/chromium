@@ -120,7 +120,7 @@ void PlaybackCommandForwardingRenderer::Initialize(
 void PlaybackCommandForwardingRenderer::SetCdm(media::CdmContext* cdm_context,
                                                CdmAttachedCB cdm_attached_cb) {
   // CDM should not be set for current mirroring use cases.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PlaybackCommandForwardingRenderer::SetLatencyHint(
@@ -254,7 +254,8 @@ void PlaybackCommandForwardingRenderer::MojoRendererSetVolume(float volume) {
 void PlaybackCommandForwardingRenderer::MojoRendererSetCdm(
     const std::optional<::base::UnguessableToken>& cdm_id,
     media::mojom::Renderer::SetCdmCallback callback) {
-  NOTREACHED() << "Use of a CDM is not supported by the remoting protocol.";
+  NOTREACHED_IN_MIGRATION()
+      << "Use of a CDM is not supported by the remoting protocol.";
 }
 
 void PlaybackCommandForwardingRenderer::OnError(media::PipelineStatus status) {

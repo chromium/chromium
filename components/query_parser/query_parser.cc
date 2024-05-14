@@ -214,18 +214,18 @@ bool QueryNodeList::IsWord() const {
 }
 
 bool QueryNodeList::Matches(const std::u16string& word, bool exact) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool QueryNodeList::HasMatchIn(const QueryWordVector& words,
                                Snippet::MatchPositions* match_positions) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool QueryNodeList::HasMatchIn(const QueryWordVector& words, bool exact) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

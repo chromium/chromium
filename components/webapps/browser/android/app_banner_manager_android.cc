@@ -484,7 +484,7 @@ void AppBannerManagerAndroid::OnInstallEvent(
               web_contents(), a2hs_params.shortcut_info->url.spec());
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       break;
 

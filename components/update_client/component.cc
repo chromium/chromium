@@ -1464,7 +1464,7 @@ void Component::StateRun::ActionRunComplete(bool succeeded,
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace update_client

@@ -46,7 +46,7 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
         kSyncUser:
       return "SyncUser";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -64,7 +64,7 @@ std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
         kSyncing:
       return "Syncing";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

@@ -70,7 +70,7 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
       }
       return UploadState::ACTIVE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UploadState::NOT_ACTIVE;
 }
 

@@ -69,8 +69,9 @@ SkBitmap GLScalerTestUtil::CreateSMPTETestImage(const gfx::Size& size) {
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
       if (result.getColor4f(x, y) == kDeadColor) {
-        NOTREACHED() << "TEST BUG: Error creating SMPTE test image. Bad size ("
-                     << size.ToString() << ")?";
+        NOTREACHED_IN_MIGRATION()
+            << "TEST BUG: Error creating SMPTE test image. Bad size ("
+            << size.ToString() << ")?";
         return result;
       }
     }

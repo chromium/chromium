@@ -263,7 +263,7 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
       algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA256;
       break;
     default:
-      NOTREACHED() << "Invalid signature type: " << signature_type;
+      NOTREACHED_IN_MIGRATION() << "Invalid signature type: " << signature_type;
       return false;
   }
 

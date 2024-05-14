@@ -61,7 +61,7 @@ KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
       return KeyDerivationMethodStateForMetrics::SCRYPT_8192_8_11;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeyDerivationMethodStateForMetrics::NOT_SET;
 }
 
@@ -92,7 +92,7 @@ KeyDerivationParams GetKeyDerivationParamsFromSpecifics(
           GetScryptSaltFromSpecifics(specifics));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeyDerivationParams::CreateForPbkdf2();
 }
 
@@ -206,7 +206,7 @@ bool IsValidPassphraseTransition(
       return new_passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE ||
              new_passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -970,7 +970,7 @@ base::Time NigoriSyncBridgeImpl::GetExplicitPassphraseTime() const {
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
       return state_.custom_passphrase_time;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return state_.custom_passphrase_time;
 }
 
@@ -978,7 +978,7 @@ KeyDerivationParams NigoriSyncBridgeImpl::GetKeyDerivationParamsForPendingKeys()
     const {
   switch (state_.passphrase_type) {
     case NigoriSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return KeyDerivationParams::CreateForPbkdf2();
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:

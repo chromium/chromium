@@ -348,7 +348,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
   // TODO(blundell): If we ever need this functionality on ChromeOS (which seems
   // unlikely), plumb this through to just clear the primary account info
   // synchronously with IdentityManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSignin))
     return;

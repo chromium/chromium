@@ -56,7 +56,7 @@ class ScopedExperimentalStateToggle {
         break;
 
       case base::FeatureList::OVERRIDE_USE_DEFAULT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

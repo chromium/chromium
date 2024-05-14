@@ -89,7 +89,7 @@ void FieldTrialTest::SetFeatureParams(
   std::string fetch_behavior_param;
   switch (fetch_behavior) {
     case NetworkTimeTracker::FETCH_BEHAVIOR_UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       fetch_behavior_param = "unknown";
       break;
     case NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY:

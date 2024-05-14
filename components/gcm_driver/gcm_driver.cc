@@ -185,7 +185,7 @@ void GCMDriver::GetEncryptionInfo(const std::string& app_id,
 
 void GCMDriver::UnregisterWithSenderIdImpl(const std::string& app_id,
                                            const std::string& sender_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GCMDriver::RegisterFinished(const std::string& app_id,
@@ -342,7 +342,7 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
       break;  // deliberate fall-through
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GCMDriver::RegisterAfterUnregister(

@@ -74,7 +74,7 @@ AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
     case SegmentId::OPTIMIZATION_TARGET_UNKNOWN:
       return AdaptiveToolbarButtonVariant::kNone;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AdaptiveToolbarButtonVariant::kUnknown;
   }
 }
@@ -104,7 +104,7 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
         case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
           return AdaptiveToolbarSegmentSwitch::kNoneToVoice;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return AdaptiveToolbarSegmentSwitch::kUnknown;
       }
 
@@ -117,7 +117,7 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
         case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
           return AdaptiveToolbarSegmentSwitch::kNewTabToVoice;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return AdaptiveToolbarSegmentSwitch::kUnknown;
       }
 
@@ -130,7 +130,7 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
         case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
           return AdaptiveToolbarSegmentSwitch::kShareToVoice;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return AdaptiveToolbarSegmentSwitch::kUnknown;
       }
 
@@ -143,12 +143,12 @@ AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
         case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
           return AdaptiveToolbarSegmentSwitch::kVoiceToShare;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return AdaptiveToolbarSegmentSwitch::kUnknown;
       }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AdaptiveToolbarSegmentSwitch::kUnknown;
   }
 }
@@ -186,7 +186,7 @@ std::string SignalTypeToHistogramVariant(proto::SignalType signal_type) {
     case proto::SignalType::HISTOGRAM_VALUE:
       return "HistogramValue";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown";
   }
 }
@@ -505,7 +505,7 @@ void RecordModelExecutionResult(SegmentId segment_id,
       is_probability_score = false;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   for (size_t i = 0; i < result.size(); i++) {
@@ -727,7 +727,7 @@ SegmentationSelectionFailureReason GetSuccessOrFailureReason(
     SegmentResultProvider::ResultState result_state) {
   switch (result_state) {
     case SegmentResultProvider::ResultState::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SegmentationSelectionFailureReason::kMaxValue;
     case SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed:
       return SegmentationSelectionFailureReason::kServerModelDatabaseScoreUsed;

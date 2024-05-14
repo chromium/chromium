@@ -444,7 +444,7 @@ class UrlRequestTest : public ::testing::TestWithParam<
             engine, request_finished_listener_, executor);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

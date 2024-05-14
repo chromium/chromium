@@ -40,7 +40,7 @@ PredictionModelHandlerProvider::GetPredictionModelHandler(
     case RequestType::kGeolocation:
       return geolocation_prediction_model_handler_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

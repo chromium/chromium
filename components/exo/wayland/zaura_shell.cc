@@ -1631,7 +1631,7 @@ ui::ZOrderLevel AuraTopLevelZOrderLevel(uint32_t z_order_level) {
       return ui::ZOrderLevel::kSecuritySurface;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ZOrderLevel::kNormal;
 }
 

@@ -34,7 +34,7 @@ SecurePaymentConfirmationController::~SecurePaymentConfirmationController() =
 
 void SecurePaymentConfirmationController::ShowDialog() {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   if (!request_ || !request_->spec())
@@ -230,7 +230,7 @@ void SecurePaymentConfirmationController::ShowPaymentHandlerScreen(
     const GURL& url,
     PaymentHandlerOpenWindowCallback callback) {
   // Payment handler screen is not supported.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurePaymentConfirmationController::ConfirmPaymentForTesting() {

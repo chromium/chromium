@@ -50,7 +50,7 @@ std::string UpdateVirtualCardEnrollmentRequest::GetRequestContent() {
       BuildUnenrollRequestDictionary(&request_dict);
       break;
     case VirtualCardEnrollmentRequestType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -89,7 +89,7 @@ bool UpdateVirtualCardEnrollmentRequest::IsResponseComplete() {
       // error. Thus, we always return true.
       return true;
     case VirtualCardEnrollmentRequestType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -127,7 +127,7 @@ void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
       request_dict->Set("channel_type", "CHROME_DOWNSTREAM");
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (request_details_.billing_customer_number != 0) {

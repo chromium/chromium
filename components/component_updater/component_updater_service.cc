@@ -397,7 +397,7 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
     update_client_->Update({id}, std::move(crx_data_callback), {}, false,
                            std::move(update_complete_callback));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

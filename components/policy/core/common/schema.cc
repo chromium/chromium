@@ -314,7 +314,8 @@ bool ValidateAttributesAndTypes(const base::Value::Dict& dict,
     begin = kAttributesAndTypesForString;
     end = kAttributesAndTypesForStringEnd;
   } else {
-    NOTREACHED() << "Type should be a valid schema type or '$ref'.";
+    NOTREACHED_IN_MIGRATION()
+        << "Type should be a valid schema type or '$ref'.";
   }
 
   base::Value::Type expected_type = base::Value::Type::NONE;

@@ -51,7 +51,7 @@ void SpellCheckHostImpl::RequestTextCheck(const std::u16string& text,
 void SpellCheckHostImpl::CheckSpelling(const std::u16string& word,
                                        CheckSpellingCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(false);
 }
 
@@ -59,7 +59,7 @@ void SpellCheckHostImpl::FillSuggestionList(
     const std::u16string& word,
     FillSuggestionListCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run({});
 }
 
@@ -67,7 +67,7 @@ void SpellCheckHostImpl::FillSuggestionList(
 void SpellCheckHostImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
                           /*enable=*/false);
 }

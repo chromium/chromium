@@ -1041,7 +1041,7 @@ void DownloadManifestToBufferCompletion(PP_Instance instance,
                                     "access to manifest url was denied.");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       pp_error = PP_ERROR_FAILED;
       load_manager->ReportLoadError(PP_NACL_ERROR_MANIFEST_LOAD_URL,
                                     "could not load manifest url.");

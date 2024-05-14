@@ -166,7 +166,7 @@ metrics::SystemProfileProto::OS::XdgSessionType ToProtoSessionType(
       return metrics::SystemProfileProto::OS::MIR;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::SystemProfileProto::OS::UNSET;
 }
 
@@ -198,7 +198,7 @@ metrics::SystemProfileProto::OS::XdgCurrentDesktop ToProtoCurrentDesktop(
       return metrics::SystemProfileProto::OS::LXQT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return metrics::SystemProfileProto::OS::OTHER;
 }
 #endif  // BUILDFLAG(IS_LINUX)

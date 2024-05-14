@@ -441,7 +441,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       }
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

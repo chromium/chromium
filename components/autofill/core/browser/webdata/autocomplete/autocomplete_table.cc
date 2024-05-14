@@ -323,7 +323,7 @@ int AutocompleteTable::GetCountOfValuesContainedBetween(base::Time begin,
   s.BindInt64(1, end_time_t);
 
   if (!s.Step()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   return s.ColumnInt(0);

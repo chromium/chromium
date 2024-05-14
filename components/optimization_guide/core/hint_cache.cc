@@ -385,10 +385,10 @@ bool HintCache::ProcessAndCacheHints(
         break;
       case proto::HASHED_HOST:
         // The server should not send hints with hashed host key.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case proto::REPRESENTATION_UNSPECIFIED:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

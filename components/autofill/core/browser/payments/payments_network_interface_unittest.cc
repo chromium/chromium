@@ -1934,7 +1934,7 @@ class UpdateVirtualCardEnrollmentTest
                        net::HTTP_REQUEST_TIMEOUT, "");
         break;
       case AutofillClient::PaymentsRpcResult::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     EXPECT_EQ(response_type_for_test, result_);
@@ -2075,7 +2075,7 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
                      net::HTTP_REQUEST_TIMEOUT, "");
       break;
     case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   EXPECT_EQ(result, result_);

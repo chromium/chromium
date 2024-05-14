@@ -107,7 +107,7 @@ std::string LogoTypeToString(LogoType type) {
     case LogoType::INTERACTIVE:
       return kInteractiveType;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

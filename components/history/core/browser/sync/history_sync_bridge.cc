@@ -564,7 +564,7 @@ std::optional<syncer::ModelError> HistorySyncBridge::MergeFullSyncData(
     syncer::EntityChangeList entity_data) {
   // Since HISTORY is in ApplyUpdatesImmediatelyTypes(), MergeFullSyncData()
   // should never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -639,7 +639,7 @@ HistorySyncBridge::ApplyIncrementalSyncChanges(
         // entities *is* tracked, but then an incoming tombstone would result in
         // a conflict that'd be resolved as "local edit wins over remote
         // deletion", so still no ACTION_DELETE would arrive here.]
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

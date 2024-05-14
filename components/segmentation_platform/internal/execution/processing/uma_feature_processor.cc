@@ -100,7 +100,7 @@ UkmDatabase::CustomSqlQuery MakeSqlQuery(
   bool is_bucketed = false;
   switch (aggregation) {
     case proto::Aggregation::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case proto::Aggregation::COUNT:
       query.query = base::StringPrintf(kQueryTemplate, "COUNT(metric_value)",

@@ -432,7 +432,7 @@ bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
       }
       break;
     default:
-      NOTREACHED() << "Unsupported dependency requirement";
+      NOTREACHED_IN_MIGRATION() << "Unsupported dependency requirement";
   }
 
   return handler_->CheckPolicySettings(policies, errors);
@@ -448,7 +448,7 @@ void PolicyWithDependencyHandler::ApplyPolicySettingsWithParameters(
 void PolicyWithDependencyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 // SchemaValidatingPolicyHandler implementation --------------------------------
 
@@ -778,7 +778,7 @@ void LegacyPoliciesDeprecatingPolicyHandler::ApplyPolicySettingsWithParameters(
 void LegacyPoliciesDeprecatingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // SimpleDeprecatingPolicyHandler implementation -----------------------
@@ -823,7 +823,7 @@ void SimpleDeprecatingPolicyHandler::ApplyPolicySettingsWithParameters(
 void SimpleDeprecatingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // CloudOnlyPolicyHandler implementation ---------------------------------------
@@ -931,7 +931,7 @@ void CloudUserOnlyPolicyHandler::ApplyPolicySettingsWithParameters(
 void CloudUserOnlyPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 URLPolicyHandler::URLPolicyHandler(const char* policy_name,

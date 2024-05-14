@@ -111,7 +111,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kCookies:
       return {kCookiesTypeName, COOKIES, {COOKIES}};
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {nullptr, UNSPECIFIED, {}};
 }
 

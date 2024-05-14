@@ -359,7 +359,7 @@ bool SafeBrowsingPageActivationThrottle::
     case ActivationScope::NO_SITES:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

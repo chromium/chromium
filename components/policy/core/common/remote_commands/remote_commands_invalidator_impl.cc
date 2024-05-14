@@ -26,8 +26,9 @@ const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
     case PolicyInvalidationScope::kCBCM:
       return kMetricCBCMRemoteCommandInvalidations;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
-                      "device local account scope.";
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected instance of remote commands invalidator with "
+             "device local account scope.";
       return "";
   }
 }
@@ -41,8 +42,9 @@ std::string ComposeOwnerName(PolicyInvalidationScope scope) {
     case PolicyInvalidationScope::kCBCM:
       return "RemoteCommands.CBCM";
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
-                      "device local account scope.";
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected instance of remote commands invalidator with "
+             "device local account scope.";
       return "";
   }
 }

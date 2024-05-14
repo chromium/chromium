@@ -314,7 +314,7 @@ class TestGpuCommandsCompletedFence : public ResourceFence {
   // ResourceFence implementation.
   bool HasPassed() override { return passed_; }
   gfx::GpuFenceHandle GetGpuFenceHandle() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::GpuFenceHandle();
   }
 

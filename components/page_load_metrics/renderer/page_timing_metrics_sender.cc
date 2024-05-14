@@ -42,7 +42,7 @@ mojom::UserInteractionType UserInteractionTypeForMojom(
   }
   // mojom::UserInteractionType should have the same interaction types as
   // blink::UserInteractionType does.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::UserInteractionType::kMinValue;
 }
 

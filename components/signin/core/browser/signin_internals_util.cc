@@ -25,11 +25,11 @@ std::string SigninStatusFieldToString(UntimedSigninStatusField field) {
     ENUM_CASE(GAIA_ID);
     ENUM_CASE(USERNAME);
     case UNTIMED_FIELDS_END:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -38,11 +38,11 @@ std::string SigninStatusFieldToString(TimedSigninStatusField field) {
     ENUM_CASE(AUTHENTICATION_RESULT_RECEIVED);
     ENUM_CASE(REFRESH_TOKEN_RECEIVED);
     case TIMED_FIELDS_END:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

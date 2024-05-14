@@ -292,7 +292,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -348,7 +348,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       base::debug::DumpWithoutCrashing();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -376,7 +376,7 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
       // These dismiss reasons should not be possible for a TranslateMessage,
       // since clicking the primary or secondary buttons doesn't dismiss the
       // message.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     default:
@@ -570,7 +570,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     return nullptr;
@@ -644,7 +644,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

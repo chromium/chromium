@@ -101,7 +101,7 @@ ImportEntry::Status GetConflictType(
     case PasswordForm::Store::kNotSet:
       return ImportEntry::Status::UNKNOWN_ERROR;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ImportEntry::Status::UNKNOWN_ERROR;
 }

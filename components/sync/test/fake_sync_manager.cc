@@ -59,7 +59,7 @@ void FakeSyncManager::WaitForSyncThread() {
   base::RunLoop run_loop;
   if (!sync_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                            run_loop.QuitClosure())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   run_loop.Run();
 }

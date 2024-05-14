@@ -170,7 +170,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       seat_->AbortPendingDragOperation();
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   if (send_details) {

@@ -217,7 +217,7 @@ AutofillProfile ConstructProfileFromTypeValuePairs(
                                              VerificationStatus::kObserved);
   }
   if (!profile.FinalizeAfterImport())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return profile;
 }
 

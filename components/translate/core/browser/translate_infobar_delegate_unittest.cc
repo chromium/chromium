@@ -53,7 +53,7 @@ class TestInfoBarManager : public infobars::InfoBarManager {
 
   // infobars::InfoBarManager:
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 

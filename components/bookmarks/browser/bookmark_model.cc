@@ -652,7 +652,7 @@ void BookmarkModel::SetTitle(const BookmarkNode* node,
   }
 
   if (is_permanent_node(node) && !client_->CanSetPermanentNodeTitle(node)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

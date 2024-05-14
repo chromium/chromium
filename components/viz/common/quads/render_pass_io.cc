@@ -260,7 +260,7 @@ const char* RRectFTypeToString(gfx::RRectF::Type type) {
     MAP_RRECTF_TYPE_TO_STRING(kOval)
     MAP_RRECTF_TYPE_TO_STRING(kComplex)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1210,7 +1210,7 @@ const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
     MAP_VIDEO_TYPE_TO_STRING(kSoftwareProtected)
     MAP_VIDEO_TYPE_TO_STRING(kHardwareProtected)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1309,9 +1309,9 @@ void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
   }
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)     \
-  case DrawQuad::Material::NAME:            \
-    NOTREACHED() << "Unexpected " << #NAME; \
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
+  case DrawQuad::Material::NAME:                         \
+    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
     break;
 #define WRITE_DRAW_QUAD_TYPE_FIELDS(NAME, TYPE)                    \
   case DrawQuad::Material::NAME:                                   \
@@ -1649,9 +1649,9 @@ bool VideoHoleDrawQuadFromDict(const base::Value::Dict& dict,
   return true;
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)     \
-  case DrawQuad::Material::NAME:            \
-    NOTREACHED() << "Unexpected " << #NAME; \
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
+  case DrawQuad::Material::NAME:                         \
+    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
     break;
 #define GET_QUAD_FROM_DICT(NAME, TYPE)                             \
   case DrawQuad::Material::NAME: {                                 \
@@ -1899,7 +1899,7 @@ const char* BlendModeToString(SkBlendMode blend_mode) {
     MAP_BLEND_MODE_TO_STRING(kColor)
     MAP_BLEND_MODE_TO_STRING(kLuminosity)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1922,7 +1922,7 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kYuvVideoContent)
     MAP_MATERIAL_TO_STRING(kVideoHole)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

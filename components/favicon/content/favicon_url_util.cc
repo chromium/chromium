@@ -25,7 +25,7 @@ favicon_base::IconType IconTypeFromContentIconType(
     case blink::mojom::FaviconIconType::kInvalid:
       return favicon_base::IconType::kInvalid;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return favicon_base::IconType::kInvalid;
 }
 

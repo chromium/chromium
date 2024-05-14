@@ -65,7 +65,7 @@ std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
       return "uploaded";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

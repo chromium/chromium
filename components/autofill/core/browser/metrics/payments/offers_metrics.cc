@@ -40,7 +40,7 @@ void LogOfferNotificationBubbleOfferMetric(
                                 commerce::UrlContainsDiscountUtmTag(url));
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   base::UmaHistogramBoolean(histogram_name, is_reshow);
@@ -70,7 +70,7 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   base::UmaHistogramBoolean(histogram_name, true);
@@ -98,7 +98,7 @@ void LogOfferNotificationBubbleResultMetric(
       histogram_name += "FreeListingCouponOffer.";
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   // Add subhistogram for |is_reshow| decision.
@@ -120,7 +120,7 @@ void LogOfferNotificationBubbleSuppressed(
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   base::UmaHistogramBoolean(histogram_name, true);
@@ -152,7 +152,7 @@ void LogStoredOfferMetrics(
         break;
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
     }
     base::UmaHistogramCounts1000(related_merchant_count_histogram_name,
@@ -205,7 +205,7 @@ void LogIndividualOfferSuggestionEvent(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

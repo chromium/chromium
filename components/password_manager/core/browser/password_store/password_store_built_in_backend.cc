@@ -169,7 +169,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
 void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(

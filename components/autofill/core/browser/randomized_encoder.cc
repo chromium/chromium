@@ -218,7 +218,7 @@ std::string RandomizedEncoder::Encode(FormSignature form_signature,
                                       std::string_view data_type,
                                       std::string_view data_value) const {
   if (!encoding_info_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 

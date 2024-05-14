@@ -75,7 +75,7 @@ Study::FormFactor VariationsServiceClient::GetCurrentFormFactor() {
     case ui::DEVICE_FORM_FACTOR_FOLDABLE:
       return Study::FOLDABLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Study::DESKTOP;
 #endif  // BUILDFLAG(PLATFORM_CFM)
 }

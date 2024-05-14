@@ -243,7 +243,7 @@ void GCMDriverAndroid::RegisterImpl(
 }
 
 void GCMDriverAndroid::UnregisterImpl(const std::string& app_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GCMDriverAndroid::UnregisterWithSenderIdImpl(

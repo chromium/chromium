@@ -284,7 +284,7 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
     return;
   }
 
-  NOTREACHED() << "Unknown chrome app";
+  NOTREACHED_IN_MIGRATION() << "Unknown chrome app";
   std::move(callback).Run(false);
 }
 

@@ -168,7 +168,7 @@ void FullscreenClient::HandleMode(void* data,
       surface_size_.SetSize(height, width);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

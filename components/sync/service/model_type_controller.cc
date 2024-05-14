@@ -36,7 +36,7 @@ SyncStopMetadataFate TakeStrictestMetadataFate(SyncStopMetadataFate fate1,
     case KEEP_METADATA:
       return fate2;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KEEP_METADATA;
 }
 
@@ -58,7 +58,7 @@ std::string ModelTypeController::StateToString(State state) {
     case FAILED:
       return "Failed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Invalid";
 }
 
@@ -397,8 +397,8 @@ void ModelTypeController::OnDelegateStarted(
     case MODEL_LOADED:
     case RUNNING:
     case NOT_RUNNING:
-      NOTREACHED() << " type " << ModelTypeToDebugString(type()) << " state "
-                   << StateToString(state_);
+      NOTREACHED_IN_MIGRATION() << " type " << ModelTypeToDebugString(type())
+                                << " state " << StateToString(state_);
   }
 
   TriggerCompletionCallbacks(SyncError());

@@ -124,7 +124,7 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::BINARY:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

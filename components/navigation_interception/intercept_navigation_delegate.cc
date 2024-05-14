@@ -111,7 +111,7 @@ class RedirectURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}

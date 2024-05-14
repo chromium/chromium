@@ -88,7 +88,7 @@ class FakeModelProvider : public TestOptimizationGuideModelProvider {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

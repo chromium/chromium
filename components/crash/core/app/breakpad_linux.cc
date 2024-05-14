@@ -2048,8 +2048,10 @@ void InitCrashReporter(const std::string& process_type) {
 #endif  // BUILDFLAG(IS_ANDROID)
   } else if (GetCrashReporterClient()->EnableBreakpadForProcess(process_type)) {
 #if BUILDFLAG(IS_ANDROID)
-    NOTREACHED() << "Breakpad initialized with InitCrashReporter() instead of "
-      "InitNonBrowserCrashReporter in " << process_type << " process.";
+    NOTREACHED_IN_MIGRATION()
+        << "Breakpad initialized with InitCrashReporter() instead of "
+           "InitNonBrowserCrashReporter in "
+        << process_type << " process.";
     return;
 #else
     // We might be chrooted in a zygote or renderer process so we cannot call
@@ -2113,7 +2115,8 @@ void InitNonBrowserCrashReporterForAndroid(
     int minidump_fd = base::GlobalDescriptors::GetInstance()->MaybeGet(
         GetCrashReporterClient()->GetAndroidMinidumpDescriptor());
     if (minidump_fd < 0) {
-      NOTREACHED() << "Could not find minidump FD, crash reporting disabled.";
+      NOTREACHED_IN_MIGRATION()
+          << "Could not find minidump FD, crash reporting disabled.";
     } else {
       InitCrashKeys();
       EnableNonBrowserCrashDumping(process_type, minidump_fd,

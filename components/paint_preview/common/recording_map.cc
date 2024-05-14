@@ -46,7 +46,7 @@ std::pair<RecordingMap, PaintPreviewProto> RecordingMapFromCaptureResult(
           capture_result.proto};
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

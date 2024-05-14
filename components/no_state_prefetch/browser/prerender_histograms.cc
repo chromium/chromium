@@ -43,7 +43,7 @@ std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
     case ORIGIN_SAME_ORIGIN_SPECULATION:
       return "sameoriginspeculation";
     case ORIGIN_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

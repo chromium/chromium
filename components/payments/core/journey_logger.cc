@@ -113,7 +113,7 @@ void JourneyLogger::SetSectionNeedsCompletion(const Section section) {
       events_ |= EVENT_NEEDS_COMPLETION_SHIPPING;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -193,7 +193,7 @@ void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
       SetEvent2Occurred(Event2::kSelectedOther);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -209,13 +209,13 @@ void JourneyLogger::SetAvailableMethod(PaymentMethodCategory category) {
                                                            // fallthrough.
     case PaymentMethodCategory::kPlayBilling:  // Intentional fallthrough.
     case PaymentMethodCategory::kSecurePaymentConfirmation:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case PaymentMethodCategory::kOther:
       SetEventOccurred(EVENT_AVAILABLE_METHOD_OTHER);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -329,7 +329,7 @@ void JourneyLogger::RecordJourneyStatsHistograms(
     case COMPLETION_STATUS_COULD_NOT_SHOW:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // These following metrics only make sense if the Payment Request was
@@ -376,7 +376,7 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
       SetEvent2Occurred(Event2::kUserOptedOut);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Add the whether the user had complete suggestions for all requested

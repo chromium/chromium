@@ -499,7 +499,7 @@ bool ClientDiscardableSharedMemoryManager::LockSpan(
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

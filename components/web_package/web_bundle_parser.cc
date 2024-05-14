@@ -562,7 +562,7 @@ class WebBundleParser::MetadataParser
         return;
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     // Read the next metadata section.
     ReadMetadataSections(++section_iter);

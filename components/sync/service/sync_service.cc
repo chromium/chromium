@@ -54,7 +54,7 @@ bool SyncService::IsEngineInitialized() const {
     case TransportState::ACTIVE:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -73,7 +73,7 @@ bool SyncService::IsSyncFeatureActive() const {
     case TransportState::ACTIVE:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

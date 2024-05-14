@@ -50,7 +50,7 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
                     "expire_date INTEGER NOT NULL DEFAULT 0, "
                     "method_name VARCHAR, "
                     "web_app_id VARCHAR)")) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -63,7 +63,7 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
           "relying_party_id VARCHAR NOT NULL, "
           "label VARCHAR NOT NULL, "
           "icon BLOB NOT NULL)")) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -72,7 +72,7 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db_->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "date_created INTEGER NOT NULL DEFAULT 0")) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
   }
@@ -82,7 +82,7 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
     if (!db_->Execute(
             "ALTER TABLE secure_payment_confirmation_instrument ADD COLUMN "
             "user_id BLOB")) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
   }

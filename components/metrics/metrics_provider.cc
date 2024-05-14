@@ -55,7 +55,7 @@ void MetricsProvider::ProvideIndependentMetrics(
   // Either the method HasIndependentMetrics() has been overridden and this
   // method has not, or this method being called without regard to Has().
   // Both are wrong.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MetricsProvider::ProvideSystemProfileMetrics(

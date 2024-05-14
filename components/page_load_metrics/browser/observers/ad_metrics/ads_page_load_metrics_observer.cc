@@ -122,7 +122,7 @@ std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
                            " because its peak CPU usage exceeded the limit. ",
                            kChromeStatusMessage});
     case HeavyAdStatus::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -145,7 +145,7 @@ blink::mojom::HeavyAdReason GetHeavyAdReason(HeavyAdStatus status) {
     case HeavyAdStatus::kPeakCpu:
       return blink::mojom::HeavyAdReason::kCpuPeakLimit;
     case HeavyAdStatus::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return blink::mojom::HeavyAdReason::kNetworkTotalLimit;
   }
 }

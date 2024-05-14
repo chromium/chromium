@@ -169,7 +169,7 @@ void NaClBrowser::EarlyStartup() {
 }
 
 NaClBrowser::~NaClBrowser() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NaClBrowser::InitIrtFilePath() {

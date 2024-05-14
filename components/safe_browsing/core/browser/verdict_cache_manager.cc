@@ -254,7 +254,7 @@ std::string GetKeyOfTypeFromTriggerType(
 // interpret it as exact match only.
 template <typename T>
 bool IsOnlyExactMatchAllowed(T verdict) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 template <>
@@ -272,7 +272,7 @@ bool IsOnlyExactMatchAllowed<LoginReputationClientResponse>(
 
 template <typename T>
 std::string GetCacheExpression(T verdict) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

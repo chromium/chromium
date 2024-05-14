@@ -136,7 +136,7 @@ void SiteEngagementService::Helper::InputTracker::DidGetUserInteraction(
       helper()->RecordUserInput(EngagementType::kScroll);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   Pause();
 }

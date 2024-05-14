@@ -175,7 +175,7 @@ class FeaturePromoLifecycleTest : public testing::Test {
         name.append("Rotating");
         break;
       case PromoType::kUnspecified:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
 

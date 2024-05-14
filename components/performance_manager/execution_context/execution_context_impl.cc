@@ -177,7 +177,7 @@ blink::ExecutionContextToken ToExecutionContextToken(
   // Unfortunately there's no enum of input types, so no way to ensure that
   // all types are handled at compile time. This at least ensures via the CQ
   // that all types are handled.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::ExecutionContextToken();
 }
 

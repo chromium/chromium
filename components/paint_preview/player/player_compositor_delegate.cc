@@ -329,7 +329,7 @@ void PlayerCompositorDelegate::OnCompositorReadyStatusAdapter(
       new_status = CompositorStatus::INVALID_ROOT_FRAME_SKP;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   OnCompositorReady(new_status, std::move(composite_response),
                     page_scale_factor, std::move(ax_tree_update_));
@@ -409,7 +409,7 @@ void PlayerCompositorDelegate::ValidateProtoAndLoadAXTree(
     // treat this as a new failure type to catch any possible regressions.
     OnCompositorReady(CompositorStatus::UNEXPECTED_VERSION, nullptr, 0.0,
                       nullptr);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

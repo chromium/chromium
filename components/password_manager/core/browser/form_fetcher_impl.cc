@@ -322,7 +322,7 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FormFetcherImpl::OnGetPasswordStoreResultsFrom(

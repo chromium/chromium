@@ -44,7 +44,7 @@ void PrefChangeRegistrar::Add(const std::string& path,
 void PrefChangeRegistrar::Add(const std::string& path,
                               const NamedChangeCallback& obs) {
   if (!service_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   DCHECK(!IsObserved(path)) << "Already had pref, \"" << path

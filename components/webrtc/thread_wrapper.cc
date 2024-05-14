@@ -302,31 +302,31 @@ void ThreadWrapper::FinalizeRunTask(
 }
 
 bool ThreadWrapper::IsQuitting() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 // All methods below are marked as not reached. See comments in the
 // header for more details.
 void ThreadWrapper::Quit() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ThreadWrapper::Restart() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int ThreadWrapper::GetDelay() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 void ThreadWrapper::Stop() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ThreadWrapper::Run() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace webrtc

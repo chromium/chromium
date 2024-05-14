@@ -944,7 +944,7 @@ void FormFiller::TriggerRefill(const FormData& form,
                       trigger_details,
                       /*is_refill=*/true);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

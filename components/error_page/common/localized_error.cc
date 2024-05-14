@@ -581,7 +581,7 @@ void AddLinkedSuggestionToList(const int error_code,
           IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

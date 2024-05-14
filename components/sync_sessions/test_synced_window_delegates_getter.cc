@@ -166,7 +166,7 @@ int64_t TestSyncedTabDelegate::GetRootTaskIdForNavigationId(int nav_id) const {
 
 std::unique_ptr<SyncedTabDelegate>
 TestSyncedTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -195,71 +195,71 @@ PlaceholderTabDelegate::CreatePlaceholderTabSyncedTabDelegate() {
 }
 
 SessionID PlaceholderTabDelegate::GetWindowId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SessionID::InvalidValue();
 }
 
 bool PlaceholderTabDelegate::IsBeingDestroyed() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 base::Time PlaceholderTabDelegate::GetLastActiveTime() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::Time::UnixEpoch();
 }
 
 std::string PlaceholderTabDelegate::GetExtensionAppId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 bool PlaceholderTabDelegate::IsInitialBlankNavigation() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 int PlaceholderTabDelegate::GetCurrentEntryIndex() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 int PlaceholderTabDelegate::GetEntryCount() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 GURL PlaceholderTabDelegate::GetVirtualURLAtIndex(int i) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GURL();
 }
 
 void PlaceholderTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PlaceholderTabDelegate::ProfileHasChildAccount() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 PlaceholderTabDelegate::GetBlockedNavigations() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 bool PlaceholderTabDelegate::ShouldSync(SyncSessionsClient* sessions_client) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 int64_t PlaceholderTabDelegate::GetTaskIdForNavigationId(int nav_id) const {
   // Task IDs are currently not used in the tests. -1 signals an unknown Task
   // ID.
-  NOTREACHED() << "Task IDs are not used for Placeholder Tabs";
+  NOTREACHED_IN_MIGRATION() << "Task IDs are not used for Placeholder Tabs";
   return -1;
 }
 
@@ -267,14 +267,14 @@ int64_t PlaceholderTabDelegate::GetParentTaskIdForNavigationId(
     int nav_id) const {
   // Task IDs are currently not used in the tests. -1 signals an unknown Task
   // ID.
-  NOTREACHED() << "Task IDs are not used for Placeholder Tabs";
+  NOTREACHED_IN_MIGRATION() << "Task IDs are not used for Placeholder Tabs";
   return -1;
 }
 
 int64_t PlaceholderTabDelegate::GetRootTaskIdForNavigationId(int nav_id) const {
   // Task IDs are currently not used in the tests. -1 signals an unknown Task
   // ID.
-  NOTREACHED() << "Task IDs are not used for Placeholder Tabs";
+  NOTREACHED_IN_MIGRATION() << "Task IDs are not used for Placeholder Tabs";
   return -1;
 }
 

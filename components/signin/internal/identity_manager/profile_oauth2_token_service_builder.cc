@@ -177,7 +177,7 @@ CreateOAuth2TokenServiceDelegate(
 #endif  // BUILDFLAG(IS_WIN)
       network_connection_tracker);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif  // BUILDFLAG(IS_ANDROID)
 }

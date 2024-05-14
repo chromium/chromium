@@ -201,7 +201,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       uint32_t usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::unique_ptr<gpu::SharedImageBacking> CreateSharedImage(
@@ -215,7 +215,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   bool IsSupported(uint32_t usage,

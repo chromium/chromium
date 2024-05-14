@@ -1257,7 +1257,7 @@ DOT11_SSID WiFiServiceImpl::SSIDFromGUID(
             network_guid.c_str(),
             ssid.uSSIDLength);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return ssid;
 }

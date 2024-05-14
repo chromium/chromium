@@ -387,15 +387,16 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
     DCHECK(!pref->HasExtensionSetting());
 
     if (!pref->GetValue()->is_list()) {
-      NOTREACHED() << "Could not read patterns from " << entry.pref_name;
+      NOTREACHED_IN_MIGRATION()
+          << "Could not read patterns from " << entry.pref_name;
       return;
     }
 
     const base::Value::List& pattern_str_list = pref->GetValue()->GetList();
     for (size_t i = 0; i < pattern_str_list.size(); ++i) {
       if (!pattern_str_list[i].is_string()) {
-        NOTREACHED() << "Could not read content settings pattern #" << i
-                     << " from " << entry.pref_name;
+        NOTREACHED_IN_MIGRATION() << "Could not read content settings pattern #"
+                                  << i << " from " << entry.pref_name;
         continue;
       }
 
@@ -450,7 +451,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
   DCHECK(!pref->HasExtensionSetting());
 
   if (!pref->GetValue()->is_list()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -474,7 +475,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
   std::unordered_map<std::string, base::Value::Dict> filters_map;
   for (const auto& pattern_filter_str : pref->GetValue()->GetList()) {
     if (!pattern_filter_str.is_string()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

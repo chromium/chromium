@@ -252,7 +252,7 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
     case payments::mojom::PaymentShippingType::SHIPPING:
       return PaymentShippingType::SHIPPING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   // Needed for compilation on some platforms.
   return PaymentShippingType::SHIPPING;

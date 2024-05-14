@@ -165,7 +165,7 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
                                     DataCallback callback) {
   // PLUS_ADDRESS is read-only, so `GetData()` is not needed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PlusAddressSyncBridge::GetAllDataForDebugging(DataCallback callback) {

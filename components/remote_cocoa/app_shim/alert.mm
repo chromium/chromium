@@ -215,7 +215,7 @@ const int kMessageTextMaxSlots = 2000;
       _alertBridge->SendResultAndDestroy(AlertDisposition::CLOSE);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

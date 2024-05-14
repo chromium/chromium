@@ -113,7 +113,7 @@ void AddCustomItemsToMenu(
         break;
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case blink::mojom::CustomContextMenuItemType::kSeparator:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -130,7 +130,7 @@ void AddCustomItemsToMenu(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

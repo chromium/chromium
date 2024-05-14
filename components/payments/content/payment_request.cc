@@ -976,7 +976,7 @@ JourneyLogger::PaymentMethodCategory PaymentRequest::GetSelectedMethodCategory()
       break;
     }
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return JourneyLogger::PaymentMethodCategory::kOther;

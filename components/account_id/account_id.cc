@@ -74,7 +74,7 @@ bool AccountId::operator==(const AccountId& other) const {
     case AccountType::ACTIVE_DIRECTORY:
       return id_ == other.id_ && user_email_ == other.user_email_;
     default:
-      NOTREACHED() << "Unknown account type";
+      NOTREACHED_IN_MIGRATION() << "Unknown account type";
   }
   return false;
 }
@@ -104,7 +104,7 @@ bool AccountId::is_valid() const {
     case AccountType::UNKNOWN:
       return id_.empty() && !user_email_.empty();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -152,7 +152,7 @@ const std::string AccountId::GetAccountIdKey() const {
     case AccountType::ACTIVE_DIRECTORY:
       return std::string(kKeyAdIdPrefix) + id_;
     default:
-      NOTREACHED() << "Unknown account type";
+      NOTREACHED_IN_MIGRATION() << "Unknown account type";
   }
   return std::string();
 }
@@ -201,7 +201,7 @@ AccountType AccountId::StringToAccountType(
     return AccountType::ACTIVE_DIRECTORY;
   if (account_type_string == kUnknown)
     return AccountType::UNKNOWN;
-  NOTREACHED() << "Unknown account type " << account_type_string;
+  NOTREACHED_IN_MIGRATION() << "Unknown account type " << account_type_string;
   return AccountType::UNKNOWN;
 }
 

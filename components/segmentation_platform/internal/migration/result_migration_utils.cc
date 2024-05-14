@@ -23,7 +23,7 @@ proto::ClientResult CreateClientResultFromOldResult(
     return pref_migration_utils::CreateClientResultForAdaptiveToolbar(
         config, old_result);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return proto::ClientResult();
   }
 }

@@ -42,7 +42,7 @@ uint64_t GetExpectedTensorLength(const proto::UMAFeature& feature) {
     case proto::Aggregation::LATEST_OR_DEFAULT:
       return 1;
     case proto::Aggregation::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -409,7 +409,7 @@ base::TimeDelta ConvertToTimeDelta(proto::TimeUnit time_unit) {
     case proto::TimeUnit::UNKNOWN_TIME_UNIT:
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::TimeDelta();
   }
 }

@@ -117,7 +117,7 @@ bool RealtimeReportingJobConfiguration::ShouldRecordUma() const {
 }
 
 std::string RealtimeReportingJobConfiguration::GetUmaString() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

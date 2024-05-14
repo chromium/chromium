@@ -100,7 +100,7 @@ class TestClusteringBackend : public ClusteringBackend {
         return AnnotatedVisitToClusterVisit(visit);
     }
 
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "TestClusteringBackend::GetVisitById() could not find visit_id: "
         << visit_id;
     return {};

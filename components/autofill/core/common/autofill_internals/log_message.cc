@@ -27,7 +27,7 @@ const char* LogMessageToString(LogMessage message) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -48,7 +48,7 @@ const char* LogMessageValue(LogMessage message) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

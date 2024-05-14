@@ -79,7 +79,7 @@ CommitProcessor::GatheringPhase CommitProcessor::IncrementGatheringPhase(
     case GatheringPhase::kLowPriority:
       return GatheringPhase::kDone;
     case GatheringPhase::kDone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GatheringPhase::kDone;
   }
 }
@@ -95,7 +95,7 @@ ModelTypeSet CommitProcessor::GetUserTypesForCurrentCommitPhase() const {
     case GatheringPhase::kLowPriority:
       return Intersection(commit_types_, LowPriorityUserTypes());
     case GatheringPhase::kDone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ModelTypeSet();
   }
 }

@@ -168,7 +168,7 @@ void Edit::ApplyTo(std::u16string& text) const {
     }
     case Kind::KEEP:
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

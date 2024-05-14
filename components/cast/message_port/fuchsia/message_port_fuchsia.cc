@@ -36,7 +36,7 @@ class MessagePortFuchsiaClient : public MessagePortFuchsia {
 
   fidl::InterfaceRequest<::fuchsia::web::MessagePort> TakeServiceRequest()
       final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 
@@ -130,7 +130,7 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
 
   // MessagePortFuchsia implementation.
   fidl::InterfaceHandle<::fuchsia::web::MessagePort> TakeClientHandle() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

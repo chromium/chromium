@@ -166,7 +166,7 @@ std::string InfoCardTracker::GetHistogramForTrackingType(
     case TrackingType::kResetState:
       return histogram_prefix + kInfoCardTrackingHistogramBucketReset;
   }
-  NOTREACHED() << "Tracking type is not supported.";
+  NOTREACHED_IN_MIGRATION() << "Tracking type is not supported.";
   return nullptr;
 }
 

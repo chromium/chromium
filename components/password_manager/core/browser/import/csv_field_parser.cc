@@ -114,7 +114,7 @@ void CSVFieldParser::UpdateState() {
       }
       break;
     case State::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

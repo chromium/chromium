@@ -158,7 +158,7 @@ std::string GetCaptionSettingsUrl() {
   return "chrome://settings/accessibility";
 #endif  // BUILDFLAG(IS_MAC)
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

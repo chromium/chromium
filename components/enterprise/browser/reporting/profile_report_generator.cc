@@ -56,7 +56,7 @@ ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
       report_->set_id(ObfuscateFilePath(path.AsUTF8Unsafe()));
       break;
     case ReportType::kBrowserVersion:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

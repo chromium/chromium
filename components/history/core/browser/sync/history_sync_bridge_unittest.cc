@@ -147,14 +147,14 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   void Delete(const std::string& storage_key,
               const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void UpdateStorageKey(
       const syncer::EntityData& entity_data,
       const std::string& storage_key,
       syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
@@ -193,13 +193,13 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
 
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Time();
   }
 
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::Time();
   }
 
@@ -234,13 +234,13 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return sync_pb::EntitySpecifics::default_instance();
   }
 

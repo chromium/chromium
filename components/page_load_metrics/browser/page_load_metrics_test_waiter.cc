@@ -847,7 +847,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 WaiterMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Waiters are not currently used directly on Prerendered pages.";
   return STOP_OBSERVING;
 }

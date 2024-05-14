@@ -71,7 +71,7 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
                                 ui_language_code, components_language_code);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

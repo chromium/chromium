@@ -77,7 +77,7 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
       return "Scrypt8192";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

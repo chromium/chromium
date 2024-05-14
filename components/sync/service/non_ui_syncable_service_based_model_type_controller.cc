@@ -36,34 +36,34 @@ class FakeSyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   // ModelTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_data*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_changes*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
   void GetData(StorageKeyList /*storage_keys*/,
                DataCallback /*callback*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void GetAllDataForDebugging(DataCallback /*callback*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   std::string GetClientTag(const EntityData& /*entity_data*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
   std::string GetStorageKey(const EntityData& /*entity_data*/) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 };

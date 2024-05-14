@@ -29,7 +29,7 @@ EnumTraits<chromeos_camera::mojom::EncodeStatus,
     case chromeos_camera::JpegEncodeAccelerator::PLATFORM_FAILURE:
       return chromeos_camera::mojom::EncodeStatus::PLATFORM_FAILURE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chromeos_camera::mojom::EncodeStatus::ENCODE_OK;
 }
 
@@ -64,7 +64,7 @@ bool EnumTraits<chromeos_camera::mojom::EncodeStatus,
       *out = chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

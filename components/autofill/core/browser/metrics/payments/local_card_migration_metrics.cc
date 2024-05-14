@@ -104,7 +104,7 @@ void LogLocalCardMigrationPromptMetric(
       histogram_name += "SettingsPage";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   base::UmaHistogramEnumeration(histogram_name, metric,

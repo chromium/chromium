@@ -71,7 +71,7 @@ bool ExternalClearKeyKeySystemInfo::IsSupportedInitDataType(
     case media::EmeInitDataType::UNKNOWN:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -85,7 +85,7 @@ ExternalClearKeyKeySystemInfo::GetEncryptionSchemeConfigRule(
     case media::EncryptionScheme::kUnencrypted:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media::EmeConfig::UnsupportedRule();
 }
 

@@ -96,7 +96,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     result = base::Value(std::move(list));
     DCHECK_EQ(result.type(), base::Value::Type::LIST);
   } else {
-    NOTREACHED();  // Convert other types as needed.
+    NOTREACHED_IN_MIGRATION();  // Convert other types as needed.
   }
   return result;
 }
@@ -269,7 +269,7 @@ void DistillerPageIOS::WebStateDestroyed(web::WebState* web_state) {
   // The DistillerPageIOS owns the WebState that it observe and unregister
   // itself from the WebState before destroying it, so this method should
   // never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace dom_distiller

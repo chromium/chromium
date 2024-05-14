@@ -75,8 +75,9 @@ base::Value::Dict GetPolicyNameToTypeMapping(
         result.Set(policy_name.GetString(), "string");
         break;
       default:
-        NOTREACHED() << "Unrecognized policy type " << (int)policy_type << " ("
-                     << policy_name << ")";
+        NOTREACHED_IN_MIGRATION()
+            << "Unrecognized policy type " << (int)policy_type << " ("
+            << policy_name << ")";
         break;
     }
   }

@@ -120,7 +120,7 @@ void BluetoothChooserController::OnAdapterPresenceChanged(
   ClearAllDevices();
   switch (presence) {
     case content::BluetoothChooser::AdapterPresence::ABSENT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case content::BluetoothChooser::AdapterPresence::POWERED_OFF:
       if (view()) {

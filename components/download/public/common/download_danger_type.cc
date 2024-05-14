@@ -60,7 +60,7 @@ const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type) {
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

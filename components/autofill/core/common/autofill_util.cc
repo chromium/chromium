@@ -173,7 +173,7 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SubmissionIndicatorEvent::NONE;
 }
 

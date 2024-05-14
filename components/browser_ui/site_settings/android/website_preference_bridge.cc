@@ -906,7 +906,8 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
         value = CONTENT_SETTING_ALLOW;
         break;
       default:
-        NOTREACHED() << static_cast<int>(type);  // Not supported on Android.
+        NOTREACHED_IN_MIGRATION()
+            << static_cast<int>(type);  // Not supported on Android.
     }
   }
 

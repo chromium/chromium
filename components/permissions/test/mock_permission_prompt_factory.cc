@@ -97,7 +97,7 @@ void MockPermissionPromptFactory::WaitForPermissionBubble() {
 std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::DoNotCreate(
     content::WebContents* web_contents,
     PermissionPrompt::Delegate* delegate) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::WrapUnique(new MockPermissionPrompt(nullptr, nullptr));
 }
 

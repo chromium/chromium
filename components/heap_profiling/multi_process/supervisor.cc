@@ -51,7 +51,7 @@ Supervisor* Supervisor::GetInstance() {
 
 Supervisor::Supervisor() = default;
 Supervisor::~Supervisor() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool Supervisor::HasStarted() {

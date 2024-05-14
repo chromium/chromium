@@ -42,7 +42,7 @@ bool ShouldAllowInsecurePrivateNetworkRequests(
     case CONTENT_SETTING_BLOCK:
       return false;
     default:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Invalid content setting for insecure private network requests: "
           << setting;
       return false;

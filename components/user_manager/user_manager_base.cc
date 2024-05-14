@@ -250,7 +250,7 @@ UserList UserManagerBase::GetUnlockUsers() const {
     if (policy == MultiUserSignInPolicy::kUnrestricted && user->CanLock()) {
       unlock_users.push_back(user);
     } else if (policy == MultiUserSignInPolicy::kPrimaryOnly) {
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Spotted primary-only multi-user policy for non-primary user";
     }
   }
@@ -348,7 +348,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
       break;
 
     default:
-      NOTREACHED() << "Unhandled usert type " << user_type;
+      NOTREACHED_IN_MIGRATION() << "Unhandled usert type " << user_type;
   }
 
   DCHECK(active_user_);
@@ -387,24 +387,25 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
 void UserManagerBase::SwitchActiveUser(const AccountId& account_id) {
   User* user = FindUserAndModify(account_id);
   if (!user) {
-    NOTREACHED() << "Switching to a non-existing user";
+    NOTREACHED_IN_MIGRATION() << "Switching to a non-existing user";
     return;
   }
   if (user == active_user_) {
-    NOTREACHED() << "Switching to a user who is already active";
+    NOTREACHED_IN_MIGRATION() << "Switching to a user who is already active";
     return;
   }
   if (!user->is_logged_in()) {
-    NOTREACHED() << "Switching to a user that is not logged in";
+    NOTREACHED_IN_MIGRATION() << "Switching to a user that is not logged in";
     return;
   }
   if (!user->HasGaiaAccount()) {
-    NOTREACHED() <<
-        "Switching to a user without gaia account (non-regular one)";
+    NOTREACHED_IN_MIGRATION()
+        << "Switching to a user without gaia account (non-regular one)";
     return;
   }
   if (user->username_hash().empty()) {
-    NOTREACHED() << "Switching to a user that doesn't have username_hash set";
+    NOTREACHED_IN_MIGRATION()
+        << "Switching to a user that doesn't have username_hash set";
     return;
   }
 
@@ -520,7 +521,7 @@ void UserManagerBase::RemoveUserFromListImpl(
     DeleteUser(
         RemoveRegularOrSupervisedUserFromList(account_id, reason.has_value()));
   } else {
-    NOTREACHED() << "Users are not loaded yet.";
+    NOTREACHED_IN_MIGRATION() << "Users are not loaded yet.";
     return;
   }
 

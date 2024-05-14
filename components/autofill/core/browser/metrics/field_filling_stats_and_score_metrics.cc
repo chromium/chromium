@@ -252,7 +252,7 @@ void FormGroupFillingStats::AddFieldFillingStatus(FieldFillingStatus status) {
       num_left_empty++;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {

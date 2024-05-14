@@ -69,7 +69,7 @@ class InstanceRegistryTest : public testing::Test,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* instance_registry) override {
     // The test code explicitly calls both AddObserver and RemoveObserver.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   apps::InstanceRegistry& instance_registry() { return instance_registry_; }

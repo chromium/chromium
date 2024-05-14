@@ -440,7 +440,7 @@ void AddressProfileSaveManagerTest::VerifyUpdateAffectedTypesHistogram(
       break;
 
     default:
-      NOTREACHED() << "Decision not covered by test logic.";
+      NOTREACHED_IN_MIGRATION() << "Decision not covered by test logic.";
   }
   for (auto changed_type :
        test_scenario.expected_affeceted_types_in_merge_for_metrics) {

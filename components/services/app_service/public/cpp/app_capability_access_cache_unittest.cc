@@ -57,7 +57,7 @@ class AppCapabilityAccessCacheTest
   void OnAppCapabilityAccessCacheWillBeDestroyed(
       apps::AppCapabilityAccessCache* cache) override {
     // The test code explicitly calls both AddObserver and RemoveObserver.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const AccountId& account_id() const { return account_id_; }

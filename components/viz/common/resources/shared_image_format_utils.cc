@@ -423,7 +423,7 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
 #endif
     return GL_RGBA8_OES;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GL_RGBA8_OES;
 }
 
@@ -444,7 +444,7 @@ SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
   } else if (format == MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
   }
-  NOTREACHED() << "format=" << format.ToString();
+  NOTREACHED_IN_MIGRATION() << "format=" << format.ToString();
   return gfx::BufferFormat::RGBA_8888;
 }
 

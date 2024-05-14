@@ -29,7 +29,7 @@ protodb::Entry_State ProtoConversions::RequestStateToProto(Entry::State state) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protodb::Entry_State_NEW;
 }
 
@@ -48,7 +48,7 @@ Entry::State ProtoConversions::RequestStateFromProto(
       return Entry::State::COMPLETE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Entry::State::NEW;
 }
 
@@ -81,7 +81,7 @@ protodb::DownloadClient ProtoConversions::DownloadClientToProto(
       return protodb::DownloadClient::BOUNDARY;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protodb::DownloadClient::INVALID;
 }
 
@@ -114,7 +114,7 @@ DownloadClient ProtoConversions::DownloadClientFromProto(
       return DownloadClient::BOUNDARY;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadClient::INVALID;
 }
 
@@ -130,7 +130,7 @@ ProtoConversions::NetworkRequirementsFromProto(
       return SchedulingParams::NetworkRequirements::UNMETERED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SchedulingParams::NetworkRequirements::NONE;
 }
 
@@ -148,7 +148,7 @@ ProtoConversions::NetworkRequirementsToProto(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protodb::SchedulingParams_NetworkRequirements_NONE;
 }
 
@@ -164,7 +164,7 @@ ProtoConversions::BatteryRequirementsFromProto(
       return SchedulingParams::BatteryRequirements::BATTERY_CHARGING;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
 }
 
@@ -182,7 +182,7 @@ ProtoConversions::BatteryRequirementsToProto(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protodb::SchedulingParams_BatteryRequirements_BATTERY_INSENSITIVE;
 }
 
@@ -199,7 +199,7 @@ SchedulingParams::Priority ProtoConversions::SchedulingPriorityFromProto(
       return SchedulingParams::Priority::UI;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SchedulingParams::Priority::LOW;
 }
 
@@ -218,7 +218,7 @@ protodb::SchedulingParams_Priority ProtoConversions::SchedulingPriorityToProto(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protodb::SchedulingParams_Priority_LOW;
 }
 

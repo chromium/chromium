@@ -61,7 +61,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
       billable_service_number = kDownstreamEnrollBillableServiceNumber;
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   context.Set("billable_service", billable_service_number);
@@ -89,7 +89,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
       request_dict.Set("channel_type", "CHROME_DOWNSTREAM");
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

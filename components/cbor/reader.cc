@@ -288,7 +288,7 @@ std::optional<Value> Reader::DecodeToSimpleValueOrFloat(
         return Value(result);
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;
         return std::nullopt;
     }
@@ -502,7 +502,7 @@ const char* Reader::ErrorCodeToString(DecoderError error) {
     case DecoderError::UNKNOWN_ERROR:
       return kUnknownError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown error code.";
   }
 }

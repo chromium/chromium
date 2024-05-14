@@ -312,7 +312,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

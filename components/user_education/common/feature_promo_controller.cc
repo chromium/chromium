@@ -1206,7 +1206,7 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
       failure_action_name.append("ExceededMaxShowCount");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::RecordComputedAction(failure_action_name);
 }

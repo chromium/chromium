@@ -17,7 +17,7 @@ EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration>::
     case SpellCheckResult::GRAMMAR:
       return spellcheck::mojom::Decoration::kGrammar;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return spellcheck::mojom::Decoration::kSpelling;
 }
 
@@ -32,7 +32,7 @@ bool EnumTraits<spellcheck::mojom::Decoration, SpellCheckResult::Decoration>::
       *output = SpellCheckResult::GRAMMAR;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

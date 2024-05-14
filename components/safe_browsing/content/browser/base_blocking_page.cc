@@ -174,7 +174,7 @@ std::string BaseBlockingPage::GetMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
       return primary_subresource ? "phishing_subresource" : "phishing";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unkown_metric_prefix";
 }
 

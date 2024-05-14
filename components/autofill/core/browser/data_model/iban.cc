@@ -252,7 +252,7 @@ std::u16string Iban::GetRawInfo(FieldType type) const {
     return value_;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -262,7 +262,7 @@ void Iban::SetRawInfoWithVerificationStatus(FieldType type,
   if (type == IBAN_VALUE) {
     set_value(value);
   } else {
-    NOTREACHED() << "Attempting to set unknown info-type" << type;
+    NOTREACHED_IN_MIGRATION() << "Attempting to set unknown info-type" << type;
   }
 }
 

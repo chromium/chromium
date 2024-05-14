@@ -352,8 +352,9 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
     const Topic& topic) {
   auto it = pending_subscriptions_.find(topic);
   if (it == pending_subscriptions_.end()) {
-    NOTREACHED() << "StartPendingSubscriptionRequest called on " << topic
-                 << " which is not in the registration map";
+    NOTREACHED_IN_MIGRATION()
+        << "StartPendingSubscriptionRequest called on " << topic
+        << " which is not in the registration map";
     return;
   }
   if (it->second->request_retry_timer_.IsRunning()) {

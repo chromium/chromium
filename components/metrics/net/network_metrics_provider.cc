@@ -47,10 +47,10 @@ ConvertEffectiveConnectionType(
     case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
       return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
     case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 }
 
@@ -201,7 +201,7 @@ NetworkMetricsProvider::GetConnectionType() const {
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SystemProfileProto::Network::CONNECTION_UNKNOWN;
 }
 
@@ -230,7 +230,7 @@ NetworkMetricsProvider::GetWifiPHYLayerProtocol() const {
     case net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
       return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
 }
 

@@ -25,7 +25,7 @@ struct EnumTraits<remote_cocoa::mojom::SystemFont,
       case gfx::PlatformFontMac::SystemFontType::kToolTip:
         return remote_cocoa::mojom::SystemFont::kToolTip;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   static bool FromMojom(remote_cocoa::mojom::SystemFont input,

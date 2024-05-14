@@ -540,7 +540,7 @@ class VideoCaptureOverlayRenderTest
       }
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
 

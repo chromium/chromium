@@ -57,7 +57,7 @@ remote_cocoa::ColorPanelBridge* g_current_panel_bridge = nullptr;
 
 - (void)dealloc {
   // This object is never freed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (void)windowWillClose:(NSNotification*)notification {

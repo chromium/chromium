@@ -201,7 +201,7 @@ void SiteIsolationPolicy::PersistIsolatedOrigin(
   } else if (source == IsolatedOriginSource::WEB_TRIGGERED) {
     PersistWebTriggeredIsolatedOrigin(context, origin);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

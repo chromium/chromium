@@ -83,7 +83,7 @@ class CBOR_EXPORT Value {
           break;
       }
 
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 

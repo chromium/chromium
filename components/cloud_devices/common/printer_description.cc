@@ -453,7 +453,7 @@ const gfx::Size& FindMediaSizeByType(MediaSize size_name) {
       return media.size_um;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kMediaDefinitions[0].size_um;
 }
 
@@ -475,7 +475,7 @@ std::string TypeToString(const T& names, IdType id) {
     if (id == name.id)
       return name.json_name;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -571,7 +571,7 @@ bool RangeVendorCapability::IsValid() const {
       return true;
     }
   }
-  NOTREACHED() << "Bad range capability value type";
+  NOTREACHED_IN_MIGRATION() << "Bad range capability value type";
   return false;
 }
 
@@ -664,7 +664,7 @@ bool TypedValueVendorCapability::IsValid() const {
     case ValueType::STRING:
       return true;
   }
-  NOTREACHED() << "Bad typed value capability value type";
+  NOTREACHED_IN_MIGRATION() << "Bad typed value capability value type";
   return false;
 }
 
@@ -734,7 +734,7 @@ VendorCapability::VendorCapability(VendorCapability&& other)
           TypedValueVendorCapability(std::move(other.typed_value_capability_));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -756,7 +756,7 @@ void VendorCapability::InternalCleanup() {
       typed_value_capability_.~TypedValueVendorCapability();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   type_ = Type::NONE;
 }
@@ -776,7 +776,7 @@ bool VendorCapability::operator==(const VendorCapability& other) const {
     case Type::TYPED_VALUE:
       return typed_value_capability_ == other.typed_value_capability_;
   }
-  NOTREACHED() << "Bad vendor capability type";
+  NOTREACHED_IN_MIGRATION() << "Bad vendor capability type";
 }
 
 bool VendorCapability::IsValid() const {
@@ -792,7 +792,7 @@ bool VendorCapability::IsValid() const {
     case Type::TYPED_VALUE:
       return typed_value_capability_.IsValid();
   }
-  NOTREACHED() << "Bad vendor capability type";
+  NOTREACHED_IN_MIGRATION() << "Bad vendor capability type";
   return false;
 }
 
@@ -834,7 +834,7 @@ bool VendorCapability::LoadFrom(const base::Value::Dict& dict) {
   switch (type_) {
     case Type::NONE:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Type::RANGE:
       new (&range_capability_) RangeVendorCapability();
@@ -858,7 +858,7 @@ void VendorCapability::SaveTo(base::Value::Dict* dict) const {
 
   switch (type_) {
     case Type::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Type::RANGE: {
       base::Value::Dict range_capability_value;

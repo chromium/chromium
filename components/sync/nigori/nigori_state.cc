@@ -72,7 +72,7 @@ KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
           proto.custom_passphrase_key_derivation_salt());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeyDerivationParams::CreateForPbkdf2();
 }
 

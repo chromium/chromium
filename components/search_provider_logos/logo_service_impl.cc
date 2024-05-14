@@ -678,7 +678,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
       break;
 
     case DOWNLOAD_OUTCOME_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

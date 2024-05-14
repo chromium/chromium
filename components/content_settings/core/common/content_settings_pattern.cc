@@ -301,7 +301,7 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
   if ((parts.is_scheme_wildcard && !parts.scheme.empty()) ||
       (parts.is_port_wildcard && !parts.port.empty()) ||
       (parts.is_path_wildcard && !parts.path.empty())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -836,7 +836,7 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ContentSettingsPattern::IDENTITY;
 }
 

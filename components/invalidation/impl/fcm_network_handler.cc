@@ -290,14 +290,14 @@ void FCMNetworkHandler::OnSendError(
     const gcm::GCMClient::SendErrorDetails& details) {
   // Should never be called because we don't send GCM messages to
   // the server.
-  NOTREACHED() << "FCMNetworkHandler doesn't send GCM messages.";
+  NOTREACHED_IN_MIGRATION() << "FCMNetworkHandler doesn't send GCM messages.";
 }
 
 void FCMNetworkHandler::OnSendAcknowledged(const std::string& app_id,
                                            const std::string& message_id) {
   // Should never be called because we don't send GCM messages to
   // the server.
-  NOTREACHED() << "FCMNetworkHandler doesn't send GCM messages.";
+  NOTREACHED_IN_MIGRATION() << "FCMNetworkHandler doesn't send GCM messages.";
 }
 
 void FCMNetworkHandler::SetTokenValidationTimerForTesting(

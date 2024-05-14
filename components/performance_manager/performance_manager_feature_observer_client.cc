@@ -34,7 +34,7 @@ void OnChangeNodeUsing(content::GlobalRenderFrameHostId id,
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

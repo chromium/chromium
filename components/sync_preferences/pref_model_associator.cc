@@ -48,7 +48,7 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
       return pref.GetSpecifics().os_priority_preference().preference();
 #endif
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return pref.GetSpecifics().preference();
   }
 }
@@ -125,7 +125,7 @@ sync_pb::PreferenceSpecifics* PrefModelAssociator::GetMutableSpecifics(
       return specifics->mutable_os_priority_preference()->mutable_preference();
 #endif
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

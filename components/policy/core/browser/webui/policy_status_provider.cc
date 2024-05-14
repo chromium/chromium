@@ -44,7 +44,7 @@ std::u16string FormatAssociationState(const em::PolicyData* data) {
         return l10n_util::GetStringUTF16(
             IDS_POLICY_ASSOCIATION_STATE_DEPROVISIONED);
     }
-    NOTREACHED() << "Unknown state " << data->state();
+    NOTREACHED_IN_MIGRATION() << "Unknown state " << data->state();
   }
 
   // Default to UNMANAGED for the case of missing policy or bad state enum.

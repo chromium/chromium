@@ -106,7 +106,7 @@ PolicyPriorityBrowser GetPriority(
     case POLICY_SOURCE_MERGED:
       return POLICY_PRIORITY_BROWSER_MERGED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
   }
 }

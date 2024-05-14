@@ -57,7 +57,7 @@ std::string_view PackageTypeToPlatformName(PackageType package_type) {
     case PackageType::kWeb:
       return kWebPlatformName;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

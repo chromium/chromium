@@ -110,14 +110,14 @@ DWORD FallbackCrashHandlerLauncher::LaunchAndWaitForHandler(
   if (error != WAIT_OBJECT_0) {
     // This should never happen, barring handle abuse.
     // TODO(siggi): Record an UMA metric here.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     error = GetLastError();
   } else {
     // On successful wait, return the exit code of the fallback crash handler
     // process.
     if (!GetExitCodeProcess(process_info.hProcess, &error)) {
       // This should never happen, barring handle abuse.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       error = GetLastError();
     }
   }

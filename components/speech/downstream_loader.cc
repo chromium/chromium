@@ -45,7 +45,7 @@ void DownstreamLoader::OnComplete(bool success) {
 
 void DownstreamLoader::OnRetry(base::OnceClosure start_retry) {
   // Retries are not enabled for these requests.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace speech

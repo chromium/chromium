@@ -207,7 +207,7 @@ void PhishingClassifierDelegate::ClassificationDone(
         result = mojom::PhishingDetectorResult::VISUAL_EXTRACTION_FAILED;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

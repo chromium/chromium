@@ -26,7 +26,7 @@ int ToTileIteratorLevel(ImagePrefetchMode mode) {
     case ImagePrefetchMode::kAll:
       return TileIterator::kAllTiles;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

@@ -663,7 +663,7 @@ AddressDataManager::GetProfileStorage(AutofillProfile::Source source) const {
     case AutofillProfile::Source::kAccount:
       return account_profiles_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AddressDataManager::OnAutofillProfileChanged(

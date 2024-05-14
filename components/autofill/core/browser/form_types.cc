@@ -44,7 +44,7 @@ std::string_view FormTypeToStringView(FormType form_type) {
       return "Unknown";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UnknownFormType";
 }
 

@@ -126,7 +126,7 @@ void CardUnmaskPromptControllerImpl::OnVerificationResult(
     }
 
     case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

@@ -255,7 +255,7 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
     auto* yuv_video_quad = static_cast<YUVVideoDrawQuad*>(quad);
     yuv_video_quad->damage_rect = damage_rect;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   pass_->has_per_quad_damage = true;

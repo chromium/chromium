@@ -200,7 +200,7 @@ std::u16string GetCounterTextFromResult(
             IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION, parts[0],
             parts[1]);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -221,7 +221,7 @@ std::u16string GetCounterTextFromResult(
 
   if (pref_name == prefs::kDeleteBrowsingHistoryBasic) {
     // The basic tab doesn't show history counter results.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (pref_name == prefs::kDeleteBrowsingHistory) {
@@ -273,7 +273,7 @@ std::u16string GetCounterTextFromResult(
               IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT, num_suggestions));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
 
@@ -299,11 +299,11 @@ std::u16string GetCounterTextFromResult(
                    : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
             displayed_strings[0], displayed_strings[1], displayed_strings[2]);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -367,7 +367,7 @@ bool GetDeletionPreferenceFromDataType(
       *out_pref = prefs::kCloseTabs;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

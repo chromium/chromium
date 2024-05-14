@@ -60,7 +60,7 @@ LoopbackServerEntity::CreateEntityFromProto(
     case sync_pb::LoopbackServerEntity_Type_UNIQUE:
       return PersistentUniqueClientEntity::CreateFromEntity(entity.entity());
     case sync_pb::LoopbackServerEntity_Type_UNKNOWN:
-      NOTREACHED() << "Unknown type encountered";
+      NOTREACHED_IN_MIGRATION() << "Unknown type encountered";
   }
   return nullptr;
 }
@@ -112,7 +112,7 @@ bool LoopbackServerEntity::IsPermanent() const {
 
 sync_pb::LoopbackServerEntity_Type
 LoopbackServerEntity::GetLoopbackServerEntityType() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return sync_pb::LoopbackServerEntity_Type_UNKNOWN;
 }
 

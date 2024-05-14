@@ -320,8 +320,8 @@ constexpr kSpecificsFieldNumberToModelTypeMap
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case UNSPECIFIED:
-      NOTREACHED() << "No default field value for "
-                   << ModelTypeToDebugString(type);
+      NOTREACHED_IN_MIGRATION()
+          << "No default field value for " << ModelTypeToDebugString(type);
       break;
     case BOOKMARKS:
       specifics->mutable_bookmark();

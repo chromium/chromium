@@ -275,7 +275,7 @@ class PlusAddressCreationRequests
       client().ConfirmPlusAddress(origin, profile.plus_address,
                                   std::move(callback));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   std::string LatencyHistogram() { return LatencyHistogramFor(GetParam()); }

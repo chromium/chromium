@@ -113,10 +113,10 @@ std::string SigninStatusFieldToLabel(
     case signin_internals_util::USERNAME:
       return "Username";
     case signin_internals_util::UNTIMED_FIELDS_END:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -145,7 +145,7 @@ std::string TokenServiceLoadCredentialsStateToLabel(
         LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS:
       return "Load credentials failed with unknown errors";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -158,10 +158,10 @@ std::string SigninStatusFieldToLabel(
     case signin_internals_util::REFRESH_TOKEN_RECEIVED:
       return "RefreshToken Received";
     case signin_internals_util::TIMED_FIELDS_END:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Error";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Error";
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -206,7 +206,7 @@ std::string GetAccountConsistencyDescription(
     case signin::AccountConsistencyMethod::kDice:
       return "DICE";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

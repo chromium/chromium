@@ -541,7 +541,7 @@ bool* RLZTracker::GetAccessPointRecord(rlz_lib::AccessPoint point) {
   if (point == ChromeAppList())
     return &app_list_used_;
 #endif  // !BUILDFLAG(IS_IOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

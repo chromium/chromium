@@ -350,7 +350,7 @@ void ServiceWorkerContextAdapter::OnControlleeAdded(
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
   if (!inserted) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -398,12 +398,12 @@ void ServiceWorkerContextAdapter::OnControlleeNavigationCommitted(
   // not already a client of |version_id|.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   if (it->second.find(client_uuid) == it->second.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

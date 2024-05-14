@@ -25,7 +25,7 @@ UploadList::UploadInfo::State ReportUploadStateToUploadInfoState(
       return UploadList::UploadInfo::State::Uploaded;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UploadList::UploadInfo::State::Uploaded;
 }
 

@@ -103,7 +103,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
   }
 
   void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void RunUntilCalled() { run_loop_.Run(); }

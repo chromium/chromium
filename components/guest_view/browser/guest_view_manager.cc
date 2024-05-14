@@ -452,7 +452,7 @@ std::unique_ptr<GuestViewBase> GuestViewManager::CreateGuestInternal(
 
   auto it = guest_view_registry_.find(view_type);
   if (it == guest_view_registry_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

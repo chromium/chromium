@@ -283,7 +283,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
       // Transferred tracks, that use blink::MEDIA_GET_OPEN_DEVICE type, do not
       // need to get permissions for MediaStreamDevice as those are controlled
       // by the original context.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case blink::MEDIA_DEVICE_ACCESS: {
@@ -302,7 +302,7 @@ blink::mojom::StreamDevicesSetPtr MediaStreamDevicesController::GetDevices(
       break;
     }
     case blink::MEDIA_DEVICE_UPDATE: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }  // switch
@@ -397,7 +397,7 @@ bool MediaStreamDevicesController::IsUserAcceptAllowed(
       content_type = ContentSettingsType::MEDIASTREAM_CAMERA;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -501,7 +501,7 @@ bool MediaStreamDevicesController::HasAvailableDevices(
              permission == blink::PermissionType::CAMERA_PAN_TILT_ZOOM) {
     devices = &enumerator_->GetVideoCaptureDevices();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // TODO(tommi): It's kind of strange to have this here since if we fail this

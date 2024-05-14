@@ -32,7 +32,7 @@ InfoCollectionGpuServiceImpl::InfoCollectionGpuServiceImpl(
 
 InfoCollectionGpuServiceImpl::~InfoCollectionGpuServiceImpl() {
   // Info Collection GPU process exits atomically.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InfoCollectionGpuServiceImpl::BindOnIO(

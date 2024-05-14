@@ -826,7 +826,7 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
       DCHECK(!gaia.empty());
       return CoreAccountId::FromGaiaId(gaia);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CoreAccountId::FromString(email);
   }
 #else

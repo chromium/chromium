@@ -203,14 +203,14 @@ void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PDFDocumentHelper::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable> PDFDocumentHelper::CreateDrawable() {

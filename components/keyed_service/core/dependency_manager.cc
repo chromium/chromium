@@ -77,7 +77,7 @@ void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   for (DependencyNode* dependency_node : construction_order) {
@@ -96,7 +96,7 @@ void DependencyManager::CreateContextServices(void* context,
 
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
 #ifndef NDEBUG
@@ -166,7 +166,7 @@ std::vector<raw_ptr<DependencyNode, VectorExperimental>>
 DependencyManager::GetDestructionOrder() {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> destruction_order;
   if (!dependency_graph_.GetDestructionOrder(&destruction_order))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return destruction_order;
 }
 

@@ -25,7 +25,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
   output->clear();
   for (const auto& plain : input) {
     if (plain.empty()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       output->clear();
       return false;
     }
@@ -224,7 +224,7 @@ bool ResourceCache::VerifyKeyPath(const std::string& key,
                                   bool allow_create,
                                   base::FilePath* path) {
   if (key.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -242,7 +242,7 @@ bool ResourceCache::VerifyKeyPathAndGetSubkeyPath(const std::string& key,
                                                   const std::string& subkey,
                                                   base::FilePath* path) {
   if (subkey.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

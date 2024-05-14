@@ -124,7 +124,7 @@ std::string SyncError::GetMessagePrefix() const {
       type_message = "disabled due to configuration constraints: ";
       break;
     case UNSET:
-      NOTREACHED() << "Invalid error type";
+      NOTREACHED_IN_MIGRATION() << "Invalid error type";
       break;
   }
   return type_message;

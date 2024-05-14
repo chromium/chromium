@@ -309,7 +309,7 @@ void GeolocationPermissionContextAndroid::UpdateLocationSettingsBackOff(
       next_show += base::Days(90);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   PrefService* prefs = delegate_->GetPrefs(browser_context());

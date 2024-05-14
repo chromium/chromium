@@ -137,7 +137,7 @@ proto::OptimizationTarget GetOptimizationTargetForModelAdaptation(
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::OPTIMIZATION_TARGET_UNKNOWN;
 }

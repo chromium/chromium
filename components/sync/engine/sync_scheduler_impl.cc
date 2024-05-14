@@ -45,7 +45,7 @@ bool IsConfigRelatedUpdateOriginValue(
     case sync_pb::SyncEnums::RETRY:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -70,7 +70,7 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       return true;
     case CONFLICT:
     case INVALID_MESSAGE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return false;
@@ -384,7 +384,7 @@ const char* SyncSchedulerImpl::GetModeString(SyncScheduler::Mode mode) {
     case NORMAL_MODE:
       return "NORMAL_MODE";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

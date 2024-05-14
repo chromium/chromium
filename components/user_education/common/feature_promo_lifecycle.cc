@@ -98,7 +98,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
           // For now, rotating promos can continue to show indefinitely.
           return FeaturePromoResult::Success();
         case PromoType::kUnspecified:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           result = FeaturePromoResult::kPermanentlyDismissed;
           break;
       }
@@ -142,7 +142,7 @@ bool FeaturePromoLifecycle::CanSnooze() const {
       // TODO(dfried): Should snooze promos be allowed in rotating promos?
       return true;
     case PromoType::kUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -442,7 +442,7 @@ void FeaturePromoLifecycle::RecordShown() {
       type_action_name.append("Rotating");
       break;
     case PromoType::kUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::RecordComputedAction(type_action_name);
 }

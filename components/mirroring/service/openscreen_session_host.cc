@@ -119,7 +119,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
             RemotingSinkAudioCapability::CODEC_OPUS);
         continue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   for (const openscreen::cast::VideoCapability capability :
@@ -154,7 +154,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
       case openscreen::cast::VideoCapability::kAv1:
         continue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return sink_metadata;
@@ -1029,7 +1029,7 @@ void OpenscreenSessionHost::Negotiate() {
     case State::kInitializing:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OpenscreenSessionHost::NegotiateMirroring() {

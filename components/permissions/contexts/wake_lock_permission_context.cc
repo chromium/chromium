@@ -35,7 +35,7 @@ ContentSetting WakeLockPermissionContext::GetPermissionStatusInternal(
     case ContentSettingsType::WAKE_LOCK_SYSTEM:
       return CONTENT_SETTING_BLOCK;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CONTENT_SETTING_BLOCK;
   }
 }

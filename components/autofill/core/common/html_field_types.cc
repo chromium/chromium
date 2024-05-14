@@ -109,7 +109,7 @@ std::string_view FieldTypeToStringView(HtmlFieldType type) {
       return "HTML_TYPE_UNRECOGNIZED";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -126,7 +126,7 @@ std::string_view HtmlFieldModeToStringView(HtmlFieldMode mode) {
     case HtmlFieldMode::kShipping:
       return "shipping";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

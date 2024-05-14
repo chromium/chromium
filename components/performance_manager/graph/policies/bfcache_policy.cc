@@ -97,7 +97,7 @@ void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy,
                                 : BackgroundCacheSizeOnCriticalPressure();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   // Do not flush BFCache if cache_size is negative (such as -1).
   if (cache_size < 0)

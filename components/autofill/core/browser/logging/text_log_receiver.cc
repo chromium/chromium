@@ -73,7 +73,7 @@ std::vector<std::string> RenderFragment(const base::Value::Dict& entry) {
 std::vector<std::string> RenderEntry(const base::Value::Dict& entry) {
   const std::string* type = entry.FindString("type");
   if (!type) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else if (*type == "element") {
     return RenderElement(entry);
   } else if (*type == "text") {
@@ -81,7 +81,7 @@ std::vector<std::string> RenderEntry(const base::Value::Dict& entry) {
   } else if (*type == "fragment") {
     return RenderFragment(entry);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return {};
 }

@@ -101,7 +101,8 @@ BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<url::Origin>(
     return GetOwnerBasedOnScheme(data_key);
   }
 
-  NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected StorageType: " << static_cast<int>(storage_type_);
   return "";
 }
 
@@ -119,8 +120,8 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kCdmStorage:
       return GetOwnerBasedOnScheme(data_key.origin());
     default:
-      NOTREACHED() << "Unexpected StorageType: "
-                   << static_cast<int>(storage_type_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected StorageType: " << static_cast<int>(storage_type_);
       return "";
   }
 }
@@ -350,7 +351,7 @@ void StorageRemoverHelper::Visitor::operator()<
         ->ClearSharedDictionaryCacheForIsolationKey(
             isolation_key, helper->GetCompleteCallback());
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -372,7 +373,7 @@ void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
                               bool deleted) { std::move(callback).Run(); },
                            helper->GetCompleteCallback()));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

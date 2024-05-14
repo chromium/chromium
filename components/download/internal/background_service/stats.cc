@@ -52,13 +52,13 @@ std::string TaskTypeToHistogramSuffix(DownloadTaskType task_type) {
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "DownloadAutoResumptionTask";
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "DownloadLaterTask";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -75,9 +75,9 @@ std::string FileCleanupReasonToHistogramSuffix(FileCleanupReason reason) {
     case FileCleanupReason::HARD_RECOVERY:
       return "HardRecovery";
     case FileCleanupReason::COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

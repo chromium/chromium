@@ -465,7 +465,7 @@ class PredictionQualityMetricsTest
         return "Decca";
 
       default:
-        NOTREACHED();  // Fall through
+        NOTREACHED_IN_MIGRATION();  // Fall through
         return "unexpected!";
     }
   }
@@ -523,7 +523,7 @@ class PredictionQualityMetricsTest
                actual_type != predicted_type && predicted_type == UNKNOWN_TYPE;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return false;
   }

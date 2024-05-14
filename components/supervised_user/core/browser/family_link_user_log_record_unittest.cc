@@ -76,7 +76,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
             supervised_user::FilteringBehavior::kBlock);
         break;
       case WebFilterType::kMixed:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

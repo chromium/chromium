@@ -27,7 +27,7 @@ const char* LoggingScopeToString(LoggingScope scope) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

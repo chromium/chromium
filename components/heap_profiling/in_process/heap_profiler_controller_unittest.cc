@@ -353,7 +353,7 @@ base::FieldTrialParams FeatureTestParams::ToFieldTrialParams() const {
         field_trial_params["network-process-params"] = is_supported_string;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

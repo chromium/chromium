@@ -340,7 +340,7 @@ const base::Value* PrefService::GetUserPrefValue(
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED() << "Trying to get an unregistered pref: " << path;
+    NOTREACHED_IN_MIGRATION() << "Trying to get an unregistered pref: " << path;
     return nullptr;
   }
 
@@ -397,7 +397,8 @@ void PrefService::ClearPref(const std::string& path) {
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED() << "Trying to clear an unregistered pref: " << path;
+    NOTREACHED_IN_MIGRATION()
+        << "Trying to clear an unregistered pref: " << path;
     return;
   }
   user_pref_store_->RemoveValue(path, GetWriteFlags(pref));
@@ -521,7 +522,7 @@ base::Value* PrefService::GetMutableUserPref(const std::string& path,
     return nullptr;
   }
   if (pref->GetType() != type) {
-    NOTREACHED() << "Wrong type for GetMutableValue: " << path;
+    NOTREACHED_IN_MIGRATION() << "Wrong type for GetMutableValue: " << path;
     return nullptr;
   }
 
@@ -567,8 +568,9 @@ void PrefService::SetUserPrefValue(const std::string& path,
     return;
   }
   if (pref->GetType() != new_value.type()) {
-    NOTREACHED() << "Trying to set pref " << path << " of type "
-                 << pref->GetType() << " to value of type " << new_value.type();
+    NOTREACHED_IN_MIGRATION()
+        << "Trying to set pref " << path << " of type " << pref->GetType()
+        << " to value of type " << new_value.type();
     return;
   }
 

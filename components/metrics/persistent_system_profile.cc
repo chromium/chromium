@@ -414,7 +414,7 @@ void PersistentSystemProfile::MergeUpdateRecords(
     switch (type) {
       case kUnusedSpace:
         // These should never be returned.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case kSystemProfileProto:

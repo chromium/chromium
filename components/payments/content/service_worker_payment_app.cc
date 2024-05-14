@@ -398,7 +398,7 @@ bool ServiceWorkerPaymentApp::CanPreselect() const {
 }
 
 std::u16string ServiceWorkerPaymentApp::GetMissingInfoLabel() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

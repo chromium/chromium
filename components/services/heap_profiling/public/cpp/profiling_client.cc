@@ -149,7 +149,7 @@ mojom::AllocatorType ConvertType(AllocationSubsystem type) {
     case AllocationSubsystem::kPartitionAllocator:
       return mojom::AllocatorType::kPartitionAlloc;
     case AllocationSubsystem::kManualForTesting:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return mojom::AllocatorType::kMalloc;
   }
 }
@@ -236,7 +236,7 @@ void ProfilingClient::AddHeapProfileToTrace(
 #else
   bool success = false;
   // Tracing is not supported in iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   std::move(callback).Run(success);

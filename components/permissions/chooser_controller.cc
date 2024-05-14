@@ -20,7 +20,7 @@ std::u16string ChooserController::GetTitle() const {
 }
 
 void ChooserController::View::OnAdapterAuthorizationChanged(bool authorized) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool ChooserController::ShouldShowIconBeforeText() const {
@@ -72,15 +72,15 @@ bool ChooserController::IsPaired(size_t index) const {
 }
 
 void ChooserController::RefreshOptions() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChooserController::OpenAdapterOffHelpUrl() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChooserController::OpenPermissionPreferences() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace permissions

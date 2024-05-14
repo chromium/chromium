@@ -83,7 +83,7 @@ UnionTraits<autofill::mojom::SectionValueDataView,
   if (absl::holds_alternative<autofill::Section::FieldIdentifier>(r))
     return autofill::mojom::SectionValueDataView::Tag::kFieldIdentifier;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return autofill::mojom::SectionValueDataView::Tag::kDefaultSection;
 }
 

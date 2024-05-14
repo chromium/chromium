@@ -184,7 +184,7 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
     case TileSource::CUSTOM_LINKS:
       return custom_links_ != nullptr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

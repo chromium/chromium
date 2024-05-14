@@ -37,7 +37,7 @@ ConnectionType GetConnectionType(net::HttpConnectionInfo connection_info) {
     case net::HttpConnectionInfoCoarse::kOTHER:
       return ConnectionType::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ConnectionType::kUnknown;
 }
 

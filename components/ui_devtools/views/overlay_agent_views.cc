@@ -467,7 +467,7 @@ void OverlayAgentViews::ShowDistancesInHighlightOverlay(int pinned_id,
     } else if (r1.Intersects(r2)) {
       highlight_rect_config_ = HighlightRectsConfiguration::R1_INTERSECTS_R2;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   } else {
     highlight_rect_config_ = HighlightRectsConfiguration::NO_DRAW;
@@ -709,7 +709,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
       DrawRectGuideLinesOnCanvas(screen_bounds, hovered_rect_f, flags, canvas);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

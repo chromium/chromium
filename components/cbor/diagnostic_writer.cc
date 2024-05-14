@@ -140,7 +140,7 @@ static bool Serialize(const Value& node,
           s->append("undefined");
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
@@ -152,7 +152,7 @@ static bool Serialize(const Value& node,
       break;
 
     case Value::Type::TAG:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

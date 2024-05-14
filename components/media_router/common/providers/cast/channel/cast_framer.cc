@@ -95,7 +95,7 @@ size_t MessageFramer::BytesRequested() {
       VLOG(2) << "Bytes needed for body: " << bytes_left;
       return bytes_left;
     default:
-      NOTREACHED() << "Unhandled packet element type.";
+      NOTREACHED_IN_MIGRATION() << "Unhandled packet element type.";
       return 0;
   }
 }
@@ -148,7 +148,7 @@ std::unique_ptr<CastMessage> MessageFramer::Ingest(size_t num_bytes,
       }
       break;
     default:
-      NOTREACHED() << "Unhandled packet element type.";
+      NOTREACHED_IN_MIGRATION() << "Unhandled packet element type.";
       return nullptr;
   }
 

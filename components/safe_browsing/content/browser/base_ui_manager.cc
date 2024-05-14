@@ -181,7 +181,7 @@ ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
     case SB_THREAT_TYPE_SAFE:
       return std::numeric_limits<ThreatSeverity>::max();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::numeric_limits<ThreatSeverity>::max();
@@ -458,7 +458,7 @@ BaseUIManager::CreateBlockingPage(
   // committed interstitials. In the meantime, there is no create method for the
   // non-committed implementations, and this code won't be called if committed
   // interstitials are disabled.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -203,7 +203,7 @@ PersistedWindowShowState ShowStateToPersistedShowState(
     case ui::SHOW_STATE_END:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PERSISTED_SHOW_STATE_NORMAL;
 }
 
@@ -222,7 +222,7 @@ ui::WindowShowState PersistedShowStateToShowState(int state) {
     case PERSISTED_SHOW_STATE_DOCKED_DEPRECATED:
       return ui::SHOW_STATE_NORMAL;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::SHOW_STATE_NORMAL;
 }
 

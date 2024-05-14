@@ -522,7 +522,7 @@ std::string BrowserURLLoaderThrottle::GetUrlCheckTypeForLogging(
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck:
       return ".HashPrefixRealTimeCheck";
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ".HashPrefixDatabaseCheck";
   }
 }

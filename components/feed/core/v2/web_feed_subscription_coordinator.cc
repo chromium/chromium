@@ -244,7 +244,7 @@ void WebFeedSubscriptionCoordinator::UpdatePendingOperationBeforeAttempt(
     case WebFeedInFlightChangeStrategy::kRetry:
       break;
     case WebFeedInFlightChangeStrategy::kPending:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -930,7 +930,8 @@ void WebFeedSubscriptionCoordinator::RetryPendingOperations() {
             op.operation.change_reason(), base::DoNothing());
         break;
       default:
-        NOTREACHED() << "Unsupported operation kind " << op.operation.kind();
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported operation kind " << op.operation.kind();
     }
   }
 }

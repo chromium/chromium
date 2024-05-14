@@ -132,7 +132,7 @@ std::string GetDownloadCreationTypeNames(
     case DownloadItem::TYPE_SAVE_PAGE_AS:
       return "SAVE_PAGE_AS";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "INVALID_TYPE";
   }
 }
@@ -162,7 +162,7 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
     case DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return "DANGEROUS_ACCOUNT_COMPROMISE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "UNKNOWN_DANGER_TYPE";
   }
 }
@@ -623,7 +623,7 @@ void DownloadItemImpl::Pause() {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -668,7 +668,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -847,7 +847,7 @@ bool DownloadItemImpl::CanResume() const {
     }
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -1058,7 +1058,7 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return false;
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -2110,7 +2110,7 @@ void DownloadItemImpl::InterruptWithPartialState(
 
     case INITIAL_INTERNAL:
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
 
     case TARGET_PENDING_INTERNAL:
@@ -2342,7 +2342,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   switch (state_) {
     case INITIAL_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case TARGET_PENDING_INTERNAL:
@@ -2411,7 +2411,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
       break;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -2647,7 +2647,7 @@ DownloadItem::DownloadState DownloadItemImpl::InternalToExternalState(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MAX_DOWNLOAD_STATE;
 }
 
@@ -2664,7 +2664,7 @@ DownloadItemImpl::ExternalToInternalState(DownloadState external_state) {
     case INTERRUPTED:
       return INTERRUPTED_INTERNAL;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return MAX_DOWNLOAD_INTERNAL_STATE;
 }
@@ -2691,7 +2691,7 @@ bool DownloadItemImpl::IsValidSavePackageStateTransition(
              to == INTERRUPTED_INTERNAL;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 #else
@@ -2741,7 +2741,7 @@ bool DownloadItemImpl::IsValidStateTransition(DownloadInternalState from,
       return false;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 #else
@@ -2775,7 +2775,7 @@ const char* DownloadItemImpl::DebugDownloadStateString(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED() << "Unknown download state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown download state " << state;
   return "unknown";
 }
 
@@ -2792,7 +2792,7 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
     case ResumeMode::USER_RESTART:
       return "USER_RESTART";
   }
-  NOTREACHED() << "Unknown resume mode " << static_cast<int>(mode);
+  NOTREACHED_IN_MIGRATION() << "Unknown resume mode " << static_cast<int>(mode);
   return "unknown";
 }
 

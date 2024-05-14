@@ -360,7 +360,8 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
       return;
   }
 
-  NOTREACHED() << "Invalid client status " << client_->last_dm_status();
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid client status " << client_->last_dm_status();
   RefreshAfter(kUnmanagedRefreshDelayMs, PolicyFetchReason::kUnspecified);
 }
 
@@ -383,7 +384,7 @@ void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
 
   // This should never happen, as the registration change should have been
   // handled via OnRegistrationStateChanged().
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,

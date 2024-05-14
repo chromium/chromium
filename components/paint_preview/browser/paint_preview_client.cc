@@ -334,7 +334,7 @@ void PaintPreviewClient::CapturePaintPreview(
     // This should be impossible, but if it happens in a release build just
     // abort.
     DVLOG(1) << "Error: Root frame does not have an embedding token.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   document_data.capture_links = params.inner.capture_links;

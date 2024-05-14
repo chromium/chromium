@@ -46,7 +46,7 @@ bool IntentFile::MatchConditionValue(const ConditionValuePtr& condition_value) {
     case PatternMatchType::kLiteral:
     case PatternMatchType::kPrefix:
     case PatternMatchType::kSuffix: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     case PatternMatchType::kGlob: {
@@ -166,7 +166,7 @@ std::optional<std::string> Intent::GetIntentConditionValueByType(
     case ConditionType::kAuthority:
     // Handled in MatchFileCondition.
     case ConditionType::kFile: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
     }
   }

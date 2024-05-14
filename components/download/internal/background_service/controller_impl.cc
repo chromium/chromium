@@ -77,7 +77,7 @@ Client::FailureReason FailureReasonFromCompletionType(CompletionType type) {
     case CompletionType::CANCEL:
       return Client::FailureReason::CANCELLED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return Client::FailureReason::UNKNOWN;
@@ -448,7 +448,7 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -888,13 +888,13 @@ void ControllerImpl::ResolveInitialRequestStates() {
             new_state = Entry::State::COMPLETE;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -938,7 +938,7 @@ void ControllerImpl::ResolveInitialRequestStates() {
         }
         break;
       case Entry::State::COUNT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

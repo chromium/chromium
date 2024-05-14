@@ -207,7 +207,7 @@ syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
       return &os_priority_pref_sync_associator_;
 #endif
     default:
-      NOTREACHED() << "invalid model type: " << type;
+      NOTREACHED_IN_MIGRATION() << "invalid model type: " << type;
       return nullptr;
   }
 }

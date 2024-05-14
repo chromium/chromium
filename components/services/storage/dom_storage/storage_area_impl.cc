@@ -474,7 +474,7 @@ void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
   // TODO(ssid): Remove this method since it is not supported in only keys mode,
   // crbug.com/764127.
   if (cache_mode_ == CacheMode::KEYS_ONLY_WHEN_POSSIBLE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {

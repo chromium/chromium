@@ -42,7 +42,7 @@ openscreen::IPAddress::Version ToOpenScreenVersion(
       return openscreen::IPAddress::Version::kV4;
 
     case net::AddressFamily::ADDRESS_FAMILY_UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return openscreen::IPAddress::Version::kV4;
   }
 }

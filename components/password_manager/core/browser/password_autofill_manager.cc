@@ -325,7 +325,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
 void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
     const Suggestion&) {
   // Button actions do currently not exist for password entries.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PasswordAutofillManager::RemoveSuggestion(const Suggestion& suggestion) {

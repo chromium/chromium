@@ -772,7 +772,7 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
       return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

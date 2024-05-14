@@ -96,7 +96,7 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kDiskQuota:
       // Handled by an override in `QuotaPermissionRequest`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case RequestType::kGeolocation:
       message_id = IDS_GEOLOCATION_INFOBAR_TEXT;
@@ -137,7 +137,7 @@ PermissionRequest::GetDialogAnnotatedMessageText(
                     embedding_origin_string_formatted)),
             /*bolded_ranges=*/{});
     case RequestType::kTopLevelStorageAccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case RequestType::kVrSession:
       message_id = IDS_VR_INFOBAR_TEXT;
@@ -330,12 +330,12 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 #endif
     case RequestType::kRegisterProtocolHandler:
       // Handled by an override in `RegisterProtocolHandlerPermissionRequest`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
       // Handled by an override in `SmartCardPermissionRequest`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
 #endif
     case RequestType::kStorageAccess:
@@ -424,7 +424,7 @@ std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
       message_id = IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
   DCHECK_NE(0, message_id);

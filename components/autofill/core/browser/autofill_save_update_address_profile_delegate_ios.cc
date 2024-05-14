@@ -195,7 +195,7 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::EqualsDelegate(
 }
 
 int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IDR_INFOBAR_AUTOFILL_CC;
 }
 

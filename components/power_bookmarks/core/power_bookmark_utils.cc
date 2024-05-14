@@ -141,7 +141,7 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingPropertiesImpl(
           type_present = meta->has_shopping_specifics();
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
 
       if (!type_present)

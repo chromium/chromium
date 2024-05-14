@@ -146,7 +146,7 @@ void ParseAsCvcChallengeOption(
       challenge_info_position_string = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROMPT_SECURITY_CODE_POSITION_BACK_OF_CARD);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       parsed_challenge_option->cvc_position = CvcPosition::kUnknown;
     }
   }
@@ -295,7 +295,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
           cvc_position = "CVC_POSITION_BACK";
           break;
         case autofill::CvcPosition::kUnknown:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       challenge_option.Set("cvc_position", cvc_position);
@@ -438,7 +438,7 @@ void UnmaskCardRequest::ParseResponse(const base::Value::Dict& response) {
     response_details_.card_type =
         AutofillClient::PaymentsRpcCardType::kServerCard;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const base::Value::Dict* decline_details =

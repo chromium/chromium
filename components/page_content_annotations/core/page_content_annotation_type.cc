@@ -19,7 +19,7 @@ std::string AnnotationTypeToString(AnnotationType type) {
       return "ContentVisibility";
     case AnnotationType::kDeprecatedPageEntities:
     case AnnotationType::kDeprecatedTextEmbedding:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

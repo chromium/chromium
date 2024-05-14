@@ -97,7 +97,7 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
       return;
 
     case AutofillProfileImportType::kImportTypeUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

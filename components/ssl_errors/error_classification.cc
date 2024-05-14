@@ -182,7 +182,7 @@ void RecordUMAStatisticsForClockInterstitial(bool overridable,
   } else if (clock_state == ssl_errors::CLOCK_STATE_PAST) {
     RecordSSLInterstitialCause(overridable, CLOCK_PAST);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -246,11 +246,11 @@ ClockState GetClockState(
     case NETWORK_CLOCK_STATE_CLOCK_IN_FUTURE:
       return CLOCK_STATE_FUTURE;
     case NETWORK_CLOCK_STATE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CLOCK_STATE_UNKNOWN;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CLOCK_STATE_UNKNOWN;
 }
 

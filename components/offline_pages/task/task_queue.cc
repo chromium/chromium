@@ -136,7 +136,7 @@ void TaskQueue::TaskCompleted(Task* task) {
     }
   }
 
-  NOTREACHED() << "TaskCompleted: cannot find task";
+  NOTREACHED_IN_MIGRATION() << "TaskCompleted: cannot find task";
 }
 
 void TaskQueue::SuspendTask(Task* task) {
@@ -164,7 +164,7 @@ void TaskQueue::ResumeTask(Task* task, base::OnceClosure on_resume) {
     }
   }
 
-  NOTREACHED() << "Trying to resume task that's not suspended";
+  NOTREACHED_IN_MIGRATION() << "Trying to resume task that's not suspended";
 }
 
 void TaskQueue::InformTaskQueueIsIdle() {

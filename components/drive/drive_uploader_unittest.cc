@@ -323,7 +323,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
                                   const base::FilePath& local_file_path,
                                   UploadRangeCallback callback,
                                   ProgressCallback progress_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CancelCallbackOnce();
   }
 

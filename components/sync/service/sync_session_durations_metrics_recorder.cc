@@ -264,8 +264,9 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
     case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::ON):
     case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::UNKNOWN):
     case GetFeatureStates(FeatureState::UNKNOWN, FeatureState::OFF):
-      NOTREACHED() << "Account status is determined in the constructor so it is"
-                      " known when LogSyncAndAccountDuration() is called";
+      NOTREACHED_IN_MIGRATION()
+          << "Account status is determined in the constructor so it is"
+             " known when LogSyncAndAccountDuration() is called";
       break;
     case GetFeatureStates(FeatureState::ON, FeatureState::ON):
       LogDuration("OptedInToSyncWithAccount", session_length);
@@ -286,8 +287,9 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       LogDuration("NotOptedInToSyncWithoutAccount", session_length);
       break;
     default:
-      NOTREACHED() << "Unexpected feature states: "
-                   << GetFeatureStates(account_status_, sync_status_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected feature states: "
+          << GetFeatureStates(account_status_, sync_status_);
       break;
   }
 }

@@ -10,16 +10,16 @@ namespace bookmarks {
 
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

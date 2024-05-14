@@ -48,7 +48,7 @@ std::string GetStringNameForRequestContext(
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown";
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return "PageNavigation";
@@ -69,7 +69,7 @@ std::string GetStringNameForRequestContext(
     case proto::RequestContext::CONTEXT_SHOPPING:
       return "Shopping";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

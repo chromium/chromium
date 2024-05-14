@@ -322,7 +322,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
     switch (rv) {
       case MOJO_RESULT_INVALID_ARGUMENT:
       case MOJO_RESULT_BUSY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case MOJO_RESULT_FAILED_PRECONDITION:
         Complete(net::ERR_ABORTED);

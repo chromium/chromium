@@ -294,7 +294,7 @@ class FrameInjectingAudioDemuxerStream final
   // DemuxerStream remainder of implementation.
   media::AudioDecoderConfig audio_decoder_config() final { return config(); }
   media::VideoDecoderConfig video_decoder_config() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::VideoDecoderConfig();
   }
   Type type() const final { return Type::AUDIO; }
@@ -311,7 +311,7 @@ class FrameInjectingVideoDemuxerStream final
  private:
   // DemuxerStream remainder of implementation.
   media::AudioDecoderConfig audio_decoder_config() final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::AudioDecoderConfig();
   }
   media::VideoDecoderConfig video_decoder_config() final { return config(); }

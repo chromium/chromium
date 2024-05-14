@@ -129,7 +129,7 @@ void FullCardRequest::GetFullCardImpl(
   // failure and reset.
   if (card.record_type() == CreditCard::RecordType::kVirtualCard &&
       !last_committed_primary_main_frame_origin.has_value()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     if (ui_delegate_) {
       ui_delegate_->OnUnmaskVerificationResult(
           AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
@@ -377,7 +377,7 @@ void FullCardRequest::OnDidGetRealPan(
                  AutofillClient::PaymentsRpcCardType::kServerCard) {
         request_->card.set_record_type(CreditCard::RecordType::kFullServerCard);
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       // TODO(crbug.com/40621544): Once |fido_opt_in| is added to
@@ -398,7 +398,7 @@ void FullCardRequest::OnDidGetRealPan(
     }
 
     case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

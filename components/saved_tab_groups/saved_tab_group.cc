@@ -438,11 +438,11 @@ SavedTabGroup::TabGroupColorToSyncColor(
     case tab_groups::TabGroupColorId::kOrange:
       return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_ORANGE;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED() << "kNumEntries is not a supported color enum.";
+      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
       return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY;
   }
 
-  NOTREACHED() << "No known conversion for the supplied color.";
+  NOTREACHED_IN_MIGRATION() << "No known conversion for the supplied color.";
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid) {

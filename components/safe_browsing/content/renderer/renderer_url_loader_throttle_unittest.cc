@@ -49,7 +49,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
   }
 
   void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void EnableDelayCallback() { should_delay_callback_ = true; }

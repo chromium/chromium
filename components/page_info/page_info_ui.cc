@@ -395,7 +395,7 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       message_id = IDS_PAGE_INFO_STATE_TEXT_AUTO_PICTURE_IN_PICTURE_ASK;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (message_id == kInvalidResourceID)
@@ -474,7 +474,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case PageInfo::SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE:
@@ -487,7 +487,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       security_description->details = identity_info.safe_browsing_details;
       return security_description;
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case PageInfo::SAFE_BROWSING_STATUS_BILLING:
@@ -558,7 +558,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
       // Internal pages on desktop have their own UI implementations which
       // should never call this function.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
@@ -614,7 +614,7 @@ std::u16string PageInfoUI::PermissionTypeToUIString(ContentSettingsType type) {
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -625,7 +625,7 @@ std::u16string PageInfoUI::PermissionTypeToUIStringMidSentence(
     if (info.type == type)
       return l10n_util::GetStringUTF16(info.string_id_mid_sentence);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -701,7 +701,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
     case SettingSource::kAllowList:
     case SettingSource::kNone:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
   int button_text_id = button_text_ids[effective_setting];
@@ -768,7 +768,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
     case CONTENT_SETTING_ASK:
       return GetPermissionAskStateString(permission.type);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return l10n_util::GetStringUTF16(message_id);
@@ -908,7 +908,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
       SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -947,7 +947,7 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -23,7 +23,7 @@ DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
     case InMemoryDownload::State::COMPLETE:
       return DriverEntry::State::COMPLETE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DriverEntry::State::UNKNOWN;
 }
 
@@ -186,7 +186,7 @@ void InMemoryDownloadDriver::OnDownloadComplete(InMemoryDownload* download) {
     case InMemoryDownload::State::INITIAL:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

@@ -28,7 +28,7 @@ bool HasRunToCompletion(
         kCancelledPwdSyncStateChanged:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -229,7 +229,7 @@ std::string PasswordStoreBackendMetricsRecorder::GetStoreInfix() const {
         kLocal:
       return base::JoinString({*backend_infix_, "Local"}, ".");
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

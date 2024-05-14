@@ -352,7 +352,7 @@ net::HttpStatusCode LoopbackServer::HandleCommand(
         break;
       case sync_pb::ClientToServerMessage::DEPRECATED_3:
       case sync_pb::ClientToServerMessage::DEPRECATED_4:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return net::HTTP_BAD_REQUEST;
     }
 

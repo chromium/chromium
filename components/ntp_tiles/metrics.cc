@@ -49,7 +49,7 @@ std::string GetSourceHistogramName(TileSource source) {
     case TileSource::CUSTOM_LINKS:
       return kHistogramCustomLinksName;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

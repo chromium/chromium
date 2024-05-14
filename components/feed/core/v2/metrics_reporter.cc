@@ -158,7 +158,7 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
 std::string_view ContentOrderToString(ContentOrder content_order) {
   switch (content_order) {
     case ContentOrder::kUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case ContentOrder::kGrouped:
       return "Grouped";

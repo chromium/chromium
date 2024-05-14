@@ -100,7 +100,7 @@ std::u16string PopupBlockedInfoBarDelegate::GetButtonLabel(
     case BUTTON_CANCEL:
       return l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::u16string();

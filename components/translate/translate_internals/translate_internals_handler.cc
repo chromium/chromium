@@ -32,7 +32,7 @@ TranslateInternalsHandler::TranslateInternalsHandler() {
   translate::TranslateLanguageList* language_list =
       translate::TranslateDownloadManager::GetInstance()->language_list();
   if (!language_list) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

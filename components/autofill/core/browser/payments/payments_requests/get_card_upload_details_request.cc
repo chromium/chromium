@@ -109,7 +109,7 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
                        "LOCAL_CARD_MIGRATION_SETTINGS_PAGE");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::string request_content;

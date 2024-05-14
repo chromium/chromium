@@ -260,7 +260,7 @@ bool WebContentsDelegateAndroid::DidAddMessageToConsole(
       jlevel = WEB_CONTENTS_DELEGATE_LOG_LEVEL_ERROR;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return Java_WebContentsDelegateAndroid_addMessageToConsole(
       env, GetJavaDelegate(env), jlevel, jmessage, line_no, jsource_id);

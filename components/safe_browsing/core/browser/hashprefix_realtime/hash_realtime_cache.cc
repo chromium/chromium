@@ -103,7 +103,7 @@ void HashRealTimeCache::CacheSearchHashesResponse(
           full_hash_to_store);
     } else {
       // There should always be a hash prefix associated with the full hash.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

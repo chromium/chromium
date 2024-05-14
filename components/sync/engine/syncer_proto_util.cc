@@ -52,7 +52,7 @@ SyncerError ServerConnectionErrorAsSyncerError(
           static_cast<net::HttpStatusCode>(http_status_code));
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SyncerError::Success();
   }
 }
@@ -82,7 +82,7 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return ENCRYPTION_OBSOLETE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNKNOWN_ERROR;
 }
 
@@ -94,7 +94,7 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
       return UNKNOWN_ACTION;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNKNOWN_ACTION;
 }
 
@@ -334,7 +334,7 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
     case CONFLICT:
     case INVALID_MESSAGE:
       // These error types should not be used at this stage.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (should_report_success) {

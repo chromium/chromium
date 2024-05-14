@@ -152,7 +152,7 @@ class NullStatusReporter : public AppBannerManager::StatusReporter {
 
   WebappInstallSource GetInstallSource(content::WebContents* web_contents,
                                        InstallTrigger trigger) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return WebappInstallSource::COUNT;
   }
 };

@@ -100,7 +100,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
 }
 
 - (id)init {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nil;
 }
 

@@ -421,7 +421,7 @@ std::string GetHistogramNameSliceForRequestSource(
     // If you add something here, add to the ClusteringRequestSource variant at
     // the top of history/histograms.xml.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

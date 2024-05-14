@@ -221,7 +221,7 @@ class _NestedMessageIteratorGet:
                   'NestedMessageIterator::Get() const {\n')
         for msg in messages:
             cls._IfMsg(out, msg)
-        out.write('  NOTREACHED();\n')
+        out.write('  NOTREACHED_IN_MIGRATION();\n')
         out.write('  return nullptr;\n')
         out.write('}\n')
 

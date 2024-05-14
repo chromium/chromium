@@ -195,7 +195,7 @@ std::string GetTeamDriveId(const google_apis::ChangeResource& change_resource) {
       team_drive_id = change_resource.team_drive_id();
       break;
     case ChangeResource::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return team_drive_id;
@@ -1787,7 +1787,7 @@ void FakeDriveService::GetChangeListInternal(
         }
         break;
       case ChangeResource::UNKNOWN:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -1896,7 +1896,7 @@ CancelCallbackOnce FakeDriveService::AddPermission(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(callback);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CancelCallbackOnce();
 }
 
@@ -1904,7 +1904,7 @@ std::unique_ptr<BatchRequestConfiguratorInterface>
 FakeDriveService::StartBatchRequest() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

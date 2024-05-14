@@ -197,7 +197,7 @@ HostIndexedContentSettings::Iterator::operator++() {
         // We have reached the end.
         break;
       case Stage::kInvalid:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   return *this;
@@ -244,7 +244,7 @@ void HostIndexedContentSettings::Iterator::SetStage(Stage stage) {
       current_end_ = index_->wildcard_settings_.end();
       break;
     case Stage::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -288,7 +288,7 @@ GCMMessageCryptographer::GCMMessageCryptographer(Version version) {
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 GCMMessageCryptographer::~GCMMessageCryptographer() = default;

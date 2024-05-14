@@ -68,7 +68,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
     case metrics_util::AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE:
     case metrics_util::CLICKED_BRAND_NAME_OBSOLETE:
     case metrics_util::NUM_UI_RESPONSES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return BubbleDismissalReason::kUnknown;
@@ -273,7 +273,7 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
             action.second);
         break;
       case DetailedUserAction::kObsoleteTriggeredManualFallbackForUpdating:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -711,7 +711,7 @@ void PasswordFormMetricsRecorder::CalculatePasswordFillingAssistanceMetric(
   }
 
   // If execution gets here, we have a bug in our state machine.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasswordFormMetricsRecorder::
@@ -904,7 +904,7 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::MANUAL_BLOCKLISTED_OBSOLETE:
     case metrics_util::AUTOMATIC_CREDENTIAL_REQUEST_OBSOLETE:
     case metrics_util::NUM_DISPLAY_DISPOSITIONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

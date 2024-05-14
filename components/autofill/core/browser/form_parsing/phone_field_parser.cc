@@ -378,7 +378,7 @@ std::u16string PhoneFieldParser::GetRegExp(RegexType regex_id) {
     case REGEX_EXTENSION:
       return kPhoneExtensionRe;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::u16string();
@@ -406,7 +406,7 @@ const char* PhoneFieldParser::GetRegExpName(RegexType regex_id) {
     case REGEX_EXTENSION:
       return "kPhoneExtensionRe";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return "";
@@ -435,7 +435,7 @@ std::string PhoneFieldParser::GetJSONFieldType(RegexType phonetype_id) {
     case REGEX_EXTENSION:
       return "PHONE_EXTENSION";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::string();

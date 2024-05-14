@@ -472,7 +472,7 @@ void JsonPrefStore::OnFileRead(std::unique_ptr<ReadResult> read_result) {
         // can't complete synchronously, it should never be returned by the read
         // operation itself.
       case PREF_READ_ERROR_MAX_ENUM:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

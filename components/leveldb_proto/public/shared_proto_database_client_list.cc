@@ -125,7 +125,7 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
     case ProtoDbType::CLIENT_CERTIFICATES_DATABASE:
       return "ClientCertificatesDatabase";
     case ProtoDbType::LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

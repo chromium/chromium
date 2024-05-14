@@ -73,7 +73,7 @@ bool ShouldProfileNonRendererProcessType(Mode mode, int process_type) {
       {}
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

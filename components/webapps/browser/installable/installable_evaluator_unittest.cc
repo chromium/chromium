@@ -162,7 +162,7 @@ class InstallableEvaluatorCriteriaUnitTest
         EXPECT_EQ(root_page_code, error_code);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 };

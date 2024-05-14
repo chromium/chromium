@@ -402,7 +402,7 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
     case CONTENT_SETTING_BLOCK:
       return net::CookieAccessSemantics::NONLEGACY;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return net::CookieAccessSemantics::UNKNOWN;
 }

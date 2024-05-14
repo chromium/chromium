@@ -74,7 +74,8 @@ int GetThreatSeverity(SafetyNetJavaThreatType threat_type) {
     case SafetyNetJavaThreatType::MAX_VALUE:
       return std::numeric_limits<int>::max();
   }
-  NOTREACHED() << "Unhandled threat_type: " << static_cast<int>(threat_type);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled threat_type: " << static_cast<int>(threat_type);
   return std::numeric_limits<int>::max();
 }
 

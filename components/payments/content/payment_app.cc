@@ -24,7 +24,7 @@ int GetSortingGroup(const PaymentApp& app) {
     case PaymentApp::Type::NATIVE_MOBILE_APP:
       return 2;
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 99;
   }
 }

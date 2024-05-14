@@ -151,7 +151,7 @@ NaClListener::NaClListener()
 }
 
 NaClListener::~NaClListener() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   shutdown_event_.Signal();
   g_listener = NULL;
 }

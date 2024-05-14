@@ -137,7 +137,7 @@ std::string GetStringForOptimizationGuideDecision(
     case OptimizationGuideDecision::kFalse:
       return "False";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

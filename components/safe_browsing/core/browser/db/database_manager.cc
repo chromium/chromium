@@ -44,7 +44,7 @@ bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
     api_checks_.erase(it);
     return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

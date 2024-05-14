@@ -808,7 +808,7 @@ ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
     int classification_style = ACMatchClassification::NONE;
     if (!base::StringToInt(tokens[i], &classification_offset) ||
         !base::StringToInt(tokens[i + 1], &classification_style)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return classifications;
     }
     classifications.push_back(
@@ -1137,7 +1137,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1313,7 +1313,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
         break;
       case OmniboxActionId::UNKNOWN:
       case OmniboxActionId::LAST:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

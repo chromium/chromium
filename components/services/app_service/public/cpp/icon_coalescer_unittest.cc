@@ -39,7 +39,8 @@ class AppsIconCoalescerTest : public testing::Test {
         std::move(iter->second).Run(NewIconValuePtr());
         pending_callbacks_.erase(iter);
       } else {
-        NOTREACHED() << "No pending callback for app_id=" << app_id;
+        NOTREACHED_IN_MIGRATION()
+            << "No pending callback for app_id=" << app_id;
       }
     }
 

@@ -350,7 +350,7 @@ bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
     case CERT_ERRORS_CONTENT:
       return base::Contains(ran_content_with_cert_errors_hosts_, entry);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

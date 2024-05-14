@@ -57,7 +57,7 @@ gfx::Rect HelpBubble::GetBoundsInScreen() const {
 base::CallbackListSubscription HelpBubble::AddOnCloseCallback(
     ClosedCallback callback) {
   if (is_closed()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::CallbackListSubscription();
   }
 

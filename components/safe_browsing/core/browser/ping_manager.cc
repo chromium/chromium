@@ -499,7 +499,7 @@ GURL PingManager::SafeBrowsingHitUrl(
       threat_list = "phishcsdhit";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::string threat_source = "none";
@@ -526,7 +526,7 @@ GURL PingManager::SafeBrowsingHitUrl(
       threat_source = "asb";
       break;
     case safe_browsing::ThreatSource::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Add user_population component only if it's not empty.

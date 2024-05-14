@@ -44,7 +44,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
     return value;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kHistogramPageTransitionFallbackValue;
 }
 

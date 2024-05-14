@@ -289,7 +289,8 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case 0:
-      NOTREACHED() << "Title should not be requested if no fields are missing";
+      NOTREACHED_IN_MIGRATION()
+          << "Title should not be requested if no fields are missing";
       return std::u16string();
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_NAME);

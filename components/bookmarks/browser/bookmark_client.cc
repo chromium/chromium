@@ -31,7 +31,7 @@ bool BookmarkClient::SupportsTypedCountForUrls() {
 
 void BookmarkClient::GetTypedCountForUrls(
     UrlTypedCountMap* url_typed_count_map) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace bookmarks

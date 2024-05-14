@@ -68,7 +68,7 @@ int WebFaviconDriver::DownloadImage(const GURL& url,
 
 void WebFaviconDriver::DownloadManifest(const GURL& url,
                                         ManifestDownloadCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WebFaviconDriver::IsOffTheRecord() {

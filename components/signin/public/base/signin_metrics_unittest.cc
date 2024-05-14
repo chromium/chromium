@@ -197,7 +197,7 @@ class SigninMetricsTest : public ::testing::Test {
       case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
         return "WebAuthnModalDialog";
       case AccessPoint::ACCESS_POINT_MAX:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
     }
   }

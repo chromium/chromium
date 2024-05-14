@@ -18,7 +18,7 @@ const char* PageNode::ToString(PageNode::EmbeddingType embedding_type) {
     case PageNode::EmbeddingType::kPortal:
       return "kPortal";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -31,7 +31,7 @@ const char* PageNode::ToString(PageType type) {
     case PageType::kUnknown:
       return "kUnknown";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -48,7 +48,7 @@ const char* PageNode::ToString(PageNode::LoadingState loading_state) {
     case LoadingState::kLoadedIdle:
       return "kLoadedIdle";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -61,7 +61,7 @@ const char* PageNode::ToString(PageNode::PageState page_state) {
     case PageState::kBackForwardCache:
       return "kBackForwardCache";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 PageNode::PageNode() = default;

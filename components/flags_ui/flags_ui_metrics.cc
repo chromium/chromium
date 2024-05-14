@@ -33,8 +33,8 @@ void ReportAboutFlagsHistogramSwitches(const std::string& uma_histogram_name,
 
       uma_id = GetSwitchUMAId(switch_name);
     } else {
-      NOTREACHED() << "ReportAboutFlagsHistogram(): flag '" << flag
-                   << "' has incorrect format.";
+      NOTREACHED_IN_MIGRATION() << "ReportAboutFlagsHistogram(): flag '" << flag
+                                << "' has incorrect format.";
     }
     DVLOG(1) << "ReportAboutFlagsHistogram(): histogram='" << uma_histogram_name
              << "' '" << flag << "', uma_id=" << uma_id;

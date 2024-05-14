@@ -280,7 +280,7 @@ void ExtendedDragSource::OnToplevelWindowDragEvent(ui::LocatedEvent* event) {
     return;
   }
 
-  NOTREACHED() << "Only mouse and touch events are supported.";
+  NOTREACHED_IN_MIGRATION() << "Only mouse and touch events are supported.";
 }
 
 void ExtendedDragSource::OnDataSourceDestroying(DataSource* source) {

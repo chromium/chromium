@@ -891,7 +891,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -535,7 +535,7 @@ void TranslateAgent::CheckTranslateStatus() {
     }
 
     if (!translate_callback_pending_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 

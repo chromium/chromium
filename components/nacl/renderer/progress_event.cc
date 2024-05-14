@@ -35,7 +35,7 @@ const char* EventTypeToName(PP_NaClEventType event_type) {
     case PP_NACL_EVENT_CRASH:
       return "crash";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

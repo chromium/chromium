@@ -115,7 +115,7 @@ std::string GetDomainReliabilityProtocol(
     case net::HttpConnectionInfoCoarse::kOTHER:
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -139,7 +139,7 @@ void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
       DUMP_WILL_BE_NOTREACHED_NORETURN() << "State::IDLE";
       return;
     case State::REPORT_STAGED_RESULT:
-      NOTREACHED() << "State::REPORT_STAGED_RESULT";
+      NOTREACHED_IN_MIGRATION() << "State::REPORT_STAGED_RESULT";
       return;
   }
 }

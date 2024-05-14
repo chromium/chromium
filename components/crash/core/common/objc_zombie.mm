@@ -383,7 +383,7 @@ bool ZombieEnable(bool zombieAllObjects,
       g_zombies =
           static_cast<ZombieRecord*>(calloc(g_zombieCount, sizeof(*g_zombies)));
       if (!g_zombies) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         g_zombies = oldZombies;
         g_zombieCount = oldCount;
         g_zombieIndex = oldIndex;

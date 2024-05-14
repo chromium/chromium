@@ -91,7 +91,7 @@ std::vector<std::string> PostProcessor::GetClassifierResults(
       return GetBinnedClassifierResults(model_scores,
                                         predictor.binned_classifier());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::vector<std::string>();
   }
 }
@@ -208,7 +208,7 @@ int PostProcessor::GetIndexOfTopLabel(
           return i;
         }
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kInvalidResult;
     }
     case proto::Predictor::kBinnedClassifier: {
@@ -222,11 +222,11 @@ int PostProcessor::GetIndexOfTopLabel(
           return i;
         }
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kInvalidResult;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kInvalidResult;
   }
 }

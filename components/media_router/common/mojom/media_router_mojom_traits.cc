@@ -48,7 +48,7 @@ UnionTraits<media_router::mojom::MediaSinkExtraDataDataView,
   } else if (sink.is_cast_sink()) {
     return media_router::mojom::MediaSinkExtraDataDataView::Tag::kCastMediaSink;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media_router::mojom::MediaSinkExtraDataDataView::Tag::kCastMediaSink;
 }
 
@@ -110,7 +110,7 @@ bool UnionTraits<media_router::mojom::MediaSinkExtraDataDataView,
       return true;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

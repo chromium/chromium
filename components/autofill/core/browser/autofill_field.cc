@@ -234,7 +234,7 @@ bool AutofillField::server_type_prediction_is_override() const {
 void AutofillField::set_heuristic_type(HeuristicSource s, FieldType type) {
   if (type < 0 || type > MAX_VALID_FIELD_TYPE ||
       type == FIELD_WITH_DEFAULT_VALUE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // This case should not be reachable; but since this has potential
     // implications on data uploaded to the server, better safe than sorry.
     type = UNKNOWN_TYPE;

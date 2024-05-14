@@ -160,7 +160,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       mode = mojom::FileOpenMode::kOpenIfExistsAndTruncate;
       break;
     default:
-      NOTREACHED() << "Invalid open mode flags: " << mode_flags;
+      NOTREACHED_IN_MIGRATION() << "Invalid open mode flags: " << mode_flags;
       return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
@@ -182,7 +182,8 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       write_access = mojom::FileWriteAccess::kAppendOnly;
       break;
     default:
-      NOTREACHED() << "Invalid write access flags: " << write_flags;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid write access flags: " << write_flags;
       return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 

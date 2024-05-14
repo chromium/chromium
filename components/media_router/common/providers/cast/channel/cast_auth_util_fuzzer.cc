@@ -61,7 +61,7 @@ void UpdateTime(TimeBoundCase c, const base::Time* time, int direction) {
       mtime = base::Time();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

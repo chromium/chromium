@@ -175,7 +175,7 @@ GetDeviceRegistrationOutcomeForUMAFromResponse(
     case TrustedVaultRegistrationStatus::kOtherError:
       return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
 }
 
@@ -288,7 +288,7 @@ StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
       return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
 }
 

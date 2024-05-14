@@ -140,7 +140,7 @@ void FakeGCMProfileService::CustomFakeGCMDriver::UnregisterImpl(
 void FakeGCMProfileService::CustomFakeGCMDriver::UnregisterWithSenderIdImpl(
     const std::string& app_id,
     const std::string& sender_id) {
-  NOTREACHED() << "This Android-specific method is not yet faked.";
+  NOTREACHED_IN_MIGRATION() << "This Android-specific method is not yet faked.";
 }
 
 void FakeGCMProfileService::CustomFakeGCMDriver::SendImpl(

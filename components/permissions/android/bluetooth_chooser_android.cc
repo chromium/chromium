@@ -147,7 +147,7 @@ void BluetoothChooserAndroid::OnDialogFinished(
           base::android::ConvertJavaStringToUTF8(env, device_id));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothChooserAndroid::RestartSearch() {

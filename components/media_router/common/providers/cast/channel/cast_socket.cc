@@ -217,8 +217,8 @@ void CastSocketImpl::Connect(OnOpenCallback callback) {
       std::move(callback).Run(this);
       break;
     default:
-      NOTREACHED() << "Unknown ReadyState: "
-                   << ReadyStateToString(ready_state_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown ReadyState: " << ReadyStateToString(ready_state_);
   }
 }
 
@@ -366,7 +366,8 @@ void CastSocketImpl::DoConnectLoop(int result) {
         DCHECK(IsTerminalState(connect_state_));
         break;
       default:
-        NOTREACHED() << "Unknown state in connect flow: " << AsInteger(state);
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown state in connect flow: " << AsInteger(state);
         SetConnectState(ConnectionState::FINISHED);
         SetErrorState(ChannelError::UNKNOWN);
         DoConnectCallback();

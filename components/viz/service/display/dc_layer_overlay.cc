@@ -733,7 +733,7 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
       }
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -203,7 +203,7 @@ OverlayProcessorOzone::OverlayProcessorOzone(
         break;
 #endif
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

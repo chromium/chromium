@@ -396,7 +396,8 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
       // Fall through to NOTREACHED().
     }
   }
-  NOTREACHED() << "Unknown proxy mode, falling back to system settings.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown proxy mode, falling back to system settings.";
   return false;
 }
 

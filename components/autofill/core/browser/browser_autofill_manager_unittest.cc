@@ -1158,7 +1158,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         matchers.push_back(
             Equal(absl::get<RationalizationFieldLogEvent>(event)));
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
     return ElementsAreArray(matchers);
@@ -1213,7 +1213,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       if (metric & (1 << sample))
         return sample;
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

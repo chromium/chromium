@@ -277,7 +277,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::nullopt;
   }
 

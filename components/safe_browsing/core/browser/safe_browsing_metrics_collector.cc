@@ -266,7 +266,7 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
       event = EventType::ANDROID_SAFEBROWSING_INTERSTITIAL_BYPASS;
       break;
     default:
-      NOTREACHED() << "Unexpected threat source.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected threat source.";
       event = EventType::DATABASE_INTERSTITIAL_BYPASS;
   }
   AddSafeBrowsingEventToPref(event);
@@ -481,7 +481,7 @@ UserState SafeBrowsingMetricsCollector::GetUserState() {
     case SafeBrowsingState::STANDARD_PROTECTION:
       return UserState::kStandardProtection;
     case SafeBrowsingState::NO_SAFE_BROWSING:
-      NOTREACHED() << "Unexpected Safe Browsing state.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected Safe Browsing state.";
       return UserState::kStandardProtection;
   }
 }

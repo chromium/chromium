@@ -110,7 +110,7 @@ std::string ProcessHistogramName(std::string_view base_name,
     case ProcessType::kUnknown:
     default:
       // Profiler should not be enabled for these process types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

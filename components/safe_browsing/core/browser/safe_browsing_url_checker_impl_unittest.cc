@@ -268,7 +268,7 @@ class FakeRealTimeUrlLookupService
         verdict_type = RTLookupResponse::ThreatInfo::SUSPICIOUS;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
         verdict_type = RTLookupResponse::ThreatInfo::SAFE;
     }

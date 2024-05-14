@@ -84,7 +84,7 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeBlockedScanFailed;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::DownloadDangerType::kDownloadDangerTypeInvalid;
   }
 }

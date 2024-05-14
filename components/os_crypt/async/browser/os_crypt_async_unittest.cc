@@ -395,7 +395,7 @@ TEST_F(OSCryptAsyncTest, SubscriptionCancelled) {
     auto sub = factory.GetInstance(
         base::BindOnce([](Encryptor encryptor, bool success) {
           // This should not be called, as the subscription went out of scope.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }));
   }
 

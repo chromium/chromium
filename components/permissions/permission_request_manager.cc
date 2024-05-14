@@ -1544,7 +1544,7 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
       Dismiss();
       break;
     case NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -35,7 +35,7 @@ class SafeBrowsingPolicyHandlerTest
       case 2:
         return true;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -49,7 +49,7 @@ class SafeBrowsingPolicyHandlerTest
       case 2:
         return true;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

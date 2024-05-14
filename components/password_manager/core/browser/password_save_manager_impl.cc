@@ -210,7 +210,7 @@ PendingCredentialsState ResolvePendingCredentialsStates(
       account_state == PendingCredentialsState::NEW_LOGIN) {
     return PendingCredentialsState::NEW_LOGIN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PendingCredentialsState::NONE;
 }
 
@@ -645,7 +645,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
       pending_credentials.action = parsed_submitted_form.action;
       break;
     case PendingCredentialsState::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

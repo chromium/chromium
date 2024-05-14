@@ -310,7 +310,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
     Fingerprint fingerprint,
     bool send_notifications) {
   if (!hash_table_ || table_length_ == 0) {
-    NOTREACHED();  // Not initialized.
+    NOTREACHED_IN_MIGRATION();  // Not initialized.
     return null_hash_;
   }
 
@@ -337,7 +337,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
       // This means that we've wrapped around and are about to go into an
       // infinite loop. Something was wrong with the hashtable resizing
       // logic, so stop here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return null_hash_;
     }
   }
@@ -356,7 +356,7 @@ void PartitionedVisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
 
 bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
   if (!hash_table_ || table_length_ == 0) {
-    NOTREACHED();  // Not initialized.
+    NOTREACHED_IN_MIGRATION();  // Not initialized.
     return false;
   }
   if (!IsVisited(fingerprint)) {
@@ -519,7 +519,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::TryToAddVisitedLink(
   // TODO(boliu): Move this check to HistoryService when IsOffTheRecord is
   // removed from BrowserContext.
   if (browser_context_ && browser_context_->IsOffTheRecord()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return null_hash_;
   }
 

@@ -48,8 +48,9 @@ std::string FileErrorToString(FileError error) {
 #undef PRINT
   }
 
-  NOTREACHED() << "Unexpected FileError "
-               << static_cast<std::underlying_type_t<FileError>>(error);
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected FileError "
+      << static_cast<std::underlying_type_t<FileError>>(error);
   return "";
 }
 
@@ -114,7 +115,7 @@ base::File::Error FileErrorToBaseFileError(FileError error) {
       return base::File::FILE_ERROR_FAILED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::File::FILE_ERROR_FAILED;
 }
 

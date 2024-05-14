@@ -343,7 +343,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         break;
       default:
         proxy_mode = ProxyPrefs::MODE_DIRECT;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   } else {
     return;
@@ -367,7 +367,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         set_proxy_pref_value(ProxyConfigDictionary::CreatePacScript(
             pac_url->GetString(), mandatory));
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       break;
     }
@@ -384,7 +384,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       set_proxy_pref_value(ProxyConfigDictionary::CreateSystem());
       break;
     case ProxyPrefs::kModeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

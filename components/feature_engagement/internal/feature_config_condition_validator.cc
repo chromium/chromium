@@ -129,7 +129,7 @@ void FeatureConfigConditionValidator::NotifyIsShowing(
       break;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -223,7 +223,7 @@ bool FeatureConfigConditionValidator::IsBlocked(
       return false;
     default:
       // All cases should be covered.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

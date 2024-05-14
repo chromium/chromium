@@ -42,7 +42,7 @@ void RealTimeUploader::Upload(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!report_queue_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -86,7 +86,7 @@ void RealTimeUploader::CreateReportQueue(const std::string& dm_token,
   }
   report_queue_ = std::move(report_queue.value());
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // !BUILDFLAG(IS_IOS)
 }
 

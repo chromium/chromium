@@ -224,7 +224,7 @@ void AddToHomescreenMediator::OnDataAvailable(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     UMA_HISTOGRAM_ENUMERATION(

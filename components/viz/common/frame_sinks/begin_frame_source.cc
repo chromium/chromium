@@ -203,7 +203,7 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

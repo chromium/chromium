@@ -215,7 +215,7 @@ void DownloadUIAdapter::GetShareInfoForItem(const ContentId& id,
 void DownloadUIAdapter::RenameItem(const ContentId& id,
                                    const std::string& name,
                                    RenameCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DownloadUIAdapter::OnPageGetForVisuals(

@@ -730,7 +730,8 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
       break;
 
     default:
-      NOTREACHED() << "Attempting to set unknown info-type " << type;
+      NOTREACHED_IN_MIGRATION()
+          << "Attempting to set unknown info-type " << type;
       break;
   }
 }

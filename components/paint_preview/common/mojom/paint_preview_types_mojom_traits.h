@@ -24,7 +24,8 @@ struct EnumTraits<paint_preview::mojom::RecordingPersistence,
       case paint_preview::RecordingPersistence::kMemoryBuffer:
         return paint_preview::mojom::RecordingPersistence::kMemoryBuffer;
     }
-    NOTREACHED() << "Unknown persistence " << static_cast<int>(persistence);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown persistence " << static_cast<int>(persistence);
     return paint_preview::mojom::RecordingPersistence::kFileSystem;
   }
 

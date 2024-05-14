@@ -106,7 +106,7 @@ void IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "This data type does not store or commit any data to the server.";
 }
 

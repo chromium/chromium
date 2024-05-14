@@ -161,7 +161,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_OPEN_TRUNCATED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -172,7 +172,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_READ;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -186,7 +186,7 @@ void FilesystemImpl::OpenFile(const base::FilePath& path,
       flags |= base::File::FLAG_APPEND;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

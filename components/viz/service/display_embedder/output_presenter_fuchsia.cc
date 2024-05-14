@@ -76,7 +76,7 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
                                        gfx::Size image_size,
                                        size_t num_images) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -100,7 +100,7 @@ void OutputPresenterFuchsia::SchedulePrimaryPlane(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
     Image* image,
     bool is_submitted) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OutputPresenterFuchsia::ScheduleOverlayPlane(

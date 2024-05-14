@@ -339,7 +339,7 @@ std::string FakeModelTypeSyncBridge::GetStorageKeyInternal(
       return entity_data.specifics.shared_tab_group_data().guid();
     default:
       // If you need support for more types, add them here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }

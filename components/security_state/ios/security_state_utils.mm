@@ -78,7 +78,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
       // These threat types are not currently associated with
       // interstitials, and thus resources with these threat types are
       // not ever whitelisted or pending whitelisting.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;

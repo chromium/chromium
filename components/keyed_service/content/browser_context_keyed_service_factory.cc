@@ -96,7 +96,7 @@ BrowserContextKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 KeyedService* BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Stub to prevent converted sub-classes from needing to implement this form.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

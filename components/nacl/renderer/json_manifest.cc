@@ -598,7 +598,7 @@ bool JsonManifest::GetURLFromISADictionary(
     } else {
       // Should not reach here, because the earlier IsValidISADictionary()
       // call checked that the manifest covers the current architecture.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
   }

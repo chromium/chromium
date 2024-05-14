@@ -247,7 +247,7 @@ InstallableStatusCode InstallableEvaluator::GetDisplayError(
     case InstallableCriteria::kValidManifestIgnoreDisplay:
       break;
     case InstallableCriteria::kDoNotCheck:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return InstallableStatusCode::NO_ERROR_DETECTED;

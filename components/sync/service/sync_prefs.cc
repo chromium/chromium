@@ -544,7 +544,7 @@ const char* SyncPrefs::GetPrefNameForOsType(UserSelectableOsType type) {
     case UserSelectableOsType::kOsWifiConfigurations:
       return prefs::internal::kSyncWifiConfigurations;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -706,7 +706,7 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
     case UserSelectableType::kCookies:
       return prefs::internal::kSyncCookies;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -130,7 +130,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountIdLegacy() {
   // Since we only record `incomplete_login_user_account` pref in
   // `auth_session_authenticator` for regular and kiosk users, it should be
   // impossible to reach here after checking for both types of users above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

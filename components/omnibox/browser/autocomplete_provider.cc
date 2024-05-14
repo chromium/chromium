@@ -79,7 +79,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
     case TYPE_HISTORY_EMBEDDINGS:
       return "HistoryEmbeddings";
     default:
-      NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
+      NOTREACHED_IN_MIGRATION()
+          << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";
   }
 }

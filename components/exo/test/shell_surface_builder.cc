@@ -373,7 +373,7 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
         break;
       default:
         // Other states are not supported as initial state in ShellSurface.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -442,7 +442,7 @@ ShellSurfaceBuilder::BuildClientControlledShellSurface() {
         shell_surface->SetPip();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

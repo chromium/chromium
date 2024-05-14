@@ -472,9 +472,9 @@ const char* GetDownloadValidationMetricName(
         return kDownloadMetricsVerificationNameItemOther;
       return kDownloadMetricsVerificationNameManagerOther;
     case DOWNLOAD_CONNECTION_SECURITY_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -636,7 +636,7 @@ void RecordInputStreamReadError(MojoResult mojo_result) {
       error = InputStreamReadError::kBusy;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::UmaHistogramEnumeration("Download.InputStreamReadError", error);
 }

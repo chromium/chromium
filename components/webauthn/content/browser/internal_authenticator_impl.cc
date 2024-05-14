@@ -77,7 +77,7 @@ void InternalAuthenticatorImpl::GetMatchingCredentialIds(
     bool require_third_party_payment_bit,
     webauthn::GetMatchingCredentialIdsCallback callback) {
   // Not yet supported on any desktop platform.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InternalAuthenticatorImpl::Cancel() {

@@ -58,7 +58,7 @@ std::string GetClientTagForSpecificsId(WalletMetadataSpecifics::Type type,
     case WalletMetadataSpecifics::IBAN:
       return "iban-" + specifics_id;
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -101,7 +101,8 @@ TypeAndMetadataId ParseWalletMetadataStorageKey(
   int type_int;
   std::string specifics_id;
   if (!iterator.ReadInt(&type_int) || !iterator.ReadString(&specifics_id)) {
-    NOTREACHED() << "Unsupported storage_key provided " << storage_key;
+    NOTREACHED_IN_MIGRATION()
+        << "Unsupported storage_key provided " << storage_key;
   }
 
   TypeAndMetadataId parsed;
@@ -247,7 +248,7 @@ bool AddServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -263,7 +264,7 @@ bool RemoveServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -279,7 +280,7 @@ bool UpdateServerMetadata(PaymentsAutofillTable* table,
     // ADDRESS metadata syncing is deprecated.
     case WalletMetadataSpecifics::ADDRESS:
     case WalletMetadataSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

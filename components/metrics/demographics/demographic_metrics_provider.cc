@@ -159,7 +159,7 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
       // Structured Metrics doesn't have demographic metrics.
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace metrics

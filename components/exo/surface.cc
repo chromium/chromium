@@ -132,7 +132,7 @@ Transform InvertY(Transform transform) {
     case Transform::FLIPPED_ROTATE_270:
       return Transform::ROTATE_90;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Returns a gfx::Transform that can transform a (0,0 1x1) rect to the same
@@ -158,7 +158,7 @@ gfx::Transform ToBufferTransformMatrix(Transform transform, bool invert_y) {
     case Transform::FLIPPED_ROTATE_270:
       return gfx::Transform::Affine(0, -1, -1, 0, 1, 1);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Helper function that returns |size| after adjusting for |transform|.
@@ -176,7 +176,7 @@ gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
       return gfx::Size(size.height(), size.width());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool IsDeskContainer(aura::Window* container) {
@@ -2104,7 +2104,7 @@ std::string Surface::DumpDebugInfo() const {
       case SkBlendMode::kSrcOver:
         return " kSrcOver";
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return " InvalidBlendMode";
     }
   };

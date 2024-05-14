@@ -374,7 +374,7 @@ std::string AutocompleteController::UpdateTypeToDebugString(
     case UpdateType::kMatchDeletion:
       return "Match deletion";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -1160,7 +1160,7 @@ void AutocompleteController::UpdateResult(UpdateType update_type) {
       break;
 
     case UpdateType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #endif  // DCHECK_IS_ON()
 
@@ -1292,7 +1292,7 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
     RunBatchUrlScoringModel(old_result);
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
@@ -1989,7 +1989,7 @@ void AutocompleteController::RunBatchUrlScoringModel(OldResult& old_result) {
   }
 
   if (results.size() != eligible_match_itrs.size()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

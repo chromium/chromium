@@ -104,7 +104,8 @@ class PEPCInitiatedPermissionRequestTest
         permission_descriptor->name = PermissionName::AUDIO_CAPTURE;
         break;
       default:
-        NOTREACHED() << "Unsupported permission type in this test fixture";
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported permission type in this test fixture";
     }
 
     return permission_descriptor;

@@ -186,11 +186,11 @@ class DummyAccountReconcilorWithDelegate : public AccountReconcilor {
         return std::make_unique<signin::DiceAccountReconcilorDelegate>(
             identity_manager, client);
 #else
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
 #endif
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };
@@ -687,7 +687,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       if (PickAccountIdForAccount(account.gaia_id, account.email) == account_id)
         return account;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Account();
   }
 
@@ -2698,7 +2698,7 @@ TEST_P(AccountReconcilorMethodParamTest,
       break;
     }
     case signin::AccountConsistencyMethod::kDisabled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

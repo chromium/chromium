@@ -174,7 +174,7 @@ void SkiaOutputDevice::Submit(bool sync_cpu, base::OnceClosure callback) {
 }
 
 bool SkiaOutputDevice::EnsureMinNumberOfBuffers(size_t n) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

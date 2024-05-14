@@ -222,7 +222,7 @@ QueryProcessor::Tensor CustomInputProcessor::ProcessSingleCustomInput(
              proto::CustomInput::PRICE_TRACKING_HINTS) {
     feature_processor_state.SetError(
         stats::FeatureProcessingError::kCustomInputError);
-    NOTREACHED() << "InputDelegate is not found";
+    NOTREACHED_IN_MIGRATION() << "InputDelegate is not found";
   } else if (custom_input.fill_policy() == proto::CustomInput::FILL_RANDOM) {
     if (!AddRandom(custom_input, tensor_result)) {
       feature_processor_state.SetError(

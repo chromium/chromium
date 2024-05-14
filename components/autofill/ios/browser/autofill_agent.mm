@@ -419,8 +419,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       autofillManager->OnUserAcceptedCardsFromAccountOption();
     }
   } else {
-    NOTREACHED() << "unknown identifier "
-                 << base::to_underlying(suggestion.popupItemId);
+    NOTREACHED_IN_MIGRATION()
+        << "unknown identifier " << base::to_underlying(suggestion.popupItemId);
   }
 }
 

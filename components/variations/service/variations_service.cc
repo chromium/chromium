@@ -159,7 +159,7 @@ ResourceRequestsAllowedState ResourceRequestStateToHistogramValue(
     case ResourceRequestAllowedNotifier::ALLOWED:
       return RESOURCE_REQUESTS_ALLOWED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RESOURCE_REQUESTS_NOT_ALLOWED;
 }
 

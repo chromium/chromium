@@ -235,7 +235,7 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

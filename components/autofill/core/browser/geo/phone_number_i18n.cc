@@ -306,7 +306,7 @@ bool PhoneNumbersMatch(const std::u16string& number_a,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -24,7 +24,7 @@ std::optional<UserVisibleFeatureKey> GetModelExecutionFeature(
     case proto::LogAiDataRequest::FeatureCase::kWallpaperSearch:
       return UserVisibleFeatureKey::kWallpaperSearch;
     case proto::LogAiDataRequest::FeatureCase::kDefault:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
     case proto::LogAiDataRequest::FeatureCase::FEATURE_NOT_SET:
       // This can be used for testing.

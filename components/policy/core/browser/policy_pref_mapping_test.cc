@@ -553,7 +553,7 @@ PolicySettings GetPolicySettings(const std::string& policy,
     else if (*source == "cloud_from_ash")
       settings.source = POLICY_SOURCE_CLOUD_FROM_ASH;
     else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

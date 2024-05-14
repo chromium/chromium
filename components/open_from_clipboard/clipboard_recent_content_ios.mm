@@ -60,7 +60,7 @@ ClipboardContentType ClipboardContentTypeFromContentType(ContentType type) {
   } else if ([type isEqualToString:ContentTypeImage]) {
     return ClipboardContentType::Image;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ClipboardContentType::Text;
 }
 

@@ -179,7 +179,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
 
     // Binary is not a valid schema type.
     case base::Value::Type::BINARY: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::Value();
     }
 
@@ -218,7 +218,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

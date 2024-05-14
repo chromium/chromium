@@ -60,7 +60,7 @@ std::optional<std::unordered_map<std::string, std::vector<int32_t>>>
 LoadOverrideListFromFile(const base::FilePath& path) {
   if (!path.IsAbsolute() ||
       path.BaseName() != base::FilePath(kOverrideListBasePath)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // This is enforced by calling code, so no UMA in this case.
     return std::nullopt;
   }

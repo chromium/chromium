@@ -66,7 +66,7 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
       case AnnotationType::kDeprecatedTextEmbedding:
       case AnnotationType::kDeprecatedPageEntities:
       case AnnotationType::kUnknown:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         PostNewResult(
             BatchAnnotationResult::CreateEmptyAnnotationsResult(input), i);
         break;
@@ -77,7 +77,7 @@ void PageContentAnnotationJob::FillWithNullOutputs() {
 void PageContentAnnotationJob::OnComplete() {
   DCHECK(inputs_.empty());
   if (!on_complete_callback_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

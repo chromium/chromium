@@ -265,7 +265,7 @@ void TestSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -291,7 +291,7 @@ void TestSharedImageInterface::VerifySyncToken(gpu::SyncToken& sync_token) {
 }
 
 void TestSharedImageInterface::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestSharedImageInterface::Flush() {

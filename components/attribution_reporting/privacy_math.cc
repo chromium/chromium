@@ -193,7 +193,7 @@ void GetReportsFromIndexRecursive(TriggerSpecs::Iterator it,
     }
     prev_sum += num_states;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 absl::uint128 GetNumStatesCached(const TriggerSpecs& specs,

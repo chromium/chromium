@@ -194,7 +194,7 @@ SharedProtoDatabaseClient::~SharedProtoDatabaseClient() {
 void SharedProtoDatabaseClient::Init(const std::string& client_uma_name,
                                      Callbacks::InitStatusCallback callback) {
   // Should never be called from from the selector, and init is not necessary.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   GetSharedDatabaseInitStatusAsync(client_db_id(), parent_db_,
                                    std::move(callback));
 }
@@ -205,7 +205,7 @@ void SharedProtoDatabaseClient::InitWithDatabase(
     const leveldb_env::Options& options,
     bool destroy_on_corruption,
     Callbacks::InitStatusCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharedProtoDatabaseClient::UpdateEntries(

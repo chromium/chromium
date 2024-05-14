@@ -60,7 +60,7 @@ void PasswordModelTypeConrollerDelegateAndroid::ClearMetadataIfStopped() {
 
 void PasswordModelTypeConrollerDelegateAndroid::ReportBridgeErrorForTest() {
   // Not supported for Android.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

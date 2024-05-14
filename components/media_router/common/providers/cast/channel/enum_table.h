@@ -338,7 +338,8 @@ class EnumTable {
         return entry.str();
     }
 
-    NOTREACHED() << "No string for enum value: " << static_cast<int32_t>(Value);
+    NOTREACHED_IN_MIGRATION()
+        << "No string for enum value: " << static_cast<int32_t>(Value);
     return "[invalid enum value]";
   }
 

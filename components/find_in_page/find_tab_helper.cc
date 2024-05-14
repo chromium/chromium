@@ -120,7 +120,7 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
       action = content::STOP_FIND_ACTION_ACTIVATE_SELECTION;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       action = content::STOP_FIND_ACTION_KEEP_SELECTION;
   }
   GetWebContents().StopFinding(action);

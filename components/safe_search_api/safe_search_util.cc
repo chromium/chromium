@@ -108,7 +108,7 @@ void ForceYouTubeRestrict(const GURL& url,
   switch (mode) {
     case YOUTUBE_RESTRICT_OFF:
     case YOUTUBE_RESTRICT_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case YOUTUBE_RESTRICT_MODERATE:

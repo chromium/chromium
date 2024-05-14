@@ -25,7 +25,7 @@ const char* JobTypeToRequestType(
     DeviceManagementService::JobConfiguration::JobType type) {
   switch (type) {
     case DeviceManagementService::JobConfiguration::TYPE_INVALID:
-      NOTREACHED() << "Not a DMServer request type" << type;
+      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type" << type;
       return "Invalid";
     case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
       return dm_protocol::kValueRequestAutoEnrollment;
@@ -83,7 +83,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueRequestPublicSamlUser;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_REAL_TIME_REPORT:
-      NOTREACHED() << "Not a DMServer request type " << type;
+      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
       break;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
       return dm_protocol::kValueRequestChromeOsUserReport;
@@ -100,14 +100,14 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueBrowserUploadPublicKey;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
-      NOTREACHED() << "Not a DMServer request type " << type;
+      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
       break;
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
       return dm_protocol::kValueRequestUploadEuiccInfo;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
       return dm_protocol::kValueRequestChromeProfileReport;
   }
-  NOTREACHED() << "Invalid job type " << type;
+  NOTREACHED_IN_MIGRATION() << "Invalid job type " << type;
   return "";
 }
 

@@ -173,7 +173,8 @@ std::u16string NewBadgeLabel::GetAccessibleDescription() const {
 }
 
 void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
-  NOTREACHED() << "Calling SetBorder() externally is currently not allowed.";
+  NOTREACHED_IN_MIGRATION()
+      << "Calling SetBorder() externally is currently not allowed.";
 }
 
 BEGIN_METADATA(NewBadgeLabel)

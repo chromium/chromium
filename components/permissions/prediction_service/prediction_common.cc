@@ -66,7 +66,7 @@ ClientFeatures_Gesture ConvertToProtoGesture(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return permissions::ClientFeatures_Gesture_GESTURE_UNSPECIFIED;
 }
 
@@ -82,7 +82,7 @@ ClientFeatures_GestureEnum ConvertToProtoGestureEnum(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2;
 }
 
@@ -124,7 +124,7 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       permission_features->mutable_geolocation_permission()->Clear();
       break;
     default:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "CPSS only supports notifications and geolocation at the moment.";
   }
   if (!entity.url.is_empty()) {

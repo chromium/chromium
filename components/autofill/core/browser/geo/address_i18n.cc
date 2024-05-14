@@ -89,7 +89,7 @@ FieldType TypeForField(AddressField address_field) {
     case ::i18n::addressinput::RECIPIENT:
       return NAME_FULL;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNKNOWN_TYPE;
 }
 

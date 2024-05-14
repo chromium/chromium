@@ -28,7 +28,7 @@ Process ToExecutionContextProcess(CallStackProfileParams::Process process) {
     case CallStackProfileParams::Process::kPpapiPlugin:
       return PPAPI_PLUGIN_PROCESS;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNKNOWN_PROCESS;
 }
 
@@ -45,7 +45,7 @@ Thread ToExecutionContextThread(CallStackProfileParams::Thread thread) {
     case CallStackProfileParams::Thread::kServiceWorker:
       return SERVICE_WORKER_THREAD;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UNKNOWN_THREAD;
 }
 
@@ -65,7 +65,7 @@ SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
     case CallStackProfileParams::Trigger::kPeriodicHeapCollection:
       return SampledProfile::PERIODIC_HEAP_COLLECTION;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SampledProfile::UNKNOWN_TRIGGER_EVENT;
 }
 

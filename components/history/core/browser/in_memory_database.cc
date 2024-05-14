@@ -19,7 +19,8 @@ InMemoryDatabase::~InMemoryDatabase() = default;
 
 bool InMemoryDatabase::InitDB() {
   if (!db_.OpenInMemory()) {
-    NOTREACHED() << "Cannot open databse " << GetDB().GetErrorMessage();
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot open databse " << GetDB().GetErrorMessage();
     return false;
   }
 
@@ -35,7 +36,7 @@ bool InMemoryDatabase::InitDB() {
 
   // Create the keyword search terms table.
   if (!InitKeywordSearchTermsTable()) {
-    NOTREACHED() << "Unable to create keyword search terms";
+    NOTREACHED_IN_MIGRATION() << "Unable to create keyword search terms";
     db_.Close();
     return false;
   }
@@ -105,7 +106,7 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
 
   // Detach from the history database on disk.
   if (!db_.DetachDatabase("history")) {
-    NOTREACHED() << "Unable to detach from history database.";
+    NOTREACHED_IN_MIGRATION() << "Unable to detach from history database.";
     return false;
   }
 

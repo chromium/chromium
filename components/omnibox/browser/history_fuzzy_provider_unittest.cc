@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& os, const fuzzy::Edit& edit) {
       break;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

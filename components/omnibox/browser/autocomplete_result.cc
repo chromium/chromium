@@ -413,7 +413,7 @@ void AutocompleteResult::SortAndCull(
                     suggestion_groups_map_));
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       } else if (omnibox::IsNTPPage(page_classification)) {
         // IPH is shown for NTP ZPS in the Omnibox only.  If it is shown, reduce

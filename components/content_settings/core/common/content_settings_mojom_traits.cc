@@ -51,7 +51,7 @@ EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::ToMojom(
       // CONTENT_SETTING_NUM_SETTINGS is a dummy enum value.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return content_settings::mojom::ContentSetting::DEFAULT;
 }
 

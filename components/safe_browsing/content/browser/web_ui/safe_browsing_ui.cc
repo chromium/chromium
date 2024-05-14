@@ -1428,7 +1428,7 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
       break;
     case ClientSafeBrowsingReportRequest::PVER3_NATIVE:
     case ClientSafeBrowsingReportRequest::FLYWHEEL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       url_api_type = "";
       break;
   }
@@ -1651,7 +1651,7 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
       case ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE:
       case ClientSafeBrowsingReportRequest::HASH_PREFIX_REAL_TIME_EXPERIMENT:
         // Deprecated!
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         report_type = "";
         break;
     }
@@ -2269,7 +2269,7 @@ base::Value::Dict SerializeCsdDebuggingMetadata(
     switch (debugging_metadata.preclassification_check_result()) {
       case safe_browsing::PreClassificationCheckResult::
           OBSOLETE_NO_CLASSIFY_PROXY_FETCH:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         preclassification_check_result =
             "NOT_REACHED_OBSOLETE_NO_CLASSIFY_PROXY_FETCH";
         break;
@@ -2308,7 +2308,7 @@ base::Value::Dict SerializeCsdDebuggingMetadata(
         break;
       case safe_browsing::PreClassificationCheckResult::
           DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         preclassification_check_result =
             "NOT_REACHED_DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL";
         break;
@@ -2337,12 +2337,12 @@ base::Value::Dict SerializeCsdDebuggingMetadata(
         break;
       case safe_browsing::PreClassificationCheckResult::
           OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         preclassification_check_result =
             "NOT_REACHED_OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY";
         break;
       case safe_browsing::NO_CLASSIFY_MAX:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         preclassification_check_result = "NOT_REACHED_NO_CLASSIFY_MAX";
         break;
     }

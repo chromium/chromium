@@ -57,7 +57,7 @@ UnionTraits<paint_preview::mojom::SerializedRecordingDataView,
       return paint_preview::mojom::SerializedRecordingDataView::Tag::kBuffer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return paint_preview::mojom::SerializedRecordingDataView::Tag::kFile;
 }
 

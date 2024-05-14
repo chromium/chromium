@@ -22,7 +22,7 @@ const char* BeginFrameArgs::TypeToString(BeginFrameArgsType type) {
     case BeginFrameArgs::MISSED:
       return "MISSED";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 
@@ -38,7 +38,7 @@ TypeToProtozeroEnum(BeginFrameArgs::BeginFrameArgsType type) {
     case BeginFrameArgs::MISSED:
       return pbzeroType::BEGIN_FRAME_ARGS_TYPE_MISSED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroType::BEGIN_FRAME_ARGS_TYPE_UNSPECIFIED;
 }
 }  // namespace

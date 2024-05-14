@@ -291,7 +291,7 @@ SafetyNetJavaThreatType SBThreatTypeToSafetyNetJavaThreatType(
     case SB_THREAT_TYPE_CSD_ALLOWLIST:
       return SafetyNetJavaThreatType::CSD_ALLOWLIST;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SafetyNetJavaThreatType::MAX_VALUE;
   }
 }
@@ -347,7 +347,7 @@ SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
     case SB_THREAT_TYPE_BILLING:
       return SafeBrowsingJavaThreatType::BILLING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SafeBrowsingJavaThreatType::NO_THREAT;
   }
 }

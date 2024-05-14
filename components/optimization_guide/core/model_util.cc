@@ -131,7 +131,7 @@ std::string GetStringNameForOptimizationTarget(
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

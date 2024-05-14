@@ -81,7 +81,7 @@ KeyStorageKWallet::InitResult KeyStorageKWallet::InitWallet() {
       return InitResult::SUCCESS;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return InitResult::PERMANENT_FAIL;
 }
 

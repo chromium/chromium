@@ -131,7 +131,7 @@ void WorkerNodeImpl::AddClientWorker(WorkerNodeImpl* worker_node) {
       break;
     case WorkerType::kShared:
       // Nested shared workers are not available in Chrome.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case WorkerType::kService:
       // A service worker may not control another service worker.

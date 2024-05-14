@@ -423,7 +423,7 @@ void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal_service_->DetectCaptivePortal();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -848,7 +848,7 @@ void SSLErrorHandler::ShowDynamicInterstitial(
     const DynamicInterstitialInfo dynamic_interstitial) {
   switch (dynamic_interstitial.interstitial_type) {
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL:
       delegate_->ShowSSLInterstitial(dynamic_interstitial.support_url);
@@ -900,7 +900,7 @@ void SSLErrorHandler::Observe(
   else
     ShowSSLInterstitial();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

@@ -1196,7 +1196,7 @@ DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
 }
 
 void DirectRenderer::DrawDelegatedInkTrail() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool DirectRenderer::CompositeTimeTracingEnabled() {
@@ -1215,7 +1215,7 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
 }
 
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gpu::Mailbox();
 }
 

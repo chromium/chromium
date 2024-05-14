@@ -120,7 +120,7 @@ std::string ReasonToString(OfflinePageHeader::Reason reason) {
     case OfflinePageHeader::Reason::NONE:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

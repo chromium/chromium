@@ -63,7 +63,7 @@ std::string SpoofCheckResultToString(IDNSpoofChecker::Result result) {
     case IDNSpoofChecker::Result::kDangerousPattern:
       return "kDangerousPattern";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   };
   return std::string();
 }

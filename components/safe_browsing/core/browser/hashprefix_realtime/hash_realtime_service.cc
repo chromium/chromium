@@ -67,8 +67,8 @@ SBThreatType MapFullHashDetailToSbThreatType(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED() << "Unexpected ThreatType encountered: "
-                   << detail.threat_type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected ThreatType encountered: " << detail.threat_type();
       return SBThreatType::SB_THREAT_TYPE_UNUSED;
   }
 }
@@ -225,8 +225,8 @@ int HashRealTimeService::GetThreatSeverity(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED() << "Unexpected ThreatType encountered: "
-                   << detail.threat_type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected ThreatType encountered: " << detail.threat_type();
       return kLeastSeverity;
   }
 }

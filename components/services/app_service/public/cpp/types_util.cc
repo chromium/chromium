@@ -89,7 +89,7 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromFirstRun:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool AppTypeUsesWebContents(apps::AppType app_type) {
@@ -112,7 +112,7 @@ bool AppTypeUsesWebContents(apps::AppType app_type) {
     case apps::AppType::kStandaloneBrowserExtension:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace apps_util

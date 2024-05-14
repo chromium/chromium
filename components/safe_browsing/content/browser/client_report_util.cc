@@ -73,8 +73,8 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
-      NOTREACHED() << "We should not send report for threat type: "
-                   << static_cast<int>(threat_type);
+      NOTREACHED_IN_MIGRATION() << "We should not send report for threat type: "
+                                << static_cast<int>(threat_type);
       return CSBRR::UNKNOWN;
   }
 }
@@ -116,8 +116,8 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-      NOTREACHED() << "We should not send report for threat type: "
-                   << static_cast<int>(threat_type);
+      NOTREACHED_IN_MIGRATION() << "We should not send report for threat type: "
+                                << static_cast<int>(threat_type);
       return CSBRR::WarningShownInfo::UNKNOWN;
   }
 }

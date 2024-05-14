@@ -95,7 +95,7 @@ GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
       return GCMClient::NETWORK_ERROR;
     case MCSClient::SENT:
     case MCSClient::SEND_STATUS_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return GCMClientImpl::UNKNOWN_ERROR;
@@ -170,7 +170,7 @@ int ConstructGCMVersion(const std::string& chrome_version) {
   // Major Chrome version is passed as GCM version.
   size_t pos = chrome_version.find('.');
   if (pos == std::string::npos) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -1059,7 +1059,7 @@ void GCMClientImpl::Unregister(
     if (instance_id_iter == instance_id_data_.end()) {
       // This should not be reached since we should not delete tokens when
       // an InstanceID has not been created yet.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -1209,7 +1209,7 @@ std::string GCMClientImpl::GetStateString() const {
     case GCMClientImpl::READY:
       return "READY";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -1283,7 +1283,8 @@ void GCMClientImpl::OnMessageReceivedFromMCS(const gcm::MCSMessage& message) {
       HandleIncomingMessage(message);
       return;
     default:
-      NOTREACHED() << "Message with unexpected tag received by GCMClient";
+      NOTREACHED_IN_MIGRATION()
+          << "Message with unexpected tag received by GCMClient";
       return;
   }
 }

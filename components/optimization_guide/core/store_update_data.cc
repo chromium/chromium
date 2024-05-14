@@ -67,7 +67,7 @@ StoreUpdateData::StoreUpdateData(std::optional<base::Version> component_version,
             OptimizationGuideStore::MetadataType::kFetched),
         std::move(metadata_fetched_entry));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   // |this| may be modified on another thread after construction but all
   // future modifications, from that call forward, must be made on the same

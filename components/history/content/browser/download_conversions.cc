@@ -24,10 +24,10 @@ download::DownloadItem::DownloadState ToContentDownloadState(
       return download::DownloadItem::INTERRUPTED;
     case DownloadState::INVALID:
     case DownloadState::BUG_140687:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DownloadItem::MAX_DOWNLOAD_STATE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return download::DownloadItem::MAX_DOWNLOAD_STATE;
 }
 
@@ -43,10 +43,10 @@ DownloadState ToHistoryDownloadState(
     case download::DownloadItem::INTERRUPTED:
       return DownloadState::INTERRUPTED;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DownloadState::INVALID;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadState::INVALID;
 }
 
@@ -106,7 +106,7 @@ download::DownloadDangerType ToContentDownloadDangerType(
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
     case DownloadDangerType::INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
   }
 }
@@ -161,7 +161,7 @@ DownloadDangerType ToHistoryDownloadDangerType(
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return DownloadDangerType::BLOCKED_SCAN_FAILED;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DownloadDangerType::INVALID;
   }
 }

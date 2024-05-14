@@ -67,7 +67,7 @@ bool MediaSinkInternal::operator==(const MediaSinkInternal& other) const {
     case SinkType::GENERIC:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -153,7 +153,7 @@ void MediaSinkInternal::InternalCopyConstructFrom(
     case SinkType::GENERIC:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaSinkInternal::InternalMoveConstructFrom(MediaSinkInternal&& other) {
@@ -170,7 +170,7 @@ void MediaSinkInternal::InternalMoveConstructFrom(MediaSinkInternal&& other) {
     case SinkType::GENERIC:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaSinkInternal::InternalCleanup() {
@@ -184,7 +184,7 @@ void MediaSinkInternal::InternalCleanup() {
     case SinkType::GENERIC:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DialSinkExtraData::DialSinkExtraData() = default;

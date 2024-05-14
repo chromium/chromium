@@ -90,7 +90,7 @@ DownloadSource DownloadDBConversions::DownloadSourceFromProto(
     case download_pb::DownloadSource::TOOLBAR_MENU:
       return DownloadSource::TOOLBAR_MENU;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadSource::UNKNOWN;
 }
 
@@ -125,7 +125,7 @@ download_pb::DownloadSource DownloadDBConversions::DownloadSourceToProto(
     case DownloadSource::TOOLBAR_MENU:
       return download_pb::DownloadSource::TOOLBAR_MENU;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return download_pb::DownloadSource::UNKNOWN;
 }
 

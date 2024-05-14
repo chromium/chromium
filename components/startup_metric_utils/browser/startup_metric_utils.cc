@@ -148,7 +148,7 @@ void UmaHistogramWithTemperature(
     case UNDETERMINED_STARTUP_TEMPERATURE:
       break;
     case STARTUP_TEMPERATURE_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

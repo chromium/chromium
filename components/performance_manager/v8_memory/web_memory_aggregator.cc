@@ -153,7 +153,7 @@ AttributionScope AttributionScopeFromWorkerType(
     case WorkerNode::WorkerType::kShared:
     case WorkerNode::WorkerType::kService:
       // TODO(crbug.com/40165276): Support service and shared workers.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return AttributionScope::kDedicatedWorker;
   }
 }
@@ -370,7 +370,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       break;
 
     case NodeAggregationType::kCrossOriginAggregationPoint:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
