@@ -315,7 +315,7 @@ class HashTableConstIterator final {
   }
 
  public:
-  HashTableConstIterator() = default;
+  constexpr HashTableConstIterator() = default;
 
   GetType Get() const {
     CheckModifications();
@@ -334,7 +334,11 @@ class HashTableConstIterator final {
     return *this;
   }
 
-  // postfix ++ intentionally omitted
+  const_iterator operator++(int) {
+    auto copy = this;
+    ++(*this);
+    return copy;
+  }
 
   const_iterator& operator--() {
 #if DCHECK_IS_ON()
@@ -346,7 +350,11 @@ class HashTableConstIterator final {
     return *this;
   }
 
-  // postfix -- intentionally omitted
+  const_iterator operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   // Comparison.
   bool operator==(const const_iterator& other) const {
@@ -371,12 +379,12 @@ class HashTableConstIterator final {
   }
 
  private:
-  PointerType position_;
-  PointerType end_position_;
+  PointerType position_ = nullptr;
+  PointerType end_position_ = nullptr;
 #if DCHECK_IS_ON()
-  PointerType begin_position_;
-  const HashTableType* container_;
-  int64_t container_modifications_;
+  PointerType begin_position_ = nullptr;
+  const HashTableType* container_ = nullptr;
+  int64_t container_modifications_ = 0;
 #endif
 };
 
@@ -436,7 +444,7 @@ class HashTableIterator final {
       : iterator_(pos, begin, end, container, tag) {}
 
  public:
-  HashTableIterator() = default;
+  constexpr HashTableIterator() = default;
 
   // default copy, assignment and destructor are OK
 
@@ -449,14 +457,22 @@ class HashTableIterator final {
     return *this;
   }
 
-  // postfix ++ intentionally omitted
+  iterator operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
 
   iterator& operator--() {
     --iterator_;
     return *this;
   }
 
-  // postfix -- intentionally omitted
+  iterator operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   // Comparison.
   bool operator==(const iterator& other) const {
@@ -2127,7 +2143,7 @@ struct HashTableIteratorAdapter {
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
-  HashTableIteratorAdapter() = default;
+  constexpr HashTableIteratorAdapter() = default;
   HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
       : impl_(impl) {}
 
@@ -2141,13 +2157,21 @@ struct HashTableIteratorAdapter {
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableIteratorAdapter operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
 
   HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableIteratorAdapter operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   operator HashTableConstIteratorAdapter<HashTableType, Traits, Enable>() {
     typename HashTableType::const_iterator i = impl_;
@@ -2175,7 +2199,7 @@ struct HashTableIteratorAdapter<
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
-  HashTableIteratorAdapter() = default;
+  constexpr HashTableIteratorAdapter() = default;
   HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
       : impl_(impl) {}
 
@@ -2189,13 +2213,21 @@ struct HashTableIteratorAdapter<
     ++impl_;
     return *this;
   }
-  // postfix ++ intentionally omitted
+  HashTableIteratorAdapter operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
 
   HashTableIteratorAdapter& operator--() {
     --impl_;
     return *this;
   }
-  // postfix -- intentionally omitted
+  HashTableIteratorAdapter operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   operator HashTableConstIteratorAdapter<HashTableType, Traits, void>() {
     typename HashTableType::const_iterator i = impl_;
