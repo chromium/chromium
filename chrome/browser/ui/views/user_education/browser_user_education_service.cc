@@ -110,20 +110,23 @@ class ScopedSavedTabGroupTutorialState
     : public user_education::ScopedTutorialState {
  public:
   explicit ScopedSavedTabGroupTutorialState(ui::ElementContext ctx)
-      : user_education::ScopedTutorialState(ctx),
-        browser_(chrome::FindBrowserWithUiElementContext(ctx)) {
-    CHECK(browser_);
+      : user_education::ScopedTutorialState(ctx) {
+    auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+    CHECK(browser);
+    browser_ = browser->AsWeakPtr();
     browser_->SetForceShowBookmarkBarFlag(
         Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
   }
 
   ~ScopedSavedTabGroupTutorialState() override {
-    browser_->ClearForceShowBookmarkBarFlag(
-        Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
+    if (browser_ && !browser_->IsBrowserClosing()) {
+      browser_->ClearForceShowBookmarkBarFlag(
+          Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
+    }
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  base::WeakPtr<Browser> browser_;
 };
 
 bool HasTabGroups(const BrowserView* browser_view) {
