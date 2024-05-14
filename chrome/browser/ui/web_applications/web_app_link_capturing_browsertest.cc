@@ -674,20 +674,20 @@ class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
-    // TODO(b/339747365): Enable kDesktopPWAsTabStripCustomizations in this test
-    // so it tests the released flag configuration.
     features_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kDesktopPWAsTabStrip,
-                              features::kDesktopPWAsTabStripSettings},
-        /*disabled_features=*/{
-            blink::features::kDesktopPWAsTabStripCustomizations});
+                              blink::features::
+                                  kDesktopPWAsTabStripCustomizations},
+        /*disabled_features=*/{});
   }
 
   // Returns [app_id, in_scope_1, in_scope_2, scope]
   std::tuple<webapps::AppId, GURL, GURL, GURL> InstallTestTabbedApp() {
     const auto [app_id, in_scope_1, in_scope_2, scope] =
         WebAppLinkCapturingBrowserTest::InstallTestApp(
-            "/web_apps/tab_strip_customizations.html");
+            "/banners/"
+            "manifest_test_page.html?manifest=manifest_tabbed_display_override."
+            "json");
     return std::make_tuple(app_id, in_scope_1, in_scope_2, scope);
   }
 
