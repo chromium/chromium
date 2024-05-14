@@ -9,6 +9,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -106,7 +107,9 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker, nullptr);
+          shopping_service, profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
+                                                                profile));
 }
 
 ProductSpecificationsUI::~ProductSpecificationsUI() = default;

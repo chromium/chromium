@@ -5,15 +5,22 @@
 import 'chrome://compare/table.js';
 
 import type {TableElement} from 'chrome://compare/table.js';
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {$$} from './test_support.js';
 
 suite('ProductSpecificationsTableTest', () => {
   let tableElement: TableElement;
+  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
 
   setup(async () => {
+    shoppingServiceApi.reset();
+    BrowserProxyImpl.setInstance(shoppingServiceApi);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     tableElement = document.createElement('product-specifications-table');
     document.body.appendChild(tableElement);
@@ -117,5 +124,34 @@ suite('ProductSpecificationsTableTest', () => {
     assertTrue(!!event);
     assertEquals('https://foo.com', event.detail.url);
     assertEquals(0, event.detail.index);
+  });
+
+  test('opens new tab', async () => {
+    // Arrange
+    const testUrl = 'https://example.com';
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: testUrl,
+          imageUrl: 'https://example.com/image',
+        },
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
+        },
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+
+    // Act
+    $$<HTMLElement>(tableElement, '#openTabButton')!.click();
+
+    // Assert.
+    assertEquals(1, shoppingServiceApi.getCallCount('openUrlInNewTab'));
+    assertEquals(testUrl, shoppingServiceApi.getArgs('openUrlInNewTab')[0].url);
   });
 });
