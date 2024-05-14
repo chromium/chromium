@@ -125,6 +125,8 @@ extern const char kNtpModuleIgnoredCriteriaThreshold[];
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the module order.
 extern const char kNtpModulesOrderParam[];
+// Parameter determining the type of calendar data used to render module.
+extern const char kNtpCalendarModuleDataParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.

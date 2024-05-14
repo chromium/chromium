@@ -1945,6 +1945,13 @@ const FeatureEntry::FeatureVariation kChromeLabsVariations[] = {
      std::size(kChromeLabsEnabledInFlags), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kNtpCalendarModuleFakeData[] = {
+    {ntp_features::kNtpCalendarModuleDataParam, "fake"}};
+const FeatureEntry::FeatureVariation kNtpCalendarModuleVariations[] = {
+    {"- Fake Data", kNtpCalendarModuleFakeData,
+     std::size(kNtpCalendarModuleFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpChromeCartModuleFakeData[] = {
     {ntp_features::kNtpChromeCartModuleDataParam, "fake"},
     {ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, "true"}};
@@ -6619,7 +6626,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-calendar-module", flag_descriptions::kNtpCalendarModuleName,
      flag_descriptions::kNtpCalendarModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpCalendarModule)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCalendarModule,
+                                    kNtpCalendarModuleVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-chrome-cart-journeys-module-coexist",
      flag_descriptions::kNtpChromeCartHistoryClusterCoexistName,
