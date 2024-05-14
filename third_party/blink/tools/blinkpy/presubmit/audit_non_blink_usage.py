@@ -1095,11 +1095,21 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public',
+        ],
+        'allowed': [
+            'gfx::Point',
+            'gfx::PointF',
+            'gfx::Rect',
+            'gfx::RectF',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_frame_widget.h',
         ],
         'allowed': [
             'base::OnceCallback',
-            'gfx::Rect',
         ],
     },
     {
