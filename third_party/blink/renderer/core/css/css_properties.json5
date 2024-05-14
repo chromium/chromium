@@ -318,6 +318,7 @@
         "list-item",
         "mask",
         "opacity",
+        "table",
         "z-index",
       ],
     },
@@ -2161,6 +2162,7 @@
       keywords: ["separate", "collapse"],
       typedom_types: ["Keyword"],
       default_value: "separate",
+      invalidate: ["table"],
     },
     {
       name: "border-image-outset",
@@ -2583,6 +2585,7 @@
       keywords: ["top", "bottom"],
       typedom_types: ["Keyword"],
       default_value: "top",
+      invalidate: ["table"],
     },
     {
       name: "caret-color",
@@ -2931,6 +2934,7 @@
       keywords: ["show", "hide"],
       typedom_types: ["Keyword"],
       default_value: "show",
+      invalidate: ["table"],
     },
     {
       name: "fill",
@@ -5182,6 +5186,7 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      invalidate: ["table"],
     },
     {
       name: "tab-size",

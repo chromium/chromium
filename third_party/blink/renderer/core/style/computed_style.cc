@@ -952,9 +952,7 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
   }
 
   if (IsDisplayTableType(Display())) {
-    if (ComputedStyleBase::
-            DiffNeedsFullLayoutAndPaintInvalidationDisplayTableType(*this,
-                                                                    other)) {
+    if (field_diff & kTable) {
       return true;
     }
 

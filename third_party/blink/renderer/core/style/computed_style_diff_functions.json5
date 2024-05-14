@@ -210,27 +210,6 @@
         ]
     },
     {
-        name: "DiffNeedsFullLayoutAndPaintInvalidationDisplayTableType",
-        methods_to_diff: [
-          {
-            method: "BorderCollapse()",
-            field_dependencies: ["border-collapse"]
-          },
-          {
-            method: "EmptyCells()",
-            field_dependencies: ["empty-cells"]
-          },
-          {
-            method: "CaptionSide()",
-            field_dependencies: ["caption-side"]
-          },
-          {
-            method: "TableLayout()",
-            field_dependencies: ["table-layout"]
-          },
-        ]
-    },
-    {
         name: "DiffNeedsFullLayout",
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
