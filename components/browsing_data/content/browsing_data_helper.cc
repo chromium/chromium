@@ -40,7 +40,8 @@ bool WebsiteSettingsFilterAdapter(
   // this filter is used for is DURABLE_STORAGE, which also only uses
   // origin-scoped patterns. Such patterns can be directly translated to a GURL.
   GURL url(primary_pattern.ToString());
-  DCHECK(url.is_valid());
+  DCHECK(url.is_valid()) << "url: '" << url.possibly_invalid_spec() << "' "
+                         << "pattern: '" << primary_pattern.ToString() << "'";
   return predicate.Run(url);
 }
 
