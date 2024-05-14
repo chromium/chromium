@@ -494,7 +494,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
   // Show compose suggestion in the popup.
   external_delegate().OnSuggestionsReturned(
       queried_field().global_id(),
-      {test::CreateAutofillSuggestion(SuggestionType::kCompose,
+      {test::CreateAutofillSuggestion(SuggestionType::kComposeResumeNudge,
                                       u"generated text")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(),
             FillingProduct::kCompose);
@@ -2136,12 +2136,12 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
   IssueOnQuery();
 
   // Simulate receiving a Compose suggestion.
-  EXPECT_CALL(
-      client(),
-      ShowAutofillSuggestions(
-          PopupOpenArgsAre(SuggestionVectorIdsAre(SuggestionType::kCompose)),
-          _));
-  std::vector<Suggestion> suggestions = {Suggestion(SuggestionType::kCompose)};
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                          SuggestionType::kComposeResumeNudge)),
+                                      _));
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kComposeResumeNudge)};
   external_delegate().OnSuggestionsReturned(queried_field().global_id(),
                                             suggestions);
 

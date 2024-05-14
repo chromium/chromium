@@ -441,8 +441,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kCreditCardFieldByFieldFilling:
-    case SuggestionType::kCompose:
-    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillFullAddress:
     case SuggestionType::kFillFullEmail:
@@ -455,9 +454,11 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kAutofillOptions:
     case SuggestionType::kClearForm:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDeleteAddressProfile:

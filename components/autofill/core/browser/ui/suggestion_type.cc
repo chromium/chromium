@@ -41,8 +41,8 @@ std::ostream& operator<<(std::ostream& os, SuggestionType type) {
     case SuggestionType::kAutofillOptions:
       os << "kAutofillOptions";
       break;
-    case SuggestionType::kCompose:
-      os << "kCompose";
+    case SuggestionType::kComposeResumeNudge:
+      os << "kComposeResumeNudge";
       break;
     case SuggestionType::kComposeDisable:
       os << "kComposeDisable";
@@ -52,6 +52,9 @@ std::ostream& operator<<(std::ostream& os, SuggestionType type) {
       break;
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
       os << "kComposeNeverShowOnThisSiteAgain";
+      break;
+    case SuggestionType::kComposeProactiveNudge:
+      os << "kComposeProactiveNudge";
       break;
     case SuggestionType::kComposeSavedStateNotification:
       os << "kComposeSavedStateNotification";

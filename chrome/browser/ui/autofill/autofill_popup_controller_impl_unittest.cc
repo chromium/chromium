@@ -101,7 +101,7 @@ TEST_F(AutofillPopupControllerImplTest, EventsAreDelegatedToChildrenAndView) {
 // Tests that the controller forwards calls to perform a button action (such as
 // clicking a close button on a suggestion) to its delegate.
 TEST_F(AutofillPopupControllerImplTest, ButtonActionsAreSentToDelegate) {
-  ShowSuggestions(manager(), {SuggestionType::kCompose});
+  ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
   EXPECT_CALL(manager().external_delegate(),
               DidPerformButtonActionForSuggestion);
   client().popup_controller(manager()).PerformButtonActionForSuggestion(0);
@@ -143,7 +143,7 @@ TEST_F(AutofillPopupControllerImplTest,
 
 // Tests that the popup controller queries the view for its screen location.
 TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
-  ShowSuggestions(manager(), {SuggestionType::kCompose});
+  ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
 
   using PopupScreenLocation = AutofillClient::PopupScreenLocation;
   constexpr gfx::Rect kSampleRect = gfx::Rect(123, 234);
@@ -155,7 +155,7 @@ TEST_F(AutofillPopupControllerImplTest, GetPopupScreenLocationCallsView) {
 
 // Tests that a change to a text field hides a popup with a Compose suggestion.
 TEST_F(AutofillPopupControllerImplTest, HidesOnFieldChangeForComposeEntries) {
-  ShowSuggestions(manager(), {SuggestionType::kCompose});
+  ShowSuggestions(manager(), {SuggestionType::kComposeResumeNudge});
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(SuggestionHidingReason::kFieldValueChanged));
   manager().NotifyObservers(

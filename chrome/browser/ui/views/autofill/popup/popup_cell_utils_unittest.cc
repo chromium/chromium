@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,12 +22,13 @@ const char* GetExpandableMenuIconNameFromSuggestionType(SuggestionType type) {
 
 TEST(PopupCellUtilsTest,
      GetExpandableMenuIcon_ComposeSuggestions_ReturnThreeDotsMenuIcon) {
-  EXPECT_EQ(
-      GetExpandableMenuIconNameFromSuggestionType(SuggestionType::kCompose),
-      kBrowserToolsChromeRefreshIcon.name);
   EXPECT_EQ(GetExpandableMenuIconNameFromSuggestionType(
-                SuggestionType::kComposeSavedStateNotification),
+                SuggestionType::kComposeProactiveNudge),
             kBrowserToolsChromeRefreshIcon.name);
+  // No other Compose type should allow an expandable menu.
+  EXPECT_FALSE(IsExpandableSuggestionType(SuggestionType::kComposeResumeNudge));
+  EXPECT_FALSE(IsExpandableSuggestionType(
+      SuggestionType::kComposeSavedStateNotification));
 }
 
 TEST(PopupCellUtilsTest,

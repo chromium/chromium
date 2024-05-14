@@ -467,7 +467,7 @@ const PosInSetTestdata kPosInSetTestcases[] = {
         .set_index = 2,
     },
     PosInSetTestdata{
-        .types = {SuggestionType::kCompose},
+        .types = {SuggestionType::kComposeResumeNudge},
         .line_number = 0,
         .set_size = 1,
         .set_index = 1,

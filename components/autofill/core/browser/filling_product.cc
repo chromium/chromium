@@ -75,10 +75,11 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
       return FillingProduct::kPassword;
-    case SuggestionType::kCompose:
+    case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case SuggestionType::kCreateNewPlusAddress:
