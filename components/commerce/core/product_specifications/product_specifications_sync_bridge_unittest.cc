@@ -24,18 +24,18 @@
 
 namespace {
 
-constexpr std::string_view kInitUuid[] = {
+const std::vector<std::string> kInitUuid = {
     "10000000-0000-0000-0000-000000000000",
     "20000000-0000-0000-0000-000000000000",
     "30000000-0000-0000-0000-000000000000"};
-constexpr std::string_view kInitName[] = {"my_name", "another name",
-                                          "yet another name"};
+const std::vector<std::string> kInitName = {"my_name", "another name",
+                                            "yet another name"};
 const std::vector<int64_t> kCreationTime = {1710953277, 1711035900, 1711118523};
 const std::vector<int64_t> kUpdateTime = {
     kCreationTime[0] + base::Time::kMillisecondsPerDay,
     kCreationTime[1] + 2 * base::Time::kMillisecondsPerDay,
     kCreationTime[2] + base::Time::kMillisecondsPerDay};
-constexpr std::pair<std::string_view, std::string_view> kCompareUrls[] = {
+const std::vector<std::vector<std::string>> kCompareUrls = {
     {"https://foo.com/", "https://bar.com/"},
     {"https://foo-bar.com", "https://bar-foo.com"},
     {"https://amazon.com/dp/12345",
@@ -57,31 +57,34 @@ void VerifySpecificsAgainstIndex(sync_pb::CompareSpecifics* compare_specifics,
             compare_specifics->creation_time_unix_epoch_micros());
   EXPECT_EQ(kUpdateTime[idx],
             compare_specifics->update_time_unix_epoch_micros());
-  EXPECT_EQ(kCompareUrls[idx].first, compare_specifics->data()[0].url());
-  EXPECT_EQ(kCompareUrls[idx].second, compare_specifics->data()[1].url());
+  int j = 0;
+  for (auto& data : compare_specifics->data()) {
+    EXPECT_EQ(kCompareUrls[idx][j], data.url());
+    j++;
+  }
 }
 
 std::string GetName(uint64_t idx) {
-  return base::StringPrintf("%s_%s", kInitName[idx].data(),
-                            kInitUuid[idx].data());
+  return base::StringPrintf("%s_%s", kInitName[idx].c_str(),
+                            kInitUuid[idx].c_str());
 }
 
 sync_pb::CompareSpecifics BuildCompareSpecifics(
-    const std::string_view uuid,
+    const std::string& uuid,
     int64_t creation_time_micros_epoch,
     int64_t update_time_micros_epoch,
-    const std::string_view name,
-    const std::pair<std::string_view, std::string_view>& urls) {
+    const std::string& name,
+    const std::vector<std::string> urls) {
   sync_pb::CompareSpecifics specifics;
-  specifics.set_uuid(uuid.data());
+  specifics.set_uuid(uuid);
   specifics.set_creation_time_unix_epoch_micros(creation_time_micros_epoch);
   specifics.set_update_time_unix_epoch_micros(update_time_micros_epoch);
-  specifics.set_name(name.data());
+  specifics.set_name(name);
 
-  sync_pb::ComparisonData* compare_data = specifics.add_data();
-  compare_data->set_url(urls.first.data());
-  compare_data = specifics.add_data();
-  compare_data->set_url(urls.second.data());
+  for (auto& url : urls) {
+    sync_pb::ComparisonData* compare_data = specifics.add_data();
+    compare_data->set_url(url);
+  }
   return specifics;
 }
 
@@ -160,16 +163,16 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   void AddInitialSpecifics() {
     std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
-    for (uint64_t i = 0; i < std::size(kInitUuid); i++) {
+    for (uint64_t i = 0; i < kInitUuid.size(); i++) {
       sync_pb::CompareSpecifics compare_specifics;
-      compare_specifics.set_uuid(kInitUuid[i].data());
-      compare_specifics.set_name(kInitName[i].data());
+      compare_specifics.set_uuid(kInitUuid[i]);
+      compare_specifics.set_name(kInitName[i]);
       compare_specifics.set_creation_time_unix_epoch_micros(kCreationTime[i]);
       compare_specifics.set_update_time_unix_epoch_micros(kUpdateTime[i]);
-      sync_pb::ComparisonData* compare_data = compare_specifics.add_data();
-      compare_data->set_url(kCompareUrls[i].first.data());
-      compare_data = compare_specifics.add_data();
-      compare_data->set_url(kCompareUrls[i].second.data());
+      for (auto& compare_url : kCompareUrls[i]) {
+        sync_pb::ComparisonData* compare_data = compare_specifics.add_data();
+        compare_data->set_url(compare_url);
+      }
       batch->WriteData(compare_specifics.uuid(),
                        compare_specifics.SerializeAsString());
     }
@@ -177,7 +180,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   }
 
   std::optional<sync_pb::CompareSpecifics> AddProductSpecifications(
-      const std::string name,
+      const std::string& name,
       const std::vector<GURL> urls) {
     return bridge().AddProductSpecifications(name, urls);
   }
@@ -312,8 +315,8 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetData) {
   // Leave out first entry. GetData takes in a set of keys
   // so we want to ensure the entries with keys specified are
   // returned, rather than all entries.
-  storage_keys.push_back(kInitUuid[1].data());
-  storage_keys.push_back(kInitUuid[2].data());
+  storage_keys.push_back(kInitUuid[1]);
+  storage_keys.push_back(kInitUuid[2]);
   base::RunLoop run_loop;
   bridge().GetData(
       std::move(storage_keys),
@@ -344,7 +347,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestGetDataForDebugging) {
         std::vector<syncer::KeyAndData> key_and_data =
             GetKeyAndData(data_batch.get());
         EXPECT_EQ(3u, key_and_data.size());
-        for (uint64_t i = 0; i < std::size(kInitUuid); i++) {
+        for (uint64_t i = 0; i < kInitUuid.size(); i++) {
           EXPECT_EQ(kInitUuid[i], key_and_data[i].first);
           EXPECT_EQ(GetName(i), key_and_data[i].second->name);
           VerifySpecificsAgainstIndex(
@@ -442,14 +445,13 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestDelete) {
 TEST_F(ProductSpecificationsSyncBridgeTest, AddProductSpecifications) {
   const std::optional<sync_pb::CompareSpecifics> new_specifics =
       AddProductSpecifications(
-          kInitName[0].data(),
-          {GURL(kCompareUrls[0].first), GURL(kCompareUrls[0].second)});
+          kInitName[0], {GURL(kCompareUrls[0][0]), GURL(kCompareUrls[0][1])});
   EXPECT_TRUE(new_specifics.has_value());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(new_specifics.has_value());
   EXPECT_EQ(kInitName[0], new_specifics->name());
-  EXPECT_EQ(kCompareUrls[0].first, new_specifics->data()[0].url());
-  EXPECT_EQ(kCompareUrls[0].second, new_specifics->data()[1].url());
+  EXPECT_EQ(kCompareUrls[0][0], new_specifics->data()[0].url());
+  EXPECT_EQ(kCompareUrls[0][1], new_specifics->data()[1].url());
   VerifySpecificsInitialNonExistence(new_specifics.value());
   VerifySpecificsExists(new_specifics.value());
   VerifyStoreAndEntriesSizeIncreasedBy(1);

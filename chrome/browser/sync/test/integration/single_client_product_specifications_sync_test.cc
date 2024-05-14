@@ -22,26 +22,25 @@ namespace {
 const char kNonUniqueName[] = "non_unique_name";
 const char kUuid[] = "e22e29ba-135a-46ea-969a-ece45f979784";
 const char kName[] = "name";
-constexpr std::pair<std::string_view, std::string_view> kUrls = {
-    "https://product_one.com/", "https://product_two.com/"};
+const std::vector<std::string> kUrls = {"https://product_one.com/",
+                                        "https://product_two.com/"};
 const int64_t kCreationTimeEpochMicros = 1712162260;
 const int64_t kUpdateTimeEpochMicros = 1713162260;
 
-void FillInSpecifics(
-    sync_pb::CompareSpecifics* compare_specifics,
-    const std::string& uuid,
-    const std::string& name,
-    const std::pair<std::string_view, std::string_view>& urls) {
+void FillInSpecifics(sync_pb::CompareSpecifics* compare_specifics,
+                     const std::string& uuid,
+                     const std::string& name,
+                     const std::vector<std::string>& urls) {
   compare_specifics->set_uuid(uuid);
   compare_specifics->set_name(name);
   compare_specifics->set_creation_time_unix_epoch_micros(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   compare_specifics->set_update_time_unix_epoch_micros(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-  sync_pb::ComparisonData* data = compare_specifics->add_data();
-  data->set_url(urls.first.data());
-  data = compare_specifics->add_data();
-  data->set_url(urls.second.data());
+  for (const std::string& url : urls) {
+    sync_pb::ComparisonData* data = compare_specifics->add_data();
+    data->set_url(url);
+  }
 }
 
 class SingleClientProductSpecificationsSyncTest : public SyncTest {
