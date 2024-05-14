@@ -390,7 +390,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
   if (features::TFLiteXNNPACKDelegateEnabled()) {
     delegate_creators_.push_back([](TfLiteContext* context) {
       return tflite::MaybeCreateXNNPACKDelegate(
-          context, tflite::XNNPackQS8Options::disabled);
+          context, tflite::XNNPackQS8Options::default_value);
     });
   }
 #endif
