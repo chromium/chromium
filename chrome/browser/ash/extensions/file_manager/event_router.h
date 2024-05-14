@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/device_event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
+#include "chrome/browser/ash/extensions/file_manager/office_tasks.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
@@ -54,12 +55,6 @@ using file_manager::util::EntryDefinition;
 namespace display {
 enum class TabletState;
 }  // namespace display
-
-namespace ash::file_system_provider {
-
-class ScopedUserInteraction;
-
-}
 
 namespace file_manager {
 
@@ -333,16 +328,12 @@ class EventRouter
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<SystemNotificationManager> notification_manager_;
+  std::unique_ptr<OfficeTasks> office_tasks_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;
   const std::unique_ptr<DriveFsEventRouter> drivefs_event_router_;
 
   DispatchDirectoryChangeEventImplCallback
       dispatch_directory_change_event_impl_;
-
-  // Keeps track of IO tasks interacting with ODFS.
-  std::map<io_task::IOTaskId,
-           std::unique_ptr<ash::file_system_provider::ScopedUserInteraction>>
-      odfs_interactions_;
 
   // Set this to true to ignore the DoFilesSwaWindowsExist check for testing.
   bool force_broadcasting_for_testing_ = false;

@@ -3650,6 +3650,8 @@ source_set("ash") {
     "extensions/file_manager/image_loader_private_api.h",
     "extensions/file_manager/logged_extension_function.cc",
     "extensions/file_manager/logged_extension_function.h",
+    "extensions/file_manager/office_tasks.cc",
+    "extensions/file_manager/office_tasks.h",
     "extensions/file_manager/private_api_dialog.cc",
     "extensions/file_manager/private_api_dialog.h",
     "extensions/file_manager/private_api_drive.cc",

@@ -602,6 +602,7 @@ EventRouter::EventRouter(Profile* profile)
       profile_(profile),
       notification_manager_(
           std::make_unique<SystemNotificationManager>(profile)),
+      office_tasks_(std::make_unique<OfficeTasks>()),
       device_event_router_(
           std::make_unique<DeviceEventRouterImpl>(notification_manager_.get(),
                                                   profile)),
@@ -1225,10 +1226,10 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // progress UI is already displayed.
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     if (status.IsCompleted()) {
-      odfs_interactions_.erase(status.task_id);
+      office_tasks_->odfs_interactions.erase(status.task_id);
     } else {
-      auto it = odfs_interactions_.find(status.task_id);
-      if (it == odfs_interactions_.end()) {
+      auto it = office_tasks_->odfs_interactions.find(status.task_id);
+      if (it == office_tasks_->odfs_interactions.end()) {
         auto interaction = MaybeStartInteractionWithODFS(
             status.GetDestinationFolder(), profile_);
         if (!interaction) {
@@ -1240,7 +1241,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
           }
         }
         if (interaction) {
-          odfs_interactions_[status.task_id] = std::move(interaction);
+          office_tasks_->odfs_interactions[status.task_id] =
+              std::move(interaction);
         }
       }
     }
