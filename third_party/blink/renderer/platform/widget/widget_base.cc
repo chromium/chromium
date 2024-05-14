@@ -1470,6 +1470,11 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
 }
 
 void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay) {
+  recordreplay::AssertMaybeEventsDisallowed(
+    "[TT-1179-1180] WidgetBase::RequestAnimationAfterDelay %d %d",
+    delay.is_zero(),
+    request_animation_after_delay_timer_.IsActive()
+  );
   if (delay.is_zero()) {
     client_->ScheduleAnimation();
     return;

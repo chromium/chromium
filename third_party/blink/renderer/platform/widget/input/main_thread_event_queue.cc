@@ -431,6 +431,7 @@ void MainThreadEventQueue::PossiblyScheduleMainFrame() {
 }
 
 void MainThreadEventQueue::DispatchEvents() {
+  recordreplay::AssertMaybeEventsDisallowed("[TT-1179-1180] MainThreadEventQueue::DispatchEvents");
   size_t events_to_process;
   size_t queue_size;
 
@@ -577,6 +578,7 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
 }
 
 void MainThreadEventQueue::PostTaskToMainThread() {
+  recordreplay::AssertMaybeEventsDisallowed("[TT-1179-1180] MainThreadEventQueue::PostTaskToMainThread");
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MainThreadEventQueue::DispatchEvents, this));
 }
@@ -702,6 +704,11 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
 }
 
 void MainThreadEventQueue::SetNeedsMainFrame() {
+  recordreplay::AssertMaybeEventsDisallowed(
+    "[TT-1179-1180] MainThreadEventQueue::SetNeedsMainFrame %d %d",
+    main_task_runner_->BelongsToCurrentThread(),
+    !!client_
+  );
   if (main_task_runner_->BelongsToCurrentThread()) {
     if (raf_fallback_timer_) {
       raf_fallback_timer_->Start(
