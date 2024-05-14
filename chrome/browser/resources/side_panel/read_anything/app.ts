@@ -1314,7 +1314,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.synth.resume();
       } else {
         this.synth.cancel();
-        this.highlightAndPlayInterruptedMessage();
+        if (!this.highlightAndPlayInterruptedMessage()) {
+          // Ensure we're updating Read Aloud state if there's no text to speak.
+          this.onSpeechFinished();
+        }
       }
 
       this.speechPlayingState = {
@@ -1358,7 +1361,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (this.firstTextNodeSetForReadAloud) {
         chrome.readingMode.initAxPositionWithNode(
             this.firstTextNodeSetForReadAloud);
-        this.highlightAndPlayMessage();
+        if (!this.highlightAndPlayMessage()) {
+          // Ensure we're updating Read Aloud state if there's no text to speak.
+          this.onSpeechFinished();
+        }
       }
     }
   }
