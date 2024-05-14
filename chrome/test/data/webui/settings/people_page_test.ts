@@ -62,7 +62,7 @@ suite('ProfileInfoTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');
@@ -114,7 +114,7 @@ suite('SigninDisallowedTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
   });
 
@@ -155,7 +155,7 @@ suite('SyncStatusTests', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
   });
 
@@ -505,7 +505,7 @@ suite('SyncSettings', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');

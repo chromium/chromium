@@ -42,16 +42,13 @@ export interface PrivacyPageVisibility {
   searchPrediction: boolean;
 }
 
-/**
- * Dictionary defining page visibility.
- */
-export let pageVisibility: PageVisibility;
+function createPageVisibility(): PageVisibility|undefined {
+  if (!loadTimeData.getBoolean('isGuest')) {
+    return undefined;
+  }
 
-if (loadTimeData.getBoolean('isGuest')) {
-  // "if not chromeos" and "if chromeos" in two completely separate blocks
-  // to work around closure compiler.
   // <if expr="not is_chromeos">
-  pageVisibility = {
+  const pageVisibility = {
     a11y: false,
     advancedSettings: false,
     ai: false,
@@ -73,7 +70,7 @@ if (loadTimeData.getBoolean('isGuest')) {
   };
   // </if>
   // <if expr="is_chromeos">
-  pageVisibility = {
+  const pageVisibility = {
     ai: false,
     autofill: false,
     people: false,
@@ -102,8 +99,16 @@ if (loadTimeData.getBoolean('isGuest')) {
     performance: false,
   };
   // </if>
+
+  return pageVisibility;
 }
 
-export function setPageVisibilityForTesting(testVisibility: PageVisibility) {
+/**
+ * Dictionary defining page visibility.
+ */
+export let pageVisibility: PageVisibility|undefined = createPageVisibility();
+
+export function resetPageVisibilityForTesting(
+    testVisibility: PageVisibility|undefined = createPageVisibility()) {
   pageVisibility = testVisibility;
 }

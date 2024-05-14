@@ -61,7 +61,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     };
   }
 
-  pageVisibility: PageVisibility;
+  pageVisibility?: PageVisibility;
   private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
 

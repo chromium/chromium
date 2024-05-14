@@ -107,7 +107,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   private showNoResultsFound_: boolean;
   private showingSubpage_: boolean;
   toolbarSpinnerActive: boolean;
-  pageVisibility: PageVisibility;
+  pageVisibility?: PageVisibility;
 
   /**
    * Updates the hidden state of the about and settings pages based on the

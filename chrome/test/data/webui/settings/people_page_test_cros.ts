@@ -80,7 +80,7 @@ suite('Chrome OS', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await accountManagerBrowserProxy.whenCalled('getAccounts');
@@ -139,7 +139,7 @@ suite('Chrome OS with account manager disabled', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.prefs = DEFAULT_PREFS;
-    peoplePage.pageVisibility = pageVisibility;
+    peoplePage.pageVisibility = pageVisibility || {};
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');

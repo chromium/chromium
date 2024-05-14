@@ -113,7 +113,7 @@ suite('BasicPage', () => {
     }
 
     // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     // When enabled, SafetyHub replaces SafetyCheck by default.
@@ -469,7 +469,7 @@ suite('Performance', () => {
 
   test('performanceSectionTitlesVisible', async function() {
     await createNewBasicPage();
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertEquals(
@@ -488,7 +488,7 @@ suite('Performance', () => {
   test('performanceVisibilityTestFeaturesAvailable', async function() {
     await createNewBasicPage();
     // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertTrue(
@@ -520,7 +520,7 @@ suite('Performance', () => {
 
   test('performanceVisibilityTestDeviceHasBattery', async function() {
     await createNewBasicPage();
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     await performanceBrowserProxy.whenCalled('getDeviceHasBattery');
@@ -567,7 +567,7 @@ suite('SafetyHubDisabled', () => {
     }
 
     // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertTrue(
@@ -589,7 +589,7 @@ suite('SafetyHubDisabled', () => {
     }
 
     // Set the visibility of the pages under test to their default value.
-    page.pageVisibility = pageVisibility;
+    page.pageVisibility = pageVisibility || {};
     flush();
 
     assertFalse(
