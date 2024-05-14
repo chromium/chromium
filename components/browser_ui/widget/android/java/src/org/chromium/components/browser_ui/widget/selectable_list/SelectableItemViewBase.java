@@ -41,7 +41,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     // is ignored if finger was moved horizontally more than this threshold.
     private static final float LONG_CLICK_SLIDE_THRESHOLD_PX = 100.f;
 
-    private SelectionDelegate<E> mSelectionDelegate;
+    private @Nullable SelectionDelegate<E> mSelectionDelegate;
     private E mItem;
     private @Nullable Boolean mIsChecked;
 
@@ -87,15 +87,15 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     }
 
     /**
-     * Sets the SelectionDelegate and registers this object as an observer. The SelectionDelegate
-     * must be set before the item can respond to click events.
+     * Sets the SelectionDelegate and registers this object as an observer.
+     *
      * @param delegate The SelectionDelegate that will inform this item of selection changes.
      */
-    public void setSelectionDelegate(SelectionDelegate<E> delegate) {
+    public void setSelectionDelegate(@Nullable SelectionDelegate<E> delegate) {
         if (mSelectionDelegate != delegate) {
             if (mSelectionDelegate != null) mSelectionDelegate.removeObserver(this);
             mSelectionDelegate = delegate;
-            mSelectionDelegate.addObserver(this);
+            if (mSelectionDelegate != null) mSelectionDelegate.addObserver(this);
         }
     }
 
@@ -108,8 +108,12 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         mSelectOnLongClick = selectOnLongClick;
     }
 
-    /** @param item The item associated with this SelectableItemViewBase. */
+    /**
+     * @param item The item associated with this SelectableItemViewBase.
+     */
     public void setItem(E item) {
+        if (mSelectionDelegate == null) return;
+
         mItem = item;
         setChecked(mSelectionDelegate.isItemSelected(item));
     }
@@ -118,6 +122,37 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     public E getItem() {
         return mItem;
     }
+
+    /**
+     * @return Whether we are currently in selection mode.
+     */
+    protected boolean isSelectionModeActive() {
+        if (mSelectionDelegate == null) return false;
+        return mSelectionDelegate.isSelectionEnabled();
+    }
+
+    /**
+     * Toggles the selection state for a given item.
+     *
+     * @param item The given item.
+     * @return Whether the item was in selected state after the toggle.
+     */
+    protected boolean toggleSelectionForItem(E item) {
+        if (mSelectionDelegate == null) return false;
+        return mSelectionDelegate.toggleSelectionForItem(item);
+    }
+
+    /**
+     * Update the view based on whether this item is selected.
+     *
+     * @param animate Whether to animate the selection state changing if applicable.
+     */
+    protected void updateView(boolean animate) {}
+
+    /** Called when a click event happens that doesn't result in a selection. */
+    protected abstract void handleNonSelectionClick();
+
+    // View implementation.
 
     @Override
     protected void onAttachedToWindow() {
@@ -130,10 +165,13 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        resetCheckedState();
+        if (mSelectionDelegate != null) {
+            resetCheckedState();
+        }
     }
 
     // OnTouchListener implementation.
+
     @Override
     public final boolean onTouch(View view, MotionEvent event) {
         int action = event.getActionMasked();
@@ -152,6 +190,7 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
     @Override
     public void onClick(View view) {
         assert view == this;
+        if (mSelectionDelegate == null) return;
 
         if (!mSelectOnLongClick) {
             handleSelection();
@@ -161,38 +200,23 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         if (isSelectionModeActive()) {
             onLongClick(view);
         } else {
-            onClick();
+            handleNonSelectionClick();
         }
     }
 
     // OnLongClickListener implementation.
+
     @Override
     public boolean onLongClick(View view) {
         assert view == this;
+        if (mSelectionDelegate == null) return false;
+
         if (Math.abs(mCurrentX - mAnchorX) < LONG_CLICK_SLIDE_THRESHOLD_PX) handleSelection();
         return true;
     }
 
-    private void handleSelection() {
-        boolean checked = toggleSelectionForItem(mItem);
-        setChecked(checked);
-    }
-
-    /** @return Whether we are currently in selection mode. */
-    protected boolean isSelectionModeActive() {
-        return mSelectionDelegate.isSelectionEnabled();
-    }
-
-    /**
-     * Toggles the selection state for a given item.
-     * @param item The given item.
-     * @return Whether the item was in selected state after the toggle.
-     */
-    protected boolean toggleSelectionForItem(E item) {
-        return mSelectionDelegate.toggleSelectionForItem(item);
-    }
-
     // Checkable implementations.
+
     @Override
     public boolean isChecked() {
         return mIsChecked != null && mIsChecked;
@@ -200,6 +224,8 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
 
     @Override
     public void toggle() {
+        // TODO: Shouldn't this toggle the selection delegate as well??
+        if (mSelectionDelegate == null) return;
         setChecked(!isChecked());
     }
 
@@ -219,29 +245,24 @@ public abstract class SelectableItemViewBase<E> extends ViewLookupCachingFrameLa
         updateView(animate);
     }
 
+    // SelectionObserver implementation.
+
+    @Override
+    public void onSelectionStateChange(List<E> selectedItems) {
+        if (mSelectionDelegate == null) return;
+        setChecked(mSelectionDelegate.isItemSelected(mItem));
+    }
+
+    // Private methods.
+
     /** Resets the checked state to be uninitialized. */
     private void resetCheckedState() {
         setChecked(false);
         mIsChecked = null;
     }
 
-    // SelectionObserver implementation.
-    @Override
-    public void onSelectionStateChange(List<E> selectedItems) {
-        setChecked(mSelectionDelegate.isItemSelected(mItem));
+    private void handleSelection() {
+        boolean checked = toggleSelectionForItem(mItem);
+        setChecked(checked);
     }
-
-    /**
-     * Update the view based on whether this item is selected.
-     * @param animate Whether to animate the selection state changing if applicable.
-     */
-    protected void updateView(boolean animate) {}
-
-    /**
-     * Same as {@link OnClickListener#onClick(View)} on this.
-     * Subclasses should override this instead of setting their own OnClickListener because this
-     * class handles onClick events in selection mode, and won't forward events to subclasses in
-     * that case.
-     */
-    protected abstract void onClick();
 }

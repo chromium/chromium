@@ -404,6 +404,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/displaystyle/ViewResizerUtilTest.java",
     "java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListenerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/promo/PromoCardCoordinatorUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableItemViewBaseTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
     "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinderTest.java",
   ]
@@ -423,6 +424,7 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
     "//ui/accessibility:ui_accessibility_features_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -187,7 +187,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
 
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public void onClick() {
+    public void handleNonSelectionClick() {
         if (getItem() != null) getItem().onItemClicked();
     }
 
