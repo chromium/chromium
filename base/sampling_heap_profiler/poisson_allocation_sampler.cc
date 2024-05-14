@@ -172,6 +172,14 @@ PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
   ResetProfilingStateFlag(ProfilingStateFlag::kHookedSamplesMutedForTesting);
 }
 
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::
+    ScopedMuteHookedSamplesForTesting(ScopedMuteHookedSamplesForTesting&&) =
+        default;
+
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting&
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting::operator=(
+    ScopedMuteHookedSamplesForTesting&&) = default;
+
 // static
 ABSL_CONST_INIT std::atomic<PoissonAllocationSampler::ProfilingStateFlagMask>
     PoissonAllocationSampler::profiling_state_{0};

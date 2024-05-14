@@ -20,10 +20,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
-namespace heap_profiling {
-class HeapProfilerControllerTest;
-}
-
 namespace base {
 
 class SamplingHeapProfilerTest;
@@ -84,6 +80,36 @@ class BASE_EXPORT PoissonAllocationSampler {
     static bool IsSuppressed();
   };
 
+  // An instance of this class makes the sampler only report samples with
+  // AllocatorType kManualForTesting, not those from hooked allocators. This
+  // allows unit tests to set test expectations based on only explicit calls to
+  // RecordAlloc and RecordFree.
+  //
+  // The accumulated bytes on the thread that creates a
+  // ScopedMuteHookedSamplesForTesting will also be reset to 0, and restored
+  // when the object leaves scope. This gives tests a known state to start
+  // recording samples on one thread: a full interval must pass to record a
+  // sample. Other threads will still have a random number of accumulated bytes.
+  //
+  // Only one instance may exist at a time.
+  class BASE_EXPORT ScopedMuteHookedSamplesForTesting {
+   public:
+    ScopedMuteHookedSamplesForTesting();
+    ~ScopedMuteHookedSamplesForTesting();
+
+    // Move-only.
+    ScopedMuteHookedSamplesForTesting(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+    ScopedMuteHookedSamplesForTesting& operator=(
+        const ScopedMuteHookedSamplesForTesting&) = delete;
+    ScopedMuteHookedSamplesForTesting(ScopedMuteHookedSamplesForTesting&&);
+    ScopedMuteHookedSamplesForTesting& operator=(
+        ScopedMuteHookedSamplesForTesting&&);
+
+   private:
+    intptr_t accumulated_bytes_snapshot_;
+  };
+
   // Must be called early during the process initialization. It creates and
   // reserves a TLS slot.
   static void Init();
@@ -116,9 +142,8 @@ class BASE_EXPORT PoissonAllocationSampler {
   PoissonAllocationSampler(const PoissonAllocationSampler&) = delete;
   PoissonAllocationSampler& operator=(const PoissonAllocationSampler&) = delete;
 
-  // Returns true if a ScopedMuteHookedSamplesForTesting exists. Only friends
-  // can create a ScopedMuteHookedSamplesForTesting but anyone can check the
-  // status of this. This can be read from any thread.
+  // Returns true if a ScopedMuteHookedSamplesForTesting exists. This can be
+  // read from any thread.
   static bool AreHookedSamplesMuted() {
     return profiling_state_.load(std::memory_order_relaxed) &
            ProfilingStateFlag::kHookedSamplesMutedForTesting;
@@ -139,32 +164,6 @@ class BASE_EXPORT PoissonAllocationSampler {
     kHookedSamplesMutedForTesting = 1 << 2,
   };
   using ProfilingStateFlagMask = int;
-
-  // An instance of this class makes the sampler only report samples with
-  // AllocatorType kManualForTesting, not those from hooked allocators. This
-  // allows unit tests to set test expectations based on only explicit calls to
-  // RecordAlloc and RecordFree.
-  //
-  // The accumulated bytes on the thread that creates a
-  // ScopedMuteHookedSamplesForTesting will also be reset to 0, and restored
-  // when the object leaves scope. This gives tests a known state to start
-  // recording samples on one thread: a full interval must pass to record a
-  // sample. Other threads will still have a random number of accumulated bytes.
-  //
-  // Only one instance may exist at a time.
-  class BASE_EXPORT ScopedMuteHookedSamplesForTesting {
-   public:
-    ScopedMuteHookedSamplesForTesting();
-    ~ScopedMuteHookedSamplesForTesting();
-
-    ScopedMuteHookedSamplesForTesting(
-        const ScopedMuteHookedSamplesForTesting&) = delete;
-    ScopedMuteHookedSamplesForTesting& operator=(
-        const ScopedMuteHookedSamplesForTesting&) = delete;
-
-   private:
-    intptr_t accumulated_bytes_snapshot_;
-  };
 
   PoissonAllocationSampler();
   ~PoissonAllocationSampler() = delete;
@@ -210,7 +209,6 @@ class BASE_EXPORT PoissonAllocationSampler {
   // Fast, thread-safe access to the current profiling state.
   static std::atomic<ProfilingStateFlagMask> profiling_state_;
 
-  friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<PoissonAllocationSampler>;
   friend class PoissonAllocationSamplerStateTest;
   friend class SamplingHeapProfilerTest;

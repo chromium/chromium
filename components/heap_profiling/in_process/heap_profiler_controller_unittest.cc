@@ -64,6 +64,10 @@ using ProcessTypeSet =
 using base::allocator::dispatcher::AllocationNotificationData;
 using base::allocator::dispatcher::AllocationSubsystem;
 using base::allocator::dispatcher::FreeNotificationData;
+using ScopedMuteHookedSamplesForTesting =
+    base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting;
+using ScopedSuppressRandomnessForTesting =
+    base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
 
 constexpr size_t kSamplingRate = 1024;
 constexpr size_t kAllocationSize = 42 * kSamplingRate;
@@ -148,27 +152,57 @@ class ScopedCallbacks {
     barrier_closure_ =
         base::BarrierClosure(num_callbacks, std::move(quit_closure));
 
-    if (expect_take_snapshot) {
-      first_snapshot_callback_ = barrier_closure_;
-    } else {
-      first_snapshot_callback_ =
-          base::BindOnce([] { FAIL() << "TakeSnapshot called unexpectedly."; });
-    }
-    if (expect_sampled_profile) {
-      collector_callback_ =
-          std::move(profile_collector_callback).Then(barrier_closure_);
-    } else {
-      collector_callback_ =
-          base::BindRepeating([](base::TimeTicks, metrics::SampledProfile) {
+    // Each callback should invoke `barrier_closure_` once. If they're called
+    // too often, log a test failure on the first extra call only to avoid log
+    // spam. These lambdas need to take a copy of the method arguments since
+    // they outlive the method` scope.
+    first_snapshot_callback_ =
+        base::BindLambdaForTesting([this, expect_take_snapshot] {
+          if (!expect_take_snapshot) {
+            FAIL() << "TakeSnapshot called unexpectedly.";
+          }
+          first_snapshot_count_++;
+          if (first_snapshot_count_ == 1) {
+            barrier_closure_.Run();
+            return;
+          }
+          if (first_snapshot_count_ == 2) {
+            FAIL() << "TakeSnapshot callback invoked too many times.";
+          }
+        });
+
+    collector_callback_ = base::BindLambdaForTesting(
+        [this, expect_sampled_profile,
+         callback = std::move(profile_collector_callback)](
+            base::TimeTicks time_ticks, metrics::SampledProfile profile) {
+          if (!expect_sampled_profile) {
             FAIL() << "ProfileCollectorCallback called unexpectedly.";
-          });
-    }
-    if (use_other_process_callback) {
-      other_process_callback_ = barrier_closure_;
-    } else {
-      other_process_callback_ = base::BindOnce(
-          [] { FAIL() << "Other process callback invoked unexpectedly."; });
-    }
+          }
+          collector_count_++;
+          if (collector_count_ == 1) {
+            std::move(callback).Run(time_ticks, profile);
+            barrier_closure_.Run();
+            return;
+          }
+          if (collector_count_ == 2) {
+            FAIL() << "ProfileCollectorCallback invoked too many times.";
+          }
+        });
+
+    other_process_callback_ =
+        base::BindLambdaForTesting([this, use_other_process_callback] {
+          if (!use_other_process_callback) {
+            FAIL() << "Other process callback invoked unexpectedly.";
+          }
+          other_process_count_++;
+          if (other_process_count_ == 1) {
+            barrier_closure_.Run();
+            return;
+          }
+          if (other_process_count_ == 2) {
+            FAIL() << "Other process callback invoked too many times.";
+          }
+        });
   }
 
   ~ScopedCallbacks() = default;
@@ -184,7 +218,8 @@ class ScopedCallbacks {
   }
 
   ProfileCollectorCallback collector_callback() {
-    return std::move(collector_callback_);
+    // Return by copy since this is a RepeatingCallback.
+    return collector_callback_;
   }
 
   base::OnceClosure other_process_callback() {
@@ -193,9 +228,52 @@ class ScopedCallbacks {
 
  private:
   base::RepeatingClosure barrier_closure_;
+
   base::OnceClosure first_snapshot_callback_;
   ProfileCollectorCallback collector_callback_;
   base::OnceClosure other_process_callback_;
+
+  size_t first_snapshot_count_ = 0;
+  size_t collector_count_ = 0;
+  size_t other_process_count_ = 0;
+};
+
+class ProfilerSetUpMixin {
+ public:
+  ProfilerSetUpMixin(
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
+    // ScopedFeatureList must be initialized in the constructor, before any
+    // threads are started.
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+    if (!base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
+      // Set the sampling rate manually since there's no feature param to read.
+      base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
+    }
+  }
+
+  ~ProfilerSetUpMixin() = default;
+
+  ProfilerSetUpMixin(const ProfilerSetUpMixin&) = delete;
+  ProfilerSetUpMixin& operator=(const ProfilerSetUpMixin&) = delete;
+
+  base::test::TaskEnvironment& task_env() { return task_environment_; }
+
+ private:
+  // Initialize `mute_hooks_` before `task_environment_` so that memory
+  // allocations aren't sampled while TaskEnvironment creates a thread. The
+  // sampling is crashing in the hooked FreeFunc on some test bots.
+  ScopedMuteHookedSamplesForTesting mute_hooks_ =
+      base::SamplingHeapProfiler::Get()->MuteHookedSamplesForTesting();
+  ScopedSuppressRandomnessForTesting suppress_randomness_;
+
+  // Create `feature_list_` before `task_environment_` and destroy it after to
+  // avoid a race in destruction.
+  base::test::ScopedFeatureList feature_list_;
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 class MockSnapshotController : public mojom::SnapshotController {
@@ -335,12 +413,9 @@ std::ostream& operator<<(std::ostream& os, const FeatureTestParams& params) {
   return os;
 }
 
-}  // namespace
-
-// HeapProfilerControllerTest can't be in an anonymous namespace because it is a
-// friend of SamplingHeapProfiler.
 class HeapProfilerControllerTest
-    : public ::testing::TestWithParam<FeatureTestParams> {
+    : public ::testing::TestWithParam<FeatureTestParams>,
+      public ProfilerSetUpMixin {
  public:
   // Sets `sample_received_` to true if any sample is received. This will work
   // even without stack unwinding since it doesn't check the contents of the
@@ -354,27 +429,16 @@ class HeapProfilerControllerTest
     // The mock clock should not have advanced since the sample was recorded, so
     // the collection time can be compared exactly.
     const base::TimeDelta expected_time_offset =
-        task_environment_.NowTicks() - profiler_creation_time_;
+        task_env().NowTicks() - profiler_creation_time_;
     EXPECT_EQ(sampled_profile.call_stack_profile().profile_time_offset_ms(),
               expected_time_offset.InMilliseconds());
     sample_received_ = true;
   }
 
  protected:
-  HeapProfilerControllerTest() {
-    // ScopedFeatureList must be initialized in the constructor, before any
-    // threads are started.
-    feature_list_.InitWithFeaturesAndParameters(
-        GetParam().GetEnabledFeatures(), GetParam().GetDisabledFeatures());
-    if (!GetParam().feature_enabled) {
-      // Set the sampling rate manually since there's no feature param to read.
-      base::SamplingHeapProfiler::Get()->SetSamplingInterval(kSamplingRate);
-    }
-
-    // Clear any samples set in the global SamplingHeapProfiler before the
-    // ScopedMuteHookedSamplesForTesting was created.
-    base::SamplingHeapProfiler::Get()->ClearSamplesForTesting();
-  }
+  HeapProfilerControllerTest()
+      : ProfilerSetUpMixin(GetParam().GetEnabledFeatures(),
+                           GetParam().GetDisabledFeatures()) {}
 
   ~HeapProfilerControllerTest() override {
     // Remove any collectors that were set in StartHeapProfiling.
@@ -418,7 +482,7 @@ class HeapProfilerControllerTest
     }
 
     ASSERT_FALSE(HeapProfilerController::GetInstance());
-    profiler_creation_time_ = task_environment_.NowTicks();
+    profiler_creation_time_ = task_env().NowTicks();
     controller_ =
         std::make_unique<HeapProfilerController>(channel, process_type);
     controller_->SuppressRandomnessForTesting();
@@ -435,7 +499,7 @@ class HeapProfilerControllerTest
     sampler->OnAllocation(AllocationNotificationData(
         reinterpret_cast<void*>(0x1337), kAllocationSize, nullptr,
         AllocationSubsystem::kManualForTesting));
-    task_environment_.RunUntilQuit();
+    task_env().RunUntilQuit();
     // Free the allocation so that other tests can re-use the address.
     sampler->OnFree(
         FreeNotificationData(reinterpret_cast<void*>(0x1337),
@@ -445,10 +509,9 @@ class HeapProfilerControllerTest
   void ConnectRemoteProfileCollector(
       ProfileCollectorCallback collector_callback) {
     mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> remote;
-    child_profile_collector_ = mojo::MakeSelfOwnedReceiver(
-        std::make_unique<TestCallStackProfileCollector>(
-            std::move(collector_callback)),
-        remote.InitWithNewPipeAndPassReceiver());
+    mojo::MakeSelfOwnedReceiver(std::make_unique<TestCallStackProfileCollector>(
+                                    std::move(collector_callback)),
+                                remote.InitWithNewPipeAndPassReceiver());
     metrics::CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
         std::move(remote));
   }
@@ -462,27 +525,11 @@ class HeapProfilerControllerTest
         use_other_process_callback,
         base::BindRepeating(&HeapProfilerControllerTest::RecordSampleReceived,
                             base::Unretained(this)),
-        task_environment_.QuitClosure());
+        task_env().QuitClosure());
   }
-
-  // Initialize `mute_hooks_` before `task_environment_` so that memory
-  // allocations aren't sampled while TaskEnvironment creates a thread. The
-  // sampling is crashing in the hooked FreeFunc on some test bots.
-  base::PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting mute_hooks_;
-  base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting
-      suppress_randomness_;
-
-  // Create `feature_list_` before `task_environment_` and destroy it after to
-  // avoid a race in destruction.
-  base::test::ScopedFeatureList feature_list_;
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<HeapProfilerController> controller_;
   base::HistogramTester histogram_tester_;
-  mojo::SelfOwnedReceiverRef<metrics::mojom::CallStackProfileCollector>
-      child_profile_collector_;
 
   // The creation time of the HeapProfilerController, saved so that
   // RecordSampleReceived() can test that SampledProfile::ms_after_login() in
@@ -497,8 +544,6 @@ class HeapProfilerControllerTest
   // during a scheduled sample and the read happens well after that.
   bool sample_received_ = false;
 };
-
-namespace {
 
 // Basic tests only use the default feature params.
 INSTANTIATE_TEST_SUITE_P(All,
@@ -549,7 +594,7 @@ TEST_P(HeapProfilerControllerTest, ProfileCollectionsScheduler) {
   // The profiler should continue to collect snapshots as long as this memory is
   // allocated. If not the test will time out.
   while (profile_count < kSnapshotsToCollect) {
-    task_environment_.FastForwardBy(base::Days(1));
+    task_env().FastForwardBy(base::Days(1));
   }
 
   // Free all recorded memory so the address list is empty for the next test.
@@ -874,7 +919,7 @@ TEST_P(HeapProfilerControllerIncludeZeroTest, EmptyProfile) {
                      /*expect_enabled=*/true,
                      callbacks.first_snapshot_callback(),
                      callbacks.collector_callback());
-  task_environment_.RunUntilQuit();
+  task_env().RunUntilQuit();
   EXPECT_EQ(sample_received_, GetParam().include_zero_feature_enabled);
 }
 
