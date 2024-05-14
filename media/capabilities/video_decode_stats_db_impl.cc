@@ -286,7 +286,7 @@ void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
   } else {
     // Callers shouldn't ask DB to save empty records. See
     // VideoDecodeStatsRecorder.
-    NOTREACHED() << __func__ << " saving empty stats record";
+    NOTREACHED_IN_MIGRATION() << __func__ << " saving empty stats record";
   }
 
   if (old_frames_decoded + new_entry.frames_decoded > kMaxFramesPerBuffer) {

@@ -149,7 +149,8 @@ void VideoDecoderMixin::Initialize(const VideoDecoderConfig& config,
                                    InitCB init_cb,
                                    const OutputCB& output_cb,
                                    const WaitingCB& waiting_cb) {
-  NOTREACHED() << "FrameResource version of Initialize is used instead";
+  NOTREACHED_IN_MIGRATION()
+      << "FrameResource version of Initialize is used instead";
 }
 
 void VideoDecoderMixin::ReleaseSecureBuffer(uint64_t secure_handle) {}

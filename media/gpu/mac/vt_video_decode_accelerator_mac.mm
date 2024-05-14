@@ -2117,7 +2117,7 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
       return false;
 
     case TASK_DESTROY:
-      NOTREACHED() << "Can't destroy while in STATE_DECODING";
+      NOTREACHED_IN_MIGRATION() << "Can't destroy while in STATE_DECODING";
       NotifyError(ILLEGAL_STATE, SFT_PLATFORM_ERROR);
       return false;
   }

@@ -93,7 +93,7 @@ size_t VideoFrameLayout::NumPlanes(VideoPixelFormat format) {
       // Set its NumPlanes() to zero to avoid NOTREACHED().
       return 0;
   }
-  NOTREACHED() << "Unsupported video frame format: " << format;
+  NOTREACHED_IN_MIGRATION() << "Unsupported video frame format: " << format;
   return 0;
 }
 

@@ -405,7 +405,7 @@ class DecoderSelectorTest : public ::testing::Test {
                 RunOnceCallbackRepeatedly<1>(capability == kDecryptAndDecode));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

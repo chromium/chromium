@@ -587,7 +587,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_GE(default_params.frames_per_buffer(),
             media::limits::kMinAudioBufferSize);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   AudioOutputStream* stream;

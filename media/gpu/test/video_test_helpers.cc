@@ -572,7 +572,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
         << "Failed creating GpuMemoryBufferHandle";
     return VideoFrameData(std::move(gmb_handle));
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return VideoFrameData();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   } else {

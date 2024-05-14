@@ -792,8 +792,8 @@ void WASAPIAudioInputStream::Run() {
     // TODO(henrika): perhaps it worth improving the cleanup here by e.g.
     // stopping the audio client, joining the thread etc.?
     auto saved_last_error = GetLastError();
-    NOTREACHED() << "WASAPI capturing failed with error code "
-                 << saved_last_error;
+    NOTREACHED_IN_MIGRATION()
+        << "WASAPI capturing failed with error code " << saved_last_error;
   }
 
   // Disable MMCSS.
@@ -1044,7 +1044,7 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
 }
 
 void WASAPIAudioInputStream::HandleError(HRESULT err) {
-  NOTREACHED() << "Error code: " << err;
+  NOTREACHED_IN_MIGRATION() << "Error code: " << err;
   if (sink_)
     sink_->OnError();
 }

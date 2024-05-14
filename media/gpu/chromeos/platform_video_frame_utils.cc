@@ -483,8 +483,8 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       }
     } break;
     default:
-      NOTREACHED() << "Unsupported storage type: "
-                   << video_frame->storage_type();
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported storage type: " << video_frame->storage_type();
   }
   CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
   if (video_frame->format() == PIXEL_FORMAT_MJPEG)
@@ -535,7 +535,7 @@ gfx::GenericSharedMemoryId GetSharedMemoryId(const VideoFrame& frame) {
   if (frame.HasDmaBufs()) {
     return gfx::GenericSharedMemoryId(frame.GetDmabufFd(0));
   }
-  NOTREACHED() << "The frame is not backed by shared memory";
+  NOTREACHED_IN_MIGRATION() << "The frame is not backed by shared memory";
   return gfx::GenericSharedMemoryId();  // Invalid
 }
 

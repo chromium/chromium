@@ -137,7 +137,7 @@ void Mp4TrackFragmentHeaderBoxWriter::Write(BoxByteStream& writer) {
   if (box_.flags &
       static_cast<uint32_t>(mp4::writable_boxes::TrackFragmentHeaderFlags::
                                 kSampleDescriptionIndexPresent)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (box_.flags &

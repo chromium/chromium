@@ -212,7 +212,7 @@ bool IsBufferSlotInUse(
         is_frame_not_refreshed = !frame_hdr.refresh_last;
         break;
       default:
-        NOTREACHED() << "Invalid reference frame index";
+        NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
     }
     const bool is_candidate_in_use =
         (ref_frames[i]->buffer_id() ==
@@ -394,7 +394,7 @@ void Vp8Decoder::UpdateReusableReferenceBufferSlots(
                                Vp8FrameHeader::COPY_LAST_TO_GOLDEN);
       break;
     default:
-      NOTREACHED() << "Invalid reference frame index";
+      NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
   }
   const bool is_buffer_slot_in_use =
       IsBufferSlotInUse(frame_hdr, ref_frames_, curr_ref_frame_index);
@@ -447,8 +447,8 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
         DCHECK(ref_frames_[kVp8FrameAltref]);
         break;
       default:
-        NOTREACHED() << "Invalid flag to refresh altenate frame: "
-                     << frame_hdr.copy_buffer_to_alternate;
+        NOTREACHED_IN_MIGRATION() << "Invalid flag to refresh altenate frame: "
+                                  << frame_hdr.copy_buffer_to_alternate;
     }
   }
 
@@ -474,8 +474,8 @@ std::set<int> Vp8Decoder::RefreshReferenceSlots(
         DCHECK(ref_frames_[kVp8FrameGolden]);
         break;
       default:
-        NOTREACHED() << "Invalid flag to refresh golden frame: "
-                     << frame_hdr.copy_buffer_to_golden;
+        NOTREACHED_IN_MIGRATION() << "Invalid flag to refresh golden frame: "
+                                  << frame_hdr.copy_buffer_to_golden;
     }
   }
 

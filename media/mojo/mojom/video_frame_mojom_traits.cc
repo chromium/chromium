@@ -166,7 +166,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     }
   }
 
-  NOTREACHED() << "Unsupported VideoFrame conversion";
+  NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";
   return nullptr;
 }
 

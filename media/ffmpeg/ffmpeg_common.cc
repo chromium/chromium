@@ -345,7 +345,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
       // F.3.1 and F.5.1 in that spec the sample_format for AC3/EAC3 must be 16.
       sample_format = kSampleFormatS16;
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)

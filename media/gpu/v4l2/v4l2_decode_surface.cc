@@ -140,7 +140,7 @@ bool V4L2RequestDecodeSurface::Submit() {
       result = std::move(output_buffer()).QueueDMABuf(frame());
       break;
     default:
-      NOTREACHED() << "We should only use MMAP or DMABUF.";
+      NOTREACHED_IN_MIGRATION() << "We should only use MMAP or DMABUF.";
   }
 
   if (!result)

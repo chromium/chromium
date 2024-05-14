@@ -782,7 +782,8 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
       codec_profile = media::H264PROFILE_MAIN;
       break;
     case VideoCodec::kUnknown:
-      NOTREACHED() << "Fake software video encoder cannot be external";
+      NOTREACHED_IN_MIGRATION()
+          << "Fake software video encoder cannot be external";
       [[fallthrough]];
     default:
       cast_environment_->PostTask(

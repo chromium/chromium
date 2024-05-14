@@ -361,7 +361,7 @@ gfx::BufferFormat GpuMemoryBufferFormat(
       DCHECK_EQ(0u, plane);
       return gfx::BufferFormat::BGRA_8888;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return gfx::BufferFormat::BGRA_8888;
@@ -408,7 +408,7 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       DCHECK_EQ(0u, plane);
       return viz::SinglePlaneFormat::kBGRA_8888;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return viz::SinglePlaneFormat::kBGRA_8888;
@@ -430,7 +430,7 @@ size_t PlanesPerCopy(GpuVideoAcceleratorFactories::OutputFormat format) {
     case GpuVideoAcceleratorFactories::OutputFormat::YV12:
       return 3;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return 0;
@@ -458,7 +458,7 @@ VideoPixelFormat VideoFormat(
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return PIXEL_FORMAT_XB30;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return PIXEL_FORMAT_UNKNOWN;
@@ -760,7 +760,7 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
       output = gfx::Size(base::bits::AlignUp(width, size_t{2}), height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   DCHECK(gfx::Rect(video_frame->coded_size()).Contains(gfx::Rect(output)));
   return output;
@@ -1249,7 +1249,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
     }
 
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

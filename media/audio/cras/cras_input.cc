@@ -116,7 +116,7 @@ CrasInputStream::~CrasInputStream() {
 
 AudioInputStream::OpenOutcome CrasInputStream::Open() {
   if (client_) {
-    NOTREACHED() << "CrasInputStream already open";
+    NOTREACHED_IN_MIGRATION() << "CrasInputStream already open";
     ReportStreamOpenResult(StreamOpenResult::kCallbackOpenClientAlreadyOpen);
     return OpenOutcome::kAlreadyOpen;
   }

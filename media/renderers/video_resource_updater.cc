@@ -174,7 +174,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
                      ? VideoFrameResourceType::RGB
                      : VideoFrameResourceType::RGBA_PREMULTIPLIED;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
@@ -285,7 +285,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       return VideoFrameResourceType::RGBA;
 
     case PIXEL_FORMAT_UYVY:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
@@ -1534,7 +1534,7 @@ bool VideoResourceUpdater::WriteYUVPixelsPerPlaneToPerTexture(
           upload_image_stride / 2, resource_size_pixels.width(),
           resource_size_pixels.height(), bits_per_channel);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     pixels = upload_pixels_[0].get();
@@ -1657,7 +1657,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
             upload_image_stride / 2, resource_size_pixels.width(),
             resource_size_pixels.height(), bits_per_channel);
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       pixels = upload_pixels_[plane_index].get();

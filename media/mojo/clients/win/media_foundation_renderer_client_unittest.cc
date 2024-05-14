@@ -239,7 +239,7 @@ class MediaFoundationRendererClientTest
       dcomp_on_state_change_cb_ = cb;
     } else {
       // Unexpected
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return std::make_unique<MockOverlayStateObserverSubscription>();

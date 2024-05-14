@@ -279,7 +279,7 @@ bool IsVp9ProfileSupported(const VideoType& type) {
       return vpx_supports_hbd;
 #endif  // BUILDFLAG(IS_ANDROID)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
   return false;

@@ -39,8 +39,9 @@ std::unique_ptr<AudioDecoder> AndroidMojoMediaClient::CreateAudioDecoder(
 std::unique_ptr<CdmFactory> AndroidMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   if (!frame_interfaces) {
-    NOTREACHED() << "Host interfaces should be provided when using CDM with "
-                 << "AndroidMojoMediaClient";
+    NOTREACHED_IN_MIGRATION()
+        << "Host interfaces should be provided when using CDM with "
+        << "AndroidMojoMediaClient";
     return nullptr;
   }
 

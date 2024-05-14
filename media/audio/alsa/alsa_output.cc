@@ -199,7 +199,7 @@ bool AlsaPcmOutputStream::Open() {
     return false;
 
   if (!CanTransitionTo(kIsOpened)) {
-    NOTREACHED() << "Invalid state: " << state();
+    NOTREACHED_IN_MIGRATION() << "Invalid state: " << state();
     return false;
   }
 
@@ -804,7 +804,8 @@ AlsaPcmOutputStream::TransitionTo(InternalState to) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!CanTransitionTo(to)) {
-    NOTREACHED() << "Cannot transition from: " << state_ << " to: " << to;
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot transition from: " << state_ << " to: " << to;
     state_ = kInError;
   } else {
     state_ = to;

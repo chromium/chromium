@@ -67,7 +67,7 @@ viz::SharedImageFormat DXGIFormatToMultiPlanarSharedImageFormat(
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return viz::SinglePlaneFormat::kBGRA_8888;
   }
 }

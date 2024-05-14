@@ -241,7 +241,7 @@ void TestVDAVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     handle = CreateGpuMemoryBufferHandle(video_frame.get());
     DCHECK(!handle.is_null());
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
     ASSERT_TRUE(!handle.is_null()) << "Failed to create GPU memory handle";

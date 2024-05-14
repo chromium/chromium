@@ -195,10 +195,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
         // GTEST_SKIP() returns.
       }
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     min_number_input_frames_needed_ = frames_per_buffer_;
@@ -968,7 +968,7 @@ class AACAudioEncoderTest : public AudioEncodersTest {
         channel_layout = CHANNEL_LAYOUT_5_1_BACK;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     AudioDecoderConfig config(AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
                               channel_layout, options_.sample_rate,

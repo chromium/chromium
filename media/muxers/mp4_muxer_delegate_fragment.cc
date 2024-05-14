@@ -165,7 +165,7 @@ void Mp4MuxerDelegateFragment::Finalize(base::TimeTicks start_audio_time,
     moof_.track_fragments.erase(moof_.track_fragments.begin() + 1);
     mdat_.track_data.erase(mdat_.track_data.begin() + 1);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

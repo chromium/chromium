@@ -1043,7 +1043,7 @@ void CameraHalDelegate::CameraDeviceStatusChange(
       }
       break;
     default:
-      NOTREACHED() << "Unexpected new status " << new_status;
+      NOTREACHED_IN_MIGRATION() << "Unexpected new status " << new_status;
   }
 }
 

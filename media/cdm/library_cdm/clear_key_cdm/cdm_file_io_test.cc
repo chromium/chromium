@@ -654,7 +654,7 @@ void FileIOTest::RunNextStep() {
         file_io_stack_.pop();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -416,7 +416,7 @@ VideoRateControlWrapper::RateControlConfig CreateRateControllerConfig(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   int bitrate_sum = 0;
@@ -1038,7 +1038,7 @@ bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

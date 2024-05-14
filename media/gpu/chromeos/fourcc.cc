@@ -66,7 +66,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_ARGB:
         return Fourcc(AR24);
       case PIXEL_FORMAT_UYVY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_XRGB:
@@ -115,7 +115,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_NV21:
         return Fourcc(NM21);
       case PIXEL_FORMAT_UYVY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_I444:
@@ -211,7 +211,7 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
     case UNDEFINED:
       break;
   }
-  NOTREACHED() << "Unmapped Fourcc: " << ToString();
+  NOTREACHED_IN_MIGRATION() << "Unmapped Fourcc: " << ToString();
   return PIXEL_FORMAT_UNKNOWN;
 }
 
@@ -284,7 +284,7 @@ std::optional<uint32_t> Fourcc::ToVAFourCC() const {
       DVLOGF(3) << "Fourcc not convertible to VaFourCC: " << ToString();
       return std::nullopt;
   }
-  NOTREACHED() << "Unmapped Fourcc: " << ToString();
+  NOTREACHED_IN_MIGRATION() << "Unmapped Fourcc: " << ToString();
   return std::nullopt;
 }
 

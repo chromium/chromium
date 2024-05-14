@@ -470,7 +470,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

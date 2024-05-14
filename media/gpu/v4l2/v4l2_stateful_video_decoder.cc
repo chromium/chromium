@@ -570,31 +570,36 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
 
 bool V4L2StatefulVideoDecoder::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return false;
 }
 
 bool V4L2StatefulVideoDecoder::CanReadWithoutStalling() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return true;
 }
 
 int V4L2StatefulVideoDecoder::GetMaxDecodeRequests() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return 4;
 }
 
 VideoDecoderType V4L2StatefulVideoDecoder::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return VideoDecoderType::kV4L2;
 }
 
 bool V4L2StatefulVideoDecoder::IsPlatformDecoder() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return true;
 }
 

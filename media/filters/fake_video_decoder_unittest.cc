@@ -198,7 +198,7 @@ class FakeVideoDecoderTest
         EXPECT_FALSE(is_reset_pending_);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

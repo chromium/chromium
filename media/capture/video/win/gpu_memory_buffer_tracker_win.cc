@@ -112,7 +112,7 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                      const mojom::PlaneStridesPtr& strides) {
   // Only support NV12
   if (format != PIXEL_FORMAT_NV12) {
-    NOTREACHED() << "Unsupported VideoPixelFormat " << format;
+    NOTREACHED_IN_MIGRATION() << "Unsupported VideoPixelFormat " << format;
     return false;
   }
 
@@ -152,7 +152,7 @@ bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
       gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
       gpu::GpuMemoryBufferImpl::DestructionCallback(), nullptr, nullptr);
   if (!buffer_) {
-    NOTREACHED() << "Failed to create GPU memory buffer";
+    NOTREACHED_IN_MIGRATION() << "Failed to create GPU memory buffer";
     return false;
   }
 

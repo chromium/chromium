@@ -54,7 +54,7 @@ void MidiMessageQueue::Get(std::vector<uint8_t>* message) {
         }
         return;
       } else if (next_message_.size() > target_len) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
 

@@ -295,7 +295,7 @@ void LetterboxVideoFrame(VideoFrame* frame, const gfx::Rect& view_area) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (gmb_mapped) {
@@ -387,7 +387,7 @@ void RotatePlaneByPixels(const uint8_t* src,
       }
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Copy pixels.

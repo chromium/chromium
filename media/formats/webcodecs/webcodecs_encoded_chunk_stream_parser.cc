@@ -87,8 +87,8 @@ bool WebCodecsEncodedChunkStreamParser::AppendToParseBuffer(
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
   // attempting the wrong append method, without causing parse/decode error?
-  NOTREACHED();  // ProcessChunks() is the method to use instead for this
-                 // parser.
+  NOTREACHED_IN_MIGRATION();  // ProcessChunks() is the method to use instead
+                              // for this parser.
   return true;   // Subsequent async Parse failure will occur below.
 }
 
@@ -99,8 +99,8 @@ StreamParser::ParseStatus WebCodecsEncodedChunkStreamParser::Parse(
   // the SourceBuffer. Maybe a better MEDIA_LOG here would be sufficient?  Or
   // instead have the top-level SourceBuffer throw synchronous exception when
   // attempting the wrong append method, without causing parse/decode error?
-  NOTREACHED();  // ProcessChunks() is the method to use instead for this
-                 // parser.
+  NOTREACHED_IN_MIGRATION();  // ProcessChunks() is the method to use instead
+                              // for this parser.
   return ParseStatus::kFailed;
 }
 

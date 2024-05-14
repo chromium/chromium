@@ -156,7 +156,7 @@ std::vector<uint8_t> GetFpsAllocation(size_t num_temporal_layers) {
     case 3:
       return {kFullAllocation / 4, kFullAllocation / 2, kFullAllocation};
     default:
-      NOTREACHED() << "Unsupported temporal layers";
+      NOTREACHED_IN_MIGRATION() << "Unsupported temporal layers";
       return {};
   }
 }

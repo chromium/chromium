@@ -32,7 +32,7 @@ std::unique_ptr<MediaService> CreateMediaService(
   return std::make_unique<MediaService>(
       std::make_unique<MediaFoundationMojoMediaClient>(), std::move(receiver));
 #else
-  NOTREACHED() << "No MediaService implementation available.";
+  NOTREACHED_IN_MIGRATION() << "No MediaService implementation available.";
   return nullptr;
 #endif
 }

@@ -60,7 +60,7 @@ uint32_t GetDefaultDecoderBufferConverterCapacity(DemuxerStream::Type type) {
     // TODO(xhwang, sandersd): Provide a better way to customize this value.
     capacity = 2 * (1024 * 1024);
   } else {
-    NOTREACHED() << "Unsupported type: " << type;
+    NOTREACHED_IN_MIGRATION() << "Unsupported type: " << type;
     // Choose an arbitrary size.
     capacity = 512 * 1024;
   }

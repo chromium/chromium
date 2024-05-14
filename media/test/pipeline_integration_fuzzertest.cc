@@ -105,7 +105,7 @@ std::string MseFuzzerVariantEnumToMimeTypeString(FuzzerVariant variant) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
     case SRC:
-      NOTREACHED() << "SRC is an invalid MSE fuzzer variant";
+      NOTREACHED_IN_MIGRATION() << "SRC is an invalid MSE fuzzer variant";
       break;
   }
 

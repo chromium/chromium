@@ -16,7 +16,7 @@ MediaResource::MediaResource() = default;
 MediaResource::~MediaResource() = default;
 
 const MediaUrlParams& MediaResource::GetMediaUrlParams() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   static base::NoDestructor<MediaUrlParams> instance{
       GURL(), net::SiteForCookies(), url::Origin(), false, false, false};
   return *instance;
@@ -38,13 +38,13 @@ DemuxerStream* MediaResource::GetFirstStream(DemuxerStream::Type type) {
 void MediaResource::ForwardDurationChangeToDemuxerHost(
     base::TimeDelta duration) {
   // Only implemented by MediaUrlDemuxer, for the MediaPlayerRendererClient.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaResource::SetHeaders(
     const base::flat_map<std::string, std::string>& headers) {
   // Only implemented by MediaUrlDemuxer, for the MojoRendererService.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace media

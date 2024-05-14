@@ -171,7 +171,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
             1, 1, frame_size, kFrameSize, kNoTimestamp);
         break;
       default:
-        NOTREACHED() << "Unrecognized format " << sample_format_;
+        NOTREACHED_IN_MIGRATION() << "Unrecognized format " << sample_format_;
     }
     return buffer;
   }

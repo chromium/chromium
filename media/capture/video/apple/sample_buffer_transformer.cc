@@ -285,7 +285,8 @@ void ConvertFromAnyToNV12(CVPixelBufferRef source_pixel_buffer,
       return;
     }
     default:
-      NOTREACHED() << "Pixel format " << pixel_format << " not supported.";
+      NOTREACHED_IN_MIGRATION()
+          << "Pixel format " << pixel_format << " not supported.";
   }
 }
 
@@ -366,7 +367,8 @@ void ConvertFromAnyToI420(CVPixelBufferRef source_pixel_buffer,
       return;
     }
     default:
-      NOTREACHED() << "Pixel format " << pixel_format << " not supported.";
+      NOTREACHED_IN_MIGRATION()
+          << "Pixel format " << pixel_format << " not supported.";
   }
 }
 
@@ -620,7 +622,7 @@ void SampleBufferTransformer::TransformPixelBuffer(
       return TransformPixelBufferWithLibyuv(source_pixel_buffer,
                                             destination_pixel_buffer);
     case Transformer::kNotConfigured:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -656,7 +658,7 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuv(
                                                   destination_pixel_buffer);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Unlock source and destination pixel buffers.
@@ -801,7 +803,7 @@ bool SampleBufferTransformer::TransformSampleBuffer(
           destination_pixel_buffer);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   // Unlock destination pixel buffer.
   lock_status = CVPixelBufferUnlockBaseAddress(destination_pixel_buffer, 0);

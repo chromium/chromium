@@ -632,7 +632,7 @@ static void FallbackScalingList4x4(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -673,7 +673,7 @@ static void FallbackScalingList8x8(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

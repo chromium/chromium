@@ -618,7 +618,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           return VideoCaptureErrorOrDevice(
               VideoCaptureError::kWinMediaFoundationSourceCreationFailed);
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
@@ -639,10 +639,10 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           VideoCaptureError::kWinDirectShowDeviceInitializationFailed);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VideoCaptureErrorOrDevice(
       VideoCaptureError::kVideoCaptureDeviceFactoryWinUnknownError);
 }

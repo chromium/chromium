@@ -191,7 +191,7 @@ void DemuxerStreamAdapter::Initialize(int remote_callback_handle) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   DEMUXER_VLOG(2) << "Sending RPC_DS_INITIALIZE_CALLBACK to " << rpc->handle()
@@ -425,7 +425,7 @@ void DemuxerStreamAdapter::SendReadAck() {
       media::cast::ConvertVideoDecoderConfigToProto(video_config_,
                                                     video_message);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

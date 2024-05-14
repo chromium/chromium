@@ -133,8 +133,9 @@ void AudioBlockFifo::PushInternal(const void* source,
               push_frames);
           break;
         default:
-          NOTREACHED() << "Unsupported bytes per sample encountered: "
-                       << bytes_per_sample;
+          NOTREACHED_IN_MIGRATION()
+              << "Unsupported bytes per sample encountered: "
+              << bytes_per_sample;
           current_block->ZeroFramesPartial(write_pos_, push_frames);
       }
     } else {

@@ -443,7 +443,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
         if (output_params.IsBitstreamFormat())
           uma_stream_format = STREAM_FORMAT_BITSTREAM;
         else
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -451,7 +451,7 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
     UMA_HISTOGRAM_ENUMERATION("Media.AudioOutputStreamProxy.StreamFormat",
                               *uma_stream_format, STREAM_FORMAT_MAX + 1);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   auto dispatcher_params = std::make_unique<DispatcherParams>(

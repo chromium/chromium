@@ -833,7 +833,7 @@ void RendererImpl::PausePlayback() {
     case STATE_UNINITIALIZED:
     case STATE_INIT_PENDING_CDM:
     case STATE_INITIALIZING:
-      NOTREACHED() << "Invalid state: " << state_;
+      NOTREACHED_IN_MIGRATION() << "Invalid state: " << state_;
       break;
 
     case STATE_ERROR:

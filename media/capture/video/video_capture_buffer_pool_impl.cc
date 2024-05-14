@@ -54,7 +54,7 @@ VideoCaptureBufferPoolImpl::DuplicateAsUnsafeRegion(int buffer_id) {
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return {};
   }
   return tracker->DuplicateAsUnsafeRegion();
@@ -66,7 +66,7 @@ VideoCaptureBufferPoolImpl::GetHandleForInProcessAccess(int buffer_id) {
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return nullptr;
   }
 
@@ -78,7 +78,7 @@ gfx::GpuMemoryBufferHandle VideoCaptureBufferPoolImpl::GetGpuMemoryBufferHandle(
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return gfx::GpuMemoryBufferHandle();
   }
 
@@ -115,7 +115,7 @@ void VideoCaptureBufferPoolImpl::RelinquishProducerReservation(int buffer_id) {
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return;
   }
   tracker->SetHeldByProducer(false);
@@ -194,7 +194,7 @@ void VideoCaptureBufferPoolImpl::HoldForConsumers(int buffer_id,
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return;
   }
   tracker->AddConsumerHolds(num_clients);
@@ -208,7 +208,7 @@ void VideoCaptureBufferPoolImpl::RelinquishConsumerHold(int buffer_id,
   base::AutoLock lock(lock_);
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED() << "Invalid buffer_id.";
+    NOTREACHED_IN_MIGRATION() << "Invalid buffer_id.";
     return;
   }
   tracker->RemoveConsumerHolds(num_clients);

@@ -740,7 +740,7 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
       is_first_video_track = false;
     } else {
       // Text tracks are not supported through this code path.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

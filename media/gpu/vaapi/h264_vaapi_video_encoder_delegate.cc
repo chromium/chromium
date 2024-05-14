@@ -578,7 +578,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       current_sps_.cbr_flag[0] = false;
       break;
     case Bitrate::Mode::kExternal:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =

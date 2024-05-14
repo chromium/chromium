@@ -133,7 +133,7 @@ void FakeAudioConsumer::SendPacket(fuchsia::media::StreamPacket stream_packet,
 }
 
 void FakeAudioConsumer::SendPacketNoReply(fuchsia::media::StreamPacket packet) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeAudioConsumer::EndOfStream() {

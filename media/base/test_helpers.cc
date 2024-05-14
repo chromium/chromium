@@ -767,7 +767,7 @@ std::unique_ptr<StrictMock<MockDemuxerStream>> CreateMockDemuxerStream(
                                            : TestVideoConfig::Normal());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

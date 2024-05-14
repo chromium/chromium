@@ -322,7 +322,7 @@ uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
     case gfx::BufferFormat::P010:
       return VA_FOURCC_P010;
     default:
-      NOTREACHED() << gfx::BufferFormatToString(fmt);
+      NOTREACHED_IN_MIGRATION() << gfx::BufferFormatToString(fmt);
       return 0;
   }
 }
@@ -2104,7 +2104,7 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
     case gfx::BufferFormat::P010:
       return VA_RT_FORMAT_YUV420_10BPP;
     default:
-      NOTREACHED() << gfx::BufferFormatToString(fmt);
+      NOTREACHED_IN_MIGRATION() << gfx::BufferFormatToString(fmt);
       return 0;
   }
 }

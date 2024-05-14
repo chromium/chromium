@@ -163,7 +163,8 @@ const std::string VARTFormatToString(unsigned int va_rt_format) {
     case VA_RT_FORMAT_YUV420_10:
       return "VA_RT_FORMAT_YUV420_10";
   }
-  NOTREACHED() << "Unknown VA_RT_FORMAT 0x" << std::hex << va_rt_format;
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown VA_RT_FORMAT 0x" << std::hex << va_rt_format;
   return "Unknown VA_RT_FORMAT";
 }
 
@@ -181,7 +182,7 @@ const char* VAProfileToString(VAProfile profile) {
     TOSTR(VAProfileMPEG4AdvancedSimple);
     TOSTR(VAProfileMPEG4Main);
     case VAProfileH264Baseline:
-      NOTREACHED() << "VAProfileH264Baseline is deprecated";
+      NOTREACHED_IN_MIGRATION() << "VAProfileH264Baseline is deprecated";
       return "Deprecated VAProfileH264Baseline";
     TOSTR(VAProfileH264Main);
     TOSTR(VAProfileH264High);

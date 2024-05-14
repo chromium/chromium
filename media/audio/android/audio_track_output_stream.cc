@@ -74,7 +74,7 @@ bool AudioTrackOutputStream::Open() {
       case AudioParameters::AUDIO_FAKE:
       case AudioParameters::AUDIO_PCM_LINEAR:
       case AudioParameters::AUDIO_PCM_LOW_LATENCY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

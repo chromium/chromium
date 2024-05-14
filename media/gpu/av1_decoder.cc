@@ -46,7 +46,8 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
       return AV1PROFILE_PROFILE_PRO;
     default:
       // ObuParser::ParseSequenceHeader() validates the profile.
-      NOTREACHED() << "Invalid profile: " << base::strict_cast<int>(profile);
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid profile: " << base::strict_cast<int>(profile);
       return AV1PROFILE_PROFILE_MAIN;
   }
 }

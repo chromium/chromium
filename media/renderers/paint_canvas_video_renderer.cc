@@ -643,7 +643,7 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "These cases should be handled in ConvertVideoFrameToRGBPixels";
       break;
 
@@ -666,8 +666,9 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_RGBAF16:
     case PIXEL_FORMAT_UNKNOWN:
-      NOTREACHED() << "Only YUV formats and Y16 are supported, got: "
-                   << media::VideoPixelFormatToString(format);
+      NOTREACHED_IN_MIGRATION()
+          << "Only YUV formats and Y16 are supported, got: "
+          << media::VideoPixelFormatToString(format);
   }
   done->Run();
 }
@@ -1280,8 +1281,9 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
       }
       continue;
     }
-    NOTREACHED() << "Unsupported Y16 conversion for format: 0x" << std::hex
-                 << format << " and type: 0x" << std::hex << type;
+    NOTREACHED_IN_MIGRATION()
+        << "Unsupported Y16 conversion for format: 0x" << std::hex << format
+        << " and type: 0x" << std::hex << type;
   }
 }
 
@@ -1371,7 +1373,8 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     FilterMode filter,
     bool disable_threading) {
   if (!video_frame->IsMappable()) {
-    NOTREACHED() << "Cannot extract pixels from non-CPU frame formats.";
+    NOTREACHED_IN_MIGRATION()
+        << "Cannot extract pixels from non-CPU frame formats.";
     return;
   }
 

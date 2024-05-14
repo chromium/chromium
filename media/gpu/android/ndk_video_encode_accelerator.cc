@@ -238,7 +238,7 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                             BITRATE_MODE_VBR);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_BIT_RATE,

@@ -130,7 +130,7 @@ std::string GetFourCCString(VideoCodec codec) {
     case VideoCodec::kAV1:
       return "av01";
     default:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "This video codec is not supported by MediaFoundationCDM. codec="
           << GetCodecName(codec);
   }
@@ -165,7 +165,7 @@ std::string GetFourCCString(AudioCodec codec) {
     case AudioCodec::kMpegHAudio:
       return "mhm1";
     default:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "This audio codec is not supported by MediaFoundationCDM. codec="
           << GetCodecName(codec);
   }
@@ -179,7 +179,7 @@ std::string GetName(EncryptionScheme scheme) {
     case EncryptionScheme::kCbcs:
       return "cbcs";
     default:
-      NOTREACHED() << "Only cenc and cbcs are supported";
+      NOTREACHED_IN_MIGRATION() << "Only cenc and cbcs are supported";
   }
   return "";
 }
@@ -196,7 +196,7 @@ int GetIvSize(EncryptionScheme scheme) {
     case EncryptionScheme::kCbcs:
       return 16;
     default:
-      NOTREACHED() << "Only cenc and cbcs are supported";
+      NOTREACHED_IN_MIGRATION() << "Only cenc and cbcs are supported";
   }
   return 0;
 }

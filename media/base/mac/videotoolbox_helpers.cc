@@ -236,7 +236,7 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   } else if (nal_size_field_bytes == 4) {
     CopyNalsToAnnexB<uint32_t>(contiguous_bb_span, annexb_buffer);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return true;
 }

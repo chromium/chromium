@@ -717,9 +717,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED() << "Unsupported SVC: "
-                     << GetScalabilityModeName(
-                            options.scalability_mode.value());
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported SVC: "
+            << GetScalabilityModeName(options.scalability_mode.value());
     }
   }
   // Try decoding saved outputs dropping varying number of layers
@@ -822,9 +822,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED() << "Unsupported SVC: "
-                     << GetScalabilityModeName(
-                            options.scalability_mode.value());
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported SVC: "
+            << GetScalabilityModeName(options.scalability_mode.value());
     }
   }
   // Try decoding saved outputs dropping varying number of layers

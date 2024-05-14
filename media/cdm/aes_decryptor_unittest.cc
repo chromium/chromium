@@ -300,11 +300,11 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
 
       base::RunLoop().RunUntilIdle();
 #else
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "CdmAdapter tests only supported when library CDMs are supported.";
 #endif
     } else {
-      NOTREACHED() << "Unsupported test parameter.";
+      NOTREACHED_IN_MIGRATION() << "Unsupported test parameter.";
     }
   }
 

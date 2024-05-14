@@ -281,7 +281,7 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
           video_frame->stride(VideoFrame::Plane::kUV);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -452,7 +452,7 @@ void VpxEncoder::UpdateRates(uint32_t new_bitrate) {
 
   // Update encoder context.
   if (vpx_codec_enc_config_set(&encoder_, &config_)) {
-    NOTREACHED() << "Invalid return value";
+    NOTREACHED_IN_MIGRATION() << "Invalid return value";
   }
 
   VLOG(1) << "VPX new rc_target_bitrate: " << new_bitrate_kbit << " kbps";

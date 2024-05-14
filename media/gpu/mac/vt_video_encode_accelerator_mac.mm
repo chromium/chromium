@@ -98,7 +98,7 @@ static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
       return kVTProfileLevel_HEVC_Main_AutoLevel;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return kVTProfileLevel_H264_Baseline_AutoLevel;
 }
@@ -112,7 +112,7 @@ static CMVideoCodecType VideoCodecToCMVideoCodec(VideoCodec codec) {
       return kCMVideoCodecType_HEVC;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return kCMVideoCodecType_H264;
 }
@@ -713,7 +713,7 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
       md.h265.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

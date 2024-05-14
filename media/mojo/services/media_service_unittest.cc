@@ -283,7 +283,7 @@ TEST_F(MediaServiceTest, MoreIdling) {
   else if (renderer_)
     renderer_.FlushForTesting();
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   // Disconnecting CDM and Renderer will cause the service to idle since no
   // other interfaces are connected.

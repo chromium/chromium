@@ -130,8 +130,9 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
         num_temporal_layers = 3;
         break;
       default:
-        NOTREACHED() << "Unsupported SVC: "
-                     << GetScalabilityModeName(opts.scalability_mode.value());
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported SVC: "
+            << GetScalabilityModeName(opts.scalability_mode.value());
     }
   }
   if (num_temporal_layers > 1) {

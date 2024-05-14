@@ -436,7 +436,7 @@ void End2EndTestRenderer::SendFrameToSink(
   } else if (type == DemuxerStream::Type::VIDEO) {
     media_remotee_->OnVideoFrame(frame_count, decoder_buffer);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -70,7 +70,7 @@ void AlphaVideoEncoderWrapper::Initialize(VideoCodecProfile profile,
   auto done_callback = [](base::WeakPtr<AlphaVideoEncoderWrapper> self,
                           EncoderStatus status) {
     if (!self) {
-      NOTREACHED() << "Underlying encoder must be synchronous";
+      NOTREACHED_IN_MIGRATION() << "Underlying encoder must be synchronous";
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -136,7 +136,7 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
   auto done_callback = [](base::WeakPtr<AlphaVideoEncoderWrapper> self,
                           EncoderStatus status) {
     if (!self) {
-      NOTREACHED() << "Underlying encoder must be synchronous";
+      NOTREACHED_IN_MIGRATION() << "Underlying encoder must be synchronous";
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -182,7 +182,7 @@ void AlphaVideoEncoderWrapper::ChangeOptions(const Options& options,
                                              OutputCB output_cb,
                                              EncoderStatusCB done_cb) {
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
-  NOTREACHED() << "Not implemented. Implement when needed.";
+  NOTREACHED_IN_MIGRATION() << "Not implemented. Implement when needed.";
   std::move(done_cb).Run(EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
@@ -200,7 +200,7 @@ void AlphaVideoEncoderWrapper::YuvOutputCallback(
     std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "AlphaVideoEncoderWrapper doesn't support codecs with extra data";
     return;
   }
@@ -211,7 +211,7 @@ void AlphaVideoEncoderWrapper::AlphaOutputCallback(
     std::optional<CodecDescription> desc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (desc.has_value()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "AlphaVideoEncoderWrapper doesn't support codecs with extra data";
     return;
   }

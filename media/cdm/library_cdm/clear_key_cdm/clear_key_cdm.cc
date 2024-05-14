@@ -625,7 +625,7 @@ void ClearKeyCdm::ResetDecoder(cdm::StreamType decoder_type) {
       audio_decoder_->Reset();
       break;
     default:
-      NOTREACHED() << "ResetDecoder(): invalid cdm::StreamType";
+      NOTREACHED_IN_MIGRATION() << "ResetDecoder(): invalid cdm::StreamType";
   }
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
 }
@@ -642,7 +642,8 @@ void ClearKeyCdm::DeinitializeDecoder(cdm::StreamType decoder_type) {
 #endif
       break;
     default:
-      NOTREACHED() << "DeinitializeDecoder(): invalid cdm::StreamType";
+      NOTREACHED_IN_MIGRATION()
+          << "DeinitializeDecoder(): invalid cdm::StreamType";
   }
 }
 
@@ -765,7 +766,8 @@ void ClearKeyCdm::OnPlatformChallengeResponse(
   DVLOG(1) << __func__;
 
   if (!is_running_platform_verification_test_) {
-    NOTREACHED() << "OnPlatformChallengeResponse() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION()
+        << "OnPlatformChallengeResponse() called unexpectedly.";
     return;
   }
 
@@ -785,7 +787,8 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
            << ", output_protection_mask:" << output_protection_mask;
 
   if (!is_running_output_protection_test_) {
-    NOTREACHED() << "OnQueryOutputProtectionStatus() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION()
+        << "OnQueryOutputProtectionStatus() called unexpectedly.";
     return;
   }
 
@@ -826,7 +829,7 @@ void ClearKeyCdm::OnStorageId(uint32_t version,
                               const uint8_t* storage_id,
                               uint32_t storage_id_size) {
   if (!is_running_storage_id_test_) {
-    NOTREACHED() << "OnStorageId() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION() << "OnStorageId() called unexpectedly.";
     return;
   }
 

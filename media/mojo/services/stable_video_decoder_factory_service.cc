@@ -70,7 +70,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return configs.value_or(std::vector<SupportedVideoDecoderConfig>{});
   }

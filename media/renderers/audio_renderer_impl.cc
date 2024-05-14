@@ -509,7 +509,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
         channels = 1;
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     // If we want the precise PCM frame count here, we have to somehow peek the

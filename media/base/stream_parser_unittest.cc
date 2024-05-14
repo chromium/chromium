@@ -110,7 +110,7 @@ class StreamParserTest : public testing::Test {
             results_stream << "V";
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
         results_stream << buffer.track_id() << ":";
       }

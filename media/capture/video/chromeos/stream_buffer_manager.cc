@@ -263,7 +263,7 @@ void StreamBufferManager::SetUpStreamsAndBuffers(
         break;
       }
       default: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
     const ChromiumPixelFormat stream_format =

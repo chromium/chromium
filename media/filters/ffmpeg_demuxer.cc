@@ -304,7 +304,7 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
       is_encrypted = video_config_->is_encrypted();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -375,7 +375,8 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   }
 
   if (!demuxer_ || end_of_stream_) {
-    NOTREACHED() << "Attempted to enqueue packet on a stopped stream";
+    NOTREACHED_IN_MIGRATION()
+        << "Attempted to enqueue packet on a stopped stream";
     return;
   }
 

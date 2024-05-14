@@ -289,7 +289,7 @@ void VideoCaptureDeviceWin::ScopedMediaType::FreeMediaType(AM_MEDIA_TYPE* mt) {
     mt->pbFormat = nullptr;
   }
   if (mt->pUnk != nullptr) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // pUnk should not be used.
     mt->pUnk->Release();
     mt->pUnk = nullptr;

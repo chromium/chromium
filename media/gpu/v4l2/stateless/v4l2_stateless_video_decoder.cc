@@ -269,27 +269,32 @@ void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
 }
 
 bool V4L2StatelessVideoDecoder::NeedsBitstreamConversion() const {
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return false;
 }
 
 bool V4L2StatelessVideoDecoder::CanReadWithoutStalling() const {
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return false;
 }
 
 int V4L2StatelessVideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return -1;
 }
 
 VideoDecoderType V4L2StatelessVideoDecoder::GetDecoderType() const {
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return VideoDecoderType::kV4L2;
 }
 
 bool V4L2StatelessVideoDecoder::IsPlatformDecoder() const {
-  NOTREACHED() << "Our only owner VideoDecoderPipeline never calls here";
+  NOTREACHED_IN_MIGRATION()
+      << "Our only owner VideoDecoderPipeline never calls here";
   return true;
 }
 

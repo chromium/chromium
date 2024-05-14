@@ -1470,7 +1470,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       SetErrorState({EncoderStatus::Codes::kEncoderIllegalState,
                      base::StrCat({"Unknown input memory type: ",
                                    base::NumberToString(static_cast<int>(
@@ -1885,8 +1885,8 @@ bool V4L2VideoEncodeAccelerator::InitControls(const Config& config) {
       InitControlsVP8(config);
       break;
     default:
-      NOTREACHED() << "Unsupported codec "
-                   << FourccToString(output_format_fourcc_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported codec " << FourccToString(output_format_fourcc_);
       return false;
   }
 

@@ -384,7 +384,7 @@ void Vp9Decoder::SetupFrameParams(
         v4l2_frame_params->alt_frame_ts = reference_id;
         break;
       default:
-        NOTREACHED() << "Invalid reference frame index";
+        NOTREACHED_IN_MIGRATION() << "Invalid reference frame index";
     }
   }
 

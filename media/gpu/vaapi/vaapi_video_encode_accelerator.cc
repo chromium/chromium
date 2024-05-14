@@ -352,7 +352,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       }
       break;
     default:
-      NOTREACHED() << "Unsupported codec type " << GetCodecName(output_codec_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported codec type " << GetCodecName(output_codec_);
       return;
   }
 

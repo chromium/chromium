@@ -81,7 +81,7 @@ class StreamProviderTest : public testing::Test {
         } else if (type == DemuxerStream::Type::VIDEO) {
           receiver_video_demuxer_stream_handle_ = message->integer_value();
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
 
         RpcInitializeCallback(type);
@@ -124,7 +124,7 @@ class StreamProviderTest : public testing::Test {
       }
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     rpc_messenger_->SendMessageToRemote(*rpc);
@@ -139,7 +139,7 @@ class StreamProviderTest : public testing::Test {
         SendVideoFrame();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -227,7 +227,7 @@ class StreamProviderTest : public testing::Test {
         received_video_buffer_ = buffer;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

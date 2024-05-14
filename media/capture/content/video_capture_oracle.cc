@@ -190,7 +190,7 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
       break;
 
     case kNumEvents:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

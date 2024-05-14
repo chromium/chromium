@@ -105,8 +105,8 @@ std::string IntelMediaCompressedModifierToString(uint64_t modifier) {
     case I915_FORMAT_MOD_4_TILED_MTL_MC_CCS:
       return "I915_FORMAT_MOD_4_TILED_MTL_MC_CCS";
   }
-  NOTREACHED() << "Invalid Intel Media Compressed modifier provided: "
-               << modifier;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid Intel Media Compressed modifier provided: " << modifier;
   return "";
 }
 

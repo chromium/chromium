@@ -252,7 +252,7 @@ void MojoVideoDecoderService::Initialize(
           mojo_cdm_service_context_->GetCdmContextRef(cdm_id.value());
     } else if (cdm_id != cdm_id_) {
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
-      NOTREACHED() << "The caller should not switch CDM";
+      NOTREACHED_IN_MIGRATION() << "The caller should not switch CDM";
       OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }

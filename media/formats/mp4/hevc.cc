@@ -609,7 +609,8 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
         break;
 
       default:
-        NOTREACHED() << "Unsupported NALU type " << nalu.nal_unit_type;
+        NOTREACHED_IN_MIGRATION()
+            << "Unsupported NALU type " << nalu.nal_unit_type;
     }
   }
 

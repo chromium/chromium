@@ -60,7 +60,7 @@ libyuv::FourCC VideoCaptureFormatToLibyuvFourcc(
       fourcc_format = libyuv::FOURCC_MJPG;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return fourcc_format;
 }

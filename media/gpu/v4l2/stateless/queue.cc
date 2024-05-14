@@ -211,8 +211,9 @@ const std::optional<Buffer> InputQueue::DequeueBuffer() {
             << free_buffer_indices_.size() + 1 << " " << Description()
             << " available.";
   if (!free_buffer_indices_.insert(index).second) {
-    NOTREACHED() << "There is no way that a reclaimed buffer is already "
-                    "present in the list";
+    NOTREACHED_IN_MIGRATION()
+        << "There is no way that a reclaimed buffer is already "
+           "present in the list";
   }
 
   return buffer;
@@ -227,7 +228,8 @@ bool InputQueue::SubmitCompressedFrameData(const void* data,
   auto buffer_index = GetFreeBufferIndex();
   if (!buffer_index) {
     // The caller is responsible for making sure that a buffer is present.
-    NOTREACHED() << "No free buffers to submit a compressed frame with.";
+    NOTREACHED_IN_MIGRATION()
+        << "No free buffers to submit a compressed frame with.";
     return false;
   }
 
@@ -511,8 +513,8 @@ void OutputQueue::ReturnBuffer(uint64_t frame_id) {
 
   auto it = decoded_and_dequeued_frames_.find(frame_id);
   if (it == decoded_and_dequeued_frames_.end()) {
-    NOTREACHED() << "Decoded buffer with frame id (" << frame_id
-                 << ") not previously dequeued.";
+    NOTREACHED_IN_MIGRATION() << "Decoded buffer with frame id (" << frame_id
+                              << ") not previously dequeued.";
   }
 
   const uint32_t buffer_index = it->second;
@@ -520,8 +522,9 @@ void OutputQueue::ReturnBuffer(uint64_t frame_id) {
   decoded_and_dequeued_frames_.erase(it);
 
   if (!free_buffer_indices_.insert(buffer_index).second) {
-    NOTREACHED() << "There is no way that a reclaimed buffer is already "
-                    "present in the list";
+    NOTREACHED_IN_MIGRATION()
+        << "There is no way that a reclaimed buffer is already "
+           "present in the list";
   }
 }
 

@@ -723,7 +723,8 @@ AudioEncoder::AudioEncoder(
       break;
 #endif  // BUILDFLAG(IS_MAC)
     default:
-      NOTREACHED() << "Unsupported or unspecified codec for audio encoder";
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported or unspecified codec for audio encoder";
       break;
   }
 }

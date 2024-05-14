@@ -32,7 +32,7 @@ cdm::ColorRange ToCdmColorRange(gfx::ColorSpace::RangeID range) {
       return cdm::ColorRange::kDerived;
   }
 
-  NOTREACHED() << "Unexpected color range";
+  NOTREACHED_IN_MIGRATION() << "Unexpected color range";
   return cdm::ColorRange::kInvalid;
 }
 
@@ -48,7 +48,7 @@ gfx::ColorSpace::RangeID ToGfxColorRange(cdm::ColorRange range) {
       return gfx::ColorSpace::RangeID::DERIVED;
   }
 
-  NOTREACHED() << "Unexpected color range";
+  NOTREACHED_IN_MIGRATION() << "Unexpected color range";
   return gfx::ColorSpace::RangeID::INVALID;
 }
 
@@ -97,7 +97,7 @@ cdm::HdcpVersion ToCdmHdcpVersion(HdcpVersion hdcp_version) {
       return cdm::kHdcpVersion2_3;
   }
 
-  NOTREACHED() << "Unexpected HdcpVersion";
+  NOTREACHED_IN_MIGRATION() << "Unexpected HdcpVersion";
   return cdm::kHdcpVersion2_3;
 }
 
@@ -109,7 +109,8 @@ cdm::SessionType ToCdmSessionType(CdmSessionType session_type) {
       return cdm::kPersistentLicense;
   }
 
-  NOTREACHED() << "Unexpected session type " << static_cast<int>(session_type);
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected session type " << static_cast<int>(session_type);
   return cdm::kTemporary;
 }
 
@@ -125,7 +126,7 @@ CdmSessionType ToMediaSessionType(cdm::SessionType session_type) {
       break;
   }
 
-  NOTREACHED() << "Unexpected cdm::SessionType " << session_type;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::SessionType " << session_type;
   return CdmSessionType::kTemporary;
 }
 
@@ -141,7 +142,7 @@ cdm::InitDataType ToCdmInitDataType(EmeInitDataType init_data_type) {
       break;
   }
 
-  NOTREACHED() << "Unexpected EmeInitDataType";
+  NOTREACHED_IN_MIGRATION() << "Unexpected EmeInitDataType";
   return cdm::kKeyIds;
 }
 
@@ -155,7 +156,8 @@ EmeInitDataType ToEmeInitDataType(cdm::InitDataType init_data_type) {
       return EmeInitDataType::WEBM;
   }
 
-  NOTREACHED() << "Unexpected cdm::InitDataType " << init_data_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected cdm::InitDataType " << init_data_type;
   return EmeInitDataType::UNKNOWN;
 }
 
@@ -177,7 +179,7 @@ CdmKeyInformation::KeyStatus ToMediaKeyStatus(cdm::KeyStatus status) {
       return CdmKeyInformation::RELEASED;
   }
 
-  NOTREACHED() << "Unexpected cdm::KeyStatus " << status;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::KeyStatus " << status;
   return CdmKeyInformation::INTERNAL_ERROR;
 }
 
@@ -199,7 +201,8 @@ cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status) {
       return cdm::kReleased;
   }
 
-  NOTREACHED() << "Unexpected CdmKeyInformation::KeyStatus " << status;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected CdmKeyInformation::KeyStatus " << status;
   return cdm::kInternalError;
 }
 
@@ -213,7 +216,7 @@ cdm::EncryptionScheme ToCdmEncryptionScheme(EncryptionScheme scheme) {
       return cdm::EncryptionScheme::kCbcs;
   }
 
-  NOTREACHED() << "Unexpected EncryptionScheme";
+  NOTREACHED_IN_MIGRATION() << "Unexpected EncryptionScheme";
   return cdm::EncryptionScheme::kUnencrypted;
 }
 
@@ -229,7 +232,7 @@ CdmPromise::Exception ToMediaCdmPromiseException(cdm::Exception exception) {
       return CdmPromise::Exception::QUOTA_EXCEEDED_ERROR;
   }
 
-  NOTREACHED() << "Unexpected cdm::Exception " << exception;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::Exception " << exception;
   return CdmPromise::Exception::INVALID_STATE_ERROR;
 }
 
@@ -245,7 +248,7 @@ cdm::Exception ToCdmException(CdmPromise::Exception exception) {
       return cdm::kExceptionQuotaExceededError;
   }
 
-  NOTREACHED() << "Unexpected CdmPromise::Exception";
+  NOTREACHED_IN_MIGRATION() << "Unexpected CdmPromise::Exception";
   return cdm::kExceptionInvalidStateError;
 }
 
@@ -261,7 +264,7 @@ CdmMessageType ToMediaMessageType(cdm::MessageType message_type) {
       return CdmMessageType::INDIVIDUALIZATION_REQUEST;
   }
 
-  NOTREACHED() << "Unexpected cdm::MessageType " << message_type;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::MessageType " << message_type;
   return CdmMessageType::LICENSE_REQUEST;
 }
 
@@ -277,7 +280,7 @@ cdm::MessageType ToCdmMessageType(CdmMessageType message_type) {
       return cdm::kIndividualizationRequest;
   }
 
-  NOTREACHED() << "Unexpected CdmMessageType";
+  NOTREACHED_IN_MIGRATION() << "Unexpected CdmMessageType";
   return cdm::kLicenseRequest;
 }
 
@@ -289,7 +292,8 @@ cdm::StreamType ToCdmStreamType(Decryptor::StreamType stream_type) {
       return cdm::kStreamTypeVideo;
   }
 
-  NOTREACHED() << "Unexpected Decryptor::StreamType " << stream_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected Decryptor::StreamType " << stream_type;
   return cdm::kStreamTypeVideo;
 }
 
@@ -310,7 +314,7 @@ Decryptor::Status ToMediaDecryptorStatus(cdm::Status status) {
       break;
   }
 
-  NOTREACHED() << "Unexpected cdm::Status " << status;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::Status " << status;
   return Decryptor::kError;
 }
 
@@ -346,7 +350,7 @@ SampleFormat ToMediaSampleFormat(cdm::AudioFormat format) {
       return kUnknownSampleFormat;
   }
 
-  NOTREACHED() << "Unexpected cdm::AudioFormat " << format;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::AudioFormat " << format;
   return kUnknownSampleFormat;
 }
 
@@ -382,7 +386,7 @@ VideoCodec ToMediaVideoCodec(cdm::VideoCodec codec) {
       return VideoCodec::kAV1;
   }
 
-  NOTREACHED() << "Unexpected cdm::VideoCodec " << codec;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::VideoCodec " << codec;
   return VideoCodec::kUnknown;
 }
 
@@ -463,7 +467,7 @@ VideoCodecProfile ToMediaVideoCodecProfile(cdm::VideoCodecProfile profile) {
       return AV1PROFILE_PROFILE_PRO;
   }
 
-  NOTREACHED() << "Unexpected cdm::VideoCodecProfile " << profile;
+  NOTREACHED_IN_MIGRATION() << "Unexpected cdm::VideoCodecProfile " << profile;
   return VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 

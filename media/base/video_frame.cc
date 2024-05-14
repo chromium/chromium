@@ -88,7 +88,7 @@ std::string VideoFrame::StorageTypeToString(
       return "GPU_MEMORY_BUFFER";
   }
 
-  NOTREACHED() << "Invalid StorageType provided: " << storage_type;
+  NOTREACHED_IN_MIGRATION() << "Invalid StorageType provided: " << storage_type;
   return "INVALID";
 }
 
@@ -243,7 +243,7 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
     case PIXEL_FORMAT_UNKNOWN:
       break;
   }
-  NOTREACHED() << "Unsupported video frame format: " << format;
+  NOTREACHED_IN_MIGRATION() << "Unsupported video frame format: " << format;
   return false;
 }
 

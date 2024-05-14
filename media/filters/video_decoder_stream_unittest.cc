@@ -469,7 +469,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -488,7 +488,7 @@ class VideoDecoderStreamTest
       // This is only interesting to test during VideoDecoderStream destruction.
       // There's no need to satisfy a callback.
       case DECRYPTOR_NO_KEY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case DECODER_REINIT:
@@ -504,7 +504,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

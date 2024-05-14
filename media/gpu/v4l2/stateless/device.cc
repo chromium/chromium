@@ -94,7 +94,7 @@ enum v4l2_buf_type BufferTypeToV4L2(BufferType type) {
     return V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return V4L2_BUF_TYPE_PRIVATE;
 }
 
@@ -105,7 +105,7 @@ enum v4l2_memory MemoryTypeToV4L2(MemoryType memory) {
     case MemoryType::kDmaBuf:
       return V4L2_MEMORY_DMABUF;
     case MemoryType::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // V4L2_MEMORY_USERPTR is not used in our code.
       return V4L2_MEMORY_USERPTR;
   }
@@ -118,7 +118,7 @@ BufferType V4L2ToBufferType(unsigned int type) {
     return BufferType::kDecodedFrame;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return BufferType::kInvalid;
 }
 
@@ -130,7 +130,7 @@ MemoryType V4L2ToMemoryType(unsigned int memory) {
       return MemoryType::kDmaBuf;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MemoryType::kInvalid;
 }
 

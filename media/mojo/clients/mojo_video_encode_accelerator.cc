@@ -120,8 +120,8 @@ VideoEncodeAccelerator::SupportedProfiles
 MojoVideoEncodeAccelerator::GetSupportedProfiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTREACHED() << "GetSupportedProfiles() should never be called."
-               << "Use VEA provider or GPU factories";
+  NOTREACHED_IN_MIGRATION() << "GetSupportedProfiles() should never be called."
+                            << "Use VEA provider or GPU factories";
   return {};
 }
 

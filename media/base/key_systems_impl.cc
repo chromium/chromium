@@ -524,7 +524,7 @@ std::string KeySystemsImpl::GetBaseKeySystemName(
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED() << "Key system support should have been checked";
+    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
     return key_system;
   }
 
@@ -543,7 +543,7 @@ bool KeySystemsImpl::ShouldUseBaseKeySystemName(
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED() << "Key system support should have been checked";
+    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
     return false;
   }
 
@@ -588,7 +588,7 @@ EmeConfig::Rule KeySystemsImpl::GetContentTypeConfigRule(
   // Double check whether the key system is supported.
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED() << "Key system support should have been checked";
+    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
     return EmeConfig::UnsupportedRule();
   }
 

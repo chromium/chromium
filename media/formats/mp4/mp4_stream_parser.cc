@@ -54,7 +54,7 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
     case FOURCC_CBCS:
       return EncryptionScheme::kCbcs;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return EncryptionScheme::kUnencrypted;
