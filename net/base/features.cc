@@ -258,7 +258,7 @@ BASE_FEATURE(kTpcdMetadataGrants,
              "TpcdMetadataGrants",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTpcdMetadataStagedRollback,
+BASE_FEATURE(kTpcdMetadataStageControl,
              "TpcdMetadataStageControl",
              base::FEATURE_DISABLED_BY_DEFAULT);
 

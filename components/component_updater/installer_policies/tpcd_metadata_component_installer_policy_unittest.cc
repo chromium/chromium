@@ -65,9 +65,9 @@ class TpcdMetadataComponentInstallerPolicyTest
     }
 
     if (IsTpcdMetadataStagingEnabled()) {
-      enabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+      enabled_features.push_back(net::features::kTpcdMetadataStageControl);
     } else {
-      disabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+      disabled_features.push_back(net::features::kTpcdMetadataStageControl);
     }
 
     scoped_list_.InitWithFeatures(enabled_features, disabled_features);

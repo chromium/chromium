@@ -99,7 +99,7 @@ bool Parser::IsValidMetadata(const Metadata& metadata,
     }
 
     if (base::FeatureList::IsEnabled(
-            net::features::kTpcdMetadataStagedRollback)) {
+            net::features::kTpcdMetadataStageControl)) {
       if (tpcd::metadata::Parser::IsDtrpEligible(
               tpcd::metadata::Parser::ToRuleSource(me.source()))) {
         if (!me.has_dtrp() || !IsValidDtrp(me.dtrp())) {

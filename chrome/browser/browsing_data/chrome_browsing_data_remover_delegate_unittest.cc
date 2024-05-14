@@ -4493,7 +4493,7 @@ class ChromeBrowsingDataRemoverDelegateTpcdMetadataTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
   ChromeBrowsingDataRemoverDelegateTpcdMetadataTest() {
-    feature_list_.InitWithFeatures({net::features::kTpcdMetadataStagedRollback},
+    feature_list_.InitWithFeatures({net::features::kTpcdMetadataStageControl},
                                    {});
   }
 };

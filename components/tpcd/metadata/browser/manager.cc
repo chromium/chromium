@@ -120,8 +120,7 @@ void Manager::SetGrants(const ContentSettingsForOneType& grants) {
 ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     base::FunctionRef<bool(const MetadataEntry&)> predicate) {
   base::flat_set<std::string> remove_keys;
-  if (base::FeatureList::IsEnabled(
-          net::features::kTpcdMetadataStagedRollback) &&
+  if (base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl) &&
       local_state_) {
     const base::Value::Dict& dict = local_state_->GetDict(prefs::kCohorts);
     for (const auto itr : dict) {
@@ -154,7 +153,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     if (!Parser::IsDtrpEligible(
             Parser::ToRuleSource(metadata_entry.source())) ||
         !base::FeatureList::IsEnabled(
-            net::features::kTpcdMetadataStagedRollback)) {
+            net::features::kTpcdMetadataStageControl)) {
       cohort = content_settings::mojom::TpcdMetadataCohort::DEFAULT;
     }
 
@@ -209,8 +208,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
                         /*incognito=*/false, std::move(rule_metadata));
   }
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kTpcdMetadataStagedRollback) &&
+  if (base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl) &&
       local_state_) {
     ScopedDictPrefUpdate update(local_state_, prefs::kCohorts);
     for (const auto& key : remove_keys) {
@@ -247,8 +245,7 @@ ContentSettingsForOneType Manager::GetGrants() const {
 }
 
 void Manager::ResetCohorts() {
-  if (!base::FeatureList::IsEnabled(
-          net::features::kTpcdMetadataStagedRollback)) {
+  if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl)) {
     return;
   }
 

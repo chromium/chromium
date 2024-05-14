@@ -264,9 +264,9 @@ class ManagerCohortsTest
         content_settings::features::kIndexedHostContentSettingsMap);
 
     if (IsTpcdMetadataStagedRollbackEnabled()) {
-      enabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+      enabled_features.push_back(net::features::kTpcdMetadataStageControl);
     } else {
-      disabled_features.push_back(net::features::kTpcdMetadataStagedRollback);
+      disabled_features.push_back(net::features::kTpcdMetadataStageControl);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -555,7 +555,7 @@ class ManagerPrefsTest : public testing::Test {
 
   void SetUp() override {
     scoped_list_.InitWithFeatures({net::features::kTpcdMetadataGrants,
-                                   net::features::kTpcdMetadataStagedRollback},
+                                   net::features::kTpcdMetadataStageControl},
                                   {});
 
     RegisterLocalStatePrefs(local_state_.registry());

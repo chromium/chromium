@@ -501,8 +501,7 @@ bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
 // Whether to bypass any available grants from the Third Party Cookie
 // Deprecation TPCD Metadata.
 bool IgnoreTpcdDtGracePeriodMetadataEntry(const SettingInfo& info) {
-  if (!base::FeatureList::IsEnabled(
-          net::features::kTpcdMetadataStagedRollback)) {
+  if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl)) {
     return false;
   }
 

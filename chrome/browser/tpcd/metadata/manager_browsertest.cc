@@ -89,7 +89,7 @@ class ManagerBrowserTest : public PlatformBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {content_settings::features::kTrackingProtection3pcd,
          net::features::kTpcdMetadataGrants,
-         net::features::kTpcdMetadataStagedRollback,
+         net::features::kTpcdMetadataStageControl,
          net::features::kTopLevelTpcdTrialSettings},
         {});
 
