@@ -85,6 +85,7 @@ class ApplicationContextImpl : public ApplicationContext {
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
   UpgradeCenter* GetUpgradeCenter() override;
+  os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -157,6 +158,8 @@ class ApplicationContextImpl : public ApplicationContext {
       segmentation_otr_web_state_observer_;
 
   std::unique_ptr<PushNotificationService> push_notification_service_;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   __strong UpgradeCenter* upgrade_center_ = nil;
 };

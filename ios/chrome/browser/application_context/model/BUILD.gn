@@ -19,6 +19,7 @@ source_set("model") {
     "//components/metrics_services_manager",
     "//components/net_log",
     "//components/network_time",
+    "//components/os_crypt/async/browser",
     "//components/prefs",
     "//components/sessions",
     "//components/translate/core/browser",

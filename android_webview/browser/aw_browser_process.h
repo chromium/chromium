@@ -16,6 +16,7 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -77,6 +78,10 @@ class AwBrowserProcess {
   // Called on UI and IO threads.
   AwSafeBrowsingUIManager* GetSafeBrowsingUIManager() const;
 
+  // Obtain the browser instance of OSCryptAsync, which should be used for data
+  // encryption.
+  os_crypt_async::OSCryptAsync* GetOSCryptAsync() const;
+
   static void RegisterNetworkContextLocalStatePrefs(
       PrefRegistrySimple* pref_registry);
   static void RegisterEnterpriseAuthenticationAppLinkPolicyPref(
@@ -137,6 +142,7 @@ class AwBrowserProcess {
   std::unique_ptr<EnterpriseAuthenticationAppLinkManager> app_link_manager_;
   std::unique_ptr<embedder_support::OriginTrialsSettingsStorage>
       origin_trials_settings_storage_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace android_webview

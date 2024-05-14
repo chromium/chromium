@@ -33,6 +33,7 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/net_log/net_export_file_writer.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id_generator.h"
@@ -142,6 +143,14 @@ void ApplicationContextImpl::PreCreateThreads() {
 }
 
 void ApplicationContextImpl::PostCreateThreads() {
+  // Delegate all encryption calls to OSCrypt.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+
+  // Trigger an instance grab on a background thread if necessary.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&IOSChromeIOThread::InitOnIO,
                                 base::Unretained(ios_chrome_io_thread_.get())));
@@ -522,6 +531,10 @@ UpgradeCenter* ApplicationContextImpl::GetUpgradeCenter() {
     DCHECK(upgrade_center_);
   }
   return upgrade_center_;
+}
+
+os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {
+  return os_crypt_async_.get();
 }
 
 void ApplicationContextImpl::OnAppEnterState(AppState app_state) {

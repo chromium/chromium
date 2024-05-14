@@ -52,6 +52,10 @@ namespace network_time {
 class NetworkTimeTracker;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace segmentation_platform {
 class OTRWebStateObserver;
 }
@@ -181,6 +185,10 @@ class ApplicationContext {
   // Returns the application's UpgradeCenter that handle presenting all the
   // notification to upgrade Chrome on iOS.
   virtual UpgradeCenter* GetUpgradeCenter() = 0;
+
+  // Returns the application's OSCryptAsync instance which can be used to create
+  // instances of Encryptor for data encryption.
+  virtual os_crypt_async::OSCryptAsync* GetOSCryptAsync() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

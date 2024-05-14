@@ -11,6 +11,7 @@
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/os_crypt/async/browser/test_utils.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -287,4 +288,11 @@ TestingApplicationContext::GetPushNotificationService() {
 UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return upgrade_center_;
+}
+
+os_crypt_async::OSCryptAsync* TestingApplicationContext::GetOSCryptAsync() {
+  if (!os_crypt_async_) {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
+  }
+  return os_crypt_async_.get();
 }

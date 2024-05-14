@@ -11,6 +11,7 @@ include_rules = [
   "+components/language",
   "+components/metrics",
   "+components/network_time",
+  "+components/os_crypt/async",
   "+components/password_manager/core/common",
   "+components/prefs",
   "+components/signin/internal/identity_manager",

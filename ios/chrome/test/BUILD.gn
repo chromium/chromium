@@ -68,6 +68,7 @@ source_set("test_support") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/network_time",
+    "//components/os_crypt/async/browser:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common",

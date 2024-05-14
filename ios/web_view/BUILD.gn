@@ -325,6 +325,7 @@ ios_web_view_deps = [
   "//components/lookalikes/core",
   "//components/metrics:library_support",
   "//components/metrics/demographics",
+  "//components/os_crypt/async/browser",
   "//components/password_manager/core/browser",
   "//components/password_manager/core/browser/affiliation:affiliation_fetching",
   "//components/password_manager/core/browser/features:password_features",

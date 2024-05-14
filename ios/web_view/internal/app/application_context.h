@@ -34,6 +34,10 @@ class NetworkContext;
 }
 }  // namespace network
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 class PrefService;
 class SafeBrowsingService;
 
@@ -69,6 +73,9 @@ class ApplicationContext {
 
   // Gets the ComponentUpdateService.
   component_updater::ComponentUpdateService* GetComponentUpdateService();
+
+  // Gets the application specific OSCryptAsync instance.
+  os_crypt_async::OSCryptAsync* GetOSCryptAsync();
 
   // Creates state tied to application threads. It is expected this will be
   // called from web::WebMainParts::PreCreateThreads.
@@ -124,6 +131,8 @@ class ApplicationContext {
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace ios_web_view

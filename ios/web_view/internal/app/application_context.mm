@@ -14,6 +14,7 @@
 #include "components/component_updater/timer_update_scheduler.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #import "components/metrics/demographics/user_demographics.h"
+#import "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -70,6 +71,14 @@ void ApplicationContext::PreCreateThreads() {
 }
 
 void ApplicationContext::PostCreateThreads() {
+  // Delegate all encryption calls to OSCrypt.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+
+  // Trigger an instance grab on a background thread if necessary.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&WebViewIOThread::InitOnIO,
@@ -219,6 +228,10 @@ ApplicationContext::GetComponentUpdateService() {
         brand_code);
   }
   return component_updater_.get();
+}
+
+os_crypt_async::OSCryptAsync* ApplicationContext::GetOSCryptAsync() {
+  return os_crypt_async_.get();
 }
 
 WebViewIOThread* ApplicationContext::GetWebViewIOThread() {

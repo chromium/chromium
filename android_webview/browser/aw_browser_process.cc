@@ -21,6 +21,7 @@
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,6 +70,12 @@ AwBrowserProcess::AwBrowserProcess(
 
   origin_trials_settings_storage_ =
       std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
+
+  // Initialize OSCryptAsync with no providers. This delegates all encryption
+  // operations to OSCrypt.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<
+          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
 }
 
 AwBrowserProcess::~AwBrowserProcess() {
@@ -82,6 +89,9 @@ void AwBrowserProcess::PreMainMessageLoopRun() {
   pref_change_registrar_.Add(prefs::kAuthServerAllowlist, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthAndroidNegotiateAccountType,
                              auth_pref_callback);
+
+  // Trigger async initialization of OSCrypt key providers.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
 
   InitSafeBrowsing();
 }
@@ -191,6 +201,10 @@ AwBrowserProcess::GetSafeBrowsingAllowlistManager() const {
 
 AwSafeBrowsingUIManager* AwBrowserProcess::GetSafeBrowsingUIManager() const {
   return safe_browsing_ui_manager_.get();
+}
+
+os_crypt_async::OSCryptAsync* AwBrowserProcess::GetOSCryptAsync() const {
+  return os_crypt_async_.get();
 }
 
 // static

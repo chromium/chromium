@@ -92,6 +92,7 @@ class TestingApplicationContext : public ApplicationContext {
   GetSegmentationOTRWebStateObserver() override;
   PushNotificationService* GetPushNotificationService() override;
   UpgradeCenter* GetUpgradeCenter() override;
+  os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
   base::ThreadChecker thread_checker_;
@@ -118,6 +119,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   __strong UpgradeCenter* upgrade_center_ = nil;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   raw_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
 };
 
