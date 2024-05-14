@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -30,6 +31,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
+#include "ui/display/display_observer.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -531,6 +534,26 @@ TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
   arc_widget->Close();
 }
 
+TEST_F(ArcAppPerformanceTracingTest, DetachDisplayDuringTrace) {
+  views::Widget* const arc_widget = PrepareArcFocusAppTracing();
+  tracing_helper().GetTracingSession()->FireTimerForTesting();
+
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->HasPresentFrames());
+
+  auto* dm = ash::Shell::Get()->display_manager();
+  display::test::DisplayManagerTestApi display_manager(dm);
+  auto prim_info = dm->GetDisplayInfo(dm->first_display_id());
+  display_manager.UpdateDisplayWithDisplayInfoList({});
+
+  EXPECT_FALSE(tracing_helper().GetTracingSession());
+
+  display_manager.UpdateDisplayWithDisplayInfoList({prim_info});
+  EXPECT_TRUE(tracing_helper().GetTracingSession());
+  arc_widget->Close();
+}
+
 TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
@@ -600,6 +623,8 @@ TEST_F(ArcAppPerformanceTracingTest, GhostWindowTurnsIntoTaskWindow) {
   exo::SetShellApplicationId(widget->GetNativeWindow(), kAppId);
 
   ASSERT_TRUE(tracing_helper().GetTracingSession());
+
+  widget->Close();
 }
 
 }  // namespace arc

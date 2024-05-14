@@ -36,6 +36,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/aura/window.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 
 // Enable VLOG level 1.
@@ -147,6 +148,7 @@ ArcAppPerformanceTracing::ArcAppPerformanceTracing(
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
   }
   ArcAppListPrefs::Get(context_)->AddObserver(this);
+  display::Screen::GetScreen()->AddObserver(this);
 }
 
 // Releasing resources in DTOR is not safe, see |Shutdown|.
@@ -180,13 +182,14 @@ void ArcAppPerformanceTracing::SetCustomSessionReadyCallbackForTesting(
   custom_session_ready_callback_ = std::move(callback);
 }
 
-
 void ArcAppPerformanceTracing::MaybeCancelTracing() {
   jankiness_timer_.Stop();
   session_.reset();
 }
 
 void ArcAppPerformanceTracing::Shutdown() {
+  display::Screen::GetScreen()->RemoveObserver(this);
+
   MaybeCancelTracing();
 
   // |session_|. Make sure that |active_window_| is detached.
@@ -385,6 +388,21 @@ void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
   DetachActiveWindow();
 }
 
+// This method is invoked when a display changes between detected and not
+// detected. One can test manually on a Chromebook by turning off
+// sleep-on-lid-close in the Power settings and closing the lid during a trace.
+// Jankiness tracing is not affected, as this does not rely on frame present
+// events, and uses internal Android tracing.
+void ArcAppPerformanceTracing::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (!ExpectingPresentEvents()) {
+    session_.reset();
+  } else {
+    MaybeStartTracing();
+  }
+}
+
 void ArcAppPerformanceTracing::FinalizeJankinessTracing(bool stopped_early) {
   // Never started. Nothing to do.
   if (!jankiness_timer_.IsRunning() && stopped_early) {
@@ -488,6 +506,10 @@ void ArcAppPerformanceTracing::MaybeStartTracing() {
   // Check if we have all conditions met, ARC++ window is active and information
   // is available for associated task.
   if (!active_task_) {
+    return;
+  }
+
+  if (!ExpectingPresentEvents()) {
     return;
   }
 

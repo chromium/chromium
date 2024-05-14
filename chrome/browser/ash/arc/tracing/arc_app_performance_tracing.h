@@ -23,6 +23,7 @@
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace aura {
@@ -44,7 +45,8 @@ class ArcAppPerformanceTracing : public KeyedService,
                                  public wm::ActivationChangeObserver,
                                  public aura::WindowObserver,
                                  public ArcAppListPrefs::Observer,
-                                 public exo::SurfaceObserver {
+                                 public exo::SurfaceObserver,
+                                 public display::DisplayObserver {
  public:
   using CustomSessionReadyCallback = base::RepeatingCallback<void()>;
 
@@ -99,6 +101,10 @@ class ArcAppPerformanceTracing : public KeyedService,
   // exo::SurfaceObserver:
   void OnCommit(exo::Surface* surface) override;
   void OnSurfaceDestroying(exo::Surface* surface) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   void HandleActiveAppRendered(base::Time timestamp);
 
