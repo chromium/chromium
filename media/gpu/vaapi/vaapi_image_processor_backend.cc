@@ -231,22 +231,16 @@ void VaapiImageProcessorBackend::ProcessFrame(
     return;
   }
 
-  // TODO(339518553): Remove these temporary variables.
-  auto tmp_va_surface_src = base::MakeRefCounted<VASurface>(
-      src_va_surface->id(), src_va_surface->size(), src_va_surface->format(),
-      base::DoNothing());
-  auto tmp_va_surface_dst = base::MakeRefCounted<VASurface>(
-      dst_va_surface->id(), dst_va_surface->size(), dst_va_surface->format(),
-      base::DoNothing());
   // VA-API performs pixel format conversion and scaling without any filters.
-  if (!vaapi_wrapper_->BlitSurface(
-          *tmp_va_surface_src.get(), *tmp_va_surface_dst.get(),
-          input_frame->visible_rect(), output_frame->visible_rect()
+  if (!vaapi_wrapper_->BlitSurface(src_va_surface->id(), src_va_surface->size(),
+                                   dst_va_surface->id(), dst_va_surface->size(),
+                                   input_frame->visible_rect(),
+                                   output_frame->visible_rect()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                                           ,
-          va_protected_session_id
+                                       ,
+                                   va_protected_session_id
 #endif
-          )) {
+                                   )) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (use_protected &&
         vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {

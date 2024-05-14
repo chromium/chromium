@@ -237,22 +237,17 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  // TODO(339518553): Remove these temporary variables.
-  auto input_tmp_surface = base::MakeRefCounted<VASurface>(
-      input_surface->id(), input_surface->size(), input_surface->format(),
-      base::DoNothing() /* release_cb */);
-  auto blit_surface =
-      base::MakeRefCounted<VASurface>(va_surface_id_, input_size, va_format,
-                                      base::DoNothing() /* release_cb */);
-  if (!vpp_vaapi_wrapper_->BlitSurface(*input_tmp_surface, *blit_surface)) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(input_surface->id(),
+                                       input_surface->size(), va_surface_id_,
+                                       input_size)) {
     VLOGF(1) << "Failed to blit surfaces";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
   // We should call vaSyncSurface() when passing surface between contexts. See:
   // https://lists.01.org/pipermail/intel-vaapi-media/2019-June/000131.html
-  // Sync |blit_surface| since it it passing to the JPEG encoding context.
-  if (!vpp_vaapi_wrapper_->SyncSurface(blit_surface->id())) {
+  // Sync |va_surface_id_| since it it passing to the JPEG encoding context.
+  if (!vpp_vaapi_wrapper_->SyncSurface(va_surface_id_)) {
     VLOGF(1) << "Cannot sync VPP output surface";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -284,8 +279,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   }
 
   if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/nullptr,
-                             /*exif_buffer_size=*/0u, quality,
-                             blit_surface->id(), cached_output_buffer_->id(),
+                             /*exif_buffer_size=*/0u, quality, va_surface_id_,
+                             cached_output_buffer_->id(),
                              /*exif_offset=*/nullptr)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
@@ -360,7 +355,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   uint8_t* frame_content = output_memory + output_offset;
   const size_t max_frame_size = output_size - output_offset;
   if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
-                                            blit_surface->id(), frame_content,
+                                            va_surface_id_, frame_content,
                                             max_frame_size, &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);

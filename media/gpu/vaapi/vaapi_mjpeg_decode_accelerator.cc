@@ -498,10 +498,6 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureVpp(
     return false;
   }
 
-  scoped_refptr<VASurface> src_surface = base::MakeRefCounted<VASurface>(
-      surface->id(), surface->size(), surface->format(),
-      /*release_cb=*/base::DoNothing());
-
   // We should call vaSyncSurface() when passing surface between contexts, but
   // on Intel platform, we don't have to call vaSyncSurface() because the
   // underlying drivers handle synchronization between different contexts. See:
@@ -513,12 +509,9 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureVpp(
     VLOGF(1) << "Cannot sync VPP input surface";
     return false;
   }
-  // TODO(339518553): Remove this temporary variable.
-  scoped_refptr<VASurface> output_tmp_surface = base::MakeRefCounted<VASurface>(
-      output_surface->id(), output_surface->size(), output_surface->format(),
-      base::DoNothing() /* release_cb */);
-  if (!vpp_vaapi_wrapper_->BlitSurface(*src_surface, *output_tmp_surface,
-                                       crop_rect)) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(surface->id(), surface->size(),
+                                       output_surface->id(),
+                                       output_surface->size(), crop_rect)) {
     VLOGF(1) << "Cannot convert decoded image into output buffer";
     return false;
   }

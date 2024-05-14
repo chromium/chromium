@@ -748,15 +748,9 @@ TEST_P(VaapiVppTest, BlitWithVAAllocatedSurfaces) {
   std::unique_ptr<ScopedVASurface> scoped_surface_out =
       std::move(scoped_surfaces[0]);
 
-  scoped_refptr<VASurface> surface_in = base::MakeRefCounted<VASurface>(
-      scoped_surface_in->id(), kInputSize, va_rt_format_in, base::DoNothing());
-  scoped_refptr<VASurface> surface_out =
-      base::MakeRefCounted<VASurface>(scoped_surface_out->id(), kOutputSize,
-                                      va_rt_format_out, base::DoNothing());
-
-  ASSERT_TRUE(wrapper->BlitSurface(*surface_in, *surface_out,
-                                   gfx::Rect(kInputSize),
-                                   gfx::Rect(kOutputSize)));
+  ASSERT_TRUE(wrapper->BlitSurface(
+      scoped_surface_in->id(), kInputSize, scoped_surface_out->id(),
+      kOutputSize, gfx::Rect(kInputSize), gfx::Rect(kOutputSize)));
   ASSERT_TRUE(wrapper->SyncSurface(scoped_surface_out->id()));
   wrapper->DestroyContext();
 }

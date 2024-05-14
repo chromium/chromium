@@ -654,26 +654,30 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
     return false;
   }
 
-  *input_surface =
+  const auto* input_tmp_surface =
       CreateInputSurface(*vaapi_wrapper_, encode_size,
                          {VaapiWrapper::SurfaceUsageHint::kVideoEncoder});
-  if (!*input_surface) {
+  if (!input_tmp_surface) {
     NotifyError({EncoderStatus::Codes::kEncoderIllegalState,
                  "Failed to create input surface"});
     return false;
   }
 
-  if (!vaapi_wrapper_->UploadVideoFrameToSurface(frame, (*input_surface)->id(),
-                                                 (*input_surface)->size())) {
+  if (!vaapi_wrapper_->UploadVideoFrameToSurface(frame, input_tmp_surface->id(),
+                                                 input_tmp_surface->size())) {
     NotifyError({EncoderStatus::Codes::kEncoderHardwareDriverError,
                  "Failed to upload frame"});
     return false;
   }
 
+  *input_surface = base::MakeRefCounted<VASurface>(
+      input_tmp_surface->id(), input_tmp_surface->size(),
+      input_tmp_surface->format(), base::DoNothing());
+
   return !!*reconstructed_surface;
 }
 
-scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateInputSurface(
+ScopedVASurface* VaapiVideoEncodeAccelerator::CreateInputSurface(
     VaapiWrapper& vaapi_wrapper,
     const gfx::Size& encode_size,
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
@@ -689,10 +693,7 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateInputSurface(
 
     input_surfaces_[encode_size] = std::move(surface);
   }
-
-  const ScopedVASurface& surface = *input_surfaces_[encode_size];
-  return base::MakeRefCounted<VASurface>(surface.id(), surface.size(),
-                                         surface.format(), base::DoNothing());
+  return input_surfaces_[encode_size].get();
 }
 
 scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateEncodeSurface(
@@ -777,7 +778,7 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::ExecuteBlitSurface(
     }
   }
 
-  auto blit_surface =
+  const auto* blit_surface =
       CreateInputSurface(*vpp_vaapi_wrapper_, encode_size,
                          {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite,
                           VaapiWrapper::SurfaceUsageHint::kVideoEncoder});
@@ -788,9 +789,9 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::ExecuteBlitSurface(
   TRACE_EVENT2("media,gpu", "VAVEA::ImageProcessor::BlitSurface",
                "source_visible_rect", source_visible_rect.ToString(),
                "dest_visible_rect", gfx::Rect(encode_size).ToString());
-  if (!vpp_vaapi_wrapper_->BlitSurface(source_surface, *blit_surface,
-                                       source_visible_rect,
-                                       gfx::Rect(encode_size))) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(
+          source_surface.id(), source_surface.size(), blit_surface->id(),
+          blit_surface->size(), source_visible_rect, gfx::Rect(encode_size))) {
     NotifyError({EncoderStatus::Codes::kFormatConversionError,
                  "Failed BlitSurface on frame size: " +
                      source_surface.size().ToString() +
@@ -799,7 +800,9 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::ExecuteBlitSurface(
     return nullptr;
   }
 
-  return blit_surface;
+  return base::MakeRefCounted<VASurface>(
+      blit_surface->id(), blit_surface->size(), blit_surface->format(),
+      base::DoNothing());
 }
 
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>

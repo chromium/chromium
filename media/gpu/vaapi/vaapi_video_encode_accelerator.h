@@ -160,11 +160,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // creation fails.
   scoped_refptr<VASurface> CreateEncodeSurface(const gfx::Size& encode_size);
 
-  // Creates VASurface using |vaapi_wrapper| whose sizes are |encode_size|
-  // with |surface_usage_hints|. Returns nullptr if the surfaces fail to be
-  // created successfully. The created surfaces are filled into
-  // |input_surfaces_[encode_size]|.
-  scoped_refptr<VASurface> CreateInputSurface(
+  // Creates or retrieves a ScopedVASurface compatible with |encode_size| and
+  // |surface_usage_hints|. Returns nullptr if the surfaces fail to be created
+  // successfully. Created surfaces are kept in |input_surfaces_[encode_size]|.
+  ScopedVASurface* CreateInputSurface(
       VaapiWrapper& vaapi_wrapper,
       const gfx::Size& encode_size,
       const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints);

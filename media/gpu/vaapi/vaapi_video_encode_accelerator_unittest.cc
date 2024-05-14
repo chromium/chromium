@@ -181,13 +181,12 @@ class MockVaapiWrapper : public VaapiWrapper {
   MOCK_METHOD0(DestroyContext, void());
   MOCK_METHOD1(DestroySurface, void(VASurfaceID));
 
-  MOCK_METHOD4(DoBlitSurface,
-               bool(const VASurface&,
-                    const VASurface&,
-                    std::optional<gfx::Rect>,
-                    std::optional<gfx::Rect>));
-  bool BlitSurface(const VASurface& va_surface_src,
-                   const VASurface& va_surface_dest,
+  MOCK_METHOD2(DoBlitSurface,
+               bool(std::optional<gfx::Rect>, std::optional<gfx::Rect>));
+  bool BlitSurface(VASurfaceID va_surface_src_id,
+                   const gfx::Size& va_surface_src_size,
+                   VASurfaceID va_surface_dst_id,
+                   const gfx::Size& va_surface_dst_size,
                    std::optional<gfx::Rect> src_rect = std::nullopt,
                    std::optional<gfx::Rect> dest_rect = std::nullopt
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -195,7 +194,7 @@ class MockVaapiWrapper : public VaapiWrapper {
                    VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
 #endif
                    ) override {
-    return DoBlitSurface(va_surface_src, va_surface_dest, src_rect, dest_rect);
+    return DoBlitSurface(src_rect, dest_rect);
   }
 
  private:
@@ -604,7 +603,7 @@ class VaapiVideoEncodeAcceleratorTest
         std::optional<gfx::Rect> default_rect = gfx::Rect(kDefaultEncodeSize);
         std::optional<gfx::Rect> layer_rect = gfx::Rect(svc_resolutions[i]);
         EXPECT_CALL(*mock_vpp_vaapi_wrapper_,
-                    DoBlitSurface(_, _, default_rect, layer_rect))
+                    DoBlitSurface(default_rect, layer_rect))
             .WillOnce(Return(true));
     }
 

@@ -3043,8 +3043,10 @@ bool VaapiWrapper::GetMinAV1SegmentSize(VideoCodecProfile profile,
   return true;
 }
 
-bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
-                               const VASurface& va_surface_dest,
+bool VaapiWrapper::BlitSurface(VASurfaceID va_surface_src_id,
+                               const gfx::Size& va_surface_src_size,
+                               VASurfaceID va_surface_dst_id,
+                               const gfx::Size& va_surface_dst_size,
                                std::optional<gfx::Rect> src_rect,
                                std::optional<gfx::Rect> dest_rect
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -3083,16 +3085,16 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
 
     memset(pipeline_param, 0, sizeof *pipeline_param);
     if (!src_rect)
-      src_rect.emplace(gfx::Rect(va_surface_src.size()));
+      src_rect.emplace(gfx::Rect(va_surface_src_size));
     if (!dest_rect)
-      dest_rect.emplace(gfx::Rect(va_surface_dest.size()));
+      dest_rect.emplace(gfx::Rect(va_surface_dst_size));
 
     input_region.x = src_rect->x();
     input_region.y = src_rect->y();
     input_region.width = src_rect->width();
     input_region.height = src_rect->height();
     pipeline_param->surface_region = &input_region;
-    pipeline_param->surface = va_surface_src.id();
+    pipeline_param->surface = va_surface_src_id;
     pipeline_param->surface_color_standard = VAProcColorStandardNone;
 
     output_region.x = dest_rect->x();
@@ -3137,7 +3139,7 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                src_rect->ToString(), "dest_rect", dest_rect->ToString());
 
   VAStatus va_res =
-      vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id());
+      vaBeginPicture(va_display_, va_context_id_, va_surface_dst_id);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVABeginPicture, false);
 
   VABufferID va_buffer_id = va_buffer_for_vpp_->id();
