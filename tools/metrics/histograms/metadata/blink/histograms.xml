@@ -2675,7 +2675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.IntersectionObservation.MinScrollDeltaToUpdateX"
-    units="pixels" expires_after="2024-05-01">
+    units="pixels" expires_after="2024-06-30">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2687,7 +2687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.IntersectionObservation.MinScrollDeltaToUpdateY"
-    units="pixels" expires_after="2024-05-01">
+    units="pixels" expires_after="2024-06-30">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2719,7 +2719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.IntersectionObservation.UpdateType"
-    enum="IntersectionObservationUpdateType" expires_after="2024-05-01">
+    enum="IntersectionObservationUpdateType" expires_after="2024-06-30">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
