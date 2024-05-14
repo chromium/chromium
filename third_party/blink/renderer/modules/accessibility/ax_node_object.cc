@@ -1914,7 +1914,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
     if (GetLayoutObject()->IsSVGShape()) {
       return ax::mojom::blink::Role::kGraphicsSymbol;
     }
-    if (GetLayoutObject()->IsSVGForeignObject() || IsA<SVGGElement>(node)) {
+    if (GetLayoutObject()->IsSVGForeignObject()) {
       return ax::mojom::blink::Role::kGroup;
     }
     if (IsA<SVGUseElement>(node)) {
@@ -2004,6 +2004,10 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     }
 
     return ax::mojom::blink::Role::kGenericContainer;
+  }
+
+  if (IsA<SVGGElement>(*GetNode())) {
+    return ax::mojom::blink::Role::kGroup;
   }
 
   if (IsA<HTMLButtonElement>(*GetNode()))
