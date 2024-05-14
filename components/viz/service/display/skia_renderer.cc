@@ -1514,6 +1514,12 @@ void SkiaRenderer::BeginDrawingRenderPass(
                                               /*do_save=*/true);
 
     const SkRect layer_bounds = gfx::RectToSkRect(render_pass_update_rect);
+    if (scissor_rect_.has_value()) {
+      // Set the clip rect so when we pop the layer, we only touch pixels within
+      // the update rect.
+      current_canvas_->clipRect(layer_bounds);
+    }
+
     SkPaint no_blend;
     no_blend.setBlendMode(SkBlendMode::kSrc);
     const gfx::ColorSpace blend_color_space =
