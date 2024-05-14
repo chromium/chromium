@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -106,6 +108,25 @@ UrlIdentity PermissionPromptBaseView::GetUrlIdentity(
   }
 
   return url_identity;
+}
+
+std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
+    const std::vector<raw_ptr<permissions::PermissionRequest,
+                              VectorExperimental>>& visible_requests) {
+  CHECK_GT(visible_requests.size(), 0u);
+
+  if (visible_requests.size() == 1 &&
+      visible_requests[0]->GetAllowAlwaysText().has_value()) {
+    // A prompt for a single request can use an "allow always" text that is
+    // customized for it.
+    return visible_requests[0]->GetAllowAlwaysText().value();
+  }
+
+  // Use the generic text.
+  return l10n_util::GetStringUTF16(
+      permissions::feature_params::kUseWhileVisitingLanguage.Get()
+          ? IDS_PERMISSION_ALLOW_WHILE_VISITING
+          : IDS_PERMISSION_ALLOW_EVERY_VISIT);
 }
 
 BEGIN_METADATA(PermissionPromptBaseView)

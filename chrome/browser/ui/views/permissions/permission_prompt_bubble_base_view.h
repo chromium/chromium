@@ -99,10 +99,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   static bool IsOneTimePermission(
       permissions::PermissionPrompt::Delegate& delegate);
 
-  static std::u16string GetAllowAlwaysText(
-      const std::vector<raw_ptr<permissions::PermissionRequest,
-                                VectorExperimental>>& visible_requests);
-
   PermissionDialogButton GetPermissionDialogButton(int button_id) {
     return static_cast<PermissionDialogButton>(button_id);
   }
