@@ -31,11 +31,9 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
     private ChromeSwitchPreference mSecureDnsSwitch;
     private SecureDnsProviderPreference mSecureDnsProviderPreference;
 
-    public static boolean isUiEnabled() {
-        return SecureDnsBridge.isUiEnabled();
-    }
-
-    /** @return A summary for use in the Preference that opens this fragment. */
+    /**
+     * @return A summary for use in the Preference that opens this fragment.
+     */
     public static String getSummary(Context context) {
         @SecureDnsMode int mode = SecureDnsBridge.getMode();
         if (mode == SecureDnsMode.OFF) {

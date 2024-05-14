@@ -2496,7 +2496,6 @@ if (!is_android) {
       "../browser/net/chrome_shared_dictionary_browsertest.cc",
       "../browser/net/cookie_policy_browsertest.cc",
       "../browser/net/cookie_store_samesite_browsertest.cc",
-      "../browser/net/dns_over_https_browsertest.cc",
       "../browser/net/dns_probe_browsertest.cc",
       "../browser/net/errorpage_browsertest.cc",
       "../browser/net/explicitly_allowed_network_ports_browsertest.cc",

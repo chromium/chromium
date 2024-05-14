@@ -1720,10 +1720,6 @@ bool ShouldLinkSecureDnsOsSettings() {
 #endif
 }
 
-bool IsSecureDnsAvailable() {
-  return features::kDnsOverHttpsShowUiParam.Get();
-}
-
 void AddPrivacyStrings(content::WebUIDataSource* html_source,
                        Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -1958,13 +1954,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("enhancedProtectionHelpCenterURL",
                          chrome::kSafeBrowsingInChromeHelpCenterURL);
 
-  bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();
-  html_source->AddBoolean("showSecureDnsSetting",
-                          show_secure_dns && !link_secure_dns);
+  html_source->AddBoolean("showSecureDnsSetting", !link_secure_dns);
 #if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean("showSecureDnsSettingLink",
-                          show_secure_dns && link_secure_dns);
+  html_source->AddBoolean("showSecureDnsSettingLink", link_secure_dns);
   html_source->AddString(
       "chromeOSPrivacyAndSecuritySectionPath",
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath);

@@ -239,11 +239,7 @@ IN_PROC_BROWSER_TEST_P(StubResolverConfigReaderBrowsertest,
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(async_dns_feature_enabled,
             config_reader_->GetInsecureStubResolverEnabled());
-  if (base::FeatureList::IsEnabled(features::kDnsOverHttps)) {
-    EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
-  } else {
-    EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kOff);
-  }
+  EXPECT_EQ(secure_dns_config.mode(), net::SecureDnsMode::kAutomatic);
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 }
 

@@ -124,43 +124,9 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
   if (set_up_pref_defaults) {
     local_state_->SetDefaultPrefValue(prefs::kBuiltInDnsClientEnabled,
                                       base::Value(ShouldEnableAsyncDns()));
-    net::SecureDnsMode default_secure_dns_mode = net::SecureDnsMode::kOff;
-    std::string default_doh_templates;
-    if (base::FeatureList::IsEnabled(features::kDnsOverHttps)) {
-      if (features::kDnsOverHttpsFallbackParam.Get()) {
-        default_secure_dns_mode = net::SecureDnsMode::kAutomatic;
-      } else {
-        default_secure_dns_mode = net::SecureDnsMode::kSecure;
-      }
-      default_doh_templates = features::kDnsOverHttpsTemplatesParam.Get();
-    }
-    local_state_->SetDefaultPrefValue(
-        prefs::kDnsOverHttpsMode,
-        base::Value(SecureDnsConfig::ModeToString(default_secure_dns_mode)));
-    local_state_->SetDefaultPrefValue(prefs::kDnsOverHttpsTemplates,
-                                      base::Value(default_doh_templates));
-
-    // If the user has explicitly enabled or disabled the DoH experiment in
-    // chrome://flags and the DoH UI setting is not visible, store that choice
-    // in the user prefs so that it can be persisted after the experiment ends.
-    // Also make sure to remove the stored prefs value if the user has changed
-    // their chrome://flags selection to the default.
-    if (!features::kDnsOverHttpsShowUiParam.Get()) {
-      flags_ui::PrefServiceFlagsStorage flags_storage(local_state_);
-      std::set<std::string> entries = flags_storage.GetFlags();
-      if (entries.count("dns-over-https@1")) {
-        // The user has "Enabled" selected.
-        local_state_->SetString(prefs::kDnsOverHttpsMode,
-                                SecureDnsConfig::kModeAutomatic);
-      } else if (entries.count("dns-over-https@2")) {
-        // The user has "Disabled" selected.
-        local_state_->SetString(prefs::kDnsOverHttpsMode,
-                                SecureDnsConfig::kModeOff);
-      } else {
-        // The user has "Default" selected.
-        local_state_->ClearPref(prefs::kDnsOverHttpsMode);
-      }
-    }
+    local_state_->SetDefaultPrefValue(prefs::kDnsOverHttpsMode,
+                                      base::Value(SecureDnsConfig::ModeToString(
+                                          net::SecureDnsMode::kAutomatic)));
   }
 
   pref_change_registrar_.Add(prefs::kBuiltInDnsClientEnabled, pref_callback);

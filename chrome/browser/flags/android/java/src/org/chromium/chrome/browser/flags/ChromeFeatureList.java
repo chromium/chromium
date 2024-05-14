@@ -282,7 +282,6 @@ public abstract class ChromeFeatureList {
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
-    public static final String DNS_OVER_HTTPS = "DnsOverHttps";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";
     public static final String DRAG_DROP_INTO_OMNIBOX = "DragDropIntoOmnibox";
     public static final String DRAG_DROP_TAB_TEARING = "DragDropTabTearing";

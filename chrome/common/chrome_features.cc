@@ -342,40 +342,6 @@ BASE_FEATURE(kDisruptiveNotificationPermissionRevocation,
              "DisruptiveNotificationPermissionRevocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable DNS over HTTPS (DoH).
-BASE_FEATURE(kDnsOverHttps,
-             "DnsOverHttps",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-// Set whether fallback to insecure DNS is allowed by default. This setting may
-// be overridden for individual transactions.
-const base::FeatureParam<bool> kDnsOverHttpsFallbackParam{&kDnsOverHttps,
-                                                          "Fallback", true};
-
-// Sets whether the DoH setting is displayed in the settings UI.
-const base::FeatureParam<bool> kDnsOverHttpsShowUiParam{&kDnsOverHttps,
-                                                        "ShowUi",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-                                                        true
-#else
-                                                        false
-#endif
-};
-
-// Supply one or more space-separated DoH server URI templates to use when this
-// feature is enabled. If no templates are specified, then a hardcoded mapping
-// will be used to construct a list of DoH templates associated with the IP
-// addresses of insecure resolvers in the discovered configuration.
-const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam{
-    &kDnsOverHttps, "Templates", ""};
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enable WebHID on extension service workers.
 BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,

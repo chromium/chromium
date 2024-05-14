@@ -208,10 +208,6 @@ BASE_DECLARE_FEATURE(kDisruptiveNotificationPermissionRevocation);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kDnsOverHttps);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kDnsOverHttpsFallbackParam;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kDnsOverHttpsShowUiParam;
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kDnsOverHttpsTemplatesParam;
 COMPONENT_EXPORT(CHROME_FEATURES)
 

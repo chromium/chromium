@@ -336,10 +336,6 @@ const std::vector<SearchConcept>& GetPrivacyControlsSearchConcepts() {
   return *tags;
 }
 
-bool IsSecureDnsAvailable() {
-  return ::features::kDnsOverHttpsShowUiParam.Get();
-}
-
 }  // namespace
 
 PrivacySection::PrivacySection(Profile* profile,
@@ -398,8 +394,7 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 
   web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
 
-  if (IsSecureDnsAvailable())
-    web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
+  web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
 
   // `sync_subsection_` is initialized only if the feature revamp wayfinding is
   // enabled.
@@ -686,7 +681,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
 
-  html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
+  html_source->AddBoolean("showSecureDnsSetting", true);
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
   html_source->AddBoolean(
       "isDeprecateDnsDialogEnabled",

@@ -6715,32 +6715,6 @@
             ]
         }
     ],
-    "DnsOverHttpsUi": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledLaunch",
-                    "params": {
-                        "DisabledProviders": "Quad9Secure",
-                        "ShowUi": "true"
-                    },
-                    "enable_features": [
-                        "DnsOverHttps",
-                        "DnsOverHttpsUpgrade"
-                    ]
-                }
-            ]
-        }
-    ],
     "DoNotEvictOnAXLocationChange": [
         {
             "platforms": [

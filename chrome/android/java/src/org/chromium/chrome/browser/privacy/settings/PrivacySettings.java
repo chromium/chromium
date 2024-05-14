@@ -195,9 +195,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                             .settings_https_first_mode_with_advanced_protection_summary));
         }
 
-        Preference secureDnsPref = findPreference(PREF_SECURE_DNS);
-        secureDnsPref.setVisible(SecureDnsSettings.isUiEnabled());
-
         Preference syncAndServicesLink = findPreference(PREF_SYNC_AND_SERVICES_LINK);
         syncAndServicesLink.setSummary(buildSyncAndServicesLink());
 
