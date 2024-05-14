@@ -19,6 +19,46 @@ cryptography: it's expected for crates we import to be \"good enough\" citizens,
 so they'll at least be forthcoming if they try to implement something
 cryptographic. When in doubt, please ask an expert."""
 
+[audits.chromeos.criteria.ub-risk-0]
+description = """
+No unsafe code.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-0
+"""
+
+[audits.chromeos.criteria.ub-risk-1]
+description = """
+Excellent soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-1
+"""
+
+[audits.chromeos.criteria.ub-risk-2]
+description = """
+Negligible unsoundness or average soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-2
+"""
+
+[audits.chromeos.criteria.ub-risk-3]
+description = """
+Mild unsoundness or suboptimal soundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-3
+"""
+
+[audits.chromeos.criteria.ub-risk-4]
+description = """
+Extreme unsoundness.
+
+Full description of the audit criteria can be found at
+https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-risk-4
+"""
+
 [[audits.chromeos.audits.anyhow]]
 who = "ChromeOS"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -92,6 +132,11 @@ version = "0.4.17"
 who = "George Burgess IV <gbiv@google.com>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.4.17 -> 0.4.20"
+
+[[audits.chromeos.audits.memchr]]
+who = "Ying Hsu <yinghsu@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+version = "2.7.2"
 
 [[audits.chromeos.audits.rand_chacha]]
 who = "Android Legacy"
@@ -214,7 +259,7 @@ https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#ub-r
 
 [[audits.google.audits.bytemuck]]
 who = [
-    "Manish Goregaokar <manishearth@gmail.com>",
+    "Manish Goregaokar <manishearth@google.com>",
     "Łukasz Anforowicz <lukasza@google.com>",
 ]
 criteria = ["does-not-implement-crypto", "ub-risk-2"]
