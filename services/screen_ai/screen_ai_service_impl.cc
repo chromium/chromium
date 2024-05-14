@@ -409,9 +409,6 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
   // The original caller is always replied to, and an empty AXTreeUpdate tells
   // that the annotation function was not successful.
   std::move(callback).Run(update);
-
-  // TODO(crbug.com/40904361): Send the AXTreeUpdate to the browser
-  // side client for Backlight.
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
