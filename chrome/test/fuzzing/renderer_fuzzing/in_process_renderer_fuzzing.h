@@ -51,6 +51,7 @@ class RendererFuzzerProxy : public InProcessFuzzer {
   RendererFuzzerProxy(InProcessFuzzerOptions options = {});
 
   int Fuzz(const uint8_t* data, size_t size) override;
+  base::CommandLine::StringVector GetChromiumCommandLineArguments() override;
 
  private:
   std::string fuzzer_name_;
@@ -94,6 +95,12 @@ int RendererFuzzerProxy<RendererFuzzer>::Fuzz(const uint8_t* data,
       )",
                                       fuzzer_name_, b64)));
   return 0;
+}
+
+template <typename RendererFuzzer>
+base::CommandLine::StringVector
+RendererFuzzerProxy<RendererFuzzer>::GetChromiumCommandLineArguments() {
+  return {FILE_PATH_LITERAL("--disable-kill-after-bad-ipc")};
 }
 
 // Registers the given class as a renderer fuzzer which will be driven by an
