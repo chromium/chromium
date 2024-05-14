@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_TEST_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
-#define COMPONENTS_VIZ_TEST_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
+#ifndef GPU_COMMAND_BUFFER_CLIENT_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
+#define GPU_COMMAND_BUFFER_CLIENT_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -12,7 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 
-namespace viz {
+namespace gpu {
 
 class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
  public:
@@ -71,6 +71,6 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   bool fail_on_create_ = false;
 };
 
-}  // namespace viz
+}  // namespace gpu
 
-#endif  // COMPONENTS_VIZ_TEST_TEST_GPU_MEMORY_BUFFER_MANAGER_H_
+#endif  // GPU_COMMAND_BUFFER_CLIENT_TEST_GPU_MEMORY_BUFFER_MANAGER_H_

@@ -464,6 +464,7 @@ test("capture_unittests") {
     ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//gpu:test_support",
     "//gpu/command_buffer/client",
     "//media:test_support",
     "//media/capture/mojom:image_capture",

@@ -13,8 +13,8 @@
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_frame_sink_manager.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/compositor/compositor.h"
 
@@ -52,7 +52,7 @@ class TestImageTransportFactory : public ui::ContextFactory,
 
  private:
   cc::TestTaskGraphRunner task_graph_runner_;
-  viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
+  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;

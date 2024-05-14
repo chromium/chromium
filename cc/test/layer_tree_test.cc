@@ -1175,7 +1175,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
   ASSERT_TRUE(image_worker_->Start());
 
   gpu_memory_buffer_manager_ =
-      std::make_unique<viz::TestGpuMemoryBufferManager>();
+      std::make_unique<gpu::TestGpuMemoryBufferManager>();
   task_graph_runner_ = std::make_unique<TestTaskGraphRunner>();
 
   if (mode == CompositorMode::THREADED) {

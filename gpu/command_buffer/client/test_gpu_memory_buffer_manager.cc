@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,7 +14,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-namespace viz {
+namespace gpu {
 namespace {
 
 class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
@@ -207,4 +207,4 @@ bool TestGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
   return false;
 }
 
-}  // namespace viz
+}  // namespace gpu

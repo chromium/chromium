@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "ui/compositor/compositor.h"
 
 namespace cc {
@@ -51,7 +51,7 @@ class FakeContextFactory : public ui::ContextFactory {
  private:
   raw_ptr<cc::FakeLayerTreeFrameSink> frame_sink_ = nullptr;
   cc::TestTaskGraphRunner task_graph_runner_;
-  viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
+  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
 };
 

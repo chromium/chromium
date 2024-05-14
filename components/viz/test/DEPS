@@ -12,6 +12,7 @@ include_rules = [
   "+gpu/command_buffer/client/raster_interface.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/client/shared_memory_limits.h",
+  "+gpu/command_buffer/client/test_gpu_memory_buffer_manager.h",
   "+gpu/command_buffer/common",
   "+gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h",
   "+gpu/config/gpu_feature_info.h",

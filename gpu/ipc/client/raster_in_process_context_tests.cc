@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/raster_in_process_context.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -15,7 +16,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "gpu/ipc/in_process_gpu_thread_holder.h"
-#include "gpu/ipc/raster_in_process_context.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"

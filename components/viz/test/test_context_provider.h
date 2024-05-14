@@ -22,9 +22,9 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
@@ -134,7 +134,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
 
   void UseTestGMBInSharedImageCreationWithBufferUsage() {
-    test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
+    test_gmb_manager_ = std::make_unique<gpu::TestGpuMemoryBufferManager>();
   }
 
  protected:
@@ -154,7 +154,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
 
   // If non-null, this will be used to back mappable SharedImages with test
   // GpuMemoryBuffers.
-  std::unique_ptr<TestGpuMemoryBufferManager> test_gmb_manager_;
+  std::unique_ptr<gpu::TestGpuMemoryBufferManager> test_gmb_manager_;
 };
 
 class TestContextProvider

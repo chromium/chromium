@@ -5,6 +5,7 @@
 #include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
 
 #include <GLES2/gl2.h>
+
 #include <cstddef>
 #include <memory>
 
@@ -16,10 +17,10 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "content/renderer/media/codec_factory.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -498,7 +499,7 @@ class GpuVideoAcceleratorFactoriesImplTest : public testing::Test {
 
   NiceMock<gpu::MockGpuChannel> mock_gpu_channel_;
   NiceMock<MockGLESInterface> mock_context_gl_;
-  viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
+  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   scoped_refptr<MockContextProviderCommandBuffer> mock_context_provider_;
   std::unique_ptr<gpu::CommandBufferProxyImpl> gpu_command_buffer_proxy_;
