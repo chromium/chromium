@@ -296,7 +296,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private lastDownloadedLang_: string;
   private emptyStateSubheading_: string;
 
-  private previousHighlight_: HTMLElement[] = [];
+  private previousHighlights_: HTMLElement[] = [];
   private currentColorSuffix_: string;
   private isHighlightOn_: boolean = true;
 
@@ -481,12 +481,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // If speech is resumed, this won't be restored.
       // TODO(b/40927698): Restore the previous highlight after speech
       // is resumed after a selection.
-      this.previousHighlight_.forEach((element) => {
+      this.previousHighlights_.forEach((element) => {
         if (element) {
-          element.className = '';
+          element.classList.remove(previousReadHighlightClass);
         }
       });
-      this.previousHighlight_ = [];
+      this.previousHighlights_ = [];
 
     };
 
@@ -539,11 +539,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     let ancestor;
-    if (node.parentElement.className === parentOfHighlightClass) {
+    if (node.parentElement.classList.contains(parentOfHighlightClass)) {
       ancestor = node.parentNode;
-    } else if (
-        node.parentElement.parentElement?.className ===
-        parentOfHighlightClass) {
+    } else if (node.parentElement.parentElement?.classList.contains(
+                   parentOfHighlightClass)) {
       ancestor = node.parentNode.parentNode;
     }
 
@@ -1763,7 +1762,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       highlightStart: number, highlightEnd: number,
       currentNode: HTMLElement): void {
     const parentOfHighlight = document.createElement('span');
-    parentOfHighlight.className = parentOfHighlightClass;
+    parentOfHighlight.classList.add(parentOfHighlightClass);
 
     // First pull out any text within this node before the highlighted section.
     // Since it's already been highlighted, we fade it out.
@@ -1771,15 +1770,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         currentNode.textContent!.substring(0, highlightStart);
     if (highlightPrefix.length > 0) {
       const prefixNode = document.createElement('span');
-      prefixNode.className = previousReadHighlightClass;
+      prefixNode.classList.add(previousReadHighlightClass);
       prefixNode.textContent = highlightPrefix;
+      this.previousHighlights_.push(prefixNode);
       parentOfHighlight.appendChild(prefixNode);
     }
 
     // Then get the section of text to highlight and mark it for
     // highlighting.
     const readingHighlight = document.createElement('span');
-    readingHighlight.className = currentReadHighlightClass;
+    readingHighlight.classList.add(currentReadHighlightClass);
     const textNode = document.createTextNode(
         currentNode.textContent!.substring(highlightStart, highlightEnd));
     readingHighlight.appendChild(textNode);
@@ -1797,7 +1797,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // Replace the current node in the tree with the split up version of the
     // node.
-    this.previousHighlight_.push(readingHighlight);
+    this.previousHighlights_.push(readingHighlight);
     this.replaceElement(currentNode, parentOfHighlight);
 
     // Automatically scroll the text so the highlight stays roughly centered.
@@ -1823,7 +1823,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       speechStarted: false,
       speechActuallyPlaying: false,
     };
-    this.previousHighlight_ = [];
+    this.previousHighlights_ = [];
     this.resetToDefaultWordBoundaryState();
   }
 
@@ -1936,9 +1936,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // The most recent highlight could have been spread across multiple segments
     // so clear the formatting for all of the segments.
     for (let i = 0; i < chrome.readingMode.getCurrentText().length; i++) {
-      const lastElement = this.previousHighlight_.pop();
+      const lastElement = this.previousHighlights_.pop();
       if (lastElement) {
-        lastElement.className = '';
+        lastElement.classList.remove(currentReadHighlightClass);
       }
     }
 
@@ -1946,9 +1946,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private resetPreviousHighlight() {
-    this.previousHighlight_.forEach((element) => {
+    this.previousHighlights_.forEach((element) => {
       if (element) {
-        element.className = previousReadHighlightClass;
+        element.classList.add(previousReadHighlightClass);
+        element.classList.remove(currentReadHighlightClass);
       }
     });
   }
