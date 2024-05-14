@@ -152,6 +152,7 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   std::vector<uint64_t> modifiers;
   if (window && window->GetController() && !(flags & GBM_BO_USE_LINEAR) &&
       !(flags & GBM_BO_USE_HW_VIDEO_DECODER) &&
+      !(flags & GBM_BO_USE_PROTECTED) &&
       !(client_flags & GbmPixmap::kFlagNoModifiers)) {
     modifiers = window->GetController()->GetSupportedModifiers(fourcc_format);
   }
