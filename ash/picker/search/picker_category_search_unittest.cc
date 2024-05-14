@@ -53,43 +53,43 @@ INSTANTIATE_TEST_SUITE_P(
         // Exact match
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"My Files",
+            .query = u"This Chromebook",
             .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Case-insensitive match
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"mY fIlEs",
+            .query = u"tHiS cHrOmEbOoK",
             .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Prefix match
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"m",
+            .query = u"t",
             .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Prefix match in second word
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"fi",
+            .query = u"ch",
             .expected_categories = {PickerCategory::kLocalFiles},
         },
         // Substring match
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"iles",
+            .query = u"rome",
             .expected_categories = {},
         },
         // Category unavailable
         TestCase{
             .available_categories = {PickerCategory::kLinks},
-            .query = u"My Files",
+            .query = u"This Chromebook",
             .expected_categories = {},
         },
         // Not matched
         TestCase{
             .available_categories = {PickerCategory::kLocalFiles},
-            .query = u"My Files1",
+            .query = u"This Chromebookz",
             .expected_categories = {},
         }));
 
