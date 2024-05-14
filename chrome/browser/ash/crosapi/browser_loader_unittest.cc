@@ -487,30 +487,22 @@ TEST_F(BrowserLoaderTest, LoadWhileUnloading) {
 
   // Wait until rootfs lacros loader starts Unload. GetVersion runs
   // asynchronously before it start unloading.
-  base::RunLoop run_loop1;
+  base::test::TestFuture<void> future1;
   FakeLacrosSelectionLoader* rootfs_lacros_loader =
       static_cast<FakeLacrosSelectionLoader*>(
           browser_loader.rootfs_lacros_loader_.get());
-  rootfs_lacros_loader->SetCallbackOnUnload(run_loop1.QuitClosure());
-  run_loop1.Run();
+  rootfs_lacros_loader->SetCallbackOnUnload(future1.GetCallback());
+  ASSERT_TRUE(future1.Wait());
 
   // On requesting Load while Unloading, the load request should be stored to
   // `callback_on_unload_completion_` and wait for unload to complete to resume
   // load request.
-  base::RunLoop run_loop2;
-  std::optional<LacrosSelection> selection_result;
-  browser_loader.Load(base::BindOnce(
-      [](base::OnceClosure quit_closure,
-         std::optional<LacrosSelection>* selection_result,
-         const base::FilePath&, LacrosSelection selection, base::Version) {
-        *selection_result = selection;
-        std::move(quit_closure).Run();
-      },
-      run_loop2.QuitClosure(), &selection_result));
-  EXPECT_FALSE(selection_result.has_value());
+  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version>
+      future2;
+  browser_loader.Load(future2.GetCallback<const base::FilePath&,
+                                          LacrosSelection, base::Version>());
 
-  run_loop2.Run();
-  EXPECT_EQ(LacrosSelection::kStateful, selection_result);
+  EXPECT_EQ(LacrosSelection::kStateful, future2.Get<1>());
 }
 
 }  // namespace crosapi

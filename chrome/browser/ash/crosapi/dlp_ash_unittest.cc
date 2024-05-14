@@ -6,6 +6,7 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -71,13 +72,10 @@ TEST_F(DlpAshTest, CheckScreenShareRestrictionRootWindowAllowed) {
       });
 
   mojom::ScreenShareAreaPtr area = mojom::ScreenShareArea::New();
-  base::RunLoop run_loop;
-  dlp_ash()->CheckScreenShareRestriction(
-      std::move(area), kAppId, base::BindLambdaForTesting([&](bool allowed) {
-        EXPECT_TRUE(allowed);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<bool> is_allowed_response;
+  dlp_ash()->CheckScreenShareRestriction(std::move(area), kAppId,
+                                         is_allowed_response.GetCallback());
+  EXPECT_TRUE(is_allowed_response.Take());
 }
 
 TEST_F(DlpAshTest, CheckScreenShareRestrictionRootWindowNotAllowed) {
@@ -94,13 +92,10 @@ TEST_F(DlpAshTest, CheckScreenShareRestrictionRootWindowNotAllowed) {
       });
 
   mojom::ScreenShareAreaPtr area = mojom::ScreenShareArea::New();
-  base::RunLoop run_loop;
-  dlp_ash()->CheckScreenShareRestriction(
-      std::move(area), kAppId, base::BindLambdaForTesting([&](bool allowed) {
-        EXPECT_FALSE(allowed);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  dlp_ash()->CheckScreenShareRestriction(std::move(area), kAppId,
+                                         future.GetCallback());
+  EXPECT_FALSE(future.Take());
 }
 
 TEST_F(DlpAshTest, CheckScreenShareRestrictionInvalidWindow) {
@@ -110,13 +105,10 @@ TEST_F(DlpAshTest, CheckScreenShareRestrictionInvalidWindow) {
 
   mojom::ScreenShareAreaPtr area = mojom::ScreenShareArea::New();
   area->window_id = "id";
-  base::RunLoop run_loop;
-  dlp_ash()->CheckScreenShareRestriction(
-      std::move(area), kAppId, base::BindLambdaForTesting([&](bool allowed) {
-        EXPECT_TRUE(allowed);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<bool> future;
+  dlp_ash()->CheckScreenShareRestriction(std::move(area), kAppId,
+                                         future.GetCallback());
+  EXPECT_TRUE(future.Take());
 }
 
 TEST_F(DlpAshTest, ScreenShareStarted) {
