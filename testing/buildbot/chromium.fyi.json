@@ -47943,6 +47943,13 @@
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
       },
       {
+        "args": [
+          "--test-type",
+          "testharness",
+          "reftest",
+          "crashtest",
+          "print-reftest"
+        ],
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -49772,6 +49779,12 @@
   "mac13-wpt-chromium-rel": {
     "isolated_scripts": [
       {
+        "args": [
+          "--test-type",
+          "testharness",
+          "crashtest"
+        ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -52287,9 +52300,14 @@
     "isolated_scripts": [
       {
         "args": [
+          "--test-type",
+          "testharness",
+          "crashtest",
           "--target",
-          "Release_x64"
+          "Release_x64",
+          "--no-retry-failures"
         ],
+        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [
