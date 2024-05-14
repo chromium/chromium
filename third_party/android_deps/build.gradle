@@ -182,6 +182,11 @@ dependencies {
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
+    // accessibility-test-framework has a phantom dependency on the really old
+    // protobuf runtime which trips our asserts. Manually add dep here but
+    // exclude it in ChromiumDepGraph.
+    androidTestCompile 'com.google.protobuf:protobuf-lite:3.0.0'
+
     String mockitoVersion = '5.11.0'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"

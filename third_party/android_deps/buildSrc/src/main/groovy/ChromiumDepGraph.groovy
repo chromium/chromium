@@ -40,6 +40,10 @@ class ChromiumDepGraph {
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
             description: 'Firebase Cloud Messaging library that interfaces with GmsCore.'),
+        com_google_android_gms_play_services_base: new PropertyOverride(
+            description: 'Base library for gmscore / Google Play Services.'),
+        com_google_android_gms_play_services_location: new PropertyOverride(
+            description: 'Provides data about the device\'s physical location via gmscore.'),
         com_google_auto_auto_common: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -140,6 +144,11 @@ class ChromiumDepGraph {
             licensePath: 'licenses/Eclipse_EDL.txt',
             licenseName: 'BSD 3-Clause'),
         com_google_protobuf_protobuf_java: new PropertyOverride(
+            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
+            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
+            licenseName: 'BSD'),
+        com_google_protobuf_protobuf_lite: new PropertyOverride(
+            exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
             licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
             licenseName: 'BSD'),
