@@ -719,10 +719,17 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
     return false;
   }
 
+  // Relaxes checks for initiator and transition type. This logic is intended to
+  // be used for WebView, as WebView is intended to host embedder-trusted
+  // contests.
+  bool allow_initiator_and_transition_mismatch =
+      web_contents_->GetDelegate()->ShouldAllowPartialParamMismatchOfPrerender2(
+          navigation_request);
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
       AreBeginNavigationParamsCompatibleWithNavigation(
-          navigation_request.begin_params(), reason);
+          navigation_request.begin_params(),
+          allow_initiator_and_transition_mismatch, reason);
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
                                                    embedder_histogram_suffix());
@@ -731,7 +738,8 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 
   // Compare CommonNavigationParams.
   result = AreCommonNavigationParamsCompatibleWithNavigation(
-      navigation_request.common_params());
+      navigation_request.common_params(),
+      allow_initiator_and_transition_mismatch);
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
                                                    embedder_histogram_suffix());
@@ -747,10 +755,16 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
     const blink::mojom::BeginNavigationParams& potential_activation,
+    bool allow_initiator_and_transition_mismatch,
     PrerenderCancellationReason& reason) {
   CHECK(begin_params_);
-  if (potential_activation.initiator_frame_token !=
-      begin_params_->initiator_frame_token) {
+
+  // TODO(https://crbug.com/340416082): Check details of security properties,
+  // update the check to appropriate form and remove differences among all
+  // platforms.
+  if (!allow_initiator_and_transition_mismatch &&
+      (potential_activation.initiator_frame_token !=
+       begin_params_->initiator_frame_token)) {
     return ActivationNavigationParamsMatch::kInitiatorFrameToken;
   }
 
@@ -838,7 +852,8 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 
 PrerenderHost::ActivationNavigationParamsMatch
 PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
-    const blink::mojom::CommonNavigationParams& potential_activation) {
+    const blink::mojom::CommonNavigationParams& potential_activation,
+    bool allow_initiator_and_transition_mismatch) {
   // The CommonNavigationParams::url field is expected to be the same for both
   // initial and activation prerender navigations, as the PrerenderHost
   // selection would have already checked for matching values. Adding a CHECK
@@ -853,8 +868,13 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
       CHECK_EQ(potential_activation.url, common_params_->url);
     }
   }
-  if (potential_activation.initiator_origin !=
-      common_params_->initiator_origin) {
+
+  // TODO(https://crbug.com/340416082): Check details of security properties,
+  // update the check to appropriate form and remove differences among all
+  // platforms.
+  if (!allow_initiator_and_transition_mismatch &&
+      (potential_activation.initiator_origin !=
+       common_params_->initiator_origin)) {
     return ActivationNavigationParamsMatch::kInitiatorOrigin;
   }
 
@@ -864,7 +884,8 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // history entry (e.g., a renderer-initiated navigation to the current URL).
   int32_t potential_activation_transition =
       potential_activation.transition & ~ui::PAGE_TRANSITION_CLIENT_REDIRECT;
-  if (potential_activation_transition != common_params_->transition) {
+  if (!allow_initiator_and_transition_mismatch &&
+      (potential_activation_transition != common_params_->transition)) {
     RecordPrerenderActivationTransition(potential_activation_transition,
                                         trigger_type(),
                                         embedder_histogram_suffix());

@@ -82,6 +82,8 @@ class AwWebContentsDelegate
       content::WebContents& web_contents) override;
   content::NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPrerender2() override;
+  bool ShouldAllowPartialParamMismatchOfPrerender2(
+      content::NavigationHandle& navigation_handle) override;
 
   scoped_refptr<content::FileSelectListener> TakeFileSelectListener();
 

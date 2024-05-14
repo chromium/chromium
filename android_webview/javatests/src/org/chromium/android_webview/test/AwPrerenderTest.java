@@ -50,6 +50,11 @@ import java.util.concurrent.TimeUnit;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
 public class AwPrerenderTest extends AwParameterizedTest {
+    private static enum ActivationBy {
+        LOAD_URL,
+        JAVASCRIPT,
+    };
+
     private static final String TAG = "AwPrerenderTest";
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -170,17 +175,26 @@ public class AwPrerenderTest extends AwParameterizedTest {
     // Activate a prerendered page by navigating to `activateUrl`. `expectedActivatedUrl` indicates
     // a URL that should actually be activated. Generally, `expectedActivatedUrl` is the same as
     // `activateUrl`, but they are different when prerendering navigation is redirected.
-    private void activatePage(String activateUrl, String expectedActivatedUrl) throws Exception {
+    private void activatePage(
+            String activateUrl, String expectedActivatedUrl, ActivationBy activationBy)
+            throws Exception {
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         int currentOnPageStartedCallCount = onPageStartedHelper.getCallCount();
 
         // Activate the prerendered page.
-        mActivityTestRule.runOnUiThread(
-                () -> {
-                    final String activationScript =
-                            String.format("location.href = `%s`;", activateUrl);
-                    mAwContents.evaluateJavaScript(activationScript, null);
-                });
+        switch (activationBy) {
+            case LOAD_URL:
+                mActivityTestRule.loadUrlAsync(mAwContents, activateUrl);
+                break;
+            case JAVASCRIPT:
+                mActivityTestRule.runOnUiThread(
+                        () -> {
+                            final String activationScript =
+                                    String.format("location.href = `%s`;", activateUrl);
+                            mAwContents.evaluateJavaScript(activationScript, null);
+                        });
+                break;
+        }
 
         // Wait until the page is activated.
         onPageStartedHelper.waitForCallback(
@@ -197,8 +211,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
     }
 
     // Shorthand notation of `activatePage(activate_url, activate_url)`.
-    private void activatePage(String activateUrl) throws Exception {
-        activatePage(activateUrl, activateUrl);
+    private void activatePage(String activateUrl, ActivationBy activationBy) throws Exception {
+        activatePage(activateUrl, activateUrl, activationBy);
     }
 
     private final String encodeUrl(String url) {
@@ -221,13 +235,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(uriFromServer.getPort(), origin.getPort());
     }
 
-    // Tests basic end-to-end behavior of speculation rules prerendering on WebView.
+    // Tests basic end-to-end behavior of speculation rules prerendering on WebView with
+    // renderer-initiated activation.
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
     @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
-    public void testSpeculationRulesPrerendering() throws Throwable {
+    public void testSpeculationRulesPrerenderingRendererInitiatedActivation() throws Throwable {
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -235,7 +250,25 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
-        activatePage(mPrerenderingUrl);
+        activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
+    }
+
+    // Tests basic end-to-end behavior of speculation rules prerendering on WebView with
+    // embedder-initiated activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testSpeculationRulesPrerenderingEmbedderInitiatedActivation() throws Throwable {
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
+        // onPageStarted should never be called for prerender initial navigation.
+        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
     }
 
     // Tests FrameTree swap of AwContentsIoThreadClient by observing that callbacks are correctly
@@ -268,7 +301,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         callCount = helper.getCallCount();
         // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
-        activatePage(url2);
+        activatePage(url2, ActivationBy.JAVASCRIPT);
         Assert.assertEquals(
                 "Prerender activation navigation doesn't trigger shouldInterceptRequest",
                 helper.getCallCount(),
@@ -316,7 +349,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         callCount = helper.getCallCount();
         // Prerender activation will trigger a FrameTree swap and a RenderFrameHostChanged call.
-        activatePage(url2);
+        activatePage(url2, ActivationBy.JAVASCRIPT);
         Assert.assertEquals(
                 "Prerender activation navigation doesn't trigger shouldInterceptRequest",
                 helper.getCallCount(),
@@ -365,7 +398,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(requestHeaders.get("Sec-Purpose"), "prefetch;prerender");
 
         currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
-        activatePage(mPrerenderingUrl);
+        activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
         Assert.assertEquals(
                 "Prerender activation navigation doesn't trigger shouldInterceptRequest",
                 shouldInterceptRequestHelper.getCallCount(),
@@ -404,7 +437,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNotNull(request);
 
         // Activation with the non-existent URL should succeed.
-        activatePage(nonExistentUrl);
+        activatePage(nonExistentUrl, ActivationBy.JAVASCRIPT);
     }
 
     // Tests ShouldOverrideUrlLoading interaction with prerendering.
@@ -431,7 +464,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 requestHeadersOnShouldOverride.get("Sec-Purpose"), "prefetch;prerender");
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
-        activatePage(mPrerenderingUrl);
+        activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
         shouldOverrideUrlLoadingHelper.waitForCallback(currentShouldOverrideUrlLoadingCallCount);
         Assert.assertEquals(
                 shouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl(), mPrerenderingUrl);
@@ -485,7 +518,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         currentShouldOverrideUrlLoadingCallCount = shouldOverrideUrlLoadingHelper.getCallCount();
 
-        activatePage(initialPrerenderingUrl, mPrerenderingUrl);
+        activatePage(initialPrerenderingUrl, mPrerenderingUrl, ActivationBy.JAVASCRIPT);
 
         // Activation navigation should also be visible to shouldOverrideUrlLoading.
         shouldOverrideUrlLoadingHelper.waitForCallback(currentShouldOverrideUrlLoadingCallCount);
@@ -537,7 +570,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         {
             int callCount = helper.getCallCount();
-            activatePage(prerenderUrl);
+            activatePage(prerenderUrl, ActivationBy.JAVASCRIPT);
             Assert.assertEquals(
                     "Prerender activation navigation doesn't trigger shouldInterceptRequest",
                     helper.getCallCount(),
@@ -589,7 +622,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 true, mPostMessageFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
 
-        activatePage(mPrerenderingUrl);
+        activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
 
         // The page is activated. Now the deferred messages should be delivered.
         TestWebMessageListener.Data data = mWebMessageListener.waitForOnPostMessage();

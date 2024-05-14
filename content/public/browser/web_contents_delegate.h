@@ -732,6 +732,16 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual NavigationController::UserAgentOverrideOption
   ShouldOverrideUserAgentForPrerender2();
 
+  // Returns true if the embedder allows initiator and transition type mismatch
+  // of prerender activation that activation navigation has no initiator
+  // (embedder-initiated).
+  //
+  // This mitigation is mainly for Android WebView (speculationrules +
+  // `WebView.loadUrl`), as WebView is intended to host embedder-trusted
+  // contents.
+  virtual bool ShouldAllowPartialParamMismatchOfPrerender2(
+      NavigationHandle& navigation_handle);
+
   // If |old_contents| is being inspected by a DevTools window, it updates the
   // window to inspect |new_contents| instead and calls |callback| after it
   // finishes asynchronously. If no window is present, or no update is

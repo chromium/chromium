@@ -384,6 +384,11 @@ WebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
   return NavigationController::UA_OVERRIDE_INHERIT;
 }
 
+bool WebContentsDelegate::ShouldAllowPartialParamMismatchOfPrerender2(
+    NavigationHandle& navigation_handle) {
+  return false;
+}
+
 void WebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
     WebContents* old_contents,
     WebContents* new_contents,

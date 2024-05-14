@@ -341,10 +341,12 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   ActivationNavigationParamsMatch
   AreBeginNavigationParamsCompatibleWithNavigation(
       const blink::mojom::BeginNavigationParams& potential_activation,
+      bool allow_initiator_and_transition_mismatch,
       PrerenderCancellationReason& reason);
   ActivationNavigationParamsMatch
   AreCommonNavigationParamsCompatibleWithNavigation(
-      const blink::mojom::CommonNavigationParams& potential_activation);
+      const blink::mojom::CommonNavigationParams& potential_activation,
+      bool allow_initiator_and_transition_mismatch);
 
   void SetNoVarySearch(net::HttpNoVarySearchData no_vary_search);
 
