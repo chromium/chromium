@@ -28,8 +28,7 @@ found in the LICENSE file.
       android:layout_gravity="center_vertical"
       android:importantForAccessibility="yes"
       android:contentDescription="@null"
-      android:src="@drawable/bookmark_add"
-      app:tint="@color/default_icon_color_baseline" />
+      android:src="@drawable/bookmark" />
   <ImageView
       android:id="@+id/google_bottom_bar_page_insights_icon"
       android:layout_width="0dp"

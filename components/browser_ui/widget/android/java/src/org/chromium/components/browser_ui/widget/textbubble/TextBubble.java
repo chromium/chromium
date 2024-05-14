@@ -464,9 +464,11 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         }
 
         mPopupWindow.show();
-        assert sSkipShowCheckForTesting || mPopupWindow.isShowing()
-                : "TextBubble is not presented: " + mString;
-        if (!mPopupWindow.isShowing()) return;
+
+        boolean popupShowing = sSkipShowCheckForTesting || mPopupWindow.isShowing();
+        assert popupShowing : "TextBubble is not presented: " + mString;
+
+        if (!popupShowing) return;
 
         sBubbles.add(this);
         sCountSupplier.set(sBubbles.size());

@@ -4668,6 +4668,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
 	Close button to close privacy notice of page insights hub.
       </message>
 
+      <!-- GoogleBottomBar -->
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SAVE_DISABLED_TOOLTIP_MESSAGE" desc="Tooltip message when disabled save button is clicked">
+      Sign in to save this page
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SAVE_DISABLED_BUTTON_DESCRIPTION" desc="Content description for disabled save button">
+      Disabled save button
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SHARE_BUTTON_DESCRIPTION" desc="Content description for share button">
+      Share button
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_PAGE_INSIGHTS_BUTTON_DESCRIPTION" desc="Content description for page insights button">
+      Page insights button
+      </message>
+
       <!-- WebFeed -->
       <message name="IDS_WEB_FEED_FOLLOW_LOADING_DESCRIPTION" desc="The content description of the loading spinner after the user presses Follow and is waiting for a response.">
         Following...

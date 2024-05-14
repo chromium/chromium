@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfig.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreator.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandler.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
   ]
@@ -18,16 +19,22 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/widget/android:java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.google_bottom_bar"
 }
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/bookmark_add.xml",
+    "java/res/drawable/bookmark.xml",
     "java/res/layout/google_bottom_bar_even.xml",
     "java/res/layout/google_bottom_bar_spotlight.xml",
     "java/res/values/colors.xml",
@@ -42,15 +49,25 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreatorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarActionsHandlerTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
     "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/tab:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 

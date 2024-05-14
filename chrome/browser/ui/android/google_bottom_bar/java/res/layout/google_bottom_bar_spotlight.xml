@@ -49,8 +49,7 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/google_bottom_bar_button_padding"
         android:importantForAccessibility="yes"
         android:contentDescription="@null"
-        android:src="@drawable/bookmark_add"
-        app:tint="@color/default_icon_color_baseline" />
+        android:src="@drawable/bookmark" />
     <ImageView
         android:id="@+id/google_bottom_bar_share_button"
         android:layout_width="@dimen/google_bottom_bar_button_size"
