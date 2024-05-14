@@ -18,11 +18,12 @@
 @implementation PromosManagerMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                promoImpressionLimits:(PromoConfigsSet)promoImpressionLimits {
+                         promoConfigs:(PromoConfigsSet)promoConfigs {
   if (self = [super init]) {
     _promosManager = promosManager;
-    if (promoImpressionLimits.size())
-      _promosManager->InitializePromoConfigs(std::move(promoImpressionLimits));
+    if (promoConfigs.size()) {
+      _promosManager->InitializePromoConfigs(std::move(promoConfigs));
+    }
   }
 
   return self;

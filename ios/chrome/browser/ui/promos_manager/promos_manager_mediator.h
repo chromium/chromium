@@ -26,7 +26,7 @@ struct PromoDisplayData {
 
 // Designated initializer.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                promoImpressionLimits:(PromoConfigsSet)promoImpressionLimits
+                         promoConfigs:(PromoConfigsSet)promoConfigs
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
