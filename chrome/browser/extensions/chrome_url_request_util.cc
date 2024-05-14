@@ -105,7 +105,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED() << "No redirects for local file loads.";
+    NOTREACHED_IN_MIGRATION() << "No redirects for local file loads.";
   }
   // Current implementation reads all resource data at start of resource
   // load, so priority, and pausing is not currently implemented.

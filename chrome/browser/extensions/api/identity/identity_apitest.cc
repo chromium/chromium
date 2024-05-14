@@ -1477,7 +1477,7 @@ class GetAuthTokenFunctionInteractivityTest
         break;
       case IdentityGetAuthTokenFunction::InteractivityStatus::
           kDisallowedSigninDisallowed:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

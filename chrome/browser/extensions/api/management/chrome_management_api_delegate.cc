@@ -374,7 +374,7 @@ void OnWebAppInstallabilityChecked(
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 extensions::SupervisedUserExtensionsDelegate*

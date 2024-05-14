@@ -228,7 +228,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->install_directory(),
                                     extension_paths, /*unpacked=*/false))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -239,7 +239,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
           FROM_HERE, base::BindOnce(&GarbageCollectExtensionsOnFileThread,
                                     service->unpacked_install_directory(),
                                     extension_paths, /*unpacked=*/true))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

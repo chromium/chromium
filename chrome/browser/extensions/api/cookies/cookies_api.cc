@@ -161,7 +161,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
       break;
 
     case net::CookieChangeCause::UNKNOWN_DELETION:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   dict.Set(cookies_api_constants::kCauseKey, cause_dict_entry);
 

@@ -78,7 +78,7 @@ syncer::SyncData CreateData(const ExtensionId& extension_id,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return syncer::SyncData::CreateLocalData(

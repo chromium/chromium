@@ -187,7 +187,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
             &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
             this));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     EXTENSION_FUNCTION_VALIDATE(false);
   }
   return RespondLater();
@@ -500,7 +500,7 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
       keystore_type = crosapi::mojom::KeystoreType::kDevice;
       break;
     case api::enterprise_platform_keys::Scope::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Default to RSA when not registering a key.
@@ -527,7 +527,7 @@ EnterprisePlatformKeysChallengeKeyFunction::Run() {
         break;
       }
       case api::enterprise_platform_keys::Algorithm::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

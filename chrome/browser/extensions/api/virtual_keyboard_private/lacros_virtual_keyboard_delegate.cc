@@ -42,7 +42,7 @@ void PopulateFeatureRestrictions(
         update->voice_input_enabled = enabled;
         break;
       case crosapi::mojom::VirtualKeyboardFeature::NONE:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

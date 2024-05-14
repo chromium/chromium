@@ -312,7 +312,7 @@ bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
     case PLATFORM_APPS_ONLY:
       return extension->is_platform_app();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

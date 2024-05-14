@@ -89,7 +89,7 @@ void InitializeOverridesList(base::Value::List& list) {
       new_dict.Set(kEntry, entry_name);
       new_dict.Set(kActive, true);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -114,7 +114,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
       entry = dict->FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     if (*entry == spec) {
@@ -123,7 +123,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
     }
     GURL entry_url(*entry);
     if (!entry_url.is_valid()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     if (entry_url.host() == override_url.host()) {
@@ -152,7 +152,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
       entry = val.GetDict().FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     GURL override_url(*entry);
@@ -285,7 +285,7 @@ void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
 
       favicon_bitmap_results.push_back(bitmap_result);
     } else {
-      NOTREACHED() << "Could not encode extension favicon";
+      NOTREACHED_IN_MIGRATION() << "Could not encode extension favicon";
     }
   }
 

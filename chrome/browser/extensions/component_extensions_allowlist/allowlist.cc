@@ -81,7 +81,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #endif
   LOG(ERROR) << "Component extension with id " << extension_id << " not in "
              << "allowlist and is not being loaded as a result.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -117,7 +117,7 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   LOG(ERROR) << "Component extension with manifest resource id "
              << manifest_resource_id << " not in allowlist and is not being "
              << "loaded as a result.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -138,7 +138,7 @@ class ActiveTabTest : public ChromeRenderViewHostTestHarness {
       case PERMITTED_NONE:
         return !script && !capture;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

@@ -58,7 +58,7 @@ autofill_private::AddressSource ConvertProfileSource(
     case autofill::AutofillProfile::Source::kAccount:
       return autofill_private::AddressSource::kAccount;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return autofill_private::AddressSource::kNone;
   }
 }

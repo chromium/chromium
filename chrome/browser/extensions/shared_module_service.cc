@@ -148,7 +148,7 @@ InstallGate::Action SharedModuleService::ShouldDelay(const Extension* extension,
       return ABORT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return INSTALL;
 }
 

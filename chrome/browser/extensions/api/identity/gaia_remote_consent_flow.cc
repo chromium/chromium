@@ -107,7 +107,8 @@ void GaiaRemoteConsentFlow::OnAuthFlowFailure(WebAuthFlow::Failure failure) {
       gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;
       break;
     case WebAuthFlow::INTERACTION_REQUIRED:
-      NOTREACHED() << "Unexpected error from web auth flow: " << failure;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected error from web auth flow: " << failure;
       gaia_failure = GaiaRemoteConsentFlow::LOAD_FAILED;
       break;
     case WebAuthFlow::CANNOT_CREATE_WINDOW:

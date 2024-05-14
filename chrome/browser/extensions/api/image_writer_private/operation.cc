@@ -46,7 +46,7 @@ void ExtractArchive(ExtractionProperties properties) {
   } else if (XzExtractor::IsXzFile(properties.image_path)) {
     XzExtractor::Extract(std::move(properties));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

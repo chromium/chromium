@@ -38,7 +38,7 @@ std::unique_ptr<extensions::MenuItem::Id> GetParentId(
   else if (property.parent_id->as_string)
     parent_id->string_uid = *property.parent_id->as_string;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return parent_id;
 }
 

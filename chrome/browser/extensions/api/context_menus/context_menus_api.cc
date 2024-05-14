@@ -74,7 +74,7 @@ ExtensionFunction::ResponseAction ContextMenusUpdateFunction::Run() {
   else if (params->id.as_integer)
     item_id.uid = *params->id.as_integer;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   std::string error;
   if (!extensions::context_menus_api_helpers::UpdateMenuItem(
@@ -99,7 +99,7 @@ ExtensionFunction::ResponseAction ContextMenusRemoveFunction::Run() {
   else if (params->menu_item_id.as_integer)
     id.uid = *params->menu_item_id.as_integer;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   MenuItem* item = manager->GetItemById(id);
   // Ensure one extension can't remove another's menu items.

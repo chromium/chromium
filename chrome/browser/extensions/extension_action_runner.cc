@@ -246,7 +246,7 @@ int ExtensionActionRunner::GetBlockedActions(
           break;
         case mojom::RunLocation::kUndefined:
         case mojom::RunLocation::kRunDeferred:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -287,7 +287,7 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
       return extension->permissions_data()->GetPageAccess(url, tab_id, nullptr);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PermissionsData::PageAccess::kDenied;
 }
 
@@ -350,7 +350,7 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
     mojom::RunLocation run_location,
     mojom::LocalFrameHost::RequestScriptInjectionPermissionCallback callback) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {
-    NOTREACHED() << "'" << extension_id << "' is not a valid id.";
+    NOTREACHED_IN_MIGRATION() << "'" << extension_id << "' is not a valid id.";
     std::move(callback).Run(false);
     return;
   }

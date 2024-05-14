@@ -141,9 +141,10 @@ api::sessions::Session CreateSessionModelHelper(
   } else if (window) {
     session_struct.window = std::move(*window);
   } else if (group) {
-    NOTREACHED();  // TODO(crbug.com/40757179): Implement group support.
+    // TODO(crbug.com/40757179): Implement group support.
+    NOTIMPLEMENTED();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return session_struct;
 }
@@ -324,7 +325,7 @@ SessionsGetDevicesFunction::CreateWindowModel(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sessions::SessionWindow::TYPE_CUSTOM_TAB:
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   api::windows::WindowState state = api::windows::WindowState::kNone;

@@ -272,7 +272,7 @@ ui::WindowShowState ConvertToWindowShowState(windows::WindowState state) {
     case windows::WindowState::kNone:
       return ui::SHOW_STATE_DEFAULT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::SHOW_STATE_DEFAULT;
 }
 
@@ -297,7 +297,7 @@ bool IsValidStateForWindowsCreateFunction(
     case windows::WindowState::kNone:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -2383,8 +2383,9 @@ std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
     case FAILURE_REASON_SCREEN_SHOTS_DISABLED_BY_DLP:
       return tabs_constants::kScreenshotsDisabledByDlp;
     case OK:
-      NOTREACHED() << "CaptureResultToErrorMessage should not be called"
-                      " with a successful result";
+      NOTREACHED_IN_MIGRATION()
+          << "CaptureResultToErrorMessage should not be called"
+             " with a successful result";
       return kUnknownErrorDoNotUse;
   }
   return ErrorUtils::FormatErrorMessage("Failed to capture tab: *",

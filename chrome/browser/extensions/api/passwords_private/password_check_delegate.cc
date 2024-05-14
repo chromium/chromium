@@ -173,7 +173,7 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
       return api::passwords_private::PasswordCheckState::kOtherError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::passwords_private::PasswordCheckState::kNone;
 }
 

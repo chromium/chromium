@@ -190,7 +190,7 @@ void BrailleDisplayPrivateWriteDotsFunction::WriteDotsOnIO() {
 ExtensionFunction::ResponseAction
 BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RespondNow(Error("Unsupported on this platform."));
 #else
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);

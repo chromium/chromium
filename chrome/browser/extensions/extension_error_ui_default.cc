@@ -149,12 +149,12 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
   bool HasMenuItem() override { return false; }
 
   int MenuItemCommandID() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
   std::u16string MenuItemLabel() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

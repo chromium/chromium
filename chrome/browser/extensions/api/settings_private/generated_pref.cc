@@ -51,7 +51,7 @@ void GeneratedPref::ApplyControlledByFromPref(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 /* static */
@@ -70,7 +70,7 @@ void GeneratedPref::ApplyControlledByFromContentSettingSource(
           settings_api::ControlledBy::kChildRestriction;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

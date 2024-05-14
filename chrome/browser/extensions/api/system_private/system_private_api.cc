@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
       state = kNotAvailableState;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #else
   if (UpgradeDetector::GetInstance()->notify_upgrade()) {

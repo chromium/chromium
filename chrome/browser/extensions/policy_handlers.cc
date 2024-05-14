@@ -159,7 +159,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
 
   if (!policy_value->is_list()) {
     // This should have been caught in CheckPolicySettings.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -307,7 +307,7 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   }
 
   if (!value->is_list()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

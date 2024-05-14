@@ -114,7 +114,7 @@ void Provider::InitProfileState() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (new_install_state) {

@@ -24,7 +24,7 @@ void SetPrefFromSource(sync_preferences::TestingPrefServiceSyncable* prefs,
   } else if (source == settings_private::PrefSource::kRecommended) {
     prefs->SetRecommendedPref(pref_name, std::move(pref_value));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

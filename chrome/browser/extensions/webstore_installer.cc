@@ -312,7 +312,7 @@ void WebstoreInstaller::Start() {
   const std::string* name =
       approval_->manifest->available_values().FindString(manifest_keys::kName);
   if (!name) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   extensions::InstallTracker* tracker =
       extensions::InstallTrackerFactory::GetForBrowserContext(profile_);

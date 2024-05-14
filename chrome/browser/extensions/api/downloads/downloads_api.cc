@@ -220,7 +220,7 @@ extensions::api::downloads::DangerType ConvertDangerType(
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return extensions::api::downloads::DangerType::kBlockedScanFailed;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return extensions::api::downloads::DangerType::kMaxValue;
   }
 }
@@ -449,7 +449,7 @@ IconLoader::IconSize IconLoaderSizeFromPixelSize(int pixel_size) {
     case 32:
       return IconLoader::NORMAL;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IconLoader::NORMAL;
   }
 }
@@ -736,7 +736,7 @@ ConvertConflictAction(downloads::FilenameConflictAction action) {
     case downloads::FilenameConflictAction::kPrompt:
       return DownloadPathReservationTracker::PROMPT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return download::DownloadPathReservationTracker::UNIQUIFY;
 }
 

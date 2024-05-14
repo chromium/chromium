@@ -488,7 +488,7 @@ void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
     } else if (form.IsUsingProfileStore()) {
       profile_store_->AddLogin(form);
     } else {
-      NOTREACHED() << "Store not set";
+      NOTREACHED_IN_MIGRATION() << "Store not set";
     }
   }
   // Spin the loop to allow PasswordStore tasks being processed.

@@ -575,7 +575,8 @@ bool ExternalProviderImpl::GetExtensionDetails(
       *version = std::make_unique<base::Version>(*external_version);
 
   } else {
-    NOTREACHED();  // Chrome should not allow prefs to get into this state.
+    NOTREACHED_IN_MIGRATION();  // Chrome should not allow prefs to get into
+                                // this state.
     return false;
   }
 
@@ -682,7 +683,7 @@ void ExternalProviderImpl::CreateExternalProviders(
       external_loader = broker->extension_loader();
       crx_location = ManifestLocation::kExternalPolicy;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)

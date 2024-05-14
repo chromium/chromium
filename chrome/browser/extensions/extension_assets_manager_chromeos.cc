@@ -230,7 +230,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
   for (const std::string& id : extensions) {
     base::Value::Dict* extension_info = shared_extension_dict.FindDict(id);
     if (!extension_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     if (!CleanUpExtension(id, *extension_info, live_extension_paths)) {
@@ -285,7 +285,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   const std::string& user_id = profile->GetProfileUserName();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -434,7 +434,7 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
   base::Value::Dict& shared_extensions_dict = shared_extensions.Get();
   base::Value::Dict* extension_info = shared_extensions_dict.FindDict(id);
   if (!extension_info) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -449,18 +449,18 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
        it != versions.end(); it++) {
     base::Value::Dict* version_info = extension_info->FindDict(*it);
     if (!version_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     base::Value::List* users = version_info->FindList(kSharedExtensionUsers);
     if (!users) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     if (users->EraseValue(user_name) && users->empty()) {
       std::string* shared_path = version_info->FindString(kSharedExtensionPath);
       if (!shared_path) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       GetExtensionFileTaskRunner()->PostTask(
@@ -492,7 +492,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
     std::multimap<std::string, base::FilePath>* live_extension_paths) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -506,7 +506,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
        it != versions.end(); it++) {
     base::Value::Dict* version_info = extension_info.FindDict(*it);
     if (!version_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     base::Value::List* users_list =
@@ -514,14 +514,14 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
     const std::string* shared_path =
         version_info->FindString(kSharedExtensionPath);
     if (!users_list || !shared_path) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
     for (auto iter = users_list->begin(); iter != users_list->end();) {
       const std::string* user_id = iter->GetIfString();
       if (!user_id) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
       const user_manager::User* user =

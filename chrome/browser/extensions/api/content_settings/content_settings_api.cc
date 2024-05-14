@@ -87,7 +87,7 @@ ContentSettingsContentSettingClearFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
@@ -125,7 +125,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
@@ -194,7 +194,7 @@ ContentSettingsContentSettingSetFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RespondNow(Error(kUnknownErrorDoNotUse));
   }
 
@@ -259,7 +259,8 @@ ContentSettingsContentSettingSetFunction::Run() {
     } else if (content_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
       readable_type_name = "camera";
     } else {
-      NOTREACHED() << "No human-readable type name defined for this type.";
+      NOTREACHED_IN_MIGRATION()
+          << "No human-readable type name defined for this type.";
     }
 
     return RespondNow(Error(base::StringPrintf(kUnsupportedDefaultSettingError,

@@ -35,7 +35,7 @@ std::string GetComponentNameForComponentType(
       LOG(ERROR) << "No component type requested.";
       return "";
   }
-  NOTREACHED() << "Reached component type not in switch.";
+  NOTREACHED_IN_MIGRATION() << "Reached component type not in switch.";
   return "";
 }
 
@@ -64,7 +64,7 @@ GetComponentInstallationErrorForComponentManagerAshError(
       return api::media_perception_private::ComponentInstallationError::
           kNotFound;
   }
-  NOTREACHED() << "Reached component error type not in switch.";
+  NOTREACHED_IN_MIGRATION() << "Reached component error type not in switch.";
   return api::media_perception_private::ComponentInstallationError::kNone;
 }
 

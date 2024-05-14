@@ -72,7 +72,7 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
       break;
     default:
       developer_private_type = api::developer_private::ViewType::kNone;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return developer_private_type;
 }

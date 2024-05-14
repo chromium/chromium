@@ -248,7 +248,8 @@ ExtensionSyncData ExtensionSyncService::CreateSyncData(
   if (extensions::blocklist_prefs::IsExtensionBlocklisted(id,
                                                           extension_prefs)) {
     enabled = false;
-    NOTREACHED() << "Blocklisted extensions should not be getting synced.";
+    NOTREACHED_IN_MIGRATION()
+        << "Blocklisted extensions should not be getting synced.";
   }
 
   bool incognito_enabled = extensions::util::IsIncognitoEnabled(id, profile_);

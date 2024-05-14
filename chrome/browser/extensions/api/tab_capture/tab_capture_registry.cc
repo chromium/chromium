@@ -256,7 +256,7 @@ void TabCaptureRegistry::OnRequestUpdate(
       return;
     case content::MEDIA_REQUEST_STATE_REQUESTED:
     case content::MEDIA_REQUEST_STATE_NOT_REQUESTED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -322,7 +322,7 @@ void TabCaptureRegistry::KillRequest(LiveRequest* request) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace extensions

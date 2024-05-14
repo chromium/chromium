@@ -423,7 +423,7 @@ bool MenuManager::DescendantOf(MenuItem* item,
       return true;
     MenuItem* next = GetItemById(*id);
     if (!next) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     id = next->parent_id();
@@ -448,7 +448,7 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
   if (old_parent_id != nullptr) {
     MenuItem* old_parent = GetItemById(*old_parent_id);
     if (!old_parent) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     child = old_parent->ReleaseChild(child_id, false /* non-recursive search*/);
@@ -460,14 +460,14 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
     const MenuItem::ExtensionKey& child_key = child_ptr->id().extension_key;
     auto i = context_items_.find(child_key);
     if (i == context_items_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     MenuItem::OwnedList& list = i->second;
     auto j =
         base::ranges::find(list, child_ptr, &std::unique_ptr<MenuItem>::get);
     if (j == list.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     child = std::move(*j);
@@ -496,7 +496,7 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
   const MenuItem::ExtensionKey extension_key = id.extension_key;
   auto i = context_items_.find(extension_key);
   if (i == context_items_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -579,14 +579,14 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
   if (item->parent_id()) {
     MenuItem* parent = GetItemById(*item->parent_id());
     if (!parent) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     list = &(parent->children());
   } else {
     const MenuItem::ExtensionKey& key = item->id().extension_key;
     if (context_items_.find(key) == context_items_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     list = &context_items_[key];
@@ -600,7 +600,7 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
       break;
   }
   if (item_location == list->end()) {
-    NOTREACHED();  // We should have found the item.
+    NOTREACHED_IN_MIGRATION();  // We should have found the item.
     return;
   }
 
@@ -817,7 +817,7 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
   if (!menu_item->parent_id()) {
     auto i = context_items_.find(menu_item->id().extension_key);
     if (i == context_items_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
   }

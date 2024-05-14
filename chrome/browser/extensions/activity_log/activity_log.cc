@@ -338,7 +338,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (arg_url.is_valid()) {
@@ -529,7 +529,7 @@ void ActivityLog::SetDatabasePolicy(
       database_policy_ = new CountingPolicy(profile_);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   database_policy_->Init();
   database_policy_type_ = policy_type;

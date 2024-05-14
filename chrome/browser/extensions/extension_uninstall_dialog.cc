@@ -240,7 +240,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
                                            : u"User canceled uninstall dialog";
       break;
     case CLOSE_ACTION_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   delegate_->OnExtensionUninstallDialogClosed(success, error);
 }

@@ -146,7 +146,7 @@ base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
                  "'sendMessage' retry...";
     ContinueBrowserFor(kSendMessageRetryPeriod);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::Value();
 }
 

@@ -42,7 +42,8 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
     case WebAuthFlow::CANNOT_CREATE_WINDOW:
       return IdentityLaunchWebAuthFlowFunction::Error::kCannotCreateWindow;
     default:
-      NOTREACHED() << "Unexpected error from web auth flow: " << failure;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected error from web auth flow: " << failure;
       return IdentityLaunchWebAuthFlowFunction::Error::kUnexpectedError;
   }
 }
@@ -50,7 +51,7 @@ IdentityLaunchWebAuthFlowFunction::Error WebAuthFlowFailureToError(
 std::string ErrorToString(IdentityLaunchWebAuthFlowFunction::Error error) {
   switch (error) {
     case IdentityLaunchWebAuthFlowFunction::Error::kNone:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "This function is not expected to be called with no error";
       return std::string();
     case IdentityLaunchWebAuthFlowFunction::Error::kOffTheRecord:

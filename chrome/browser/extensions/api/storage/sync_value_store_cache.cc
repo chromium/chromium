@@ -76,7 +76,7 @@ syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
     case syncer::EXTENSION_SETTINGS:
       return extension_backend_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

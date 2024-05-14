@@ -73,7 +73,7 @@ keyboard::ContainerType ConvertKeyboardModeToContainerType(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return keyboard::ContainerType::kFullWidth;
 }
 

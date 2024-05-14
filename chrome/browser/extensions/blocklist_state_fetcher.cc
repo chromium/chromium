@@ -151,7 +151,7 @@ void BlocklistStateFetcher::OnURLLoaderCompleteInternal(
     int net_error) {
   auto it = requests_.find(url_loader);
   if (it == requests_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

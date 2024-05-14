@@ -146,11 +146,11 @@ api::tab_groups::Color ColorIdToColor(
     case tab_groups::TabGroupColorId::kOrange:
       return api::tab_groups::Color::kOrange;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED() << "kNumEntries is not a support color enum.";
+      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a support color enum.";
       return api::tab_groups::Color::kGrey;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::tab_groups::Color::kCyan;
 }
 
@@ -175,10 +175,10 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
     case api::tab_groups::Color::kOrange:
       return tab_groups::TabGroupColorId::kOrange;
     case api::tab_groups::Color::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return tab_groups::TabGroupColorId::kGrey;
 }
 

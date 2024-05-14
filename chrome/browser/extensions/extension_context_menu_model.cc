@@ -164,7 +164,7 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ContextMenuAction::kNoAction;
 }
 
@@ -177,7 +177,7 @@ PermissionsManager::UserSiteAccess CommandIdToSiteAccess(int command_id) {
     case ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES:
       return PermissionsManager::UserSiteAccess::kOnAllSites;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PermissionsManager::UserSiteAccess::kOnClick;
 }
 
@@ -206,7 +206,7 @@ void LogPageAccessAction(int command_id) {
           "Extensions.ContextMenu.Hosts.LearnMoreClicked"));
       break;
     default:
-      NOTREACHED() << "Unknown option: " << command_id;
+      NOTREACHED_IN_MIGRATION() << "Unknown option: " << command_id;
       break;
   }
 }
@@ -392,7 +392,7 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case VIEW_WEB_PERMISSIONS:
       return true;
     default:
-      NOTREACHED() << "Unknown command" << command_id;
+      NOTREACHED_IN_MIGRATION() << "Unknown command" << command_id;
   }
   return true;
 }
@@ -506,7 +506,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
 
       break;
     default:
-      NOTREACHED() << "Unknown option";
+      NOTREACHED_IN_MIGRATION() << "Unknown option";
       break;
   }
 }

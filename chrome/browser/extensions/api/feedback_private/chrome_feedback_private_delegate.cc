@@ -177,7 +177,7 @@ ChromeFeedbackPrivateDelegate::CreateSingleLogSource(
 
     case api::feedback_private::LogSource::kNone:
     default:
-      NOTREACHED() << "Unknown log source type.";
+      NOTREACHED_IN_MIGRATION() << "Unknown log source type.";
       return nullptr;
   }
 }

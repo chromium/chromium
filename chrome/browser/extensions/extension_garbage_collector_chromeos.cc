@@ -54,7 +54,7 @@ void ExtensionGarbageCollectorChromeOS::GarbageCollectExtensions() {
 bool ExtensionGarbageCollectorChromeOS::CanGarbageCollectSharedExtensions() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -86,7 +86,7 @@ void ExtensionGarbageCollectorChromeOS::GarbageCollectSharedExtensions() {
                 // No need to process unpacked because shared extensions can't
                 // be unpacked.
                 /*unpacked=*/false))) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

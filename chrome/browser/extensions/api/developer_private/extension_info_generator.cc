@@ -113,7 +113,7 @@ developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
       type = developer::ExtensionType::kExtension;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return type;
 }
@@ -293,7 +293,7 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
       result.severity = developer::ErrorLevel::kError;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   result.context_url = error.context_url().spec();
   result.occurrences = error.occurrences();
@@ -881,7 +881,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
           // https://crbug.com/503427.
           break;
         case ExtensionError::NUM_ERROR_TYPES:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

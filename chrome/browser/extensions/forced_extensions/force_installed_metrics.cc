@@ -58,7 +58,7 @@ ForceInstalledMetrics::UserType ConvertUserType(
     case user_manager::UserType::kWebKioskApp:
       return ForceInstalledMetrics::UserType::USER_TYPE_WEB_KIOSK_APP;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ForceInstalledMetrics::UserType::kMaxValue;
 }
@@ -385,7 +385,7 @@ bool IsStatusGood(ExtensionStatus status) {
     case ExtensionStatus::kFailed:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

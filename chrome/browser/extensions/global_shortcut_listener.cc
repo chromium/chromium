@@ -111,7 +111,7 @@ void GlobalShortcutListener::NotifyKeyPressed(
   if (iter == accelerator_map_.end()) {
     // This should never occur, because if it does, we have failed to unregister
     // or failed to clean up the map after unregistering the shortcut.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;  // No-one is listening to this key.
   }
 

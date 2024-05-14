@@ -193,7 +193,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -213,7 +213,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->set_duplex_mode(printing::mojom::DuplexMode::kShortEdge);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -230,7 +230,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->SetOrientation(/*landscape=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

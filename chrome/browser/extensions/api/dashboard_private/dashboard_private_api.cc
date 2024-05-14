@@ -41,7 +41,7 @@ api::dashboard_private::Result WebstoreInstallHelperResultToDashboardApiResult(
     case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
       return api::dashboard_private::Result::kManifestError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::dashboard_private::Result::kNone;
 }
 

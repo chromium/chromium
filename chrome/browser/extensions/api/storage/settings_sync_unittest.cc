@@ -261,7 +261,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
         model_type = value_store_util::ModelType::EXTENSION;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
     value_store_dir = value_store_util::GetValueStoreDir(

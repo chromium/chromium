@@ -117,7 +117,7 @@ api::processes::ProcessType GetProcessType(
       return api::processes::ProcessType::kOther;
   }
 
-  NOTREACHED() << "Unknown task type.";
+  NOTREACHED_IN_MIGRATION() << "Unknown task type.";
   return api::processes::ProcessType::kNone;
 }
 

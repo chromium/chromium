@@ -324,7 +324,7 @@ struct TypeConverter<mojom::OptionValuePtr,
       return mojom::OptionValue::NewStringValue(input.as_string.value());
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 };

@@ -74,7 +74,7 @@ ChromeWebViewInternalContextMenusUpdateFunction::Run() {
   else if (params->id.as_integer)
     item_id.uid = *params->id.as_integer;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   std::string error;
   bool success = extensions::context_menus_api_helpers::UpdateMenuItem(
@@ -104,7 +104,7 @@ ChromeWebViewInternalContextMenusRemoveFunction::Run() {
   } else if (params->menu_item_id.as_integer) {
     id.uid = *params->menu_item_id.as_integer;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   MenuItem* item = menu_manager->GetItemById(id);

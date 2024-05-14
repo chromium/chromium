@@ -91,7 +91,7 @@ ExtensionFunction::ResponseAction ResourcesPrivateGetStringsFunction::Run() {
       break;
     }
     case api::resources_private::Component::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();

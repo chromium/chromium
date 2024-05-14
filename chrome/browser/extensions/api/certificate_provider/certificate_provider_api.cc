@@ -50,7 +50,7 @@ PinErrorLabel GetErrorLabelForDialog(api_cp::PinRequestErrorType error_type) {
       return PinErrorLabel::kNone;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PinErrorLabel::kNone;
 }
 
@@ -202,7 +202,7 @@ bool ParseCertificateInfo(
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PKCS1_SHA512);
         break;
       case api_cp::Hash::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -260,7 +260,7 @@ bool ParseClientCertificateInfo(
         out_info->supported_algorithms.push_back(SSL_SIGN_RSA_PSS_RSAE_SHA512);
         break;
       case api_cp::Algorithm::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

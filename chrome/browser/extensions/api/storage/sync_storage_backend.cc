@@ -42,7 +42,7 @@ value_store_util::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
     case syncer::EXTENSION_SETTINGS:
       return value_store_util::ModelType::EXTENSION;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return value_store_util::ModelType::EXTENSION;
 }

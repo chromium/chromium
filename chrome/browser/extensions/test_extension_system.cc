@@ -226,7 +226,7 @@ void TestExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
@@ -236,7 +236,7 @@ void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
 bool TestExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

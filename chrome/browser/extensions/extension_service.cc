@@ -655,7 +655,7 @@ scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
     if (file_ownership_passed &&
         !GetExtensionFileTaskRunner()->PostTask(
             FROM_HERE, base::GetDeleteFileCallback(file.path))) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return nullptr;
@@ -903,7 +903,7 @@ bool ExtensionService::UninstallExtension(
                            std::move(extension_dir_to_delete),
                            profile_->GetPath()),
             subtask_done_callback)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1528,7 +1528,7 @@ void ExtensionService::AddExtension(const Extension* extension) {
     // location, but some bugs (e.g. crbug.com/692069) seem to indicate we do.
     // Track down the cases when this can happen, and remove this
     // DumpWithoutCrashing() (possibly replacing it with a CHECK).
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
     ManifestLocation location = extension->location();
     int creation_flags = extension->creation_flags();
@@ -1753,7 +1753,7 @@ void ExtensionService::OnExtensionInstalled(
       if (!GetExtensionFileTaskRunner()->PostTask(
               FROM_HERE,
               base::GetDeletePathRecursivelyCallback(extension->path()))) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       return;
     }
@@ -1869,7 +1869,7 @@ void ExtensionService::OnExtensionInstalled(
       return;
   }
 
-  NOTREACHED() << "Unknown action for delayed install: " << action;
+  NOTREACHED_IN_MIGRATION() << "Unknown action for delayed install: " << action;
 }
 
 void ExtensionService::OnExtensionManagementSettingsChanged() {
@@ -1957,7 +1957,7 @@ bool ExtensionService::FinishDelayedInstallationIfReady(
   delayed_installs_.Remove(extension_id);
 
   if (!extension_prefs_->FinishDelayedInstallInfo(extension_id))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   FinishInstallation(delayed_install.get());
   return true;

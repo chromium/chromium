@@ -50,7 +50,7 @@ void ReportReenableExtension(ExtensionUpdateCheckDataKey reason) {
       histogram = "Extensions.ExtensionReenabledRemotelyForPolicyViolation";
       break;
     case ExtensionUpdateCheckDataKey::kNoKey:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   base::UmaHistogramCounts100(histogram, 1);
 }
@@ -71,7 +71,7 @@ bool HasOmahaBlocklistStateInAttributes(const base::Value::Dict& attributes,
       break;
     case BitMapBlocklistState::NOT_BLOCKLISTED:
     case BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "The other states are not applicable in Omaha attributes.";
       state_value = std::nullopt;
       break;

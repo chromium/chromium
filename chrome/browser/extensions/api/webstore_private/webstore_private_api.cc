@@ -181,7 +181,7 @@ api::webstore_private::Result WebstoreInstallHelperResultToApiResult(
     case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
       return api::webstore_private::Result::kManifestError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return api::webstore_private::Result::kNone;
 }
 
@@ -762,7 +762,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
     case ExtensionInstallPrompt::Result::ABORTED:
       break;
     case ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
