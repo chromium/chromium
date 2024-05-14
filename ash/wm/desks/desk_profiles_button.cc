@@ -175,7 +175,8 @@ void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,
 
   menu_config.anchor_position = views::MenuAnchorPosition::kBubbleBottomRight;
   menu_config.profiles = delegate->GetProfilesSnapshot();
-  menu_config.current_lacros_profile_id = desk_->lacros_profile_id();
+  menu_config.current_lacros_profile_id =
+      delegate->ResolveProfileId(desk_->lacros_profile_id());
   menu_config.set_lacros_profile_id = base::BindRepeating(
       &DeskProfilesButton::OnSetLacrosProfileId, base::Unretained(this));
 

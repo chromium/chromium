@@ -428,7 +428,8 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   // there are at least two profiles.
   if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
     menu_config.profiles = delegate->GetProfilesSnapshot();
-    menu_config.current_lacros_profile_id = desk_->lacros_profile_id();
+    menu_config.current_lacros_profile_id =
+        delegate->ResolveProfileId(desk_->lacros_profile_id());
     menu_config.set_lacros_profile_id = base::BindRepeating(
         &DeskMiniView::OnSetLacrosProfileId, base::Unretained(this));
   }

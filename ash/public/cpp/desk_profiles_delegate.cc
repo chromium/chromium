@@ -15,4 +15,8 @@ LacrosProfileSummary& LacrosProfileSummary::operator=(
 LacrosProfileSummary& LacrosProfileSummary::operator=(LacrosProfileSummary&&) =
     default;
 
+uint64_t DeskProfilesDelegate::ResolveProfileId(uint64_t profile_id) {
+  return profile_id ? profile_id : GetPrimaryProfileId();
+}
+
 }  // namespace ash
