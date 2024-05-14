@@ -2972,6 +2972,34 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       contents));
 }
 
+// Main window HTTP allowlist should not apply to Incognito window.
+// Regression test for crbug.com/40949400.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       IncognitoHasSeparateAllowlist) {
+  // This test only covers the case of HFM-in-Incognito.
+  if (!IsIncognito()) {
+    return;
+  }
+  // In a regular window, add a host to the HTTP allowlist.
+  // Note: This is explicitly done with HTTPS-First Mode disabled as that is the
+  // specific regression case for crbug.com/40949400, but HTTPS-First Mode and
+  // HTTPS-Upgrades may eventually have separate allowlists.
+  SetPref(false);
+  auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  auto* normal_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(normal_tab, http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          normal_tab));
+
+  // In an Incognito window, navigating to that same host should still trigger
+  // the HTTP interstitial, as the allowlist is not inherited.
+  auto* incognito_tab = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(incognito_tab, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      incognito_tab));
+}
+
 // Tests that URLs typed with an explicit http:// scheme are opted out from
 // upgrades.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
