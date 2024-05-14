@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
-
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeBatteryInfo2, fakeCpuUsage, fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
-import {BatteryChargeStatusObserverRemote, BatteryHealthObserverRemote, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, DeviceCapabilities, MemoryUsage, MemoryUsageObserverRemote, SystemInfo, VersionInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeSystemDataProviderTestSuite', function() {
-  /** @type {?FakeSystemDataProvider} */
-  let provider = null;
+  let provider: FakeSystemDataProvider|null = null;
 
   setup(() => {
     provider = new FakeSystemDataProvider();
@@ -23,19 +21,16 @@ suite('fakeSystemDataProviderTestSuite', function() {
   });
 
   test('GetSystemInfo', () => {
-    /** @type {!DeviceCapabilities} */
-    const capabilities = {
+    const capabilities: DeviceCapabilities = {
       hasBattery: true,
     };
 
-    /** @type {!VersionInfo} */
-    const version = {
+    const version: VersionInfo = {
       milestoneVersion: 'M97',
       fullVersionString: 'M97.1234.5.6',
     };
 
-    /** @type {!SystemInfo} */
-    const expected = {
+    const expected: SystemInfo = {
       boardName: 'BestBoard',
       cpuModelName: 'SuperFast CPU',
       marketingName: 'Bestest 1000',
@@ -45,118 +40,117 @@ suite('fakeSystemDataProviderTestSuite', function() {
       versionInfo: version,
       deviceCapabilities: capabilities,
     };
-
+    assert(provider);
     provider.setFakeSystemInfo(expected);
-    return provider.getSystemInfo().then((result) => {
+    return provider.getSystemInfo().then((result: {systemInfo: SystemInfo}) => {
       assertDeepEquals(expected, result.systemInfo);
     });
   });
 
   test('GetBatteryInfo', () => {
+    assert(provider);
     provider.setFakeBatteryInfo(fakeBatteryInfo);
-    return provider.getBatteryInfo().then((result) => {
-      assertDeepEquals(fakeBatteryInfo, result.batteryInfo);
-    });
+    return provider.getBatteryInfo().then(
+        (result: {batteryInfo: BatteryInfo}) => {
+          assertDeepEquals(fakeBatteryInfo, result.batteryInfo);
+        });
   });
 
   test('ObserveBatteryHealth', () => {
+    assert(provider);
     provider.setFakeBatteryHealth(fakeBatteryHealth);
 
-    const batteryHealthObserverRemote =
-        /** @type {!BatteryHealthObserverRemote} */ ({
-          onBatteryHealthUpdated: (batteryHealth) => {
-            assertDeepEquals(fakeBatteryHealth[0], batteryHealth);
-          },
-        });
+    const batteryHealthObserverRemote = {
+      onBatteryHealthUpdated: (batteryHealth: BatteryHealth) => {
+        assertDeepEquals(fakeBatteryHealth[0], batteryHealth);
+      },
+    };
 
-    provider.observeBatteryHealth(batteryHealthObserverRemote);
+    provider.observeBatteryHealth(
+        batteryHealthObserverRemote as BatteryHealthObserverRemote);
     return provider.getObserveBatteryHealthPromiseForTesting();
   });
 
   test('ObserveBatteryChargeStatus', () => {
+    assert(provider);
     provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
 
-    const batteryChargeStatusObserverRemote =
-        /** @type {!BatteryChargeStatusObserverRemote} */ ({
-          onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
+    const batteryChargeStatusObserverRemote = {
+      onBatteryChargeStatusUpdated:
+          (batteryChargeStatus: BatteryChargeStatus) => {
             assertDeepEquals(fakeBatteryChargeStatus[0], batteryChargeStatus);
           },
-        });
+    };
 
-    provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
+    provider.observeBatteryChargeStatus(
+        batteryChargeStatusObserverRemote as BatteryChargeStatusObserverRemote);
     return provider.getObserveBatteryChargeStatusPromiseForTesting();
   });
 
   test('ObserveCpuUsage', () => {
+    assert(provider);
     provider.setFakeCpuUsage(fakeCpuUsage);
 
-    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
-      onCpuUsageUpdated: (cpuUsage) => {
+    const cpuObserverRemote = {
+      onCpuUsageUpdated: (cpuUsage: CpuUsage) => {
         assertDeepEquals(fakeCpuUsage[0], cpuUsage);
       },
-    });
+    };
 
-    provider.observeCpuUsage(cpuObserverRemote);
+    provider.observeCpuUsage(cpuObserverRemote as CpuUsageObserverRemote);
     return provider.getObserveCpuUsagePromiseForTesting();
   });
 
   test('ObserveMemoryUsage', () => {
+    assert(provider);
     provider.setFakeMemoryUsage(fakeMemoryUsage);
 
-    const memoryUsageObserverRemote =
-        /** @type {!MemoryUsageObserverRemote} */ ({
-          onMemoryUsageUpdated: (memoryUsage) => {
-            assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
-          },
-        });
+    const memoryUsageObserverRemote = {
+      onMemoryUsageUpdated: (memoryUsage: MemoryUsage) => {
+        assertDeepEquals(fakeMemoryUsage[0], memoryUsage);
+      },
+    };
 
-    provider.observeMemoryUsage(memoryUsageObserverRemote);
+    provider.observeMemoryUsage(
+        memoryUsageObserverRemote as MemoryUsageObserverRemote);
     return provider.getObserveMemoryUsagePromiseForTesting();
   });
 
-  test('CallMethodWithNoValue', () => {
-    // Don't set any fake data.
-    return provider.getBatteryInfo().then((value) => {
-      assertEquals(undefined, value);
-    });
-  });
-
   test('CallMethodDifferentDataAfterReset', () => {
+    assert(provider);
     // Setup the fake data, but then reset it and set it with new data.
     provider.setFakeBatteryInfo(fakeBatteryInfo);
     provider.reset();
     provider.setFakeBatteryInfo(fakeBatteryInfo2);
 
-    return provider.getBatteryInfo().then((result) => {
-      assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
-    });
+    return provider.getBatteryInfo().then(
+        (result: {batteryInfo: BatteryInfo}) => {
+          assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
+        });
   });
 
   test('CallMethodFirstThenDifferentDataAfterReset', () => {
     // Setup the initial fake data.
+    assert(provider);
     provider.setFakeBatteryInfo(fakeBatteryInfo);
     return provider.getBatteryInfo()
-        .then((result) => {
+        .then((result: {batteryInfo: BatteryInfo}) => {
           assertDeepEquals(fakeBatteryInfo, result.batteryInfo);
         })
         .then(() => {
-          // Reset and next time it should fire undefined.
-          provider.reset();
-          return provider.getBatteryInfo().then((value) => {
-            assertEquals(undefined, value);
-          });
-        })
-        .then(() => {
+          assert(provider);
           // Set different data and next time should fire with it.
           provider.reset();
           provider.setFakeBatteryInfo(fakeBatteryInfo2);
-          return provider.getBatteryInfo().then((result) => {
-            assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
-          });
+          return provider.getBatteryInfo().then(
+              (result: {batteryInfo: BatteryInfo}) => {
+                assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
+              });
         });
   });
 
   test('ObserveCpuTwiceWithTrigger', () => {
+    assert(provider);
     // The fake needs to have at least 2 samples.
     assertTrue(fakeCpuUsage.length >= 2);
     provider.setFakeCpuUsage(fakeCpuUsage);
@@ -166,24 +160,23 @@ suite('fakeSystemDataProviderTestSuite', function() {
     const firstResolver = new PromiseResolver();
     const completeResolver = new PromiseResolver();
 
-    /** @type {!CpuUsageObserverRemote} */
-    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
-      onCpuUsageUpdated: (cpuUsage) => {
+    const cpuObserverRemote = {
+      onCpuUsageUpdated: (cpuUsage: CpuUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
         assertTrue(whichSample <= 1);
         assertDeepEquals(fakeCpuUsage[whichSample], cpuUsage);
 
         if (whichSample === 0) {
-          firstResolver.resolve();
+          firstResolver.resolve(null);
         } else {
-          completeResolver.resolve();
+          completeResolver.resolve(null);
         }
         whichSample++;
       },
-    });
+    };
 
-    provider.observeCpuUsage(cpuObserverRemote);
+    provider.observeCpuUsage(cpuObserverRemote as CpuUsageObserverRemote);
     return provider.getObserveCpuUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
@@ -191,12 +184,14 @@ suite('fakeSystemDataProviderTestSuite', function() {
         .then(() => {
           // After the observer fires the first time, trigger it to
           // fire again.
+          assert(provider);
           provider.triggerCpuUsageObserver();
           return completeResolver.promise;
         });
   });
 
   test('ObserveMemoryTwiceWithTrigger', () => {
+    assert(provider);
     // The fake needs to have at least 2 samples.
     assertTrue(fakeMemoryUsage.length >= 2);
     provider.setFakeMemoryUsage(fakeMemoryUsage);
@@ -206,23 +201,24 @@ suite('fakeSystemDataProviderTestSuite', function() {
     const firstResolver = new PromiseResolver();
     const completeResolver = new PromiseResolver();
 
-    const memoryObserverRemote = /** @type {!MemoryUsageObserverRemote} */ ({
-      onMemoryUsageUpdated: (memoryUsage) => {
+    const memoryObserverRemote = {
+      onMemoryUsageUpdated: (memoryUsage: MemoryUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
         assertTrue(whichSample <= 1);
         assertDeepEquals(fakeMemoryUsage[whichSample], memoryUsage);
 
         if (whichSample === 0) {
-          firstResolver.resolve();
+          firstResolver.resolve(null);
         } else {
-          completeResolver.resolve();
+          completeResolver.resolve(null);
         }
         whichSample++;
       },
-    });
+    };
 
-    provider.observeMemoryUsage(memoryObserverRemote);
+    provider.observeMemoryUsage(
+        memoryObserverRemote as MemoryUsageObserverRemote);
     return provider.getObserveMemoryUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
@@ -230,12 +226,14 @@ suite('fakeSystemDataProviderTestSuite', function() {
         .then(() => {
           // After the observer fires the first time, trigger it to
           // fire again.
+          assert(provider);
           provider.triggerMemoryUsageObserver();
           return completeResolver.promise;
         });
   });
 
   test('ObserveBatteryHealthTwiceWithTrigger', () => {
+    assert(provider);
     // The fake needs to have at least 2 samples.
     assertTrue(fakeBatteryHealth.length >= 2);
     provider.setFakeBatteryHealth(fakeBatteryHealth);
@@ -245,24 +243,24 @@ suite('fakeSystemDataProviderTestSuite', function() {
     const firstResolver = new PromiseResolver();
     const completeResolver = new PromiseResolver();
 
-    const batteryHealthObserverRemote =
-        /** @type {!BatteryHealthObserverRemote} */ ({
-          onBatteryHealthUpdated: (batteryHealth) => {
-            // Only expect 2 calls.
-            assertTrue(whichSample >= 0);
-            assertTrue(whichSample <= 1);
-            assertDeepEquals(fakeBatteryHealth[whichSample], batteryHealth);
+    const batteryHealthObserverRemote = {
+      onBatteryHealthUpdated: (batteryHealth: BatteryHealth) => {
+        // Only expect 2 calls.
+        assertTrue(whichSample >= 0);
+        assertTrue(whichSample <= 1);
+        assertDeepEquals(fakeBatteryHealth[whichSample], batteryHealth);
 
-            if (whichSample === 0) {
-              firstResolver.resolve();
-            } else {
-              completeResolver.resolve();
-            }
-            whichSample++;
-          },
-        });
+        if (whichSample === 0) {
+          firstResolver.resolve(null);
+        } else {
+          completeResolver.resolve(null);
+        }
+        whichSample++;
+      },
+    };
 
-    provider.observeBatteryHealth(batteryHealthObserverRemote);
+    provider.observeBatteryHealth(
+        batteryHealthObserverRemote as BatteryHealthObserverRemote);
     return provider.getObserveBatteryHealthPromiseForTesting()
         .then(() => {
           return firstResolver.promise;
@@ -270,12 +268,14 @@ suite('fakeSystemDataProviderTestSuite', function() {
         .then(() => {
           // After the observer fires the first time, trigger it to
           // fire again.
+          assert(provider);
           provider.triggerBatteryHealthObserver();
           return completeResolver.promise;
         });
   });
 
   test('ObserveBatteryChargeStatusTwiceWithTrigger', () => {
+    assert(provider);
     // The fake needs to have at least 2 samples.
     assertTrue(fakeBatteryChargeStatus.length >= 2);
     provider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
@@ -285,9 +285,9 @@ suite('fakeSystemDataProviderTestSuite', function() {
     const firstResolver = new PromiseResolver();
     const completeResolver = new PromiseResolver();
 
-    const batteryChargeStatusObserverRemote =
-        /** @type {!BatteryChargeStatusObserverRemote} */ ({
-          onBatteryChargeStatusUpdated: (batteryChargeStatus) => {
+    const batteryChargeStatusObserverRemote = {
+      onBatteryChargeStatusUpdated:
+          (batteryChargeStatus: BatteryChargeStatus) => {
             // Only expect 2 calls.
             assertTrue(whichSample >= 0);
             assertTrue(whichSample <= 1);
@@ -295,20 +295,22 @@ suite('fakeSystemDataProviderTestSuite', function() {
                 fakeBatteryChargeStatus[whichSample], batteryChargeStatus);
 
             if (whichSample === 0) {
-              firstResolver.resolve();
+              firstResolver.resolve(null);
             } else {
-              completeResolver.resolve();
+              completeResolver.resolve(null);
             }
             whichSample++;
           },
-        });
+    };
 
-    provider.observeBatteryChargeStatus(batteryChargeStatusObserverRemote);
+    provider.observeBatteryChargeStatus(
+        batteryChargeStatusObserverRemote as BatteryChargeStatusObserverRemote);
     return provider.getObserveBatteryChargeStatusPromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
         .then(() => {
+          assert(provider);
           // After the observer fires the first time, trigger it to
           // fire again.
           provider.triggerBatteryChargeStatusObserver();
@@ -317,6 +319,7 @@ suite('fakeSystemDataProviderTestSuite', function() {
   });
 
   test('ObserveWithResetBetweenTriggers', () => {
+    assert(provider);
     // The fake needs to have at least 2 samples.
     assertTrue(fakeCpuUsage.length >= 2);
     provider.setFakeCpuUsage(fakeCpuUsage);
@@ -326,9 +329,8 @@ suite('fakeSystemDataProviderTestSuite', function() {
     const firstResolver = new PromiseResolver();
     const completeResolver = new PromiseResolver();
 
-    /** @type {!CpuUsageObserverRemote} */
-    const cpuObserverRemote = /** @type {!CpuUsageObserverRemote} */ ({
-      onCpuUsageUpdated: (cpuUsage) => {
+    const cpuObserverRemote = {
+      onCpuUsageUpdated: (cpuUsage: CpuUsage) => {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
         assertTrue(whichSample <= 1);
@@ -337,27 +339,29 @@ suite('fakeSystemDataProviderTestSuite', function() {
         assertDeepEquals(fakeCpuUsage[0], cpuUsage);
 
         if (whichSample === 0) {
-          firstResolver.resolve();
+          firstResolver.resolve(null);
         } else {
-          completeResolver.resolve();
+          completeResolver.resolve(null);
         }
         whichSample++;
       },
-    });
+    };
 
-    provider.observeCpuUsage(cpuObserverRemote);
+    provider.observeCpuUsage(cpuObserverRemote as CpuUsageObserverRemote);
     return provider.getObserveCpuUsagePromiseForTesting()
         .then(() => {
           return firstResolver.promise;
         })
         .then(() => {
+          assert(provider);
           // After the observer fires the first time, reset it and observe
           // again. We should go back to the initial sample.
           provider.reset();
           provider.setFakeCpuUsage(fakeCpuUsage);
 
           // Observing will implicitly trigger again.
-          return provider.observeCpuUsage(cpuObserverRemote);
+          return provider.observeCpuUsage(
+              cpuObserverRemote as CpuUsageObserverRemote);
         })
         .then(() => {
           // Wait for the second callback which should return the first sample
