@@ -383,16 +383,31 @@ public final class CronetStatsLog {
     public static final int CRONET_INITIALIZED__HTTP_FLAGS_SUCCESSFUL__OPTIONAL_BOOLEAN_FALSE = 2;
 
     // Annotation constants.
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_IS_UID = StatsLog.ANNOTATION_ID_IS_UID;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_TRUNCATE_TIMESTAMP =
             StatsLog.ANNOTATION_ID_TRUNCATE_TIMESTAMP;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_PRIMARY_FIELD = StatsLog.ANNOTATION_ID_PRIMARY_FIELD;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_EXCLUSIVE_STATE = StatsLog.ANNOTATION_ID_EXCLUSIVE_STATE;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_PRIMARY_FIELD_FIRST_UID =
             StatsLog.ANNOTATION_ID_PRIMARY_FIELD_FIRST_UID;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_DEFAULT_STATE = StatsLog.ANNOTATION_ID_DEFAULT_STATE;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_TRIGGER_STATE_RESET =
             StatsLog.ANNOTATION_ID_TRIGGER_STATE_RESET;
+
+    @android.annotation.SuppressLint("InlinedApi")
     public static final byte ANNOTATION_ID_STATE_NESTED = StatsLog.ANNOTATION_ID_STATE_NESTED;
 
     // Write methods
@@ -566,8 +581,7 @@ public final class CronetStatsLog {
         StatsLog.write(builder.build());
     }
 
-    // **The @RequiresApi annotation below needs to be added back after regenerating this file.**
-    // TODO(b/313088483): Autogenerate the @RequiresApi annotation
+    @android.annotation.SuppressLint("ObsoleteSdkInt")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     public static void write(
             int code, long arg1, int arg2, int arg3, int arg4, int arg5, long[] arg6, long[] arg7) {
