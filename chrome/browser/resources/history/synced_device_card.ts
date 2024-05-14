@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './searched_label.js';
 import './shared_style.css.js';
+import './shared_vars.css.js';
 import './strings.m.js';
 
+import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
@@ -35,7 +35,7 @@ declare global {
 export interface HistorySyncedDeviceCardElement {
   $: {
     'card-heading': HTMLDivElement,
-    'collapse': IronCollapseElement,
+    'collapse': CrCollapseElement,
     'collapse-button': HTMLElement,
     'menu-button': HTMLElement,
   };
@@ -184,7 +184,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
       target: e.target,
       tag: this.sessionTag,
     });
-    e.stopPropagation();  // Prevent iron-collapse.
+    e.stopPropagation();  // Prevent cr-collapse.
   }
 
   private onLinkRightClick_() {
