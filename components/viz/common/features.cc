@@ -395,7 +395,7 @@ const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
 // inserting a separate color conversion pass during surface aggregation.
 BASE_FEATURE(kColorConversionInRenderer,
              "ColorConversionInRenderer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes BeginFrame issue to use LastUsedBeginFrameArgs() instead of the
 // current set of BeginFrameArgs.
