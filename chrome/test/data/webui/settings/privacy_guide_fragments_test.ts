@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {PrivacyGuideCompletionFragmentElement, PrivacyGuideCookiesFragmentElement, PrivacyGuideDescriptionItemElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideMsbbFragmentElement, PrivacyGuideSafeBrowsingFragmentElement, PrivacyGuideWelcomeFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, resetRouterForTesting, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -393,6 +393,8 @@ suite('SafeBrowsingFragment', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -532,6 +534,7 @@ suite('SafeBrowsingFragment', function() {
         enableFriendlierSafeBrowsingSettings: true,
         enableHashPrefixRealTimeLookups: false,
       });
+      resetRouterForTesting();
     });
 
     test('StandardProtectionDescription', function() {
@@ -556,6 +559,7 @@ suite('SafeBrowsingFragment', function() {
         enableFriendlierSafeBrowsingSettings: true,
         enableHashPrefixRealTimeLookups: true,
       });
+      resetRouterForTesting();
     });
 
     test('StandardProtectionDescriptionWithProxy', function() {
@@ -577,6 +581,7 @@ suite('SafeBrowsingFragment', function() {
         enableFriendlierSafeBrowsingSettings: false,
         enableHashPrefixRealTimeLookups: true,
       });
+      resetRouterForTesting();
     });
 
     test('NotUpdatedStandardProtectionDescription', function() {
@@ -617,6 +622,7 @@ suite('SafeBrowsingFragment', function() {
         enableFriendlierSafeBrowsingSettings: false,
         enableHashPrefixRealTimeLookups: false,
       });
+      resetRouterForTesting();
     });
 
     // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
@@ -805,6 +811,7 @@ suite('CompletionFragment', function() {
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -921,6 +928,7 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: false,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -967,6 +975,7 @@ suite(
           isPrivacySandboxRestricted: true,
           isPrivacySandboxRestrictedNoticeEnabled: true,
         });
+        resetRouterForTesting();
       });
 
       setup(function() {
@@ -999,6 +1008,7 @@ suite('CompletionFragmentWithoutTrackingProtection', function() {
       isPrivacySandboxRestrictedNoticeEnabled: false,
       enableTrackingProtectionRolloutUx: false,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
