@@ -397,7 +397,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
   void NodeIsAttachedWithCleanLayout(Node*);
-  void HandleScrollPositionChangedWithCleanLayout(Node*);
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
   void HandleEditableTextContentChangedWithCleanLayout(Node*);
   void UpdateAriaOwnsWithCleanLayout(Node*);
@@ -1074,6 +1073,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Help de-dupe processing of repetitive events.
   HashSet<AXID> nodes_with_pending_children_changed_;
+  HashSet<AXID> nodes_with_pending_scroll_changed_;
 
   // Nodes with document markers that have received accessibility updates.
   HashSet<AXID> nodes_with_spelling_or_grammar_markers_;

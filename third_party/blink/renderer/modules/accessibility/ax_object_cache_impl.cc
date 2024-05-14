@@ -1932,12 +1932,14 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
     }
     // Allow the new AXObject for the same node to be serialized correctly.
     nodes_with_pending_children_changed_.erase(obj_id);
+    nodes_with_pending_scroll_changed_.erase(obj_id);
     computed_node_mapping_.erase(obj_id);
   } else {
     // Non-DOM ids should never find their way into these maps.
     DCHECK(!fixed_or_sticky_node_ids_.Contains(obj_id));
     DCHECK(!computed_node_mapping_.Contains(obj_id));
     DCHECK(!nodes_with_pending_children_changed_.Contains(obj_id));
+    DCHECK(!nodes_with_pending_scroll_changed_.Contains(obj_id));
   }
 }
 
@@ -3072,6 +3074,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       CHECK(tree_update_callback_queue_main_.empty());
       CHECK(tree_update_callback_queue_popup_.empty());
       CHECK(nodes_with_pending_children_changed_.empty());
+      CHECK(nodes_with_pending_scroll_changed_.empty());
 
       // Build out tree, such that each node has computed its children.
       UpdateTreeIfNeeded();
@@ -3079,6 +3082,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       CHECK(tree_update_callback_queue_main_.empty());
       CHECK(tree_update_callback_queue_popup_.empty());
       CHECK(nodes_with_pending_children_changed_.empty());
+      CHECK(nodes_with_pending_scroll_changed_.empty());
 
       // Updating the tree did not add dirty objects.
       DUMP_WILL_BE_CHECK(!IsDirty());
@@ -3332,6 +3336,7 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
   TreeUpdateCallbackQueue old_tree_update_callback_queue;
   GetTreeUpdateCallbackQueue(document).swap(old_tree_update_callback_queue);
   nodes_with_pending_children_changed_.clear();
+  nodes_with_pending_scroll_changed_.clear();
   last_value_change_node_ = ui::AXNodeData::kInvalidAXID;
 
   for (TreeUpdateParams* tree_update : old_tree_update_callback_queue) {
@@ -5672,10 +5677,19 @@ void AXObjectCacheImpl::SetCachedBoundingBox(
 
 void AXObjectCacheImpl::HandleScrollPositionChanged(
     LayoutObject* layout_object) {
+  if (layout_object->GetDocument() != document_) {
+    return;
+  }
+
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   InvalidateBoundingBoxForFixedOrStickyPosition();
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
+    if (!nodes_with_pending_scroll_changed_.insert(node->GetDomNodeId())
+             .is_new_entry) {
+      return;
+    }
+
     DeferTreeUpdate(TreeUpdateReason::kMarkDirtyFromHandleScroll, node);
   }
 }
