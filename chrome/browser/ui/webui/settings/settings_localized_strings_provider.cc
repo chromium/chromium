@@ -432,7 +432,6 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("presetZoomFactors",
                          zoom::GetPresetZoomFactorsAsJSON());
-  html_source->AddBoolean("showSidePanelOptions", true);
   html_source->AddBoolean(
       "showHoverCardImagesOption",
       base::FeatureList::IsEnabled(features::kTabHoverCardImages));

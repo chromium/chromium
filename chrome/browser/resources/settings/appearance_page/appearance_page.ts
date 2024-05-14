@@ -195,13 +195,6 @@ export class SettingsAppearancePageElement extends
       },
       // </if>
 
-      showSidePanelOptions_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showSidePanelOptions');
-        },
-      },
-
       showHoverCardImagesOption_: {
         type: Boolean,
         value() {
@@ -233,7 +226,6 @@ export class SettingsAppearancePageElement extends
   }
 
   pageVisibility: AppearancePageVisibility;
-  private showSidePanelOptions_: boolean;
   private defaultZoom_: number;
   private isWallpaperPolicyControlled_: boolean;
   private fontSizeOptions_: DropdownMenuOptionList;

@@ -345,17 +345,8 @@ suite('AppearanceHandler', function() {
   });
 
   test('show side panel options', function() {
-    loadTimeData.overrideValues({
-      showSidePanelOptions: true,
-    });
     createAppearancePage();
     assertTrue(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
-
-    loadTimeData.overrideValues({
-      showSidePanelOptions: false,
-    });
-    createAppearancePage();
-    assertFalse(!!appearancePage.shadowRoot!.querySelector('#side-panel'));
   });
 
   test('ShowSavedTabGroupsToggleVisible', async function() {
