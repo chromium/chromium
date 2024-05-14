@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.ColorDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -100,6 +101,8 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
                             PrivacyPreferencesManagerImpl.getInstance(),
                             this);
 
+            // Reset the activity background to transparent for fullscreen upgrade promo view.
+            getWindow().setBackgroundDrawable(new ColorDrawable(0));
             setContentView(mUpgradePromoCoordinator.getViewSwitcher());
             onInitialLayoutInflationComplete();
             return;
