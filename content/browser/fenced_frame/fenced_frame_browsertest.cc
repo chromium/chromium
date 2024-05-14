@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -55,6 +56,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
+#include "content/shell/browser/shell_paths.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -3830,7 +3832,12 @@ class FencedFrameIgnoreCertErrors : public FencedFrameParameterizedBrowserTest {
     // We need to have a dedicated browser context for the tests.
     // Or, SSLManager::UpdateEntry() doesn't update the entry if
     // |ssl_host_state_delegate_| is nullptr.
-    browser_context_ = std::make_unique<TestBrowserContext>();
+    // The directory has to be inside the shell's user data directory for the
+    // storage service to work correctly.
+    base::FilePath path;
+    base::PathService::Get(SHELL_DIR_USER_DATA, &path);
+    path = path.Append(FILE_PATH_LITERAL("fenced_frame_profile"));
+    browser_context_ = std::make_unique<TestBrowserContext>(path);
 
     https_server()->RegisterRequestMonitor(base::BindRepeating(
         &FencedFrameParameterizedBrowserTest::ObserveRequestHeaders,
