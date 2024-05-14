@@ -544,17 +544,19 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // of the IBAN, representing its country of origin. `callback` is the
   // callback function that is triggered when a response is received from the
   // server, and the callback is triggered with that response's result. The
-  // legal message will always be returned upon a successful response via
-  // `callback`. A successful response does not guarantee that the legal
-  // message is valid, callers should parse the legal message and use it to
-  // decide if IBAN upload save should be offered.
+  // `validation_regex` is used to validate whether the given IBAN can be saved
+  // to the server. The legal message will always be returned upon a successful
+  // response via `callback`. A successful response does not guarantee that the
+  // legal message is valid, callers should parse the legal message and use it
+  // to decide if IBAN upload save should be offered.
   virtual void GetIbanUploadDetails(
       const std::string& app_locale,
       int64_t billing_customer_number,
       int billable_service_number,
       const std::string& country_code,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const std::u16string&,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult result,
+                              const std::u16string& validation_regex,
+                              const std::u16string& context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
 
   // The user has indicated that they would like to upload an IBAN. This request

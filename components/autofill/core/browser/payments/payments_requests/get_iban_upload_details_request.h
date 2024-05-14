@@ -23,7 +23,8 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
       int billable_service_number,
       const std::string& country_code,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const std::u16string&,
+                              const std::u16string& validation_regex,
+                              const std::u16string& context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
   GetIbanUploadDetailsRequest(const GetIbanUploadDetailsRequest&) = delete;
   GetIbanUploadDetailsRequest& operator=(const GetIbanUploadDetailsRequest&) =
@@ -47,12 +48,14 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   const bool full_sync_enabled_;
   std::string app_locale_;
   std::u16string context_token_;
+  std::u16string validation_regex_;
   std::unique_ptr<base::Value::Dict> legal_message_;
   const int64_t billing_customer_number_;
   const int billable_service_number_;
   std::string country_code_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          const std::u16string&,
+                          const std::u16string& validation_regex,
+                          const std::u16string& context_token,
                           std::unique_ptr<base::Value::Dict>)>
       callback_;
 };

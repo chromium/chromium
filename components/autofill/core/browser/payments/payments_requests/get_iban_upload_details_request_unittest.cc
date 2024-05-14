@@ -16,6 +16,8 @@ constexpr char kAppLocale[] = "dummy_locale";
 constexpr char kCountryCode[] = "FR";
 constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
+constexpr char16_t kCapitalizedIbanRegex[] =
+    u"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$";
 
 }  // namespace
 
@@ -76,6 +78,8 @@ TEST_F(GetIbanUploadDetailsRequestTest,
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_ResponseIsComplete) {
   base::Value::Dict response =
       base::Value::Dict()
+          .Set("iban_details", base::Value::Dict().Set("validation_regex",
+                                                       kCapitalizedIbanRegex))
           .Set("context_token", base::Value(u"some token"))
           .Set("legal_message",
                base::Value::Dict().Set("terms_of_service", "Terms of Service"));
@@ -88,9 +92,12 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_ResponseIsComplete) {
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingContextToken) {
-  base::Value::Dict response = base::Value::Dict().Set(
-      "legal_message",
-      base::Value::Dict().Set("terms_of_service", "Terms of Service"));
+  base::Value::Dict response =
+      base::Value::Dict()
+          .Set("iban_details", base::Value::Dict().Set("validation_regex",
+                                                       kCapitalizedIbanRegex))
+          .Set("legal_message",
+               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
 
   ParseResponse(response);
 
@@ -99,7 +106,22 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingContextToken) {
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingLegalMessage) {
   base::Value::Dict response =
-      base::Value::Dict().Set("context_token", base::Value(u"some token"));
+      base::Value::Dict()
+          .Set("iban_details", base::Value::Dict().Set("validation_regex",
+                                                       kCapitalizedIbanRegex))
+          .Set("context_token", base::Value(u"some token"));
+
+  ParseResponse(response);
+
+  EXPECT_FALSE(IsResponseComplete());
+}
+
+TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingValidationRegex) {
+  base::Value::Dict response =
+      base::Value::Dict()
+          .Set("context_token", base::Value(u"some token"))
+          .Set("legal_message",
+               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
 
   ParseResponse(response);
 

@@ -341,7 +341,8 @@ void PaymentsNetworkInterface::GetIbanUploadDetails(
     int billable_service_number,
     const std::string& country_code,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::u16string&,
+                            const std::u16string& validation_regex,
+                            const std::u16string& context_token,
                             std::unique_ptr<base::Value::Dict>)> callback) {
   IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),

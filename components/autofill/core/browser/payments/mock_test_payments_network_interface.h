@@ -25,6 +25,7 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
                const std::string&,
                (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                                         const std::u16string&,
+                                        const std::u16string&,
                                         std::unique_ptr<base::Value::Dict>)>)),
               (override));
   MOCK_METHOD(

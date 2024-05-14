@@ -152,13 +152,16 @@ class IbanSaveManager {
   // implies the offer to save will be icon-only on desktop and not shown at all
   // on mobile. The `legal_message` will be used for displaying the Terms of
   // Service and Privacy Notice within the upload-save IBAN bubble view. The
-  // `context_token` will serve as the token to initiate the actual Upload IBAN
-  // request. The upload flow will be executed only when there is a successful
-  // result and the `legal_message` is parsed successfully. In all other cases,
-  // local save will be offered if applicable.
+  // `validation_regex` will be used to validate that Google Payments will
+  // accept the extracted IBAN value. The `context_token` will serve as the
+  // token to initiate the actual Upload IBAN request. The upload flow will be
+  // executed only when there is a successful result and the `legal_message` is
+  // parsed successfully. In all other cases, local save will be offered if
+  // applicable.
   void OnDidGetUploadDetails(bool show_save_prompt,
                              Iban import_candidate,
                              AutofillClient::PaymentsRpcResult result,
+                             const std::u16string& validation_regex,
                              const std::u16string& context_token,
                              std::unique_ptr<base::Value::Dict> legal_message);
 

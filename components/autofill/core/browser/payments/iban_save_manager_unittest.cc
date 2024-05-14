@@ -52,6 +52,9 @@ constexpr char kInvalidLegalMessageLines[] =
     "  } ]"
     "}";
 
+constexpr char16_t kCapitalizedIbanRegex[] =
+    u"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$";
+
 }  // namespace
 
 class IbanSaveManagerTest : public testing::Test {
@@ -81,20 +84,23 @@ class IbanSaveManagerTest : public testing::Test {
 
   void SetUpGetIbanUploadDetailsResponse(
       bool is_successful,
+      const std::u16string& regex = kCapitalizedIbanRegex,
       bool includes_invalid_legal_message = false) {
     ON_CALL(*payments_network_interface(), GetIbanUploadDetails)
         .WillByDefault(
-            [is_successful, includes_invalid_legal_message](
+            [is_successful, regex, includes_invalid_legal_message](
                 const std::string& app_locale, int64_t billing_customer_number,
                 int billable_service_number, const std::string& country_code,
-                base::OnceCallback<void(
-                    AutofillClient::PaymentsRpcResult, const std::u16string&,
-                    std::unique_ptr<base::Value::Dict>)> callback) {
+                base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                        const std::u16string& validation_regex,
+                                        const std::u16string& context_token,
+                                        std::unique_ptr<base::Value::Dict>)>
+                    callback) {
               std::move(callback).Run(
                   is_successful
                       ? AutofillClient::PaymentsRpcResult::kSuccess
                       : AutofillClient::PaymentsRpcResult::kPermanentFailure,
-                  u"this is a context token",
+                  regex, u"this is a context token",
                   includes_invalid_legal_message
                       ? std::make_unique<base::Value::Dict>(
                             base::JSONReader::ReadDict(
@@ -525,6 +531,25 @@ TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_Success) {
                    ->ConfirmSaveIbanLocallyWasCalled());
 }
 
+// Test that upload save should be not be offered for a new IBAN when the
+// regex validation does not pass.
+TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_FailureOnRegexNotMatch) {
+  Iban iban;
+  // Set up a valid France IBAN value.
+  iban.set_value(std::u16string(test::kIbanValue16));
+  // Set up a Finland validation regex.
+  SetUpGetIbanUploadDetailsResponse(
+      /*is_successful=*/true,
+      u"^FI{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$",
+      /*includes_invalid_legal_message=*/false);
+
+  EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+  EXPECT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+                   ->ConfirmUploadIbanToCloudWasCalled());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->ConfirmSaveIbanLocallyWasCalled());
+}
+
 // Test that upload save should not be offered when the preflight call failed.
 // In this case, local save should be offered because the extracted IBAN is a
 // new IBAN.
@@ -553,6 +578,7 @@ TEST_F(
   iban.set_value(std::u16string(test::kIbanValue16));
 
   SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true,
+                                    kCapitalizedIbanRegex,
                                     /*includes_invalid_legal_message=*/true);
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));

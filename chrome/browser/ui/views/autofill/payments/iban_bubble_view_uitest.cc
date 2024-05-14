@@ -54,10 +54,12 @@ constexpr char kURLGetUploadDetailsRequest[] =
     "https://payments.google.com/payments/apis/chromepaymentsservice/"
     "getdetailsforiban";
 constexpr char kResponseGetUploadDetailsSuccess[] =
-    "{\"legal_message\":{\"line\":[{\"template\":\"Legal message template with "
-    "link: "
-    "{0}.\",\"template_parameter\":[{\"display_text\":\"Link\",\"url\":\"https:"
-    "//www.example.com/\"}]}]},\"context_token\":\"dummy_context_token\"}";
+    "{\"iban_details\":{\"validation_regex\":"
+    "\"^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}[A-Z0-9]{0,18}$\"},"
+    "\"legal_message\":{\"line\":[{\"template\":\"Legal message template with"
+    " link: {0}.\",\"template_parameter\":[{\"display_text\":\"Link\","
+    "\"url\":\"https://www.example.com/\"}]}]},\"context_token\":"
+    "\"dummy_context_token\"}";
 constexpr char kURLUploadIbanRequest[] =
     "https://payments.google.com/payments/apis-secure/chromepaymentsservice/"
     "saveiban"
