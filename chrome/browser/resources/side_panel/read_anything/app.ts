@@ -1364,15 +1364,31 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   // TODO: Should this be merged with highlightAndPlayMessage?
-  highlightAndPlayInterruptedMessage() {
+  highlightAndPlayInterruptedMessage(): boolean {
     // getCurrentText gets the AX Node IDs of text that should be spoken and
     // highlighted.
     const axNodeIds: number[] = chrome.readingMode.getCurrentText();
 
+    // If there aren't any valid ax node ids returned by getCurrentText,
+    // speech should stop.
+    if (axNodeIds.length === 0) {
+      return false;
+    }
+
     const utteranceText = this.extractTextOf(axNodeIds);
     // Return if the utterance is empty or null.
     if (!utteranceText) {
-      return false;
+      // TODO(b/332694565): This fallback should never be needed, but it is.
+      // Investigate root cause of Read Aloud / Reading Mode mismatch.
+      chrome.readingMode.movePositionToNextGranularity();
+      return this.highlightAndPlayInterruptedMessage();
+    }
+
+    // The TTS engine may not like attempts to speak whitespace, so move to the
+    // next utterance.
+    if (utteranceText.trim().length === 0) {
+      chrome.readingMode.movePositionToNextGranularity();
+      return this.highlightAndPlayInterruptedMessage();
     }
 
     if (this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED) {
@@ -1380,7 +1396,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           this.wordBoundaryState.speechUtteranceStartIndex;
       this.wordBoundaryState.previouslySpokenIndex = 0;
       this.wordBoundaryState.speechUtteranceStartIndex = substringIndex;
-      this.playText(utteranceText.substring(substringIndex));
+      const utteranceTextForWordBoundary =
+          utteranceText.substring(substringIndex);
+      // Don't use the word boundary if it's going to cause a TTS engine issue.
+      if (utteranceTextForWordBoundary.trim().length === 0) {
+        this.playText(utteranceText);
+      } else {
+        this.playText(utteranceText.substring(substringIndex));
+      }
     } else {
       this.playText(utteranceText);
     }
@@ -1411,6 +1434,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!utteranceText) {
       // TODO(b/332694565): This fallback should never be needed, but it is.
       // Investigate root cause of Read Aloud / Reading Mode mismatch.
+      chrome.readingMode.movePositionToNextGranularity();
+      return this.highlightAndPlayMessage();
+    }
+
+    // The TTS engine may not like attempts to speak whitespace, so move to the
+    // next utterance.
+    if (utteranceText.trim().length === 0) {
       chrome.readingMode.movePositionToNextGranularity();
       return this.highlightAndPlayMessage();
     }
