@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
