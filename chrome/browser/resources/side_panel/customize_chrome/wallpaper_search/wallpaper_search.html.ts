@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {WallpaperSearchElement} from './wallpaper_search.js';
 
 export function getHtml(this: WallpaperSearchElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="sp-card">
   <sp-heading id="heading" @back-button-click="${this.onBackClick_}"
@@ -243,4 +244,5 @@ ${this.inspirationCardEnabled_ ? html`
   </div>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

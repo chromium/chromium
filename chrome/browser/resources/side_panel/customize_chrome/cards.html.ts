@@ -1,3 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CardsElement} from './cards.js';
+
+export function getHtml(this: CardsElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="showToggleContainer">
   <div id="showToggleTitle">$i18n{showCardsToggleTitle}</div>
   <cr-policy-indicator indicator-type="devicePolicy"
@@ -46,3 +57,6 @@
     `)}
   </cr-collapse>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

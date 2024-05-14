@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ShortcutsElement} from './shortcuts.js';
+
+export function getHtml(this: ShortcutsElement) {
+  return html`<!--_html_template_start_-->
 <div id="showShortcutsToggleContainer" class="sp-card-content">
   <div id="showShortcutsToggleTitle">$i18n{showShortcutsToggle}</div>
   <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
@@ -38,3 +48,5 @@
     </cr-radio-group>
   </cr-collapse>
 </div>
+<!--_html_template_end_-->`;
+}
