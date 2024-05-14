@@ -305,4 +305,5 @@ HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
                             "sanity/print-to-pdf-tiny-page.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "sanity/request-fullscreen.js")
 }  // namespace headless
