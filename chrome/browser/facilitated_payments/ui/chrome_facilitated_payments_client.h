@@ -46,9 +46,13 @@ class ChromeFacilitatedPaymentsClient
                            GetFacilitatedPaymentsNetworkInterface);
 
   // FacilitatedPaymentsClient:
+  // This returns nullptr if the `Profile` associated is null.
   autofill::PersonalDataManager* GetPersonalDataManager() override;
+  // This returns nullptr if the `Profile` associated is null.
   payments::facilitated::FacilitatedPaymentsNetworkInterface*
   GetFacilitatedPaymentsNetworkInterface() override;
+  // This returns std::nullopt if the `Profile` associated is null.
+  std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
   bool ShowPixPaymentPrompt(
       base::span<autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)

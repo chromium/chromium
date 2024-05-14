@@ -61,6 +61,10 @@ class FakeFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetFacilitatedPaymentsNetworkInterface,
               (),
               (override));
+  MOCK_METHOD(std::optional<CoreAccountInfo>,
+              GetCoreAccountInfo,
+              (),
+              (override));
 };
 
 class ContentFacilitatedPaymentsDriverTest

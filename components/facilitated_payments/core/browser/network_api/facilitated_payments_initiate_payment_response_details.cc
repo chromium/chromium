@@ -9,4 +9,7 @@ namespace payments::facilitated {
 FacilitatedPaymentsInitiatePaymentResponseDetails::
     FacilitatedPaymentsInitiatePaymentResponseDetails() = default;
 
+FacilitatedPaymentsInitiatePaymentResponseDetails::
+    ~FacilitatedPaymentsInitiatePaymentResponseDetails() = default;
+
 }  // namespace payments::facilitated

@@ -4,7 +4,11 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
@@ -32,6 +36,27 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments::facilitated {
+namespace {
+
+// Returns a bank account enabled for Pix with fake data.
+autofill::BankAccount CreatePixBankAccount(int64_t instrument_id) {
+  autofill::BankAccount bank_account(
+      instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
+      u"account_number", autofill::BankAccount::AccountType::kChecking);
+  return bank_account;
+}
+
+// Returns an account info that has all the details a logged in account should
+// have.
+CoreAccountInfo CreateLoggedInAccountInfo() {
+  CoreAccountInfo account;
+  account.email = "foo@bar.com";
+  account.gaia = "foo-gaia-id";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  return account;
+}
+
+}  // namespace
 
 class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
  public:
@@ -113,6 +138,10 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(FacilitatedPaymentsNetworkInterface*,
               GetFacilitatedPaymentsNetworkInterface,
+              (),
+              (override));
+  MOCK_METHOD(std::optional<CoreAccountInfo>,
+              GetCoreAccountInfo,
               (),
               (override));
   MOCK_METHOD(bool,
@@ -277,15 +306,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   void FastForwardBy(base::TimeDelta duration) {
     task_environment_.FastForwardBy(duration);
     task_environment_.RunUntilIdle();
-  }
-
-  // Returns a bank account enabled for Pix with fake data.
-  static autofill::BankAccount CreatePixBankAccount(int64_t instrument_id) {
-    autofill::BankAccount bank_account(
-        instrument_id, u"nickname", GURL("http://www.example.com"),
-        u"bank_name", u"account_number",
-        autofill::BankAccount::AccountType::kChecking);
-    return bank_account;
   }
 
  protected:
@@ -1229,6 +1249,95 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
               InitiatePayment(testing::_, testing::_, testing::_));
 
   manager_->SendInitiatePaymentRequest();
+}
+
+// Test that if the response from
+// `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
+// result, purchase action is not invoked.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_FailureResponse) {
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+
+  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      std::move(response_details));
+}
+
+// Test that if the response from
+// `FacilitatedPaymentsNetworkInterface::InitiatePayment` has empty action
+// token, purchase action is not invoked.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_NoActionToken) {
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+
+  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+}
+
+// Test that if the core account is std::nullopt, purchase action is not
+// invoked.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_NoCoreAccountInfo) {
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(std::nullopt));
+
+  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+}
+
+// Test that if the user is logged out, purchase action is not invoked.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_LoggedOutProfile) {
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CoreAccountInfo()));
+
+  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+}
+
+// Test that the puchase action is invoked after receiving a success response
+// from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+
+  EXPECT_CALL(*api_client_, InvokePurchaseAction);
+
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
 }
 
 // The `IsAvailable` async call is made after a valid Pix code has been

@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -143,6 +142,8 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
   // If a valid PIX code is found, and the user has Google wallet linked PIX
   // accounts, verify that the payments API is available, and then show the PIX
   // payment prompt.
+  // TODO(b/339477906): The check for bank accounts should move to
+  // OnPixCodeValidated.
   auto* personal_data_manager = client_->GetPersonalDataManager();
   if (!personal_data_manager) {
     Reset();
@@ -290,9 +291,32 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     autofill::AutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
         response_details) {
-  // TODO(b/300334855): Send the action token from the InitiatePayment response
-  // into the purchase manager.
+  if (result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
+    // TODO(b/300335703): Show the error message.
+    Reset();
+    return;
+  }
+  DCHECK(response_details);
+  if (response_details->action_token_.empty()) {
+    Reset();
+    return;
+  }
+  std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
+  // If the user logged out after selecting the payment method, the
+  // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
+  // abandon the payment flow.
+  if (!account_info.has_value() || account_info.value().IsEmpty()) {
+    Reset();
+    return;
+  }
+  api_client_->InvokePurchaseAction(
+      account_info.value(), response_details->action_token_,
+      base::BindOnce(&FacilitatedPaymentsManager::OnPurchaseActionResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
+
+void FacilitatedPaymentsManager::OnPurchaseActionResult(
+    FacilitatedPaymentsApiClient::PurchaseActionResult result) {}
 
 void FacilitatedPaymentsManager::ResetForTesting() {
   is_test_ = false;

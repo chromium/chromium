@@ -16,6 +16,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
@@ -28,7 +29,6 @@ class GURL;
 
 namespace payments::facilitated {
 
-class FacilitatedPaymentsApiClient;
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsDriver;
 
@@ -171,7 +171,17 @@ class FacilitatedPaymentsManager {
                            PaymentNotOfferedReason_ApiNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            SendInitiatePaymentRequest);
-
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnInitiatePaymentResponseReceived_FailureResponse);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnInitiatePaymentResponseReceived_NoActionToken);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnInitiatePaymentResponseReceived_NoCoreAccountInfo);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnInitiatePaymentResponseReceived_LoggedOutProfile);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
   void RegisterPixAllowlist() const;
@@ -233,6 +243,11 @@ class FacilitatedPaymentsManager {
       autofill::AutofillClient::PaymentsRpcResult result,
       std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
           response_details);
+
+  // Called after receiving the `result` of invoking the purchase manager for
+  // payment.
+  void OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult result);
 
   // Calling `Reset` has no effect in tests. Adding this method to specifically
   // test `Resets` in tests.

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
@@ -56,6 +57,18 @@ ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
         profile->IsOffTheRecord());
   }
   return facilitated_payments_network_interface_.get();
+}
+
+std::optional<CoreAccountInfo>
+ChromeFacilitatedPaymentsClient::GetCoreAccountInfo() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  if (!profile) {
+    return std::nullopt;
+  }
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 }
 
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
