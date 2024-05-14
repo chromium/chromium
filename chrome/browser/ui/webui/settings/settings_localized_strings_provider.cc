@@ -287,10 +287,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_WIN)
-  html_source->AddBoolean("isWindows10OrNewer", true);
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
       "showFocusHighlightOption",

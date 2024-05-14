@@ -269,12 +269,6 @@ function createRoutes(): SettingsRoutes {
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
     // </if>
 
-    // <if expr="is_win">
-    if (!loadTimeData.getBoolean('isWindows10OrNewer')) {
-      r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
-    }
-    // </if>
-
     // <if expr="not chromeos_ash">
     r.SYSTEM = r.ADVANCED.createSection(
         '/system', 'system', loadTimeData.getString('systemPageTitle'));

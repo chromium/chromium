@@ -147,14 +147,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         type: Boolean,
         value() {
           let opensExternally = false;
-          // <if expr="is_macosx">
+          // <if expr="is_macosx or is_win">
           opensExternally = true;
           // </if>
-
-          // <if expr="is_win">
-          opensExternally = loadTimeData.getBoolean('isWindows10OrNewer');
-          // </if>
-
           return opensExternally;
         },
       },
