@@ -139,7 +139,7 @@ TEST_F(ShortcutCreatorLinuxTest, ShortcutCreatedWithCorrectFile) {
   // Note: The profile directory is expected to be simply the base name, and not
   // the full path.
   std::string expected_command_line_args = base::StringPrintf(
-      "--profile-directory=%s \"%s\"",
+      "--profile-directory=%s --ignore-profile-directory-if-not-exists \"%s\"",
       profile_path().BaseName().value().c_str(), kUrl.spec().c_str());
   EXPECT_THAT(file, HasSubstr(expected_command_line_args));
 
