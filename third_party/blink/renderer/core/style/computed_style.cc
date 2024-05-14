@@ -1225,8 +1225,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetZIndexChanged();
   }
 
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesTransform(*this,
-                                                                    other)) {
+  if (field_diff & kTransformProperty) {
     diff.SetTransformPropertyChanged();
   }
 

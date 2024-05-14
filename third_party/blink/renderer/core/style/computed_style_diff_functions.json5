@@ -338,12 +338,6 @@
                      "transform-box"],
     },
     {
-        // Diff of the transform property only. See
-        // |UpdatePropertySpecificDifferencesOtherTransform|.
-        name: "UpdatePropertySpecificDifferencesTransform",
-        fields_to_diff: ["transform"],
-    },
-    {
         // Diff of transform-related properties other than the transform itself.
         // Because HasTransform() is checked below, this will also check for
         // changes to the existence of the transform property.

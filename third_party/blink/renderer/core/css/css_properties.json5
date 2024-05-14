@@ -322,6 +322,7 @@
         "opacity",
         "table",
         "text-decoration",
+        "transform-property",
         "z-index",
       ],
     },
@@ -5607,6 +5608,7 @@
       type_name: "TransformOperations",
       converter: "ConvertTransformOperations",
       supports_incremental_style: true,
+      invalidate: ["transform-property"],
     },
     {
       name: "transform-box",
