@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.init.ProcessInitializationHandler;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
@@ -444,7 +445,7 @@ public class CustomTabsConnection {
                         try (TraceEvent e =
                                 TraceEvent.scoped("CustomTabsConnection.initializeBrowser()")) {
                             initializeBrowser(ContextUtils.getApplicationContext());
-                            ChromeBrowserInitializer.getInstance().initNetworkChangeNotifier();
+                            ProcessInitializationHandler.getInstance().initNetworkChangeNotifier();
                             mWarmupHasBeenFinished.set(true);
                         }
                     });

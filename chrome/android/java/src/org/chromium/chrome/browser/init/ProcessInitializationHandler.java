@@ -8,6 +8,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Process;
 import android.text.format.DateUtils;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -16,29 +17,38 @@ import android.view.inputmethod.InputMethodSubtype;
 import androidx.annotation.CallSuper;
 import androidx.annotation.WorkerThread;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForR;
+import org.chromium.base.memory.MemoryPressureUma;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeBackupAgentImpl;
+import org.chromium.chrome.browser.ChromeStrictMode;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
+import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
+import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProvider;
@@ -47,9 +57,11 @@ import org.chromium.chrome.browser.content_capture.ContentCaptureHistoryDeletion
 import org.chromium.chrome.browser.crash.CrashUploadCountStore;
 import org.chromium.chrome.browser.crash.LogcatExtractionRunnable;
 import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl;
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
@@ -59,6 +71,7 @@ import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.PackageMetrics;
+import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
@@ -66,6 +79,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
+import org.chromium.chrome.browser.preferences.AllPreferenceKeyRegistries;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -87,6 +101,7 @@ import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
+import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -98,16 +113,23 @@ import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.components.crash.anr.AnrCollector;
+import org.chromium.components.crash.browser.ChildProcessCrashObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
+import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.optimization_guide.proto.HintsProto;
+import org.chromium.components.policy.CombinedPolicyProvider;
+import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
+import org.chromium.content_public.browser.DeviceUtils;
+import org.chromium.content_public.browser.SpeechRecognition;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
@@ -121,9 +143,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * Handles the initialization dependences of the browser process.  This is meant to handle the
+ * Handles the initialization dependences of the browser process. This is meant to handle the
  * initialization that is not tied to any particular Activity, and the logic that should only be
  * triggered a single time for the lifetime of the browser process.
  */
@@ -140,8 +163,13 @@ public class ProcessInitializationHandler {
     private static ProcessInitializationHandler sInstance;
 
     private boolean mInitializedPreNative;
+    private boolean mInitializedPreNativeLibraryLoad;
     private boolean mInitializedPostNative;
+    private boolean mInitializedPostNativeFollowingActivityInit;
     private boolean mInitializedDeferredStartupTasks;
+    private boolean mNetworkChangeNotifierInitializationComplete;
+    private final Locale mInitialLocale = Locale.getDefault();
+
     private DevToolsServer mDevToolsServer;
 
     private final ProfileKeyedMap<Boolean> mStartupProfileTasksCompleted =
@@ -161,11 +189,16 @@ public class ProcessInitializationHandler {
     }
 
     /**
-     * Initializes the any dependencies that must occur before native library has been loaded.
-     * <p>
-     * Adding anything expensive to this must be avoided as it would delay the Chrome startup path.
-     * <p>
-     * All entry points that do not rely on {@link ChromeBrowserInitializer} must call this on
+     * Initializes the dependencies that are required and used before native library loading.
+     *
+     * <p>If a dependency should be initialized early but only is utilizes when the native library
+     * has been loaded, then add that dependency in {@link
+     * #handlePreNativeLibraryLoadInitialization()}.
+     *
+     * <p>Adding anything expensive to this must be avoided as it would delay the Chrome startup
+     * path.
+     *
+     * <p>All entry points that do not rely on {@link ChromeBrowserInitializer} must call this on
      * startup.
      */
     public final void initializePreNative() {
@@ -179,6 +212,7 @@ public class ProcessInitializationHandler {
     }
 
     /** Performs the shared class initialization. */
+    @CallSuper
     protected void handlePreNativeInitialization() {
         // Initialize the AccountManagerFacade with the correct AccountManagerDelegate. Must be done
         // only once and before AccountManagerFacadeProvider.getInstance() is invoked.
@@ -188,19 +222,140 @@ public class ProcessInitializationHandler {
         setProcessStateSummaryForAnrs(false);
     }
 
-    /** Initializes any dependencies that must occur after the native library has been loaded. */
-    public final void initializePostNative() {
-        ThreadUtils.checkUiThread();
-        if (mInitializedPostNative) return;
-        handlePostNativeInitialization();
-        mInitializedPostNative = true;
+    /**
+     * Initializes the dependencies that must occur before native library has been loaded.
+     *
+     * <p>Adding anything expensive to this must be avoided as it would delay the Chrome startup
+     * path.
+     *
+     * <p>All entry points that do not rely on {@link ChromeBrowserInitializer} must call this on
+     * startup.
+     */
+    public final void initializePreNativeLibraryLoad() {
+        try (TraceEvent e =
+                TraceEvent.scoped(
+                        "ProcessInitializationHandler.initializePreNativeLibraryLoad()")) {
+            ThreadUtils.checkUiThread();
+            if (mInitializedPreNativeLibraryLoad) return;
+            handlePreNativeLibraryLoadInitialization();
+            mInitializedPreNativeLibraryLoad = true;
+        }
     }
 
     /**
-     * @return Whether post native initialization has been completed.
+     * Performs the shared class initialization of dependencies that need to be initialized
+     * immediately before native library loading and initialization.
      */
-    public final boolean postNativeInitializationComplete() {
-        return mInitializedPostNative;
+    @CallSuper
+    protected void handlePreNativeLibraryLoadInitialization() {
+        new Thread(SafeBrowsingApiBridge::ensureSafetyNetApiInitialized).start();
+        if (ChromeFeatureList.sSafeBrowsingCallNewGmsApiOnStartup.isEnabled()) {
+            new Thread(SafeBrowsingApiBridge::initSafeBrowsingApi).start();
+        }
+
+        // Ensure critical files are available, so they aren't blocked on the file-system
+        // behind long-running accesses in next phase.
+        // Don't do any large file access here!
+        ChromeStrictMode.configureStrictMode();
+        ChromeWebApkHost.init();
+
+        // In ENABLE_ASSERTS builds, initialize SharedPreferences key registry checking.
+        if (BuildConfig.ENABLE_ASSERTS) {
+            AllPreferenceKeyRegistries.initializeKnownRegistries();
+        }
+        // Time this call takes in background from test devices:
+        // - Pixel 2: ~10 ms
+        // - Nokia 1 (Android Go): 20-200 ms
+        warmUpSharedPrefs();
+
+        DeviceUtils.addDeviceSpecificUserAgentSwitch();
+        ApplicationStatus.registerStateListenerForAllActivities(
+                (activity, newState) -> {
+                    if (newState == ActivityState.CREATED || newState == ActivityState.DESTROYED) {
+                        // When the app locale is overridden a change in system locale will not
+                        // effect Chrome's UI language. There is race condition where the initial
+                        // locale may not equal the overridden default locale
+                        // (https://crbug.com/1224756).
+                        if (GlobalAppLocaleController.getInstance().isOverridden()) return;
+                        // Android destroys Activities at some point after a locale change, but
+                        // doesn't kill the process.  This can lead to a bug where Chrome is halfway
+                        // RTL, where stale natively-loaded resources are not reloaded
+                        // (http://crbug.com/552618).
+                        if (!mInitialLocale.equals(Locale.getDefault())) {
+                            Log.e(TAG, "Killing process because of locale change.");
+                            Process.killProcess(Process.myPid());
+                        }
+                    }
+                });
+
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.initGlobals();
+    }
+
+    /**
+     * Pre-load shared prefs to avoid being blocked on the disk access async task in the future.
+     * Running in an AsyncTask as pre-loading itself may cause I/O.
+     */
+    private void warmUpSharedPrefs() {
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    DownloadManagerService.warmUpSharedPrefs();
+                });
+    }
+
+    /**
+     * Enqueues tasks that should be run before any Activity (or similar Android entry point) begins
+     * their respective post native initialization.
+     *
+     * <p>There is no guarantee that these tasks are completed, so each task should individually
+     * track their own corresponding completeness status and ensure subsequent calls only run the
+     * required work.
+     *
+     * @param tasks The ordered list of startup tasks to be run.
+     * @param minimalBrowserMode Whether this is being started in minimal mode.
+     */
+    public final void enqueuePostNativeTasksToRunBeforeActivityNativeInit(
+            ChainedTasks tasks, boolean minimalBrowserMode) {
+        ThreadUtils.checkUiThread();
+
+        // If full browser process is not going to be launched, it is up to individual service to
+        // launch its required components.
+        if (!minimalBrowserMode && !mInitializedPostNative) {
+            tasks.add(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (mInitializedPostNative) return;
+                        handlePostNativeInitialization();
+                        mInitializedPostNative = true;
+                    });
+        }
+
+        if (!mNetworkChangeNotifierInitializationComplete) {
+            tasks.add(TaskTraits.UI_DEFAULT, this::initNetworkChangeNotifier);
+        }
+    }
+
+    /**
+     * Enqueues tasks that should be run after any Activity (or similar Android entry point)
+     * completes their respective post native initialization.
+     *
+     * <p>There is no guarantee that these tasks are completed, so each task should individually
+     * track their own corresponding completeness status and ensure subsequent calls only run the
+     * required work.
+     *
+     * @param tasks The ordered list of startup tasks to be run.
+     */
+    public final void enqueuePostNativeTasksToRunAfterActivityNativeInit(ChainedTasks tasks) {
+        if (!mInitializedPostNativeFollowingActivityInit) {
+            tasks.add(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        if (mInitializedPostNativeFollowingActivityInit) return;
+                        handlePostNativeInitializationFollowingActivityInit();
+                        mInitializedPostNativeFollowingActivityInit = true;
+                    });
+        }
     }
 
     /** Performs the post native initialization. */
@@ -314,6 +469,63 @@ public class ProcessInitializationHandler {
                 PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted());
         PrivacyPreferencesManagerImpl.getInstance().addObserver(crashUploadPermissionSupplier::set);
         SurveyClientFactory.initialize(crashUploadPermissionSupplier);
+
+        AppHooks.get().registerPolicyProviders(CombinedPolicyProvider.get());
+        SpeechRecognition.initialize();
+    }
+
+    /**
+     * Handles additional post native initialization that should be run after the triggering
+     * Activity (or other Android entry point) has completed their native init.
+     */
+    @CallSuper
+    protected void handlePostNativeInitializationFollowingActivityInit() {
+        ContentUriUtils.setFileProviderUtil(new FileProviderHelper());
+
+        // When a child process crashes, search for the most recent minidump for the child's process
+        // ID and attach a logcat to it. Then upload it to the crash server. Note that the logcat
+        // extraction might fail. This is ok; in that case, the minidump will be found and uploaded
+        // upon the next browser launch.
+        ChildProcessCrashObserver.registerCrashCallback(
+                new ChildProcessCrashObserver.ChildCrashedCallback() {
+                    @Override
+                    public void childCrashed(int pid) {
+                        CrashFileManager crashFileManager =
+                                new CrashFileManager(
+                                        ContextUtils.getApplicationContext().getCacheDir());
+
+                        File minidump = crashFileManager.getMinidumpSansLogcatForPid(pid);
+                        if (minidump != null) {
+                            AsyncTask.THREAD_POOL_EXECUTOR.execute(
+                                    new LogcatExtractionRunnable(minidump));
+                        } else {
+                            Log.e(TAG, "Missing dump for child " + pid);
+                        }
+                    }
+                });
+
+        MemoryPressureUma.initializeForBrowser();
+        UmaUtils.recordBackgroundRestrictions();
+
+        // Needed for field trial metrics to be properly collected in minimal browser mode.
+        ChromeCachedFlags.getInstance().cacheMinimalBrowserFlags();
+
+        ModuleUtil.recordStartupTime();
+
+        ChromeStartupDelegate startupDelegate = AppHooks.get().createChromeStartupDelegate();
+        startupDelegate.init();
+    }
+
+    public final void initNetworkChangeNotifier() {
+        if (mNetworkChangeNotifierInitializationComplete) return;
+        mNetworkChangeNotifierInitializationComplete = true;
+
+        ThreadUtils.assertOnUiThread();
+        TraceEvent.begin("NetworkChangeNotifier.init");
+        // Enable auto-detection of network connectivity state changes.
+        NetworkChangeNotifier.init();
+        NetworkChangeNotifier.setAutoDetectConnectivityState(true);
+        TraceEvent.end("NetworkChangeNotifier.init");
     }
 
     /**
