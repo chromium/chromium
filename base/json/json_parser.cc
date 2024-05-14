@@ -829,9 +829,7 @@ std::optional<Value> JSONParser::ConsumeNumber() {
     // StringToInt will treat `-0` as zero, losing the significance of the
     // negation.
     if (num_int == 0 && num_string.starts_with('-')) {
-      if (base::FeatureList::IsEnabled(features::kJsonNegativeZero)) {
-        return Value(-0.0);
-      }
+      return Value(-0.0);
     }
     return Value(num_int);
   }
