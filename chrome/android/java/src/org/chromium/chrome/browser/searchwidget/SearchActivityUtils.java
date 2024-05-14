@@ -25,6 +25,9 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -37,10 +40,6 @@ public class SearchActivityUtils implements SearchActivityClient {
     @VisibleForTesting
     /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
 
-    @VisibleForTesting /* package */ static final String EXTRA_ORIGIN = "origin";
-    @VisibleForTesting /* package */ static final String EXTRA_SEARCH_TYPE = "search-type";
-    @VisibleForTesting /* package */ static final String EXTRA_CURRENT_URL = "current-url";
-    @VisibleForTesting /* package */ static final String EXTRA_REFERRER = "referrer";
     // Only alpha-numeric characters, including dots and dashes.
     // Must be at least 2 characters long, and begin and end with an alphanumeric character.
     private static final String REFERRER_VALIDATION_REGEX =
@@ -66,11 +65,13 @@ public class SearchActivityUtils implements SearchActivityClient {
         String action = String.format(ACTION_SEARCH_FORMAT, origin, searchType);
 
         var intent = buildTrustedIntent(context, action);
-        intent.putExtra(EXTRA_ORIGIN, origin)
-                .putExtra(EXTRA_SEARCH_TYPE, searchType)
+        intent.putExtra(SearchActivityExtras.EXTRA_ORIGIN, origin)
+                .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, searchType)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                .putExtra(EXTRA_CURRENT_URL, GURL.isEmptyOrInvalid(url) ? null : url.getSpec());
+                .putExtra(
+                        SearchActivityExtras.EXTRA_CURRENT_URL,
+                        GURL.isEmptyOrInvalid(url) ? null : url.getSpec());
 
         return intent;
     }
@@ -108,11 +109,13 @@ public class SearchActivityUtils implements SearchActivityClient {
                                         IntentOrigin.CUSTOM_TAB,
                                         SearchType.TEXT))
                         .putExtra(
-                                EXTRA_CURRENT_URL,
+                                SearchActivityExtras.EXTRA_CURRENT_URL,
                                 GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec())
-                        .putExtra(EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
-                        .putExtra(EXTRA_REFERRER, TextUtils.isEmpty(referrer) ? null : referrer)
-                        .putExtra(EXTRA_SEARCH_TYPE, SearchType.TEXT)
+                        .putExtra(SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
+                        .putExtra(
+                                SearchActivityExtras.EXTRA_REFERRER,
+                                TextUtils.isEmpty(referrer) ? null : referrer)
+                        .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT)
                         .addFlags(
                                 Intent.FLAG_ACTIVITY_NO_HISTORY
                                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
@@ -133,7 +136,8 @@ public class SearchActivityUtils implements SearchActivityClient {
      */
     /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
-            return IntentUtils.safeGetIntExtra(intent, EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
+            return IntentUtils.safeGetIntExtra(
+                    intent, SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
         }
 
         return IntentOrigin.UNKNOWN;
@@ -145,7 +149,10 @@ public class SearchActivityUtils implements SearchActivityClient {
      */
     /* package */ static @Nullable GURL getIntentUrl(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
-            var gurl = new GURL(IntentUtils.safeGetStringExtra(intent, EXTRA_CURRENT_URL));
+            var gurl =
+                    new GURL(
+                            IntentUtils.safeGetStringExtra(
+                                    intent, SearchActivityExtras.EXTRA_CURRENT_URL));
             if (!GURL.isEmptyOrInvalid(gurl)) return gurl;
         }
         return null;
@@ -157,7 +164,7 @@ public class SearchActivityUtils implements SearchActivityClient {
     /* package */ static @Nullable String getReferrer(@NonNull Intent intent) {
         String referrer = null;
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
-            referrer = IntentUtils.safeGetStringExtra(intent, EXTRA_REFERRER);
+            referrer = IntentUtils.safeGetStringExtra(intent, SearchActivityExtras.EXTRA_REFERRER);
             if (referrer != null && !referrer.matches(REFERRER_VALIDATION_REGEX)) {
                 Log.e(
                         TAG,
@@ -185,7 +192,8 @@ public class SearchActivityUtils implements SearchActivityClient {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static @SearchType int getIntentSearchType(@NonNull Intent intent) {
         if (IntentUtils.isTrustedIntentFromSelf(intent)) {
-            return IntentUtils.safeGetIntExtra(intent, EXTRA_SEARCH_TYPE, SearchType.TEXT);
+            return IntentUtils.safeGetIntExtra(
+                    intent, SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT);
         }
 
         return SearchType.TEXT;

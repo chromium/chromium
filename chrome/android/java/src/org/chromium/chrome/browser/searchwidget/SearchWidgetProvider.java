@@ -30,6 +30,8 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
@@ -122,11 +124,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         Intent searchIntent =
                 client.createIntent(
                         context,
-                        SearchActivityClient.IntentOrigin.SEARCH_WIDGET,
+                        IntentOrigin.SEARCH_WIDGET,
                         null,
-                        startVoiceSearch
-                                ? SearchActivityClient.SearchType.VOICE
-                                : SearchActivityClient.SearchType.TEXT);
+                        startVoiceSearch ? SearchType.VOICE : SearchType.TEXT);
 
         searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 

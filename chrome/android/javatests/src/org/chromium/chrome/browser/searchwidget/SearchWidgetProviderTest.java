@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -296,8 +296,7 @@ public class SearchWidgetProviderTest {
             // Check that the Activity was launched in the right mode.
             Intent intent = activity.getIntent();
             boolean microphoneState =
-                    SearchActivityUtils.getIntentSearchType(intent)
-                            == SearchActivityClient.SearchType.VOICE;
+                    SearchActivityUtils.getIntentSearchType(intent) == SearchType.VOICE;
             Assert.assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
             boolean fromWidget =
                     IntentUtils.safeGetBooleanExtra(

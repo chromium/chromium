@@ -67,8 +67,8 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity.TerminationReason
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrlService;

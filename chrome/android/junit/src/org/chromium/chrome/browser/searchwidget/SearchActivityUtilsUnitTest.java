@@ -41,8 +41,9 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBodyJni;
@@ -131,7 +132,7 @@ public class SearchActivityUtilsUnitTest {
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.TEXT);
             assertEquals(action, intent.getAction());
-            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
@@ -142,7 +143,7 @@ public class SearchActivityUtilsUnitTest {
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
-                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+                    intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
         }
@@ -167,7 +168,7 @@ public class SearchActivityUtilsUnitTest {
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.VOICE);
             assertEquals(action, intent.getAction());
-            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
@@ -178,7 +179,7 @@ public class SearchActivityUtilsUnitTest {
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
-                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+                    intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
         }
@@ -203,7 +204,7 @@ public class SearchActivityUtilsUnitTest {
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.LENS);
             assertEquals(action, intent.getAction());
-            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertNull(intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
 
@@ -214,7 +215,7 @@ public class SearchActivityUtilsUnitTest {
             assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
-                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+                    intent.getStringExtra(SearchActivityExtras.EXTRA_CURRENT_URL));
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
         }
@@ -255,7 +256,7 @@ public class SearchActivityUtilsUnitTest {
 
         assertEquals(
                 IntentUtils.safeGetStringExtra(
-                        intentForResult.intent, SearchActivityUtils.EXTRA_CURRENT_URL),
+                        intentForResult.intent, SearchActivityExtras.EXTRA_CURRENT_URL),
                 GOOD_URL.getSpec());
         assertEquals(SearchActivityUtils.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
     }
@@ -269,11 +270,11 @@ public class SearchActivityUtilsUnitTest {
 
         assertTrue(
                 IntentUtils.safeHasExtra(
-                        intentForResult.intent, SearchActivityUtils.EXTRA_CURRENT_URL));
+                        intentForResult.intent, SearchActivityExtras.EXTRA_CURRENT_URL));
         assertTrue(
                 TextUtils.isEmpty(
                         IntentUtils.safeGetStringExtra(
-                                intentForResult.intent, SearchActivityUtils.EXTRA_CURRENT_URL)));
+                                intentForResult.intent, SearchActivityExtras.EXTRA_CURRENT_URL)));
         assertEquals(SearchActivityUtils.OMNIBOX_REQUEST_CODE, intentForResult.requestCode);
     }
 
