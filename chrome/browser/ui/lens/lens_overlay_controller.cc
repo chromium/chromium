@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,6 +44,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -161,6 +164,10 @@ LensOverlayController::LensOverlayController(
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&LensOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
+
+#if BUILDFLAG(IS_MAC)
+  corner_radii_ = {0, 0, 10, 10};
+#endif
 }
 
 LensOverlayController::~LensOverlayController() {
@@ -456,6 +463,8 @@ void LensOverlayController::SendObjects(
 }
 
 void LensOverlayController::NotifyResultsPanelOpened() {
+  UpdateCornerRadiusForSidePanel();
+
   page_->NotifyResultsPanelOpened();
 }
 
@@ -741,6 +750,35 @@ void LensOverlayController::BackgroundUI() {
   overlay_widget_->Hide();
   state_ = State::kBackground;
   // TODO(b/335516480): Schedule the UI to be suspended.
+}
+
+void LensOverlayController::SetWebViewCornerRadii(
+    const gfx::RoundedCornersF& radii) {
+  CHECK(overlay_web_view_);
+  views::NativeViewHost* host = overlay_web_view_->holder();
+  DCHECK(host);
+
+  host->SetCornerRadii(radii);
+}
+
+void LensOverlayController::UpdateCornerRadiusForSidePanel() {
+  Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
+  CHECK(tab_browser);
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(tab_browser);
+  CHECK(browser_view);
+
+  bool is_right_aligned = browser_view->unified_side_panel()->IsRightAligned();
+  const float corner_radius =
+      browser_view->GetLayoutProvider()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kSidePanelPageContentRadius);
+  if (is_right_aligned) {
+    corner_radii_.set_upper_right(corner_radius);
+    corner_radii_.set_lower_right(0);
+  } else {
+    corner_radii_.set_upper_left(corner_radius);
+    corner_radii_.set_lower_left(0);
+  }
+  SetWebViewCornerRadii(corner_radii_);
 }
 
 void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {

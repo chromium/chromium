@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -465,6 +466,16 @@ class LensOverlayController : public LensSearchboxClient,
   // Backgrounds the UI by hiding the overlay.
   void BackgroundUI();
 
+  // Sets the corner radii on the overlay WebUI view.
+  void SetWebViewCornerRadii(const gfx::RoundedCornersF& radii);
+
+  // Computes the new corner radius values for when the side panel is open. The
+  // values never need to be set back to their original values because our
+  // overlay is tied to the side panel. If the side panel closes, so does our
+  // overlay and therefore setting the corner radii back is a no-op if the side
+  // panel closes.
+  void UpdateCornerRadiusForSidePanel();
+
   // Closes the overlay UI and sets state to kOff. This method is the final
   // cleanup of closing the overlay UI and should only be called by
   // CloseUIAsync. Anyone called trying to close the UI should go through
@@ -576,6 +587,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Tracks the internal state machine.
   State state_ = State::kOff;
+
+  // The current corner radii set to the web view.
+  gfx::RoundedCornersF corner_radii_ = {0, 0, 0, 0};
 
   // Controller for showing the page screenshot permission bubble.
   std::unique_ptr<lens::LensPermissionBubbleController>
