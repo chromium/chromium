@@ -22,7 +22,7 @@ class TestStructuredMetricsProvider : public Recorder::RecorderImpl {
   TestStructuredMetricsProvider();
   explicit TestStructuredMetricsProvider(
       std::unique_ptr<StructuredMetricsRecorder> recorder);
-  ~TestStructuredMetricsProvider() override;
+  virtual ~TestStructuredMetricsProvider();
   TestStructuredMetricsProvider(const TestStructuredMetricsProvider&) = delete;
   TestStructuredMetricsProvider& operator=(
       const TestStructuredMetricsProvider&) = delete;

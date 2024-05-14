@@ -45,12 +45,9 @@ void Recorder::RecordEvent(Event&& event) {
   delegating_events_processor_.OnEventsRecord(&event);
 
   // Make a copy of an event that all observers can share.
-  const auto event_clone = event.Clone();
-  for (auto& observer : observers_) {
-    observer.OnEventRecord(event_clone);
-  }
-
-  if (observers_.empty()) {
+  if (recorder_ != nullptr) {
+    recorder_->OnEventRecord(event);
+  } else {
     // Other values of EventRecordingState are recorded in
     // StructuredMetricsProvider::OnRecord.
     LogEventRecordingState(EventRecordingState::kProviderMissing);
@@ -58,8 +55,8 @@ void Recorder::RecordEvent(Event&& event) {
 }
 
 void Recorder::OnSystemProfileInitialized() {
-  for (auto& observer : observers_) {
-    observer.OnSystemProfileInitialized();
+  if (recorder_) {
+    recorder_->OnSystemProfileInitialized();
   }
 }
 
@@ -68,12 +65,16 @@ void Recorder::SetUiTaskRunner(
   ui_task_runner_ = ui_task_runner;
 }
 
-void Recorder::AddObserver(RecorderImpl* observer) {
-  observers_.AddObserver(observer);
+void Recorder::SetRecorder(RecorderImpl* recorder) {
+  recorder_ = recorder;
 }
 
-void Recorder::RemoveObserver(RecorderImpl* observer) {
-  observers_.RemoveObserver(observer);
+void Recorder::UnsetRecorder(RecorderImpl* recorder) {
+  // Only reset if this is the same recorder. Otherwise, changing the recorder
+  // isn't needed.
+  if (recorder_ == recorder) {
+    recorder_ = nullptr;
+  }
 }
 
 void Recorder::AddEventsProcessor(

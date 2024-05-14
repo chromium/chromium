@@ -33,12 +33,12 @@ StructuredMetricsRecorder::StructuredMetricsRecorder(
       event_storage_(std::move(event_storage)) {
   CHECK(key_data_provider_);
   CHECK(event_storage_);
-  Recorder::GetInstance()->AddObserver(this);
+  Recorder::GetInstance()->SetRecorder(this);
   key_data_provider_->AddObserver(this);
 }
 
 StructuredMetricsRecorder::~StructuredMetricsRecorder() {
-  Recorder::GetInstance()->RemoveObserver(this);
+  Recorder::GetInstance()->UnsetRecorder(this);
   key_data_provider_->RemoveObserver(this);
 }
 

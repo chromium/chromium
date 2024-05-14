@@ -21,18 +21,18 @@ TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
                 .Append(FILE_PATH_LITERAL("structured_metrics"))
                 .Append(FILE_PATH_LITERAL("device_keys"))),
         std::make_unique<TestEventStorage>());
-    Recorder::GetInstance()->AddObserver(this);
+    Recorder::GetInstance()->SetRecorder(this);
   }
 }
 
 TestStructuredMetricsProvider::TestStructuredMetricsProvider(
     std::unique_ptr<StructuredMetricsRecorder> recorder)
     : structured_metrics_recorder_(std::move(recorder)) {
-  Recorder::GetInstance()->AddObserver(this);
+  Recorder::GetInstance()->SetRecorder(this);
 }
 
 TestStructuredMetricsProvider::~TestStructuredMetricsProvider() {
-  Recorder::GetInstance()->RemoveObserver(this);
+  Recorder::GetInstance()->UnsetRecorder(this);
 }
 
 const EventsProto& TestStructuredMetricsProvider::ReadEvents() const {
