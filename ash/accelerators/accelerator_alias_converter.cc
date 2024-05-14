@@ -309,6 +309,30 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
   }
 
   // Generate aliases for both the priority external keyboard + the internal
+  // keyboard for CapsLock key.
+  if (priority_external_keyboard) {
+    if (const auto alias =
+            CreateCapsLockAliases(*priority_external_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+      // Always add the original accelerator if an external keyboard is present.
+      aliases_set.insert(accelerator);
+    }
+  }
+  if (internal_keyboard) {
+    if (const auto alias =
+            CreateCapsLockAliases(*internal_keyboard, accelerator);
+        alias) {
+      aliases_set.insert(*alias);
+      // Always add the original accelerator if an internal keyboard is present.
+      aliases_set.insert(accelerator);
+    }
+  }
+  if (!aliases_set.empty()) {
+    return FilterAliasBySupportedKeys(std::move(aliases_set).extract());
+  }
+
+  // Generate aliases for both the priority external keyboard + the internal
   // keyboard for f-keys.
   if (priority_external_keyboard) {
     if (const auto alias =
@@ -473,6 +497,20 @@ AcceleratorAliasConverter::CreateExtendedFKeysAliases(
   modifiers = accelerator.modifiers() |
               (top_row_are_fkeys ? modifiers : modifiers | ui::EF_COMMAND_DOWN);
   return ui::Accelerator(key_code, modifiers);
+}
+
+std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateCapsLockAliases(
+    const ui::KeyboardDevice& keyboard,
+    const ui::Accelerator& accelerator) const {
+  if (accelerator.key_code() != ui::VKEY_CAPITAL) {
+    return std::nullopt;
+  }
+
+  if (Shell::Get()->keyboard_capability()->HasFunctionKey(keyboard)) {
+    return {ui::Accelerator(ui::VKEY_RIGHT_ALT, ui::EF_FUNCTION_DOWN)};
+  }
+
+  return accelerator;
 }
 
 std::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
@@ -760,6 +798,28 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     // Search should be shown in the shortcuts app.
     if (accelerator.key_code() == ui::VKEY_MENU &&
         accelerator.modifiers() == ui::EF_COMMAND_DOWN) {
+      continue;
+    }
+
+    // Add [CapsLock] to the accelerators list if keyboard has CapsLock.
+    if (accelerator.key_code() == ui::VKEY_CAPITAL) {
+      if ((priority_keyboard &&
+           keyboard_capability->HasCapsLockKey(*priority_keyboard)) ||
+          (internal_keyboard &&
+           keyboard_capability->HasCapsLockKey(*internal_keyboard))) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    // Add Alt + Search to the accelerators list.
+    if (accelerator.key_code() == ui::VKEY_LWIN &&
+        accelerator.modifiers() == ui::EF_ALT_DOWN) {
+      if ((internal_keyboard &&
+           !IsSplitModifierKeyboard(internal_keyboard->id)) ||
+          priority_keyboard) {
+        filtered_accelerators.push_back(accelerator);
+      }
       continue;
     }
 

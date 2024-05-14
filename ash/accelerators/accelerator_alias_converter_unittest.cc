@@ -495,6 +495,68 @@ TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
   EXPECT_EQ(accelerator, accelerator_aliases[0]);
 }
 
+TEST_F(AcceleratorAliasConverterTest, SplitModifierKeyboardCapsLockAlias) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::KeyboardDevice split_modifier_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag, /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  split_modifier_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(split_modifier_keyboard,
+                                          kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+  const ui::Accelerator capslock_accelerator{ui::VKEY_CAPITAL, ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(capslock_accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(ui::Accelerator(ui::VKEY_RIGHT_ALT, ui::EF_FUNCTION_DOWN),
+            accelerator_aliases[0]);
+  const ui::Accelerator capslock_accelerator_2{ui::VKEY_LWIN, ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> new_accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(
+          capslock_accelerator_2);
+  EXPECT_EQ(0u, new_accelerator_aliases.size());
+}
+
+TEST_F(AcceleratorAliasConverterTest, ExternalKeyboardCapsLockAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+
+  ui::KeyboardDevice external_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayout1Tag);
+  SetKeyboardInfo(
+      external_keyboard,
+      ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown,
+      ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1);
+  external_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+  const ui::Accelerator capslock_accelerator{ui::VKEY_CAPITAL, ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(capslock_accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(capslock_accelerator, accelerator_aliases[0]);
+  const ui::Accelerator capslock_accelerator_2{ui::VKEY_LWIN, ui::EF_ALT_DOWN};
+  std::vector<ui::Accelerator> new_accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(
+          capslock_accelerator_2);
+  EXPECT_EQ(1u, new_accelerator_aliases.size());
+  EXPECT_EQ(capslock_accelerator_2, new_accelerator_aliases[0]);
+}
+
 TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();

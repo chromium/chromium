@@ -126,6 +126,7 @@ const AcceleratorData kAcceleratorData[] = {
     {false, ui::VKEY_RSHIFT, ui::EF_NONE, AcceleratorAction::kDisableCapsLock},
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN, AcceleratorAction::kToggleCalendar},
     // Accelerators to toggle Caps Lock.
+    {true, ui::VKEY_CAPITAL, ui::EF_NONE, AcceleratorAction::kToggleCapsLock},
     // The following is triggered when Search is released while Alt is still
     // down. The key_code here is LWIN (for search) and Alt is a modifier.
     {false, ui::VKEY_LWIN, ui::EF_ALT_DOWN, AcceleratorAction::kToggleCapsLock},

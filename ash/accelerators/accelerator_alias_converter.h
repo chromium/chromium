@@ -53,8 +53,13 @@ class ASH_EXPORT AcceleratorAliasConverter {
       const ui::Accelerator& accelerator,
       std::optional<int> device_id) const;
 
-  // Create accelerator alias for extended function keys (F11+) for the given
-  // `keyboard`.
+  // Create accelerator alias for |capslock| for the given |keyboard|.
+  std::optional<ui::Accelerator> CreateCapsLockAliases(
+      const ui::KeyboardDevice& keyboard,
+      const ui::Accelerator& accelerator) const;
+
+  // Create accelerator alias for extended function keys (F11+) for the
+  // given `keyboard`.
   std::optional<ui::Accelerator> CreateExtendedFKeysAliases(
       const ui::KeyboardDevice& keyboard,
       const ui::Accelerator& accelerator,

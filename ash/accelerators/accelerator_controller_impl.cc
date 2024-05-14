@@ -50,6 +50,7 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -263,6 +264,12 @@ bool CanHandleToggleCapsLock(
     const std::set<ui::KeyboardCode>& currently_pressed_keys,
     const AcceleratorCapslockStateMachine& capslock_state_machine,
     InputDeviceSettingsNotificationController* notification_controller) {
+  // The toggle of CapsLock is handled in the event rewriters and not as an
+  // accelerator.
+  if (accelerator.key_code() == ui::VKEY_CAPITAL) {
+    return false;
+  }
+
   if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
     if (capslock_state_machine.CanHandleCapsLock()) {
       // Check if from modifier split keyboard. if not, show notification.
