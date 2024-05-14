@@ -141,7 +141,7 @@ const std::vector<std::string> GetVpnNetworkTypeHistograms(
              vpn_provider_type == shill::kProviderWireGuard) {
     vpn_histograms.emplace_back(kVPNBuiltIn);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     vpn_histograms.emplace_back(kVPNUnknown);
   }
   return vpn_histograms;

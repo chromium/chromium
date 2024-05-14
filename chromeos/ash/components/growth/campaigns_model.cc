@@ -182,7 +182,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
       return campaign->FindDictByDottedPath(
           base::StringPrintf(kPayloadPathTemplate, kNotificationPayloadPath));
     case Slot::kDemoModeFreePlayApps:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

@@ -750,7 +750,7 @@ class SecureChannelBleConnectionManagerImplTest : public testing::Test {
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   FakeBleAdvertiser* fake_ble_advertiser() {

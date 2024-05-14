@@ -36,7 +36,7 @@ std::ostream& operator<<(std::ostream& stream, WindowStateType state) {
       return stream << "kFloated";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return stream;
 }
 
@@ -55,7 +55,7 @@ WindowStateType ToWindowStateType(ui::WindowShowState state) {
     case ui::SHOW_STATE_FULLSCREEN:
       return WindowStateType::kFullscreen;
     case ui::SHOW_STATE_END:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WindowStateType::kDefault;
   }
 }
@@ -82,7 +82,7 @@ ui::WindowShowState ToWindowShowState(WindowStateType type) {
     case WindowStateType::kTrustedPinned:
       return ui::SHOW_STATE_FULLSCREEN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::SHOW_STATE_DEFAULT;
 }
 

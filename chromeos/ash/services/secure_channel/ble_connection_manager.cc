@@ -50,7 +50,7 @@ void BleConnectionManager::AttemptBleInitiatorConnection(
                   << "Tried to add BLE initiator connection attempt, but one "
                   << "was already active. Device IDs: " << device_id_pair
                   << ", Priority: " << connection_priority;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   ConnectionAttemptDetails details(device_id_pair,
@@ -114,7 +114,7 @@ void BleConnectionManager::AttemptBleListenerConnection(
                   << "Tried to add BLE listener connection attempt, but one "
                   << "was already active. Device IDs: " << device_id_pair
                   << ", Priority: " << connection_priority;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   ConnectionAttemptDetails details(device_id_pair,
@@ -188,7 +188,7 @@ BleConnectionManager::GetDetailsForRemoteDevice(
                   << "the provided ID existed. ID: "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          remote_device_id);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return remote_device_id_to_details_map_[remote_device_id];
@@ -257,7 +257,7 @@ BleConnectionManager::GetInitiatorEntry(const DeviceIdPair& device_id_pair) {
     PA_LOG(ERROR) << "BleConnectionManager::GetInitiatorEntry(): Tried to get "
                   << "map entry, but it did not exist. Device IDs: "
                   << device_id_pair;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::unique_ptr<InitiatorConnectionAttemptMetadata>& entry =
@@ -272,7 +272,7 @@ BleConnectionManager::GetListenerEntry(const DeviceIdPair& device_id_pair) {
     PA_LOG(ERROR) << "BleConnectionManager::GetListenerEntry(): Tried to get "
                   << "map entry, but it did not exist. Device IDs: "
                   << device_id_pair;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::unique_ptr<ListenerConnectionAttemptMetadata>& entry =
@@ -290,7 +290,7 @@ void BleConnectionManager::RemoveRequestMetadata(
         PA_LOG(ERROR) << "BleConnectionManager::RemoveRequestMetadata(): Tried "
                       << "to remove BLE initiator attempt, but no attempt "
                       << "existed. Device IDs: " << device_id_pair;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       id_pair_to_initiator_metadata_map_.erase(device_id_pair);
@@ -301,7 +301,7 @@ void BleConnectionManager::RemoveRequestMetadata(
         PA_LOG(ERROR) << "BleConnectionManager::RemoveRequestMetadata(): Tried "
                       << "to remove BLE listener attempt, but no attempt "
                       << "existed. Device IDs: " << device_id_pair;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       id_pair_to_listener_metadata_map_.erase(device_id_pair);
@@ -318,7 +318,7 @@ void BleConnectionManager::RemoveRequestMetadata(
     PA_LOG(ERROR) << "BleConnectionManager::RemoveRequestMetadata(): Tried "
                   << "to remove connection attempt, but no remote device ID "
                   << "entry existed. Device IDs: " << device_id_pair;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

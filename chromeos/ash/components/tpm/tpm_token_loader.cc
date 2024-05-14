@@ -141,7 +141,7 @@ void TPMTokenLoader::ContinueTokenInitialization() {
       return;
     }
     case TPM_INITIALIZATION_STARTED: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     case TPM_TOKEN_INFO_RECEIVED: {

@@ -343,7 +343,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnTimeoutForSubStatus(
           BLE_WEAVE_CONNECTION_RESULT_TIMEOUT_WAITING_FOR_MESSAGE_TO_SEND;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   DestroyConnection(result);
@@ -465,7 +465,7 @@ void BluetoothLowEnergyWeaveClientConnection::GattCharacteristicValueChanged(
       // transition to the DATA_READY state.
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -950,7 +950,7 @@ std::string BluetoothLowEnergyWeaveClientConnection::GetReasonForClose() {
     case ReasonForClose::APPLICATION_ERROR:
       return "APPLICATION_ERROR";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

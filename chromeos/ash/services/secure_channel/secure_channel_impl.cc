@@ -183,7 +183,7 @@ void SecureChannelImpl::OnConnection(
     PA_LOG(ERROR) << "SecureChannelImpl::OnConnection(): Connection created "
                   << "for detail " << connection_details << ", but a "
                   << "connection already existed for those details.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Build string of clients whose connection attempts succeeded.

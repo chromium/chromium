@@ -59,7 +59,7 @@ FakeBiodClient::FakeRecord ParseFakeRecordDict(
     } else if (key == "label") {
       res.label = value.GetString();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   return res;

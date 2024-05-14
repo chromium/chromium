@@ -24,7 +24,7 @@ std::string EncSchemeToString(securemessage::EncScheme scheme) {
       return easy_unlock::kEncryptionTypeNone;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -38,11 +38,11 @@ std::string SigSchemeToString(securemessage::SigScheme scheme) {
       return easy_unlock::kSignatureTypeHMACSHA256;
     case securemessage::RSA2048_SHA256:
       // RSA2048_SHA256 is not supported by the daemon.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

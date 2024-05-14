@@ -87,7 +87,7 @@ PowerManagerClient::LidState GetLidStateFromProtoEnum(
     case power_manager::SwitchStates_LidState_NOT_PRESENT:
       return PowerManagerClient::LidState::NOT_PRESENT;
   }
-  NOTREACHED() << "Unhandled lid state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unhandled lid state " << state;
   return PowerManagerClient::LidState::NOT_PRESENT;
 }
 
@@ -103,7 +103,7 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
     case power_manager::SwitchStates_TabletMode_UNSUPPORTED:
       return PowerManagerClient::TabletMode::UNSUPPORTED;
   }
-  NOTREACHED() << "Unhandled tablet mode " << mode;
+  NOTREACHED_IN_MIGRATION() << "Unhandled tablet mode " << mode;
   return PowerManagerClient::TabletMode::UNSUPPORTED;
 }
 
@@ -123,7 +123,7 @@ base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
-  NOTREACHED() << "Unhandled thermal state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unhandled thermal state " << state;
   return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 

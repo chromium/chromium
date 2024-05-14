@@ -247,7 +247,7 @@ class DeviceSyncSoftwareFeatureManagerImplTest
     else if (error == kErrorFindingEligibleNetworkRequestError)
       result_ = Result::kErrorFindingEligible;
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   void InvokeSetSoftwareFeatureCallback() {

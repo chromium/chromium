@@ -237,7 +237,7 @@ void AudioSelectionNotificationHandler::HandleSwitchButtonClicked(
     case NotificationType::kMultipleSources:
       // Do not record in this case. When the notification type is
       // kMultipleSources, notification with settings button should display.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Activate audio devices.

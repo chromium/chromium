@@ -652,7 +652,7 @@ void CryptAuthClientImpl::MakeApiCall(
   if (has_call_started_) {
     PA_LOG(ERROR) << "CryptAuthClientImpl::MakeApiCall(): Tried to make an API "
                   << "call, but the client had already been used.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   has_call_started_ = true;

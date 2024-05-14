@@ -349,7 +349,7 @@ void MultiDeviceSetupImpl::TriggerEventForDebugging(
           kTestDeviceNameForDebugNotification);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::move(callback).Run(true /* success */);

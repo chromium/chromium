@@ -68,25 +68,25 @@ base::WeakPtr<TwentyEightDayImpl> TwentyEightDayImpl::GetWeakPtr() {
 }
 
 void TwentyEightDayImpl::CheckMembershipOprf() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
 void TwentyEightDayImpl::OnCheckMembershipOprfComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
 void TwentyEightDayImpl::CheckMembershipQuery(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
 void TwentyEightDayImpl::OnCheckMembershipQueryComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -118,7 +118,7 @@ void TwentyEightDayImpl::CheckIn() {
 
 void TwentyEightDayImpl::OnCheckInComplete(
     std::unique_ptr<std::string> response_body) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -686,9 +686,10 @@ TwentyEightDayImpl::GetPsmIdentifiersToQueryPhaseTwo() {
   std::string window_id_query_day = utils::TimeToYYYYMMDDString(query_day);
 
   if (actives_cache_.contains(window_id_query_day)) {
-    NOTREACHED() << "Unexpectedly the Window ID is contained in the actives "
-                    "cache already = "
-                 << window_id_query_day;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpectedly the Window ID is contained in the actives "
+           "cache already = "
+        << window_id_query_day;
     return {};
   }
 
@@ -714,7 +715,7 @@ void TwentyEightDayImpl::CheckMembershipOprfSecondPhase() {
   DCHECK(!url_loader_);
 
   if (!IsFirstPhaseComplete()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback_).Run();
     return;
   }

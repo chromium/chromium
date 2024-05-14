@@ -54,7 +54,7 @@ void FakeResourcedClient::ReportBrowserProcesses(
   } else if (component == ResourcedClient::Component::kLacros) {
     lacros_browser_processes_ = processes;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -37,13 +37,13 @@ void FakeU2FClient::IsU2FEnabled(
 void FakeU2FClient::MakeCredential(
     const u2f::MakeCredentialRequest& request,
     DBusMethodCallback<u2f::MakeCredentialResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::GetAssertion(
     const u2f::GetAssertionRequest& request,
     DBusMethodCallback<u2f::GetAssertionResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::HasCredentials(
@@ -65,31 +65,31 @@ void FakeU2FClient::HasLegacyU2FCredentials(
 void FakeU2FClient::CountCredentials(
     const u2f::CountCredentialsInTimeRangeRequest& request,
     DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::DeleteCredentials(
     const u2f::DeleteCredentialsInTimeRangeRequest& request,
     DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::CancelWebAuthnFlow(
     const u2f::CancelWebAuthnFlowRequest& request,
     DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::GetAlgorithms(
     const u2f::GetAlgorithmsRequest& request,
     DBusMethodCallback<u2f::GetAlgorithmsResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeU2FClient::GetSupportedFeatures(
     const u2f::GetSupportedFeaturesRequest& request,
     DBusMethodCallback<u2f::GetSupportedFeaturesResponse> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace chromeos

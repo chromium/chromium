@@ -77,7 +77,7 @@ std::unique_ptr<ResultParser> ResultParserFactory::Create(
     // separately.
     case ResultType::kTranslationResult:
     case ResultType::kNoResult:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

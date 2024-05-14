@@ -263,7 +263,7 @@ void CryptAuthMetadataSyncerImpl::OnTimeout() {
                                       CryptAuthApiCallResult::kTimeout);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   FinishAttempt(*error_code);
@@ -309,7 +309,7 @@ void CryptAuthMetadataSyncerImpl::AttemptNextStep() {
           EncryptLocalDeviceMetadata();
           return;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
       }
     }
@@ -345,7 +345,7 @@ void CryptAuthMetadataSyncerImpl::AttemptNextStep() {
           FilterMetadataAndFinishAttempt();
           return;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
       }
     }
@@ -370,7 +370,7 @@ void CryptAuthMetadataSyncerImpl::AttemptNextStep() {
 
     // Each CryptAuthMetadataSyncer object can only be used once.
     case State::kFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -508,7 +508,7 @@ void CryptAuthMetadataSyncerImpl::MakeSyncMetadataCall() {
       break;
     default:
       // AttemptNextStep() ensures that no more than two calls are made.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -532,7 +532,7 @@ void CryptAuthMetadataSyncerImpl::OnSyncMetadataSuccess(
     RecordSecondSyncMetadataMetrics(execution_time,
                                     CryptAuthApiCallResult::kSuccess);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   PA_LOG(VERBOSE) << "SyncMetadata response:\n" << response;
 
@@ -565,7 +565,7 @@ void CryptAuthMetadataSyncerImpl::OnSyncMetadataFailure(
     RecordSecondSyncMetadataMetrics(
         execution_time, CryptAuthApiCallResultFromNetworkRequestError(error));
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   FinishAttempt(SyncMetadataNetworkRequestErrorToResultCode(error));
 }

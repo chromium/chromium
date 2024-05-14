@@ -146,8 +146,9 @@ void BluetoothHidDetectorImpl::OnPropertiesUpdated(
     bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties) {
   switch (state_) {
     case kNotStarted:
-      NOTREACHED() << "SystemPropertiesObserver should not be bound while in "
-                      "state |kNotStarted|";
+      NOTREACHED_IN_MIGRATION()
+          << "SystemPropertiesObserver should not be bound while in "
+             "state |kNotStarted|";
       return;
     case kStarting:
       if (properties->system_state == BluetoothSystemState::kEnabled) {

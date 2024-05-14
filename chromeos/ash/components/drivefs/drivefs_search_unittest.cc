@@ -32,7 +32,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MockDriveFs& operator=(const MockDriveFs&) = delete;
 
   DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

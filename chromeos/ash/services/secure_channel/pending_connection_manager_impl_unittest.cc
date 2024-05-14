@@ -631,7 +631,7 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
           }
 
           case ConnectionRole::kListenerRole:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
         break;
     }
@@ -875,7 +875,7 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
               break;
 
             case ConnectionRole::kListenerRole:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
           }
           break;

@@ -651,7 +651,7 @@ NetworkState::NetworkTechnologyType NetworkState::GetNetworkTechnologyType()
   if (network_type == shill::kTypeWifi) {
     return NetworkTechnologyType::kWiFi;
   }
-  NOTREACHED() << "Unknown network type: " << network_type;
+  NOTREACHED_IN_MIGRATION() << "Unknown network type: " << network_type;
   return NetworkTechnologyType::kUnknown;
 }
 

@@ -178,7 +178,7 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
     case CheckReadinessResult::kUnknownResult:
       return HotspotMetricsCheckReadinessResult::kUnknownResult;
   }
-  NOTREACHED() << "Unknown check tethering readiness result.";
+  NOTREACHED_IN_MIGRATION() << "Unknown check tethering readiness result.";
 }
 
 // static
@@ -207,7 +207,7 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
       }
       return HotspotMetricsSetConfigResult::kFailedUnknownShillError;
   }
-  NOTREACHED() << "Unknown set hotspot config result.";
+  NOTREACHED_IN_MIGRATION() << "Unknown set hotspot config result.";
 }
 
 // static
@@ -246,7 +246,7 @@ HotspotMetricsHelper::GetMetricsDisableReason(
     case DisableReason::kUnknownError:
       return HotspotMetricsDisableReason::kUnknownError;
   }
-  NOTREACHED() << "Unknown hotspot disable reason.";
+  NOTREACHED_IN_MIGRATION() << "Unknown hotspot disable reason.";
 }
 
 HotspotMetricsHelper::HotspotMetricsHelper() = default;

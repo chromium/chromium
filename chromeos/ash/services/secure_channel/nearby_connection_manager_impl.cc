@@ -173,7 +173,7 @@ void NearbyConnectionManagerImpl::SetAuthenticatingChannel(
                   << "same remote device ID. ID: "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          remote_device_id);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   SecureChannel* secure_channel_raw = secure_channel.get();
@@ -238,7 +238,7 @@ std::string NearbyConnectionManagerImpl::GetRemoteDeviceIdForSecureChannel(
   }
 
   PA_LOG(ERROR) << "No remote device ID mapped to the provided SecureChannel.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -250,7 +250,7 @@ void NearbyConnectionManagerImpl::HandleSecureChannelDisconnection(
                   << "not present in map. Remote device ID: "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          remote_device_id);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   for (const auto& pair : GetDeviceIdPairsForRemoteDevice(remote_device_id)) {

@@ -198,7 +198,7 @@ ProxyPrefs::ProxyMode OncStringToProxyMode(const std::string& onc_proxy_type) {
   if (onc_proxy_type == ::onc::proxy::kManual) {
     return ProxyPrefs::ProxyMode::MODE_FIXED_SERVERS;
   }
-  NOTREACHED() << "Unsupported ONC proxy type: " << onc_proxy_type;
+  NOTREACHED_IN_MIGRATION() << "Unsupported ONC proxy type: " << onc_proxy_type;
   return ProxyPrefs::ProxyMode::MODE_DIRECT;
 }
 

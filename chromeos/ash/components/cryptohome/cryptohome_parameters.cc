@@ -36,7 +36,7 @@ const std::string GetCryptohomeId(const AccountId& account_id) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return account_id.GetUserEmail();
 }
 

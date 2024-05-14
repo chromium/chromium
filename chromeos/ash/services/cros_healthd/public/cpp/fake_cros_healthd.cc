@@ -407,13 +407,13 @@ void FakeCrosHealthd::RunFloatingPointAccuracyRoutine(
 void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutineWithThreshold(
     uint32_t wear_level_threshold,
     DEPRECATED_RunNvmeWearLevelRoutineWithThresholdCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_RunNvmeWearLevelRoutine(
     mojom::NullableUint32Ptr wear_level_threshold,
     DEPRECATED_RunNvmeWearLevelRoutineCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::RunNvmeSelfTestRoutine(
@@ -676,7 +676,7 @@ void FakeCrosHealthd::DEPRECATED_RunAudioSetVolumeRoutine(
     uint8_t volume,
     bool mute_on,
     DEPRECATED_RunAudioSetVolumeRoutineCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_RunAudioSetGainRoutine(
@@ -684,7 +684,7 @@ void FakeCrosHealthd::DEPRECATED_RunAudioSetGainRoutine(
     uint8_t gain,
     bool mute_on,
     DEPRECATED_RunAudioSetGainRoutineCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::RunBluetoothPowerRoutine(
@@ -740,17 +740,17 @@ void FakeCrosHealthd::RunFanRoutine(RunFanRoutineCallback callback) {
 
 void FakeCrosHealthd::DEPRECATED_AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddLidObserver(
     mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddPowerObserver(
     mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::AddNetworkObserver(
@@ -761,17 +761,17 @@ void FakeCrosHealthd::AddNetworkObserver(
 
 void FakeCrosHealthd::DEPRECATED_AddAudioObserver(
     mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddThunderboltObserver(
     mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::DEPRECATED_AddUsbObserver(
     mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCrosHealthd::AddEventObserver(

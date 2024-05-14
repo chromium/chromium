@@ -54,7 +54,7 @@ std::string_view GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string_view();
 }
 

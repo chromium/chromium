@@ -402,7 +402,7 @@ class SecureChannelNearbyConnectionManagerImplTest : public testing::Test {
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const multidevice::RemoteDeviceRefList test_devices_;

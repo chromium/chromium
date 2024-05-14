@@ -1276,7 +1276,7 @@ class CiceroneClientImpl : public CiceroneClient {
     } else if (signal_name == vm_tools::cicerone::kUninhibitScreensaverSignal) {
       is_uninhibit_screensaver_signal_connected_ = is_connected;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

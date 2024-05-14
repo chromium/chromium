@@ -39,7 +39,7 @@ ChallengeSignatureAlgorithm ChallengeSignatureAlgorithmToProtoEnum(
     case Algorithm::kRsassaPkcs1V15Sha512:
       return CHALLENGE_RSASSA_PKCS1_V1_5_SHA512;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChallengeResponseKeyToPublicKeyInfo(

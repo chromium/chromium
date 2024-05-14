@@ -26,7 +26,7 @@ EnumTraits<chromeos::network_config::mojom::ProxyMode,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chromeos::network_config::mojom::ProxyMode::kDirect;
 }
 
@@ -52,7 +52,7 @@ bool EnumTraits<chromeos::network_config::mojom::ProxyMode,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

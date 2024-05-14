@@ -348,7 +348,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
         // pending install from the queue (would waste time checking).
         return;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     // Try to run a pending install since we have complete/failed the current

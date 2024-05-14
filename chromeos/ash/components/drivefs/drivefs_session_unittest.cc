@@ -192,7 +192,7 @@ class MockDriveFsConnection : public DriveFsConnection,
 
  private:
   mojom::DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

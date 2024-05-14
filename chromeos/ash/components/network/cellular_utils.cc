@@ -67,7 +67,7 @@ CellularESimProfile::State FromProfileState(hermes::profile::State state) {
     case hermes::profile::State::kActive:
       return CellularESimProfile::State::kActive;
     default:
-      NOTREACHED() << "Unexpected Hermes profile state: " << state;
+      NOTREACHED_IN_MIGRATION() << "Unexpected Hermes profile state: " << state;
       return CellularESimProfile::State::kInactive;
   }
 }

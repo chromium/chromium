@@ -88,14 +88,14 @@ void ClientConnectionParameters::VerifyDelegateWaitingForResponse(
     PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
                   << "Attempted to notify ConnectionDelegate when a delegate "
                   << "function had already been invoked. Cannot proceed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (HasClientCanceledRequest()) {
     PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
                   << "Attempted to notify ConnectionDelegate when the client "
                   << "had already canceled the connection. Cannot proceed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

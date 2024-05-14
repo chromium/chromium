@@ -115,7 +115,7 @@ void AppendProxyServerForScheme(const base::Value::Dict& onc_manual,
     default_proxy_scheme = net::ProxyServer::SCHEME_SOCKS4;
     url_scheme = kSocksScheme;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   net::ProxyServer proxy_server = ConvertOncProxyLocationToHostPort(
@@ -156,7 +156,7 @@ std::string SchemeToString(net::ProxyServer::Scheme scheme) {
     case net::ProxyServer::SCHEME_INVALID:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -409,7 +409,7 @@ std::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
     return ProxyConfigDictionary::CreateFixedServers(manual_spec,
                                                      bypass_rules.ToString());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

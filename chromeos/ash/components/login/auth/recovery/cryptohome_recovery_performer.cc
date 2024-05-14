@@ -170,8 +170,9 @@ void CryptohomeRecoveryPerformer::OnAuthenticateWithRecovery(
     return;
   }
   if (!context->GetAuthorizedIntents().Has(AuthSessionIntent::kDecrypt)) {
-    NOTREACHED() << "Authentication via recovery factor failed to authorize "
-                    "for decryption";
+    NOTREACHED_IN_MIGRATION()
+        << "Authentication via recovery factor failed to authorize "
+           "for decryption";
     RecordRecoveryResult(
         AuthEventsRecorder::CryptohomeRecoveryResult::kMountCryptohomeError);
     std::move(callback_).Run(

@@ -72,8 +72,9 @@ void AuthFactorStore::OnUserAction(
             State::AuthenticationStage::kAuthenticating;
         SubmitPassword(password);
       } else {
-        NOTREACHED() << "AuthPanel: Password was submitted while textfield is "
-                     << "empty or password factor is disabled";
+        NOTREACHED_IN_MIGRATION()
+            << "AuthPanel: Password was submitted while textfield is "
+            << "empty or password factor is disabled";
       }
 
       break;

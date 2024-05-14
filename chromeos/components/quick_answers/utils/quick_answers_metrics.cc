@@ -52,7 +52,7 @@ std::string ResultTypeToString(ResultType result_type) {
     case ResultType::kUnitConversionResult:
       return "UnitConversion";
     default:
-      NOTREACHED() << "Invalid ResultType.";
+      NOTREACHED_IN_MIGRATION() << "Invalid ResultType.";
       return ".Unknown";
   }
 }

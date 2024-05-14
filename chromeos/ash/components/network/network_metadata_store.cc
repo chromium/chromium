@@ -614,7 +614,7 @@ NetworkMetadataStore::GetUserTextMessageSuppressionState(
              state_value->GetInt()) {
     return UserTextMessageSuppressionState::kSuppress;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UserTextMessageSuppressionState::kAllow;
 }
 

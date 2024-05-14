@@ -199,7 +199,7 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeature,
           PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::multidevice::mojom::SoftwareFeature::BETTER_TOGETHER_HOST;
 }
 
@@ -258,7 +258,7 @@ bool EnumTraits<ash::multidevice::mojom::SoftwareFeature,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -275,7 +275,7 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
       return ash::multidevice::mojom::SoftwareFeatureState::kEnabled;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::multidevice::mojom::SoftwareFeatureState::kNotSupported;
 }
 
@@ -295,7 +295,7 @@ bool EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

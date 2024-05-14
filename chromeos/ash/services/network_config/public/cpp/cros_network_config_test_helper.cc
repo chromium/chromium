@@ -50,7 +50,7 @@ CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
     case NetworkType::kAll:
     case NetworkType::kMobile:
     case NetworkType::kWireless:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case NetworkType::kCellular: {
       auto cellular = mojom::CellularStateProperties::New();

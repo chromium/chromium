@@ -28,7 +28,7 @@ using testing::_;
 class MockDriveFs : public mojom::DriveFsInterceptorForTesting {
  public:
   DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };
@@ -36,7 +36,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting {
 class MockDriveFsDelegate : public mojom::DriveFsDelegateInterceptorForTesting {
  public:
   DriveFsDelegate* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

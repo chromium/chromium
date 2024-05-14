@@ -153,7 +153,7 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
   if (auth_session_id.empty()) {
-    NOTREACHED() << "Auth session should exist";
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Deleting stale ephemeral user";
   user_data_auth::RemoveRequest remove_request;
@@ -1109,9 +1109,10 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       // repo.
       // However, we should seek to handle all CryptohomeErrorCode and not let
       // any of them hit the default block.
-  NOTREACHED() << "Unhandled CryptohomeError in ProcessCryptohomeError"
-                  ": "
-               << error.get_cryptohome_error();
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled CryptohomeError in ProcessCryptohomeError"
+         ": "
+      << error.get_cryptohome_error();
   return false;
 }
 
@@ -1135,8 +1136,8 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
   }
   bool handled = ResolveCryptohomeError(default_error, error);
   if (!handled) {
-    NOTREACHED() << "Unhandled cryptohome error: "
-                 << error.get_cryptohome_error();
+    NOTREACHED_IN_MIGRATION()
+        << "Unhandled cryptohome error: " << error.get_cryptohome_error();
     SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code",
                             error.get_cryptohome_error().code());
     base::debug::DumpWithoutCrashing();

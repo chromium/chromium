@@ -74,7 +74,7 @@ void ActiveConnectionManagerImpl::PerformAddClientToChannel(
     PA_LOG(ERROR) << "ActiveConnectionManagerImpl::"
                   << "PerformAddClientToChannel(): Could not add "
                   << "ClientConnectionParameters to MultiplexedChannel.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -88,7 +88,7 @@ void ActiveConnectionManagerImpl::OnDisconnected(
   if (num_deleted != 1u) {
     PA_LOG(ERROR) << "ActiveConnectionManagerImpl::OnDisconnected(): Tried to "
                   << "delete map entry, but it did not exist.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   OnChannelDisconnected(connection_details_copy);

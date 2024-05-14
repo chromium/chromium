@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& out, WindowPinType pin_type) {
       return out << "kTrustedPinned";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return out;
 }
 

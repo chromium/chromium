@@ -19,7 +19,7 @@ EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
       return ash::secure_channel::mojom::ConnectionMedium::kNearbyConnections;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::secure_channel::mojom::ConnectionMedium::kBluetoothLowEnergy;
 }
 
@@ -36,7 +36,7 @@ bool EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -53,7 +53,7 @@ EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
       return ash::secure_channel::mojom::ConnectionPriority::HIGH;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::secure_channel::mojom::ConnectionPriority::LOW;
 }
 
@@ -73,7 +73,7 @@ bool EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

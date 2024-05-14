@@ -297,7 +297,7 @@ void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
                          weak_ptr_factory_.GetWeakPtr(), type, path));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShillPropertyHandler::RequestPortalDetection(
@@ -674,7 +674,7 @@ void ShillPropertyHandler::PropertyChangedCallback(
       listener_->UpdateDeviceProperty(path, key, value);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShillPropertyHandler::RequestIPConfig(

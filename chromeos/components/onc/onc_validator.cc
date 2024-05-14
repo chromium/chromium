@@ -537,7 +537,8 @@ bool Validator::ValidateRecommendedField(
   for (const auto& entry : recommended_value->GetList()) {
     const std::string* field_name = entry.GetIfString();
     if (!field_name) {
-      NOTREACHED();  // The types of field values are already verified.
+      NOTREACHED_IN_MIGRATION();  // The types of field values are already
+                                  // verified.
       continue;
     }
 
@@ -700,7 +701,7 @@ bool Validator::FieldExistsAndIsEmpty(const base::Value::Dict& dict,
       return false;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -749,7 +750,8 @@ bool Validator::ListFieldContainsValidValues(
   for (const auto& entry : *list) {
     const std::string* value = entry.GetIfString();
     if (!value) {
-      NOTREACHED();  // The types of field values are already verified.
+      NOTREACHED_IN_MIGRATION();  // The types of field values are already
+                                  // verified.
       continue;
     }
     if (!IsValidValue(*value, valid_values)) {

@@ -86,7 +86,7 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
     case views::CAPTION_BUTTON_ICON_FLOAT:
     case views::CAPTION_BUTTON_ICON_CUSTOM:
     case views::CAPTION_BUTTON_ICON_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SnapDirection::kNone;
   }
 }

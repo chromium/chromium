@@ -181,7 +181,7 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
   };
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -224,7 +224,7 @@ bool EnumTraits<crosapi::mojom::WebAppUninstallResultCode,
       return true;
   };
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

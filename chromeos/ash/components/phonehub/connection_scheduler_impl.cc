@@ -141,7 +141,7 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
 
     // Status should not transition from same status.
     case FeatureStatus::kEnabledButDisconnected:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

@@ -141,7 +141,7 @@ void AuthFactorConfig::IsSupportedWithContext(
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -237,7 +237,7 @@ void AuthFactorConfig::IsConfiguredWithContext(
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
@@ -294,7 +294,7 @@ void AuthFactorConfig::GetManagementType(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AuthFactorConfig::IsEditable(const std::string& auth_token,
@@ -389,7 +389,7 @@ void AuthFactorConfig::IsEditableWithContext(
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));

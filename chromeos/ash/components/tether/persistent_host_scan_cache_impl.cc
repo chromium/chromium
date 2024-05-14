@@ -107,7 +107,7 @@ PersistentHostScanCacheImpl::GetStoredCacheEntries() {
   for (auto& cache_entry_value : cache_entry_list) {
     if (!cache_entry_value.is_dict()) {
       // All prefs stored in the ListValue should be valid DictionaryValues.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     std::unique_ptr<HostScanCacheEntry> entry =

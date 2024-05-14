@@ -150,7 +150,7 @@ std::string GetStubPolicyFilenamePostfix(
       return kStubSigninExtensionPolicyFileNameFragment +
              descriptor.component_id();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -179,7 +179,7 @@ base::FilePath GetStubRelativePolicyPath(
           .AppendASCII(kStubPerAccountPolicyFileNamePrefix + postfix);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::FilePath();
   }
 }
@@ -216,7 +216,7 @@ base::FilePath GetStubPolicyFilePath(
       return base_path.Append(relative_policy_path);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::FilePath();
   }
 }

@@ -64,7 +64,7 @@ power_manager::PowerManagementPolicy_Action GetProtoAction(
     case PowerPolicyController::ACTION_DO_NOTHING:
       return power_manager::PowerManagementPolicy_Action_DO_NOTHING;
     default:
-      NOTREACHED() << "Unhandled action " << action;
+      NOTREACHED_IN_MIGRATION() << "Unhandled action " << action;
       return power_manager::PowerManagementPolicy_Action_DO_NOTHING;
   }
 }

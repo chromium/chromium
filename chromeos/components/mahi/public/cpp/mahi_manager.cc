@@ -74,7 +74,7 @@ ScopedMahiManagerSetter* ScopedMahiManagerSetter::instance_ = nullptr;
 ScopedMahiManagerSetter::ScopedMahiManagerSetter(MahiManager* manager) {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   instance_ = this;
@@ -86,7 +86,7 @@ ScopedMahiManagerSetter::ScopedMahiManagerSetter(MahiManager* manager) {
 
 ScopedMahiManagerSetter::~ScopedMahiManagerSetter() {
   if (instance_ != this) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

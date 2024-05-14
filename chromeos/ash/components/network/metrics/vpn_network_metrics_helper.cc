@@ -47,7 +47,7 @@ const char* GetBucketForVpnProviderType(const std::string& vpn_provider_type) {
   } else if (vpn_provider_type == shill::kProviderWireGuard) {
     return kVpnConfigurationSourceBucketWireGuard;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kVpnConfigurationSourceBucketUnknown;
 }
 

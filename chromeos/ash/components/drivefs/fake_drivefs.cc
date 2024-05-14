@@ -81,7 +81,7 @@ base::FilePath MaybeMountDriveFs(
       return registration.second->mount_path();
     }
   }
-  NOTREACHED() << datadir_suffix;
+  NOTREACHED_IN_MIGRATION() << datadir_suffix;
   return {};
 }
 

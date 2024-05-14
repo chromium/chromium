@@ -523,7 +523,7 @@ std::string InstallAttributes::GetDeviceModeString(policy::DeviceMode mode) {
     case policy::DEVICE_MODE_NOT_SET:
       break;
   }
-  NOTREACHED() << "Invalid device mode: " << mode;
+  NOTREACHED_IN_MIGRATION() << "Invalid device mode: " << mode;
   return std::string();
 }
 

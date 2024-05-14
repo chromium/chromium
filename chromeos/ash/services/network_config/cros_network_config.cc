@@ -116,7 +116,8 @@ mojom::NetworkType NetworkPatternToMojo(NetworkTypePattern type) {
     return mojom::NetworkType::kVPN;
   if (type.Equals(NetworkTypePattern::WiFi()))
     return mojom::NetworkType::kWiFi;
-  NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported network type: " << type.ToDebugString();
   return mojom::NetworkType::kAll;  // Unsupported
 }
 
@@ -148,7 +149,7 @@ NetworkTypePattern MojoTypeToPattern(mojom::NetworkType type) {
     case mojom::NetworkType::kWiFi:
       return NetworkTypePattern::WiFi();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NetworkTypePattern::Default();
 }
 
@@ -157,7 +158,8 @@ mojom::IPConfigType OncIPConfigTypeToMojo(const std::string& ip_config_type) {
     return mojom::IPConfigType::kIPv4;
   if (ip_config_type == ::onc::ipconfig::kIPv6)
     return mojom::IPConfigType::kIPv6;
-  NOTREACHED() << "Unsupported ONC IPConfig type: " << ip_config_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported ONC IPConfig type: " << ip_config_type;
   return mojom::IPConfigType::kIPv4;
 }
 
@@ -168,7 +170,7 @@ std::string MojoIPConfigTypeToOnc(mojom::IPConfigType type) {
     case mojom::IPConfigType::kIPv6:
       return ::onc::ipconfig::kIPv6;
   }
-  NOTREACHED() << "Unexpected mojo IPConfig type: " << type;
+  NOTREACHED_IN_MIGRATION() << "Unexpected mojo IPConfig type: " << type;
   return ::onc::ipconfig::kIPv4;
 }
 
@@ -189,7 +191,7 @@ std::string MojoNetworkTypeToOnc(mojom::NetworkType type) {
     case mojom::NetworkType::kWiFi:
       return ::onc::network_type::kWiFi;
   }
-  NOTREACHED() << "Unsupported mojo to ONC type: " << type;
+  NOTREACHED_IN_MIGRATION() << "Unsupported mojo to ONC type: " << type;
   return std::string();
 }
 
@@ -235,7 +237,8 @@ std::string MojoSecurityTypeToOnc(mojom::SecurityType security_type) {
     case mojom::SecurityType::kWpaPsk:
       return ::onc::wifi::kWPA_PSK;
   }
-  NOTREACHED() << "Unsupported mojo to ONC type: " << security_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported mojo to ONC type: " << security_type;
   return std::string();
 }
 
@@ -253,7 +256,8 @@ mojom::MatchType PasspointMatchTypeToMojo(
   if (*match_type == shill::kPasspointMatchTypeUnknown) {
     return mojom::MatchType::kUnknown;
   }
-  NOTREACHED() << "Unsupported Passpoint match type: " << *match_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported Passpoint match type: " << *match_type;
   return mojom::MatchType::kUnknown;
 }
 
@@ -270,7 +274,7 @@ mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
     return mojom::VpnType::kExtension;
   if (onc_vpn_type == ::onc::vpn::kArcVpn)
     return mojom::VpnType::kArc;
-  NOTREACHED() << "Unsupported ONC VPN type: " << onc_vpn_type;
+  NOTREACHED_IN_MIGRATION() << "Unsupported ONC VPN type: " << onc_vpn_type;
   return mojom::VpnType::kOpenVPN;
 }
 
@@ -289,7 +293,7 @@ std::string MojoVpnTypeToOnc(mojom::VpnType mojo_vpn_type) {
     case mojom::VpnType::kArc:
       return ::onc::vpn::kArcVpn;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ::onc::vpn::kOpenVPN;
 }
 
@@ -324,7 +328,7 @@ mojom::DeviceStateType GetMojoDeviceStateType(
     case NetworkStateHandler::TECHNOLOGY_PROHIBITED:
       return mojom::DeviceStateType::kProhibited;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::DeviceStateType::kUnavailable;
 }
 
@@ -342,7 +346,7 @@ mojom::PortalState GetMojoPortalState(
     case NetworkState::PortalState::kNoInternet:
       return mojom::PortalState::kNoInternet;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::PortalState::kUnknown;
 }
 
@@ -382,7 +386,7 @@ mojom::OncSource GetMojoOncSource(const NetworkState* network) {
     case ::onc::ONC_SOURCE_USER_POLICY:
       return mojom::OncSource::kUserPolicy;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::OncSource::kNone;
 }
 
@@ -543,7 +547,8 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
     case mojom::NetworkType::kAll:
     case mojom::NetworkType::kMobile:
     case mojom::NetworkType::kWireless:
-      NOTREACHED() << "NetworkStateProperties can not be of type: " << type;
+      NOTREACHED_IN_MIGRATION()
+          << "NetworkStateProperties can not be of type: " << type;
       break;
   }
   return result;
@@ -731,7 +736,7 @@ std::vector<std::string> GetRequiredStringList(const base::Value::Dict* dict,
                                                const char* key) {
   const base::Value* v = dict->Find(key);
   if (!v) {
-    NOTREACHED() << "Required key missing: " << key;
+    NOTREACHED_IN_MIGRATION() << "Required key missing: " << key;
     return {};
   }
   if (!v->is_list()) {
@@ -1056,7 +1061,7 @@ mojom::ApnState OncApnStateTypeToMojo(const std::string* state) {
   if (*state == ::onc::cellular_apn::kStateDisabled)
     return mojom::ApnState::kDisabled;
 
-  NOTREACHED() << "Unexpected ONC APN State type: " << state;
+  NOTREACHED_IN_MIGRATION() << "Unexpected ONC APN State type: " << state;
   return mojom::ApnState::kEnabled;
 }
 
@@ -1068,7 +1073,7 @@ std::string MojoApnStateTypeToOnc(mojom::ApnState state) {
     case mojom::ApnState::kEnabled:
       return ::onc::cellular_apn::kStateEnabled;
   }
-  NOTREACHED() << "Unexpected mojo ApnState type: " << state;
+  NOTREACHED_IN_MIGRATION() << "Unexpected mojo ApnState type: " << state;
   return ::onc::cellular_apn::kStateEnabled;
 }
 
@@ -1082,8 +1087,8 @@ std::string MojoApnAuthenticationTypeToOnc(
     case mojom::ApnAuthenticationType::kChap:
       return ::onc::cellular_apn::kAuthenticationChap;
   }
-  NOTREACHED() << "Unexpected mojo AuthenticationType type: "
-               << authentication_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected mojo AuthenticationType type: " << authentication_type;
   return ::onc::cellular_apn::kAuthenticationAutomatic;
 }
 
@@ -1099,7 +1104,7 @@ std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
     case mojom::ApnIpType::kIpv4Ipv6:
       return ::onc::cellular_apn::kIpTypeIpv4Ipv6;
   }
-  NOTREACHED() << "Unexpected mojo ApnIpType type: " << ip_type;
+  NOTREACHED_IN_MIGRATION() << "Unexpected mojo ApnIpType type: " << ip_type;
   return ::onc::cellular_apn::kIpTypeAutomatic;
 }
 
@@ -1114,7 +1119,7 @@ std::string MojoApnSourceToOnc(mojom::ApnSource source) {
       return ::onc::cellular_apn::kSourceUi;
       // TODO(b/5429735): Add mojom::ApnSource::kAdmin in follow up CL
   }
-  NOTREACHED() << "Unexpected mojo ApnSource: " << source;
+  NOTREACHED_IN_MIGRATION() << "Unexpected mojo ApnSource: " << source;
   return ::onc::cellular_apn::kSourceModem;
 }
 
@@ -1857,7 +1862,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     case mojom::NetworkType::kAll:
     case mojom::NetworkType::kMobile:
     case mojom::NetworkType::kWireless:
-      NOTREACHED() << "NetworkStateProperties can not be of type: " << type;
+      NOTREACHED_IN_MIGRATION()
+          << "NetworkStateProperties can not be of type: " << type;
       break;
   }
 
@@ -1905,7 +1911,7 @@ bool NetworkTypeCanBeDisabled(mojom::NetworkType type) {
     case mojom::NetworkType::kWireless:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -2269,7 +2275,7 @@ mojom::TrafficCounterSource ConvertToTrafficCounterSourceEnum(
   if (source == shill::kTrafficCounterSourceWiFiLOHS) {
     return mojom::TrafficCounterSource::kChrome;
   }
-  NOTREACHED() << "Unknown traffic counter source: " << source;
+  NOTREACHED_IN_MIGRATION() << "Unknown traffic counter source: " << source;
   return mojom::TrafficCounterSource::kUnknown;
 }
 
@@ -3373,7 +3379,8 @@ void CrosNetworkConfig::OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
   } else if (mode == shill::kAlwaysOnVpnModeStrict) {
     vpn_mode = mojom::AlwaysOnVpnMode::kStrict;
   } else {
-    NOTREACHED() << "OnGetAlwaysOnVpn: invalid always-on VPN mode: " << mode;
+    NOTREACHED_IN_MIGRATION()
+        << "OnGetAlwaysOnVpn: invalid always-on VPN mode: " << mode;
     vpn_mode = mojom::AlwaysOnVpnMode::kOff;
   }
 
@@ -3412,7 +3419,8 @@ void CrosNetworkConfig::SetAlwaysOnVpn(
       mode = shill::kAlwaysOnVpnModeOff;
       break;
     default:
-      NOTREACHED() << "SetAlwaysOnVpn: invalid mode: " << properties->mode;
+      NOTREACHED_IN_MIGRATION()
+          << "SetAlwaysOnVpn: invalid mode: " << properties->mode;
       return;
   }
   network_profile_handler_->SetAlwaysOnVpnMode(profile->path, mode);

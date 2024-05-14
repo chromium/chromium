@@ -222,7 +222,7 @@ void CryptAuthDeviceSyncerImpl::OnTimeout() {
                                             CryptAuthAsyncTaskResult::kTimeout);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   FinishAttempt(*error_code);
@@ -264,7 +264,7 @@ void CryptAuthDeviceSyncerImpl::AttemptNextStep() {
       return;
     }
     case State::kFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

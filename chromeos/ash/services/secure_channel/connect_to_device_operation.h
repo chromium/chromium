@@ -35,7 +35,7 @@ class ConnectToDeviceOperation {
 
     PA_LOG(ERROR) << "ConnectToDeviceOperation::~ConnectToDeviceOperation(): "
                   << "Operation deleted before it finished or was canceled.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Updates the priority for this operation.
@@ -44,7 +44,7 @@ class ConnectToDeviceOperation {
       PA_LOG(ERROR) << "ConnectToDeviceOperation::UpdateConnectionPriority(): "
                     << "Connection priority update requested, but the "
                     << "operation was no longer active.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -58,7 +58,7 @@ class ConnectToDeviceOperation {
     if (has_finished_) {
       PA_LOG(ERROR) << "ConnectToDeviceOperation::Cancel(): Tried to cancel "
                     << "operation after it had already finished.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 

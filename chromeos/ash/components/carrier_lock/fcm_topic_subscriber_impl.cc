@@ -178,7 +178,8 @@ void FcmTopicSubscriberImpl::ReturnSuccess() {
 }
 
 void FcmTopicSubscriberImpl::ShutdownHandler() {
-  NOTREACHED() << "FcmTopicSubscriberImpl should be destroyed before GCMDriver";
+  NOTREACHED_IN_MIGRATION()
+      << "FcmTopicSubscriberImpl should be destroyed before GCMDriver";
 }
 
 void FcmTopicSubscriberImpl::OnStoreReset() {}

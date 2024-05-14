@@ -133,7 +133,7 @@ DeviceSyncRequestFailureReason GetDeviceSyncRequestFailureReason(
     default:
       return DeviceSyncRequestFailureReason::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // The exponential back off is: base * 2^(num_failures - 1)
@@ -197,7 +197,7 @@ DeviceSyncSetSoftwareFeature GetDeviceSyncSoftwareFeature(
     case multidevice::SoftwareFeature::kMessagesForWebHost:
       return DeviceSyncSetSoftwareFeature::kMessages;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DeviceSyncSetSoftwareFeature::kUnexpectedClientFeature;
   }
 }
@@ -868,7 +868,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       CompleteInitializationAfterSuccessfulEnrollment();
       break;
     case InitializationStatus::kReady:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -1185,7 +1185,7 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
   if (it == id_to_pending_set_software_feature_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1227,7 +1227,7 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
   if (it == id_to_pending_set_feature_status_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetFeatureStatusError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1298,7 +1298,7 @@ void DeviceSyncImpl::OnNotifyDevicesSuccess(
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1315,7 +1315,7 @@ void DeviceSyncImpl::OnNotifyDevicesError(
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

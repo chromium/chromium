@@ -404,19 +404,20 @@ void ContentDecryptionModuleAdapter::InitializeVideoDecoder(
 void ContentDecryptionModuleAdapter::DecryptAndDecodeAudio(
     scoped_refptr<media::DecoderBuffer> encrypted,
     AudioDecodeCB audio_decode_cb) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "ContentDecryptionModuleAdapter does not support audio decoding";
 }
 
 void ContentDecryptionModuleAdapter::DecryptAndDecodeVideo(
     scoped_refptr<media::DecoderBuffer> encrypted,
     VideoDecodeCB video_decode_cb) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "ContentDecryptionModuleAdapter does not support video decoding";
 }
 
 void ContentDecryptionModuleAdapter::ResetDecoder(StreamType stream_type) {
-  NOTREACHED() << "ContentDecryptionModuleAdapter does not support decoding";
+  NOTREACHED_IN_MIGRATION()
+      << "ContentDecryptionModuleAdapter does not support decoding";
 }
 
 void ContentDecryptionModuleAdapter::DeinitializeDecoder(

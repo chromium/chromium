@@ -252,7 +252,7 @@ struct MatchCertWithCertConfig {
              cert_and_issuer.provisioning_profile_id;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

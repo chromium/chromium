@@ -64,7 +64,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MockDriveFs() = default;
 
   DriveFs* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

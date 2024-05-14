@@ -379,7 +379,7 @@ void PhoneStatusProcessor::SetEcheFeatureStatusReceivedFromPhoneHub(
     eche_support_received_from_phone_hub =
         ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     eche_support_received_from_phone_hub =
         ash::multidevice_setup::EcheSupportReceivedFromPhoneHub::kNotSpecified;
   }

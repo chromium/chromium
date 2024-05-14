@@ -74,7 +74,7 @@ void SecureChannelDisconnectorImpl::OnSecureChannelStatusChanged(
   PA_LOG(ERROR) << "SecureChannelDisconnectorImpl::"
                 << "OnSecureChannelStatusChanged(): Channel was disconnected, "
                 << "but it was not being tracked.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace ash::secure_channel

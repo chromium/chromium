@@ -248,7 +248,8 @@ class CrosAudioConfigImplTest : public testing::Test {
         audio_pref_handler_->SetAudioOutputAllowedValue(false);
         break;
       case mojom::MuteState::kMutedExternally:
-        NOTREACHED() << "Output audio does not support kMutedExternally.";
+        NOTREACHED_IN_MIGRATION()
+            << "Output audio does not support kMutedExternally.";
         break;
     }
     base::RunLoop().RunUntilIdle();
@@ -267,7 +268,8 @@ class CrosAudioConfigImplTest : public testing::Test {
             /*mute_on=*/false);
         break;
       case mojom::MuteState::kMutedByPolicy:
-        NOTREACHED() << "Input audio does not support kMutedByPolicy.";
+        NOTREACHED_IN_MIGRATION()
+            << "Input audio does not support kMutedByPolicy.";
         break;
       case mojom::MuteState::kMutedExternally:
         ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(

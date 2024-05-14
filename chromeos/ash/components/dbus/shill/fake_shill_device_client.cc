@@ -509,7 +509,7 @@ void FakeShillDeviceClient::SetSimLockStatus(const std::string& device_path,
                                              const SimLockStatus& status) {
   base::Value::Dict* device_properties = stub_devices_.FindDict(device_path);
   if (!device_properties) {
-    NOTREACHED() << "Device not found: " << device_path;
+    NOTREACHED_IN_MIGRATION() << "Device not found: " << device_path;
     return;
   }
 

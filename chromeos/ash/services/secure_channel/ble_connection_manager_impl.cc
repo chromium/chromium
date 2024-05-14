@@ -407,7 +407,7 @@ void BleConnectionManagerImpl::SetAuthenticatingChannel(
                   << "remote device ID. ID: "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          remote_device_id);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   SecureChannel* secure_channel_raw = secure_channel.get();
@@ -498,7 +498,7 @@ std::string BleConnectionManagerImpl::GetRemoteDeviceIdForSecureChannel(
 
   PA_LOG(ERROR) << "BleConnectionManager::GetRemoteDeviceIdForSecureChannel(): "
                 << "No remote device ID mapped to the provided SecureChannel. ";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -515,7 +515,7 @@ void BleConnectionManagerImpl::HandleSecureChannelDisconnection(
                   << "not present in map. Remote device ID: "
                   << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                          remote_device_id);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   for (const auto& details : GetDetailsForRemoteDevice(remote_device_id)) {
@@ -618,7 +618,7 @@ ConnectionAttemptDetails BleConnectionManagerImpl::ChooseChannelRecipient(
                 << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
                        remote_device_id)
                 << ", Role: " << connection_role;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ConnectionAttemptDetails(std::string(), std::string(),
                                   ConnectionMedium::kBluetoothLowEnergy,
                                   ConnectionRole::kInitiatorRole);

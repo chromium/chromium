@@ -217,7 +217,7 @@ bool OncParsedCertificates::ParseCertificate(
     case CertificateType::kClient:
       return ParseClientCertificate(*guid, onc_certificate);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

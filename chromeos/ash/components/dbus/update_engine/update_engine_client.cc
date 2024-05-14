@@ -751,7 +751,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
         next_operation = update_engine::Operation::UPDATED_NEED_REBOOT;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     last_status_.set_current_operation(next_operation);
     for (auto& observer : observers_)

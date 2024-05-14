@@ -347,7 +347,7 @@ std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
       return {label, SmartCardFactor{.public_key_spki_der = key}};
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       __builtin_unreachable();
   }
 }

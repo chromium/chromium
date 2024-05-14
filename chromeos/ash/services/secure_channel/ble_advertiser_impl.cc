@@ -86,7 +86,7 @@ void BleAdvertiserImpl::AddAdvertisementRequest(
                   << "add advertisement request which was already present. "
                   << "Request: " << request
                   << ", Priority: " << connection_priority;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   all_requests_.insert(request);
 
@@ -114,7 +114,7 @@ void BleAdvertiserImpl::UpdateAdvertisementRequestPriority(
                   << "Tried to update request priority for a request, but that "
                   << "request was not present. Request: " << request
                   << ", Priority: " << connection_priority;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::optional<size_t> index_for_active_request =
@@ -174,7 +174,7 @@ void BleAdvertiserImpl::RemoveAdvertisementRequest(
     PA_LOG(ERROR) << "BleAdvertiserImpl::RemoveAdvertisementRequest(): Tried "
                   << "to remove an advertisement request, but that request was "
                   << "not present. Request: " << request;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   all_requests_.erase(request);
 

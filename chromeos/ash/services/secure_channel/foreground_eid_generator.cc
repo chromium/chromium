@@ -312,7 +312,7 @@ ForegroundEidGenerator::GetEidPeriodTimestamps(
                 << current_seed->start_time_millis()
                 << ", seed.end_timestamp_ms: "
                 << current_seed->end_time_millis();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -281,7 +281,7 @@ void GifEncoder::InitializeVideoEncoder(
 }
 
 void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GifEncoder::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {

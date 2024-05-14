@@ -39,8 +39,8 @@ TokenizedString::~TokenizedString() = default;
 void TokenizedString::Tokenize() {
   BreakIterator break_iter(text_, BreakIterator::BREAK_WORD);
   if (!break_iter.Init()) {
-    NOTREACHED() << "BreakIterator init failed"
-                 << ", text=\"" << text_ << "\"";
+    NOTREACHED_IN_MIGRATION()
+        << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
     return;
   }
 
@@ -62,8 +62,8 @@ void TokenizedString::Tokenize() {
 void TokenizedString::TokenizeWords() {
   BreakIterator break_iter(text_, BreakIterator::BREAK_WORD);
   if (!break_iter.Init()) {
-    NOTREACHED() << "BreakIterator init failed"
-                 << ", text=\"" << text_ << "\"";
+    NOTREACHED_IN_MIGRATION()
+        << "BreakIterator init failed" << ", text=\"" << text_ << "\"";
     return;
   }
 

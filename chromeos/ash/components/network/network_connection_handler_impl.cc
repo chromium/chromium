@@ -112,7 +112,7 @@ bool IsCertificateConfigured(const client_cert::ConfigType cert_config_type,
       return !client_cert_id.empty();
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -225,7 +225,7 @@ std::ostream& operator<<(std::ostream& stream, client_cert::ConfigType type) {
       stream << "EAP";
       return stream;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

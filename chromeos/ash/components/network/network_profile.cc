@@ -18,7 +18,7 @@ std::string NetworkProfile::ToDebugString() const {
                               path.c_str(),
                               userhash.c_str());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

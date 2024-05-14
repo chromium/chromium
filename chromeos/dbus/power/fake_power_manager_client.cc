@@ -61,7 +61,7 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
       return power_manager::
           BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP;
   }
-  NOTREACHED() << "Unhandled brightness request cause " << cause;
+  NOTREACHED_IN_MIGRATION() << "Unhandled brightness request cause " << cause;
   return power_manager::BacklightBrightnessChange_Cause_USER_REQUEST;
 }
 
@@ -71,7 +71,7 @@ power_manager::BacklightBrightnessChange_Cause RequestCauseToChangeCause(
 base::TimeDelta ClockNow(clockid_t clk_id) {
   struct timespec ts;
   if (clock_gettime(clk_id, &ts) != 0) {
-    NOTREACHED() << "clock_gettime(" << clk_id << ") failed.";
+    NOTREACHED_IN_MIGRATION() << "clock_gettime(" << clk_id << ") failed.";
     return base::TimeDelta();
   }
   return base::TimeDelta::FromTimeSpec(ts);

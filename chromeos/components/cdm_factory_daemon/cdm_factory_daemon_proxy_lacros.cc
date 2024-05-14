@@ -83,7 +83,7 @@ void CdmFactoryDaemonProxyLacros::GetAndroidHwKeyData(
     const std::vector<uint8_t>& hw_identifier,
     GetAndroidHwKeyDataCallback callback) {
   // This should only go through ash-chrome.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CdmFactoryDaemonProxyLacros::AllocateSecureBuffer(

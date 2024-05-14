@@ -30,7 +30,7 @@ constexpr char kWakeLockReason[] = "Assistant";
 base::TimeDelta ClockNow(clockid_t clk_id) {
   struct timespec ts;
   if (clock_gettime(clk_id, &ts) != 0) {
-    NOTREACHED() << "clock_gettime(" << clk_id << ") failed.";
+    NOTREACHED_IN_MIGRATION() << "clock_gettime(" << clk_id << ") failed.";
     return base::TimeDelta();
   }
   return base::TimeDelta::FromTimeSpec(ts);

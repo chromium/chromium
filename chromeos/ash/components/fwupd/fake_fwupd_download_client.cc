@@ -43,7 +43,7 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
   // network::SharedURLLoaderFactory implementation:
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

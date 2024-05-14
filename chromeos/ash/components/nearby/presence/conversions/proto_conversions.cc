@@ -21,7 +21,7 @@ RemoteCredentialTypeToThirdPartyCredentialType(
     case ash::nearby::proto::CredentialType::CREDENTIAL_TYPE_GAIA:
       return ::nearby::internal::CredentialType::CREDENTIAL_TYPE_GAIA;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_NORETURN();
 }
@@ -36,7 +36,7 @@ RemoteCredentialTypeToThirdPartyCredentialType(
     case ash::nearby::proto::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP:
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_CONTACTS_GROUP;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   NOTREACHED_NORETURN();

@@ -21,7 +21,7 @@ ash::device_sync::mojom::ConnectivityStatus EnumTraits<
         ConnectivityStatus_INT_MIN_SENTINEL_DO_NOT_USE_:
     case cryptauthv2::ConnectivityStatus::
         ConnectivityStatus_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::device_sync::mojom::ConnectivityStatus::kUnknownConnectivity;
   }
 }
@@ -42,7 +42,7 @@ bool EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -84,7 +84,7 @@ EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
           kGroupPrivateKeySuccessfullyDecrypted;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::device_sync::mojom::GroupPrivateKeyStatus::
       kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
 }
@@ -136,7 +136,7 @@ bool EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -170,7 +170,7 @@ EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
           kMetadataDecrypted;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::device_sync::mojom::BetterTogetherMetadataStatus::
       kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
 }
@@ -211,7 +211,7 @@ bool EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -246,7 +246,7 @@ bool EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -263,7 +263,7 @@ ash::device_sync::mojom::CryptAuthService EnumTraits<
     case cryptauthv2::TargetService::TargetService_INT_MIN_SENTINEL_DO_NOT_USE_:
       [[fallthrough]];
     case cryptauthv2::TargetService::TargetService_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::device_sync::mojom::CryptAuthService::kDeviceSync;
   }
 }
@@ -281,7 +281,7 @@ bool EnumTraits<ash::device_sync::mojom::CryptAuthService,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

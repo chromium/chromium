@@ -83,7 +83,7 @@ AssistantOnboardingMode ToOnboardingMode(const std::string& onboarding_mode) {
   if (onboarding_mode == kAssistantOnboardingModeEducation)
     return AssistantOnboardingMode::kEducation;
   if (onboarding_mode != kAssistantOnboardingModeDefault)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return AssistantOnboardingMode::kDefault;
 }
 
@@ -94,7 +94,7 @@ std::string ToOnboardingModeString(AssistantOnboardingMode onboarding_mode) {
     case AssistantOnboardingMode::kEducation:
       return kAssistantOnboardingModeEducation;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

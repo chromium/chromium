@@ -40,7 +40,8 @@ bool Property<hermes::profile::State>::PopValueFromReader(
       value_ = static_cast<hermes::profile::State>(int_value);
       return true;
   }
-  NOTREACHED() << "Received invalid hermes profile state " << int_value;
+  NOTREACHED_IN_MIGRATION()
+      << "Received invalid hermes profile state " << int_value;
   return false;
 }
 
@@ -71,7 +72,8 @@ bool Property<hermes::profile::ProfileClass>::PopValueFromReader(
       value_ = static_cast<hermes::profile::ProfileClass>(int_value);
       return true;
   }
-  NOTREACHED() << "Received invalid hermes profile class " << int_value;
+  NOTREACHED_IN_MIGRATION()
+      << "Received invalid hermes profile class " << int_value;
   return false;
 }
 

@@ -137,7 +137,7 @@ base::Value::Dict TestApnData::AsShillApn() const {
     } else if (onc_ip_type == shill::kApnIpTypeV4V6) {
       shill_ip_type = shill::kApnIpTypeV4V6;
     } else {
-      NOTREACHED() << "An IP type is required";
+      NOTREACHED_IN_MIGRATION() << "An IP type is required";
     }
     apn.Set(shill::kApnIpTypeProperty, shill_ip_type);
 

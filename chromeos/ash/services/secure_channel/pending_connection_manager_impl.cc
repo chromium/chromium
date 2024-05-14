@@ -105,7 +105,7 @@ void PendingConnectionManagerImpl::OnConnectionAttemptSucceeded(
                   << "OnConnectionAttemptSucceeded(): Attempt succeeded, but "
                   << "there was no corresponding map entry. "
                   << "Details: " << connection_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::vector<std::unique_ptr<ClientConnectionParameters>> all_clients;
@@ -185,7 +185,7 @@ void PendingConnectionManagerImpl::HandleBleInitiatorRequest(
     PA_LOG(ERROR) << "PendingConnectionManagerImpl::"
                   << "HandleBleInitiatorRequest(): Not able to handle request. "
                   << "Details: " << connection_attempt_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -217,7 +217,7 @@ void PendingConnectionManagerImpl::HandleBleListenerRequest(
     PA_LOG(ERROR) << "PendingConnectionManagerImpl::"
                   << "HandleBleListenerRequest(): Not able to handle request. "
                   << "Details: " << connection_attempt_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -232,7 +232,7 @@ void PendingConnectionManagerImpl::HandleNearbyRequest(
                                    connection_priority);
       break;
     case ConnectionRole::kListenerRole:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "PendingConnectionManagerImpl::HandleConnectionRequest(): "
           << "Nearby Connections is not supported in the listener role.";
       break;
@@ -267,7 +267,7 @@ void PendingConnectionManagerImpl::HandleNearbyInitiatorRequest(
         << "PendingConnectionManagerImpl::"
         << "HandleNearbyInitiatorRequest(): Not able to handle request. "
         << "Details: " << connection_attempt_details;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -303,7 +303,8 @@ PendingConnectionManagerImpl::ExtractClientConnectionParameters(
 
         // Nearby listener:
         case ConnectionRole::kListenerRole:
-          NOTREACHED() << "Nearby listener connections are not implemented.";
+          NOTREACHED_IN_MIGRATION()
+              << "Nearby listener connections are not implemented.";
           return std::vector<std::unique_ptr<ClientConnectionParameters>>();
       }
   }
@@ -330,7 +331,7 @@ void PendingConnectionManagerImpl::RemoveMapEntriesForFinishedConnectionAttempt(
                   << "Tried to remove ConnectionAttemptDetails, but they were"
                   << "not present in the map. Details: "
                   << connection_attempt_details_copy;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // If |connection_attempt_details_copy| was the last entry, remove the entire
@@ -354,7 +355,7 @@ void PendingConnectionManagerImpl::
             PA_LOG(ERROR) << "Tried to remove failed BLE initiator "
                           << "ConnectionAttempt, but it was not present in the "
                           << "map. Details: " << connection_attempt_details;
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }
           break;
         }
@@ -368,7 +369,7 @@ void PendingConnectionManagerImpl::
             PA_LOG(ERROR) << "Tried to remove failed BLE listener "
                           << "ConnectionAttempt, but it was not present in the "
                           << "map. Details: " << connection_attempt_details;
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }
           break;
         }
@@ -386,13 +387,13 @@ void PendingConnectionManagerImpl::
             PA_LOG(ERROR) << "Tried to remove failed Nearby initiator "
                           << "ConnectionAttempt, but it was not present in the "
                           << "map. Details: " << connection_attempt_details;
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }
           break;
         }
 
         case ConnectionRole::kListenerRole:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;

@@ -111,7 +111,7 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
       PA_LOG(ERROR) << "ConnectionAttemptBase::"
                     << "ProcessAddingNewConnectionRequest(): Processing "
                     << "request whose ID has already been processed.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     bool was_empty = id_to_request_map_.empty();
