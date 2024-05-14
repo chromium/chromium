@@ -423,7 +423,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
    * Callback for the `user-action-setting-pref-change` event which is emitted
    * by settings pref control components when the prefs state should be synced
    * after some user action (e.g. a toggle was turned on). Updates the prefs
-   * state and syncs it with the `settings-prefs` singleton.
+   * state and syncs it with the `settings-prefs` singleton, which applies the
+   * update at the OS level.
    */
   private syncPrefChange_(event: UserActionSettingPrefChangeEvent): void {
     const {prefKey, value} = event.detail;

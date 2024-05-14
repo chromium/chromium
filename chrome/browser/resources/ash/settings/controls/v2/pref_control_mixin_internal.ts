@@ -129,7 +129,17 @@ export const PrefControlMixinInternal = dedupingMixin(
               this.pref,
               'updatePrefValueFromUserAction() requires pref to be defined.');
 
-          this.set('pref.value', value);
+          // Polymer treats the contents of objects as always being available
+          // for two-way binding. That is when updating a subproperty, upward
+          // data flow events are fired, even if the property is not marked as
+          // notifying. Reference:
+          // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#data-flow-objects-arrays
+          // Since these components should not support two-way binding, update
+          // the pref value by assigning the whole pref object. The pref update
+          // will be handled by the `user-action-setting-pref-change` event
+          // instead.
+          this.pref = {...this.pref, value};
+
           this.dispatchPrefChange_(value);
         }
 
