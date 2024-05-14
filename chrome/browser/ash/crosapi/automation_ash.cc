@@ -47,6 +47,7 @@ void AutomationAsh::Disable() {
   for (auto& client : automation_client_remotes_) {
     client->Disable();
   }
+  desktop_enabled_ = false;
 }
 
 void AutomationAsh::DispatchAccessibilityEvents(
@@ -95,8 +96,11 @@ void AutomationAsh::BindAutomation(
     mojo::PendingReceiver<crosapi::mojom::Automation> automation) {
   mojo::Remote<mojom::AutomationClient> remote(std::move(automation_client));
 
-  if (desktop_enabled_)
+  if (desktop_enabled_) {
     remote->Enable();
+  } else {
+    remote->Disable();
+  }
 
   automation_client_remotes_.Add(std::move(remote));
   automation_receivers_.Add(this, std::move(automation));
