@@ -26,10 +26,10 @@
   </message>
 
   <!-- Contextual Menu -->
-  <message name="IDS_MEDIA_ROUTER_ABOUT" desc="Title of a menu item which, on click, opens a page with product information about Chromecast.">
+  <message name="IDS_MEDIA_ROUTER_ABOUT" desc="Title of a menu item which, on click, opens a page with product information about Google Cast.">
     About
   </message>
-  <message name="IDS_MEDIA_ROUTER_HELP" desc="Title of a menu item which, on click, opens a page to the Chromecast help center.">
+  <message name="IDS_MEDIA_ROUTER_HELP" desc="Title of a menu item which, on click, opens a page to the Google Cast help center.">
     Help
   </message>
   <message name="IDS_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION" desc="Title of a menu item which, on click, toggles whether or not the Media Router action icon is always shown. When toggled off, the icon is shown only when the Media Router dialog is open or if there is an active local Media Route or an issue.">
@@ -38,7 +38,7 @@
   <message name="IDS_MEDIA_ROUTER_SHOWN_BY_POLICY" desc="Title of a menu item, which indicates that the Media Router action icon was added to the toolbar by the policy enabled by the user's administrator.">
     Added by your administrator
   </message>
-  <message name="IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING" desc="Title of a menu item which, on click, toggles (enables or disables) the feature to optimize casting fullscreen videos to a Chromecast device. This menu item has a checkmark when the feature is enabled.">
+  <message name="IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING" desc="Title of a menu item which, on click, toggles (enables or disables) the feature to optimize casting fullscreen videos to a casting device. This menu item has a checkmark when the feature is enabled.">
     Optimize fullscreen videos
   </message>
 
@@ -96,7 +96,7 @@
   <message name="IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON" desc="The accessibility label that gets read by screen readers for a button shown when no Cast device was found. Clicking on the button opens a new tab.">
     No devices found. Open a help center article in a new tab.
   </message>
-  <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Chromecast help center explaining possible reasons why none are detected.">
+  <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Google Cast help center explaining possible reasons why none are detected.">
     No cast destinations found. Need help?
   </message>
   <message name="IDS_MEDIA_ROUTER_SINK_AVAILABLE" desc="Text shown as the status of a Cast destination that the user can Cast to." meaning="Device status shown in Cast dialog">
@@ -371,7 +371,7 @@
 
   <!-- Cast feedback dialog: discovery -->
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_SETUP_VISIBILITY_QUESTION" desc="Text for the question about device visibility through setup flow">
-    Are you able to see your Chromecast in the
+    Are you able to see your casting device in the
     <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>
     Google Home app<ph name="END_LINK">&lt;/a&gt;</ph>?
   </message>
@@ -394,15 +394,15 @@
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_QUESTION" desc="Text for the question describing the network.">
     Which of the following best describes your network?
   </message>
-  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_SAME_WIFI" desc="Option for describing the network with PC and chromecast on the same Wi-Fi network.">
-    PC and Chromecast on the same Wi-Fi network
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_SAME_WIFI" desc="Option for describing the network with PC and the Google Cast device on the same Wi-Fi network.">
+    PC and casting device on the same Wi-Fi network
   </message>
-  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_DIFFERENT_WIFI" desc="Option for describing the network with PC and chromecast on different Wi-Fi networks.">
-    PC and Chromecast on different Wi-Fi networks (e.g. 2.4GHz
+  <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_DIFFERENT_WIFI" desc="Option for describing the network with PC and the Google Cast device on different Wi-Fi networks.">
+    PC and casting device on different Wi-Fi networks (e.g. 2.4GHz
     vs. 5GHz)
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC" desc="Option for describing the network with a wired PC.">
-    PC is wired and Chromecast is on Wi-Fi
+    PC is wired and casting device is on Wi-Fi
   </message>
 
   <!-- OS-level notifications -->
