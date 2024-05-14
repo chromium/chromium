@@ -28,12 +28,6 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout="@layout/mv_tiles_carousel" />
 
-  <ViewStub
-      android:id="@+id/mv_tiles_grid_stub"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout="@layout/mv_tiles_grid" />
-
   <!-- Site suggestion tile grid placeholder -->
   <ViewStub
       android:id="@+id/tile_grid_placeholder_stub"

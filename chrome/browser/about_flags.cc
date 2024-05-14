@@ -2422,13 +2422,6 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      std::size(kStartSurfaceAndroid_CandidateB_AlwaysShowIncognito), nullptr},
 };
 
-const FeatureEntry::FeatureParam kSurfacePolish_mvp[] = {
-    {"scrollable_mvt", "true"}};
-
-const FeatureEntry::FeatureVariation kSurfacePolishVariations[] = {
-    {"Arm 1: MVP", kSurfacePolish_mvp, std::size(kSurfacePolish_mvp), nullptr},
-};
-
 const FeatureEntry::FeatureParam kLogoPolish_large[] = {
     {"polish_logo_size_large", "true"},
     {"polish_logo_size_medium", "false"}};
@@ -7070,9 +7063,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-surface-polish", flag_descriptions::kSurfacePolishName,
      flag_descriptions::kSurfacePolishDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSurfacePolish,
-                                    kSurfacePolishVariations,
-                                    "SurfacePolish")},
+     FEATURE_VALUE_TYPE(chrome::android::kSurfacePolish)},
 
     {"enable-surface-polish-for-toolbar-kill-switch",
      flag_descriptions::kSurfacePolishForToolbarKillSwitchName,

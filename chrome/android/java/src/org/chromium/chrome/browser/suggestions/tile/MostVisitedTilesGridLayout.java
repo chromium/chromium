@@ -13,15 +13,12 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
-import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** A layout that arranges tiles in a grid. */
@@ -38,7 +35,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
     private final int mMvtContainer2SidesMarginTablet;
     private final int mTileViewLandscapeEdgePaddingTablet;
     private final int mTileViewPortraitEdgePaddingTablet;
-    private boolean mIsSurfacePolishEnabled;
 
     /**
      * Constructor for inflating from XML.
@@ -52,7 +48,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
 
         Resources res = getResources();
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mVerticalSpacing =
                 getResources().getDimensionPixelOffset(getGridMVTVerticalSpacingResourcesId());
         TypedArray styledAttrs =
@@ -220,15 +215,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
         return Pair.create(gridStart, Math.round(horizontalSpacing));
     }
 
-    public @Nullable SuggestionsTileView findTileViewForTesting(SiteSuggestion suggestion) {
-        int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            SuggestionsTileView tileView = (SuggestionsTileView) getChildAt(i);
-            if (suggestion.equals(tileView.getData())) return tileView;
-        }
-        return null;
-    }
-
     // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     void setSearchProviderHasLogo(boolean searchProviderHasLogo) {
         if (mSearchProviderHasLogo == searchProviderHasLogo) return;
@@ -249,9 +235,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
     // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMVTVerticalSpacingResourcesId() {
         if (!LibraryLoader.getInstance().isInitialized() || !mSearchProviderHasLogo) {
-            return mIsSurfacePolishEnabled
-                    ? R.dimen.tile_grid_layout_vertical_spacing_polish
-                    : R.dimen.tile_grid_layout_vertical_spacing;
+            return R.dimen.tile_grid_layout_vertical_spacing;
         }
 
         if (FeedPositionUtils.isFeedPushDownLargeEnabled()) {
@@ -262,8 +246,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
             return R.dimen.tile_grid_layout_vertical_spacing_push_down_small;
         }
 
-        return mIsSurfacePolishEnabled
-                ? R.dimen.tile_grid_layout_vertical_spacing_polish
-                : R.dimen.tile_grid_layout_vertical_spacing;
+        return R.dimen.tile_grid_layout_vertical_spacing;
     }
 }

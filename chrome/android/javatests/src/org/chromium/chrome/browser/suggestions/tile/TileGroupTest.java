@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.junit.Assume.assumeTrue;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -25,9 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,8 +38,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -59,23 +53,14 @@ import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Instrumentation tests for {@link TileGroup} on the New Tab Page. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TileGroupTest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
-                    new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
-
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -97,26 +82,15 @@ public class TileGroupTest {
     private String[] mSiteSuggestionUrls;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
-    private boolean mEnableScrollableMVT;
-
-    public TileGroupTest(boolean enableScrollableMVT) {
-        mEnableScrollableMVT = enableScrollableMVT;
-    }
 
     @Before
     public void setUp() {
-        Assume.assumeFalse(sActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
+        Assume.assumeFalse(sActivityTestRule.getActivity().isTablet());
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
-        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            testValuesOverride.addFeatureFlagOverride(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
-                    mEnableScrollableMVT);
-        } else {
-            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
-                    mEnableScrollableMVT);
-        }
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
         FeatureList.setTestValues(testValuesOverride);
 
         mTestServer =
@@ -155,8 +129,6 @@ public class TileGroupTest {
     @Feature({"NewTabPage"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testDismissTileWithContextMenu_Tablets() throws Exception {
-        // Only the scrollable MVT is enabled on tablets when the Surface polish flag is enabled.
-        assumeTrue(mEnableScrollableMVT);
         testDismissTileWithContextMenuImpl();
     }
 
@@ -193,8 +165,6 @@ public class TileGroupTest {
     @Feature({"NewTabPage"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testDismissTileUndo_Tablets() throws Exception {
-        // Only the scrollable MVT is enabled on tablets when the Surface polish flag is enabled.
-        assumeTrue(mEnableScrollableMVT);
         testDismissTileUndoImpl();
     }
 
@@ -241,24 +211,15 @@ public class TileGroupTest {
         Assert.assertNotNull("Unable to retrieve the NewTabPageLayout.", newTabPageLayout);
 
         ViewGroup viewGroup = newTabPageLayout.findViewById(R.id.mv_tiles_layout);
-        Assert.assertNotNull(
-                "Unable to retrieve the "
-                        + (mEnableScrollableMVT ? "MvTilesLayout." : "TileGridLayout."),
-                viewGroup);
+        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", viewGroup);
         return viewGroup;
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
         View tileView;
-        if (mEnableScrollableMVT) {
-            tileView =
-                    ((MostVisitedTilesCarouselLayout) getTileLayout())
-                            .findTileViewForTesting(suggestion);
-        } else {
-            tileView =
-                    ((MostVisitedTilesGridLayout) getTileLayout())
-                            .findTileViewForTesting(suggestion);
-        }
+        tileView =
+                ((MostVisitedTilesCarouselLayout) getTileLayout())
+                        .findTileViewForTesting(suggestion);
         return tileView;
     }
 

@@ -92,11 +92,6 @@ public class StartSurfaceConfiguration {
                     START_SURFACE_RETURN_TIME_USE_MODEL_PARAM,
                     false);
 
-    private static final String SURFACE_POLISH_SCROLLABLE_MVT_PARAM = "scrollable_mvt";
-    public static final BooleanCachedFieldTrialParameter SURFACE_POLISH_SCROLLABLE_MVT =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.SURFACE_POLISH, SURFACE_POLISH_SCROLLABLE_MVT_PARAM, true);
-
     private static final String LOGO_POLISH_LARGE_SIZE_PARAM = "polish_logo_size_large";
     public static final BooleanCachedFieldTrialParameter LOGO_POLISH_LARGE_SIZE =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(

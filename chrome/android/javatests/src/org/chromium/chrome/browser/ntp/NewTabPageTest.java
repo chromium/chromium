@@ -40,7 +40,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,10 +53,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -68,7 +63,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
@@ -92,8 +86,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -119,13 +112,11 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -137,32 +128,19 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>TODO(crbug.com/40602800): Add new goldens and enable ExploreSites.
  */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=IPH_FeedHeaderMenu"
 })
 @DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class NewTabPageTest {
-    /** Parameter set controlling whether scrollable mvt is enabled. */
-    public static class MVTParams implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
-                    new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
-        }
-    }
-
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
 
     private static final int RENDER_TEST_REVISION = 6;
 
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_NTP_MODULE_LONGCLICK = "NewTabPage.Module.LongClick";
-
-    private static final String SURFACE_POLISH_BASE_PARAMS = "force-fieldtrial-params=Study.Group:";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -203,27 +181,16 @@ public class NewTabPageTest {
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private OmniboxTestUtils mOmnibox;
-    private boolean mEnableScrollableMVT;
-
-    @ParameterAnnotations.UseMethodParameterBefore(MVTParams.class)
-    public void setIsScrollableMVTEnabledForTest(boolean isScrollableMVTEnabled) {
-        mEnableScrollableMVT = isScrollableMVTEnabled;
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, isScrollableMVTEnabled);
-        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            testValuesOverride.addFeatureFlagOverride(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
-                    isScrollableMVTEnabled);
-        } else {
-            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
-                    isScrollableMVTEnabled);
-        }
-        FeatureList.setTestValues(testValuesOverride);
-    }
 
     @Before
     public void setUp() throws Exception {
+        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
+        FeatureList.setTestValues(testValuesOverride);
+
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
         TemplateUrlService originalService =
@@ -233,7 +200,6 @@ public class NewTabPageTest {
                                         ProfileManager.getLastUsedRegularProfile()));
         mTemplateUrlService = Mockito.spy(originalService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
@@ -261,10 +227,9 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     // Disable sign-in to suppress sync promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
-    public void testRender_FocusFakeBoxT(boolean isScrollableMVTEnabled) throws Exception {
+    public void testRender_FocusFakeBoxT() throws Exception {
         ScrimCoordinator scrimCoordinator =
                 mActivityTestRule
                         .getActivity()
@@ -274,11 +239,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         ChromeRenderTestRule.sanitize(mNtp.getView().getRootView());
         mRenderTestRule.render(
-                mNtp.getView().getRootView(),
-                "focus_fake_box"
-                        + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt_v2"
-                                : "_with_non_scrollable_mvt_v2"));
+                mNtp.getView().getRootView(), "focus_fake_box_with_scrollable_mvt_v2");
         scrimCoordinator.disableAnimationForTesting(false);
     }
 
@@ -347,8 +308,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
-    public void testClickMostVisitedItem(boolean isScrollableMVTEnabled) {
+    public void testClickMostVisitedItem() {
         Assert.assertNotNull(mMvTilesLayout);
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
 
@@ -371,10 +331,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     @DisabledTest(message = "Flaky - crbug.com/543138")
-    public void testOpenMostVisitedItemInNewTab(boolean isScrollableMVTEnabled)
-            throws ExecutionException {
+    public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
                 mActivityTestRule,
@@ -388,9 +346,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
-    public void testOpenMostVisitedItemInIncognitoTab(boolean isScrollableMVTEnabled)
-            throws ExecutionException {
+    public void testOpenMostVisitedItemInIncognitoTab() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
 
@@ -408,10 +364,8 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
     @DisabledTest(message = "crbug.com/1036500")
-    public void testRemoveMostVisitedItem(boolean isScrollableMVTEnabled)
-            throws ExecutionException {
+    public void testRemoveMostVisitedItem() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);
         View mostVisitedItem = mMvTilesLayout.getChildAt(0);
@@ -560,8 +514,7 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @ParameterAnnotations.UseMethodParameter(MVTParams.class)
-    public void testPlaceholder(boolean isScrollableMVTEnabled) {
+    public void testPlaceholder() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         final NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
@@ -980,11 +933,7 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
-    })
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
@@ -1223,12 +1172,8 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/true"
-    })
-    public void test1RowMvtOnNtpAfterPolish() {
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testMvtOnNtpAfterPolish() {
         verifyMostVisitedTileMarginPolish();
 
         Resources res = mActivityTestRule.getActivity().getResources();
@@ -1243,41 +1188,6 @@ public class NewTabPageTest {
                 expectedTitleTopMargin,
                 ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
                         .topMargin);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Study/Group",
-        SURFACE_POLISH_BASE_PARAMS + "scrollable_mvt/false"
-    })
-    public void test2RowMvtOnNtpAfterPolish() {
-        verifyMostVisitedTileMarginPolish();
-
-        Resources res = mActivityTestRule.getActivity().getResources();
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
-
-        int expectedTitleTopMargin =
-                res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern_polish);
-        TileView suggestionsTileElement = (TileView) ((ViewGroup) mvTilesLayout).getChildAt(0);
-        Assert.assertEquals(
-                "The top margin of the tile element's title is wrong.",
-                expectedTitleTopMargin,
-                ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
-                        .topMargin);
-
-        int expectedMvtVerticalSpacing =
-                res.getDimensionPixelSize(R.dimen.tile_grid_layout_vertical_spacing_polish);
-        Assert.assertEquals(
-                "The vertical spacing between the 2 rows of the most visited tiles is wrong.",
-                expectedMvtVerticalSpacing,
-                mvTilesLayout.getHeight() - suggestionsTileElement.getHeight() * 2,
-                1);
     }
 
     private void verifyMostVisitedTileMarginPolish() {

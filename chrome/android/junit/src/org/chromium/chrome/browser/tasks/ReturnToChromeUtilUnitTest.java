@@ -1064,12 +1064,9 @@ public class ReturnToChromeUtilUnitTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testIsScrollableMvtEnabledWhenSurfacePolishEnabled_tablets() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         Assert.assertFalse(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
         // Tests on tablets.
         setupAndVerifyTablets();
 
@@ -1082,12 +1079,9 @@ public class ReturnToChromeUtilUnitTest {
     @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID})
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtEnabled_tablets() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         Assert.assertFalse(ChromeFeatureList.sSurfacePolish.isEnabled());
         assertTrue(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
 
         // Tests on tablets.
         setupAndVerifyTablets();
@@ -1104,12 +1098,9 @@ public class ReturnToChromeUtilUnitTest {
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID
     })
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtDisabled_tablets() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         Assert.assertFalse(ChromeFeatureList.sSurfacePolish.isEnabled());
         Assert.assertFalse(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
 
         // Tests on tablets.
         setupAndVerifyTablets();
@@ -1123,23 +1114,11 @@ public class ReturnToChromeUtilUnitTest {
     @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @DisableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID})
     public void testIsScrollableMvtEnabledWhenSurfacePolishEnabled_phones() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         Assert.assertFalse(
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
-
-        // Tests on phones.
-        // Verifies if feature ChromeFeatureList.SURFACE_POLISH is enabled, feature
-        // ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID is ignored. Whether to show
-        // the scrollable MV tiles is determined by the value of
-        // StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.
         Assert.assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext));
-        Assert.assertFalse(ReturnToChromeUtil.isScrollableMvtEnabled(mContext));
-
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(true);
         assertTrue(ReturnToChromeUtil.isScrollableMvtEnabled(mContext));
     }
 
@@ -1147,13 +1126,10 @@ public class ReturnToChromeUtilUnitTest {
     @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID})
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtEnabled_phones() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         Assert.assertFalse(ChromeFeatureList.sSurfacePolish.isEnabled());
         assertTrue(
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
 
         // Tests on phones.
         // Verifies if feature ChromeFeatureList.SURFACE_POLISH is disabled, whether to show the
@@ -1169,13 +1145,10 @@ public class ReturnToChromeUtilUnitTest {
         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID
     })
     public void testIsScrollableMvtEnabled_SurfacePolishDisabled_ScrollableMvtDisabled_phones() {
-        StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(false);
-
         Assert.assertFalse(ChromeFeatureList.sSurfacePolish.isEnabled());
         Assert.assertFalse(
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID));
-        Assert.assertFalse(StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue());
 
         // Tests on phones.
         // Verifies if feature ChromeFeatureList.SURFACE_POLISH is disabled, whether to show the

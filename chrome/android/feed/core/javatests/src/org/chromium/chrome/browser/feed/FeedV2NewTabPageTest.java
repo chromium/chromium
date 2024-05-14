@@ -45,7 +45,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,7 +83,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -105,7 +103,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -122,12 +119,6 @@ import java.util.concurrent.Callable;
     "disable-features=IPH_FeedHeaderMenu"
 })
 public class FeedV2NewTabPageTest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
-                    new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
-
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
@@ -194,12 +185,7 @@ public class FeedV2NewTabPageTest {
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private boolean mDisableSigninPromoCard;
-    private boolean mEnableScrollableMVT;
     private TestFeedServer mFeedServer;
-
-    public FeedV2NewTabPageTest(boolean enableScrollableMVT) {
-        mEnableScrollableMVT = enableScrollableMVT;
-    }
 
     @ParameterAnnotations.UseMethodParameterBefore(SigninPromoParams.class)
     public void disableSigninPromoCard(boolean disableSigninPromoCard) {
@@ -216,20 +202,12 @@ public class FeedV2NewTabPageTest {
         SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
-        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            testValuesOverride.addFeatureFlagOverride(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
-                    mEnableScrollableMVT);
-        } else {
-            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
-                    mEnableScrollableMVT);
-        }
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
+        testValuesOverride.addFeatureFlagOverride(
+                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
         FeatureList.setTestValues(testValuesOverride);
 
         mActivityTestRule.startMainActivityWithURL("about:blank");
-
-        Assume.assumeFalse(mActivityTestRule.getActivity().isTablet() && mEnableScrollableMVT);
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
@@ -436,12 +414,7 @@ public class FeedV2NewTabPageTest {
         RecyclerView recyclerView = getRecyclerView();
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, recyclerView);
 
-        mRenderTestRule.render(
-                recyclerView,
-                "feedContent_landscape"
-                        + (mEnableScrollableMVT
-                                ? "_with_scrollable_mvt_v2"
-                                : "_with_non_scrollable_mvt_v2"));
+        mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v2");
     }
 
     @Test

@@ -37,7 +37,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -45,6 +44,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -81,7 +80,6 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -95,12 +93,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
 public class MostVisitedTilesLayoutTest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(true).name("EnableScrollableMVTOnNTP"),
-                    new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
-
     public final int TILE_GRID_ROWS = 2;
 
     @Rule
@@ -138,11 +130,6 @@ public class MostVisitedTilesLayoutTest {
             new String[] {"ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"};
 
     private final CallbackHelper mLoadCompleteHelper = new CallbackHelper();
-    private boolean mEnableScrollableMVT;
-
-    public MostVisitedTilesLayoutTest(boolean enableScrollableMVT) {
-        mEnableScrollableMVT = enableScrollableMVT;
-    }
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -166,12 +153,8 @@ public class MostVisitedTilesLayoutTest {
         if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
             FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
             testValuesOverride.addFeatureFlagOverride(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
-                    mEnableScrollableMVT);
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
             FeatureList.setTestValues(testValuesOverride);
-        } else {
-            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
-                    mEnableScrollableMVT);
         }
     }
 
@@ -182,9 +165,7 @@ public class MostVisitedTilesLayoutTest {
     @DisableFeatures(ChromeFeatureList.QUERY_TILES)
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
-        mRenderTestRule.render(
-                getTilesLayout(ntp),
-                mEnableScrollableMVT ? "ntp_tile_carousel_layout" : "ntp_tile_grid_layout");
+        mRenderTestRule.render(getTilesLayout(ntp), "ntp_tile_carousel_layout");
     }
 
     @Test
@@ -205,11 +186,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(
-                tilesLayout,
-                mEnableScrollableMVT
-                        ? "modern_full_carousel_portrait"
-                        : "modern_full_grid_portrait");
+        mRenderTestRule.render(tilesLayout, "modern_full_carousel_portrait");
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -218,11 +195,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(
-                tilesLayout,
-                mEnableScrollableMVT
-                        ? "modern_full_carousel_landscape"
-                        : "modern_full_grid_landscape");
+        mRenderTestRule.render(tilesLayout, "modern_full_carousel_landscape");
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
@@ -231,11 +204,16 @@ public class MostVisitedTilesLayoutTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
-    @DisableIf.Build(
-            message = "Both variants are flaky on Nougat emulator, see crbug.com/1450693",
-            supported_abis_includes = "x86",
-            sdk_is_less_than = VERSION_CODES.O)
+    @DisabledTest(
+            message =
+                    "This test is flaky not only on the Nougat emulator but also on Ubuntu-22.04"
+                            + " when building android-x86-rel., see crbug.com/1450693")
     public void testModernTilesLayoutAppearance_Two() throws IOException, InterruptedException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                                /* nightModeEnabled= */ false));
+
         View tilesLayout = renderTiles(makeSuggestions(2));
 
         Activity activity = mActivityTestRule.getActivity();
@@ -246,11 +224,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(
-                tilesLayout,
-                mEnableScrollableMVT
-                        ? "modern_two_tiles_carousel_portrait"
-                        : "modern_two_tiles_grid_portrait");
+        mRenderTestRule.render(tilesLayout, "modern_two_tiles_carousel_portrait");
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -259,11 +233,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(
-                tilesLayout,
-                mEnableScrollableMVT
-                        ? "modern_two_tiles_carousel_landscape"
-                        : "modern_two_tiles_grid_landscape");
+        mRenderTestRule.render(tilesLayout, "modern_two_tiles_carousel_landscape");
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
@@ -322,10 +292,7 @@ public class MostVisitedTilesLayoutTest {
 
     private ViewGroup getTilesLayout(NewTabPage ntp) {
         ViewGroup mostVisitedTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        assertNotNull(
-                "Unable to retrieve the "
-                        + (mEnableScrollableMVT ? "tile_carousel_layout." : "tile_grid_layout."),
-                mostVisitedTilesLayout);
+        assertNotNull("Unable to retrieve the tile_carousel_layout.", mostVisitedTilesLayout);
         return mostVisitedTilesLayout;
     }
 
@@ -412,7 +379,7 @@ public class MostVisitedTilesLayoutTest {
                         mActivityLifecycleDispatcher,
                         containerLayout,
                         mWindowAndroid,
-                        mEnableScrollableMVT,
+                        /* isScrollableMvtEnabled= */ true,
                         TILE_GRID_ROWS,
                         null,
                         null);

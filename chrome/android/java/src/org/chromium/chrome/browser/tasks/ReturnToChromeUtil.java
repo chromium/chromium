@@ -928,21 +928,18 @@ public final class ReturnToChromeUtil {
     public static boolean isScrollableMvtEnabled(Context context) {
         // TODO(b/331667743): Clean up the flag for scrollable mvt while cleaning up surface polish
         // code.
-        boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            // On phones, parameter SURFACE_POLISH_SCROLLABLE_MVT is checked when feature flag
-            // surface polish is enabled; otherwise, feature flag
-            // SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID is checked.
-            return (isSurfacePolishEnabled
-                            && StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.getValue())
-                    || ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID);
+        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            return true;
         }
-        // On tablets, only show the scrollable MV tiles on NTP if feature flag surface polish is
-        // enabled.
-        return isSurfacePolishEnabled
-                ? true
-                : ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
+
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            // On phones, parameter SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID is checked when feature
+            // flag surface polish is disabled.
+            return ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID);
+        }
+
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID);
     }
 
     /**
