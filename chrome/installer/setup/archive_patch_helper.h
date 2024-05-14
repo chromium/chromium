@@ -64,7 +64,8 @@ class ArchivePatchHelper {
   // constructor using files from |patch_source|. Ensemble patching via
   // Zucchini is attempted first (if it is enabled). If that fails patching via
   // Courgette is attempted. Courgette falls back to bspatch if unsuccessful.
-  bool ApplyPatch();
+  // The uncompressed patch file is unconditionally deleted at the end.
+  bool ApplyAndDeletePatch();
 
   // Attempts to use Courgette to apply last_uncompressed_file() to
   // patch_source() to generate target(). Returns false if patching fails.

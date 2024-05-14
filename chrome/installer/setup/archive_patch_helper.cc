@@ -41,7 +41,7 @@ bool ArchivePatchHelper::UncompressAndPatch(
     UnPackConsumer consumer) {
   ArchivePatchHelper instance(working_directory, compressed_archive,
                               patch_source, target, consumer);
-  return (instance.Uncompress(nullptr) && instance.ApplyPatch());
+  return (instance.Uncompress(nullptr) && instance.ApplyAndDeletePatch());
 }
 
 bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
@@ -62,12 +62,18 @@ bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
   return true;
 }
 
-bool ArchivePatchHelper::ApplyPatch() {
+bool ArchivePatchHelper::ApplyAndDeletePatch() {
+  bool succeeded = false;
 #if BUILDFLAG(ZUCCHINI)
-  if (ZucchiniEnsemblePatch())
-    return true;
+  succeeded = ZucchiniEnsemblePatch();
 #endif  // BUILDFLAG(ZUCCHINI)
-  return CourgetteEnsemblePatch() || BinaryPatch();
+  if (!succeeded) {
+    succeeded = CourgetteEnsemblePatch() || BinaryPatch();
+  }
+  if (!last_uncompressed_file_.empty()) {
+    base::DeleteFile(last_uncompressed_file_);
+  }
+  return succeeded;
 }
 
 bool ArchivePatchHelper::CourgetteEnsemblePatch() {
