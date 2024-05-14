@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -93,7 +94,7 @@ class TestSafeBrowsingActivationThrottleDelegate
       content::NavigationHandle* handle,
       mojom::ActivationLevel effective_level,
       ActivationDecision* decision) override {
-    DCHECK(handle->IsInMainFrame());
+    CHECK(handle->IsInMainFrame());
     if (allowlisted_hosts_.count(handle->GetURL().host())) {
       if (effective_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled)
@@ -713,7 +714,7 @@ TEST_F(SafeBrowsingPageActivationThrottleTest, ActivationList) {
 }
 
 // Regression test for an issue where synchronous failure from the SB database
-// caused a double cancel. This is DCHECKed in the fake database.
+// caused a double cancel. This is CHECKed in the fake database.
 TEST_F(SafeBrowsingPageActivationThrottleTest,
        SynchronousResponse) {
   const GURL url(kURL);

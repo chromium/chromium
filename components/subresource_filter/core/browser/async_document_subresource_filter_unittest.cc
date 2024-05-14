@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -167,7 +168,7 @@ class MultiLoadPolicyCallbackReceiver {
   int disallow_count() const { return disallow_count_; }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {
-    DCHECK(quit_closure);
+    CHECK(quit_closure);
     quit_closure_ = std::move(quit_closure);
   }
 
@@ -193,7 +194,7 @@ class MultiLoadPolicyCallbackReceiver {
   }
 
   void Quit() {
-    DCHECK(!quit_closure_.is_null());
+    CHECK(!quit_closure_.is_null());
     std::move(quit_closure_).Run();
   }
 

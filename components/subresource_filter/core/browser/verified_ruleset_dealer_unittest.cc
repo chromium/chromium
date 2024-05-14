@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -77,17 +78,17 @@ std::vector<uint8_t> ReadRulesetContents(const MemoryMappedRuleset* ruleset) {
 }
 
 std::vector<uint8_t> ReadFileContent(base::File* file) {
-  DCHECK(file);
-  DCHECK(file->IsValid());
+  CHECK(file);
+  CHECK(file->IsValid());
 
   const int64_t file_length = file->GetLength();
-  DCHECK_LE(0, file_length);
+  CHECK_LE(0, file_length);
 
   std::vector<uint8_t> file_content(static_cast<size_t>(file_length), 0);
   const int read_res =
       file->Read(0, reinterpret_cast<char*>(&(file_content[0])),
                  static_cast<int>(file_length));
-  DCHECK_EQ(read_res, file_length);
+  CHECK_EQ(read_res, file_length);
 
   return file_content;
 }

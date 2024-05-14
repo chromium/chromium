@@ -106,7 +106,7 @@ class ActivationStateComputingNavigationThrottle
       const std::optional<mojom::ActivationState> parent_activation_state,
       VerifiedRuleset::Handle* ruleset_handle);
 
-  // Optional to allow for DCHECKing.
+  // Optional to allow for CHECKing.
   std::optional<mojom::ActivationState> parent_activation_state_;
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> async_filter_;

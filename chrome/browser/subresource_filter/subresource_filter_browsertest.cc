@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 // Perform a hash change before the initial URL of a frame is navigated. Ensure
-// we don't trip any DCHECKs (crbug.com/1237409) and that filtering works as
+// we don't trip any CHECKs (crbug.com/1237409) and that filtering works as
 // expected.
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        SameDocumentBeforeInitialNavigation) {

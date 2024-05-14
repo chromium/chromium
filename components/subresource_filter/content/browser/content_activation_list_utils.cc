@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/subresource_filter/content/browser/content_activation_list_utils.h"
+
+#include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
 namespace subresource_filter {
@@ -58,7 +61,7 @@ ActivationList GetListForThreatTypeAndMetadata(
     safe_browsing::SBThreatType threat_type,
     const safe_browsing::ThreatMetadata& threat_type_metadata,
     bool* warning) {
-  DCHECK(warning);
+  CHECK(warning, base::NotFatalUntil::M129);
   bool is_phishing_interstitial =
       (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   bool is_soc_engineering_ads_interstitial =

@@ -292,7 +292,7 @@ class ContentSubresourceFilterThrottleManagerTest
 
   void CreateTestNavigation(const GURL& url,
                             content::RenderFrameHost* render_frame_host) {
-    DCHECK(render_frame_host);
+    CHECK(render_frame_host);
     navigation_simulator_ =
         content::NavigationSimulator::CreateRendererInitiated(
             url, render_frame_host);

@@ -6,9 +6,11 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -40,7 +42,7 @@ SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
       throttle_(std::move(throttle)),
       io_task_runner_(std::move(io_task_runner)),
       throttle_task_runner_(std::move(throttle_task_runner)) {
-  DCHECK(database_manager_);
+  CHECK(database_manager_, base::NotFatalUntil::M129);
 }
 
 SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
@@ -48,13 +50,14 @@ SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
 void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
                                                    size_t request_id,
                                                    base::TimeTicks start_time) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!url.is_empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
+  CHECK(!url.is_empty(), base::NotFatalUntil::M129);
 
   auto request = std::make_unique<SubresourceFilterSafeBrowsingClientRequest>(
       request_id, start_time, database_manager_, io_task_runner_, this);
   auto* raw_request = request.get();
-  DCHECK(requests_.find(raw_request) == requests_.end());
+  CHECK(requests_.find(raw_request) == requests_.end(),
+        base::NotFatalUntil::M129);
   requests_[raw_request] = std::move(request);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       TRACE_DISABLED_BY_DEFAULT("loading"), "SubresourceFilterSBCheck",
@@ -67,14 +70,14 @@ void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
 void SubresourceFilterSafeBrowsingClient::OnCheckBrowseUrlResult(
     SubresourceFilterSafeBrowsingClientRequest* request,
     const CheckResult& check_result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M129);
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("loading"), "SubresourceFilterSBCheck",
       TRACE_ID_LOCAL(request), "check_result", check_result.ToTracedValue());
   if (throttle_) {
     throttle_->OnCheckUrlResultOnUI(check_result);
   }
-  DCHECK(requests_.find(request) != requests_.end());
+  CHECK(requests_.find(request) != requests_.end(), base::NotFatalUntil::M129);
   requests_.erase(request);
 }
 

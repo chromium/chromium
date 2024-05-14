@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/not_fatal_until.h"
 #include "components/subresource_filter/core/browser/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
@@ -19,8 +20,10 @@ UnindexedRulesetStreamGenerator::UnindexedRulesetStreamGenerator(
     const UnindexedRulesetInfo& ruleset_info) {
   bool has_ruleset_file = !ruleset_info.ruleset_path.empty();
 
-  DCHECK(has_ruleset_file || ruleset_info.resource_id);
-  DCHECK(!(has_ruleset_file && ruleset_info.resource_id));
+  CHECK(has_ruleset_file || ruleset_info.resource_id,
+        base::NotFatalUntil::M129);
+  CHECK(!(has_ruleset_file && ruleset_info.resource_id),
+        base::NotFatalUntil::M129);
 
   if (has_ruleset_file) {
     GenerateStreamFromFile(ruleset_info.ruleset_path);
@@ -33,9 +36,9 @@ UnindexedRulesetStreamGenerator::~UnindexedRulesetStreamGenerator() = default;
 
 void UnindexedRulesetStreamGenerator::GenerateStreamFromFile(
     base::FilePath ruleset_path) {
-  DCHECK(!ruleset_stream_);
-  DCHECK(!copying_stream_);
-  DCHECK_EQ(ruleset_size_, -1);
+  CHECK(!ruleset_stream_, base::NotFatalUntil::M129);
+  CHECK(!copying_stream_, base::NotFatalUntil::M129);
+  CHECK_EQ(ruleset_size_, -1, base::NotFatalUntil::M129);
 
   base::File unindexed_ruleset_file(
       ruleset_path, base::File::FLAG_OPEN | base::File::FLAG_READ);

@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -38,7 +39,7 @@ void FakeSafeBrowsingDatabaseManager::RemoveBlocklistedUrl(const GURL& url) {
 }
 
 void FakeSafeBrowsingDatabaseManager::RemoveAllBlocklistedUrls() {
-  DCHECK(checks_.empty());
+  CHECK(checks_.empty());
   url_to_threat_type_.clear();
 }
 
@@ -51,7 +52,7 @@ FakeSafeBrowsingDatabaseManager::~FakeSafeBrowsingDatabaseManager() {}
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (synchronous_failure_ && !url_to_threat_type_.count(url)) {
     return true;
@@ -59,7 +60,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
 
   // Enforce the invariant that a client will not send multiple requests, with
   // the subresource filter client implementation.
-  DCHECK(checks_.find(client) == checks_.end());
+  CHECK(checks_.find(client) == checks_.end());
   checks_.insert(client);
   if (simulate_timeout_) {
     return false;
@@ -94,7 +95,7 @@ void FakeSafeBrowsingDatabaseManager::OnCheckUrlForSubresourceFilterComplete(
   client->OnCheckBrowseUrlResult(url, threat_type, metadata);
 
   // Erase the client when a check is complete. Otherwise, it's possible
-  // subsequent clients that share an address with this one will DCHECK in
+  // subsequent clients that share an address with this one will CHECK in
   // CheckUrlForSubresourceFilter.
   checks_.erase(client);
 }
@@ -106,7 +107,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
 
 void FakeSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   size_t erased = checks_.erase(client);
-  DCHECK_EQ(erased, 1u);
+  CHECK_EQ(erased, 1u);
 }
 bool FakeSafeBrowsingDatabaseManager::CanCheckRequestDestination(
     network::mojom::RequestDestination /* request_destination */) const {

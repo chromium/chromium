@@ -5,10 +5,13 @@
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 
 namespace subresource_filter {
@@ -268,7 +271,8 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
     if (rule.element_types() &
         type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_POPUP)) {
       const auto& popup_type = kElementTypes[11];
-      DCHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type);
+      CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_POPUP, popup_type.type,
+               base::NotFatalUntil::M129);
       options.push_back(popup_type.name);
     }
   }
@@ -283,7 +287,8 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
   // element_types == kDefaultElementTypes instead of 0.
   if (!rule.element_types() && !rule.activation_types()) {
     const auto& image_type = kElementTypes[2];
-    DCHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type);
+    CHECK_EQ(url_pattern_index::proto::ELEMENT_TYPE_IMAGE, image_type.type,
+             base::NotFatalUntil::M129);
     options.push_back(image_type.name);
     options.push_back(std::string("~") + image_type.name);
   }

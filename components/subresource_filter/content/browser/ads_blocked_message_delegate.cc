@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"
@@ -114,7 +116,7 @@ void AdsBlockedMessageDelegate::HandleMessageManageClicked() {
 
 void AdsBlockedMessageDelegate::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
-  DCHECK(message_);
+  CHECK(message_, base::NotFatalUntil::M129);
   message_.reset();
 }
 
@@ -143,12 +145,12 @@ void AdsBlockedMessageDelegate::HandleDialogDismissed() {
     // will be restored when the user navigates back to the original tab.
     return;
   }
-  DCHECK(ads_blocked_dialog_);
+  CHECK(ads_blocked_dialog_, base::NotFatalUntil::M129);
   ads_blocked_dialog_.reset();
 }
 
 void AdsBlockedMessageDelegate::ShowDialog(bool should_post_dialog) {
-  DCHECK(!reprompt_required_);
+  CHECK(!reprompt_required_, base::NotFatalUntil::M129);
   // Binding with base::Unretained(this) is safe here because
   // AdsBlockedMessageDelegate owns ads_blocked_dialog_. Callbacks won't be
   // called after the AdsBlockedMessageDelegate object is destroyed.

@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/not_fatal_until.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -54,7 +55,7 @@ SubresourceFilterContentSettingsManager::
     : settings_map_(settings_map),
       clock_(std::make_unique<base::DefaultClock>(base::DefaultClock())),
       should_use_smart_ui_(ShouldUseSmartUI()) {
-  DCHECK(settings_map_);
+  CHECK(settings_map_, base::NotFatalUntil::M129);
 }
 
 SubresourceFilterContentSettingsManager::
@@ -110,7 +111,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
   if (!is_activated &&
       ShouldDeleteDataWithNoActivation(dict, activation_source)) {
     // If we are clearing metadata, there should be no additional_data dict.
-    DCHECK(!additional_data);
+    CHECK(!additional_data, base::NotFatalUntil::M129);
     SetSiteMetadata(url, std::nullopt);
     return;
   }
@@ -178,7 +179,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   if (dict && dict->Find(kNonRenewingExpiryTime)) {
     std::optional<double> metadata_expiry_time =
         dict->FindDouble(kNonRenewingExpiryTime);
-    DCHECK(metadata_expiry_time);
+    CHECK(metadata_expiry_time, base::NotFatalUntil::M129);
     expiry_time = base::Time::FromSecondsSinceUnixEpoch(*metadata_expiry_time);
 
     // If the lifetime was stored explicitly, we should use that instead of

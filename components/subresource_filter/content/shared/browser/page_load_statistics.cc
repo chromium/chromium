@@ -4,12 +4,12 @@
 
 #include "components/subresource_filter/content/shared/browser/page_load_statistics.h"
 
-
 #include <string_view>
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 
@@ -58,8 +58,9 @@ void PageLoadStatistics::OnDidFinishLoad() {
   }
 
   if (activation_state_.measure_performance) {
-    DCHECK(activation_state_.activation_level !=
-           mojom::ActivationLevel::kDisabled);
+    CHECK(
+        activation_state_.activation_level != mojom::ActivationLevel::kDisabled,
+        base::NotFatalUntil::M129);
     base::UmaHistogramCustomTimes(
         base::StrCat({uma_filter_tag_,
                       ".PageLoad.SubresourceEvaluation.TotalWallDuration"}),
@@ -72,10 +73,12 @@ void PageLoadStatistics::OnDidFinishLoad() {
         aggregated_document_statistics_.evaluation_total_cpu_duration,
         base::Microseconds(1), base::Seconds(10), 50);
   } else {
-    DCHECK(aggregated_document_statistics_.evaluation_total_wall_duration
-               .is_zero());
-    DCHECK(aggregated_document_statistics_.evaluation_total_cpu_duration
-               .is_zero());
+    CHECK(aggregated_document_statistics_.evaluation_total_wall_duration
+              .is_zero(),
+          base::NotFatalUntil::M129);
+    CHECK(
+        aggregated_document_statistics_.evaluation_total_cpu_duration.is_zero(),
+        base::NotFatalUntil::M129);
   }
 }
 

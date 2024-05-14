@@ -8,12 +8,14 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -50,8 +52,8 @@ ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
           base::FeatureList::IsEnabled(
               features::kSendCnameAliasesToSubresourceFilterFromBrowser)),
       disallow_message_callback_(std::move(disallow_message_callback)) {
-  DCHECK(!IsInSubresourceFilterRoot(handle));
-  DCHECK(parent_frame_filter_);
+  CHECK(!IsInSubresourceFilterRoot(handle), base::NotFatalUntil::M129);
+  CHECK(parent_frame_filter_, base::NotFatalUntil::M129);
 }
 
 ChildFrameNavigationFilteringThrottle::
@@ -69,7 +71,7 @@ ChildFrameNavigationFilteringThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
-  DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
+  CHECK_NE(load_policy_, LoadPolicy::DISALLOW, base::NotFatalUntil::M129);
 
   if (alias_check_enabled_) {
     std::vector<GURL> alias_urls;
@@ -104,9 +106,10 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   // and there are outstanding load policy calculations, we are either in dry
   // run mode or checking aliases.
   if (pending_load_policy_calculations_ > 0) {
-    DCHECK(parent_frame_filter_->activation_state().activation_level ==
-               mojom::ActivationLevel::kDryRun ||
-           navigation_handle()->GetDnsAliases().size() > 0);
+    CHECK(parent_frame_filter_->activation_state().activation_level ==
+                  mojom::ActivationLevel::kDryRun ||
+              navigation_handle()->GetDnsAliases().size() > 0,
+          base::NotFatalUntil::M129);
     DeferStart(DeferStage::kWillProcessResponse);
     return DEFER;
   }
@@ -136,7 +139,7 @@ void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
-  DCHECK_NE(load_policy_, LoadPolicy::DISALLOW);
+  CHECK_NE(load_policy_, LoadPolicy::DISALLOW, base::NotFatalUntil::M129);
   if (load_policy_ == LoadPolicy::WOULD_DISALLOW) {
     return PROCEED;
   }
@@ -170,8 +173,9 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     return;
   }
 
-  DCHECK(defer_stage_ == DeferStage::kWillProcessResponse ||
-         defer_stage_ == DeferStage::kWillStartOrRedirectRequest);
+  CHECK(defer_stage_ == DeferStage::kWillProcessResponse ||
+            defer_stage_ == DeferStage::kWillStartOrRedirectRequest,
+        base::NotFatalUntil::M129);
 
   // If we have an activation enabled and `load_policy_` is DISALLOW, we need
   // to cancel the navigation.
@@ -194,8 +198,9 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
 void ChildFrameNavigationFilteringThrottle::
     OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies) {
   // We deferred to check aliases in WillProcessResponse.
-  DCHECK(defer_stage_ == DeferStage::kWillProcessResponse);
-  DCHECK(!policies.empty());
+  CHECK(defer_stage_ == DeferStage::kWillProcessResponse,
+        base::NotFatalUntil::M129);
+  CHECK(!policies.empty(), base::NotFatalUntil::M129);
 
   LoadPolicy most_restricive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
 
@@ -208,15 +213,15 @@ void ChildFrameNavigationFilteringThrottle::
 }
 
 void ChildFrameNavigationFilteringThrottle::DeferStart(DeferStage stage) {
-  DCHECK(defer_stage_ == DeferStage::kNotDeferring);
-  DCHECK(stage != DeferStage::kNotDeferring);
+  CHECK(defer_stage_ == DeferStage::kNotDeferring, base::NotFatalUntil::M129);
+  CHECK(stage != DeferStage::kNotDeferring, base::NotFatalUntil::M129);
   defer_stage_ = stage;
   last_defer_timestamp_ = base::TimeTicks::Now();
 }
 
 void ChildFrameNavigationFilteringThrottle::UpdateDeferInfo() {
-  DCHECK(defer_stage_ != DeferStage::kNotDeferring);
-  DCHECK(!last_defer_timestamp_.is_null());
+  CHECK(defer_stage_ != DeferStage::kNotDeferring, base::NotFatalUntil::M129);
+  CHECK(!last_defer_timestamp_.is_null(), base::NotFatalUntil::M129);
   total_defer_time_ += base::TimeTicks::Now() - last_defer_timestamp_;
   defer_stage_ = DeferStage::kNotDeferring;
 }

@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
@@ -122,7 +124,7 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   // We should never be requesting the throttle manager for a navigation that
   // moves a page into the primary frame tree (e.g. prerender activation,
   // BFCache restoration).
-  DCHECK(!handle.IsPageActivation());
+  CHECK(!handle.IsPageActivation(), base::NotFatalUntil::M129);
 
   if (WillCreateNewThrottleManager(handle)) {
     auto* container =
@@ -132,7 +134,7 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
 
     ContentSubresourceFilterThrottleManager* throttle_manager =
         container->Get();
-    DCHECK(throttle_manager);
+    CHECK(throttle_manager, base::NotFatalUntil::M129);
     return throttle_manager;
   }
 
@@ -146,7 +148,8 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
   // due to a parent's navigation (where the navigation's handle's RFH may be
   // null); this does not affect the result as both frames have the same
   // throttle manager.
-  DCHECK(handle.IsSameDocument() || !IsInSubresourceFilterRoot(&handle));
+  CHECK(handle.IsSameDocument() || !IsInSubresourceFilterRoot(&handle),
+        base::NotFatalUntil::M129);
   content::RenderFrameHost* rfh = IsInSubresourceFilterRoot(&handle)
                                       ? handle.GetRenderFrameHost()
                                       : handle.GetParentFrameOrOuterDocument();
@@ -176,7 +179,7 @@ void ContentSubresourceFilterWebContentsHelper::SetDatabaseManagerForTesting(
 void ContentSubresourceFilterWebContentsHelper::WillDestroyThrottleManager(
     ContentSubresourceFilterThrottleManager* throttle_manager) {
   bool was_erased = throttle_managers_.erase(throttle_manager);
-  DCHECK(was_erased);
+  CHECK(was_erased, base::NotFatalUntil::M129);
 }
 
 void ContentSubresourceFilterWebContentsHelper::RenderFrameDeleted(
@@ -240,12 +243,13 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     // TODO(bokan): Once the BFCache restoration navigation is made synchronous
     // like prerender activation we can remove this special case.
     if (!navigation_handle->HasCommitted()) {
-      DCHECK(navigation_handle->IsServedFromBackForwardCache());
+      CHECK(navigation_handle->IsServedFromBackForwardCache(),
+            base::NotFatalUntil::M129);
       return;
     }
 
-    DCHECK(navigation_handle->HasCommitted());
-    DCHECK(navigation_handle->GetRenderFrameHost());
+    CHECK(navigation_handle->HasCommitted(), base::NotFatalUntil::M129);
+    CHECK(navigation_handle->GetRenderFrameHost(), base::NotFatalUntil::M129);
 
     ContentSubresourceFilterThrottleManager* throttle_manager =
         GetThrottleManager(navigation_handle->GetRenderFrameHost()->GetPage());
@@ -287,7 +291,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
       return;
     }
 
-    DCHECK(throttle_manager);
+    CHECK(throttle_manager, base::NotFatalUntil::M129);
 
     // If the navigation was successful it will have created a new page,
     // transfer the throttle manager to Page user data. If it failed, but it's
@@ -305,9 +309,9 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
         // attach this TabHelper after a navigation has occurred (possibly
         // before it has finished). See
         // https://groups.google.com/a/chromium.org/g/navigation-dev/c/cY5V-w-xPRM/m/uC1Nsg_KAwAJ.
-        // DCHECK(rfh->GetLastCommittedURL().is_empty() ||
-        //        rfh->GetLastCommittedURL().IsAboutBlank());
-        // DCHECK(!GetThrottleManager(rfh->GetPage()));
+        // CHECK(rfh->GetLastCommittedURL().is_empty() ||
+        //       rfh->GetLastCommittedURL().IsAboutBlank());
+        // CHECK(!GetThrottleManager(rfh->GetPage()));
         page = &rfh->GetPage();
       }
     }
@@ -342,7 +346,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishLoad(
 void ContentSubresourceFilterWebContentsHelper::OnSubresourceFilterGoingAway() {
   // Stop observing here because the observer manager could be destroyed by the
   // time this class is destroyed.
-  DCHECK(scoped_observation_.IsObserving());
+  CHECK(scoped_observation_.IsObserving(), base::NotFatalUntil::M129);
   scoped_observation_.Reset();
 }
 
@@ -359,7 +363,8 @@ void ContentSubresourceFilterWebContentsHelper::OnPageActivationComputed(
 void ContentSubresourceFilterWebContentsHelper::OnChildFrameNavigationEvaluated(
     content::NavigationHandle* navigation_handle,
     LoadPolicy load_policy) {
-  DCHECK(!IsInSubresourceFilterRoot(navigation_handle));
+  CHECK(!IsInSubresourceFilterRoot(navigation_handle),
+        base::NotFatalUntil::M129);
   if (ContentSubresourceFilterThrottleManager* throttle_manager =
           GetThrottleManager(*navigation_handle)) {
     throttle_manager->OnChildFrameNavigationEvaluated(navigation_handle,

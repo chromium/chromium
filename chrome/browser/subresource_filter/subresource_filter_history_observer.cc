@@ -4,6 +4,8 @@
 
 #include "chrome/browser/subresource_filter/subresource_filter_history_observer.h"
 
+#include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "url/gurl.h"
 
@@ -12,8 +14,8 @@ SubresourceFilterHistoryObserver::SubresourceFilterHistoryObserver(
         settings_manager,
     history::HistoryService* history_service)
     : settings_manager_(settings_manager) {
-  DCHECK(settings_manager_);
-  DCHECK(history_service);
+  CHECK(settings_manager_, base::NotFatalUntil::M129);
+  CHECK(history_service, base::NotFatalUntil::M129);
   history_observation_.Observe(history_service);
 }
 

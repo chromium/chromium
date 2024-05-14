@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -128,7 +129,7 @@ ChildFrameNavigationFilteringThrottleTestHarness::GetConsoleMessages() {
 
 void ChildFrameNavigationFilteringThrottleTestHarness::
     SetResponseDnsAliasesForNavigation(std::vector<std::string> aliases) {
-  DCHECK(navigation_simulator_);
+  CHECK(navigation_simulator_);
   navigation_simulator_->SetResponseDnsAliases(std::move(aliases));
 }
 

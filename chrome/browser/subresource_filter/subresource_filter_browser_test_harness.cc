@@ -163,7 +163,7 @@ content::RenderFrameHost* SubresourceFilterBrowserTest::FindFrameByName(
 
 bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
     content::RenderFrameHost* rfh) {
-  DCHECK(rfh);
+  CHECK(rfh);
   return content::EvalJs(rfh, "!!document.scriptExecuted").ExtractBool();
 }
 
@@ -198,7 +198,7 @@ void SubresourceFilterBrowserTest::ExpectFramesIncludedInLayout(
 
 bool SubresourceFilterBrowserTest::IsDynamicScriptElementLoaded(
     content::RenderFrameHost* rfh) {
-  DCHECK(rfh);
+  CHECK(rfh);
   return content::EvalJs(rfh, "insertScriptElementAndReportSuccess()")
       .ExtractBool();
 }

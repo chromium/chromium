@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -328,7 +329,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
 
   // Mark the initialization complete and run task queues until all are empty.
   void SimulateStartupCompletedAndWaitForTasks() {
-    DCHECK(mock_publisher());
+    CHECK(mock_publisher());
     mock_publisher()->RunBestEffortUntilIdle();
     RunAllUntilIdle();
   }

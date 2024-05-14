@@ -39,7 +39,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
                            std::string_view document_origin = "",
                            proto::ElementType element_type = testing::kOther,
                            bool disable_generic_rules = false) const {
-    DCHECK(matcher_);
+    CHECK(matcher_);
     return matcher_->GetLoadPolicyForResourceLoad(
         GURL(url), FirstPartyOrigin(testing::GetOrigin(document_origin)),
         element_type, disable_generic_rules);
@@ -49,7 +49,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
                     std::string_view document_origin = "",
                     proto::ElementType element_type = testing::kOther,
                     bool disable_generic_rules = false) const {
-    DCHECK(matcher_);
+    CHECK(matcher_);
     return matcher_->MatchedUrlRule(
                GURL(url), FirstPartyOrigin(testing::GetOrigin(document_origin)),
                element_type, disable_generic_rules) != nullptr;
@@ -59,7 +59,7 @@ class SubresourceFilterIndexedRulesetTest : public ::testing::Test {
       std::string_view document_url,
       std::string_view parent_document_origin = "",
       proto::ActivationType activation_type = testing::kNoActivation) const {
-    DCHECK(matcher_);
+    CHECK(matcher_);
     return matcher_->ShouldDisableFilteringForDocument(
         GURL(document_url), testing::GetOrigin(parent_document_origin),
         activation_type);

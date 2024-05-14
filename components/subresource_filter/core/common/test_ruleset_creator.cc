@@ -119,7 +119,7 @@ TestRulesetCreator::~TestRulesetCreator() {
 void TestRulesetCreator::CreateRulesetToDisallowURLsWithPathSuffix(
     std::string_view suffix,
     TestRulesetPair* test_ruleset_pair) {
-  DCHECK(test_ruleset_pair);
+  CHECK(test_ruleset_pair);
   proto::UrlRule suffix_rule = CreateSuffixRule(suffix);
   CreateRulesetWithRules({suffix_rule}, test_ruleset_pair);
 }
@@ -127,7 +127,7 @@ void TestRulesetCreator::CreateRulesetToDisallowURLsWithPathSuffix(
 void TestRulesetCreator::CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
     std::string_view suffix,
     TestRuleset* test_unindexed_ruleset) {
-  DCHECK(test_unindexed_ruleset);
+  CHECK(test_unindexed_ruleset);
   proto::UrlRule suffix_rule = CreateSuffixRule(suffix);
   ASSERT_NO_FATAL_FAILURE(
       CreateUnindexedRulesetWithRules({suffix_rule}, test_unindexed_ruleset));
@@ -136,7 +136,7 @@ void TestRulesetCreator::CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
 void TestRulesetCreator::CreateRulesetToDisallowURLWithSubstrings(
     std::vector<std::string_view> substrings,
     TestRulesetPair* test_ruleset_pair) {
-  DCHECK(test_ruleset_pair);
+  CHECK(test_ruleset_pair);
   std::vector<proto::UrlRule> url_rules;
   for (const auto& substring : substrings)
     url_rules.push_back(CreateSubstringRule(substring));
@@ -147,7 +147,7 @@ void TestRulesetCreator::CreateRulesetToDisallowURLsWithManySuffixes(
     std::string_view suffix,
     int num_of_suffixes,
     TestRulesetPair* test_ruleset_pair) {
-  DCHECK(test_ruleset_pair);
+  CHECK(test_ruleset_pair);
 
   std::vector<proto::UrlRule> rules;
   for (int i = 0; i < num_of_suffixes; ++i) {
@@ -178,7 +178,7 @@ void TestRulesetCreator::CreateUnindexedRulesetWithRules(
 }
 
 void TestRulesetCreator::GetUniqueTemporaryPath(base::FilePath* path) {
-  DCHECK(path);
+  CHECK(path);
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(scoped_temp_dir_->IsValid() ||
               scoped_temp_dir_->CreateUniqueTempDir());
@@ -189,7 +189,7 @@ void TestRulesetCreator::GetUniqueTemporaryPath(base::FilePath* path) {
 void TestRulesetCreator::CreateTestRulesetFromContents(
     std::vector<uint8_t> ruleset_contents,
     TestRuleset* ruleset) {
-  DCHECK(ruleset);
+  CHECK(ruleset);
 
   ruleset->contents = std::move(ruleset_contents);
   ASSERT_NO_FATAL_FAILURE(GetUniqueTemporaryPath(&ruleset->path));

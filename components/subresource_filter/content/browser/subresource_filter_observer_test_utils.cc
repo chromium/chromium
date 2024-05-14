@@ -19,7 +19,7 @@ TestSubresourceFilterObserver::TestSubresourceFilterObserver(
     content::WebContents* web_contents) {
   auto* manager =
       SubresourceFilterObserverManager::FromWebContents(web_contents);
-  DCHECK(manager);
+  CHECK(manager);
   scoped_observation_.Observe(manager);
   Observe(web_contents);
 }
@@ -27,14 +27,14 @@ TestSubresourceFilterObserver::TestSubresourceFilterObserver(
 TestSubresourceFilterObserver::~TestSubresourceFilterObserver() {}
 
 void TestSubresourceFilterObserver::OnSubresourceFilterGoingAway() {
-  DCHECK(scoped_observation_.IsObserving());
+  CHECK(scoped_observation_.IsObserving());
   scoped_observation_.Reset();
 }
 
 void TestSubresourceFilterObserver::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     const mojom::ActivationState& activation_state) {
-  DCHECK(navigation_handle->IsInMainFrame());
+  CHECK(navigation_handle->IsInMainFrame());
   mojom::ActivationLevel level = activation_state.activation_level;
   page_activations_[navigation_handle->GetURL()] = level;
   pending_activations_[navigation_handle] = level;

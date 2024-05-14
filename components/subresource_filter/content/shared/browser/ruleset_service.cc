@@ -7,6 +7,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
@@ -16,6 +17,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -205,8 +207,9 @@ RulesetService::RulesetService(
       background_task_runner_(std::move(background_task_runner)),
       is_initialized_(false),
       indexed_ruleset_base_dir_(indexed_ruleset_base_dir) {
-  DCHECK_NE(local_state_->GetInitializationStatus(),
-            PrefService::INITIALIZATION_STATUS_WAITING);
+  CHECK_NE(local_state_->GetInitializationStatus(),
+           PrefService::INITIALIZATION_STATUS_WAITING,
+           base::NotFatalUntil::M129);
   publisher_ = publisher ? std::move(publisher)
                          : std::make_unique<RulesetPublisherImpl>(
                                this, blocking_task_runner);
@@ -222,7 +225,8 @@ RulesetService::RulesetService(
     IndexedRulesetVersion(config.filter_tag).SaveToPrefs(local_state_);
   }
 
-  DCHECK(publisher_->BestEffortTaskRunner()->BelongsToCurrentThread());
+  CHECK(publisher_->BestEffortTaskRunner()->BelongsToCurrentThread(),
+        base::NotFatalUntil::M129);
   publisher_->BestEffortTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&RulesetService::FinishInitialization,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -342,7 +346,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (result != IndexAndWriteRulesetResult::SUCCESS)
     return IndexedRulesetVersion(config.filter_tag);
 
-  DCHECK(indexed_version.IsValid());
+  CHECK(indexed_version.IsValid(), base::NotFatalUntil::M129);
   return indexed_version;
 }
 
@@ -411,7 +415,8 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
 
   // Creating a temporary directory also makes sure the path (except for the
   // final segment) gets created. ReplaceFile would not create the path.
-  DCHECK(base::PathExists(indexed_ruleset_version_dir.DirName()));
+  CHECK(base::PathExists(indexed_ruleset_version_dir.DirName()),
+        base::NotFatalUntil::M129);
 
   // Need to manually delete the previously stored ruleset with the same
   // version, if any, as ReplaceFile would not overwrite a non-empty directory.
@@ -453,7 +458,8 @@ void RulesetService::FinishInitialization() {
 void RulesetService::IndexAndStoreRuleset(
     const UnindexedRulesetInfo& unindexed_ruleset_info,
     WriteRulesetCallback success_callback) {
-  DCHECK(!unindexed_ruleset_info.content_version.empty());
+  CHECK(!unindexed_ruleset_info.content_version.empty(),
+        base::NotFatalUntil::M129);
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&RulesetService::IndexAndWriteRuleset, config_,
@@ -465,7 +471,7 @@ void RulesetService::IndexAndStoreRuleset(
 
 void RulesetService::OnWrittenRuleset(WriteRulesetCallback result_callback,
                                       const IndexedRulesetVersion& version) {
-  DCHECK(!result_callback.is_null());
+  CHECK(!result_callback.is_null(), base::NotFatalUntil::M129);
   if (!version.IsValid())
     return;
   version.SaveToPrefs(local_state_);
