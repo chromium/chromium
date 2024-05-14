@@ -28,9 +28,12 @@
       document.onprerenderingchange = () => awActivationFuture.activated();
     }
 
+    // Notify the primary page that this prerendered page started.
+    window.localStorage.setItem("pageStarted", location.href);
+
     // Post a message to Java (AwPrerenderTest.java). This should be deferred
     // until activation.
-    awMessagePort.postMessage(
+    awDeferredMessagePort.postMessage(
         wasPrerendered ? "Prerendered" : "Not prerendered");
     // Notify Java that the message was posted. This notification should not be
     // deferred even during prerendering.

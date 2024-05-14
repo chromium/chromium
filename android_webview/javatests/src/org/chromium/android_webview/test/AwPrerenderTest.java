@@ -27,7 +27,6 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.common.AwFeatures;
-import org.chromium.android_webview.test.TestAwContentsClient.OnLoadResourceHelper;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -79,7 +78,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
     private SettableFuture<Boolean> mActivationFuture;
     private SettableFuture<Boolean> mPostMessageFuture;
 
-    private TestWebMessageListener mWebMessageListener;
+    private TestWebMessageListener mDeferredWebMessageListener;
+    private TestWebMessageListener mPrerenderLifecycleWebMessageListener;
 
     @Before
     public void setUp() throws Exception {
@@ -88,7 +88,27 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        mWebMessageListener = new TestWebMessageListener();
+        // Enable localStorage that is used as communication channel between the primary page and
+        // prerendered pages. See `channelScript` below for details.
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setDomStorageEnabled(true);
+
+        // This message listener is used for making sure messages posted by prerendered pages are
+        // deferred until prerender activation.
+        mDeferredWebMessageListener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents,
+                "awDeferredMessagePort",
+                new String[] {"*"},
+                mDeferredWebMessageListener);
+
+        // This message listener is used for notifying Java of lifecycle events on prerendered
+        // pages.
+        mPrerenderLifecycleWebMessageListener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mAwContents,
+                "awPrerenderLifecycleMessagePort",
+                new String[] {"*"},
+                mPrerenderLifecycleWebMessageListener);
 
         // This future is used for waiting until the JS prerenderingchange event is fired on the
         // prerendered page. See //android_webview/test/data/prerender.html.
@@ -130,6 +150,26 @@ public class AwPrerenderTest extends AwParameterizedTest {
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
         onPageStartedHelper.waitForCallback(0, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
+
+        // Set up the communication channel between the primary page (initial page) and prerendered
+        // pages. This script waits until a prerendered page notifies the primary page of lifecycle
+        // events via `window.localStorage`. Then, the primary page forwards the notification to
+        // Java via `mPrerenderLifecycleWebMessageListener`.
+        final String channelScript =
+                """
+                    {
+                      window.localStorage.clear();
+                      window.addEventListener("storage", event => {
+                        if (event.key === "pageStarted") {
+                          awPrerenderLifecycleMessagePort.postMessage(event.newValue);
+                        }
+                      });
+                    }
+                """;
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    mAwContents.evaluateJavaScript(channelScript, null);
+                });
     }
 
     @After
@@ -157,22 +197,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
                 });
     }
 
-    // Injects speculation rules for `url` and then waits until a prerendering navigation request is
-    // sent.
+    // Injects speculation rules for `url` and then waits until a prerendered page starts running
+    // JavaScript.
     private void injectSpeculationRulesAndWait(String url) throws Exception {
-        final OnLoadResourceHelper onLoadResourceHelper = mContentsClient.getOnLoadResourceHelper();
-        int currentOnLoadResourceCallCount = onLoadResourceHelper.getCallCount();
-
+        // Start prerendering.
         injectSpeculationRules(url);
 
-        // Wait for prerendering navigation. Monitor onLoadResource instead of onPageFinished as
-        // onPageFinished is never called during prerendering (deferred until activation).
-        onLoadResourceHelper.waitForCallback(
-                currentOnLoadResourceCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Assert.assertEquals(onLoadResourceHelper.getLastLoadedResource(), url);
+        // Wait until the prerendered page starts running JavaScript.
+        TestWebMessageListener.Data data =
+                mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+        Assert.assertEquals(url, data.getAsString());
     }
 
-    // Activate a prerendered page by navigating to `activateUrl`. `expectedActivatedUrl` indicates
+    // Activates a prerendered page by navigating to `activateUrl`. `expectedActivatedUrl` indicates
     // a URL that should actually be activated. Generally, `expectedActivatedUrl` is the same as
     // `activateUrl`, but they are different when prerendering navigation is redirected.
     private void activatePage(
@@ -295,7 +332,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         helper.clearUrls();
         callCount = helper.getCallCount();
-        injectSpeculationRulesAndWait(url2);
+        injectSpeculationRules(url2);
         helper.waitForCallback(callCount);
         Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
 
@@ -343,7 +380,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         helper.clearUrls();
         callCount = helper.getCallCount();
-        injectSpeculationRulesAndWait(url2);
+        injectSpeculationRules(url2);
         helper.waitForCallback(callCount);
         Assert.assertEquals(helper.getUrls(), Arrays.asList(url2));
 
@@ -551,7 +588,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         {
             helper.clearUrls();
             int callCount = helper.getCallCount();
-            injectSpeculationRulesAndWait(prerenderUrl);
+            injectSpeculationRules(prerenderUrl);
             helper.waitForCallback(callCount);
             Assert.assertEquals(helper.getUrls(), Arrays.asList(prerenderUrl));
             AwContentsClient.AwWebResourceRequest request = helper.getRequestsForUrl(prerenderUrl);
@@ -600,9 +637,6 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPostMessageDuringPrerendering() throws Throwable {
-        TestWebMessageListener.addWebMessageListenerOnUiThread(
-                mAwContents, "awMessagePort", new String[] {"*"}, mWebMessageListener);
-
         injectSpeculationRules(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -620,12 +654,12 @@ public class AwPrerenderTest extends AwParameterizedTest {
         // could have a mechanism to make sure the deferral logic in a deterministic way.
         Assert.assertEquals(
                 true, mPostMessageFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
+        Assert.assertTrue(mDeferredWebMessageListener.hasNoMoreOnPostMessage());
 
         activatePage(mPrerenderingUrl, ActivationBy.JAVASCRIPT);
 
         // The page is activated. Now the deferred messages should be delivered.
-        TestWebMessageListener.Data data = mWebMessageListener.waitForOnPostMessage();
+        TestWebMessageListener.Data data = mDeferredWebMessageListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(mPrerenderingUrl, data.mTopLevelOrigin);
         assertUrlHasOrigin(mPrerenderingUrl, data.mSourceOrigin);
@@ -633,7 +667,7 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
-        Assert.assertTrue(mWebMessageListener.hasNoMoreOnPostMessage());
+        Assert.assertTrue(mDeferredWebMessageListener.hasNoMoreOnPostMessage());
     }
 
     // Tests that WebView.addJavascriptInterface() cancels prerendered pages.
