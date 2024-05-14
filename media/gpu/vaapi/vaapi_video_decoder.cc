@@ -501,26 +501,25 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   const gfx::GpuMemoryBufferId frame_id = frame->GetSharedMemoryId();
   DCHECK(frame_id.is_valid());
 
-  scoped_refptr<VASurface> va_surface;
   if (!base::Contains(allocated_va_surfaces_, frame_id)) {
-    va_surface = vaapi_wrapper_->CreateVASurfaceForFrameResource(
-        *frame, cdm_context_ref_ || transcryption_);
+    std::unique_ptr<ScopedVASurface> va_surface =
+        vaapi_wrapper_->CreateVASurfaceForFrameResource(
+            *frame, cdm_context_ref_ || transcryption_);
     if (!va_surface || va_surface->id() == VA_INVALID_ID) {
       SetErrorState("failed to create VASurface from FrameResource");
       return nullptr;
     }
-
-    allocated_va_surfaces_[frame_id] = va_surface;
+    allocated_va_surfaces_[frame_id] = std::move(va_surface);
   } else {
-    va_surface = allocated_va_surfaces_[frame_id];
-    DCHECK_EQ(frame->coded_size(), va_surface->size());
+    DCHECK_EQ(frame->coded_size(), allocated_va_surfaces_[frame_id]->size());
   }
 
   // Store the mapping between surface and video frame, so we know which video
   // frame to output when the surface is ready. It's also important to keep a
   // reference to the video frame during decoding, as the frame will be
   // automatically returned to the pool when the last reference is dropped.
-  VASurfaceID surface_id = va_surface->id();
+  const ScopedVASurface* va_surface = allocated_va_surfaces_[frame_id].get();
+  const VASurfaceID surface_id = va_surface->id();
   DCHECK_EQ(output_frames_.count(surface_id), 0u);
   output_frames_[surface_id] = frame;
 
@@ -879,7 +878,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   DCHECK(!use_linear_buffers);
   DCHECK(!needs_detiling);
 
-  scoped_refptr<VASurface> surface;
+  std::unique_ptr<ScopedVASurface> surface;
   switch (format) {
     case PIXEL_FORMAT_NV12: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
@@ -901,7 +900,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   if (!surface)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
   auto pixmap_and_info =
-      vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface);
+      vaapi_wrapper_->ExportVASurfaceAsNativePixmapDmaBuf(*surface.get());
   if (!pixmap_and_info)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
@@ -911,7 +910,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  allocated_va_surfaces_[frame->GetSharedMemoryId()] = surface;
+  allocated_va_surfaces_[frame->GetSharedMemoryId()] = std::move(surface);
 
   return frame;
 }

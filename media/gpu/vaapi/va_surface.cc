@@ -17,8 +17,14 @@ VASurface::VASurface(VASurfaceID va_surface_id,
   DCHECK(release_cb_);
 }
 
+void VASurface::Reset() {
+  release_cb_.Reset();
+}
+
 VASurface::~VASurface() {
-  std::move(release_cb_).Run(va_surface_id_);
+  if (release_cb_) {
+    std::move(release_cb_).Run(va_surface_id_);
+  }
 }
 
 }  // namespace media

@@ -402,15 +402,15 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const std::optional<gfx::Size>& visible_size,
       const std::optional<uint32_t>& va_fourcc);
 
-  // Creates a self-releasing VASurface from |frame|. The created VASurface
+  // Creates a self-releasing ScopedVASurface from |frame|. The created object
   // shares the ownership of the underlying buffer represented by |frame|.
   // |frame|->StorageType() must either be STORAGE_GPU_MEMORY_BUFFER or
   // STORAGE_DMABUFS. The ownership of the surface is transferred to the caller.
   // A caller can destroy |frame| after this method returns and the underlying
-  // buffer will be kept alive by the VASurface. |protected_content| should only
-  // be true if the format needs VA_RT_FORMAT_PROTECTED (currently only true for
-  // AMD).
-  scoped_refptr<VASurface> CreateVASurfaceForFrameResource(
+  // buffer will be kept alive by the ScopedVASurface. |protected_content|
+  // should only be true if the format needs VA_RT_FORMAT_PROTECTED (currently
+  // only true for AMD).
+  std::unique_ptr<ScopedVASurface> CreateVASurfaceForFrameResource(
       const FrameResource& frame,
       bool protected_content);
 
@@ -434,10 +434,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
                                                      uintptr_t* buffers,
                                                      size_t buffer_size);
 
-  // Creates a self-releasing VASurface with specified usage hints. The
+  // Creates a self-releasing ScopedVASurface with specified usage hints. The
   // ownership of the surface is transferred to the caller. |size| should be
   // the desired surface dimensions.
-  scoped_refptr<VASurface> CreateVASurfaceWithUsageHints(
+  std::unique_ptr<ScopedVASurface> CreateVASurfaceWithUsageHints(
       unsigned int va_rt_format,
       const gfx::Size& size,
       const std::vector<SurfaceUsageHint>& usage_hints);
@@ -570,6 +570,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // is provided and is not VA_INVALID_ID, the corresponding protected session
   // is attached to the VPP context prior to submitting the VPP buffers and
   // detached after submitting those buffers.
+  // TODO(339518553): Migrate to ScopedVASurface.
   [[nodiscard]] virtual bool BlitSurface(
       const VASurface& va_surface_src,
       const VASurface& va_surface_dest,

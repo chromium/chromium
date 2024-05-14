@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "build/chromeos_buildflags.h"
+#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vp8_picture.h"
@@ -217,6 +218,18 @@ ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
       size_(size),
       va_rt_format_(va_rt_format) {
   DCHECK(vaapi_wrapper_);
+}
+
+ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                                 scoped_refptr<VASurface> surface)
+    : vaapi_wrapper_(std::move(vaapi_wrapper)),
+      va_surface_id_(surface->id()),
+      size_(surface->size()),
+      va_rt_format_(surface->format()) {
+  DCHECK(vaapi_wrapper_);
+  // Make sure |surface| is Reset() to free any and all references to
+  // |vaapi_wrapper_| bound inside, otherwise we would leak it.
+  surface->Reset();
 }
 
 ScopedVASurface::~ScopedVASurface() {

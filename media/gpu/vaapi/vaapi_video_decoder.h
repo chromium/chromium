@@ -46,6 +46,7 @@ class DmabufVideoFramePool;
 class VaapiWrapper;
 class FrameResource;
 class VASurface;
+class ScopedVASurface;
 
 class VaapiVideoDecoder : public VideoDecoderMixin,
                           public DecodeSurfaceHandler<VASurface> {
@@ -239,13 +240,15 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   std::map<VASurfaceID, scoped_refptr<FrameResource>> output_frames_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // VASurfaces are created via importing resources from a DmabufVideoFramePool
-  // into libva in CreateSurface(). The following map keeps those VASurfaces for
-  // reuse according to the expectations of libva vaDestroySurfaces(): "Surfaces
-  // can only be destroyed after all contexts using these surfaces have been
-  // destroyed."
+  // ScopedVASurfaces are created by importing resources from a
+  // DmabufVideoFramePool into libva via CreateSurface(). The following map
+  // keeps those ScopedVASurfaces for reuse according to the expectations of
+  // libva vaDestroySurfaces(): "Surfaces can only be destroyed after all
+  // contexts using these surfaces have been destroyed."
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
-  base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>
+  // TODO(339518553): Use base::IDMap.
+  base::small_map<
+      std::map<gfx::GpuMemoryBufferId, std::unique_ptr<ScopedVASurface>>>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We need to use a CdmContextRef so that we destruct

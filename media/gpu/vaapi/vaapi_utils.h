@@ -23,6 +23,7 @@ class VaapiWrapper;
 class Vp8ReferenceFrameVector;
 struct VAContextAndScopedVASurfaceDeleter;
 struct Vp8FrameHeader;
+class VASurface;
 
 // Class to map a given VABuffer, identified by |buffer_id|, for its lifetime.
 // The |lock_| might be null depending on the user of this class. If |lock_| is
@@ -163,6 +164,15 @@ class ScopedVASurface {
 
   ScopedVASurface(const ScopedVASurface&) = delete;
   ScopedVASurface& operator=(const ScopedVASurface&) = delete;
+
+  // Constructor taking over a VASurface (which is normally managed via a
+  // scoped_refptr<>). This should be called like:
+  //   auto ptr = base::MakeRefCounted<VASurface>(...);
+  //   auto va_surface = std::make_unique<ScopedVASurface>(.., std::move(ptr));
+  // TODO(339518553): Remove once VaapiWrapper::CreateVASurfaceForPixmap()
+  // returns ScopedVASurfaces.
+  ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                  scoped_refptr<VASurface> surface);
 
   ~ScopedVASurface();
 

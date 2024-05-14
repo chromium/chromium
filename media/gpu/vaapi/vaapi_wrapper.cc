@@ -2398,7 +2398,7 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   return MaybeAttachProtectedSession_Locked();
 }
 
-scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
+std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
     const FrameResource& frame,
     bool protected_content) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2407,7 +2407,14 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
     LOG(ERROR) << "Failed to create NativePixmap from FrameResource";
     return nullptr;
   }
-  return CreateVASurfaceForPixmap(std::move(pixmap), protected_content);
+  // TODO(339518553): Migrate CreateVASurfaceForPixmap() to returning
+  // ScopedVASurface and remove the temporary |va_surface_ptr|.
+  scoped_refptr<VASurface> va_surface =
+      CreateVASurfaceForPixmap(std::move(pixmap), protected_content);
+  if (!va_surface) {
+    return nullptr;
+  }
+  return std::make_unique<ScopedVASurface>(this, std::move(va_surface));
 }
 
 scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
@@ -2544,7 +2551,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(
                        base::BindOnce(&VaapiWrapper::DestroySurface, this));
 }
 
-scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
+std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
     unsigned int va_rt_format,
     const gfx::Size& size,
     const std::vector<SurfaceUsageHint>& usage_hints) {
@@ -2552,8 +2559,8 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceWithUsageHints(
   std::vector<VASurfaceID> surfaces;
   if (!CreateSurfaces(va_rt_format, size, usage_hints, 1, &surfaces))
     return nullptr;
-  return new VASurface(surfaces[0], size, va_rt_format,
-                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+  return std::make_unique<ScopedVASurface>(this, surfaces[0], size,
+                                           va_rt_format);
 }
 
 std::unique_ptr<NativePixmapAndSizeInfo>

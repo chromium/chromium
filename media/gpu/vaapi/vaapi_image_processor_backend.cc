@@ -124,13 +124,13 @@ std::string VaapiImageProcessorBackend::type() const {
   return "VaapiImageProcessor";
 }
 
-const VASurface* VaapiImageProcessorBackend::GetSurfaceForFrame(
+const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
     const FrameResource& frame,
     bool use_protected) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   const gfx::GenericSharedMemoryId shared_memory_id = frame.GetSharedMemoryId();
   if (base::Contains(allocated_va_surfaces_, shared_memory_id)) {
-    const VASurface* surface = allocated_va_surfaces_[shared_memory_id].get();
+    const auto* surface = allocated_va_surfaces_[shared_memory_id].get();
     CHECK_EQ(frame.coded_size(), surface->size());
     const auto buffer_format =
         VideoPixelFormatToGfxBufferFormat(frame.format());
@@ -218,28 +218,35 @@ void VaapiImageProcessorBackend::ProcessFrame(
 
   DCHECK(input_frame);
   DCHECK(output_frame);
-  const VASurface* src_va_surface =
-      GetSurfaceForFrame(*input_frame, use_protected);
+  const ScopedVASurface* src_va_surface =
+      GetOrCreateSurfaceForFrame(*input_frame, use_protected);
   if (!src_va_surface) {
     error_cb_.Run();
     return;
   }
-  const VASurface* dst_va_surface =
-      GetSurfaceForFrame(*output_frame, use_protected);
+  const ScopedVASurface* dst_va_surface =
+      GetOrCreateSurfaceForFrame(*output_frame, use_protected);
   if (!dst_va_surface) {
     error_cb_.Run();
     return;
   }
 
+  // TODO(339518553): Remove these temporary variables.
+  auto tmp_va_surface_src = base::MakeRefCounted<VASurface>(
+      src_va_surface->id(), src_va_surface->size(), src_va_surface->format(),
+      base::DoNothing());
+  auto tmp_va_surface_dst = base::MakeRefCounted<VASurface>(
+      dst_va_surface->id(), dst_va_surface->size(), dst_va_surface->format(),
+      base::DoNothing());
   // VA-API performs pixel format conversion and scaling without any filters.
-  if (!vaapi_wrapper_->BlitSurface(*src_va_surface, *dst_va_surface,
-                                   input_frame->visible_rect(),
-                                   output_frame->visible_rect()
+  if (!vaapi_wrapper_->BlitSurface(
+          *tmp_va_surface_src.get(), *tmp_va_surface_dst.get(),
+          input_frame->visible_rect(), output_frame->visible_rect()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                                       ,
-                                   va_protected_session_id
+                                           ,
+          va_protected_session_id
 #endif
-                                   )) {
+          )) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (use_protected &&
         vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {
