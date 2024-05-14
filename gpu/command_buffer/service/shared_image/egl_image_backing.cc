@@ -90,7 +90,7 @@ class EGLImageBacking::GLRepresentationShared {
         return false;
       mode_ = RepresentationAccessMode::kWrite;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return true;
   }
@@ -105,7 +105,7 @@ class EGLImageBacking::GLRepresentationShared {
     } else if (mode_ == RepresentationAccessMode::kWrite) {
       backing_->EndWrite();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     mode_ = RepresentationAccessMode::kNone;
   }
@@ -238,7 +238,7 @@ SharedImageBackingType EGLImageBacking::GetType() const {
 }
 
 void EGLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <class T>

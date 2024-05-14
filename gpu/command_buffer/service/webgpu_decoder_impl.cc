@@ -117,7 +117,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return weak_ptr_factory_.GetWeakPtr();
   }
   const gles2::ContextState* GetContextState() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void Destroy(bool have_context) override;
@@ -129,11 +129,11 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   }
   gl::GLContext* GetGLContext() override { return nullptr; }
   gl::GLSurface* GetGLSurface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   const gles2::FeatureInfo* GetFeatureInfo() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   Capabilities GetCapabilities() override { return {}; }
@@ -142,15 +142,15 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void ClearAllAttributes() const override { NOTREACHED(); }
   void RestoreAllAttributes() const override { NOTREACHED(); }
   void RestoreState(const gles2::ContextState* prev_state) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RestoreActiveTexture() const override { NOTREACHED(); }
   void RestoreAllTextureUnitAndSamplerBindings(
       const gles2::ContextState* prev_state) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RestoreActiveTextureUnitBinding(unsigned int target) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RestoreBufferBinding(unsigned int target) override { NOTREACHED(); }
   void RestoreBufferBindings() const override { NOTREACHED(); }
@@ -159,21 +159,21 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void RestoreProgramBindings() const override { NOTREACHED(); }
   void RestoreTextureState(unsigned service_id) override { NOTREACHED(); }
   void RestoreTextureUnitBindings(unsigned unit) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RestoreVertexAttribArray(unsigned index) override { NOTREACHED(); }
   void RestoreAllExternalTextureBindingsIfNeeded() override { NOTREACHED(); }
   QueryManager* GetQueryManager() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void CancelAllQueries() override { NOTREACHED(); }
   gles2::GpuFenceManager* GetGpuFenceManager() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   bool HasPendingQueries() const override { return false; }
@@ -213,7 +213,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   }
 
   TextureBase* GetTextureBase(uint32_t client_id) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void SetLevelInfo(uint32_t client_id,
@@ -225,7 +225,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                     unsigned format,
                     unsigned type,
                     const gfx::Rect& cleared_rect) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   bool WasContextLost() const override {
     NOTIMPLEMENTED();
@@ -236,7 +236,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTIMPLEMENTED();
   }
   bool CheckResetStatus() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void BeginDecoding() override {}
@@ -249,11 +249,11 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::string_view GetLogPrefix() override { return "WebGPUDecoderImpl"; }
   gles2::ContextGroup* GetContextGroup() override { return nullptr; }
   gles2::ErrorState* GetErrorState() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   bool IsCompressedTextureFormat(unsigned format) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool ClearLevel(gles2::Texture* texture,
@@ -265,7 +265,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                   int yoffset,
                   int width,
                   int height) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool ClearCompressedTextureLevel(gles2::Texture* texture,
@@ -274,7 +274,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                    unsigned format,
                                    int width,
                                    int height) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool ClearCompressedTextureLevel3D(gles2::Texture* texture,
@@ -284,7 +284,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                      int width,
                                      int height,
                                      int depth) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool ClearLevel3D(gles2::Texture* texture,
@@ -295,7 +295,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                     int width,
                     int height,
                     int depth) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool initialized() const override { return true; }
@@ -305,7 +305,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return nullptr;
   }
   int GetRasterDecoderId() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return -1;
   }
 
@@ -2268,7 +2268,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return error::kInvalidArguments;
   }
   isolation_key_provider_->GetIsolationKey(

@@ -44,7 +44,7 @@ VkPipelineStageFlags GetPipelineStageFlags(
     case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
       return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
     default:
-      NOTREACHED() << "layout=" << layout;
+      NOTREACHED_IN_MIGRATION() << "layout=" << layout;
   }
   return 0;
 }
@@ -77,7 +77,7 @@ VkAccessFlags GetAccessMask(const VkImageLayout layout) {
     case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
       return 0;
     default:
-      NOTREACHED() << "layout=" << layout;
+      NOTREACHED_IN_MIGRATION() << "layout=" << layout;
   }
   return 0;
 }

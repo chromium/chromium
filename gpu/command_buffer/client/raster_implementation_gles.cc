@@ -61,7 +61,7 @@ GLenum SkColorTypeToGLDataFormat(SkColorType color_type, bool supports_rg) {
     default:
       DLOG(ERROR) << "Unknown SkColorType " << color_type;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -81,7 +81,7 @@ GLenum SkColorTypeToGLDataType(SkColorType color_type) {
     default:
       DLOG(ERROR) << "Unknown SkColorType " << color_type;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -339,7 +339,7 @@ void RasterImplementationGLES::BeginRasterCHROMIUM(
     const gfx::ColorSpace& color_space,
     float hdr_headroom,
     const GLbyte* mailbox) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementationGLES::RasterCHROMIUM(
@@ -352,7 +352,7 @@ void RasterImplementationGLES::RasterCHROMIUM(
     const gfx::Vector2dF& post_scale,
     bool requires_clear,
     size_t* max_op_size_hint) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementationGLES::SetActiveURLCHROMIUM(const char* url) {
@@ -360,7 +360,7 @@ void RasterImplementationGLES::SetActiveURLCHROMIUM(const char* url) {
 }
 
 void RasterImplementationGLES::EndRasterCHROMIUM() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 SyncToken RasterImplementationGLES::ScheduleImageDecode(
@@ -369,7 +369,7 @@ SyncToken RasterImplementationGLES::ScheduleImageDecode(
     uint32_t transfer_cache_entry_id,
     const gfx::ColorSpace& target_color_space,
     bool needs_mips) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SyncToken();
 }
 

@@ -489,7 +489,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
   } else if (format == viz::MultiPlaneFormat::kP410) {
     return wgpu::TextureFormat::R10X6BG10X6Biplanar444Unorm;
   }
-  NOTREACHED() << "Unsupported format: " << format.ToString();
+  NOTREACHED_IN_MIGRATION() << "Unsupported format: " << format.ToString();
   return wgpu::TextureFormat::Undefined;
 }
 

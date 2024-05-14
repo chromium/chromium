@@ -389,7 +389,7 @@ struct EnumTraits<gpu::mojom::%s, %s> {
   traits_header_file.write(
 """
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return gpu::mojom::%s::INVALID_VALUE;
     }
   }
@@ -408,11 +408,11 @@ struct EnumTraits<gpu::mojom::%s, %s> {
   traits_header_file.write(
 """
       case gpu::mojom::%s::INVALID_VALUE:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
 
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };""" % name)

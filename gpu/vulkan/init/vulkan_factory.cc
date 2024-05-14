@@ -55,7 +55,7 @@ std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<VulkanImplementationMac>(use_swiftshader);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 #endif
 #endif

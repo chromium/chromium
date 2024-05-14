@@ -230,7 +230,7 @@ bool QueryTracker::Query::CheckResultsAvailable(CommandBufferHelper* helper,
           result_ = info_.sync->result;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       if (on_completed_callback_) {
         std::move(on_completed_callback_.value()).Run();

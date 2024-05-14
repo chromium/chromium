@@ -674,7 +674,7 @@ gfx::GpuMemoryBufferHandle ExternalVkImageBacking::GetGpuMemoryBufferHandle() {
 #else
   LOG(ERROR) << "Illegal access to GetGpuMemoryBufferHandle for non OZONE "
                 "platforms from this backing.";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::GpuMemoryBufferHandle();
 #endif
 }

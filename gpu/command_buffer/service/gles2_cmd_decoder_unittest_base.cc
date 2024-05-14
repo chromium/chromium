@@ -1184,7 +1184,7 @@ void GLES2DecoderTestBase::SetupExpectationsForEnableDisable(GLenum cap,
       enable_flags_.cached_stencil_test = enable;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   if (enable) {

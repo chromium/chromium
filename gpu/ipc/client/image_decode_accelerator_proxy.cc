@@ -152,7 +152,7 @@ bool ImageDecodeAcceleratorProxy::IsImageSupported(
       return image_metadata->webp_is_non_extended_lossy.value();
     case ImageDecodeAcceleratorType::kUnknown:
       // Should not reach due to a check above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return false;

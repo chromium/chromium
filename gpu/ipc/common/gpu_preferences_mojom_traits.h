@@ -37,7 +37,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
       case gpu::GrContextType::kGraphiteMetal:
         return gpu::mojom::GrContextType::kGraphiteMetal;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::GrContextType::kGL;
   }
   static bool FromMojom(gpu::mojom::GrContextType input,
@@ -78,7 +78,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
       case gpu::VulkanImplementationName::kSwiftshader:
         return gpu::mojom::VulkanImplementationName::kSwiftshader;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::VulkanImplementationName::kNone;
   }
   static bool FromMojom(gpu::mojom::VulkanImplementationName input,
@@ -115,7 +115,7 @@ struct GPU_EXPORT
       case gpu::WebGPUAdapterName::kSwiftShader:
         return gpu::mojom::WebGPUAdapterName::kSwiftShader;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::WebGPUAdapterName::kDefault;
   }
   static bool FromMojom(gpu::mojom::WebGPUAdapterName input,
@@ -155,7 +155,7 @@ struct GPU_EXPORT
       case gpu::WebGPUPowerPreference::kForceHighPerformance:
         return gpu::mojom::WebGPUPowerPreference::kForceHighPerformance;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::WebGPUPowerPreference::kNone;
   }
 
@@ -195,7 +195,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
       case gpu::DawnBackendValidationLevel::kFull:
         return gpu::mojom::DawnBackendValidationLevel::kFull;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::DawnBackendValidationLevel::kDisabled;
   }
   static bool FromMojom(gpu::mojom::DawnBackendValidationLevel input,

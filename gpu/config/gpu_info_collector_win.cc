@@ -72,7 +72,7 @@ inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
     case D3D_FEATURE_LEVEL_11_1:
       return D3D12FeatureLevel::kD3DFeatureLevel_11_1;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return D3D12FeatureLevel::kD3DFeatureLevelUnknown;
   }
 }
@@ -117,7 +117,7 @@ D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
       return D3D12ShaderModel::kD3DShaderModel_6_7;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return D3D12ShaderModel::kUnknownOrNoD3D12Devices;
   }
 }

@@ -152,7 +152,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       uint32_t usage,
       std::string debug_label,
       bool is_thread_safe) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -166,7 +166,7 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       std::string debug_label,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(

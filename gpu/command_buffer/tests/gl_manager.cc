@@ -94,14 +94,14 @@ class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
     return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
   }
   gfx::GpuMemoryBufferId GetId() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::GpuMemoryBufferId(0);
   }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::NATIVE_PIXMAP;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::GpuMemoryBufferHandle();
   }
   void OnMemoryDump(
@@ -151,14 +151,14 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
     return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
   }
   gfx::GpuMemoryBufferId GetId() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::GpuMemoryBufferId(0);
   }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::IO_SURFACE_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::GpuMemoryBufferHandle();
   }
   void OnMemoryDump(
@@ -528,29 +528,29 @@ const GLCapabilities& GLManager::GetGLCapabilities() const {
 }
 
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::CancelAllQueries() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::SetLock(base::Lock*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::EnsureWorkVisible() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gpu::CommandBufferNamespace GLManager::GetNamespaceID() const {
@@ -562,30 +562,30 @@ CommandBufferId GLManager::GetCommandBufferID() const {
 }
 
 void GLManager::FlushPendingWork() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 uint64_t GLManager::GenerateFenceSyncRelease() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool GLManager::IsFenceSyncReleased(uint64_t release) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void GLManager::SignalSyncToken(const gpu::SyncToken& sync_token,
                                 base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLManager::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool GLManager::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

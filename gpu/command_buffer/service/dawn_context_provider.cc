@@ -168,7 +168,7 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
 #elif BUILDFLAG(IS_APPLE)
   return wgpu::BackendType::Metal;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return wgpu::BackendType::Null;
 #endif
 }

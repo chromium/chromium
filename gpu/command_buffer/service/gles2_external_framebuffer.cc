@@ -147,7 +147,7 @@ class GLES2ExternalFramebuffer::Attachment {
         break;
       default:
         texture_format = GL_RGBA;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     GLuint texture;

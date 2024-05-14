@@ -197,7 +197,7 @@ void MultiDrawManager::ResizeArrays() {
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

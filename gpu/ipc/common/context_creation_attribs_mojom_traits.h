@@ -32,7 +32,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
       case gpu::CONTEXT_TYPE_WEBGPU:
         return gpu::mojom::ContextType::kWebGPU;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

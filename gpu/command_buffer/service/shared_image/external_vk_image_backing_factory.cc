@@ -283,7 +283,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
 #else
   // A CPU mappable backing of this type can only be requested for OZONE
   // platforms.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif  // BUILDFLAG(IS_OZONE)
 }

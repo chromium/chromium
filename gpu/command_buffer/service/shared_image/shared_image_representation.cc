@@ -258,9 +258,10 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::ScopedGaneshWriteAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
     ~ScopedGaneshWriteAccess() {
   if (end_state_) {
-    NOTREACHED() << "Before ending write access TakeEndState() must be called "
-                    "and the result passed to skia to make sure all layout and "
-                    "ownership transitions are done.";
+    NOTREACHED_IN_MIGRATION()
+        << "Before ending write access TakeEndState() must be called "
+           "and the result passed to skia to make sure all layout and "
+           "ownership transitions are done.";
   }
 }
 
@@ -382,9 +383,10 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::ScopedGaneshReadAccess(
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
     ~ScopedGaneshReadAccess() {
   if (end_state_) {
-    NOTREACHED() << "Before ending read access TakeEndState() must be called "
-                    "and the result passed to skia to make sure all layout and "
-                    "ownership transitions are done.";
+    NOTREACHED_IN_MIGRATION()
+        << "Before ending read access TakeEndState() must be called "
+           "and the result passed to skia to make sure all layout and "
+           "ownership transitions are done.";
   }
 }
 
@@ -722,12 +724,12 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
 
 #if BUILDFLAG(IS_ANDROID)
 AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 OverlayImageRepresentation::GetAHardwareBufferFenceSync() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 #elif BUILDFLAG(IS_OZONE)
@@ -737,7 +739,7 @@ scoped_refptr<gfx::NativePixmap> OverlayImageRepresentation::GetNativePixmap() {
 #elif BUILDFLAG(IS_WIN)
 std::optional<gl::DCLayerOverlayImage>
 OverlayImageRepresentation::GetDCLayerOverlayImage() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 #elif BUILDFLAG(IS_APPLE)

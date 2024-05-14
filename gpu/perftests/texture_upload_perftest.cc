@@ -111,7 +111,7 @@ GLenum GLFormatToStorageFormat(GLenum format) {
     case GL_RED:
       return GL_R8;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }
@@ -161,7 +161,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
           memcpy(expected, &pixels[pixels_index], 4);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       if (memcmp(&rgba[rgba_index], expected, 4)) {
         return false;

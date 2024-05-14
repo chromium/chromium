@@ -103,11 +103,11 @@ void CommandsIssuedQuery::Reset() {
 }
 
 void CommandsIssuedQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsIssuedQuery::Process(bool did_finish) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsIssuedQuery::Destroy(bool /* have_context */) {
@@ -170,7 +170,7 @@ CommandsIssuedTimestampQuery::CommandsIssuedTimestampQuery(
     : Query(manager, target, std::move(buffer), sync) {}
 
 void CommandsIssuedTimestampQuery::Begin() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsIssuedTimestampQuery::Pause() {
@@ -182,7 +182,7 @@ void CommandsIssuedTimestampQuery::Resume() {
 }
 
 void CommandsIssuedTimestampQuery::End(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsIssuedTimestampQuery::QueryCounter(
@@ -195,7 +195,7 @@ void CommandsIssuedTimestampQuery::QueryCounter(
 }
 
 void CommandsIssuedTimestampQuery::Process(bool did_finish) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsIssuedTimestampQuery::Destroy(bool /* have_context */) {
@@ -260,7 +260,7 @@ void CommandsCompletedQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void CommandsCompletedQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CommandsCompletedQuery::Process(bool did_finish) {
@@ -326,7 +326,7 @@ QueryManager::Query* QueryManager::CreateQuery(
       query = new CommandsCompletedQuery(this, target, std::move(buffer), sync);
       break;
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   std::pair<QueryMap::iterator, bool> result =

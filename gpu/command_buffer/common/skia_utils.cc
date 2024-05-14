@@ -105,7 +105,7 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
       const char* dump_name,
       const SkDiscardableMemory& discardable_memory_object) override {
     // We don't use this class for dumping discardable memory.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   LevelOfDetail getRequestedDetails() const override {

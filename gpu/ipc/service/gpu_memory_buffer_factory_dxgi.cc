@@ -166,8 +166,8 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
       dxgi_format = DXGI_FORMAT_NV12;
       break;
     default:
-      NOTREACHED() << "invalid buffer format, format="
-                   << gfx::BufferFormatToString(format);
+      NOTREACHED_IN_MIGRATION() << "invalid buffer format, format="
+                                << gfx::BufferFormatToString(format);
       return handle;
   }
 

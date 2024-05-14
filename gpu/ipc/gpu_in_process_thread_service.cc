@@ -65,7 +65,7 @@ void GpuInProcessThreadService::ScheduleDelayedWork(base::OnceClosure task) {
 
 void GpuInProcessThreadService::PostNonNestableToClient(
     base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<SharedContextState>

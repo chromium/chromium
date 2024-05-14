@@ -45,7 +45,7 @@ static const char* extension(GLenum format) {
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
       return "GL_ANGLE_texture_compression_dxt5";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

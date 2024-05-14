@@ -133,7 +133,7 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       targetIndex = SAMPLER_EXTERNAL_OES;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -184,8 +184,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       sourceFormatIndex = S_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED() << "Invalid source format "
-                   << gl::GLEnums::GetStringEnum(source_format);
+      NOTREACHED_IN_MIGRATION() << "Invalid source format "
+                                << gl::GLEnums::GetStringEnum(source_format);
       break;
   }
 
@@ -281,8 +281,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       destFormatIndex = D_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED() << "Invalid destination format "
-                   << gl::GLEnums::GetStringEnum(dest_format);
+      NOTREACHED_IN_MIGRATION() << "Invalid destination format "
+                                << gl::GLEnums::GetStringEnum(dest_format);
       break;
   }
 
@@ -417,7 +417,7 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
         source += "#define TextureLookup texture2DRect\n";
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
@@ -440,7 +440,7 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
       source += "#define SamplerType samplerExternalOES\n";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -747,7 +747,7 @@ void prepareUnpackBuffer(GLuint buffer[2],
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 enum TexImageCommandType {
@@ -799,7 +799,7 @@ void DoReadbackAndTexImage(TexImageCommandType command_type,
       case GL_SRGB8_ALPHA8:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

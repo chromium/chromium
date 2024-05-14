@@ -17,7 +17,7 @@ const char* SchedulingPriorityToString(SchedulingPriority priority) {
     case SchedulingPriority::kLow:
       return "Low";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

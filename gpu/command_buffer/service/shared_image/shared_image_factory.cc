@@ -115,7 +115,7 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
     case gfx::ANDROID_HARDWARE_BUFFER:
       return "platform";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if defined(USE_OZONE)

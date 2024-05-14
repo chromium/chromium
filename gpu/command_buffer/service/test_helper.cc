@@ -152,7 +152,7 @@ void TestHelper::SetupTextureInitializationExpectations(
       texture_ids = &texture_rectangle_arb_ids[0];
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   int array_size = use_default_textures ? 2 : 1;
@@ -272,7 +272,7 @@ void TestHelper::SetupTextureDestructionExpectations(
       texture_id = kServiceDefaultRectangleTextureId;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   EXPECT_CALL(*gl, DeleteTextures(1, Pointee(texture_id)))

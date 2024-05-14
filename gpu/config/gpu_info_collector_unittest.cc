@@ -131,7 +131,7 @@ class GPUInfoCollectorTest
         break;
       }
       default: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
     }

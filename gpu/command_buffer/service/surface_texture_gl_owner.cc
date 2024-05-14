@@ -135,7 +135,8 @@ gl::GLSurface* SurfaceTextureGLOwner::GetSurface() const {
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 SurfaceTextureGLOwner::GetAHardwareBuffer() {
-  NOTREACHED() << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
+  NOTREACHED_IN_MIGRATION()
+      << "Don't use AHardwareBuffers with SurfaceTextureGLOwner";
   return nullptr;
 }
 

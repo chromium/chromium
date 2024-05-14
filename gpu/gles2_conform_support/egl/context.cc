@@ -177,29 +177,29 @@ const gpu::GLCapabilities& Context::GetGLCapabilities() const {
 }
 
 void Context::SignalQuery(uint32_t query, base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::CancelAllQueries() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::SetLock(base::Lock*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::EnsureWorkVisible() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gpu::CommandBufferNamespace Context::GetNamespaceID() const {
@@ -211,26 +211,26 @@ gpu::CommandBufferId Context::GetCommandBufferID() const {
 }
 
 void Context::FlushPendingWork() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 uint64_t Context::GenerateFenceSyncRelease() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool Context::IsFenceSyncReleased(uint64_t release) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void Context::SignalSyncToken(const gpu::SyncToken& sync_token,
                               base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Context::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool Context::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {

@@ -86,7 +86,7 @@ uint32_t BytesPerTexel(viz::SharedImageFormat format) {
     return 8;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -337,7 +337,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
           packed_data.push_back(
               static_cast<uint32_t>(WGPUTextureFormat_BGRA8Unorm));
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
 
         // Error case: packed data empty.
@@ -619,7 +619,7 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     } else if (GetParam().format == viz::SinglePlaneFormat::kBGRA_8888) {
       EXPECT_EQ(0xFF0000FFu, *static_cast<const uint32_t*>(data));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

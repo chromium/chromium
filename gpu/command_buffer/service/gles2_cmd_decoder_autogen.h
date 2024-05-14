@@ -2234,7 +2234,7 @@ error::Error GLES2DecoderImpl::HandleHint(uint32_t immediate_data_size,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return error::kNoError;
 }
@@ -6088,7 +6088,7 @@ bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
       }
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

@@ -650,7 +650,7 @@ void RasterImplementation::SetAggressivelyFreeResources(
 }
 
 uint64_t RasterImplementation::ShareGroupTracingGUID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -661,18 +661,18 @@ void RasterImplementation::SetErrorMessageCallback(
 
 bool RasterImplementation::ThreadSafeShallowLockDiscardableTexture(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void RasterImplementation::CompleteLockDiscardableTexureOnContextThread(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool RasterImplementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
     uint32_t texture_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -838,7 +838,7 @@ GLenum RasterImplementation::GetGLError() {
 #if defined(RASTER_CLIENT_FAIL_GL_ERRORS)
 void RasterImplementation::FailGLError(GLenum error) {
   if (error != GL_NO_ERROR) {
-    NOTREACHED() << "Error";
+    NOTREACHED_IN_MIGRATION() << "Error";
   }
 }
 // NOTE: Calling GetGLError overwrites data in the result buffer.
@@ -1893,47 +1893,47 @@ void RasterImplementation::IssueImageDecodeCacheEntryCreation(
 
 GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
     const gpu::Mailbox& mailbox) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementation::BeginGpuRaster() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void RasterImplementation::EndGpuRaster() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementation::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                                 GLenum mode) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementation::InitializeDiscardableTextureCHROMIUM(
     GLuint texture) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterImplementation::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool RasterImplementation::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

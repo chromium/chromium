@@ -143,7 +143,7 @@ void QueryShaderPrecisionFormat(const gl::GLVersionInfo& gl_version_info,
       *precision = 23;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -479,7 +479,7 @@ error::ContextLostReason GetContextLostReasonFromResetStatus(
       return error::kUnknown;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return error::kUnknown;
 }
 
@@ -1274,7 +1274,7 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
     case GL_TEXTURE_CUBE_MAP:
       return GL_TEXTURE_BINDING_CUBE_MAP;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

@@ -46,7 +46,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
       return num_channels == 2 ? gfx::BufferFormat::RG_1616
                                : gfx::BufferFormat::R_16;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::BufferFormat::RGBA_8888;
 }
 
@@ -92,7 +92,7 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
           return gfx::BufferPlane::A;
       }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::BufferPlane::DEFAULT;
 }
 

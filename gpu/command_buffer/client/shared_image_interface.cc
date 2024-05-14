@@ -34,7 +34,7 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::MakeRefCounted<ClientSharedImage>(Mailbox(), si_info.meta,
                                                  GenUnverifiedSyncToken(),
                                                  holder_, gfx::EMPTY_BUFFER);
@@ -75,14 +75,14 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
 
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharedImageInterface::CopyToGpuMemoryBufferAsync(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharedImageInterface::Release() const {

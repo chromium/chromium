@@ -66,7 +66,7 @@ size_t DiscardableCacheSizeLimitForPressure(
       return 0;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

@@ -666,14 +666,14 @@ SharedImageInterfaceInProcess::CreateSwapChain(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
 }
 
 void SharedImageInterfaceInProcess::PresentSwapChain(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -683,7 +683,7 @@ void SharedImageInterfaceInProcess::RegisterSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -814,7 +814,7 @@ SharedImageInterfaceInProcess::ImportSharedImage(
     const ExportedSharedImage& exported_shared_image) {
   // Secondary references are required only by client processes, so it shouldn't
   // be reachable here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

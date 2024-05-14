@@ -397,7 +397,7 @@ bool ContextState::GetEnabled(GLenum cap) const {
     case GL_SAMPLE_ALPHA_TO_ONE_EXT:
       return enable_flags.sample_alpha_to_one_ext;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

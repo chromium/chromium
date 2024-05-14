@@ -652,7 +652,7 @@ GpuDiskCache::~GpuDiskCache() {
 
 void GpuDiskCache::Init() {
   if (is_initialized_) {
-    NOTREACHED();  // can't initialize disk cache twice.
+    NOTREACHED_IN_MIGRATION();  // can't initialize disk cache twice.
     return;
   }
   is_initialized_ = true;
@@ -665,7 +665,8 @@ void GpuDiskCache::Init() {
       base::BindOnce(&GpuDiskCache::CacheCreatedCallback, this));
 
   if (rv.net_error == net::OK) {
-    NOTREACHED();  // This shouldn't actually happen with a non-memory backend.
+    NOTREACHED_IN_MIGRATION();  // This shouldn't actually happen with a
+                                // non-memory backend.
     backend_ = std::move(rv.backend);
   }
 }

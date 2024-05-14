@@ -468,7 +468,7 @@ void GLES2Implementation::OnGpuControlReturnData(
     } break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -617,7 +617,7 @@ GLenum GLES2Implementation::GetGLError() {
 #if defined(GL_CLIENT_FAIL_GL_ERRORS)
 void GLES2Implementation::FailGLError(GLenum error) {
   if (error != GL_NO_ERROR) {
-    NOTREACHED() << "Error";
+    NOTREACHED_IN_MIGRATION() << "Error";
   }
 }
 // NOTE: Calling GetGLError overwrites data in the result buffer.
@@ -2294,7 +2294,7 @@ void GLES2Implementation::PixelStorei(GLenum pname, GLint param) {
       unpack_skip_images_ = param;
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   helper_->PixelStorei(pname, param);
@@ -7026,48 +7026,48 @@ bool GLES2Implementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
 }
 
 void* GLES2Implementation::MapTransferCacheEntry(uint32_t serialized_size) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void GLES2Implementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
                                                            uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool GLES2Implementation::ThreadsafeLockTransferCacheEntry(uint32_t type,
                                                            uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void GLES2Implementation::UnlockTransferCacheEntries(
     const std::vector<std::pair<uint32_t, uint32_t>>& entries) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GLES2Implementation::DeleteTransferCacheEntry(uint32_t type, uint32_t id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 unsigned int GLES2Implementation::GetTransferBufferFreeSize() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool GLES2Implementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool GLES2Implementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

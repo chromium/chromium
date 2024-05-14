@@ -805,7 +805,7 @@ CompoundImageBacking::ElementHolder& CompoundImageBacking::GetElement(
       return element;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return elements_.back();
 }
 

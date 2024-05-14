@@ -409,12 +409,12 @@ bool ImplementationBase::HasGrContextSupport() const {
 
 void ImplementationBase::WillCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ImplementationBase::DidCallGLFromSkia() {
   // Should only be called on subclasses that have GrContextSupport
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace gpu

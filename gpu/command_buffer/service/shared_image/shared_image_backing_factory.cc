@@ -29,7 +29,7 @@ SharedImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                              std::string debug_label,
                                              bool is_thread_safe,
                                              gfx::BufferUsage buffer_usage) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

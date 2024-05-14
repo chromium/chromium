@@ -628,7 +628,7 @@ void GLHelperScaling::ConvertScalerOpsToScalerStages(
         current_shader = SHADER_BILINEAR3;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     bool scale_x = current_queue->front().scale_x;
     current_queue->front().UpdateScale(&intermediate_scale);
@@ -670,7 +670,7 @@ void GLHelperScaling::ConvertScalerOpsToScalerStages(
           scale_x = true;
           switch (x_ops->size()) {
             case 0:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
             case 1:
               if (x_ops->front().scale_factor == 3) {
@@ -817,7 +817,7 @@ GLHelperScaling::CreateI420Planerizer(int plane,
       result->SetColorWeights(0, kRGBtoVColorWeights);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   result->SetChainProperties(stage.scale_from, stage.scale_to, swizzle);
   return std::move(result);

@@ -526,7 +526,7 @@ SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
   }
   return mailboxes;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -546,7 +546,7 @@ void SharedImageInterfaceProxy::PresentSwapChain(const SyncToken& sync_token,
     host_->EnsureFlush(last_flush_id_);
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_WIN)
 }
 

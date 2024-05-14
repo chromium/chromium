@@ -67,7 +67,7 @@ SkColorType GetCompatibleSurfaceColorType(GrGLenum format) {
     case GL_SRGB8_ALPHA8:
       return kRGBA_8888_SkColorType;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kUnknown_SkColorType;
   }
 }

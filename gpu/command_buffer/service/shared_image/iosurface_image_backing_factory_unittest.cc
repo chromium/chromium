@@ -778,7 +778,7 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   }
 #else
   wgpu::BackendType GetDawnBackendType() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return wgpu::BackendType::Undefined;
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)

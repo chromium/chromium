@@ -250,7 +250,7 @@ SharedImageBackingType WrappedGraphiteTextureBacking::GetType() const {
 
 void WrappedGraphiteTextureBacking::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WrappedGraphiteTextureBacking::UploadFromMemory(

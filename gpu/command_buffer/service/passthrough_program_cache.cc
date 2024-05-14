@@ -91,7 +91,7 @@ ProgramCache::ProgramLoadResult PassthroughProgramCache::LoadLinkedProgram(
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode,
     DecoderClient* client) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PROGRAM_LOAD_FAILURE;
 }
 
@@ -103,7 +103,7 @@ void PassthroughProgramCache::SaveLinkedProgram(
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode,
     DecoderClient* client) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PassthroughProgramCache::LoadProgram(const std::string& key,

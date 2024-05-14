@@ -123,7 +123,7 @@ uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return libyuv::FOURCC_ANY;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return libyuv::FOURCC_ANY;
 }
 

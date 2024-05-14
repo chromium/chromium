@@ -73,7 +73,7 @@ void AbstractIntegerQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void AbstractIntegerQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AbstractIntegerQuery::Pause() {
@@ -224,7 +224,7 @@ void AsyncReadPixelsCompletedQuery::End(base::subtle::Atomic32 submit_count) {
 
 void AsyncReadPixelsCompletedQuery::QueryCounter(
     base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AsyncReadPixelsCompletedQuery::Complete() {
@@ -232,7 +232,7 @@ void AsyncReadPixelsCompletedQuery::Complete() {
 }
 
 void AsyncReadPixelsCompletedQuery::Process(bool did_finish) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AsyncReadPixelsCompletedQuery::Destroy(bool /* have_context */) {
@@ -287,11 +287,11 @@ void GetErrorQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void GetErrorQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GetErrorQuery::Process(bool did_finish) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GetErrorQuery::Destroy(bool /* have_context */) {
@@ -345,7 +345,7 @@ void TimeElapsedQuery::End(base::subtle::Atomic32 submit_count) {
 }
 
 void TimeElapsedQuery::QueryCounter(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TimeElapsedQuery::Pause() {
@@ -408,11 +408,11 @@ TimeStampQuery::TimeStampQuery(GLES2QueryManager* manager,
       gpu_timer_(manager->CreateGPUTimer(false)) {}
 
 void TimeStampQuery::Begin() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TimeStampQuery::End(base::subtle::Atomic32 submit_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TimeStampQuery::Pause() {

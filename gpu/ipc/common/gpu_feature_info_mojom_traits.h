@@ -33,7 +33,7 @@ struct GPU_EXPORT
       case gpu::kGpuFeatureStatusMax:
         return gpu::mojom::GpuFeatureStatus::Max;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::mojom::GpuFeatureStatus::Max;
   }
 

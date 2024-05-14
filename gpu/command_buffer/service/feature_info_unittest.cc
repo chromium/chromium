@@ -75,7 +75,7 @@ class FeatureInfoTest
         SetupInitExpectationsWithGLVersion(extensions_str.c_str(), "", "3.2");
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -90,7 +90,7 @@ class FeatureInfoTest
       case ES3_on_Version3_2Compatibility:
         return CONTEXT_TYPE_OPENGLES3;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CONTEXT_TYPE_OPENGLES2;
     }
   }
@@ -105,7 +105,7 @@ class FeatureInfoTest
       case ES3_on_Version3_2Compatibility:
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -242,7 +242,7 @@ TEST_P(FeatureInfoTest, InitializeNoExtensions) {
       expect_ext_srgb = true;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // Note that because GL_EXT_sRGB is a substring of GL_EXT_sRGB_write_control,

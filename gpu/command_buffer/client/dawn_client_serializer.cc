@@ -36,7 +36,7 @@ size_t DawnClientSerializer::GetMaximumAllocationSize() const {
 
 #if DCHECK_IS_ON()
 void DawnClientSerializer::OnSerializeError() {
-  NOTREACHED() << "DawnClientSerializer error";
+  NOTREACHED_IN_MIGRATION() << "DawnClientSerializer error";
 }
 #endif
 

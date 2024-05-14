@@ -63,7 +63,7 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -106,7 +106,7 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
       return plane == gfx::BufferPlane::DEFAULT;
   }
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -146,7 +146,7 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return format;
 }
 
@@ -190,7 +190,7 @@ uint32_t GetPlatformSpecificTextureTarget() {
   // Fuchsia uses Vulkan.
   return 0;
 #elif BUILDFLAG(IS_NACL)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 #else
 #error Unsupported OS

@@ -113,7 +113,7 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
                                        std::move(context_state));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

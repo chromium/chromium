@@ -22,7 +22,8 @@ EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::ToMojom(
       return gpu::mojom::GpuDiskCacheType::kDawnGraphite;
   }
 
-  NOTREACHED() << "Invalid gpu::GpuDiskCacheType: " << gpu_disk_cache_type;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid gpu::GpuDiskCacheType: " << gpu_disk_cache_type;
   return gpu::mojom::GpuDiskCacheType::kGlShaders;
 }
 
@@ -43,7 +44,8 @@ bool EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::FromMojom(
     default:
       break;
   }
-  NOTREACHED() << "Invalid gpu::mojom::GpuDiskCacheType: " << input;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid gpu::mojom::GpuDiskCacheType: " << input;
   return false;
 }
 
