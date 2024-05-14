@@ -817,6 +817,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("WebAssemblyTurboshaft"),
         Flag.baseFeature("WebAssemblyTurboshaftInstructionSelection"),
         Flag.baseFeature("WebAssemblyInlining"),
+        Flag.baseFeature("WebAssemblyLiftoffCodeFlushing"),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
                 "Inject platform-specific JavaScript APIs."),
