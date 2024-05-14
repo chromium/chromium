@@ -19,16 +19,10 @@ DataBuffer::DataBuffer(base::HeapArray<uint8_t> buffer)
   CHECK(data_.data());
 }
 
-DataBuffer::DataBuffer(const uint8_t* data, int data_size)
-    : data_size_(data_size) {
-  if (!data) {
-    CHECK_EQ(data_size, 0);
-    return;
-  }
-
-  CHECK_GE(data_size, 0);
-  data_ = base::HeapArray<uint8_t>::Uninit(data_size);
-  memcpy(data_.data(), data, data_size_);
+DataBuffer::DataBuffer(base::span<const uint8_t> data)
+    : data_size_(data.size()) {
+  CHECK(!data.empty());
+  data_ = base::HeapArray<uint8_t>::CopiedFrom(data);
 }
 DataBuffer::DataBuffer(DataBufferType data_buffer_type)
     : is_end_of_stream_(data_buffer_type == DataBufferType::kEndOfStream) {}
@@ -36,10 +30,8 @@ DataBuffer::DataBuffer(DataBufferType data_buffer_type)
 DataBuffer::~DataBuffer() = default;
 
 // static
-scoped_refptr<DataBuffer> DataBuffer::CopyFrom(const uint8_t* data, int size) {
-  // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
-  CHECK(data);
-  return base::WrapRefCounted(new DataBuffer(data, size));
+scoped_refptr<DataBuffer> DataBuffer::CopyFrom(base::span<const uint8_t> data) {
+  return base::WrapRefCounted(new DataBuffer(data));
 }
 
 // static

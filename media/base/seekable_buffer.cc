@@ -88,7 +88,8 @@ bool SeekableBuffer::Append(const scoped_refptr<DataBuffer>& buffer_in) {
 
 bool SeekableBuffer::Append(const uint8_t* data, int size) {
   if (size > 0) {
-    scoped_refptr<DataBuffer> data_buffer = DataBuffer::CopyFrom(data, size);
+    scoped_refptr<DataBuffer> data_buffer =
+        DataBuffer::CopyFrom(base::make_span(data, static_cast<size_t>(size)));
     return Append(data_buffer);
   } else {
     // Return true if we have forward capacity.

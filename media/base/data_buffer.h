@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -33,9 +34,7 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   DataBuffer& operator=(const DataBuffer&) = delete;
 
   // Create a DataBuffer whose |data_| is copied from |data|.
-  //
-  // |data| must not be null and |size| must be >= 0.
-  static scoped_refptr<DataBuffer> CopyFrom(const uint8_t* data, int size);
+  static scoped_refptr<DataBuffer> CopyFrom(base::span<const uint8_t> data);
 
   // Create a DataBuffer indicating we've reached end of stream.
   //
@@ -95,9 +94,8 @@ class MEDIA_EXPORT DataBuffer : public base::RefCountedThreadSafe<DataBuffer> {
   friend class base::RefCountedThreadSafe<DataBuffer>;
   enum class DataBufferType { kNormal, kEndOfStream };
 
-  // Allocates buffer of size |data_size|, copies [data,data+data_size) to
-  // the allocated buffer and sets data size to |data_size|.
-  DataBuffer(const uint8_t* data, int data_size);
+  // Allocates a buffer with a copy of |data| in it
+  explicit DataBuffer(base::span<const uint8_t> data);
 
   explicit DataBuffer(DataBufferType data_buffer_type);
 

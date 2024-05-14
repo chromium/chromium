@@ -34,8 +34,9 @@ class SeekableBufferTest : public testing::Test {
     srand(kKnownSeed);
 
     // Create random test data samples.
-    for (int i = 0; i < kDataSize; i++)
+    for (int i = 0; i < kDataSize; i++) {
       data_[i] = static_cast<char>(rand());
+    }
   }
 
   int GetRandomInt(int maximum) {
@@ -231,7 +232,8 @@ TEST_F(SeekableBufferTest, SeekBackward) {
 TEST_F(SeekableBufferTest, GetCurrentChunk) {
   const int kSeekSize = kWriteSize / 3;
 
-  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(data_, kWriteSize);
+  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(
+      base::make_span(data_, static_cast<size_t>(kWriteSize)));
 
   const uint8_t* data;
   int size;
@@ -334,7 +336,8 @@ TEST_F(SeekableBufferTest, GetTime) {
   EXPECT_EQ(kNoTimestamp.ToInternalValue(),
             buffer_.current_time().ToInternalValue());
 
-  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(data_, kWriteSize);
+  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(
+      base::make_span(data_, static_cast<size_t>(kWriteSize)));
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     buffer->set_timestamp(base::Microseconds(tests[i].first_time_useconds));

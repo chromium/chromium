@@ -52,8 +52,8 @@ TEST(DataBufferTest, CopyFrom) {
   const uint8_t kTestData[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
   const int kTestDataSize = std::size(kTestData);
 
-  scoped_refptr<DataBuffer> buffer =
-      DataBuffer::CopyFrom(kTestData, kTestDataSize);
+  scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(
+      base::make_span(kTestData, static_cast<size_t>(kTestDataSize)));
   EXPECT_EQ(kTestDataSize, buffer->data_size());
   EXPECT_FALSE(buffer->end_of_stream());
 
