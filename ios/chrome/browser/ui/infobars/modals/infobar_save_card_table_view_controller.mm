@@ -341,6 +341,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+- (void)showLoadingState {
+  self.saveCardButtonItem.buttonText = @"";
+  self.saveCardButtonItem.enabled = NO;
+  self.saveCardButtonItem.showsActivityIndicator = YES;
+  [self reconfigureCellsForItems:@[ self.saveCardButtonItem ]];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView*)tableView

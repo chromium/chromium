@@ -46,6 +46,7 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     _textAlignment = kDefaultTextAlignment;
     _boldButtonText = YES;
     _dimBackgroundWhenDisabled = YES;
+    _showsActivityIndicator = NO;
   }
   return self;
 }
@@ -103,6 +104,8 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
         [buttonConfiguration.background.backgroundColor
             colorWithAlphaComponent:kDisabledButtonAlpha];
   }
+
+  buttonConfiguration.showsActivityIndicator = self.showsActivityIndicator;
 
   cell.button.configuration = buttonConfiguration;
 

@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -49,6 +50,7 @@
     NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
 @property(nonatomic, assign) BOOL currentCardSaved;
 @property(nonatomic, assign) BOOL supportsEditing;
+@property(nonatomic, assign) BOOL inLoadingState;
 @end
 
 @implementation FakeSaveCardModalConsumer
@@ -61,6 +63,10 @@
   self.legalMessages = prefs[kLegalMessagesPrefKey];
   self.currentCardSaved = [prefs[kCurrentCardSavedPrefKey] boolValue];
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
+}
+
+- (void)showLoadingState {
+  self.inLoadingState = YES;
 }
 @end
 
@@ -153,4 +159,39 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadURL) {
   [mediator_ dismissModalAndOpenURL:url];
   EXPECT_NSEQ(base::SysUTF8ToNSString(url.spec()),
               base::SysUTF8ToNSString(delegate.pendingURLToLoad.spec()));
+}
+
+class SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest
+    : public SaveCardInfobarModalOverlayMediatorTest {
+ public:
+  SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation,
+        true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that calling saveCardWithCardholderName shows loading state when
+// loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       OnSaveShowLoading) {
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  mediator_.consumer = consumer;
+  NSString* cardholderName = @"name";
+  NSString* month = @"3";
+  NSString* year = @"23";
+
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
+                              base::SysNSStringToUTF16(month),
+                              base::SysNSStringToUTF16(year)));
+  [mediator_ saveCardWithCardholderName:cardholderName
+                        expirationMonth:month
+                         expirationYear:year];
+
+  EXPECT_TRUE(consumer.inLoadingState);
 }

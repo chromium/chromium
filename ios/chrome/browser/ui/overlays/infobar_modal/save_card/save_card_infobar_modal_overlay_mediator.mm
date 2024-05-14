@@ -107,7 +107,12 @@
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
       base::SysNSStringToUTF16(year)));
 
-  [self dismissOverlay];
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    [self.consumer showLoadingState];
+  } else {
+    [self dismissOverlay];
+  }
 }
 
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL {

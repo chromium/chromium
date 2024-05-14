@@ -47,6 +47,10 @@
 // button will maintain its intrinsic size based on its title. NO by default.
 @property(nonatomic, assign) BOOL disableButtonIntrinsicWidth;
 
+// Whether the Item's button should display an activity indicator. Default is
+// NO.
+@property(nonatomic, assign) BOOL showsActivityIndicator;
+
 @end
 
 // TableViewTextButtonCell contains a textLabel and a UIbutton

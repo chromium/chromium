@@ -25,6 +25,8 @@ extern NSString* const kDisplayedTargetAccountAvatarPrefKey;
 // Informs the consumer of the current state of important prefs.
 - (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs;
 
+// Informs the consumer to show loading state after save card button is pressed.
+- (void)showLoadingState;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_INFOBAR_SAVE_CARD_MODAL_CONSUMER_H_
