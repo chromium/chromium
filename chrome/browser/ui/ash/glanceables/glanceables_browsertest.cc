@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest,
           /*due=*/base::Time::Now(), /*completed=*/false,
           /*has_subtasks=*/false, /*has_email_link=*/false,
           /*has_notes=*/false, /*updated=*/base::Time::Now(),
-          /*web_view_link=*/GURL()));
+          /*web_view_link=*/GURL(), api::Task::OriginSurfaceType::kRegular));
 
   // Open the glanceables again.
   ToggleDateTray();

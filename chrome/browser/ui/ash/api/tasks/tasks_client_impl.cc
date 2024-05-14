@@ -52,10 +52,27 @@ using ::google_apis::tasks::InsertTaskRequest;
 using ::google_apis::tasks::ListTaskListsRequest;
 using ::google_apis::tasks::ListTasksRequest;
 using ::google_apis::tasks::PatchTaskRequest;
+using ::google_apis::tasks::TaskAssignmentInfo;
 using ::google_apis::tasks::TaskRequestPayload;
 using ::google_apis::tasks::TaskStatus;
 
 constexpr char kTasksUrl[] = "https://tasks.google.com/";
+
+Task::OriginSurfaceType GetTaskOriginSurfaceType(
+    const std::optional<TaskAssignmentInfo>& assignment_info) {
+  if (!assignment_info) {
+    return Task::OriginSurfaceType::kRegular;
+  }
+
+  switch (assignment_info->surface_type()) {
+    case TaskAssignmentInfo::SurfaceType::kDocument:
+      return Task::OriginSurfaceType::kDocument;
+    case TaskAssignmentInfo::SurfaceType::kSpace:
+      return Task::OriginSurfaceType::kSpace;
+    case TaskAssignmentInfo::SurfaceType::kUnknown:
+      return Task::OriginSurfaceType::kUnknown;
+  }
+}
 
 // Converts `raw_tasks` received from Google Tasks API to ash-friendly types.
 std::vector<std::unique_ptr<Task>> ConvertTasks(
@@ -99,7 +116,8 @@ std::vector<std::unique_ptr<Task>> ConvertTasks(
     converted_tasks.push_back(std::make_unique<Task>(
         root_task->id(), root_task->title(), root_task->due(), completed,
         has_subtasks, has_email_link, has_notes, root_task->updated(),
-        root_task->web_view_link()));
+        root_task->web_view_link(),
+        GetTaskOriginSurfaceType(root_task->assignment_info())));
   }
 
   return converted_tasks;
@@ -598,7 +616,8 @@ void TasksClientImpl::OnTaskAdded(
                              /*has_subtasks=*/false,
                              /*has_email_link=*/false, /*has_notes=*/false,
                              result.value()->updated(),
-                             result.value()->web_view_link()));
+                             result.value()->web_view_link(),
+                             Task::OriginSurfaceType::kRegular));
   std::move(callback).Run(/*task=*/task);
 }
 

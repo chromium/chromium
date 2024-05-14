@@ -38,16 +38,16 @@ TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrl) {
       "%2Cdue%2Clinks(type)%2Cnotes%2Cupdated%2CwebViewLink)%2CnextPageToken"
       "&showCompleted=false");
 
-  EXPECT_EQ(
-      GetListTasksUrl("task-list-id", /*include_completed=*/false,
-                      /*include_assigned=*/true,
-                      /*max_results=*/std::nullopt,
-                      /*page_token=*/""),
-      "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
-      "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition"
-      "%2Cdue%2Clinks(type)%2Cnotes%2Cupdated%2CwebViewLink)%2CnextPageToken"
-      "&showCompleted=false"
-      "&showAssigned=true");
+  EXPECT_EQ(GetListTasksUrl("task-list-id", /*include_completed=*/false,
+                            /*include_assigned=*/true,
+                            /*max_results=*/std::nullopt,
+                            /*page_token=*/""),
+            "https://tasks.googleapis.com/tasks/v1/lists/task-list-id/tasks"
+            "?fields=kind%2Citems(id%2Ctitle%2Cstatus%2Cparent%2Cposition"
+            "%2Cdue%2Clinks(type)%2Cnotes%2Cupdated%2CwebViewLink"
+            "%2CassignmentInfo(surfaceType))%2CnextPageToken"
+            "&showCompleted=false"
+            "&showAssigned=true");
 }
 
 TEST(TasksApiUrlGeneratorUtilsTest, ReturnsListTasksUrlWithOptionalArgs) {

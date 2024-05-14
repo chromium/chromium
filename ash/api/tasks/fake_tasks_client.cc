@@ -235,7 +235,8 @@ void FakeTasksClient::AddTaskImpl(const std::string& task_list_id,
       /*has_notes=*/false,
       /*updated=*/base::Time::Now(),
       /*web_view_link=*/
-      GURL(base::StrCat({"https://tasks.google.com/task/", new_task_id})));
+      GURL(base::StrCat({"https://tasks.google.com/task/", new_task_id})),
+      Task::OriginSurfaceType::kRegular);
 
   const auto* const task = task_list_iter->second->AddAt(
       /*index=*/0, std::move(pending_task));
@@ -291,7 +292,7 @@ void FakeTasksClient::CacheTasks() {
     cached_tasks_->Add(std::make_unique<Task>(
         task->id, task->title, task->due, task->completed, task->has_subtasks,
         task->has_email_link, task->has_notes, task->updated,
-        task->web_view_link));
+        task->web_view_link, Task::OriginSurfaceType::kRegular));
   }
 }
 

@@ -81,7 +81,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
                                 /*due=*/due, /*completed=*/false,
                                 /*has_subtasks=*/false,
                                 /*has_email_link=*/false, /*has_notes=*/false,
-                                /*updated=*/due, /*web_view_link=*/GURL());
+                                /*updated=*/due, /*web_view_link=*/GURL(),
+                                api::Task::OriginSurfaceType::kRegular);
     const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing(),
         /*save_callback=*/base::DoNothing(),
@@ -103,7 +104,8 @@ TEST_F(GlanceablesTaskViewTest,
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -145,7 +147,8 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -207,7 +210,8 @@ TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   base::test::TestFuture<const std::string&, bool> future;
 
@@ -250,7 +254,8 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -349,7 +354,8 @@ TEST_F(GlanceablesTaskViewTest, InvokesSaveCallbackAfterEditing) {
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
                          const std::string&,
@@ -385,7 +391,8 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time(),
-                              /*web_view_link=*/GURL());
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
 
   base::test::TestFuture<base::WeakPtr<GlanceablesTaskView>, const std::string&,
                          const std::string&,
@@ -421,7 +428,8 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
                   /*due=*/std::nullopt, /*completed=*/false,
                   /*has_subtasks=*/false,
                   /*has_email_link=*/false, /*has_notes=*/false,
-                  /*updated=*/base::Time::Now(), /*web_view_link=*/GURL());
+                  /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
+                  api::Task::OriginSurfaceType::kRegular);
     std::move(callback).Run(&updated_task);
   }
 
@@ -508,7 +516,8 @@ TEST_F(GlanceablesTaskViewTest, SupportsEditingRightAfterAdding) {
                   /*due=*/std::nullopt, /*completed=*/false,
                   /*has_subtasks=*/false,
                   /*has_email_link=*/false, /*has_notes=*/false,
-                  /*updated=*/base::Time::Now(), /*web_view_link=*/GURL());
+                  /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
+                  api::Task::OriginSurfaceType::kRegular);
     std::move(callback).Run(&created_task);
   }
 
@@ -577,7 +586,8 @@ TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
                 /*due=*/std::nullopt, /*completed=*/false,
                 /*has_subtasks=*/false,
                 /*has_email_link=*/false, /*has_notes=*/false,
-                /*updated=*/base::Time::Now(), /*web_view_link=*/GURL());
+                /*updated=*/base::Time::Now(), /*web_view_link=*/GURL(),
+                api::Task::OriginSurfaceType::kRegular);
   std::move(callback).Run(&created_task);
   EXPECT_TRUE(view->GetCheckButtonForTest()->GetEnabled());
   EXPECT_TRUE(title_button->GetEnabled());

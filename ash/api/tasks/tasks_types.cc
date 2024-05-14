@@ -33,7 +33,8 @@ Task::Task(const std::string& id,
            bool has_email_link,
            bool has_notes,
            const base::Time& updated,
-           const GURL& web_view_link)
+           const GURL& web_view_link,
+           OriginSurfaceType origin_surface_type)
     : id(id),
       title(title),
       due(due),
@@ -42,7 +43,8 @@ Task::Task(const std::string& id,
       has_email_link(has_email_link),
       has_notes(has_notes),
       updated(updated),
-      web_view_link(web_view_link) {}
+      web_view_link(web_view_link),
+      origin_surface_type(origin_surface_type) {}
 
 Task::~Task() = default;
 

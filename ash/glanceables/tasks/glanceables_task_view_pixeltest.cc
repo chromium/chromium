@@ -62,7 +62,7 @@ class GlanceablesTaskViewPixelTest
         /*completed=*/false, has_subtasks(),
         /*has_email_link=*/false,
         /*has_notes=*/has_notes(), /*updated=*/base::Time(),
-        /*web_view_link=*/GURL());
+        /*web_view_link=*/GURL(), api::Task::OriginSurfaceType::kRegular);
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

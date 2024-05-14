@@ -32,6 +32,9 @@ constexpr char kTasksListUrlTemplate[] = "tasks/v1/lists/$1/tasks";
 constexpr char kTasksListRequestedFields[] =
     "kind,items(id,title,status,parent,position,due,links(type),notes,updated,"
     "webViewLink),nextPageToken";
+constexpr char kTasksListRequestedFieldsWithAssignmentInfo[] =
+    "kind,items(id,title,status,parent,position,due,links(type),notes,updated,"
+    "webViewLink,assignmentInfo(surfaceType)),nextPageToken";
 
 constexpr char kTaskUrlTemplate[] = "tasks/v1/lists/$1/tasks/$2";
 
@@ -66,8 +69,10 @@ GURL GetListTasksUrl(const std::string& task_list_id,
   CHECK(!task_list_id.empty());
   GURL url = GetBaseUrl().Resolve(base::ReplaceStringPlaceholders(
       kTasksListUrlTemplate, {task_list_id}, nullptr));
-  url = net::AppendOrReplaceQueryParameter(url, kFieldsParameterName,
-                                           kTasksListRequestedFields);
+  url = net::AppendOrReplaceQueryParameter(
+      url, kFieldsParameterName,
+      include_assigned ? kTasksListRequestedFieldsWithAssignmentInfo
+                       : kTasksListRequestedFields);
   if (!include_completed) {
     // The default is `true`.
     url = net::AppendOrReplaceQueryParameter(url, kShowCompletedParameterName,

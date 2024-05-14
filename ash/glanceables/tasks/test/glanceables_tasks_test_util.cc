@@ -84,7 +84,8 @@ std::unique_ptr<api::FakeTasksClient> InitializeFakeTasksClient(
             /*has_subtasks=*/false, /*has_email_link=*/false,
             /*has_notes=*/false, /*updated=*/tasks_time,
             /*web_view_link=*/
-            GURL(base::StrCat({"https://tasks.google.com/task/", task_id}))));
+            GURL(base::StrCat({"https://tasks.google.com/task/", task_id})),
+            api::Task::OriginSurfaceType::kRegular));
   }
 
   return tasks_client;

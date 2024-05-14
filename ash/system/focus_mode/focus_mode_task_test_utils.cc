@@ -40,7 +40,8 @@ void AddFakeTask(api::FakeTasksClient& client,
                      task_id, title, /*due=*/std::nullopt, /*completed=*/false,
                      /*has_subtasks=*/false,
                      /*has_email_link=*/false, /*has_notes=*/false,
-                     /*updated=*/base::Time{}, /*web_view_link=*/GURL{}));
+                     /*updated=*/base::Time{}, /*web_view_link=*/GURL{},
+                     api::Task::OriginSurfaceType::kRegular));
 }
 
 }  // namespace ash

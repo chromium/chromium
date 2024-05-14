@@ -1080,6 +1080,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
             "2023-01-30T22:19:22.812Z");
   EXPECT_EQ(root_tasks->GetItemAt(0)->web_view_link,
             "https://tasks.google.com/task/id1");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->origin_surface_type,
+            api::Task::OriginSurfaceType::kRegular);
 
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
   EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
@@ -1092,6 +1094,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
             "2022-12-21T23:38:22.590Z");
   EXPECT_EQ(root_tasks->GetItemAt(1)->web_view_link,
             "https://tasks.google.com/task/id3");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->origin_surface_type,
+            api::Task::OriginSurfaceType::kRegular);
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);
@@ -1835,6 +1839,40 @@ TEST_F(TasksClientImplTest, GetTasksSortsByPosition) {
   EXPECT_EQ(root_tasks->GetItemAt(0)->title, "1st");
   EXPECT_EQ(root_tasks->GetItemAt(1)->title, "2nd");
   EXPECT_EQ(root_tasks->GetItemAt(2)->title, "3rd");
+}
+
+TEST_F(TasksClientImplTest, GetTasksHandlesOriginSurfaceType) {
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {"id": "1"},
+              {"id": "2", "assignmentInfo": {"surfaceType": "DOCUMENT"}},
+              {"id": "3", "assignmentInfo": {"surfaceType": "SPACE"}},
+              {"id": "4", "assignmentInfo": {"surfaceType": "UNKNOWN"}}
+            ]
+          }
+        )"))));
+
+  TasksFuture future;
+  client()->GetTasks("test-task-list-id", /*force_fetch=*/false,
+                     future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto [success, root_tasks] = future.Take();
+  EXPECT_TRUE(success);
+
+  ASSERT_EQ(root_tasks->item_count(), 4u);
+
+  EXPECT_EQ(root_tasks->GetItemAt(0)->origin_surface_type,
+            api::Task::OriginSurfaceType::kRegular);
+  EXPECT_EQ(root_tasks->GetItemAt(1)->origin_surface_type,
+            api::Task::OriginSurfaceType::kDocument);
+  EXPECT_EQ(root_tasks->GetItemAt(2)->origin_surface_type,
+            api::Task::OriginSurfaceType::kSpace);
+  EXPECT_EQ(root_tasks->GetItemAt(3)->origin_surface_type,
+            api::Task::OriginSurfaceType::kUnknown);
 }
 
 // ----------------------------------------------------------------------------
