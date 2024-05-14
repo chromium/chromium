@@ -53,6 +53,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     std::string type;
   };
 
+  // This is reflected by network/enums.xml:NetworkPortalState.
   enum class PortalState {
     // The network is not connected or the portal state is not available.
     kUnknown,

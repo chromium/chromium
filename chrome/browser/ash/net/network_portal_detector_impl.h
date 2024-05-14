@@ -98,6 +98,10 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void PortalStateChanged(const NetworkState* default_network,
                           NetworkState::PortalState portal_state) override;
 
+  void MaybeReportMetrics(const NetworkState* network,
+                          NetworkState::PortalState portal_state,
+                          bool detection_completed);
+
   void DetectionCompleted(const NetworkState* network,
                           NetworkState::PortalState portal_state);
 
@@ -172,6 +176,9 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   // Number of detection attempts.
   int captive_portal_detector_run_count_ = 0;
+
+  // Whether metrics have been reported for the current detection cycle.
+  bool metrics_reported_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

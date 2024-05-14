@@ -277,6 +277,8 @@ class NetworkPortalDetectorImplTest
 };
 
 TEST_F(NetworkPortalDetectorImplTest, NoPortal) {
+  base::HistogramTester histogram_tester;
+
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1, ProxyPrefs::kAutoDetectProxyModeName);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
@@ -286,9 +288,14 @@ TEST_F(NetworkPortalDetectorImplTest, NoPortal) {
   EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(CheckPortalState(204, NetworkState::PortalState::kOnline,
                                kStubWireless1));
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorState",
+                                      NetworkState::PortalState::kOnline, 1);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorType", 0);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, Portal200) {
+  base::HistogramTester histogram_tester;
+
   // Connect with a proxy to trigger Chrome portal detection.
   SetConnectedWithProxy(kStubWireless1, ProxyPrefs::kPacScriptProxyModeName);
   EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
@@ -298,6 +305,12 @@ TEST_F(NetworkPortalDetectorImplTest, Portal200) {
   EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
   EXPECT_TRUE(CheckPortalState(200, NetworkState::PortalState::kPortal,
                                kStubWireless1));
+
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorState",
+                                      NetworkState::PortalState::kPortal, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Network.NetworkPortalDetectorType",
+      NetworkState::NetworkTechnologyType::kWiFi, 1);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, Portal302) {
@@ -393,6 +406,53 @@ TEST_F(NetworkPortalDetectorImplTest, NetworkChanged) {
   EXPECT_EQ(State::STATE_IDLE, state());
   EXPECT_TRUE(CheckPortalState(204, NetworkState::PortalState::kOnline,
                                kStubWireless2));
+}
+
+TEST_F(NetworkPortalDetectorImplTest, NetworkReconnect) {
+  base::HistogramTester histogram_tester;
+
+  // Connect with a proxy to trigger Chrome portal detection.
+  SetConnectedWithProxy(kStubWireless1, ProxyPrefs::kAutoDetectProxyModeName);
+
+  // Portal detector is checking for portal.
+  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+
+  // Run CaptivePortalDetector::DetectCaptivePortal().
+  base::RunLoop().RunUntilIdle();
+
+  // Captive portal result.
+  CompleteURLFetch(net::OK, /*status_code=*/302, /*content_length=*/0, nullptr);
+  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_TRUE(CheckPortalState(302, NetworkState::PortalState::kPortal,
+                               kStubWireless1));
+
+  // WiFi network is changed during portal detection for WiFi.
+  SetDisconnected(kStubWireless1);
+  SetConnectedWithProxy(kStubWireless2, ProxyPrefs::kAutoDetectProxyModeName);
+
+  // Portal detection for kStubWireless1 is cancelled, portal detection for
+  // kStubWireless2 is started.
+  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+
+  // Run CaptivePortalDetector::DetectCaptivePortal().
+  base::RunLoop().RunUntilIdle();
+
+  // Captive portal result.
+  CompleteURLFetch(net::OK, /*status_code=*/302, /*content_length=*/0, nullptr);
+  EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+  EXPECT_TRUE(CheckPortalState(302, NetworkState::PortalState::kPortal,
+                               kStubWireless2));
+
+  // We record a NetworkPortalDetectorRunCount for the first run. The second
+  // run has not completed but will record State and Type because a kPortal
+  // state was discovered.
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorRunCount",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorState",
+                                      NetworkState::PortalState::kPortal, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Network.NetworkPortalDetectorType",
+      NetworkState::NetworkTechnologyType::kWiFi, 2);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, NetworkStateReconnect) {
@@ -555,6 +615,9 @@ TEST_F(NetworkPortalDetectorImplTest, FirstAttemptFailed) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Network.NetworkPortalDetectorRunCount"),
       ElementsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorState",
+                                      NetworkState::PortalState::kOnline, 2);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorType", 0);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, MultipleAttemptsFailed) {
@@ -593,6 +656,10 @@ TEST_F(NetworkPortalDetectorImplTest, MultipleAttemptsFailed) {
   EXPECT_EQ(3, captive_portal_detector_run_count());
   EXPECT_EQ(base::Seconds(retry_delay), next_attempt_delay());
 
+  // Less than 10 failures won't report a histogram result.
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorState", 0);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorType", 0);
+
   // Start a new probe that succeeds.
   StartDetection();
   base::RunLoop().RunUntilIdle();
@@ -606,6 +673,33 @@ TEST_F(NetworkPortalDetectorImplTest, MultipleAttemptsFailed) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Network.NetworkPortalDetectorRunCount"),
       ElementsAre(base::Bucket(4, 1)));
+}
+
+TEST_F(NetworkPortalDetectorImplTest, AllAttemptsFailed) {
+  ASSERT_EQ(0, captive_portal_detector_run_count());
+  base::HistogramTester histogram_tester;
+
+  set_attempt_delay(base::TimeDelta());
+  const int retry_delay = 0;
+  std::string retry_response = GetRetryResponse(retry_delay);
+
+  // Connect with a proxy to trigger Chrome portal detection.
+  SetConnectedWithProxy(kStubWireless1, ProxyPrefs::kAutoDetectProxyModeName);
+  EXPECT_EQ(State::STATE_CHECKING_FOR_PORTAL, state());
+
+  for (int i = 1; i <= 10; i++) {
+    CompleteURLFetch(net::OK, /*status_code=*/503, /*content_length=*/0,
+                     retry_response.c_str());
+    EXPECT_EQ(State::STATE_PORTAL_CHECK_PENDING, state());
+    EXPECT_EQ(i, captive_portal_detector_run_count());
+    EXPECT_EQ(base::Seconds(retry_delay), next_attempt_delay());
+    // Run CaptivePortalDetector::DetectCaptivePortal().
+    base::RunLoop().RunUntilIdle();
+  }
+
+  histogram_tester.ExpectUniqueSample("Network.NetworkPortalDetectorState",
+                                      NetworkState::PortalState::kUnknown, 1);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorType", 0);
 }
 
 TEST_F(NetworkPortalDetectorImplTest, MultipleRetries) {
@@ -712,6 +806,8 @@ TEST_F(NetworkPortalDetectorImplTest, NoResponseDefaultToShillOnlineState) {
 }
 
 TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
+  base::HistogramTester histogram_tester;
+
   set_attempt_delay(base::TimeDelta());
 
   // Connect with a proxy to trigger Chrome portal detection.
@@ -728,6 +824,9 @@ TEST_F(NetworkPortalDetectorImplTest, DetectionTimeoutIsCancelled) {
   EXPECT_TRUE(attempt_timeout_is_cancelled());
   EXPECT_TRUE(CheckPortalState(
       kStatusCodeUnset, NetworkState::PortalState::kOnline, kStubWireless1));
+
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorState", 0);
+  histogram_tester.ExpectTotalCount("Network.NetworkPortalDetectorType", 0);
 }
 
 }  // namespace ash

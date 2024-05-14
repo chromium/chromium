@@ -2044,13 +2044,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
-    expires_after="2024-09-22">
+    expires_after="2024-07-23">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
-    Whether a proxy is configured when Chrome captive portal detection
-    completes. This will be used to help prioritize better captive portal
-    detection with a proxy configured.
+    DEPRECATED: This metric was removed in M-126 (chrome portal detection is
+    only run when a proxy is configured starting in M-126). Whether a proxy is
+    configured when Chrome captive portal detection completes. This will be used
+    to help prioritize better captive portal detection with a proxy configured.
   </summary>
 </histogram>
 
@@ -2062,7 +2063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"
-    expires_after="2024-09-22">
+    expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
@@ -2071,8 +2072,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.NetworkPortalDetectorState" enum="NetworkPortalState"
+    expires_after="2024-12-31">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health-team@google.com</owner>
+  <summary>
+    The PortalState result of Chrome portal detection when completed.
+  </summary>
+</histogram>
+
 <histogram name="Network.NetworkPortalDetectorType" enum="NetworkTechnology"
-    expires_after="2024-09-22">
+    expires_after="2024-12-31">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
   <summary>
