@@ -10,11 +10,11 @@
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
+#include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_base.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace arc {
@@ -23,20 +23,9 @@ using EventType = arc::ArcTracingGraphicsModel::EventType;
 
 namespace {
 
-constexpr std::string_view kBasicSystrace =
-    "{\"traceEvents\":[],\"systemTraceEvents\":\""
-    // clang-format off
-    "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
-    // clang-format on
-    "\"}";
-
-class OverviewTracingHandlerTest : public ChromeAshTestBase {
+class OverviewTracingHandlerTest : public OverviewTracingTestBase {
  public:
-  OverviewTracingHandlerTest()
-      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
-        weak_ptr_factory_(this) {}
+  OverviewTracingHandlerTest() : weak_ptr_factory_(this) {}
 
   ~OverviewTracingHandlerTest() override = default;
 
@@ -45,15 +34,8 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
       delete;
 
   void SetUp() override {
-    ChromeAshTestBase::SetUp();
+    OverviewTracingTestBase::SetUp();
 
-    profile_ = std::make_unique<TestingProfile>();
-    arc_app_test_.SetUp(profile_.get());
-
-    // WMHelper constructor sets a global instance which the Handler constructor
-    // requires.
-    wm_helper_ = std::make_unique<exo::WMHelper>();
-    download_path_ = base::GetTempDirForTesting();
     handler_ = std::make_unique<OverviewTracingTestHandler>(
         base::BindRepeating(&OverviewTracingHandlerTest::OnArcWindowFocusChange,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -63,37 +45,15 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
     handler_->set_graphics_model_ready_cb(
         base::BindRepeating(&OverviewTracingHandlerTest::OnGraphicsModelReady,
                             weak_ptr_factory_.GetWeakPtr()));
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::switches::kEnableArcVm);
-
-    saved_tz_.reset(icu::TimeZone::createDefault());
-  }
-
-  static void SetTimeZone(const char* name) {
-    std::unique_ptr<icu::TimeZone> tz{icu::TimeZone::createTimeZone(name)};
-    icu::TimeZone::setDefault(*tz);
   }
 
   void TearDown() override {
-    icu::TimeZone::setDefault(*saved_tz_);
-
     handler_.reset();
-    wm_helper_.reset();
 
-    arc_app_test_.TearDown();
-
-    profile_.reset();
-
-    ChromeAshTestBase::TearDown();
+    OverviewTracingTestBase::TearDown();
   }
 
  protected:
-  void FastForwardClockAndTaskQueue(base::TimeDelta delta) {
-    handler_->set_now(handler_->Now() + delta);
-    task_environment()->FastForwardBy(delta);
-  }
-
   void OnArcWindowFocusChange(aura::Window* window) {
     if (window) {
       events_.push_back("new ARC window focused");
@@ -109,15 +69,7 @@ class OverviewTracingHandlerTest : public ChromeAshTestBase {
     model_ = std::move(results->model);
   }
 
-  // The time relative to which trace tick timestamps are calculated. This is
-  // typically when the system was booted.
-  base::Time trace_time_base_;
-  std::unique_ptr<TestingProfile> profile_;
-  ArcAppTest arc_app_test_;
-  std::unique_ptr<exo::WMHelper> wm_helper_;
-  base::FilePath download_path_;
   std::unique_ptr<OverviewTracingTestHandler> handler_;
-  std::unique_ptr<icu::TimeZone> saved_tz_;
   std::vector<std::string> events_;
   base::Value model_;
 
@@ -166,7 +118,8 @@ TEST_F(OverviewTracingHandlerTest, FilterSystemTraceByTimestamp) {
   handler_->StartTracingOnControllerRespond();
 
   // Fast forward past the max tracing interval.
-  FastForwardClockAndTaskQueue(max_time + base::Milliseconds(500));
+  FastForwardClockAndTaskQueue(handler_.get(),
+                               max_time + base::Milliseconds(500));
 
   // Pass results from trace controller to handler. First and last events should
   // not be in the model.
@@ -236,12 +189,13 @@ TEST_F(OverviewTracingHandlerTest, SwitchWindowDuringModelBuild) {
 
   // Fast forward past the max tracing interval. This will stop the trace at the
   // end of the fast-forward, which is 400ms after the timeout.
-  FastForwardClockAndTaskQueue(max_time + base::Milliseconds(400));
+  FastForwardClockAndTaskQueue(handler_.get(),
+                               max_time + base::Milliseconds(400));
 
   // While model is being built, switch to the ARC window to change
   // min_tracing_time_. This sets the min trace time to 300ms after the end of
   // the trace.
-  FastForwardClockAndTaskQueue(base::Milliseconds(300));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Milliseconds(300));
   other_arc_widget->Activate();
 
   // Pass results from trace controller to handler.
@@ -288,14 +242,14 @@ TEST_F(OverviewTracingHandlerTest, SwitchWindowDuringTrace) {
   handler_->StartTracing(download_path_, max_time);
   handler_->StartTracingOnControllerRespond();
 
-  FastForwardClockAndTaskQueue(base::Seconds(1));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(1));
   other_arc_widget->Activate();
-  FastForwardClockAndTaskQueue(base::Seconds(1));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(1));
   task_environment()->RunUntilIdle();
 
   // Fast forward past the max tracing interval. This will stop the trace at the
   // end of the fast-forward, which is 400ms after the timeout.
-  FastForwardClockAndTaskQueue(base::Milliseconds(4500));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Milliseconds(4500));
 
   // Pass results from trace controller to handler.
   handler_->StopTracingOnControllerRespond(
@@ -338,7 +292,7 @@ TEST_F(OverviewTracingHandlerTest, SwitchWindowBeforeTraceStart) {
   other_arc_widget->Activate();
 
   handler_->StartTracingOnControllerRespond();
-  FastForwardClockAndTaskQueue(base::Seconds(6));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(6));
   handler_->VerifyNoUnrespondedCallback();
 
   // We should be able to do a trace now - no trace state should be lingering.
@@ -346,7 +300,7 @@ TEST_F(OverviewTracingHandlerTest, SwitchWindowBeforeTraceStart) {
   other_arc_widget->Activate();
   handler_->StartTracing(download_path_, base::Seconds(5));
   handler_->StartTracingOnControllerRespond();
-  FastForwardClockAndTaskQueue(base::Seconds(6));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(6));
   handler_->StopTracingOnControllerRespond(
       std::make_unique<std::string>(kBasicSystrace));
   task_environment()->RunUntilIdle();
@@ -374,7 +328,7 @@ TEST_F(OverviewTracingHandlerTest, CommitAndPresentTimestampsInModel) {
   handler_->StartTracing(download_path_, base::Seconds(5));
   handler_->StartTracingOnControllerRespond();
 
-  FastForwardClockAndTaskQueue(base::Seconds(1));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(1));
 
   for (int i = 0; i < 5; i++) {
     s.Commit();
@@ -388,10 +342,10 @@ TEST_F(OverviewTracingHandlerTest, CommitAndPresentTimestampsInModel) {
     for (auto& cb : presentation_callbacks) {
       cb.Run(feedback);
     }
-    FastForwardClockAndTaskQueue(base::Milliseconds(42));
+    FastForwardClockAndTaskQueue(handler_.get(), base::Milliseconds(42));
   }
 
-  FastForwardClockAndTaskQueue(base::Seconds(5));
+  FastForwardClockAndTaskQueue(handler_.get(), base::Seconds(5));
 
   handler_->StopTracingOnControllerRespond(
       std::make_unique<std::string>(kBasicSystrace));
