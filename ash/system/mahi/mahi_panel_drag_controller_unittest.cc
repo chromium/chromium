@@ -31,6 +31,17 @@ class MahiPanelDragControllerTest : public AshTestBase {
   }
   ~MahiPanelDragControllerTest() override = default;
 
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    ui_controller_.OpenMahiPanel(GetPrimaryDisplay().id());
+  }
+
+  void TearDown() override {
+    ui_controller_.CloseMahiPanel();
+    AshTestBase::TearDown();
+  }
+
   MahiUiController& ui_controller() { return ui_controller_; }
 
  private:
@@ -40,9 +51,7 @@ class MahiPanelDragControllerTest : public AshTestBase {
   chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
 };
 
-// TODO(crbug.com/339619327): Test is flaky.
-TEST_F(MahiPanelDragControllerTest, DISABLED_MouseDragRepositionsPanel) {
-  ui_controller().OpenMahiPanel(GetPrimaryDisplay().id());
+TEST_F(MahiPanelDragControllerTest, MouseDragRepositionsPanel) {
   views::Widget* panel_widget = ui_controller().mahi_panel_widget();
   constexpr gfx::Rect kInitialBounds(100, 100, 200, 300);
   panel_widget->SetBounds(kInitialBounds);
@@ -56,9 +65,7 @@ TEST_F(MahiPanelDragControllerTest, DISABLED_MouseDragRepositionsPanel) {
             kInitialBounds + kDragOffset);
 }
 
-// TODO(crbug.com/339619327): Test is flaky.
-TEST_F(MahiPanelDragControllerTest, DISABLED_GestureDragRepositionsPanel) {
-  ui_controller().OpenMahiPanel(GetPrimaryDisplay().id());
+TEST_F(MahiPanelDragControllerTest, GestureDragRepositionsPanel) {
   views::Widget* panel_widget = ui_controller().mahi_panel_widget();
   constexpr gfx::Rect kInitialBounds(100, 100, 200, 300);
   panel_widget->SetBounds(kInitialBounds);
