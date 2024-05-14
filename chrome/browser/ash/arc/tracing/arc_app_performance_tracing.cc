@@ -209,7 +209,8 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
           .Set("commitDeviation", success ? result->commit_deviation : 0)
           .Set("presentDeviation", success ? result->present_deviation : 0)
           .Set("renderQuality", success ? result->render_quality : 0)
-          .Set("janksPerMinute", success ? result->janks_per_minute : 0));
+          .Set("janksPerMinute", success ? result->janks_per_minute : 0)
+          .Set("janksPercentage", success ? result->janks_percentage : 0));
 }
 
 bool ExpectingPresentEvents() {

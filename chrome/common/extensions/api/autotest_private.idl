@@ -382,6 +382,7 @@ namespace autotestPrivate {
     double presentDeviation;
     double renderQuality;
     double janksPerMinute;
+    double janksPercentage;
   };
 
   callback TakeScreenshotCallback = void (DOMString base64Png);
