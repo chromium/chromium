@@ -154,7 +154,7 @@ int FuzzedSocket::SetSendBufferSize(int32_t size) {
 }
 
 int FuzzedSocket::Bind(const net::IPEndPoint& local_addr) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_NOT_IMPLEMENTED;
 }
 

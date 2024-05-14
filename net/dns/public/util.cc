@@ -41,7 +41,7 @@ IPEndPoint GetMdnsGroupEndPoint(AddressFamily address_family) {
     case ADDRESS_FAMILY_IPV6:
       return GetMdnsIPEndPoint(dns_protocol::kMdnsMulticastGroupIPv6);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IPEndPoint();
   }
 }
@@ -65,7 +65,7 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
       return IPEndPoint(IPAddress::IPv6AllZeros(),
                         dns_protocol::kDefaultPortMulticast);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IPEndPoint();
   }
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

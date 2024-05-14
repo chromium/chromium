@@ -306,7 +306,7 @@ int QuicProxyClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::HTTP_TRANSACTION_TUNNEL_READ_HEADERS, rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }

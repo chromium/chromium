@@ -124,7 +124,7 @@ int FilterSourceStream::DoLoop(int result) {
         rv = DoFilterData();
         break;
       default:
-        NOTREACHED() << "bad state: " << state;
+        NOTREACHED_IN_MIGRATION() << "bad state: " << state;
         rv = ERR_UNEXPECTED;
         break;
     }

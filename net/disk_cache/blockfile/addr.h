@@ -140,7 +140,7 @@ class NET_EXPORT_PRIVATE Addr {
       case BLOCK_EVICTED:
         return 48;
       case EXTERNAL:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
     }
     return 0;

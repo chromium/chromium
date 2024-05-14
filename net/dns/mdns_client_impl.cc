@@ -601,7 +601,7 @@ void MDnsListenerImpl::HandleRecordUpdate(MDnsCache::UpdateType update_type,
         break;
       case MDnsCache::NoChange:
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         // Dummy assignment to suppress compiler warning.
         update_external = MDnsListener::RECORD_CHANGED;
         break;

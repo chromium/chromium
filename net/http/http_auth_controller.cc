@@ -319,7 +319,7 @@ int HttpAuthController::HandleAuthChallenge(
             INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

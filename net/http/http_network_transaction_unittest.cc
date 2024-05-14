@@ -6021,7 +6021,7 @@ class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
       results->UsePacString("HTTPS " + ProxyHostPortPairAsString());
       return OK;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERR_NOT_IMPLEMENTED;
   }
 };

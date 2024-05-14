@@ -532,7 +532,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
             TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     if (block_truncated &&
         base::FeatureList::IsEnabled(net::features::kBlockTruncatedCookies)) {

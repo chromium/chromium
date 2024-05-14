@@ -111,7 +111,7 @@ std::string HttpAuth::GetChallengeHeaderName(Target target) {
     case AUTH_SERVER:
       return "WWW-Authenticate";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -124,7 +124,7 @@ std::string HttpAuth::GetAuthorizationHeaderName(Target target) {
     case AUTH_SERVER:
       return HttpRequestHeaders::kAuthorization;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -137,7 +137,7 @@ std::string HttpAuth::GetAuthTargetString(Target target) {
     case AUTH_SERVER:
       return "server";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -147,7 +147,7 @@ const char* HttpAuth::SchemeToString(Scheme scheme) {
   static_assert(std::size(kSchemeNames) == AUTH_SCHEME_MAX,
                 "http auth scheme names incorrect size");
   if (scheme < AUTH_SCHEME_BASIC || scheme >= AUTH_SCHEME_MAX) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "invalid_scheme";
   }
   return kSchemeNames[scheme];
@@ -159,7 +159,7 @@ HttpAuth::Scheme HttpAuth::StringToScheme(const std::string& str) {
     if (str == kSchemeNames[i])
       return static_cast<Scheme>(i);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AUTH_SCHEME_MAX;
 }
 
@@ -178,7 +178,7 @@ const char* HttpAuth::AuthorizationResultToString(
     case AUTHORIZATION_RESULT_DIFFERENT_REALM:
       return "different_realm";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "(invalid result)";
 }
 

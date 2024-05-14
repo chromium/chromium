@@ -115,7 +115,7 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
         case PROXY_SOCKS_HOST:
           return PROXY_SOCKS_PORT;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return PROXY_HTTP_PORT;  // Placate compiler.
       }
     }

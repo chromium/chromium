@@ -76,7 +76,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
     }
     default: {
       result->UseDirect();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }
@@ -262,7 +262,7 @@ base::Value ProxyConfig::ToValue() const {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     // Output the bypass rules.

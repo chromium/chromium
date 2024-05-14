@@ -232,7 +232,7 @@ int TransportConnectJob::DoLoop(int result) {
         rv = DoTransportConnectComplete(rv);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         rv = ERR_FAILED;
         break;
     }

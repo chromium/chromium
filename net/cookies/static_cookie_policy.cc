@@ -22,7 +22,7 @@ int StaticCookiePolicy::CanAccessCookies(
     case StaticCookiePolicy::BLOCK_ALL_COOKIES:
       return ERR_ACCESS_DENIED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ERR_ACCESS_DENIED;
   }
 }

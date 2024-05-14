@@ -317,7 +317,7 @@ void TestTransactionConsumer::OnIOComplete(int result) {
       DidRead(result);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -708,7 +708,7 @@ int MockNetworkTransaction::DoLoop(int result) {
         rv = DoReadHeadersComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_FAILED;
         break;
     }

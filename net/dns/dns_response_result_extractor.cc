@@ -644,7 +644,7 @@ ResultsOrError DnsResponseResultExtractor::ExtractDnsResults(
   switch (query_type) {
     case DnsQueryType::UNSPECIFIED:
       // Should create multiple transactions with specified types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::unexpected(ExtractionError::kUnexpected);
     case DnsQueryType::A:
     case DnsQueryType::AAAA:

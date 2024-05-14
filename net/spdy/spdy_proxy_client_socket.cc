@@ -336,7 +336,7 @@ int SpdyProxyClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::HTTP_TRANSACTION_TUNNEL_READ_HEADERS, rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }
@@ -528,7 +528,7 @@ void SpdyProxyClientSocket::OnDataSent() {
 void SpdyProxyClientSocket::OnTrailers(const spdy::Http2HeaderBlock& trailers) {
   // |spdy_stream_| is of type SPDY_BIDIRECTIONAL_STREAM, so trailers are
   // combined with response headers and this method will not be calld.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SpdyProxyClientSocket::OnClose(int status)  {

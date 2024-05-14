@@ -195,7 +195,7 @@ void QuicConnectionLogger::OnPacketSent(
           kMaxOutgoingPacketSize, 50);
       break;
     case quic::NUM_ENCRYPTION_LEVELS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

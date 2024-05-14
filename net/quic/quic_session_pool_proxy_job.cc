@@ -126,7 +126,7 @@ int QuicSessionPool::ProxyJob::DoLoop(int rv) {
         rv = DoAttemptSession();
         break;
       default:
-        NOTREACHED() << "io_state_: " << io_state_;
+        NOTREACHED_IN_MIGRATION() << "io_state_: " << io_state_;
         break;
     }
   } while (io_state_ != STATE_NONE && rv != ERR_IO_PENDING);

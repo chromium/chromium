@@ -387,7 +387,7 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
     case WEBSOCKET_SOCKET_POOL:
       return websocket_socket_pool_manager_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;

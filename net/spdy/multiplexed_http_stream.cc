@@ -31,7 +31,7 @@ void MultiplexedHttpStream::SaveSSLInfo() {
 }
 
 void MultiplexedHttpStream::Drain(HttpNetworkSession* session) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   Close(false);
   delete this;
 }

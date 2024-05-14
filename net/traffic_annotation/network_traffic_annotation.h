@@ -54,7 +54,7 @@ struct NetworkTrafficAnnotationTag {
   }
 
   static NetworkTrafficAnnotationTag NotReached() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::NetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_UNINITIALIZED);
   }
 

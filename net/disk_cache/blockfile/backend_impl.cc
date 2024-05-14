@@ -295,7 +295,7 @@ int BackendImpl::SyncInit() {
   trace_object_->EnableTracing(false);
   int sc = SelfCheck();
   if (sc < 0 && sc != ERR_NUM_ENTRIES_MISMATCH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   trace_object_->EnableTracing(true);
 #endif
 
@@ -544,7 +544,7 @@ scoped_refptr<EntryImpl> BackendImpl::CreateEntryImpl(const std::string& key) {
     DCHECK(!error);
     if (!parent && data_->table[hash & mask_]) {
       // We should have corrected the problem.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
   }
@@ -699,7 +699,7 @@ bool BackendImpl::SetMaxSize(int64_t max_bytes) {
 
 base::FilePath BackendImpl::GetFileName(Addr address) const {
   if (!address.is_separate_file() || !address.is_initialized()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::FilePath();
   }
 
@@ -1421,7 +1421,7 @@ bool BackendImpl::InitStats() {
   }
 
   if (!address.is_block_file()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

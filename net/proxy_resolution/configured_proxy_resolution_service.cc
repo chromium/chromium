@@ -255,7 +255,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #elif BUILDFLAG(IS_APPLE)
     return std::make_unique<ProxyResolverFactoryApple>();
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
 #endif
   }
@@ -539,7 +539,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
           rv = DoCreateResolverComplete(rv);
           break;
         default:
-          NOTREACHED() << "bad state: " << static_cast<int>(state);
+          NOTREACHED_IN_MIGRATION() << "bad state: " << static_cast<int>(state);
           rv = ERR_UNEXPECTED;
           break;
       }
@@ -1432,7 +1432,8 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   switch (availability) {
     case ProxyConfigService::CONFIG_PENDING:
       // ProxyConfigService implementors should never pass CONFIG_PENDING.
-      NOTREACHED() << "Proxy config change with CONFIG_PENDING availability!";
+      NOTREACHED_IN_MIGRATION()
+          << "Proxy config change with CONFIG_PENDING availability!";
       return;
     case ProxyConfigService::CONFIG_VALID:
       effective_config = config;

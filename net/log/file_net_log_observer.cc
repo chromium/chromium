@@ -512,7 +512,7 @@ std::string FileNetLogObserver::CaptureModeToString(NetLogCaptureMode mode) {
     case NetLogCaptureMode::kEverything:
       return "Everything";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UNKNOWN";
 }
 

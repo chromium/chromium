@@ -526,7 +526,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest, CoalesceNelPolicyOperations) {
           break;
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -1289,7 +1289,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
           break;
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -1381,7 +1381,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
           break;
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

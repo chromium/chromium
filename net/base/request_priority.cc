@@ -23,7 +23,7 @@ const char* RequestPriorityToString(RequestPriority priority) {
     case HIGHEST:
       return "HIGHEST";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UNKNOWN_PRIORITY";
 }
 

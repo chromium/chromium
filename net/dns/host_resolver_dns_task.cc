@@ -363,7 +363,7 @@ void HostResolverDnsTask::OnTimeout() {
       default:
         // The timeout timer is only started when all other transactions have
         // completed.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -791,7 +791,7 @@ void HostResolverDnsTask::HandleTransactionResults(
         break;
       default:
         // Only expect address query types with multiple transactions.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -991,7 +991,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
     }
   } else {
     // Unhandled supplemental type.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   base::TimeDelta timeout;

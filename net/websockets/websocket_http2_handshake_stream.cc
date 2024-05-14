@@ -160,7 +160,7 @@ int WebSocketHttp2HandshakeStream::ReadResponseBody(
     CompletionOnceCallback callback) {
   // Callers should instead call Upgrade() to get a WebSocketStream
   // and call ReadFrames() on that.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return OK;
 }
 

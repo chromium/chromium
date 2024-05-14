@@ -41,7 +41,7 @@ bool IsAlternateProtocolValid(NextProto protocol) {
     case kProtoQUIC:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -50,7 +50,7 @@ bool IsProtocolEnabled(NextProto protocol,
                        bool is_quic_enabled) {
   switch (protocol) {
     case kProtoUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case kProtoHTTP11:
       return true;
@@ -59,7 +59,7 @@ bool IsProtocolEnabled(NextProto protocol,
     case kProtoQUIC:
       return is_quic_enabled;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

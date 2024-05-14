@@ -228,7 +228,8 @@ NetworkChangeNotifierApple::CalculateConnectionType(
         current_network = 5;
       } else {
         // New technology?
-        NOTREACHED() << "Unknown network technology: " << network_type;
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown network technology: " << network_type;
         return CONNECTION_UNKNOWN;
       }
       if (current_network > best_network) {
@@ -335,7 +336,7 @@ void NetworkChangeNotifierApple::SetDynamicStoreNotificationKeys(
     base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store) {
 #if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #elif BUILDFLAG(IS_MAC)
   NSArray* notification_keys = @[
     base::apple::CFToNSOwnershipCast(SCDynamicStoreKeyCreateNetworkGlobalEntity(
@@ -372,7 +373,7 @@ void NetworkChangeNotifierApple::SetDynamicStoreNotificationKeys(
 void NetworkChangeNotifierApple::OnNetworkConfigChange(CFArrayRef changed_keys) {
 #if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #elif BUILDFLAG(IS_MAC)
   DCHECK_EQ(run_loop_.get(), CFRunLoopGetCurrent());
 
@@ -389,7 +390,7 @@ void NetworkChangeNotifierApple::OnNetworkConfigChange(CFArrayRef changed_keys) 
       // TODO(willchan): Does not appear to be working.  Look into this.
       // Perhaps this isn't needed anyway.
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   if (!maybe_notify) {

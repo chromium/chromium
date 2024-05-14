@@ -77,7 +77,7 @@ unsigned GetPolicyValue(const AddressSorterPosix::PolicyTable& table,
     if (IPAddressMatchesPrefix(address, prefix, entry.prefix_length))
       return entry.value;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // The last entry is the least restrictive, so assume it's default.
   return table.back().value;
 }
@@ -128,7 +128,7 @@ AddressSorterPosix::AddressScope GetScope(
     return static_cast<AddressSorterPosix::AddressScope>(
         GetPolicyValue(ipv4_scope_table, address));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return AddressSorterPosix::SCOPE_NODELOCAL;
   }
 }

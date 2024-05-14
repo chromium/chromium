@@ -66,7 +66,7 @@ HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
       DCHECK(quic_version.UsesTls());
       return HttpConnectionInfo::kQUIC_2_DRAFT_8;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return HttpConnectionInfo::kQUIC_UNKNOWN_VERSION;
 }
 
@@ -454,7 +454,7 @@ int QuicHttpStream::DoLoop(int rv) {
         CHECK_EQ(OK, rv);
         break;
       default:
-        NOTREACHED() << "next_state_: " << next_state_;
+        NOTREACHED_IN_MIGRATION() << "next_state_: " << next_state_;
         break;
     }
   } while (next_state_ != STATE_NONE && next_state_ != STATE_OPEN &&

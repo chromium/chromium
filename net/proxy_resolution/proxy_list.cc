@@ -202,7 +202,7 @@ bool ProxyList::Fallback(ProxyRetryInfoMap* proxy_retry_info,
                          int net_error,
                          const NetLogWithSource& net_log) {
   if (proxy_chains_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // By default, proxy chains are not retried for 5 minutes.
@@ -247,7 +247,7 @@ void ProxyList::UpdateRetryInfoOnFallback(
   DCHECK(!retry_delay.is_zero());
 
   if (proxy_chains_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

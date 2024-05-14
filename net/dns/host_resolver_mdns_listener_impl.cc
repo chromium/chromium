@@ -74,7 +74,7 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
   switch (query_type_) {
     case DnsQueryType::UNSPECIFIED:
     case DnsQueryType::HTTPS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case DnsQueryType::A:
     case DnsQueryType::AAAA:

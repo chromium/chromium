@@ -60,7 +60,7 @@ void SortData(std::vector<DirectoryLister::DirectoryListerData>* data,
     std::sort(data->begin(), data->end(), CompareAlphaDirsFirst);
   } else if (listing_type != DirectoryLister::NO_SORT &&
              listing_type != DirectoryLister::NO_SORT_RECURSIVE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

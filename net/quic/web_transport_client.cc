@@ -24,7 +24,7 @@ class FailedWebTransportClient : public WebTransportClient {
         visitor_(visitor) {}
   void Connect() override { visitor_->OnConnectionFailed(error_); }
   void Close(const std::optional<WebTransportCloseInfo>& close_info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   quic::WebTransportSession* session() override { return nullptr; }

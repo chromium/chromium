@@ -107,7 +107,7 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
     case CERT_TEST_NAMES:
       return base::FilePath(FILE_PATH_LITERAL("test_names.pem"));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return base::FilePath();
 }
@@ -140,7 +140,7 @@ std::string BaseTestServer::GetScheme() const {
     case TYPE_WSS:
       return "wss";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }

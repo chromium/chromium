@@ -988,7 +988,8 @@ std::unique_ptr<HttpResponse> HandleChunked(const HttpRequest& request) {
     } else if (query.GetKey() == "chunksNumber") {
       num_chunks = value;
     } else {
-      NOTREACHED() << query.GetKey() << "Is not a valid argument of /chunked";
+      NOTREACHED_IN_MIGRATION()
+          << query.GetKey() << "Is not a valid argument of /chunked";
     }
   }
 

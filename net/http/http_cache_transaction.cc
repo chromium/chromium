@@ -623,7 +623,7 @@ void HttpCache::Transaction::SetEarlyResponseHeadersCallback(
 void HttpCache::Transaction::SetModifyRequestHeadersCallback(
     base::RepeatingCallback<void(net::HttpRequestHeaders*)> callback) {
   // This method should not be called for this class.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void HttpCache::Transaction::SetIsSharedDictionaryReadAllowedCallback(
@@ -1033,7 +1033,7 @@ int HttpCache::Transaction::DoLoop(int result) {
         rv = DoNetworkReadComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state " << state;
+        NOTREACHED_IN_MIGRATION() << "bad state " << state;
         rv = ERR_FAILED;
         break;
     }
@@ -1321,7 +1321,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
       TransitionToState(STATE_SEND_REQUEST);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return OK;
@@ -1544,7 +1544,7 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
 
   // TODO(jkarlin): We should either handle the case or DCHECK.
   if (result != OK) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     TransitionToState(STATE_FINISH_HEADERS);
     return result;
   }
@@ -1760,7 +1760,7 @@ int HttpCache::Transaction::DoCacheDispatchValidation() {
       break;
     case WRITE:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return result;
 }

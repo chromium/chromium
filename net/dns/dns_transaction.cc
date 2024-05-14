@@ -288,7 +288,7 @@ class DnsUDPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
@@ -794,7 +794,7 @@ class DnsTCPAttempt : public DnsAttempt {
           rv = DoReadResponseComplete(rv);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);

@@ -55,7 +55,7 @@ const uint16_t* GetPortFieldFromSockaddr(const struct sockaddr* address,
         reinterpret_cast<const struct sockaddr_in6*>(address);
     return &sockaddr->sin6_port;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 }

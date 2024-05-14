@@ -862,7 +862,7 @@ int UDPSocketPosix::SetMulticastOptions() {
         break;
       }
       default:
-        NOTREACHED() << "Invalid address family";
+        NOTREACHED_IN_MIGRATION() << "Invalid address family";
         return ERR_ADDRESS_INVALID;
     }
   }
@@ -933,7 +933,7 @@ int UDPSocketPosix::JoinGroup(const IPAddress& group_address) const {
       return OK;
     }
     default:
-      NOTREACHED() << "Invalid address family";
+      NOTREACHED_IN_MIGRATION() << "Invalid address family";
       return ERR_ADDRESS_INVALID;
   }
 }
@@ -977,7 +977,7 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
       return OK;
     }
     default:
-      NOTREACHED() << "Invalid address family";
+      NOTREACHED_IN_MIGRATION() << "Invalid address family";
       return ERR_ADDRESS_INVALID;
   }
 }

@@ -72,7 +72,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     return true;
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&
@@ -121,7 +121,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
   }
 
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_11_0) || (BUILDFLAG(IS_IOS) &&

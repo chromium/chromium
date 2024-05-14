@@ -97,7 +97,7 @@ int IPEndPoint::GetSockAddrFamily() const {
       return AF_BTH;
 #endif
     default:
-      NOTREACHED() << "Bad IP address";
+      NOTREACHED_IN_MIGRATION() << "Bad IP address";
       return AF_UNSPEC;
   }
 }

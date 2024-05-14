@@ -200,7 +200,7 @@ const char* NetLog::SourceTypeToString(NetLogSourceType source) {
 #include "net/log/net_log_source_type_list.h"
 #undef SOURCE_TYPE
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -224,7 +224,7 @@ const char* NetLog::EventPhaseToString(NetLogEventPhase phase) {
     case NetLogEventPhase::NONE:
       return "PHASE_NONE";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

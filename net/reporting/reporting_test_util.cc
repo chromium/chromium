@@ -86,7 +86,7 @@ void ErasePendingUpload(
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -352,51 +352,51 @@ void TestReportingService::ProcessReportToHeader(
     const url::Origin& origin,
     const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& header_value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestReportingService::RemoveBrowsingData(
     uint64_t data_type_mask,
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestReportingService::RemoveAllBrowsingData(uint64_t data_type_mask) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestReportingService::OnShutdown() {}
 
 const ReportingPolicy& TestReportingService::GetPolicy() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return dummy_policy_;
 }
 
 ReportingContext* TestReportingService::GetContextForTesting() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 std::vector<raw_ptr<const ReportingReport, VectorExperimental>>
 TestReportingService::GetReports() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<raw_ptr<const ReportingReport, VectorExperimental>>();
 }
 
 base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
 TestReportingService::GetV1ReportingEndpointsByOrigin() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::flat_map<url::Origin, std::vector<ReportingEndpoint>>();
 }
 
 void TestReportingService::AddReportingCacheObserver(
     ReportingCacheObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestReportingService::RemoveReportingCacheObserver(
     ReportingCacheObserver* observer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace net

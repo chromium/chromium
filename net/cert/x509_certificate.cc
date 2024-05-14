@@ -314,7 +314,7 @@ void X509Certificate::Persist(base::Pickle* pickle) const {
   DCHECK(cert_buffer_);
   // This would be an absolutely insane number of intermediates.
   if (intermediate_ca_certs_.size() > static_cast<size_t>(INT_MAX) - 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   pickle->WriteInt(static_cast<int>(intermediate_ca_certs_.size() + 1));
@@ -661,7 +661,8 @@ X509Certificate::CreateCertBuffersFromBytes(base::span<const uint8_t> data,
       break;
     }
     default: {
-      NOTREACHED() << "Certificate format " << format << " unimplemented";
+      NOTREACHED_IN_MIGRATION()
+          << "Certificate format " << format << " unimplemented";
       break;
     }
   }

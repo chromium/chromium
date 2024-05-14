@@ -460,7 +460,7 @@ void HostResolverManager::Job::RunNextTask() {
     case TaskType::HOSTS:
       // These task types should have been handled synchronously in
       // ResolveLocally() prior to Job creation.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -535,7 +535,7 @@ void HostResolverManager::Job::ReduceByOneJobSlot() {
     }
     --num_occupied_job_slots_;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

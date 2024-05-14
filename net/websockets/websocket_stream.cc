@@ -499,7 +499,7 @@ void Delegate::OnSSLCertificateError(URLRequest* request,
 }
 
 void Delegate::OnReadCompleted(URLRequest* request, int bytes_read) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

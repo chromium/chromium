@@ -12,7 +12,7 @@ namespace net {
 
 void StreamSocket::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::optional<std::string_view> StreamSocket::GetPeerApplicationSettings()
@@ -22,7 +22,7 @@ std::optional<std::string_view> StreamSocket::GetPeerApplicationSettings()
 
 void StreamSocket::GetSSLCertRequestInfo(
     SSLCertRequestInfo* cert_request_info) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int StreamSocket::ConfirmHandshake(CompletionOnceCallback callback) {

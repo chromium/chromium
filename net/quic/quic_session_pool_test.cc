@@ -12203,7 +12203,7 @@ class QuicSessionPoolWithDestinationTest
       case DIFFERENT:
         return url::SchemeHostPort(url::kHttpsScheme, kDifferentHostname, 443);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return url::SchemeHostPort();
     }
   }

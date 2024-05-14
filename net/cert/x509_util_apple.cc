@@ -165,7 +165,7 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
 #else
   // The other logic paths should be used, this is just to make the compiler
   // happy.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::apple::ScopedCFTypeRef<CFArrayRef>(nullptr);
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_12_0)

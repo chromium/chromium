@@ -52,7 +52,7 @@ int MapCertStatusToNetError(CertStatus cert_status) {
     return ERR_CERT_NO_REVOCATION_MECHANISM;
 
   // Unknown status. The assumption is 0 (an OK status) won't be used here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_UNEXPECTED;
 }
 

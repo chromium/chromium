@@ -551,8 +551,8 @@ MockHostResolverBase::RuleResolver::Resolve(
   if (default_result_)
     return default_result_.value();
 
-  NOTREACHED() << "Request " << request_endpoint.GetHostname()
-               << " did not match any MockHostResolver rules.";
+  NOTREACHED_IN_MIGRATION() << "Request " << request_endpoint.GetHostname()
+                            << " did not match any MockHostResolver rules.";
   static const RuleResultOrError kUnexpected = ERR_UNEXPECTED;
   return kUnexpected;
 }
@@ -1365,7 +1365,7 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
           return result;
         }
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ERR_UNEXPECTED;
       }
     }

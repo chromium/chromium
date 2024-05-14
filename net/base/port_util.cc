@@ -169,7 +169,7 @@ ScopedPortException::~ScopedPortException() {
   if (it != g_explicitly_allowed_ports.Get().end())
     g_explicitly_allowed_ports.Get().erase(it);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 NET_EXPORT bool IsAllowablePort(int port) {

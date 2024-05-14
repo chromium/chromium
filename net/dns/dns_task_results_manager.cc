@@ -154,8 +154,8 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
         } else {
           // TODO(crbug.com/41493696): This will eventually need to handle
           // DnsQueryType::HTTPS to support getting ipv{4,6}hints.
-          NOTREACHED() << "Unexpected query type: "
-                       << kDnsQueryTypes.at(query_type);
+          NOTREACHED_IN_MIGRATION()
+              << "Unexpected query type: " << kDnsQueryTypes.at(query_type);
         }
 
         should_update_endpoints |= !result->AsData().endpoints().empty();

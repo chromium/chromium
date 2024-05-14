@@ -90,7 +90,7 @@ int TCPServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
   DCHECK(!callback.is_null());
 
   if (pending_accept_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERR_UNEXPECTED;
   }
 

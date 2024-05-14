@@ -655,7 +655,7 @@ int HttpStreamFactory::Job::DoLoop(int result) {
         rv = DoCreateStreamComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_FAILED;
         break;
     }

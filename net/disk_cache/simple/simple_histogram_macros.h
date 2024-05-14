@@ -39,7 +39,7 @@
       case net::SHADER_CACHE:                                               \
         break;                                                              \
       default:                                                              \
-        NOTREACHED();                                                       \
+        NOTREACHED_IN_MIGRATION();                                          \
         break;                                                              \
     }                                                                       \
   } while (0)

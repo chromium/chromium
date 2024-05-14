@@ -150,7 +150,7 @@ void OpenSSLPutNetError(const base::Location& location, int err) {
   err = -err;
   if (err < 0 || err > 0xfff) {
     // OpenSSL reserves 12 bits for the reason code.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     err = ERR_INVALID_ARGUMENT;
   }
   ERR_put_error(OpenSSLNetErrorLib(), 0 /* unused */, err, location.file_name(),
@@ -228,7 +228,7 @@ int GetNetSSLVersion(SSL* ssl) {
     case TLS1_3_VERSION:
       return SSL_CONNECTION_VERSION_TLS1_3;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SSL_CONNECTION_VERSION_UNKNOWN;
   }
 }

@@ -307,7 +307,7 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -82,7 +82,7 @@ bool PreloadDecoder::BitReader::DecodeSize(size_t* out) {
     case 0b000:
     case 0b001:
       // This should have been handled in the if (bits == 0) check.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case 0b010:
       // A specialization of the 0b01 prefix for unary-like even numbers.
@@ -107,7 +107,7 @@ bool PreloadDecoder::BitReader::DecodeSize(size_t* out) {
       break;
     default:
       // All cases should be covered above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   size_t bit_length = 3;
@@ -303,7 +303,7 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace net::extras

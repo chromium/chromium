@@ -744,7 +744,7 @@ int HttpStreamFactory::JobController::DoLoop(int rv) {
         rv = DoCreateJobs();
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         break;
     }
   } while (next_state_ != STATE_NONE && rv != ERR_IO_PENDING);

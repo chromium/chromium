@@ -250,7 +250,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     // under the name Getifaddrs.
     getifaddrs_result = Getifaddrs(&interfaces);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     getifaddrs_result = getifaddrs(&interfaces);
@@ -273,7 +273,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 #if BUILDFLAG(IS_ANDROID)
     Freeifaddrs(interfaces);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     freeifaddrs(interfaces);

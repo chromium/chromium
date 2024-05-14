@@ -211,7 +211,7 @@ void ClientSocketHandle::ResetInternal(bool cancel, bool cancel_connect_job) {
       } else {
         // If the handle has been initialized, we should still have a
         // socket.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     } else if (cancel) {
       // If we did not get initialized yet and we have a socket

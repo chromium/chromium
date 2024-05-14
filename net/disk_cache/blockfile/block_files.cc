@@ -113,7 +113,7 @@ bool BlockHeader::CreateMapBlock(int size, int* index) {
 
 void BlockHeader::DeleteMapBlock(int index, int size) {
   if (size < 0 || size > kMaxNumBlocks) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   int byte_index = index / 8;

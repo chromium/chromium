@@ -184,7 +184,7 @@ bool TestNetworkQualityEstimator::GetRecentRTT(
       }
       break;
     case nqe::internal::OBSERVATION_CATEGORY_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return NetworkQualityEstimator::GetRecentRTT(observation_category, start_time,

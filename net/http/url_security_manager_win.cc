@@ -100,7 +100,7 @@ bool URLSecurityManagerWin::CanUseDefaultCredentials(
       // TODO(wtc): we should fail the authentication.
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

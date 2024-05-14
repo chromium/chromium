@@ -586,7 +586,7 @@ int BlockingNetworkDelegate::MaybeBlockStage(
                                     weak_factory_.GetWeakPtr()));
       return ERR_IO_PENDING;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -3943,7 +3943,7 @@ class URLRequestTestHTTP : public URLRequestTest {
 
     std::unique_ptr<URLRequestJob> CreateJob(
         URLRequest* request) const override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
 
@@ -4290,7 +4290,7 @@ void NetworkDelegateCancelRequest(BlockingNetworkDelegate::BlockMode block_mode,
     } else if (stage == BlockingNetworkDelegate::ON_HEADERS_RECEIVED) {
       EXPECT_TRUE(r->proxy_chain().is_direct());
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     EXPECT_EQ(ERR_BLOCKED_BY_CLIENT, d.request_status());
     EXPECT_EQ(1, network_delegate.created_requests());

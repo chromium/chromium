@@ -267,7 +267,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     EXPECT_CALL(stream_request_, OnFailure(_, _, _)).Times(0);
@@ -554,7 +554,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         return handshake->Upgrade();
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
   }

@@ -157,7 +157,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     BOOL ok = CertAddCertificateContextToStore(
         nullptr, cert_context, CERT_STORE_ADD_USE_EXISTING, &raw);
     if (!ok) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     cert_context2.reset(raw);

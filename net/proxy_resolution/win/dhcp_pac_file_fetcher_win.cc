@@ -276,7 +276,7 @@ int DhcpPacFileFetcherWin::Fetch(
     const NetworkTrafficAnnotationTag traffic_annotation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (state_ != STATE_START && state_ != STATE_DONE) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERR_UNEXPECTED;
   }
 

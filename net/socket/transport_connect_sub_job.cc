@@ -146,7 +146,7 @@ LoadState TransportConnectSubJob::GetLoadState() const {
     case STATE_NONE:
       return LOAD_STATE_IDLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LOAD_STATE_IDLE;
 }
 
@@ -181,7 +181,7 @@ int TransportConnectSubJob::DoLoop(int result) {
         rv = DoTransportConnectComplete(rv);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         rv = ERR_FAILED;
         break;
     }

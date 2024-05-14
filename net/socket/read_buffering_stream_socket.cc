@@ -73,7 +73,7 @@ int ReadBufferingStreamSocket::DoLoop(int result) {
         break;
       case STATE_NONE:
       default:
-        NOTREACHED() << "Unexpected state: " << current_state;
+        NOTREACHED_IN_MIGRATION() << "Unexpected state: " << current_state;
         rv = ERR_UNEXPECTED;
         break;
     }

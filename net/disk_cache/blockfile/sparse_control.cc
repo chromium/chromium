@@ -165,7 +165,7 @@ net::NetLogEventType GetSparseEventType(
     case disk_cache::SparseControl::kGetRangeOperation:
       return net::NetLogEventType::SPARSE_GET_RANGE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return net::NetLogEventType::CANCELLED;
   }
 }
@@ -187,7 +187,7 @@ void LogChildOperationEnd(const net::NetLogWithSource& net_log,
       case disk_cache::SparseControl::kGetRangeOperation:
         return;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
     net_log.EndEventWithNetErrorCode(event_type, result);
@@ -760,7 +760,7 @@ bool SparseControl::DoChildIO() {
       rv = DoGetAvailableRange();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (rv == net::ERR_IO_PENDING) {

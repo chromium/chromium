@@ -334,7 +334,7 @@ net::Error MockDiskEntry::ReadyForSparseIO(CompletionOnceCallback callback) {
 }
 
 void MockDiskEntry::SetLastUsedTimeForTest(base::Time time) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // If |value| is true, don't deliver any completion callbacks until called
@@ -523,7 +523,7 @@ disk_cache::EntryResult MockDiskCache::CreateEntry(
   if (it != entries_.end()) {
     if (!it->second->is_doomed()) {
       if (double_create_check_) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       } else {
         return EntryResult::MakeError(ERR_CACHE_CREATE_FAILURE);
       }

@@ -691,13 +691,13 @@ class FakeWebSocketHandshakeStreamCreateHelper
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

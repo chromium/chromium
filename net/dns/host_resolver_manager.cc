@@ -217,14 +217,14 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   std::vector<std::string_view> group_parts = base::SplitStringPiece(
       group, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (group_parts.size() != NUM_PRIORITIES + 1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return limits;
   }
 
   std::vector<size_t> parsed(group_parts.size());
   for (size_t i = 0; i < group_parts.size(); ++i) {
     if (!base::StringToSizeT(group_parts[i], &parsed[i])) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return limits;
     }
   }
@@ -238,7 +238,7 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   // There must be some unreserved slots available for the all priorities.
   if (total_reserved_slots > total_jobs ||
       (total_reserved_slots == total_jobs && parsed[MINIMUM_PRIORITY] == 0)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return limits;
   }
 
@@ -903,7 +903,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
         return resolved.value();
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1271,7 +1271,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
         out_tasks->push_back(TaskType::DNS);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1716,7 +1716,7 @@ int HostResolverManager::GetOrCreateMdnsClient(MDnsClient** out_client) {
   return rv;
 #else
   // Should not request MDNS resoltuion unless MDNS is enabled.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_UNEXPECTED;
 #endif
 }

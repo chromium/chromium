@@ -755,7 +755,7 @@ void SimpleEntryImpl::RunNextOperationIfNeeded() {
         DoomEntryInternal(operation.ReleaseCallback());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     // |this| may have been deleted.
   }

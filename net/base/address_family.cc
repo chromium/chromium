@@ -29,7 +29,7 @@ int ConvertAddressFamily(AddressFamily address_family) {
     case ADDRESS_FAMILY_IPV6:
       return AF_INET6;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AF_UNSPEC;
 }
 
@@ -42,7 +42,7 @@ AddressFamily ToAddressFamily(int family) {
     case AF_UNSPEC:
       return ADDRESS_FAMILY_UNSPECIFIED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ADDRESS_FAMILY_UNSPECIFIED;
 }
 

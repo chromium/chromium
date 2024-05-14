@@ -91,7 +91,7 @@ std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
 int TCPClientSocket::Bind(const IPEndPoint& address) {
   if (current_address_index_ >= 0 || bind_address_) {
     // Cannot bind the socket if we are already connected or connecting.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ERR_UNEXPECTED;
   }
 
@@ -222,7 +222,7 @@ int TCPClientSocket::DoConnectLoop(int result) {
         rv = DoConnectComplete(rv);
         break;
       default:
-        NOTREACHED() << "bad state " << state;
+        NOTREACHED_IN_MIGRATION() << "bad state " << state;
         rv = ERR_UNEXPECTED;
         break;
     }

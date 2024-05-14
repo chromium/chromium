@@ -117,7 +117,7 @@ Error FileErrorToNetError(base::File::Error file_error) {
     case base::File::FILE_ERROR_SECURITY:
       return ERR_ACCESS_DENIED;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case base::File::FILE_ERROR_NOT_A_DIRECTORY:
     case base::File::FILE_ERROR_NOT_A_FILE:
@@ -128,7 +128,7 @@ Error FileErrorToNetError(base::File::Error file_error) {
     case base::File::FILE_ERROR_FAILED:
       return ERR_FAILED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_FAILED;
 }
 

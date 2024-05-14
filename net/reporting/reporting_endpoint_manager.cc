@@ -120,7 +120,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     }
 
     // TODO(juliatuttle): Can we reach this in some weird overflow case?
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ReportingEndpoint();
   }
 

@@ -1610,7 +1610,7 @@ void SQLitePersistentSharedDictionaryStore::Backend::
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
             base::Milliseconds(kCommitIntervalMs))) {
-      NOTREACHED() << "background_task_runner_ is not running.";
+      NOTREACHED_IN_MIGRATION() << "background_task_runner_ is not running.";
     }
   } else if (num_pending >= kCommitAfterBatchSize) {
     // We've reached a big enough batch, fire off a commit now.

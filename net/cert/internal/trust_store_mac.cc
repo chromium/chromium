@@ -415,7 +415,7 @@ class TrustDomainCacheFullCerts {
         domain_name = "Admin";
         break;
       case kSecTrustSettingsDomainSystem:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     base::UmaHistogramCounts1000(
@@ -1079,7 +1079,7 @@ bssl::CertificateTrust TrustStoreMac::GetTrust(
     case TrustStatus::UNKNOWN:
       // UNKNOWN is an implementation detail of TrustImpl and should never be
       // returned.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

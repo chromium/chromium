@@ -78,7 +78,7 @@ std::string GzipSourceStream::GetTypeAsString() const {
     case TYPE_DEFLATE:
       return kDeflate;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

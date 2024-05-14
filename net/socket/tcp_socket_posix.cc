@@ -473,7 +473,7 @@ void TCPSocketPosix::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -482,7 +482,7 @@ void TCPSocketPosix::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

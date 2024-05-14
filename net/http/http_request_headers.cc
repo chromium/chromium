@@ -198,7 +198,7 @@ void HttpRequestHeaders::AddHeaderFromString(std::string_view header_line) {
   } else if (value_index == header_line.size()) {
     SetHeader(header_key, "");
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

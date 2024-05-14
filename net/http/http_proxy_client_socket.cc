@@ -127,7 +127,7 @@ const NetLogWithSource& HttpProxyClientSocket::NetLog() const {
 bool HttpProxyClientSocket::WasEverUsed() const {
   if (socket_)
     return socket_->WasEverUsed();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -307,7 +307,7 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
       case STATE_DONE:
         break;
       default:
-        NOTREACHED() << "bad state";
+        NOTREACHED_IN_MIGRATION() << "bad state";
         rv = ERR_UNEXPECTED;
         break;
     }

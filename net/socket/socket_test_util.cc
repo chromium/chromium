@@ -2044,7 +2044,7 @@ void MockTransportClientSocketPool::SetPriority(
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockTransportClientSocketPool::CancelRequest(
@@ -2073,7 +2073,7 @@ WrappedStreamSocket::WrappedStreamSocket(
 WrappedStreamSocket::~WrappedStreamSocket() = default;
 
 int WrappedStreamSocket::Bind(const net::IPEndPoint& local_addr) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ERR_FAILED;
 }
 

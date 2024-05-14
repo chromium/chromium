@@ -477,7 +477,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       case 'H':
         return COOKIE_PRIORITY_HIGH;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return COOKIE_PRIORITY_DEFAULT;
   }
 

@@ -60,7 +60,7 @@ void URLRequestFilter::AddHostnameInterceptor(
     HostnameInterceptorMap::const_iterator host_it =
         hostname_interceptor_map_.find(std::pair(url.scheme(), url.host()));
     if (host_it != hostname_interceptor_map_.end())
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #endif  // !NDEBUG
 }

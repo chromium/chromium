@@ -754,7 +754,7 @@ void TCPSocketWin::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -763,7 +763,7 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -792,7 +792,7 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
 
   IPEndPoint ip_end_point;
   if (!ip_end_point.FromSockAddr(storage.addr, storage.addr_len)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     if (closesocket(new_socket) < 0)
       PLOG(ERROR) << "closesocket";
     int net_error = ERR_ADDRESS_INVALID;
@@ -879,7 +879,7 @@ int TCPSocketWin::DoConnect() {
     // It's not documented whether the event object will be signaled or not
     // if connect does return 0.  So the code below is essentially dead code
     // and we don't know if it's correct.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
     if (ResetEventIfSignaled(core_->read_event_))
       return OK;

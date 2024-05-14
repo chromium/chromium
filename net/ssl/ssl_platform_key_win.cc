@@ -127,7 +127,7 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
         hash_alg = CALG_SHA_512;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ERR_FAILED;
     }
 
@@ -318,7 +318,7 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
           hash_alg = BCRYPT_SHA512_ALGORITHM;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ERR_FAILED;
       }
       if (SSL_is_signature_algorithm_rsa_pss(algorithm)) {

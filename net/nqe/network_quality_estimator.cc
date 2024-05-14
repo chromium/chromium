@@ -69,7 +69,7 @@ NetworkQualityObservationSource ProtocolSourceToObservationSource(
     case SocketPerformanceWatcherFactory::PROTOCOL_QUIC:
       return NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NETWORK_QUALITY_OBSERVATION_SOURCE_TCP;
 }
 
@@ -918,7 +918,7 @@ base::TimeDelta NetworkQualityEstimator::GetRTTEstimateInternal(
                              percentile, observations_count)
               .value_or(nqe::internal::INVALID_RTT_THROUGHPUT));
     case nqe::internal::OBSERVATION_CATEGORY_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::TimeDelta();
   }
 }
