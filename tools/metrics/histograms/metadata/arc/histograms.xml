@@ -2049,6 +2049,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Arc.Runtime.Performance.JanksPercentage2{ArcPerformanceAppCategories}"
+    units="%" expires_after="2024-11-22">
+  <owner>alanding@google.com</owner>
+  <owner>matvore@google.com</owner>
+  <summary>
+    Percentage of the number of present frames during the tracing period which
+    contain UI janks. A jank is defined as a displayed frame with duration
+    longer than the normal display rate by 190%. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
     units="count" expires_after="2024-09-22">
   <owner>alanding@google.com</owner>
