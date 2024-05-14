@@ -3136,6 +3136,8 @@ static_library("ui") {
       "webui/ash/cloud_upload/drive_upload_handler.h",
       "webui/ash/cloud_upload/drive_upload_observer.cc",
       "webui/ash/cloud_upload/drive_upload_observer.h",
+      "webui/ash/cloud_upload/odfs_skyvault_uploader.cc",
+      "webui/ash/cloud_upload/odfs_skyvault_uploader.h",
       "webui/ash/cloud_upload/one_drive_upload_handler.cc",
       "webui/ash/cloud_upload/one_drive_upload_handler.h",
       "webui/ash/connectivity_diagnostics_dialog.cc",
