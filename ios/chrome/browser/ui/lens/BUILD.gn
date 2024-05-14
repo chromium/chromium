@@ -42,6 +42,14 @@ source_set("coordinator") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("lens_availability") {
   sources = [
     "lens_availability.h",

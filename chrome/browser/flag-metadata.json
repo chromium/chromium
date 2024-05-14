@@ -5537,6 +5537,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "lens-circle-to-search-enabled",
+    "owners": ["cmyang@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "link-cross-device-internals",
     "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
     "expiry_milestone": 125

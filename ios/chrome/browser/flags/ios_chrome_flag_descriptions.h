@@ -562,6 +562,10 @@ extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
 extern const char kIPHiOSTabGridSwipeRightForIncognitoName[];
 extern const char kIPHiOSTabGridSwipeRightForIncognitoDescription[];
 
+// Title and description for the flag to enable Lens circle to search feature.
+extern const char kLensCircleToSearchEnabledName[];
+extern const char kLensCircleToSearchEnabledDescription[];
+
 // Title and description for the flag to add Linked Services Setting to the Sync
 // Settings page.
 extern const char kLinkedServicesSettingIosName[];

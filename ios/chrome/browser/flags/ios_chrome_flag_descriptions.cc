@@ -650,6 +650,10 @@ const char kIPHiOSTabGridSwipeRightForIncognitoDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe right on "
     "regular tab grid to view incognito tabs to new users.";
 
+const char kLensCircleToSearchEnabledName[] = "Lens Circle to Search";
+const char kLensCircleToSearchEnabledDescription[] =
+    "When enabled, circle to search is available in Lens.";
+
 const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
 const char kLinkedServicesSettingIosDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";
