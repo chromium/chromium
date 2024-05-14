@@ -1717,8 +1717,12 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     supports_external_textures =
         adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
 #elif BUILDFLAG(IS_ANDROID)
-    supports_external_textures = adapter.HasFeature(
-        wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
+    if (adapter_properties.backendType == wgpu::BackendType::OpenGLES) {
+      supports_external_textures = native_adapter.SupportsExternalImages();
+    } else {
+      supports_external_textures = adapter.HasFeature(
+          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer);
+    }
 #else
     // Chromium is in the midst of being transitioned to SharedTextureMemory
     // platform by platform. On platforms that have not yet been transitioned,
