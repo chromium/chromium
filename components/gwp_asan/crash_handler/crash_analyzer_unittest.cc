@@ -184,7 +184,8 @@ class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
 // not use base::debug::StackTrace, so the stack traces may vary slightly and
 // break this test.
 #if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-TEST_F(CrashAnalyzerTest, StackTraceCollection) {
+// TODO(https://crbug.com/340586138): Disabled due to excessive flakiness.
+TEST_F(CrashAnalyzerTest, DISABLED_StackTraceCollection) {
   void* ptr = gpa_.Allocate(10);
   ASSERT_NE(ptr, nullptr);
   gpa_.Deallocate(ptr);
