@@ -143,9 +143,9 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
 std::string OpKindToString(mojom::ArgMinMax::Kind kind) {
   switch (kind) {
     case mojom::ArgMinMax::Kind::kMin:
-      return "ArgMin";
+      return "argMin";
     case mojom::ArgMinMax::Kind::kMax:
-      return "ArgMax";
+      return "argMax";
   }
   NOTREACHED_NORETURN();
 }
@@ -217,25 +217,25 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
 std::string OpKindToString(mojom::Reduce::Kind kind) {
   switch (kind) {
     case mojom::Reduce::Kind::kL1:
-      return "ReduceL1";
+      return "reduceL1";
     case mojom::Reduce::Kind::kL2:
-      return "ReduceL2";
+      return "reduceL2";
     case mojom::Reduce::Kind::kLogSum:
-      return "ReduceLogSum";
+      return "reduceLogSum";
     case mojom::Reduce::Kind::kLogSumExp:
-      return "ReduceLogSumExp";
+      return "reduceLogSumExp";
     case mojom::Reduce::Kind::kMax:
-      return "ReduceMax";
+      return "reduceMax";
     case mojom::Reduce::Kind::kMean:
-      return "ReduceMean";
+      return "reduceMean";
     case mojom::Reduce::Kind::kMin:
-      return "ReduceMin";
+      return "reduceMin";
     case mojom::Reduce::Kind::kProduct:
-      return "ReduceProduct";
+      return "reduceProduct";
     case mojom::Reduce::Kind::kSum:
-      return "ReduceSum";
+      return "reduceSum";
     case mojom::Reduce::Kind::kSumSquare:
-      return "ReduceSumSquare";
+      return "reduceSumSquare";
   }
 }
 
