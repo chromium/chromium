@@ -14,6 +14,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
+import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
@@ -96,7 +97,9 @@ public abstract class HubBaseStation extends Station {
 
         elements.declareLogicalElement(
                 uiThreadLogicalElement(
-                        "LayoutManager is showing TAB_SWITCHER (Hub)", this::isHubLayoutShowing));
+                        "LayoutManager is showing TAB_SWITCHER (Hub)",
+                        this::isHubLayoutShowing,
+                        mActivityElement));
         elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
@@ -161,10 +164,8 @@ public abstract class HubBaseStation extends Station {
         return selectPane(PaneId.INCOGNITO_TAB_SWITCHER, HubIncognitoTabSwitcherStation.class);
     }
 
-    private boolean isHubLayoutShowing() {
-        LayoutManager layoutManager =
-                mChromeTabbedActivityTestRule.getActivity().getLayoutManager();
-        return layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
+    private ConditionStatus isHubLayoutShowing(ChromeTabbedActivity activity) {
+        return whether(activity.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
     private void clickPaneSwitcherForPaneWithContentDescription(
