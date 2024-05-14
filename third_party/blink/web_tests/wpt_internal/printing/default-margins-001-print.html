@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<link rel="match" href="default-margins-001-print-ref.html">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingMargin(33);
+  }
+</script>
+<style>
+  @page :first {
+    margin: 100px;
+  }
+  body {
+    background: yellow;
+  }
+</style>
+Large margins on the first page.
+<div style="break-before:page;">
+  Default margins on the second page.
+</div>

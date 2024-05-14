@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setShouldCenterAndShrinkToFitPaper(false);
+  }
+</script>
+<style>
+  @page {
+    size: 400px 300px;
+    margin: 0;
+  }
+  @page different {
+    size: 300px 400px;
+  }
+  body {
+    margin: 0;
+  }
+  .page {
+    display: flex;
+    overflow: clip;
+  }
+  .page > div {
+    margin: auto;
+    background: yellow;
+  }
+</style>
+<div class="page" style="height:300px;">
+  <div style="width:360px; height:260px;">
+    Default size.
+  </div>
+</div>
+<div style="page:different;">
+  <div class="page" style="height:400px;">
+    <!-- Margins are also downscaled. -->
+    <div style="width:268px; height:368px;">
+      <div style="scale:0.80; transform-origin:top left; width:125%;">
+        Scaled down, and in portrait mode.
+      </div>
+    </div>
+  </div>
+</div>
