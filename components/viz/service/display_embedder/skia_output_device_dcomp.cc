@@ -132,13 +132,8 @@ bool CopySharedImage(gpu::SharedContextState* context_state,
 
   CHECK(!src_read_access->HasBackendSurfaceEndState());
 
-  GrFlushInfo flush_info = {
-      .fNumSemaphores = end_semaphores.size(),
-      .fSignalSemaphores = end_semaphores.data(),
-  };
-  GrSemaphoresSubmitted flush_result = context_state->gr_context()->flush(
-      dst_write_access->surface(), flush_info);
-  CHECK_EQ(flush_result, GrSemaphoresSubmitted::kYes);
+  context_state->FlushWriteAccess(dst_write_access.get());
+  context_state->SubmitIfNecessary(std::move(end_semaphores));
 
   dst_write_access->ApplyBackendSurfaceEndState();
 
