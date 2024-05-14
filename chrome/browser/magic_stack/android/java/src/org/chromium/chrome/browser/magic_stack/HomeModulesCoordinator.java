@@ -300,7 +300,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     @Override
     public void onModuleClicked(@ModuleType int moduleType, int modulePosition) {
         int hostSurface = mModuleDelegateHost.getHostSurfaceType();
-        HomeModulesMetricsUtils.recordModuleClicked(hostSurface, moduleType, modulePosition);
+        HomeModulesMetricsUtils.recordModuleClicked(
+                hostSurface, moduleType, modulePosition, mModuleDelegateHost.isHomeSurface());
     }
 
     @Override
@@ -361,7 +362,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                             contextMenu, view, moduleProvider);
                 });
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
-        HomeModulesMetricsUtils.recordModuleShown(getHostSurfaceType(), moduleType, position);
+        HomeModulesMetricsUtils.recordModuleShown(
+                getHostSurfaceType(), moduleType, position, mModuleDelegateHost.isHomeSurface());
     }
 
     /**

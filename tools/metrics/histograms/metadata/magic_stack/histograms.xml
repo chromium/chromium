@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="HostSurfaceState">
+  <variant name="Regular"/>
+  <variant name="Startup"/>
+</variants>
+
 <variants name="ModuleDelegateHost">
   <variant name="NewTabPage"/>
   <variant name="StartSurface"/>
@@ -387,6 +392,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type and position of a module when it is added to the magic
     stack of a {ModuleDelegateHost}, Android-only.
+
+    Deprecated on 2024-05-14; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.Regular.Module.{ModuleType}.Build and
+    MagicStack.Clank.{ModuleDelegateHost}.Startup.Module.{ModuleType}.Build.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
   <token key="ModuleType" variants="ModuleType"/>
@@ -400,6 +409,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the type and position of a module when it is clicked by users on the
     magic stack of a {ModuleDelegateHost}, Android-only.
+
+    Deprecated on 2024-05-14; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.Regular.Module.{ModuleType}.Click and
+    MagicStack.Clank.{ModuleDelegateHost}.Startup.Module.{ModuleType}.Click.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
   <token key="ModuleType" variants="ModuleType"/>
@@ -414,6 +427,11 @@ chromium-metrics-reviews@google.com.
     Records the type and position of a module when it is visible to users on the
     magic stack of a {ModuleDelegateHost}. The histogram is logged on
     Android-only.
+
+    Deprecated on 2024-05-14; prefer
+    MagicStack.Clank.{ModuleDelegateHost}.Regular.Module.{ModuleType}.Impression
+    and
+    MagicStack.Clank.{ModuleDelegateHost}.Startup.Module.{ModuleType}.Impression.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
   <token key="ModuleType" variants="ModuleType"/>
@@ -456,6 +474,54 @@ chromium-metrics-reviews@google.com.
     magic stack on {ModuleDelegateHost}, Android-only.
   </summary>
   <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.{HostSurfaceState}.Module.{ModuleType}.Build"
+    enum="ModulePosition" expires_after="2024-11-14">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of a module when it is added to the magic
+    stack of a {ModuleDelegateHost}. {HostSurfaceState} indicates whether the
+    histogram is logged at startup, or when the user opens a new Tab.
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+  <token key="HostSurfaceState" variants="HostSurfaceState"/>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.{HostSurfaceState}.Module.{ModuleType}.Click"
+    enum="ModulePosition" expires_after="2024-11-14">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of a module when it is clicked by users on the
+    magic stack of a {ModuleDelegateHost}. {HostSurfaceState} indicates whether
+    the histogram is logged at startup, or when the user opens a new Tab.
+    Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+  <token key="HostSurfaceState" variants="HostSurfaceState"/>
+  <token key="ModuleType" variants="ModuleType"/>
+</histogram>
+
+<histogram
+    name="MagicStack.Clank.{ModuleDelegateHost}.{HostSurfaceState}.Module.{ModuleType}.Impression"
+    enum="ModulePosition" expires_after="2024-11-14">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records the type and position of a module when it is visible to users on the
+    magic stack of a {ModuleDelegateHost}. {HostSurfaceState} indicates whether
+    the histogram is logged at startup, or when the user opens a new Tab. The
+    histogram is logged on Android-only.
+  </summary>
+  <token key="ModuleDelegateHost" variants="ModuleDelegateHost"/>
+  <token key="HostSurfaceState" variants="HostSurfaceState"/>
+  <token key="ModuleType" variants="ModuleType"/>
 </histogram>
 
 </histograms>
