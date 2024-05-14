@@ -548,11 +548,11 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsWebUIToolbarEnabled) {
-  EXPECT_FALSE(IsWebUIToolbarEnabled());
-
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kReadAnythingWebUIToolbar);
   EXPECT_TRUE(IsWebUIToolbarEnabled());
+
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kReadAnythingWebUIToolbar);
+  EXPECT_FALSE(IsWebUIToolbarEnabled());
 }
 
 TEST_F(ReadAnythingAppControllerTest, Theme) {

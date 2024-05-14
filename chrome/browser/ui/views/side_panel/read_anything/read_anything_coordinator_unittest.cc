@@ -208,8 +208,8 @@ TEST_F(ReadAnythingCoordinatorTest, OnActivePageDistillableCalled) {
   ActivePageNotDistillable();
 }
 
-TEST_F(ReadAnythingCoordinatorTest, WithWebUIFlagDisabled_ShowsViewsToolbar) {
-  ASSERT_STREQ("ReadAnythingContainerView",
+TEST_F(ReadAnythingCoordinatorTest, WithWebUIFlagEnabled_ShowsWebUIToolbar) {
+  ASSERT_STREQ("ReadAnythingSidePanelWebView",
                CreateContainerView()->GetClassName());
 }
 
@@ -218,7 +218,7 @@ class ReadAnythingCoordinatorWebUIToolbarTest : public TestWithBrowserView {
   void SetUp() override {
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnything, features::kReadAnythingWebUIToolbar}, {});
+        {features::kReadAnything}, {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 
     read_anything_coordinator_ =
@@ -241,7 +241,7 @@ class ReadAnythingCoordinatorWebUIToolbarTest : public TestWithBrowserView {
 
 TEST_F(ReadAnythingCoordinatorWebUIToolbarTest,
        WithWebUIFlagEnabled_ShowsWebUIToolbar) {
-  ASSERT_STREQ("ReadAnythingSidePanelWebView",
+  ASSERT_STREQ("ReadAnythingContainerView",
                CreateContainerView()->GetClassName());
 }
 
@@ -252,7 +252,7 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
     base::test::ScopedFeatureList features;
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnything, features::kDataCollectionModeForScreen2x},
-        {});
+        {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 
     side_panel_coordinator_ =

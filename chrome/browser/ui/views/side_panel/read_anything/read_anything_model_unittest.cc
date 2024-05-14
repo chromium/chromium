@@ -18,6 +18,8 @@
 using testing::_;
 using testing::FloatNear;
 
+// TODO(b/40275871): These tests should be removed once the ReadAnythingWebUI
+// flag is fully rolled out.
 class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
  public:
   MOCK_METHOD(void,
@@ -39,8 +41,8 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
 class ReadAnythingModelTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kReadAnything}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything}, {features::kReadAnythingWebUIToolbar});
     TestWithBrowserView::SetUp();
 
     model_ = std::make_unique<ReadAnythingModel>();
@@ -67,6 +69,7 @@ class ReadAnythingModelTest : public TestWithBrowserView {
   MockReadAnythingModelObserver model_observer_1_;
   MockReadAnythingModelObserver model_observer_2_;
   MockReadAnythingModelObserver model_observer_3_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/40853217): Fix the memory leak on destruction observed on

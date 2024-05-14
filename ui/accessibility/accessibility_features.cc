@@ -385,7 +385,7 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
 
 BASE_FEATURE(kReadAnythingWebUIToolbar,
              "ReadAnythingWebUIToolbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWebUIToolbarEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWebUIToolbar);
 }
