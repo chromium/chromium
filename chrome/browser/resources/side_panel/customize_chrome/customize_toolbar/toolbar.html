@@ -7,12 +7,11 @@
 </div>
 <hr class="sp-cards-separator">
 <div class="sp-card">
-  <sp-heading hide-back-button>
-    <h3 slot="heading">Choose your toolbar icons</h3>
-  </sp-heading>
-  <h4 class="choose-icons-row">Tools and Actions</h4>
-  <div class="toggle-container choose-icons-row">
-    <h4 id="actionLabel" class="toggle-title"></h4>
-    <cr-toggle id="actionToggle" @change="${this.onActionToggle_}"></cr-toggle>
-  </div>
+  ${this.actions_.map((action) => html`
+    <div class="toggle-container choose-icons-row">
+      <h4 class="toggle-title">${action.displayName}</h4>
+      <cr-toggle @change="${this.getActionToggleHandler_(action.id)}"
+          ?checked="${action.pinned}"></cr-toggle>
+    </div>
+  `)}
 </div>

@@ -31,8 +31,6 @@ class CustomizeToolbarHandler
 
   // side_panel::customize_chrome::mojom::CustomizeToolbarHandler:
   void ListActions(ListActionsCallback callback) override;
-  void GetActionPinned(side_panel::customize_chrome::mojom::ActionId action_id,
-                       GetActionPinnedCallback callback) override;
   void PinAction(side_panel::customize_chrome::mojom::ActionId action_id,
                  bool pin) override;
 

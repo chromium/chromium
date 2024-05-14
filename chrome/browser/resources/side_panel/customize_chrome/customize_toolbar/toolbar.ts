@@ -4,11 +4,10 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 
-import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
+import type {Action, CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
 
 import {CustomizeToolbarApiProxy} from './customize_toolbar_api_proxy.js';
 import {getCss} from './toolbar.css.js';
@@ -17,8 +16,6 @@ import {getHtml} from './toolbar.html.js';
 export interface ToolbarElement {
   $: {
     heading: SpHeadingElement,
-    actionToggle: CrToggleElement,
-    actionLabel: HTMLHeadingElement,
   };
 }
 
@@ -35,22 +32,23 @@ export class ToolbarElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      actions_: {type: Array},
+    };
+  }
+
   private handler_: CustomizeToolbarHandlerInterface;
   private listenerIds_: number[] = [];
 
-  private actionId_: number = -1;
+  protected actions_: Action[] = [];
 
   constructor() {
     super();
     this.handler_ = CustomizeToolbarApiProxy.getInstance().handler;
 
     this.handler_.listActions().then(({actions}) => {
-      this.actionId_ = actions[0]!.id;
-      this.$.actionLabel.innerText = actions[0]!.displayName;
-
-      this.handler_.getActionPinned(this.actionId_).then(({pinned}) => {
-        this.$.actionToggle.checked = pinned;
-      });
+      this.actions_ = actions;
     });
   }
 
@@ -78,16 +76,19 @@ export class ToolbarElement extends CrLitElement {
     this.fire('back-click');
   }
 
-  protected onActionToggle_(event: CustomEvent<boolean>) {
-    this.handler_.pinAction(this.actionId_, event.detail);
+  protected getActionToggleHandler_(actionId: number) {
+    return (event: CustomEvent<boolean>) =>
+               this.handler_.pinAction(actionId, event.detail);
   }
 
   private setActionPinned_(actionId: number, pinned: boolean) {
-    if (actionId !== this.actionId_) {
-      return;
-    }
+    this.actions_ = this.actions_.map((action) => {
+      if (action.id === actionId) {
+        action.pinned = pinned;
+      }
 
-    this.$.actionToggle.checked = pinned;
+      return action;
+    });
   }
 }
 
