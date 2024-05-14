@@ -1699,8 +1699,7 @@ base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     CodecMode mode,
     VAProfile va_profile,
     EncryptionScheme encryption_scheme,
-    const ReportErrorToUMACB& report_error_to_uma_cb,
-    bool enforce_sequence_affinity) {
+    const ReportErrorToUMACB& report_error_to_uma_cb) {
   if (!VASupportedProfiles::Get().IsProfileSupported(mode, va_profile)) {
     DVLOG(1) << "Unsupported va_profile: " << vaProfileStr(va_profile);
     return base::unexpected(DecoderStatus::Codes::kUnsupportedProfile);
@@ -1734,8 +1733,8 @@ base::expected<scoped_refptr<VaapiWrapper>, DecoderStatus> VaapiWrapper::Create(
     }
   }
 
-  scoped_refptr<VaapiWrapper> vaapi_wrapper(new VaapiWrapper(
-      std::move(va_display_state_handle), mode, enforce_sequence_affinity));
+  scoped_refptr<VaapiWrapper> vaapi_wrapper(
+      new VaapiWrapper(std::move(va_display_state_handle), mode));
   vaapi_wrapper->VaInitialize(report_error_to_uma_cb);
   if (vaapi_wrapper->Initialize(va_profile, encryption_scheme))
     return vaapi_wrapper;
@@ -1754,11 +1753,9 @@ VaapiWrapper::CreateForVideoCodec(
     CodecMode mode,
     VideoCodecProfile profile,
     EncryptionScheme encryption_scheme,
-    const ReportErrorToUMACB& report_error_to_uma_cb,
-    bool enforce_sequence_affinity) {
+    const ReportErrorToUMACB& report_error_to_uma_cb) {
   const VAProfile va_profile = ProfileToVAProfile(profile);
-  return Create(mode, va_profile, encryption_scheme, report_error_to_uma_cb,
-                enforce_sequence_affinity);
+  return Create(mode, va_profile, encryption_scheme, report_error_to_uma_cb);
 }
 
 // static
@@ -3192,10 +3189,8 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
 }
 
 VaapiWrapper::VaapiWrapper(VADisplayStateHandle va_display_state_handle,
-                           CodecMode mode,
-                           bool enforce_sequence_affinity)
+                           CodecMode mode)
     : mode_(mode),
-      enforce_sequence_affinity_(enforce_sequence_affinity),
       va_display_state_handle_(std::move(va_display_state_handle)),
       va_lock_(va_display_state_handle_ ? va_display_state_handle_->va_lock()
                                         : nullptr),
@@ -3305,8 +3300,7 @@ void VaapiWrapper::VaInitialize(
   report_error_to_uma_cb_ = report_error_to_uma_cb;
 
   DCHECK(va_lock_);
-  if (enforce_sequence_affinity_ &&
-      !UseGlobalVaapiLock(va_display_state_handle_->implementation_type())) {
+  if (!UseGlobalVaapiLock(va_display_state_handle_->implementation_type())) {
     va_lock_ = nullptr;
   }
 }

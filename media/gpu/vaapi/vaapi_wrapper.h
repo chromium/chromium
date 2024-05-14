@@ -148,9 +148,9 @@ class VADisplayStateHandle {
 // synchronous and its constructor, all of its methods, and its destructor must
 // be called on the same sequence. These methods may wait on the |va_lock_|
 // which guards libva calls across all VaapiWrapper instances and other libva
-// call sites. If the backend is known to be thread safe and
-// |enforce_sequence_affinity_| is true when the |kGlobalVaapiLock| flag is
-// disabled, |va_lock_| will be null and won't guard any libva calls.
+// call sites. If the backend is known to be thread safe and the
+// |kGlobalVaapiLock| flag is disabled, |va_lock_| will be null and won't guard
+// any libva calls.
 //
 // This class is responsible for managing VAAPI connection, contexts and state.
 // It is also responsible for managing and freeing VABuffers (not VASurfaces),
@@ -212,8 +212,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       CodecMode mode,
       VAProfile va_profile,
       EncryptionScheme encryption_scheme,
-      const ReportErrorToUMACB& report_error_to_uma_cb,
-      bool enforce_sequence_affinity = true);
+      const ReportErrorToUMACB& report_error_to_uma_cb);
 
   // Create VaapiWrapper for VideoCodecProfile. It maps VideoCodecProfile
   // |profile| to VAProfile.
@@ -225,8 +224,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   CreateForVideoCodec(CodecMode mode,
                       VideoCodecProfile profile,
                       EncryptionScheme encryption_scheme,
-                      const ReportErrorToUMACB& report_error_to_uma_cb,
-                      bool enforce_sequence_affinity = true);
+                      const ReportErrorToUMACB& report_error_to_uma_cb);
 
   VaapiWrapper(const VaapiWrapper&) = delete;
   VaapiWrapper& operator=(const VaapiWrapper&) = delete;
@@ -592,9 +590,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   virtual void DestroySurface(VASurfaceID va_surface_id);
 
  protected:
-  VaapiWrapper(VADisplayStateHandle va_display_state_handle,
-               CodecMode mode,
-               bool enforce_sequence_affinity = true);
+  VaapiWrapper(VADisplayStateHandle va_display_state_handle, CodecMode mode);
   virtual ~VaapiWrapper();
 
  private:
@@ -686,7 +682,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static base::AtomicRefCount num_decoder_instances_;
 
   const CodecMode mode_;
-  const bool enforce_sequence_affinity_;
   base::SequenceCheckerImpl sequence_checker_;
 
   // This is declared before |va_display_| and |va_lock_| to guarantee their
