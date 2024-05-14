@@ -1788,6 +1788,28 @@
             ]
         }
     ],
+    "AutofillImproveSubmissionDetection": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_UnifySubmissionAndUseDomNodeIds",
+                    "enable_features": [
+                        "AutofillReplaceCachedWebElementsByRendererIds",
+                        "AutofillUnifyAndFixFormTracking"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [
@@ -1907,27 +1929,6 @@
                     "enable_features": [
                         "AutofillOverwritePlaceholdersOnly",
                         "AutofillSkipPreFilledFields"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillReplaceCachedWebElementsByRendererIds": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillReplaceCachedWebElementsByRendererIds"
                     ]
                 }
             ]
@@ -2066,27 +2067,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillTextAreaChangeEvents"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillUnifyAndFixFormTracking": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillUnifyAndFixFormTracking"
                     ]
                 }
             ]
