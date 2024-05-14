@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -46,43 +47,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ipc/ipc_message.h"
 #include "ui/gfx/range/range.h"
-
-namespace {
-
-// See comment for TabStripModelDelegate::ConfirmDestroyingGroups
-bool MaybeShowSavedTabGroupDeletionDialog(
-    Browser* browser,
-    tab_groups::DeletionDialogController::DialogType type,
-    const std::vector<tab_groups::TabGroupId>& group_ids,
-    base::OnceCallback<void()> callback) {
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
-
-  // Confirmation is only needed if SavedTabGroups are being deleted. If the
-  // service doesnt exist there are no saved tab groups.
-  if (!saved_tab_group_service || !tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return true;
-  }
-
-  // If there's no way to show the group deletion dialog, then fallback to
-  // running the callback.
-  auto* dialog_controller = browser->tab_group_deletion_dialog_controller();
-  if (!dialog_controller || !dialog_controller->CanShowDialog()) {
-    return true;
-  }
-
-  // Check to see if any of the groups are saved. If so then show the dialog,
-  // else, just perform the callback.
-  for (const auto& group : group_ids) {
-    if (saved_tab_group_service->model()->Contains(group)) {
-      return !dialog_controller->MaybeShowDialog(type, std::move(callback));
-    }
-  }
-  return true;
-}
-
-}  // anonymous namespace
 
 namespace chrome {
 
@@ -357,7 +321,7 @@ BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
 bool BrowserTabStripModelDelegate::ConfirmDestroyingGroups(
     const std::vector<tab_groups::TabGroupId>& group_ids,
     base::OnceCallback<void()> callback) {
-  return MaybeShowSavedTabGroupDeletionDialog(
+  return tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       browser_,
       tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
       group_ids, std::move(callback));
@@ -366,7 +330,7 @@ bool BrowserTabStripModelDelegate::ConfirmDestroyingGroups(
 bool BrowserTabStripModelDelegate::ConfirmRemovingAllTabsFromGroups(
     const std::vector<tab_groups::TabGroupId>& group_ids,
     base::OnceCallback<void()> callback) {
-  return MaybeShowSavedTabGroupDeletionDialog(
+  return tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       browser_,
       tab_groups::DeletionDialogController::DialogType::RemoveTabAndDelete,
       group_ids, std::move(callback));

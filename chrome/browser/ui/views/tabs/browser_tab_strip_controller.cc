@@ -28,8 +28,12 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
@@ -53,6 +57,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -317,21 +322,47 @@ bool BrowserTabStripController::BeforeCloseTab(int model_index,
 
   // Only consider pausing the close operation if this is the last remaining
   // tab (since otherwise closing it won't close the browser window).
-  if (GetCount() > 1)
-    return true;
+  if (GetCount() <= 1) {
+    // Closing this tab will close the current window. See if the browser wants
+    // to prompt the user before the browser is allowed to close.
+    const Browser::WarnBeforeClosingResult result =
+        browser_view_->browser()->MaybeWarnBeforeClosing(base::BindOnce(
+            [](TabStrip* tab_strip, int model_index, CloseTabSource source,
+               Browser::WarnBeforeClosingResult result) {
+              if (result == Browser::WarnBeforeClosingResult::kOkToClose) {
+                tab_strip->CloseTab(tab_strip->tab_at(model_index), source);
+              }
+            },
+            base::Unretained(tabstrip_), model_index, source));
 
-  // Closing this tab will close the current window. See if the browser wants to
-  // prompt the user before the browser is allowed to close.
-  const Browser::WarnBeforeClosingResult result =
-      browser_view_->browser()->MaybeWarnBeforeClosing(base::BindOnce(
-          [](TabStrip* tab_strip, int model_index, CloseTabSource source,
-             Browser::WarnBeforeClosingResult result) {
-            if (result == Browser::WarnBeforeClosingResult::kOkToClose)
-              tab_strip->CloseTab(tab_strip->tab_at(model_index), source);
-          },
-          base::Unretained(tabstrip_), model_index, source));
+    if (result != Browser::WarnBeforeClosingResult::kOkToClose) {
+      return false;
+    }
+  }
 
-  return result == Browser::WarnBeforeClosingResult::kOkToClose;
+  // Check to make sure the tab is not the last in it's group.
+  std::vector<tab_groups::TabGroupId> groups_to_delete =
+      model_->GetGroupsDestroyedFromRemovingIndices({model_index});
+
+  if (tab_groups::IsTabGroupsSaveV2Enabled() && !groups_to_delete.empty()) {
+    // If the user is destroying the last tab in the group via the tabstrip, a
+    // dialog is shown that will decide whether to destroy the tab or not. It
+    // will first ungroup the tab, then close the tab.
+    base::OnceCallback<void()> callback = base::BindOnce(
+        [](TabStrip* tab_strip, TabStripModel* model, int index,
+           CloseTabSource source) {
+          model->RemoveFromGroup({index});
+          tab_strip->CloseTab(tab_strip->tab_at(index), source);
+        },
+        base::Unretained(tabstrip_), base::Unretained(model_), model_index,
+        source);
+
+    return tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+        browser_view_->browser(),
+        tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
+        groups_to_delete, std::move(callback));
+  }
+  return true;
 }
 
 void BrowserTabStripController::CloseTab(int model_index) {

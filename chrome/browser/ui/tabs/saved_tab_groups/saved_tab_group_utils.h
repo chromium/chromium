@@ -10,6 +10,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -66,6 +67,16 @@ class SavedTabGroupUtils {
   static void ToggleGroupPinState(Browser* browser,
                                   base::Uuid id,
                                   int event_flags);
+
+  // Helper method to show the deletion dialog, if its needed. a return value of
+  // true means that a synchronous deletion is allowed, and the callback wasnt
+  // called. A return value of false means that the dialog was shown and the
+  // callback may be called asynchronously based on the dialog response.
+  static bool MaybeShowSavedTabGroupDeletionDialog(
+      Browser* browser,
+      DeletionDialogController::DialogType type,
+      const std::vector<TabGroupId>& group_ids,
+      base::OnceCallback<void()> callback);
 
   // Create the the context menu model for a saved tab group button or a saved
   // tab group menu item in the Everything menu. `browser` is the one from
