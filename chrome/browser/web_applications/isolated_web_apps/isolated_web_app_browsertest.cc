@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -339,6 +340,53 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
   EXPECT_EQ(content::WebExposedIsolationLevel::kIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, SameOriginWindowOpen) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/popup", "<!DOCTYPE html><body>popup page")
+          .BuildBundle();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  GURL expected_url = url_info.origin().GetURL().Resolve("/popup");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  BrowserWaiter browser_waiter(nullptr);
+  ASSERT_TRUE(ExecJs(app_frame, "window.open('/popup')"));
+  Browser* popup = browser_waiter.AwaitAdded(FROM_HERE);
+  navigation_observer.WaitForNavigationFinished();
+
+  ASSERT_NE(popup, nullptr);
+  content::RenderFrameHost* popup_frame =
+      popup->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(popup_frame->GetLastCommittedURL(), expected_url);
+  EXPECT_EQ(EvalJs(popup_frame, "document.body.innerText"), "popup page");
+  EXPECT_EQ(EvalJs(popup_frame, "window.opener !== null"), true);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CrossOriginWindowOpen) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+  app->TrustSigningKey();
+  ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  GURL expected_url = https_server()->GetURL("/simple.html");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ASSERT_TRUE(
+      ExecJs(app_frame, content::JsReplace("window.open($1)", expected_url)));
+  content::WebContents* popup_contents = tab_waiter.Wait();
+  navigation_observer.WaitForNavigationFinished();
+
+  ASSERT_NE(popup_contents, nullptr);
+  content::RenderFrameHost* popup_frame = popup_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(popup_frame->GetLastCommittedURL(), expected_url);
+  EXPECT_EQ(EvalJs(popup_frame, "window.opener === null"), true);
 }
 
 IN_PROC_BROWSER_TEST_F(
