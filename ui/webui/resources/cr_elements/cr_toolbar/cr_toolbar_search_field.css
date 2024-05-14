@@ -177,7 +177,6 @@ input[type='search']::-webkit-search-cancel-button {
   max-width: var(--cr-toolbar-field-max-width, none);
   overflow: hidden;
   padding: 0 6px;
-  padding-inline-end: 0;
   position: relative;
   width: var(--cr-toolbar-field-width, 680px);
   --cr-toolbar-search-field-border-radius: 100px;
