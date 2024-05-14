@@ -206,8 +206,8 @@ struct Bucket {
   //
   // The constructor forwards to the above non-templated constructor. Therefore,
   // `EnumType` must be implicitly convertible to `HistogramBase::Sample`.
-  template <typename MetricEnum,
-            typename = std::enable_if_t<std::is_enum_v<MetricEnum>>>
+  template <typename MetricEnum>
+    requires(std::is_enum_v<MetricEnum>)
   Bucket(MetricEnum min, HistogramBase::Count count)
       : Bucket(static_cast<std::underlying_type_t<MetricEnum>>(min), count) {}
 

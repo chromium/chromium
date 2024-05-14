@@ -111,7 +111,8 @@ class RepeatingTestFuture {
   // Wait for an element to arrive, and move its value out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsSingleValuedTuple<T>)
   auto Take() {
     return std::get<0>(TakeTuple());
   }
@@ -124,7 +125,8 @@ class RepeatingTestFuture {
   // Wait for an element to arrive, and move a tuple with its values out.
   //
   // Will DCHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsMultiValuedTuple<T>)
   TupleType Take() {
     return TakeTuple();
   }

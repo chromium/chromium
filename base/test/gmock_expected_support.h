@@ -24,12 +24,10 @@ namespace internal {
 
 // `HasVoidValueType<T>` is true iff `T` satisfies
 // `base::internal::IsExpected<T>` and `T`'s `value_type` is `void`.
-template <typename T, typename = void>
-constexpr bool HasVoidValueType = false;
 template <typename T>
-constexpr bool
-    HasVoidValueType<T, std::enable_if_t<base::internal::IsExpected<T>>> =
-        std::is_void_v<typename std::remove_cvref_t<T>::value_type>;
+concept HasVoidValueType =
+    base::internal::IsExpected<T> &&
+    std::is_void_v<typename std::remove_cvref_t<T>::value_type>;
 
 // Implementation for matcher `HasValue`.
 class HasValueMatcher {
@@ -42,17 +40,9 @@ class HasValueMatcher {
   }
 
  private:
-  // Reject instantiation with types that do not satisfy
-  // `base::internal::IsExpected<T>`.
-  template <typename T, typename = void>
-  class Impl {
-    static_assert(base::internal::IsExpected<T>,
-                  "Must be used with base::expected<T, E>");
-  };
-
   template <typename T>
-  class Impl<T, std::enable_if_t<base::internal::IsExpected<T>>>
-      : public ::testing::MatcherInterface<T> {
+    requires(base::internal::IsExpected<T>)
+  class Impl : public ::testing::MatcherInterface<T> {
    public:
     Impl() = default;
 
@@ -87,21 +77,9 @@ class ValueIsMatcher {
   }
 
  private:
-  // Reject instantiation with types that do not satisfy
-  // `base::internal::IsExpected<U> && !HasVoidValueType<U>`.
-  template <typename U, typename = void>
-  class Impl {
-    static_assert(base::internal::IsExpected<U>,
-                  "Must be used with base::expected<T, E>");
-    static_assert(!HasVoidValueType<U>,
-                  "expected object must have non-void value type");
-  };
-
   template <typename U>
-  class Impl<
-      U,
-      std::enable_if_t<base::internal::IsExpected<U> && !HasVoidValueType<U>>>
-      : public ::testing::MatcherInterface<U> {
+    requires(base::internal::IsExpected<U> && !HasVoidValueType<U>)
+  class Impl : public ::testing::MatcherInterface<U> {
    public:
     explicit Impl(const T& matcher)
         : matcher_(::testing::SafeMatcherCast<const V&>(matcher)) {}
@@ -156,17 +134,9 @@ class ErrorIsMatcher {
   }
 
  private:
-  // Reject instantiation with types that do not satisfy
-  // `base::internal::IsExpected<U>`.
-  template <typename U, typename = void>
-  class Impl {
-    static_assert(base::internal::IsExpected<U>,
-                  "Must be used with base::expected<T, E>");
-  };
-
   template <typename U>
-  class Impl<U, std::enable_if_t<base::internal::IsExpected<U>>>
-      : public ::testing::MatcherInterface<U> {
+    requires(base::internal::IsExpected<U>)
+  class Impl : public ::testing::MatcherInterface<U> {
    public:
     explicit Impl(const T& matcher)
         : matcher_(::testing::SafeMatcherCast<const E&>(matcher)) {}

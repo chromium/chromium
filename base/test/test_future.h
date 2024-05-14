@@ -222,9 +222,8 @@ class TestFuture {
   //   int first = future.Get<0>();
   //   std::string second = future.Get<1>();
   //
-  template <std::size_t I,
-            typename T = TupleType,
-            internal::EnableIfOneOrMoreValues<T> = true>
+  template <std::size_t I, typename T = TupleType>
+    requires(internal::IsNonEmptyTuple<T>)
   const auto& Get() {
     return std::get<I>(GetTuple());
   }
@@ -421,7 +420,8 @@ class TestFuture {
   // Waits for the value to arrive, and returns a reference to it.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsSingleValuedTuple<T>)
   [[nodiscard]] const auto& Get() {
     return std::get<0>(GetTuple());
   }
@@ -429,7 +429,8 @@ class TestFuture {
   // Waits for the value to arrive, and returns it.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfSingleValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsSingleValuedTuple<T>)
   [[nodiscard]] auto Take() {
     return std::get<0>(TakeTuple());
   }
@@ -441,7 +442,8 @@ class TestFuture {
   // Waits for the values to arrive, and returns a tuple with the values.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsMultiValuedTuple<T>)
   [[nodiscard]] const TupleType& Get() {
     return GetTuple();
   }
@@ -449,7 +451,8 @@ class TestFuture {
   // Waits for the values to arrive, and moves a tuple with the values out.
   //
   // Will CHECK if a timeout happens.
-  template <typename T = TupleType, internal::EnableIfMultiValue<T> = true>
+  template <typename T = TupleType>
+    requires(internal::IsMultiValuedTuple<T>)
   [[nodiscard]] TupleType Take() {
     return TakeTuple();
   }
