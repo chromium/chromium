@@ -13,7 +13,7 @@ const DawnProcTable& GetDawnNativeProcs() {
 }
 WGPUInstance MakeNativeWGPUInstance() {
   auto instance = std::make_unique<dawn::native::Instance>();
-  dawn::native::GetProcs().instanceReference(instance->Get());
+  dawn::native::GetProcs().instanceAddRef(instance->Get());
   return instance->Get();
 }
 
