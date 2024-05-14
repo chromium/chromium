@@ -3437,6 +3437,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3566721612727112615">Nenhum site adicionado</translation>
 <translation id="3567284462585300767">Para receber e aceitar arquivos de pessoas à sua volta, fique visível</translation>
 <translation id="356738834800832239">Sua senha foi salva</translation>
+<translation id="3568431410312984116">Permitir que o recurso "Quero ajuda para escrever" seja aberto automaticamente</translation>
 <translation id="3569382839528428029">Quer que o <ph name="APP_NAME" /> compartilhe sua tela?</translation>
 <translation id="3569614820047645079">Seus arquivos em "Meu Drive" são sincronizados automaticamente com o Chromebook para que possam ser acessados sem uma conexão de Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pode ver os arquivos e as pastas a seguir</translation>
@@ -5913,6 +5914,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5474859849784484111"><ph name="MANAGER" /> precisa que você se conecte ao Wi-Fi para fazer o download de uma atualização. Você também pode fazer o download em uma conexão limitada (sujeito a cobranças).</translation>
 <translation id="5477089831058413614">Configurar o ponto de acesso do <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Bloquear o download automático de vários arquivos</translation>
+<translation id="5481682542063333508">Oferecer ajuda para escrever</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5482417738572414119">Faça login para que o Chrome sugira grupos de guias e mantenha suas guias organizadas</translation>
 <translation id="5484181871714116891">Quando ativadas, as chaves de acesso serão criadas com as Chaves do iCloud e ficarão disponíveis nos seus dispositivos Apple. Quando desativadas, as chaves de acesso serão criadas no seu perfil do Chrome nesse dispositivo.</translation>
@@ -10123,6 +10125,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="869167754614449887">O arquivo <ph name="FILE_NAME" /> foi excluído do histórico de downloads</translation>
 <translation id="8692107307702113268">A senha tem mais de 1.000 caracteres</translation>
 <translation id="8693639060656817812">Saiba mais sobre a disponibilidade da "Proteção antirrastreamento"</translation>
+<translation id="8693862390730570097">Não permitir que o recurso "Quero ajuda para escrever" seja aberto automaticamente</translation>
 <translation id="8694596275649352090">Bloquear ao entrar em suspensão ou quando a tampa for fechada</translation>
 <translation id="8695139659682234808">Adicionar o controle dos pais depois da configuração</translation>
 <translation id="8695825812785969222">Abrir &amp;local...</translation>
@@ -10711,6 +10714,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9113240369465613386">Somente páginas ímpares</translation>
 <translation id="9113469270512809735">Alternar itens fechados recentemente</translation>
+<translation id="9113529408970052045">O recurso "Quero ajuda para escrever" pode ser aberto automaticamente quando é possível preencher uma caixa de texto em um site com conteúdo curto</translation>
 <translation id="9114663181201435112">Fazer login de forma fácil</translation>
 <translation id="9115675100829699941">&amp;Favoritos</translation>
 <translation id="9115932142612197835">Essa configuração não muda a disponibilidade do Google Tradutor ou do Lens</translation>

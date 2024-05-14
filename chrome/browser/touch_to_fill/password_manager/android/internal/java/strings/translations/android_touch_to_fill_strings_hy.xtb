@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="102916930470544692">Անցաբառ</translation>
+<translation id="102916930470544692">Մուտքի բանալի</translation>
 <translation id="1220509181886849806">Օգտագործե՞լ պահված գաղտնաբառը</translation>
 <translation id="1435940442311036198">Օգտագործել մուտքի բանալի մեկ այլ սարքում</translation>
 <translation id="1717486229951421299">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են էկրանի կեսով:</translation>
@@ -18,7 +18,7 @@
 <translation id="5441504010984421144">Մուտքի տվյալները, որոնք պետք է լրացվեն հպումով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="5591247451101092906">Օգտագործե՞լ պահված գաղտնաբառ կամ մուտքի բանալի</translation>
 <translation id="5624120631404540903">Կառավարել գաղտնաբառերը</translation>
-<translation id="6560306912274274630">Անցաբառ <ph name="USERNAME" /> օգտատիրոջ համար, օգտագործեք ձեր էկրանի կողպումը</translation>
+<translation id="6560306912274274630">Մուտքի բանալի <ph name="USERNAME" /> օգտատիրոջ համար, օգտագործեք ձեր էկրանի կողպումը</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
 <translation id="7286867818472074330">Ընտրել մուտքի բանալի</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />՝ <ph name="ITEMS_TOTAL" />-ից։</translation>

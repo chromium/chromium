@@ -3421,6 +3421,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3566721612727112615">No s'ha afegit cap lloc</translation>
 <translation id="3567284462585300767">Per rebre i acceptar fitxers de les persones que t'envolten, fes-te visible</translation>
 <translation id="356738834800832239">La contrasenya s'ha desat</translation>
+<translation id="3568431410312984116">Permet que la funció Ajuda'm a escriure s'obri automàticament</translation>
 <translation id="3569382839528428029">Voleu que <ph name="APP_NAME" /> comparteixi la vostra pantalla?</translation>
 <translation id="3569614820047645079">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> pot veure els fitxers i les carpetes següents</translation>
@@ -5896,6 +5897,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització. També pots baixar-la amb una connexió d'ús mesurat, però és possible que s'apliquin càrrecs.</translation>
 <translation id="5477089831058413614">Configura el punt d'accés Wi‐Fi del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5481273127572794904">Sense permís per baixar automàticament diversos fitxers</translation>
+<translation id="5481682542063333508">Ofereix ajuda per escriure</translation>
 <translation id="5481941284378890518">Afegeix impressores properes</translation>
 <translation id="5482417738572414119">Inicia la sessió perquè Chrome et suggereixi grups de pestanyes i mantén les pestanyes organitzades</translation>
 <translation id="5484181871714116891">Quan aquesta opció està activada, les claus d'accés es creen al clauer de l'iCloud i estan disponibles en tots els teus dispositius Apple. Quan està desactivada, les claus d'accés es creen al teu perfil de Chrome en aquest dispositiu.</translation>
@@ -10102,6 +10104,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="869167754614449887">S'ha suprimit <ph name="FILE_NAME" /> de l'historial de baixades</translation>
 <translation id="8692107307702113268">La contrasenya té més de 1.000 caràcters</translation>
 <translation id="8693639060656817812">Més informació sobre la disponibilitat de Protecció antiseguiment</translation>
+<translation id="8693862390730570097">No permetis que la funció Ajuda'm a escriure s'obri automàticament</translation>
 <translation id="8694596275649352090">Bloqueja quan està en repòs o es tanca la tapa</translation>
 <translation id="8695139659682234808">Afegeix controls parentals després de la configuració</translation>
 <translation id="8695825812785969222">Obre la &amp;ubicació...</translation>
@@ -10689,6 +10692,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9112987648460918699">Cerca...</translation>
 <translation id="9113240369465613386">Només pàgines senars</translation>
 <translation id="9113469270512809735">Commuta els elements tancats recentment</translation>
+<translation id="9113529408970052045">La funció Ajuda'm a escriure es pot obrir automàticament quan un quadre de text d'un lloc web es pot emplenar amb contingut breu</translation>
 <translation id="9114663181201435112">Inicia la sessió fàcilment</translation>
 <translation id="9115675100829699941">&amp;Adreces d'interès</translation>
 <translation id="9115932142612197835">Aquesta opció de configuració no canvia la disponibilitat del Traductor de Google ni de Lens</translation>

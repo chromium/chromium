@@ -3421,6 +3421,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3566721612727112615">No se ha añadido ningún sitio web</translation>
 <translation id="3567284462585300767">Para recibir y aceptar archivos de personas que estén cerca, haz que tu dispositivo sea visible</translation>
 <translation id="356738834800832239">Se ha guardado tu contraseña</translation>
+<translation id="3568431410312984116">Permitir que Ayúdame a escribir se abra automáticamente</translation>
 <translation id="3569382839528428029">¿Quieres que <ph name="APP_NAME" /> comparta tu pantalla?</translation>
 <translation id="3569614820047645079">Tus archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet.</translation>
 <translation id="3569682580018832495"><ph name="ORIGIN" /> puede ver los siguientes archivos y carpetas:</translation>
@@ -5895,6 +5896,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5474859849784484111"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización. También puedes descargarla con una conexión de uso medido (sujeto a cargos).</translation>
 <translation id="5477089831058413614">Configurar punto de acceso de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">No puede descargar varios archivos automáticamente</translation>
+<translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="5481941284378890518">Añadir impresoras cercanas</translation>
 <translation id="5482417738572414119">Inicia sesión para que Chrome pueda sugerir grupos de pestañas y mantener tus pestañas organizadas</translation>
 <translation id="5484181871714116891">Si activas esta opción, las llaves de acceso se crearán en el llavero de iCloud y estarán disponibles en todos tus dispositivos Apple. Si no la activas, las llaves de acceso se crearán en tu perfil de Chrome en este dispositivo.</translation>
@@ -10102,6 +10104,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="869167754614449887">Se ha eliminado <ph name="FILE_NAME" /> del historial de descargas</translation>
 <translation id="8692107307702113268">La contraseña contiene más de 1000 caracteres</translation>
 <translation id="8693639060656817812">Más información sobre la disponibilidad de la Protección Antirrastreo</translation>
+<translation id="8693862390730570097">No permitir que Ayúdame a escribir se abra automáticamente</translation>
 <translation id="8694596275649352090">Bloquear al suspender o al cerrar la tapa</translation>
 <translation id="8695139659682234808">Añade el control parental después de la configuración</translation>
 <translation id="8695825812785969222">Abrir &amp;ubicación...</translation>
@@ -10689,6 +10692,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9113240369465613386">Solo páginas impares</translation>
 <translation id="9113469270512809735">Mostrar/Ocultar elementos cerrados recientemente</translation>
+<translation id="9113529408970052045">Ayúdame a escribir se puede abrir automáticamente cuando un cuadro de texto de un sitio se puede rellenar con contenido de formato corto</translation>
 <translation id="9114663181201435112">Iniciar sesión fácilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>
 <translation id="9115932142612197835">Este ajuste no cambia la disponibilidad del Traductor de Google ni de Google Lens</translation>

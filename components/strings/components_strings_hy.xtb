@@ -12,7 +12,7 @@
 <translation id="1021753677514347426">Այս խնդիրը կարող է առաջանալ հավաստագրի պատճառով, որը դուք կամ ինչ-որ մեկը տեղադրել եք ձեր սարքում։ Հավաստագիրն օգտագործվում է ցանցեր որսալու ու հետագծելու նպատակով։ Այն վստահելի չէ Chromium-ի համար։ Թեև լինում են օրինական հետագծման դեպքեր, օրինակ՝ դպրոցի կամ ընկերության ցանցում, Chromium-ին անհրաժեշտ է համոզվել, որ դուք գիտեք այդ մասին, նույնիսկ եթե չեք կարող դադարեցնել դա։ Հետագծումը կարող է իրականացվել ցանկացած դիտարկիչում կամ հավելվածում, որին հասանելի է համացանցը։</translation>
 <translation id="1024111578869940408">Հաքերները երբեմն ստեղծում են կայքերի կրկնօրինակներ՝ փոքր-ինչ փոփոխելով դրանց տիրույթի հասցեները, ինչը հնարավոր չէ միանգամից նկատել։</translation>
 <translation id="1024913885641459127">Ապրանքների մասին կարծիքներ և գների համեմատություն</translation>
-<translation id="102916930470544692">Անցաբառ</translation>
+<translation id="102916930470544692">Մուտքի բանալի</translation>
 <translation id="1030706264415084469"><ph name="URL" /> կայքն ուզում է ձեր սարքում մեծ ծավալով տվյալներ մշտապես պահել</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ոչ մի}=1{1 կայքից։ Դուք դուրս կգաք կայքերի մեծ մասից։ }one{# կայքից։ Դուք դուրս կգաք կայքերի մեծ մասից։ }other{# կայքից։ Դուք դուրս կգաք կայքերի մեծ մասից։ }}</translation>
 <translation id="1033329911862281889">Ինկոգնիտո ռեժիմը չի կարող ձեզ լիովին անտեսանելի դարձնել համացանցում, մասնավորապես՝
@@ -339,7 +339,7 @@
 <translation id="159274626729231974">Կինոփառատոններ</translation>
 <translation id="1593359183944365958">270 աստիճան</translation>
 <translation id="1594030484168838125">Ընտրել</translation>
-<translation id="1598816256585174656">Անցաբառ Windows Hello-ից</translation>
+<translation id="1598816256585174656">Մուտքի բանալի Windows Hello-ից</translation>
 <translation id="1599199147673445968">Ավելացնե՞լ նոր քարտ։ <ph name="BEGIN_LINK" />Մուտքագրել քարտի տվյալները<ph name="END_LINK" /></translation>
 <translation id="1604192142734009334">Գեղեցկություն և ֆիթնես</translation>
 <translation id="160851722280695521">Խաղալ Dino Run խաղը Chrome-ում</translation>
@@ -1571,7 +1571,7 @@
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />-ն արգելափակված է</translation>
 <translation id="3975852104434126461">Ավտոմոբիլային արդյունաբերություն</translation>
-<translation id="3983340834939868135">Անցաբառ <ph name="VENDOR_NAME" /> մատակարարից</translation>
+<translation id="3983340834939868135">Մուտքի բանալի <ph name="VENDOR_NAME" /> մատակարարից</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">Թռչուններ</translation>
 <translation id="3985750352229496475">Կառավարել հասցեները…</translation>
@@ -1967,7 +1967,7 @@
 <translation id="4754461935447132332">Արգելված է չպաշտպանված կայքերում</translation>
 <translation id="4756388243121344051">&amp;Պատմություն</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
-<translation id="4757022425116568383">Անցաբառ Chrome-ի ձեր պրոֆիլից</translation>
+<translation id="4757022425116568383">Մուտքի բանալի Chrome-ի ձեր պրոֆիլից</translation>
 <translation id="4757993714154412917">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Ձեր հաշիվների պաշտպանության նկատառումներով՝ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
 <translation id="4758311279753947758">Ավելացնել կոնտակտային տվյալներ</translation>
 <translation id="4761326898079498987">Բացեք՝ մանրամասները տեսնելու համար</translation>
@@ -3172,7 +3172,7 @@
 <translation id="7096937462164235847">Այս կայքի իսկությունը ստուգված չէ։</translation>
 <translation id="7102554173784142865">Խաղալ Chrome Dino խաղը</translation>
 <translation id="7102760431686146931">Խոհանոցային պարագաներ և սպասք</translation>
-<translation id="7105998430540165694">Անցաբառ iCloud Keychain-ից</translation>
+<translation id="7105998430540165694">Մուտքի բանալի iCloud Keychain-ից</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="7107249414147762907">Այս PDF ֆայլը հնարավոր չէ բացել։ Տեքստ չի արտահանվել։</translation>
 <translation id="7107427078069498123">SHA-256 մատնահետքեր</translation>
@@ -3446,7 +3446,7 @@
 <translation id="7581199239021537589">Պատկերների տեղաշարժ հակառակ կողմից՝ Y առանցքով</translation>
 <translation id="7582602800368606489">Արագ ստեղծել միջոցառում Google Օրացույցում</translation>
 <translation id="7586676035079382730">Ծանուցումների ուղարկումն արգելված է</translation>
-<translation id="7588460771338574392">Անցաբառ <ph name="PHONE_NAME" /> հեռախոսից</translation>
+<translation id="7588460771338574392">Մուտքի բանալի <ph name="PHONE_NAME" /> հեռախոսից</translation>
 <translation id="7588707273764747927">Փոխանցում</translation>
 <translation id="7591288787774558753">Կիսվե՞լ կոնֆիդենցիալ բովանդակությամբ</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> կայքն ուզում է օգտագործել <ph name="TOP_LEVEL_URL" /> կայքի քուքիներն ու տվյալները</translation>

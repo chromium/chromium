@@ -1990,7 +1990,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4800132727771399293">Verifica la fecha de vencimiento y el CVC, y vuelve a intentarlo.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
-<translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
+<translation id="4811450222531576619">Más información sobre el tema y la fuente</translation>
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
@@ -2326,6 +2326,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5470861586879999274">&amp;Rehacer Editar</translation>
 <translation id="547963486735802022">Intenta volver a transferir tus archivos</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o borre tu información en tu dispositivo . <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Agregar una dirección válida</translation>
 <translation id="5483838506518938965">Terminaste</translation>
 <translation id="5485973315555778056">Máquina en la nube</translation>
