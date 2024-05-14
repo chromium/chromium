@@ -9,7 +9,7 @@ import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSetting, ContentSettingsTypes, CookieControlsMode, SafetyHubBrowserProxyImpl, SafetyHubEvent, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsPrivacyPageElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, resetPageVisibilityForTesting, resetRouterForTesting, Router, routes, StatusAction, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -80,6 +80,7 @@ suite('PrivacyPage', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: true,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -298,6 +299,7 @@ suite(`PrivacySandbox`, function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -415,6 +417,7 @@ suite(`CookiesSubpage`, function() {
       // This test covers the pre-3PCD subpage.
       is3pcdCookieSettingsRedesignEnabled: false,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -456,6 +459,7 @@ suite(`TrackingProtectionSubpage`, function() {
       isPrivacySandboxRestricted: false,
       is3pcdCookieSettingsRedesignEnabled: true,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -472,7 +476,7 @@ suite(`TrackingProtectionSubpage`, function() {
   });
 
   teardown(function() {
-    Router.getInstance().resetRouteForTesting();
+    resetRouterForTesting();
   });
 
   test('trackingProtectionSubpageAttributes', async function() {
@@ -522,6 +526,7 @@ suite(`PrivacySandbox4EnabledButRestricted`, function() {
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: false,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -564,6 +569,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
       isPrivacySandboxRestricted: true,
       isPrivacySandboxRestrictedNoticeEnabled: true,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -624,6 +630,7 @@ suite('PrivacyGuideRow', function() {
 
   setup(function() {
     loadTimeData.overrideValues({showPrivacyGuide: true});
+    resetRouterForTesting();
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -635,6 +642,7 @@ suite('PrivacyGuideRow', function() {
 
   test('rowNotShown', async function() {
     loadTimeData.overrideValues({showPrivacyGuide: false});
+    resetRouterForTesting();
 
     page.remove();
     page = document.createElement('settings-privacy-page');
@@ -881,9 +889,9 @@ suite('NotificationPermissionReview', function() {
   }
 
   test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({
-      isGuest: true,
-    });
+    loadTimeData.overrideValues({isGuest: true});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
     await createPage();
 
     // The UI should remain invisible even when there's an event that the
@@ -896,9 +904,9 @@ suite('NotificationPermissionReview', function() {
     assertFalse(isChildVisible(page, 'review-notification-permissions'));
 
     // Set guest mode back to false.
-    loadTimeData.overrideValues({
-      isGuest: false,
-    });
+    loadTimeData.overrideValues({isGuest: false});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
@@ -941,6 +949,7 @@ suite('NotificationPermissionReviewSafetyHubDisabled', function() {
     loadTimeData.overrideValues({
       enableSafetyHub: false,
     });
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -961,9 +970,9 @@ suite('NotificationPermissionReviewSafetyHubDisabled', function() {
   }
 
   test('InvisibleWhenGuestMode', async function() {
-    loadTimeData.overrideValues({
-      isGuest: true,
-    });
+    loadTimeData.overrideValues({isGuest: true});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
     await createPage();
 
     // The UI should remain invisible even when there's an event that the
@@ -976,9 +985,9 @@ suite('NotificationPermissionReviewSafetyHubDisabled', function() {
     assertFalse(isChildVisible(page, 'review-notification-permissions'));
 
     // Set guest mode back to false.
-    loadTimeData.overrideValues({
-      isGuest: false,
-    });
+    loadTimeData.overrideValues({isGuest: false});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
@@ -1019,6 +1028,7 @@ suite('EnableWebBluetoothNewPermissionsBackend', function() {
       isPrivacySandboxRestricted: true,
       enableWebBluetoothNewPermissionsBackend: true,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
