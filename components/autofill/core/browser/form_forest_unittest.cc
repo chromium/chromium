@@ -571,7 +571,7 @@ class FormForestTestUpdateTree : public FormForestTestWithMockedTree {
   // The subject of this test fixture.
   void UpdateTreeOfRendererForm(FormForest& ff, std::string_view form_name) {
     ff.UpdateTreeOfRendererForm(GetMockedForm(form_name),
-                                &GetDriverOfForm(form_name));
+                                GetDriverOfForm(form_name));
   }
 };
 

@@ -149,15 +149,15 @@ void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
 // (amongst others), which will then also set the child frame's
 // FrameData::parent_form.
 void FormForest::UpdateTreeOfRendererForm(FormData* form,
-                                          AutofillDriver* driver) {
+                                          AutofillDriver& driver) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.UpdateTreeOfRendererForm.Duration");
   CHECK(form->host_frame);
-  CHECK_EQ(form->host_frame, driver->GetFrameToken());
+  CHECK_EQ(form->host_frame, driver.GetFrameToken());
 
   FrameData* frame = GetOrCreateFrameData(form->host_frame);
-  CHECK(!frame->driver || frame->driver == driver);
-  frame->driver = driver;
+  CHECK(!frame->driver || frame->driver == &driver);
+  frame->driver = &driver;
 
   // Moves |form| into its |frame|'s FrameData::child_forms, with a special
   // treatment of the fields: |form|'s fields are replaced with |old_form|'s
@@ -487,7 +487,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // disallow document access, there is no immediate need to support it. See
   // https://crrev.com/c/3055422 for a draft implementation.
   if (AutofillDriver* parent_driver = nullptr;
-      !frame->parent_form && (parent_driver = driver->GetParent())) {
+      !frame->parent_form && (parent_driver = driver.GetParent())) {
     parent_driver->TriggerFormExtractionInDriverFrame();
   }
 }

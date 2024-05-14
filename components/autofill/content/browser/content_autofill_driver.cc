@@ -75,8 +75,8 @@ const std::vector<FormData>& WithNewVersion(
 // ContentAutofillDriver::router() must only route among ContentAutofillDrivers.
 // Therefore, we can safely cast AutofillDriverRouter's AutofillDrivers to
 // ContentAutofillDrivers.
-ContentAutofillDriver* cast(autofill::AutofillDriver* driver) {
-  return static_cast<ContentAutofillDriver*>(driver);
+ContentAutofillDriver& cast(autofill::AutofillDriver& driver) {
+  return static_cast<ContentAutofillDriver&>(driver);
 }
 
 }  // namespace
@@ -89,7 +89,7 @@ ContentAutofillDriver::ContentAutofillDriver(
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
-  owner_->router().UnregisterDriver(this,
+  owner_->router().UnregisterDriver(*this,
                                     /*driver_is_dying=*/true);
 }
 
@@ -240,12 +240,12 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   return router().ApplyFormAction(
-      this, action_type, action_persistence, form, triggered_origin,
+      *this, action_type, action_persistence, form, triggered_origin,
       field_type_map,
-      [](autofill::AutofillDriver* target, mojom::FormActionType action_type,
+      [](autofill::AutofillDriver& target, mojom::FormActionType action_type,
          mojom::ActionPersistence action_persistence,
          const std::vector<FormFieldData::FillData>& fields) {
-        cast(target)->GetAutofillAgent()->ApplyFieldsAction(
+        cast(target).GetAutofillAgent()->ApplyFieldsAction(
             action_type, action_persistence, fields);
       });
 }
@@ -256,11 +256,11 @@ void ContentAutofillDriver::ApplyFieldAction(
     const FieldGlobalId& field,
     const std::u16string& value) {
   router().ApplyFieldAction(
-      this, action_type, action_persistence, field, value,
-      [](autofill::AutofillDriver* target, mojom::FieldActionType action_type,
+      *this, action_type, action_persistence, field, value,
+      [](autofill::AutofillDriver& target, mojom::FieldActionType action_type,
          mojom::ActionPersistence action_persistence,
          const FieldRendererId& field, const std::u16string& value) {
-        cast(target)->GetAutofillAgent()->ApplyFieldAction(
+        cast(target).GetAutofillAgent()->ApplyFieldAction(
             action_type, action_persistence, field, value);
       });
 }
@@ -315,11 +315,11 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
   using RendererFormHandler =
       base::OnceCallback<void(const std::optional<::autofill::FormData>&)>;
   // Called on the autofill driver that hosts the form with `form_id`.
-  auto make_request = [](autofill::AutofillDriver* request_target,
+  auto make_request = [](autofill::AutofillDriver& request_target,
                          const FormRendererId& form_id,
                          RendererFormHandler flatten_form) {
     // Called asynchronously. Binding `response_target` is safe because
-    // destroying `*response_target` also destroys any pending callback.
+    // destroying `response_target` also destroys any pending callback.
     auto set_meta_data = base::BindOnce(
         [](RendererFormHandler flatten_form,
            raw_ref<ContentAutofillDriver> response_target,
@@ -330,15 +330,15 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
                   // (3) Set the meta data on receival of the renderer form.
                   response_target->GetFormWithFrameAndFormMetaData(raw_form));
         },
-        std::move(flatten_form), raw_ref(*cast(request_target)));
+        std::move(flatten_form), raw_ref(cast(request_target)));
     // (2) Send the mojo message to the right AutofillAgent.
     cast(request_target)
-        ->GetAutofillAgent()
+        .GetAutofillAgent()
         ->ExtractForm(form_id, std::move(set_meta_data));
   };
 
   // (1) Route the request to the right AutofillDriver.
-  router().ExtractForm(this, form_id, std::move(set_version), make_request);
+  router().ExtractForm(*this, form_id, std::move(set_version), make_request);
 }
 
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
@@ -348,10 +348,10 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
   // TODO(crbug.com/40753022) Send the FormDataPredictions object only if the
   // debugging flag is enabled.
   router().SendAutofillTypePredictionsToRenderer(
-      this, type_predictions,
-      [](autofill::AutofillDriver* target,
+      *this, type_predictions,
+      [](autofill::AutofillDriver& target,
          const std::vector<FormDataPredictions>& type_predictions) {
-        cast(target)->GetAutofillAgent()->FieldTypePredictionsAvailable(
+        cast(target).GetAutofillAgent()->FieldTypePredictionsAvailable(
             type_predictions);
       });
 }
@@ -360,18 +360,17 @@ void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field,
     const std::u16string& value) {
   router().RendererShouldAcceptDataListSuggestion(
-      this, field, value,
-      [](autofill::AutofillDriver* target, const FieldRendererId& field,
+      *this, field, value,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field,
          const std::u16string& value) {
-        cast(target)->GetAutofillAgent()->AcceptDataListSuggestion(field,
-                                                                   value);
+        cast(target).GetAutofillAgent()->AcceptDataListSuggestion(field, value);
       });
 }
 
 void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
   router().RendererShouldClearPreviewedForm(
-      this, [](autofill::AutofillDriver* target) {
-        cast(target)->GetAutofillAgent()->ClearPreviewedForm();
+      *this, [](autofill::AutofillDriver& target) {
+        cast(target).GetAutofillAgent()->ClearPreviewedForm();
       });
 }
 
@@ -379,11 +378,11 @@ void ContentAutofillDriver::RendererShouldTriggerSuggestions(
     const FieldGlobalId& field,
     AutofillSuggestionTriggerSource trigger_source) {
   router().RendererShouldTriggerSuggestions(
-      this, field, trigger_source,
-      [](autofill::AutofillDriver* target, const FieldRendererId& field,
+      *this, field, trigger_source,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field,
          AutofillSuggestionTriggerSource trigger_source) {
-        cast(target)->GetAutofillAgent()->TriggerSuggestions(field,
-                                                             trigger_source);
+        cast(target).GetAutofillAgent()->TriggerSuggestions(field,
+                                                            trigger_source);
       });
 }
 
@@ -391,10 +390,10 @@ void ContentAutofillDriver::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,
     mojom::AutofillSuggestionAvailability suggestion_availability) {
   router().RendererShouldSetSuggestionAvailability(
-      this, field, suggestion_availability,
-      [](autofill::AutofillDriver* target, const FieldRendererId& field,
+      *this, field, suggestion_availability,
+      [](autofill::AutofillDriver& target, const FieldRendererId& field,
          mojom::AutofillSuggestionAvailability suggestion_availability) {
-        cast(target)->GetAutofillAgent()->SetSuggestionAvailability(
+        cast(target).GetAutofillAgent()->SetSuggestionAvailability(
             field, suggestion_availability);
       });
 }
@@ -414,11 +413,11 @@ void ContentAutofillDriver::FormsSeen(
   for (FormRendererId form_id : raw_removed_forms)
     removed_forms.push_back({GetFrameToken(), form_id});
 
-  router().FormsSeen(this, std::move(updated_forms), removed_forms,
-                     [](autofill::AutofillDriver* target,
+  router().FormsSeen(*this, std::move(updated_forms), removed_forms,
+                     [](autofill::AutofillDriver& target,
                         const std::vector<FormData>& updated_forms,
                         const std::vector<FormGlobalId>& removed_forms) {
-                       target->GetAutofillManager().OnFormsSeen(
+                       target.GetAutofillManager().OnFormsSeen(
                            WithNewVersion(updated_forms), removed_forms);
                      });
 }
@@ -431,11 +430,11 @@ void ContentAutofillDriver::FormSubmitted(
     return;
   }
   router().FormSubmitted(
-      this, GetFormWithFrameAndFormMetaData(raw_form), known_success,
+      *this, GetFormWithFrameAndFormMetaData(raw_form), known_success,
       submission_source,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      [](autofill::AutofillDriver& target, const FormData& form,
          bool known_success, mojom::SubmissionSource submission_source) {
-        target->GetAutofillManager().OnFormSubmitted(
+        target.GetAutofillManager().OnFormSubmitted(
             WithNewVersion(form), known_success, submission_source);
       });
 }
@@ -450,11 +449,11 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().TextFieldDidChange(
-      this, std::move(form), field, timestamp,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, std::move(form), field, timestamp,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field, base::TimeTicks timestamp) {
-        target->GetAutofillManager().OnTextFieldDidChange(WithNewVersion(form),
-                                                          field, timestamp);
+        target.GetAutofillManager().OnTextFieldDidChange(WithNewVersion(form),
+                                                         field, timestamp);
       });
 }
 
@@ -467,11 +466,11 @@ void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().TextFieldDidScroll(
-      this, std::move(form), field,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, std::move(form), field,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
-        target->GetAutofillManager().OnTextFieldDidScroll(WithNewVersion(form),
-                                                          field);
+        target.GetAutofillManager().OnTextFieldDidScroll(WithNewVersion(form),
+                                                         field);
       });
 }
 
@@ -485,10 +484,10 @@ void ContentAutofillDriver::SelectControlDidChange(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().SelectControlDidChange(
-      this, std::move(form), field,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, std::move(form), field,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
-        target->GetAutofillManager().OnSelectControlDidChange(
+        target.GetAutofillManager().OnSelectControlDidChange(
             WithNewVersion(form), field);
       });
 }
@@ -505,12 +504,12 @@ void ContentAutofillDriver::AskForValuesToFill(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().AskForValuesToFill(
-      this, std::move(form), field,
+      *this, std::move(form), field,
       TransformBoundingBoxToViewportCoordinates(caret_bounds), trigger_source,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field, const gfx::Rect& caret_bounds,
          AutofillSuggestionTriggerSource trigger_source) {
-        target->GetAutofillManager().OnAskForValuesToFill(
+        target.GetAutofillManager().OnAskForValuesToFill(
             WithNewVersion(form), field, caret_bounds, trigger_source);
       });
 }
@@ -519,10 +518,10 @@ void ContentAutofillDriver::HidePopup() {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  router().HidePopup(this, [](autofill::AutofillDriver* target) {
-    DCHECK(!target->IsPrerendering())
+  router().HidePopup(*this, [](autofill::AutofillDriver& target) {
+    DCHECK(!target.IsPrerendering())
         << "We should never affect UI while prerendering";
-    target->GetAutofillManager().OnHidePopup();
+    target.GetAutofillManager().OnHidePopup();
   });
 }
 
@@ -531,9 +530,9 @@ void ContentAutofillDriver::FocusOnNonFormField(bool had_interacted_form) {
     return;
   }
   router().FocusOnNonFormField(
-      this, had_interacted_form,
-      [](autofill::AutofillDriver* target, bool had_interacted_form) {
-        target->GetAutofillManager().OnFocusOnNonFormField(had_interacted_form);
+      *this, had_interacted_form,
+      [](autofill::AutofillDriver& target, bool had_interacted_form) {
+        target.GetAutofillManager().OnFocusOnNonFormField(had_interacted_form);
       });
 }
 
@@ -546,14 +545,14 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().FocusOnFormField(
-      this, std::move(form), field,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, std::move(form), field,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field) {
-        target->GetAutofillManager().OnFocusOnFormField(WithNewVersion(form),
-                                                        field);
+        target.GetAutofillManager().OnFocusOnFormField(WithNewVersion(form),
+                                                       field);
       },
-      [](autofill::AutofillDriver* target) {
-        target->GetAutofillManager().OnFocusOnNonFormField(true);
+      [](autofill::AutofillDriver& target) {
+        target.GetAutofillManager().OnFocusOnNonFormField(true);
       });
 }
 
@@ -563,10 +562,10 @@ void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
     return;
   }
   router().DidFillAutofillFormData(
-      this, GetFormWithFrameAndFormMetaData(raw_form), timestamp,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, GetFormWithFrameAndFormMetaData(raw_form), timestamp,
+      [](autofill::AutofillDriver& target, const FormData& form,
          base::TimeTicks timestamp) {
-        target->GetAutofillManager().OnDidFillAutofillFormData(
+        target.GetAutofillManager().OnDidFillAutofillFormData(
             WithNewVersion(form), timestamp);
       });
 }
@@ -575,8 +574,8 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
   }
-  router().DidEndTextFieldEditing(this, [](autofill::AutofillDriver* target) {
-    target->GetAutofillManager().OnDidEndTextFieldEditing();
+  router().DidEndTextFieldEditing(*this, [](autofill::AutofillDriver& target) {
+    target.GetAutofillManager().OnDidEndTextFieldEditing();
   });
 }
 
@@ -586,10 +585,10 @@ void ContentAutofillDriver::SelectOrSelectListFieldOptionsDidChange(
     return;
   }
   router().SelectOrSelectListFieldOptionsDidChange(
-      this, GetFormWithFrameAndFormMetaData(raw_form),
-      [](autofill::AutofillDriver* target, const FormData& form) {
+      *this, GetFormWithFrameAndFormMetaData(raw_form),
+      [](autofill::AutofillDriver& target, const FormData& form) {
         cast(target)
-            ->GetAutofillManager()
+            .GetAutofillManager()
             .OnSelectOrSelectListFieldOptionsDidChange(WithNewVersion(form));
       });
 }
@@ -606,17 +605,17 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, field);
   router().JavaScriptChangedAutofilledValue(
-      this, std::move(form), field, old_value, formatting_only,
-      [](autofill::AutofillDriver* target, const FormData& form,
+      *this, std::move(form), field, old_value, formatting_only,
+      [](autofill::AutofillDriver& target, const FormData& form,
          const FormFieldData& field, const std::u16string& old_value,
          bool formatting_only) {
-        target->GetAutofillManager().OnJavaScriptChangedAutofilledValue(
+        target.GetAutofillManager().OnJavaScriptChangedAutofilledValue(
             WithNewVersion(form), field, old_value, formatting_only);
       });
 }
 
 void ContentAutofillDriver::Reset() {
-  owner_->router().UnregisterDriver(this,
+  owner_->router().UnregisterDriver(*this,
                                     /*driver_is_dying=*/false);
   autofill_manager_->Reset();
 }

@@ -229,7 +229,7 @@ class FormForest {
   // |driver| must be the AutofillDriver of `renderer_form.host_frame`.
   // Afterwards, `renderer_form.global_id()` is a known renderer form.
   void UpdateTreeOfRendererForm(FormData renderer_form,
-                                AutofillDriver* driver) {
+                                AutofillDriver& driver) {
     UpdateTreeOfRendererForm(&renderer_form, driver);
   }
 
@@ -397,7 +397,7 @@ class FormForest {
   // Leaves `*renderer_form` in a valid but unspecified state (like after a
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,
-                                AutofillDriver* driver);
+                                AutofillDriver& driver);
 
   // The FrameData nodes of the forest.
   // Note that since the elements are (smart) pointers, they are not invalidated
