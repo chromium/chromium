@@ -19,6 +19,8 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/tether/pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace ash::tether {
 
@@ -246,6 +248,21 @@ TEST_F(TetherNotificationPresenterTest,
 }
 
 TEST_F(TetherNotificationPresenterTest,
+       TestHostConnectionFailedNotification_NotShownWhenNotificationsDisabled) {
+  EXPECT_FALSE(
+      display_service_->GetNotification(GetActiveHostNotificationId()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kNotificationsEnabled,
+                                    /*value=*/false);
+
+  notification_presenter_->NotifyConnectionToHostFailed();
+
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(GetActiveHostNotificationId());
+  ASSERT_FALSE(notification);
+}
+
+TEST_F(TetherNotificationPresenterTest,
        TestSetupRequiredNotification_RemoveProgrammatically) {
   EXPECT_FALSE(
       display_service_->GetNotification(GetSetupRequiredNotificationId()));
@@ -336,6 +353,22 @@ TEST_F(TetherNotificationPresenterTest,
       display_service_->GetNotification(GetPotentialHotspotNotificationId()));
 
   VerifySettingsNotOpened();
+}
+
+TEST_F(TetherNotificationPresenterTest,
+       TestPotentialHotspotNotification_NotificationsDisabled) {
+  EXPECT_FALSE(
+      display_service_->GetNotification(GetPotentialHotspotNotificationId()));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kNotificationsEnabled,
+                                    /*value=*/false);
+
+  notification_presenter_->NotifyPotentialHotspotNearby(
+      kDeviceId, kDeviceName, kTestNetworkSignalStrength);
+
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(GetPotentialHotspotNotificationId());
+  ASSERT_FALSE(notification);
 }
 
 TEST_F(TetherNotificationPresenterTest,

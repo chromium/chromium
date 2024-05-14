@@ -17,6 +17,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace ash {
 class NetworkConnect;
@@ -42,6 +43,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
       delete;
 
   ~TetherNotificationPresenter() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // NotificationPresenter:
   void NotifyPotentialHotspotNearby(const std::string& device_id,
@@ -111,6 +114,8 @@ class TetherNotificationPresenter : public NotificationPresenter {
                                          const std::string& notification_id);
   void RemoveNotificationIfVisible(const std::string& notification_id);
 
+  bool AreNotificationsEnabled();
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<NetworkConnect, DanglingUntriaged> network_connect_;
 
@@ -123,6 +128,7 @@ class TetherNotificationPresenter : public NotificationPresenter {
   // hotspot nearby" notification. If the notification is not visible or it is
   // in the "multiple hotspots available" mode, this pointer is null.
   std::unique_ptr<std::string> hotspot_nearby_device_id_;
+
   base::WeakPtrFactory<TetherNotificationPresenter> weak_ptr_factory_{this};
 };
 

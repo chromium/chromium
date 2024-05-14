@@ -54,6 +54,10 @@ inline constexpr char kDisconnectingWifiNetworkPath[] =
 // more details.
 inline constexpr char kHostScanCache[] = "tether.host_scan_cache";
 
+// Whether the user has chosen to allow Instant Hotspot to present
+// notifications. Enabled by default.
+inline constexpr char kNotificationsEnabled[] = "tether.notifications_enabled";
+
 }  // namespace ash::tether::prefs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_PREF_NAMES_H_

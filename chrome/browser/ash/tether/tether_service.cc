@@ -53,6 +53,7 @@ TetherService* TetherService::Get(Profile* profile) {
 void TetherService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   TetherComponentImpl::RegisterProfilePrefs(registry);
+  TetherNotificationPresenter::RegisterProfilePrefs(registry);
 }
 
 // static.

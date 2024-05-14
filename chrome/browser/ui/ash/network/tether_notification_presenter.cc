@@ -19,12 +19,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/ash/components/tether/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -127,6 +131,12 @@ TetherNotificationPresenter::TetherNotificationPresenter(
       settings_ui_delegate_(base::WrapUnique(new SettingsUiDelegateImpl())) {}
 
 TetherNotificationPresenter::~TetherNotificationPresenter() = default;
+
+// static
+void TetherNotificationPresenter::RegisterProfilePrefs(
+    PrefRegistrySimple* pref_registry) {
+  pref_registry->RegisterBooleanPref(prefs::kNotificationsEnabled, true);
+}
 
 void TetherNotificationPresenter::NotifyPotentialHotspotNearby(
     const std::string& device_id,
@@ -340,6 +350,12 @@ void TetherNotificationPresenter::SetSettingsUiDelegateForTesting(
 
 void TetherNotificationPresenter::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
+  if (!AreNotificationsEnabled()) {
+    PA_LOG(INFO) << "Not showing notification with ID [" << notification->id()
+                 << "] since user has notifications disabled.";
+    return;
+  }
+
   showing_notification_id_ = notification->id();
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
@@ -366,6 +382,10 @@ void TetherNotificationPresenter::RemoveNotificationIfVisible(
 
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
+}
+
+bool TetherNotificationPresenter::AreNotificationsEnabled() {
+  return profile_->GetPrefs()->GetBoolean(prefs::kNotificationsEnabled);
 }
 
 }  // namespace ash::tether
