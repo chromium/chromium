@@ -39,6 +39,9 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/sessions",
+  # TODO: b/335799773 - We can remove this dependency once support tool files
+  # have been separated from //chrome/browser/support_tool.
+  "+chrome/browser/support_tool",
   "+chrome/browser/sync",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
