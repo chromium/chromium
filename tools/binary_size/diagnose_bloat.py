@@ -244,11 +244,6 @@ class _BuildHelper:
     self._SetDefaults()
     self.is_bundle = 'minimal' in self.target
 
-  def _MaybeAddGoogleSuffix(self, path):
-    if self.IsTrichrome() and '_google' in self.target:
-      return path.replace('.', 'Google.', 1)
-    return path
-
   @property
   def abs_apk_paths(self):
     return [os.path.join(self.output_directory, x) for x in self.apk_paths]
@@ -283,19 +278,20 @@ class _BuildHelper:
   @property
   def supersize_input(self):
     if self.IsTrichrome():
-      return self._MaybeAddGoogleSuffix(
-          os.path.join(self.output_directory, 'apks', 'Trichrome.ssargs'))
+      suffix = self.TrichromeSuffix()
+      return os.path.join(self.output_directory, 'apks',
+                          f'Trichrome{suffix}.ssargs')
     return self.abs_apk_paths[0]
 
   @property
   def apk_paths(self):
     if self.IsTrichrome():
-      ret = [
-          os.path.join('apks', 'TrichromeChrome.minimal.apks'),
-          os.path.join('apks', 'TrichromeWebView.minimal.apks'),
-          os.path.join('apks', 'TrichromeLibrary.apk'),
+      suffix = self.TrichromeSuffix()
+      return [
+          os.path.join('apks', f'TrichromeChrome{suffix}.minimal.apks'),
+          os.path.join('apks', f'TrichromeWebView{suffix}.minimal.apks'),
+          os.path.join('apks', f'TrichromeLibrary{suffix}.apk'),
       ]
-      return [self._MaybeAddGoogleSuffix(x) for x in ret]
 
     return [os.path.join('apks', self.apk_name)]
 
@@ -397,6 +393,19 @@ class _BuildHelper:
 
   def IsTrichrome(self):
     return 'trichrome' in self.target
+
+  def TrichromeSuffix(self):
+    assert self.IsTrichrome()
+    ret = ''
+    if '_google' in self.target:
+      ret = 'Google'
+    if '64_32' in self.target:
+      ret += '6432'
+    elif '64' in self.target:
+      ret += '64'
+    elif '32' in self.target:
+      ret += '32'
+    return ret
 
   def IsLinux(self):
     return self.target_os == 'linux'
