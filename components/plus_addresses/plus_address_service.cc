@@ -133,7 +133,8 @@ bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
     return true;
   }
   // Prerequisites are met, but it's an off-the-record session. If there's an
-  // existing plus_address, it's supported, otherwise it is not.
+  // existing plus_address with a facet equal to `origin` (i.e. no affiliations
+  // considered), it's supported, otherwise it is not.
   return GetPlusProfile(OriginToFacet(origin)).has_value();
 }
 
