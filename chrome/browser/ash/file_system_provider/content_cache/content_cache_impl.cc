@@ -290,7 +290,7 @@ void ContentCacheImpl::ReadBytes(
           << file.version_tag << "', offset = '" << offset << "', length = '"
           << length << "'}";
 
-  ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
+  ContentLRUCache::iterator it = lru_cache_.Peek(file.file_path);
   if (it == lru_cache_.end()) {
     VLOG(1) << "Cache miss: entire file is not in cache";
     callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
@@ -393,7 +393,7 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
     return;
   }
 
-  ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
+  ContentLRUCache::iterator it = lru_cache_.Peek(file.file_path);
   if (it == lru_cache_.end()) {
     // The file doesn't exist in the cache yet, create `CacheFileContext` with
     // the supplied version_tag.
