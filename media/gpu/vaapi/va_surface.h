@@ -35,11 +35,6 @@ class VASurface : public base::RefCountedThreadSafe<VASurface> {
   const gfx::Size& size() const { return size_; }
   unsigned int format() const { return format_; }
 
-  // Releases any resources, in particular |release_cb_|.
-  // TODO(339518553): Remove once ScopedVASurface(...,VASurface* surface) ctor
-  // is not needed.
-  void Reset();
-
  private:
   friend class base::RefCountedThreadSafe<VASurface>;
   ~VASurface();

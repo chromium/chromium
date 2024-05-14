@@ -491,7 +491,7 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureVpp(
   }
 
   // Bind a VA surface to |video_frame|.
-  scoped_refptr<VASurface> output_surface =
+  const std::unique_ptr<ScopedVASurface> output_surface =
       vpp_vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
   if (!output_surface) {
     VLOGF(1) << "Cannot create VA surface for output buffer";
@@ -513,7 +513,11 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureVpp(
     VLOGF(1) << "Cannot sync VPP input surface";
     return false;
   }
-  if (!vpp_vaapi_wrapper_->BlitSurface(*src_surface, *output_surface,
+  // TODO(339518553): Remove this temporary variable.
+  scoped_refptr<VASurface> output_tmp_surface = base::MakeRefCounted<VASurface>(
+      output_surface->id(), output_surface->size(), output_surface->format(),
+      base::DoNothing() /* release_cb */);
+  if (!vpp_vaapi_wrapper_->BlitSurface(*src_surface, *output_tmp_surface,
                                        crop_rect)) {
     VLOGF(1) << "Cannot convert decoded image into output buffer";
     return false;

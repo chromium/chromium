@@ -414,13 +414,13 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       const FrameResource& frame,
       bool protected_content);
 
-  // Creates a self-releasing VASurface from |pixmap|. The created VASurface
+  // Creates a self-releasing ScopedVASurface from |pixmap|. The created object
   // shares the ownership of the underlying buffer represented by |pixmap|. The
   // ownership of the surface is transferred to the caller. A caller can destroy
   // |pixmap| after this method returns and the underlying buffer will be kept
   // alive by the VASurface. |protected_content| should only be true if the
   // format needs VA_RT_FORMAT_PROTECTED (currently only true for AMD).
-  virtual scoped_refptr<VASurface> CreateVASurfaceForPixmap(
+  virtual std::unique_ptr<ScopedVASurface> CreateVASurfaceForPixmap(
       scoped_refptr<const gfx::NativePixmap> pixmap,
       bool protected_content = false);
 

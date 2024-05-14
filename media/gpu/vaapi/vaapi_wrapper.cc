@@ -2407,17 +2407,10 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForFrameResource(
     LOG(ERROR) << "Failed to create NativePixmap from FrameResource";
     return nullptr;
   }
-  // TODO(339518553): Migrate CreateVASurfaceForPixmap() to returning
-  // ScopedVASurface and remove the temporary |va_surface_ptr|.
-  scoped_refptr<VASurface> va_surface =
-      CreateVASurfaceForPixmap(std::move(pixmap), protected_content);
-  if (!va_surface) {
-    return nullptr;
-  }
-  return std::make_unique<ScopedVASurface>(this, std::move(va_surface));
+  return CreateVASurfaceForPixmap(std::move(pixmap), protected_content);
 }
 
-scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
+std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateVASurfaceForPixmap(
     scoped_refptr<const gfx::NativePixmap> pixmap,
     bool protected_content) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2499,9 +2492,9 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   }
   DVLOG(3) << __func__ << " " << va_surface_id;
   // VASurface shares an ownership of the buffer referred by the passed file
-  // descriptor. We can release |pixmap| here.
-  return new VASurface(va_surface_id, size, va_format,
-                       base::BindOnce(&VaapiWrapper::DestroySurface, this));
+  // descriptor. |pixmap| can be released here.
+  return std::make_unique<ScopedVASurface>(this, va_surface_id, size,
+                                           va_format);
 }
 
 scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForUserPtr(

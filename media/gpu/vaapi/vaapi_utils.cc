@@ -220,16 +220,13 @@ ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
   DCHECK(vaapi_wrapper_);
 }
 
-ScopedVASurface::ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
-                                 scoped_refptr<VASurface> surface)
-    : vaapi_wrapper_(std::move(vaapi_wrapper)),
-      va_surface_id_(surface->id()),
-      size_(surface->size()),
-      va_rt_format_(surface->format()) {
-  DCHECK(vaapi_wrapper_);
-  // Make sure |surface| is Reset() to free any and all references to
-  // |vaapi_wrapper_| bound inside, otherwise we would leak it.
-  surface->Reset();
+scoped_refptr<VASurface> ScopedVASurface::AsVASurface() {
+  auto ref_counted_va_surface = base::MakeRefCounted<VASurface>(
+      va_surface_id_, size_, va_rt_format_,
+      base::BindOnce(&VaapiWrapper::DestroySurface,
+                     std ::move(vaapi_wrapper_)));
+  va_surface_id_ = VA_INVALID_ID;
+  return ref_counted_va_surface;
 }
 
 ScopedVASurface::~ScopedVASurface() {

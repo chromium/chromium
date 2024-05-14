@@ -164,17 +164,10 @@ class ScopedVASurface {
 
   ScopedVASurface(const ScopedVASurface&) = delete;
   ScopedVASurface& operator=(const ScopedVASurface&) = delete;
-
-  // Constructor taking over a VASurface (which is normally managed via a
-  // scoped_refptr<>). This should be called like:
-  //   auto ptr = base::MakeRefCounted<VASurface>(...);
-  //   auto va_surface = std::make_unique<ScopedVASurface>(.., std::move(ptr));
-  // TODO(339518553): Remove once VaapiWrapper::CreateVASurfaceForPixmap()
-  // returns ScopedVASurfaces.
-  ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
-                  scoped_refptr<VASurface> surface);
-
   ~ScopedVASurface();
+
+  // Empties the current object into a ref-counted VASurface.
+  scoped_refptr<VASurface> AsVASurface();
 
   bool IsValid() const;
   VASurfaceID id() const { return va_surface_id_; }
@@ -184,7 +177,7 @@ class ScopedVASurface {
  private:
   friend struct VAContextAndScopedVASurfaceDeleter;
   const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
-  const VASurfaceID va_surface_id_;
+  VASurfaceID va_surface_id_;
   const gfx::Size size_;
   const unsigned int va_rt_format_;
 };

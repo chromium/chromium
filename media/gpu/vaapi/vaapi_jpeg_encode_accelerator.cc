@@ -237,10 +237,14 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
+  // TODO(339518553): Remove these temporary variables.
+  auto input_tmp_surface = base::MakeRefCounted<VASurface>(
+      input_surface->id(), input_surface->size(), input_surface->format(),
+      base::DoNothing() /* release_cb */);
   auto blit_surface =
       base::MakeRefCounted<VASurface>(va_surface_id_, input_size, va_format,
                                       base::DoNothing() /* release_cb */);
-  if (!vpp_vaapi_wrapper_->BlitSurface(*input_surface, *blit_surface)) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(*input_tmp_surface, *blit_surface)) {
     VLOGF(1) << "Failed to blit surfaces";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;

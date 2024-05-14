@@ -167,9 +167,10 @@ class MockVaapiWrapper : public VaapiWrapper {
                    const std::optional<uint32_t>&));
   MOCK_METHOD2(CreateVABuffer,
                std::unique_ptr<ScopedVABuffer>(VABufferType, size_t));
-  MOCK_METHOD2(CreateVASurfaceForPixmap,
-               scoped_refptr<VASurface>(scoped_refptr<const gfx::NativePixmap>,
-                                        bool));
+  MOCK_METHOD2(
+      CreateVASurfaceForPixmap,
+      std::unique_ptr<ScopedVASurface>(scoped_refptr<const gfx::NativePixmap>,
+                                       bool));
   MOCK_METHOD2(GetEncodedChunkSize, uint64_t(VABufferID, VASurfaceID));
   MOCK_METHOD5(
       DownloadFromVABuffer,
@@ -227,6 +228,23 @@ struct VaapiVideoEncodeAcceleratorTestParam;
 
 class VaapiVideoEncodeAcceleratorTest
     : public ::testing::TestWithParam<VaapiVideoEncodeAcceleratorTestParam> {
+ public:
+  // Populate meaningful test suffixes instead of /0, /1, etc.
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      // Naming according to
+      // https://www.w3.org/TR/webrtc-svc/#dependencydiagrams*
+      return base::StringPrintf(
+          "L%dT%d%s", info.param.num_of_spatial_layers,
+          info.param.num_of_temporal_layers,
+          (info.param.inter_layer_pred == SVCInterLayerPredMode::kOnKeyPic
+               ? "_KEY"
+               : ""));
+    }
+  };
+
  protected:
   VaapiVideoEncodeAcceleratorTest() = default;
   ~VaapiVideoEncodeAcceleratorTest() override = default;
@@ -554,9 +572,9 @@ class VaapiVideoEncodeAcceleratorTest
     // Create VASurface from GpuMemory-based VideoFrame.
     const VASurfaceID kSourceSurfaceId = 123456;
     EXPECT_CALL(*mock_vaapi_wrapper_, CreateVASurfaceForPixmap(_, _))
-        .WillOnce(
-            Return(new VASurface(kSourceSurfaceId, kDefaultEncodeSize,
-                                 VA_RT_FORMAT_YUV420, base::DoNothing())));
+        .WillOnce(Return(std::make_unique<ScopedVASurface>(
+            mock_vaapi_wrapper_, kSourceSurfaceId, kDefaultEncodeSize,
+            VA_RT_FORMAT_YUV420)));
 
     constexpr VASurfaceID kVppDestSurfaceIds[] = {456, 457};
 
@@ -781,7 +799,9 @@ TEST_P(VaapiVideoEncodeAcceleratorTest, EncodeVP9WithMultipleSpatialLayers) {
   EncodeSequenceForVP9MultipleSpatialLayers(num_of_spatial_layers);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         VaapiVideoEncodeAcceleratorTest,
-                         ::testing::ValuesIn(kTestCases));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VaapiVideoEncodeAcceleratorTest,
+    ::testing::ValuesIn(kTestCases),
+    VaapiVideoEncodeAcceleratorTest::PrintToStringParamName());
 }  // namespace media

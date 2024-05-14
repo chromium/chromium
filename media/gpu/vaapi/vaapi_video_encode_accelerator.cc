@@ -581,13 +581,16 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
       return false;
     }
 
-    source_surface =
+    const std::unique_ptr<ScopedVASurface> surface =
         vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
-    if (!source_surface) {
+    if (!surface) {
       NotifyError({EncoderStatus::Codes::kEncoderHardwareDriverError,
                    "Failed to create VASurface"});
       return false;
     }
+
+    // TODO(339518553): Store |source_surface| directly in |input_surfaces|.
+    source_surface = surface->AsVASurface();
   }
 
   // Create input surfaces.

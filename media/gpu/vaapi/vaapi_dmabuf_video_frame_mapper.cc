@@ -183,7 +183,7 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
     return nullptr;
   }
 
-  scoped_refptr<VASurface> va_surface =
+  const std::unique_ptr<ScopedVASurface> va_surface =
       vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
 
   if (!va_surface) {
