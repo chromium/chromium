@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SyncStatus} from 'chrome://settings/settings.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction, CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -755,6 +755,7 @@ suite('CookiesCardNavigations', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    resetRouterForTesting();
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -860,6 +861,7 @@ suite('PrivacyGuideDialog', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: true});
+    resetRouterForTesting();
   });
 
   setup(function() {
@@ -902,9 +904,8 @@ suite('3pcdOff', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
+    loadTimeData.overrideValues({is3pcdCookieSettingsRedesignEnabled: false});
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
