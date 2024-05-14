@@ -126,6 +126,13 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         ->OverrideAttributionManagerForTesting(std::move(manager));
   }
 
+  void NavigateAndWaitForObserver() {
+    base::RunLoop run_loop;
+    manager()->SetOnObserverRegistered(run_loop.QuitClosure());
+    ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+    run_loop.Run();
+  }
+
   void ClickRefreshButton() {
     ASSERT_TRUE(ExecJsInWebUI("document.getElementById('refresh').click();"));
   }
@@ -177,7 +184,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        NavigationUrl_ResolvedToWebUI) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     document.body.innerHTML.search('Attribution Reporting') >= 0;
@@ -192,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_MeasurementConsideredEnabled) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -232,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   _, IsNull(), IsNull(), IsNull(), IsNull()))
       .WillRepeatedly(Return(false));
 
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -264,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     AttributionInternalsWebUiBrowserTest,
     WebUIShownWithNoActiveImpression_NoImpressionsDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#active-source-panel attribution-internals-table')
@@ -293,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithActiveImpression_ImpressionsDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const base::Time now = base::Time::Now();
 
@@ -473,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        OsRegistrationsShown) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#osRegistrationTable')
@@ -519,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
@@ -529,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_DebugModeDisabled) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -566,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kAttributionReportingDebugMode);
 
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   // Create a mutation observer to wait for the content to render to the dom.
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
@@ -600,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_OsSupportDisabled) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const status = document.getElementById('attribution-support');
@@ -628,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithManager_OsSupportEnabled) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const status = document.getElementById('attribution-support');
@@ -659,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithPendingReports_ReportsDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const base::Time now = base::Time::Now();
 
@@ -848,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIWithPendingReportsClearStorage_ReportsRemoved) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const base::Time now = base::Time::Now();
 
@@ -925,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        ClearButton_ClearsSourceTable) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   base::Time now = base::Time::Now();
 
@@ -1035,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         std::move(done).Run();
       });
 
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#event-level-report-panel attribution-internals-table')
@@ -1082,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        MojoJsBindingsCorrectlyScoped) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const std::u16string passed_title = u"passed";
 
@@ -1105,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     AttributionInternalsWebUiBrowserTest,
     WebUIShownWithPendingAggregatableReports_ReportsDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const base::Time now = base::Time::Now();
 
@@ -1209,7 +1216,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        TriggersDisplayed) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   const auto create_trigger =
       [](std::vector<network::TriggerVerification> verifications) {
@@ -1314,7 +1321,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         std::move(done).Run();
       });
 
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#aggregatable-report-panel attribution-internals-table')
@@ -1380,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        VerboseDebugReport) {
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+  NavigateAndWaitForObserver();
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       /*is_operation_allowed=*/[]() { return true; },

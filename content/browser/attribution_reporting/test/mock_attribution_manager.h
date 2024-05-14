@@ -130,9 +130,13 @@ class MockAttributionManager : public AttributionManager {
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);
 
+  void SetOnObserverRegistered(base::OnceClosure done);
+
  private:
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
   base::ObserverList<AttributionObserver, /*check_empty=*/true> observers_;
+
+  base::OnceClosure on_observer_registered_;
 };
 
 }  // namespace content

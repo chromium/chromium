@@ -29,6 +29,9 @@ MockAttributionManager::~MockAttributionManager() = default;
 
 void MockAttributionManager::AddObserver(AttributionObserver* observer) {
   observers_.AddObserver(observer);
+  if (on_observer_registered_) {
+    std::move(on_observer_registered_).Run();
+  }
 }
 
 void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
@@ -106,6 +109,16 @@ void MockAttributionManager::SetDataHostManager(
     std::unique_ptr<AttributionDataHostManager> manager) {
   DCHECK(manager);
   data_host_manager_ = std::move(manager);
+}
+
+void MockAttributionManager::SetOnObserverRegistered(base::OnceClosure done) {
+  CHECK(!on_observer_registered_);
+
+  if (!observers_.empty()) {
+    std::move(done).Run();
+    return;
+  }
+  on_observer_registered_ = std::move(done);
 }
 
 }  // namespace content
