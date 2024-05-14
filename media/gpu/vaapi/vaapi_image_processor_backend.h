@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/containers/small_map.h"
+#include "base/containers/id_map.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
 #include "media/gpu/media_gpu_export.h"
@@ -67,9 +67,8 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   // ScopedVASurfaces for reuse according to the expectations of libva
   // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
   // using these surfaces have been destroyed."
-  // TODO(339518553): Use base::IDMap.
-  base::small_map<
-      std::map<gfx::GenericSharedMemoryId, std::unique_ptr<ScopedVASurface>>>
+  base::IDMap<std::unique_ptr<ScopedVASurface>,
+              decltype(gfx::GenericSharedMemoryId::id)>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 };
 
