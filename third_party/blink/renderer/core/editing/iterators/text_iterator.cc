@@ -468,7 +468,7 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
           // sibling shadow root, if any.
           const auto* shadow_root = DynamicTo<ShadowRoot>(node_);
           if (!shadow_root) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             should_stop_ = true;
             return;
           }

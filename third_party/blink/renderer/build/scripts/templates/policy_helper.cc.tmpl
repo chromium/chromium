@@ -119,7 +119,7 @@ String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature
       return protocol::Page::PermissionsPolicyFeatureEnum::{{feature.devtools_enum_name}};
     {% endfor %}
     case mojom::blink::PermissionsPolicyFeature::kNotFound:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

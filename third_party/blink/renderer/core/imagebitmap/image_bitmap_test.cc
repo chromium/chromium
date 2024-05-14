@@ -397,7 +397,7 @@ TEST_F(ImageBitmapTest, ImageAlphaState) {
           SkColorSetARGB(/* a */ 0, /* r */ 255, /* g */ 102, /* b */ 153);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

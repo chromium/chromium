@@ -63,7 +63,7 @@ void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
 
 void LayoutRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

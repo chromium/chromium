@@ -372,7 +372,7 @@ void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
   } else if (GetScrollableArea().VerticalScrollbar()) {
     theme = &GetScrollableArea().VerticalScrollbar()->GetTheme();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const auto& client = GetScrollableArea().GetScrollCornerDisplayItemClient();

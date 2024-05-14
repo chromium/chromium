@@ -33,7 +33,7 @@ network::mojom::ReferrerPolicy ReferrerUtils::NetToMojoReferrerPolicy(
     case net::ReferrerPolicy::NO_REFERRER:
       return network::mojom::ReferrerPolicy::kNever;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::ReferrerPolicy::kDefault;
 }
 

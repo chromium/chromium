@@ -11722,19 +11722,19 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
       mojo::ScopedDataPipeConsumerHandle,
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
       RegisterFromStreamCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetBlobFromUUID(mojo::PendingReceiver<mojom::blink::Blob>,
                        const String& uuid,
                        GetBlobFromUUIDCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void URLStoreForOrigin(
       const scoped_refptr<const SecurityOrigin>&,
       mojo::PendingAssociatedReceiver<mojom::blink::BlobURLStore>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 

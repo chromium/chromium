@@ -97,7 +97,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
                      EncoderStatusCB done_cb) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Flush(EncoderStatusCB done_cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

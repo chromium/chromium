@@ -88,7 +88,7 @@ LayoutObject* AltTextContentData::CreateLayoutObject(
     const ComputedStyle& pseudo_style) const {
   // Does not require a layout object. Calling site should first check
   // IsAltContentData() before calling this method.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -118,7 +118,7 @@ LayoutObject* QuoteContentData::CreateLayoutObject(
 LayoutObject* NoneContentData::CreateLayoutObject(
     PseudoElement& pseudo,
     const ComputedStyle& pseudo_style) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

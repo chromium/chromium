@@ -137,7 +137,7 @@ RobinHoodMap<Key, Value>::InsertWithRehashing(const Key& key) {
       return bucket;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

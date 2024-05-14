@@ -303,7 +303,7 @@ void MediaStreamDeviceObserver::AddStream(const String& label,
   else if (IsVideoInputMediaType(device.type))
     stream.video_devices.push_back(device);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   label_stream_map_.Set(label, Vector<Stream>{std::move(stream)});
 }

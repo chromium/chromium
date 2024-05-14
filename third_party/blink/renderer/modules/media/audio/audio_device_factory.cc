@@ -119,7 +119,7 @@ media::AudioLatency::Type AudioDeviceFactory::GetSourceLatencyType(
     case blink::WebAudioDeviceSourceType::kWebAudioExact:
       return media::AudioLatency::Type::kExactMS;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media::AudioLatency::Type::kUnknown;
 }
 

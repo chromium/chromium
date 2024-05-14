@@ -48,7 +48,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
 
   // For thread safety analysis only.  Does not actually return mu.
   base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

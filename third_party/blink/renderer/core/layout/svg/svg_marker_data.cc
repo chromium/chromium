@@ -143,7 +143,7 @@ void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
       element.points[2] = segment.target_point;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   UpdateFromPathElement(element);
 }

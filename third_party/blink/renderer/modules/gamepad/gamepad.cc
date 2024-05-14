@@ -100,7 +100,7 @@ void Gamepad::SetMapping(device::GamepadMapping mapping) {
       mapping_ = "xr-standard";
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const Gamepad::DoubleVector& Gamepad::axes() {

@@ -537,7 +537,7 @@ network::mojom::CredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
     case kCrossOriginAttributeUseCredentials:
       return network::mojom::CredentialsMode::kInclude;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::CredentialsMode::kOmit;
 }
 
@@ -888,7 +888,7 @@ PendingScript* ScriptLoader::PrepareScript(
     // <spec step="29.9">Switch on el's type:</spec>
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
 
       case ScriptTypeAtPrepare::kImportMap:
@@ -1010,7 +1010,7 @@ PendingScript* ScriptLoader::PrepareScript(
 
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
 
       case ScriptTypeAtPrepare::kImportMap: {
@@ -1327,7 +1327,7 @@ PendingScript* ScriptLoader::PrepareScript(
     }
 
     case ScriptSchedulingType::kNotSet:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

@@ -270,7 +270,7 @@ MediaQueryOperator MediaQueryParser::ConsumeComparison(
       return MediaQueryOperator::kGt;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MediaQueryOperator::kNone;
 }
 

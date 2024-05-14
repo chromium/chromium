@@ -207,7 +207,7 @@ class CORE_EXPORT ConstraintSpace final {
     switch (
         static_cast<PercentageStorage>(bitfields_.percentage_inline_storage)) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case kSameAsAvailable:
         return available_size_.inline_size;
@@ -225,7 +225,7 @@ class CORE_EXPORT ConstraintSpace final {
     switch (
         static_cast<PercentageStorage>(bitfields_.percentage_block_storage)) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case kSameAsAvailable:
         return available_size_.block_size;
@@ -260,7 +260,7 @@ class CORE_EXPORT ConstraintSpace final {
         DCHECK(HasRareData());
         return rare_data_->replaced_percentage_resolution_block_size;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     return available_size_.block_size;
@@ -996,7 +996,7 @@ class CORE_EXPORT ConstraintSpace final {
           new (&subgrid_data_) SubgridData(other.subgrid_data_);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
     ~RareData() {
@@ -1025,7 +1025,7 @@ class CORE_EXPORT ConstraintSpace final {
           subgrid_data_.~SubgridData();
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
 
@@ -1076,7 +1076,7 @@ class CORE_EXPORT ConstraintSpace final {
         case DataUnionType::kSubgridData:
           return subgrid_data_.MaySkipLayout(other.subgrid_data_);
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
@@ -1116,7 +1116,7 @@ class CORE_EXPORT ConstraintSpace final {
         case DataUnionType::kSubgridData:
           return subgrid_data_.IsInitialForMaySkipLayout();
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 

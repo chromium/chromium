@@ -3517,8 +3517,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
       TextChangedWithCleanLayout(ax_object->GetNode(), ax_object);
       break;
     default:
-      NOTREACHED() << "Update reason not handled: "
-                   << static_cast<int>(tree_update->update_reason);
+      NOTREACHED_IN_MIGRATION() << "Update reason not handled: "
+                                << static_cast<int>(tree_update->update_reason);
   }
 
   // Ensure that new subtrees are filled out. Any new AXObjects added will
@@ -3645,8 +3645,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       HandleValidationMessageVisibilityChangedWithCleanLayout(node);
       break;
     default:
-      NOTREACHED() << "Update reason not handled: "
-                   << static_cast<int>(tree_update->update_reason);
+      NOTREACHED_IN_MIGRATION() << "Update reason not handled: "
+                                << static_cast<int>(tree_update->update_reason);
   }
   // Ensure that new subtrees are filled out. Any new AXObjects added will
   // also add their children.
@@ -4588,7 +4588,8 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kWindowDeactivated:
     case ax::mojom::blink::Event::kWindowVisibilityChanged:
       // Never fired from Blink.
-      NOTREACHED() << "Event not expected from Blink: " << event->event_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Event not expected from Blink: " << event->event_type;
       return false;
   }
 }

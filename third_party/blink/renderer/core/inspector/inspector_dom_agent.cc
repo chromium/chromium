@@ -1805,7 +1805,7 @@ protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
     case ShadowRootMode::kClosed:
       return protocol::DOM::ShadowRootTypeEnum::Closed;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::DOM::ShadowRootTypeEnum::UserAgent;
 }
 
@@ -1820,7 +1820,7 @@ InspectorDOMAgent::GetDocumentCompatibilityMode(Document* document) {
     case Document::CompatibilityMode::kNoQuirksMode:
       return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
 }
 

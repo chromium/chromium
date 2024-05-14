@@ -7392,7 +7392,7 @@ for (const auto* wrapper_type_info : wrapper_type_info_list) {
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   wrapper_type_info->install_context_dependent_props_func(

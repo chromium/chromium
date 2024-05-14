@@ -43,11 +43,11 @@ class TestSharedURLLoaderFactory : public network::TestURLLoaderFactory,
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

@@ -24,7 +24,7 @@ WebInputEvent::Type PointerEventTypeForTouchPointState(
       return WebInputEvent::Type::kPointerMove;
     case WebTouchPoint::State::kStateStationary:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebInputEvent::Type::kUndefined;
   }
 }

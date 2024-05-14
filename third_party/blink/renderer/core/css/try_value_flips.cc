@@ -170,7 +170,7 @@ LogicalAxis DeterminePropertyAxis(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LogicalAxis::kInline;
 }
 

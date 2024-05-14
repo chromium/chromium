@@ -553,7 +553,7 @@ const char* FromDawnEnum(wgpu::TextureFormat dawn_enum) {
       return "astc-12x12-unorm-srgb";
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "";
 }

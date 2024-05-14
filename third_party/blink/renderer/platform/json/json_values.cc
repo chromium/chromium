@@ -225,7 +225,7 @@ std::unique_ptr<JSONValue> JSONBasicValue::Clone() const {
     case kTypeBoolean:
       return std::make_unique<JSONBasicValue>(bool_value_);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

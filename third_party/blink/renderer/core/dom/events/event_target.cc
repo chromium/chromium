@@ -560,7 +560,7 @@ bool EventTarget::addEventListener(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -799,7 +799,7 @@ bool EventTarget::removeEventListener(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

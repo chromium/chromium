@@ -295,7 +295,7 @@ Element* AutomaticGridFocusgroupStructureInfo::CellAtIndexInRow(
         if (index == 0) {
           // This shouldn't happen, since the row passed by parameter is
           // expected to always have at least one cell at this point.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return nullptr;
         }
         cell = TableCellAtIndexInRowRecursive(--index, row);

@@ -208,7 +208,7 @@ void InputTypeView::ValueAttributeChanged() {}
 void InputTypeView::DidSetValue(const String&, bool) {}
 
 void InputTypeView::SubtreeHasChanged() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void InputTypeView::ListAttributeTargetChanged() {}

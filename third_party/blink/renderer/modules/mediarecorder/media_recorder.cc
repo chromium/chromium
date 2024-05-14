@@ -69,7 +69,7 @@ String StateToString(MediaRecorder::State state) {
       return "paused";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -81,7 +81,7 @@ String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
       return "variable";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

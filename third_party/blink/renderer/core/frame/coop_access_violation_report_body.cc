@@ -29,7 +29,7 @@ String CoopAccessViolationReportBody::openeeURL() const {
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOther:
@@ -45,7 +45,7 @@ String CoopAccessViolationReportBody::openerURL() const {
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOther:
@@ -61,7 +61,7 @@ String CoopAccessViolationReportBody::otherDocumentURL() const {
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpener:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOpenee:
     case network::mojom::CoopAccessReportType::kAccessToCoopPageFromOther:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpenee:
     case network::mojom::CoopAccessReportType::kAccessFromCoopPageToOpener:

@@ -66,7 +66,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           timestamp);
     }
     default:
-      NOTREACHED() << "Unsupported storage type or pixel format";
+      NOTREACHED_IN_MIGRATION() << "Unsupported storage type or pixel format";
   }
   return nullptr;
 }

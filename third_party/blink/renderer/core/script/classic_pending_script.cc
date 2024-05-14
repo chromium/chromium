@@ -599,7 +599,7 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
       break;
     case kReady:
     case kErrorOccurred:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

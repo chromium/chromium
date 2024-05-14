@@ -240,7 +240,7 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
     case Color::ColorSpace::kA98RGB:
     case Color::ColorSpace::kProPhotoRGB:
     case Color::ColorSpace::kRec2020:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

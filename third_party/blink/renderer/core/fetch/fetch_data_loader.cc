@@ -175,7 +175,7 @@ class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone: {
           DOMArrayBuffer* array_buffer = BuildArrayBuffer();
@@ -263,7 +263,7 @@ class FetchDataLoaderAsFailure final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
         case BytesConsumer::Result::kError:
@@ -341,7 +341,7 @@ class FetchDataLoaderAsFormData final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           if (multipart_parser_->Finish()) {
@@ -501,7 +501,7 @@ class FetchDataLoaderAsString final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           builder_.Append(decoder_->Flush());
@@ -650,7 +650,7 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
         case BytesConsumer::Result::kOk:
           break;
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kDone:
           StopInternal();

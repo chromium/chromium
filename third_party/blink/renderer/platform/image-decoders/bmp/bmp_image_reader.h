@@ -232,7 +232,7 @@ class PLATFORM_EXPORT BMPImageReader final {
         return ReadUint32(encoded_pixel);
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
     }
   }

@@ -98,7 +98,7 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
       (options->colorSpaceConversion() != kImageBitmapOptionNone);
   if (options->colorSpaceConversion() != kImageBitmapOptionNone &&
       options->colorSpaceConversion() != kImageBitmapOptionDefault) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Invalid ImageBitmap creation attribute colorSpaceConversion: "
         << IDLEnumAsString(options->colorSpaceConversion());
   }

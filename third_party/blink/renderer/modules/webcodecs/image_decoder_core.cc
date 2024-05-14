@@ -121,7 +121,7 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
                              gfx::ColorSpace::MatrixID::YCOCG,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::ColorSpace();
   };
 }
@@ -261,7 +261,8 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
                               : SkImages::RasterFromBitmap(image->Bitmap());
   if (!sk_image) {
-    NOTREACHED() << "Failed to retrieve SkImage for decoded image.";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to retrieve SkImage for decoded image.";
     result->status = Status::kDecodeError;
     return result;
   }
@@ -290,7 +291,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
       media::CreateFromSkImage(sk_image, gfx::Rect(coded_size), coded_size,
                                GetTimestampForFrame(frame_index));
   if (!frame) {
-    NOTREACHED() << "Failed to create VideoFrame from SkImage.";
+    NOTREACHED_IN_MIGRATION() << "Failed to create VideoFrame from SkImage.";
     result->status = Status::kDecodeError;
     return result;
   }

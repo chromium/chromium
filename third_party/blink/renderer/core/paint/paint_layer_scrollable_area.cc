@@ -1476,7 +1476,7 @@ gfx::Vector2d PaintLayerScrollableArea::ScrollbarOffset(
                              HorizontalScrollbar()->ScrollbarThickness());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Vector2d();
 }
 

@@ -1046,7 +1046,7 @@ void ShapeResult::ApplyLeadingExpansion(float expansion) {
     }
   }
   // No glyphs.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShapeResult::ApplyTrailingExpansion(float expansion) {
@@ -1068,7 +1068,7 @@ void ShapeResult::ApplyTrailingExpansion(float expansion) {
     return;
   }
   // No glyphs.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
@@ -2048,7 +2048,7 @@ void ShapeResult::ComputePositionData() const {
       // Do not overwrite.
       if (character_index >= num_characters_) {
         // We are not sure why we reach here. See http://crbug.com/1286882
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       if (next_character_index <= character_index) {
@@ -2248,7 +2248,7 @@ void AddRunInfoRanges(const ShapeResult::RunInfo& run_info,
     // TODO(crbug.com/1147011): This should not happen, but crash logs indicate
     // that this is happening.
     if (UNLIKELY(glyph.character_index >= character_widths.size())) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       character_widths.Grow(glyph.character_index + 1);
     }
     character_widths[glyph.character_index] += glyph.advance;

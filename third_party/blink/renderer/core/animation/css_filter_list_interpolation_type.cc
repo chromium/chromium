@@ -25,7 +25,7 @@ const FilterOperations& GetFilterList(const CSSProperty& property,
                                       const ComputedStyle& style) {
   switch (property.PropertyID()) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case CSSPropertyID::kBackdropFilter:
       return style.BackdropFilter();
@@ -45,7 +45,7 @@ void SetFilterList(const CSSProperty& property,
       builder.SetFilter(filter_operations);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

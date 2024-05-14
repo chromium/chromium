@@ -100,7 +100,7 @@ mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
     case CSSPropertyID::kWritingMode:
       return mojom::blink::ViewTransitionPropertyId::kWritingMode;
     default:
-      NOTREACHED() << "Unknown id " << static_cast<uint32_t>(id);
+      NOTREACHED_IN_MIGRATION() << "Unknown id " << static_cast<uint32_t>(id);
   }
   return mojom::blink::ViewTransitionPropertyId::kMinValue;
 }
@@ -585,7 +585,7 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return false;
@@ -1071,7 +1071,7 @@ PseudoElement* ViewTransitionStyleTracker::CreatePseudoElement(
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return nullptr;
@@ -1376,7 +1376,7 @@ PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
     }
     return element_data->clip_node->Update(*current_clip, std::move(state));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PaintPropertyChangeType::kUnchanged;
 }
 
@@ -1390,7 +1390,7 @@ const ClipPaintPropertyNode* ViewTransitionStyleTracker::GetCaptureClip(
     DCHECK(element_data->clip_node);
     return element_data->clip_node.get();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1443,7 +1443,7 @@ StyleRequest::RulesToInclude ViewTransitionStyleTracker::StyleRulesToInclude()
       return StyleRequest::kAll;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return StyleRequest::kAll;
 }
 
@@ -1967,7 +1967,7 @@ const char* ViewTransitionStyleTracker::StateToString(State state) {
     case State::kFinished:
       return "Finished";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 

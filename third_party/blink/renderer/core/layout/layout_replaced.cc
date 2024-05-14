@@ -345,7 +345,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFitAndPositionRect(
     case EObjectFit::kFill:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   LayoutUnit x_offset =

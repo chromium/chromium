@@ -92,7 +92,7 @@ bool CheckFatalTransferStatus(ScriptPromiseResolverBase* resolver,
     case UsbTransferStatus::SHORT_PACKET:
       return false;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -107,7 +107,7 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
     case UsbTransferStatus::BABBLE:
       return "babble";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -915,7 +915,7 @@ void USBDevice::AsyncOpen(ScriptPromiseResolver<IDLUndefined>* resolver,
     case UsbOpenDeviceError::ALREADY_OPEN:
       // This class keeps track of open state and won't try to open a device
       // that is already open.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

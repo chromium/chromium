@@ -645,7 +645,7 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
       }
       return periodic_wave_triangle_.Get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -661,7 +661,7 @@ String BaseAudioContext::state() const {
     case kClosed:
       return "closed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

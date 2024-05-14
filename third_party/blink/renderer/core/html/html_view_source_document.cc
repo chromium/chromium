@@ -150,7 +150,7 @@ void HTMLViewSourceDocument::AddSource(
 
   switch (token.GetType()) {
     case HTMLToken::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HTMLToken::DOCTYPE:
       ProcessDoctypeToken(source, token);

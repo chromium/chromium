@@ -41,11 +41,11 @@ String ServiceWorkerClient::type() const {
     case mojom::ServiceWorkerClientType::kSharedWorker:
       return "sharedworker";
     case mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -63,7 +63,7 @@ String ServiceWorkerClient::frameType(ScriptState* script_state) const {
       return "top-level";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -75,7 +75,7 @@ String ServiceWorkerClient::lifecycleState() const {
       return "frozen";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

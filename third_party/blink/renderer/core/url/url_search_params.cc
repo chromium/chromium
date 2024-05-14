@@ -74,7 +74,7 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
       return URLSearchParams::Create(init->GetAsUSVStringUSVStringRecord(),
                                      exception_state);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

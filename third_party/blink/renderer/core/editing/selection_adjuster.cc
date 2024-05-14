@@ -165,7 +165,7 @@ class GranularityAdjuster final {
         return StartOfSentencePosition(passed_start.GetPosition());
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return passed_start.GetPosition();
   }
 
@@ -301,7 +301,7 @@ class GranularityAdjuster final {
         return EndOfSentence(CreateVisiblePosition(passed_end))
             .DeepEquivalent();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return passed_end.GetPosition();
   }
 

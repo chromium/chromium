@@ -418,7 +418,7 @@ DOMException* CredentialManagerErrorToDOMException(
           "An unknown error occurred while talking "
           "to the credential manager.");
     case CredentialManagerError::SUCCESS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;
@@ -431,7 +431,7 @@ DOMException* AuthenticatorStatusToDOMException(
             dom_exception_details.is_null());
   switch (status) {
     case AuthenticatorStatus::SUCCESS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case AuthenticatorStatus::PENDING_REQUEST:
       return MakeGarbageCollected<DOMException>(
@@ -653,7 +653,7 @@ void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
       return;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

@@ -54,7 +54,7 @@ class TestModuleRecordResolver final : public ModuleRecordResolver {
 
   const ModuleScript* GetModuleScriptFromModuleRecord(
       v8::Local<v8::Module>) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

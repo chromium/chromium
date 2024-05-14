@@ -239,7 +239,7 @@ void InstallAttribute(v8::Isolate* isolate,
       target_template = interface_template;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   target_template->SetAccessorProperty(
       name, get_func, set_func,
@@ -290,7 +290,7 @@ void InstallAttribute(v8::Isolate* isolate,
       target_object = interface_object;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   target_object->SetAccessorProperty(
       name, get_func, set_func,
@@ -335,7 +335,7 @@ void InstallOperation(v8::Isolate* isolate,
       target_template = interface_template;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   target_template->Set(
       name, func,
@@ -380,7 +380,7 @@ void InstallOperation(v8::Isolate* isolate,
       target_object = interface_object;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   target_object
       ->DefineOwnProperty(

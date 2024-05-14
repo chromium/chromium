@@ -183,7 +183,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     crash_key_is_mappable.Set(frame->IsMappable() ? "1" : "0");
     crash_key_has_textures.Set(frame->HasTextures() ? "1" : "0");
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

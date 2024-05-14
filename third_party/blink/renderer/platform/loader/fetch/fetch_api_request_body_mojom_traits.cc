@@ -108,7 +108,7 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
         break;
       }
       case network::DataElement::Tag::kChunkedDataPipe:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

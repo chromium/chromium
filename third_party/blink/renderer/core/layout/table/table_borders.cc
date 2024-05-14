@@ -263,7 +263,7 @@ Color TableBorders::BorderColor(const ComputedStyle* style,
     case EdgeSide::kBottom:
       return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
     case EdgeSide::kDoNotFill:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor());
   }
 }

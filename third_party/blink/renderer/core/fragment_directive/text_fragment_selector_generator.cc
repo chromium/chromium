@@ -367,7 +367,7 @@ void TextFragmentSelectorGenerator::ResolveSelectorState() {
       break;
     case kNotStarted:
     case kNeedsNewCandidate:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       ABSL_FALLTHROUGH_INTENDED;
     case kFailure:
       OnSelectorReady(

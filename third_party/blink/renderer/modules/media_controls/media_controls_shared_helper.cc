@@ -63,7 +63,7 @@ void MediaControlsSharedHelpers::TransitionEventListener::Invoke(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaControlsSharedHelpers::TransitionEventListener::Trace(

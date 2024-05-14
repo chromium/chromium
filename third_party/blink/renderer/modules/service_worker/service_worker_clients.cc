@@ -34,7 +34,7 @@ mojom::ServiceWorkerClientType GetClientType(const String& type) {
     return mojom::ServiceWorkerClientType::kSharedWorker;
   if (type == "all")
     return mojom::ServiceWorkerClientType::kAll;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::ServiceWorkerClientType::kWindow;
 }
 
@@ -60,7 +60,7 @@ void DidGetClient(ScriptPromiseResolver<ServiceWorkerClient>* resolver,
       client = MakeGarbageCollected<ServiceWorkerClient>(*info);
       break;
     case mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   resolver->Resolve(client);

@@ -73,7 +73,7 @@ uint16_t SVGEnumeration::MaxInternalEnumValue() const {
 }
 
 void SVGEnumeration::Add(const SVGPropertyBase*, const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGEnumeration::CalculateAnimatedValue(
@@ -84,7 +84,7 @@ void SVGEnumeration::CalculateAnimatedValue(
     const SVGPropertyBase* to,
     const SVGPropertyBase*,
     const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGEnumeration::CalculateDistance(const SVGPropertyBase*,

@@ -194,7 +194,7 @@ class PLATFORM_EXPORT ImageFrame final {
     DCHECK(pixel_format_ == kRGBA_F16);
     SkPixmap pixmap;
     if (!bitmap_.peekPixels(&pixmap)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return pixmap.writable_addr64(x, y);
   }

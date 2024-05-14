@@ -277,7 +277,7 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return *this;
   }
   const CSSMathExpressionNode* TransformAnchors(
@@ -347,7 +347,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return *this;
   }
   const CSSMathExpressionNode* TransformAnchors(
@@ -370,14 +370,14 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
     return std::nullopt;
   }
   double DoubleValue() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -405,7 +405,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
 
  protected:
   double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -444,7 +444,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
 
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope* tree_scope) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return *this;
   }
   const CSSMathExpressionNode* TransformAnchors(
@@ -465,14 +465,14 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
   double DoubleValue() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -738,14 +738,14 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final;
   double DoubleValue() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   std::optional<double> ComputeValueInCanonicalUnit() const final {
     return std::nullopt;
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -837,7 +837,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
       CSSPrimitiveValue::LengthTypeFlags& types) const final {
     // AccumulateLengthUnitTypes() is only used when interpolating the
     // 'transform' property, where anchor queries are not allowed.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

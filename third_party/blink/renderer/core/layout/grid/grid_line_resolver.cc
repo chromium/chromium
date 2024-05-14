@@ -806,10 +806,10 @@ int GridLineResolver::ResolveGridPosition(const GridPosition& position,
     case kSpanPosition:
       // 'auto' and span depend on the opposite position for resolution (e.g.
       // grid-row: auto / 1 or grid-column: span 3 / "myHeader").
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

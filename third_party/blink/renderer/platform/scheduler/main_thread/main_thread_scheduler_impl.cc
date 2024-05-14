@@ -105,7 +105,7 @@ v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
     case RAILMode::kLoad:
       return v8::RAILMode::PERFORMANCE_LOAD;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -159,7 +159,7 @@ const char* RendererProcessTypeToString(WebRendererProcessType process_type) {
     case WebRendererProcessType::kExtensionRenderer:
       return "extension";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";  // MSVC needs that.
 }
 
@@ -207,7 +207,7 @@ const char* InputEventStateToString(
     case WidgetScheduler::InputEventState::EVENT_FORWARDED_TO_MAIN_THREAD:
       return "event_forwarded_to_main_thread";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -1396,7 +1396,7 @@ bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
       return false;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -1540,7 +1540,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // TODO(skyostil): Add an idle state for foreground tabs too.
@@ -2477,7 +2477,7 @@ TaskPriority MainThreadSchedulerImpl::ComputePriority(
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kLow:
       return TaskPriority::kLowPriority;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return TaskPriority::kNormalPriority;
   }
 }
@@ -2720,7 +2720,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityFromUseCase() const {
       return std::nullopt;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -2776,7 +2776,7 @@ const char* MainThreadSchedulerImpl::UseCaseToString(UseCase use_case) {
     case UseCase::kMainThreadGesture:
       return "main_thread_gesture";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -2793,7 +2793,7 @@ const char* MainThreadSchedulerImpl::RAILModeToString(RAILMode rail_mode) {
     case RAILMode::kLoad:
       return "load";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -2807,7 +2807,7 @@ const char* MainThreadSchedulerImpl::TimeDomainTypeToString(
     case TimeDomainType::kVirtual:
       return "virtual";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

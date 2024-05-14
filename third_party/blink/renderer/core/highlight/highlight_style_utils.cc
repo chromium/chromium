@@ -62,7 +62,7 @@ Color ForcedForegroundColor(PseudoId pseudo,
       keyword = CSSValueID::kCanvastext;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
@@ -90,7 +90,7 @@ Color ForcedBackgroundColor(PseudoId pseudo,
       keyword = CSSValueID::kCanvas;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return LayoutTheme::GetTheme().SystemColor(keyword, color_scheme,
@@ -138,7 +138,7 @@ std::optional<Color> DefaultForegroundColor(
     case kPseudoIdHighlight:
       return std::nullopt;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -162,7 +162,7 @@ Color DefaultBackgroundColor(const Document& document,
     case kPseudoIdHighlight:
       return Color::kTransparent;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Color();
   }
 }
@@ -344,7 +344,7 @@ const ComputedStyle* HighlightStyleUtils::HighlightPseudoStyle(
     case kPseudoIdHighlight:
       return style.HighlightData().CustomHighlight(pseudo_argument);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

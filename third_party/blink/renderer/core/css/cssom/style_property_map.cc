@@ -35,7 +35,7 @@ CSSValueList* CssValueListForPropertyID(CSSPropertyID property_id) {
     case '/':
       return CSSValueList::CreateSlashSeparated();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -235,7 +235,7 @@ const CSSValue* CoerceStyleValueOrString(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

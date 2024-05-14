@@ -43,7 +43,7 @@ namespace {
       return ::blink::ResourceLoadPriority::kVeryHigh;
   }
 
-  NOTREACHED() << priority;
+  NOTREACHED_IN_MIGRATION() << priority;
   return blink::ResourceLoadPriority::kUnresolved;
 }
 

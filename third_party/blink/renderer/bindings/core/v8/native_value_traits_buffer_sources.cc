@@ -428,7 +428,7 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
   if (v8_view->IsDataView())
     return ToDOMViewType<DOMDataView, allow_shared>(isolate, value);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

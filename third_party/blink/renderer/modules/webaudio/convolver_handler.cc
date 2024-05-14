@@ -273,7 +273,7 @@ void ConvolverHandler::SetChannelCountMode(const String& mode,
   } else if (mode == "clamped-max") {
     new_channel_count_mode_ = kClampedMax;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (new_channel_count_mode_ != old_mode) {

@@ -42,7 +42,7 @@ const StylePath* GetPath(const CSSProperty& property,
       return DynamicTo<StylePath>(shape->GetBasicShape());
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -66,7 +66,7 @@ void SetPath(const CSSProperty& property,
           std::move(path), GeometryBox::kBorderBox));
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

@@ -57,7 +57,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   const LayoutResult* Layout();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MinMaxSizesResult();
   }
 

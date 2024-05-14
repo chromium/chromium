@@ -151,7 +151,7 @@ inline bool V8StringResource<kDefaultMode>::IsValid() const {
 
 template <>
 inline String V8StringResource<kDefaultMode>::FallbackString() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

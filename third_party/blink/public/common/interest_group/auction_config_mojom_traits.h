@@ -95,7 +95,7 @@ struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper {
       case Wrapper::Tag::kValue:
         return ViewTag::kValue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return View::Tag::kPromise;
   }
 

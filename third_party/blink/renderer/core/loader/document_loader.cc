@@ -888,7 +888,7 @@ WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
     case WebFrameLoadType::kReloadBypassingCache:
       return kWebHistoryInertCommit;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kWebHistoryInertCommit;
 }
 

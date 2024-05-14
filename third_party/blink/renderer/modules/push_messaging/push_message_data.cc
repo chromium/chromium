@@ -60,7 +60,7 @@ PushMessageData* PushMessageData::Create(
           static_cast<unsigned>(encoded_string.length()));
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

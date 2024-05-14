@@ -327,23 +327,23 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar& scrollbar,
       const gfx::Point& parent_point) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return parent_point;
   }
   virtual gfx::Point ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar& scrollbar,
       const gfx::Point& scrollbar_point) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return scrollbar_point;
   }
   virtual gfx::Point ConvertFromRootFrame(
       const gfx::Point& point_in_root_frame) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return point_in_root_frame;
   }
   virtual gfx::Point ConvertFromRootFrameToVisualViewport(
       const gfx::Point& point_in_root_frame) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return point_in_root_frame;
   }
 

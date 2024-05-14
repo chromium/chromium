@@ -103,7 +103,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   PaintImage PaintImageForTesting();
   void AdvanceAnimationForTesting() override {
-    NOTREACHED() << "Supported only with svgs";
+    NOTREACHED_IN_MIGRATION() << "Supported only with svgs";
   }
   void SetDecoderForTesting(std::unique_ptr<DeferredImageDecoder> decoder) {
     decoder_ = std::move(decoder);

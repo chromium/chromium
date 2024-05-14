@@ -56,7 +56,7 @@ FontPalette::BasePaletteValue StyleRuleFontPaletteValues::GetBasePaletteIndex()
         return FontPalette::BasePaletteValue(
             {FontPalette::kDarkBasePalette, 0});
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return kNoBasePaletteValue;
     }
   }

@@ -45,7 +45,7 @@ String SVGColorProperty::ValueAsString() const {
 
 SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
   // SVGAnimatedColor is deprecated. So No SVG DOM animation.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

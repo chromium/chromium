@@ -59,7 +59,7 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
     }
     return MakeGarbageCollected<CSSKeywordValue>(ident_value->Value());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

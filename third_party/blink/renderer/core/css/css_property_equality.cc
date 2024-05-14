@@ -56,7 +56,7 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return true;
     }
     return true;
@@ -138,7 +138,7 @@ bool FillLayersEqual(const FillLayer& a_layers, const FillLayer& b_layers) {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return true;
     }
 
@@ -914,7 +914,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kViewTimelineAxis:
     case CSSPropertyID::kViewTimelineInset:
     case CSSPropertyID::kViewTimelineName:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
     // Webkit Aliases. These should not be reachable since they are converted to
@@ -1038,7 +1039,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAliasGridColumnGap:
     case CSSPropertyID::kAliasGridRowGap:
     case CSSPropertyID::kAliasGridGap:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Aliases CSS properties should be converted to their non-aliased "
              "counterpart before calling this function. CSS property name: "
           << property.GetCSSPropertyName().ToAtomicString().Ascii();
@@ -1147,7 +1148,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollMarginInline:
     case CSSPropertyID::kScrollPaddingBlock:
     case CSSPropertyID::kScrollPaddingInline:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
     // No transitions on internal properties:
@@ -1178,7 +1180,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInternalVisitedTextEmphasisColor:
     case CSSPropertyID::kInternalVisitedTextFillColor:
     case CSSPropertyID::kInternalVisitedTextStrokeColor:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
     // Shorthand properties shouldn't be compared, use their longhands.
@@ -1244,7 +1247,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kMaskPosition:
     case CSSPropertyID::kWebkitTextStroke:
     case CSSPropertyID::kWhiteSpace:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
     // Non-animateable properties
@@ -1279,7 +1283,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kWebkitWritingMode:
     case CSSPropertyID::kWillChange:
     case CSSPropertyID::kWritingMode:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
 
     // TODO(crbug.com/1459374): Implement comparison for these properties. They
@@ -1313,7 +1318,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kAll:
     case CSSPropertyID::kInvalid:
     case CSSPropertyID::kVariable:
-      NOTREACHED() << property.GetCSSPropertyName().ToAtomicString().Ascii();
+      NOTREACHED_IN_MIGRATION()
+          << property.GetCSSPropertyName().ToAtomicString().Ascii();
       return true;
   }
 }

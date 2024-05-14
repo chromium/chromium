@@ -62,7 +62,7 @@ void MockStorageArea::DeleteAll(
 }
 
 void MockStorageArea::Get(const Vector<uint8_t>& key, GetCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockStorageArea::GetAll(

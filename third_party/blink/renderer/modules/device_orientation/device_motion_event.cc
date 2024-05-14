@@ -74,7 +74,7 @@ DeviceMotionEvent::requestPermission(ScriptState* script_state) {
 
   auto* window = To<LocalDOMWindow>(ExecutionContext::From(script_state));
   if (!window) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ScriptPromise<V8DeviceOrientationPermissionState>();
   }
 

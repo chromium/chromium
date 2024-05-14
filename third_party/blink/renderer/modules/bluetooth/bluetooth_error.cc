@@ -64,7 +64,7 @@ DOMException* BluetoothError::CreateDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotFoundError, detailed_message);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 
@@ -80,7 +80,7 @@ DOMException* BluetoothError::CreateDOMException(
       // an error and the others have a detailed message and are
       // expected to be redirected to the switch above that handles
       // BluetoothErrorCode.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kUnknownError);
 #define MAP_ERROR(enumeration, name, message)         \
@@ -232,7 +232,7 @@ DOMException* BluetoothError::CreateDOMException(
 #undef MAP_ERROR
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 

@@ -140,7 +140,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       return kSwapPeriod;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSwapPeriod;
 }
 
@@ -557,7 +557,7 @@ RemoteFontFaceSource::FontLoadHistograms::DataSourceMetricsValue() {
     case kFromUnknown:
       return CacheHitMetrics::kMiss;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CacheHitMetrics::kMiss;
 }
 

@@ -38,7 +38,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
                                                bool has_line_height_units) {
     if (original_text.length() > kMaxVariableBytes) {
       // This should have been blocked off during variable substitution.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
 

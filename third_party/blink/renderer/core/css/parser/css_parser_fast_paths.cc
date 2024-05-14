@@ -1026,7 +1026,7 @@ static bool FastParseColorInternal(Color& color,
         hue *= 360.0;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
 
@@ -1664,7 +1664,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kStart ||
              value_id == CSSValueID::kEnd || value_id == CSSValueID::kBoth;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

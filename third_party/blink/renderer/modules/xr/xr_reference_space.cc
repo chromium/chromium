@@ -34,7 +34,7 @@ ReferenceSpaceType XRReferenceSpace::StringToReferenceSpaceType(
   } else if (reference_space_type == "unbounded") {
     return ReferenceSpaceType::kUnbounded;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ReferenceSpaceType::kViewer;
 }
 
@@ -131,7 +131,8 @@ std::optional<gfx::Transform> XRReferenceSpace::MojoFromNative() const {
       return *mojo_from_local * local_from_floor;
     }
     case ReferenceSpaceType::kBoundedFloor: {
-      NOTREACHED() << "kBoundedFloor should be handled by subclass";
+      NOTREACHED_IN_MIGRATION()
+          << "kBoundedFloor should be handled by subclass";
       return std::nullopt;
     }
   }

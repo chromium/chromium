@@ -226,10 +226,10 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kRubyText:
       return EDisplay::kBlock;
     case EDisplay::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return display;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EDisplay::kBlock;
 }
 
@@ -283,10 +283,10 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
       return display;
 
     case EDisplay::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return display;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EDisplay::kBlock;
 }
 

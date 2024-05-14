@@ -548,7 +548,7 @@ void WorkerGlobalScope::RunWorkerScript() {
               is_success = false;
               break;
             case v8::Promise::kPending:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               is_success = false;
               break;
           }

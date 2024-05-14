@@ -102,8 +102,9 @@ GridPlacementData GridPlacement::RunAutoPlacementAlgorithm(
         break;
       case AutoPlacementType::kMinor:
       case AutoPlacementType::kNotNeeded:
-        NOTREACHED() << "Placement of non-auto placed items and items locked "
-                        "to a major axis should've already occurred.";
+        NOTREACHED_IN_MIGRATION()
+            << "Placement of non-auto placed items and items locked "
+               "to a major axis should've already occurred.";
         break;
     }
     if (!HasSparsePacking()) {

@@ -81,7 +81,7 @@ V8MIDIPortDeviceState MIDIPort::state() const {
     case PortState::OPENED:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return V8MIDIPortDeviceState(V8MIDIPortDeviceState::Enum::kConnected);
 }
 
@@ -145,7 +145,7 @@ void MIDIPort::SetState(PortState state) {
     case PortState::CONNECTED:
       switch (connection_) {
         case MIDIPortConnectionState::kOpen:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case MIDIPortConnectionState::kPending:
           // We do not use |setStates| in order not to dispatch events twice.
@@ -159,7 +159,7 @@ void MIDIPort::SetState(PortState state) {
       }
       break;
     case PortState::OPENED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -206,7 +206,7 @@ void MIDIPort::OpenAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
       SetStates(state_, MIDIPortConnectionState::kOpen);
       break;
     case PortState::OPENED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (resolver)

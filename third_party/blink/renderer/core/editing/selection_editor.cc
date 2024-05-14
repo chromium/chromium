@@ -344,7 +344,7 @@ static Position UpdatePostionAfterAdoptingTextNodesMerged(
       return position;
     }
   }
-  NOTREACHED() << position;
+  NOTREACHED_IN_MIGRATION() << position;
   return position;
 }
 

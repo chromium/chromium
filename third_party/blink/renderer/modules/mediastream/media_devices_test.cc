@@ -196,23 +196,23 @@ class MockMediaDevicesDispatcherHost final
   }
 
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetAllVideoInputDeviceFormats(
       const String&,
       GetAllVideoInputDeviceFormatsCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetAvailableVideoInputDeviceFormats(
       const String&,
       GetAvailableVideoInputDeviceFormatsCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetAudioInputCapabilities(GetAudioInputCapabilitiesCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void AddMediaDevicesListener(

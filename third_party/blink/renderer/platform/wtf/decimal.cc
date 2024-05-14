@@ -409,7 +409,7 @@ Decimal Decimal::operator*(const Decimal& rhs) const {
       return lhs.IsZero() ? Nan() : Infinity(result_sign);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Nan();
 }
 
@@ -611,7 +611,7 @@ Decimal Decimal::CompareTo(const Decimal& rhs) const {
       return Zero(kPositive);
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Nan();
   }
 }
@@ -813,7 +813,7 @@ Decimal Decimal::FromString(const String& str) {
         return Nan();
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return Nan();
     }
   }
@@ -906,7 +906,7 @@ String Decimal::ToString() const {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 

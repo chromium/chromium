@@ -33,7 +33,7 @@ class FileSystemDispatcher::WriteListener
   void ResultsRetrieved(
       Vector<filesystem::mojom::blink::DirectoryEntryPtr> entries,
       bool has_more) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ErrorOccurred(base::File::Error error_code) override {

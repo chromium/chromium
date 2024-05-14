@@ -532,7 +532,7 @@ void HighlightPainter::Paint(Phase phase) {
       case DocumentMarker::kGrammar:
       case DocumentMarker::kTextFragment:
       case DocumentMarker::kCustomHighlight:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -704,7 +704,7 @@ Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
   const auto* text_node = DynamicTo<Text>(fragment_item_.GetNode());
   switch (layer.type) {
     case HighlightLayerType::kOriginating:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HighlightLayerType::kCustom: {
       DCHECK(text_node);
@@ -944,7 +944,7 @@ PseudoId HighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kTextFragment:
       return kPseudoIdTargetText;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {};
   }
 }
@@ -956,7 +956,7 @@ TextDecorationLine HighlightPainter::LineFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kGrammar:
       return TextDecorationLine::kGrammarError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {};
   }
 }
@@ -968,7 +968,7 @@ Color HighlightPainter::ColorFor(DocumentMarker::MarkerType type) {
     case DocumentMarker::kGrammar:
       return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {};
   }
 }

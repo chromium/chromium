@@ -567,7 +567,7 @@ void URLLoader::Context::SetResourceRequestSenderForTesting(
 
 void URLLoader::SetBackgroundResponseProcessor(
     scoped_refptr<BackgroundResponseProcessor> background_response_processor) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

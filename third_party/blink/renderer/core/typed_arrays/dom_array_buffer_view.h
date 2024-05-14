@@ -130,7 +130,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
 
   // ScriptWrappable overrides:
   v8::Local<v8::Value> Wrap(ScriptState*) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Value>();
   }
 

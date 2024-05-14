@@ -97,7 +97,7 @@ InterpolationValue SizeInterpolationFunctions::ConvertFillSizeSide(
       return ConvertKeyword(CSSValueID::kCover);
     case EFillSizeType::kSizeNone:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -207,7 +207,7 @@ FillSize SizeInterpolationFunctions::CreateFillSize(
       case CSSValueID::kAuto:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

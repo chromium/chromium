@@ -185,7 +185,7 @@ String AudioParamHandler::GetParamName() const {
     case kParamTypeAudioWorklet:
       return custom_param_name_;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

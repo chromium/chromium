@@ -73,7 +73,7 @@ network::mojom::blink::CSPHashAlgorithm ConvertHashAlgorithmToCSPHashAlgorithm(
     case IntegrityAlgorithm::kSha512:
       return network::mojom::blink::CSPHashAlgorithm::SHA512;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::blink::CSPHashAlgorithm::None;
 }
 
@@ -537,7 +537,7 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::TrustedTypes:
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::Unknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

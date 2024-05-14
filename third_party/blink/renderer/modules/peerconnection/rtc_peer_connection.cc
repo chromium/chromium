@@ -1155,7 +1155,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setIceTransportPolicy("all");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   switch (webrtc_configuration.bundle_policy) {
@@ -1169,7 +1169,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setBundlePolicy("balanced");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   switch (webrtc_configuration.rtcp_mux_policy) {
@@ -1180,7 +1180,7 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
       result->setRtcpMuxPolicy("require");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   HeapVector<Member<RTCIceServer>> ice_servers;

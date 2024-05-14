@@ -204,7 +204,7 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
       IsValidAudioDecoderConfig(config, js_error_message);
   if (!audio_type) {
     // Checked by IsValidConfig().
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::nullopt;
   }
   if (audio_type->codec == media::AudioCodec::kUnknown) {

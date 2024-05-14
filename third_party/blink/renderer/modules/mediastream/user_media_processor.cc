@@ -114,7 +114,7 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       return "NUM_MEDIA_REQUEST_RESULTS";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -299,7 +299,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
     case MediaStreamRequestResult::REQUEST_CANCELLED:
       return "Request was cancelled";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1135,7 +1135,7 @@ void UserMediaProcessor::GotOpenDevice(
   } else if (IsVideoInputMediaType(response->device.type)) {
     devices->video_device = response->device;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojom::blink::StreamDevicesSetPtr stream_devices_set =
@@ -1491,7 +1491,7 @@ void UserMediaProcessor::OnDeviceRequestStateChange(
                             base::DoNothing());
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1979,7 +1979,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
   switch (result) {
     case MediaStreamRequestResult::OK:
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case MediaStreamRequestResult::CONSTRAINT_NOT_SATISFIED:
       user_media_request->FailConstraint(constraint_name, "");

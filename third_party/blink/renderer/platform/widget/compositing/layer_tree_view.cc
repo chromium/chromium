@@ -463,7 +463,7 @@ std::unique_ptr<cc::WebVitalMetrics> LayerTreeView::GetWebVitalMetrics() {
 
 void LayerTreeView::NotifyThroughputTrackerResults(
     cc::CustomTrackerResults results) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LayerTreeView::DidObserveFirstScrollDelay(

@@ -95,9 +95,9 @@ MixedContent::ContextTypeFromRequestContext(
       return mojom::blink::MixedContentContextType::kShouldBeBlockable;
 
     case mojom::RequestContextType::UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::blink::MixedContentContextType::kBlockable;
 }
 

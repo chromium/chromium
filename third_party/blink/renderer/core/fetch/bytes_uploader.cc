@@ -93,7 +93,7 @@ void BytesUploader::OnStateChange() {
       CloseOnError();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BytesUploader::OnPipeWriteable(MojoResult unused) {
@@ -155,7 +155,7 @@ void BytesUploader::WriteDataOnPipe() {
         CloseOnError();
         return;
       case BytesConsumer::Result::kShouldWait:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case BytesConsumer::Result::kDone:
         Close();

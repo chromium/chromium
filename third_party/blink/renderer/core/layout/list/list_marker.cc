@@ -93,7 +93,7 @@ int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Value();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -211,7 +211,7 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
       return kOrdinalValue;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kStatic;
 }
 

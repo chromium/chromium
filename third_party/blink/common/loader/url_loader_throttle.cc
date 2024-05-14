@@ -29,7 +29,7 @@ URLLoaderThrottle::Delegate::~Delegate() {}
 URLLoaderThrottle::~URLLoaderThrottle() {}
 
 void URLLoaderThrottle::DetachFromCurrentSequence() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void URLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,

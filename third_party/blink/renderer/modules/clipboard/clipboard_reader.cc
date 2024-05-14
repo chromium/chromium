@@ -352,7 +352,7 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
     return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "IsValidType() and Create() have inconsistent implementations.";
   return nullptr;
 }

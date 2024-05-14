@@ -26,7 +26,7 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
 
   class FakeURLLoaderThrottleProvider : public URLLoaderThrottleProvider {
     std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
 

@@ -37,7 +37,7 @@ class NoNetworkURLLoader : public URLLoader {
                          std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
                              resource_load_info_notifier_wrapper) override {
     // Nothing should call this in our test.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void LoadAsynchronously(
       std::unique_ptr<network::ResourceRequest> request,

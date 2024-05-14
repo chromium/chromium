@@ -223,7 +223,7 @@ class PLATFORM_EXPORT Length {
 
   int IntValue() const {
     if (IsCalculated()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
     }
     DCHECK(!IsNone());

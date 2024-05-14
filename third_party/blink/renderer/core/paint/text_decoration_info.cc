@@ -423,7 +423,7 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
     default:
       double_offset = 0.0f;
       wavy_offset_factor = 0;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   line_data_.line = line;
@@ -673,7 +673,7 @@ gfx::RectF TextDecorationInfo::Bounds() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::RectF();
 }
 

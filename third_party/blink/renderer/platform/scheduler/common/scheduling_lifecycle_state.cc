@@ -20,7 +20,7 @@ const char* SchedulingLifecycleStateToString(SchedulingLifecycleState state) {
     case SchedulingLifecycleState::kStopped:
       return "frozen";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

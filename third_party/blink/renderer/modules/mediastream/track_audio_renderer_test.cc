@@ -215,7 +215,7 @@ class TrackAudioRendererTest : public testing::TestWithParam<bool> {
 
   void OnRenderError() {
     DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {

@@ -337,7 +337,7 @@ Document* DocumentInit::CreateDocument() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -15,7 +15,7 @@ DOMException* CreateDOMExceptionFromRTCError(const webrtc::RTCError& error) {
   switch (error.type()) {
     case webrtc::RTCErrorType::NONE:
       // This should never happen.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case webrtc::RTCErrorType::SYNTAX_ERROR:
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
@@ -55,10 +55,10 @@ DOMException* CreateDOMExceptionFromRTCError(const webrtc::RTCError& error) {
                  << static_cast<int>(error.type());
       // No DOM equivalent.
       // Needs per-error evaluation or use ThrowExceptionFromRTCError.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -67,7 +67,7 @@ void ThrowExceptionFromRTCError(const webrtc::RTCError& error,
   switch (error.type()) {
     case webrtc::RTCErrorType::NONE:
       // This should never happen.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case webrtc::RTCErrorType::SYNTAX_ERROR:
       exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
@@ -108,9 +108,9 @@ void ThrowExceptionFromRTCError(const webrtc::RTCError& error,
     default:
       LOG(ERROR) << "Got unhandled RTC error "
                  << static_cast<int>(error.type());
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 }  // namespace blink

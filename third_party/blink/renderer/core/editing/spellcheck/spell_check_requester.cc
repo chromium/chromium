@@ -272,7 +272,7 @@ bool SpellCheckRequester::EnsureValidRequestQueueFor(int sequence) {
   DCHECK(processing_request_);
   if (processing_request_->Sequence() == sequence)
     return true;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   request_queue_.clear();
   return false;
 }

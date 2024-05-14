@@ -128,8 +128,8 @@ RankedDicts::RankedDicts(
       bool clean_string = true;
       for (char c : s) {
         if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
-          NOTREACHED() << "RankedDicts bad character "
-                       << static_cast<unsigned char>(c);
+          NOTREACHED_IN_MIGRATION()
+              << "RankedDicts bad character " << static_cast<unsigned char>(c);
           clean_string = false;
         }
       }

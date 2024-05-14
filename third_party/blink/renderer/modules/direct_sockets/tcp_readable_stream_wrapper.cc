@@ -82,7 +82,7 @@ void TCPReadableStreamWrapper::OnHandleReady(MojoResult result,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -133,7 +133,7 @@ void TCPReadableStreamWrapper::Pull() {
       return;
 
     default:
-      NOTREACHED() << "Unexpected result: " << result;
+      NOTREACHED_IN_MIGRATION() << "Unexpected result: " << result;
       return;
   }
 }

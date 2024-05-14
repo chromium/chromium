@@ -104,7 +104,7 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
 void SVGStringListBase::Add(const SVGPropertyBase* other,
                             const SVGElement* context_element) {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGStringListBase::CalculateAnimatedValue(
@@ -116,13 +116,13 @@ void SVGStringListBase::CalculateAnimatedValue(
     const SVGPropertyBase*,
     const SVGElement*) {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGStringListBase::CalculateDistance(const SVGPropertyBase*,
                                            const SVGElement*) const {
   // SVGStringList is never animated.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1.0f;
 }
 

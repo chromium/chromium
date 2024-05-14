@@ -560,14 +560,14 @@ String CSSComputedStyleDeclaration::GetPropertyValueInternal(
 String CSSComputedStyleDeclaration::GetPropertyValueWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

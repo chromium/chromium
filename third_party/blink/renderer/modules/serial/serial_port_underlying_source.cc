@@ -95,7 +95,7 @@ void SerialPortUnderlyingSource::SignalErrorOnClose(SerialReceiveError error) {
   v8::Local<v8::Value> exception;
   switch (error) {
     case SerialReceiveError::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case SerialReceiveError::DISCONNECTED:
       [[fallthrough]];

@@ -122,7 +122,7 @@ String BlendModeToString(BlendMode blend_op) {
     case BlendMode::kPlusLighter:
       return "plus-lighter";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -269,7 +269,7 @@ String ImageDataStorageFormatName(ImageDataStorageFormat format) {
     case ImageDataStorageFormat::kFloat32:
       return "float32";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -288,7 +288,7 @@ String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
     case PredefinedColorSpace::kSRGBLinear:
       return "srgb-linear";
   };
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -299,7 +299,7 @@ String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
     case CanvasPixelFormat::kF16:
       return "float16";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

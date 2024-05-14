@@ -1389,7 +1389,7 @@ static SkPathFillType ParseWinding(const String& winding_rule_string) {
   if (winding_rule_string == "evenodd")
     return SkPathFillType::kEvenOdd;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkPathFillType::kEvenOdd;
 }
 
@@ -2217,7 +2217,7 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
           "layers are open in the source canvas.");
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 
@@ -2699,7 +2699,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
         return;
       }
       if (!converted_bitmap.writePixels(data_pixmap, 0, 0))
-        NOTREACHED() << "Failed to convert ImageData with writePixels.";
+        NOTREACHED_IN_MIGRATION()
+            << "Failed to convert ImageData with writePixels.";
 
       PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
       if (GetPaintCanvas()) {
@@ -3031,7 +3032,7 @@ static inline TextDirection ToTextDirection(
     case CanvasRenderingContext2DState::kDirectionLTR:
       return TextDirection::kLtr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TextDirection::kLtr;
 }
 

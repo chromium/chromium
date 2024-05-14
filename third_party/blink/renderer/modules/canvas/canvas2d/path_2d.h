@@ -57,7 +57,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
       case V8UnionPath2DOrString::ContentType::kString:
         return MakeGarbageCollected<Path2D>(script_state, path->GetAsString());
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   static Path2D* Create(ScriptState* script_state) {

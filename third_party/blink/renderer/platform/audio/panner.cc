@@ -48,7 +48,7 @@ std::unique_ptr<Panner> Panner::Create(PanningModel model,
       return std::make_unique<HRTFPanner>(sample_rate, render_quantum_frames,
                                           database_loader);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -24,7 +24,7 @@ namespace blink {
 namespace {
 
 mojom::blink::MediaDevicesDispatcherHost* UnusedMediaDevicesDispatcherHost() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

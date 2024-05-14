@@ -120,7 +120,7 @@ net::NetworkTrafficAnnotationTag FetchUtils::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kFencedframe:
     case network::mojom::RequestDestination::kWebIdentity:
     case network::mojom::RequestDestination::kSharedStorageWorklet:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
 
     case network::mojom::RequestDestination::kEmpty:

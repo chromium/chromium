@@ -584,7 +584,7 @@ void TypingCommand::DoApply(EditingState* editing_state) {
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 InputEvent::InputType TypingCommand::GetInputType() const {
@@ -855,7 +855,7 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1042,7 +1042,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1178,7 +1178,7 @@ void TypingCommand::UpdatePreservesTypingStyle(CommandType command_type) {
       preserves_typing_style_ = false;
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   preserves_typing_style_ = false;
 }
 

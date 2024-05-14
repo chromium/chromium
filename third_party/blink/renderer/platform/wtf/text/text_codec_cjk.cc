@@ -1122,7 +1122,7 @@ std::unique_ptr<TextCodec> TextCodecCJK::Create(const TextEncoding& encoding,
   if (!strcmp(name, kCanonicalNameGb18030)) {
     return base::WrapUnique(new TextCodecCJK(Encoding::kGb18030));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1223,7 +1223,7 @@ Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
     case Encoding::kGb18030:
       return EncodeGb18030(string, handling);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

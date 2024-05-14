@@ -212,7 +212,7 @@ void WaitUntilObserver::MaybeCompleteEvent() {
 
   switch (event_dispatch_state_) {
     case EventDispatchState::kInitial:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case EventDispatchState::kDispatching:
       // Still dispatching, do not complete the event.

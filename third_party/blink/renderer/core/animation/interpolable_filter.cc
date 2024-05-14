@@ -31,7 +31,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
       return value;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -77,7 +77,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
       return nullptr;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 
@@ -125,7 +125,7 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 
@@ -164,7 +164,7 @@ InterpolableFilter* InterpolableFilter::CreateInitialValue(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 
@@ -207,7 +207,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

@@ -35,7 +35,7 @@ bool GetColor(const CSSProperty& property,
     case CSSPropertyID::kStroke:
       return GetColorFromPaint(style.StrokePaint(), result);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -178,7 +178,7 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
       builder.SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -304,7 +304,8 @@ void DedicatedWorker::OnHostCreated(
                   std::move(back_forward_cache_controller_host));
     return;
   }
-  NOTREACHED() << "Invalid type: " << IDLEnumAsString(options_->type());
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid type: " << IDLEnumAsString(options_->type());
 }
 
 void DedicatedWorker::terminate() {

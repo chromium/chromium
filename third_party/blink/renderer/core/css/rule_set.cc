@@ -552,7 +552,7 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
             name = shadow_element_names::kSelectFallbackDatalist;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         AddToRuleSet(name, ua_shadow_pseudo_element_rules_, rule_data);

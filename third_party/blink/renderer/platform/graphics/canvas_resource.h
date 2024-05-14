@@ -154,7 +154,7 @@ class PLATFORM_EXPORT CanvasResource
   // Returns the sync token to indicate when all writes to the current resource
   // are finished on the GPU thread.
   virtual const gpu::SyncToken GetSyncToken() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::SyncToken();
   }
 
@@ -205,7 +205,7 @@ class PLATFORM_EXPORT CanvasResource
   }
   // Returns the texture target for the resource.
   virtual GLenum TextureTarget() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -241,7 +241,7 @@ class PLATFORM_EXPORT CanvasResource
   gfx::ColorSpace GetColorSpace() const;
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -259,7 +259,7 @@ class PLATFORM_EXPORT CanvasResource
   // NOTE: Will be called only if SupportsAcceleratedCompositing() is false.
   virtual bool PrepareUnacceleratedTransferableResource(
       viz::TransferableResource* out_resource) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   const SkColorInfo& GetSkColorInfo() const { return info_; }

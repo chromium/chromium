@@ -119,7 +119,7 @@ AtomicString PerformanceNavigationTiming::GetNavigationTimingType(
     case kWebNavigationTypeOther:
       return AtomicString("navigate");
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AtomicString("navigate");
 }
 
@@ -227,7 +227,7 @@ AtomicString PerformanceNavigationTiming::deliveryType() const {
     case NavigationDeliveryType::kNavigationalPrefetch:
       return delivery_type_names::kNavigationalPrefetch;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_atom;
   }
 }

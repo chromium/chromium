@@ -48,7 +48,7 @@ class NullDemuxerStream : public media::DemuxerStream {
   Type type() const override { return stream_type; }
 
   bool SupportsConfigChanges() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
 

@@ -75,7 +75,7 @@ GPUSupportedLimits::GPUSupportedLimits(const wgpu::SupportedLimits& limits)
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

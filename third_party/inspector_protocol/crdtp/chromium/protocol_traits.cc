@@ -254,7 +254,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
     }
     case base::Value::Type::BINARY:
       // TODO(caseq): support this?
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case base::Value::Type::DICT:
       SerializeDict(value.GetDict(), bytes);

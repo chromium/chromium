@@ -1237,7 +1237,7 @@ bool JPEGImageDecoder::OutputScanlines() {
     case JCS_CMYK:
       return OutputRows<JCS_CMYK>(reader_.get(), buffer);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return SetFailed();

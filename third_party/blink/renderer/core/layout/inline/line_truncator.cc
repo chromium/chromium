@@ -427,7 +427,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Return the offset to place the ellipsis.

@@ -16,7 +16,7 @@ String ModuleScriptCreationParams::ModuleTypeToString(
     case ModuleType::kCSS:
       return "CSS";
     case ModuleType::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

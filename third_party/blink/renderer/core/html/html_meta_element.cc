@@ -425,7 +425,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
                             WebFeature::kInteractiveWidgetResizesVisual);
         } break;
         case ui::mojom::blink::VirtualKeyboardMode::kUnset: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         } break;
       }
     } else {
@@ -468,7 +468,7 @@ static mojom::ConsoleMessageLevel ViewportErrorMessageLevel(
       return mojom::ConsoleMessageLevel::kWarning;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::ConsoleMessageLevel::kError;
 }
 

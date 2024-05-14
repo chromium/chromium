@@ -53,7 +53,7 @@ class FontUniqueNameLookup {
   using NotifyFontUniqueNameLookupReady = base::OnceCallback<void()>;
   virtual void PrepareFontUniqueNameLookup(
       NotifyFontUniqueNameLookupReady callback) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Performs any global initialization needed for this renderer. This is called

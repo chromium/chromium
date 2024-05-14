@@ -109,7 +109,7 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -149,7 +149,7 @@ const char* GetElementName(const ScriptElementBase::Type type) {
     case ScriptElementBase::Type::kSVGScriptElement:
       return "SVGScriptElement";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -511,7 +511,7 @@ String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -539,7 +539,7 @@ String TrustedTypesCheckForScript(
       return value->GetAsTrustedScript()->toString();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -560,7 +560,7 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
     case SpecificTrustedType::kNone:
       return trusted;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 

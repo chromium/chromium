@@ -292,7 +292,7 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kSelfEnd:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 
@@ -333,7 +333,7 @@ LayoutUnit LogicalAnchorQuery::EvaluateSize(
                  ? anchor.block_size
                  : anchor.inline_size;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 

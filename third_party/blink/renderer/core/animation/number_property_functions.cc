@@ -116,7 +116,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
       return ClampTo<int>(RoundHalfTowardsPositiveInfinity(value));
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return value;
   }
 }

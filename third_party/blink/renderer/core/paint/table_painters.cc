@@ -618,7 +618,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
         // NOTE: This crash has been observed, but we aren't able to find a
         // reproducible testcase. See: crbug.com/1179369.
         if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           continue;
         }
 

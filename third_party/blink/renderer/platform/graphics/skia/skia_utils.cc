@@ -79,7 +79,7 @@ SkBlendMode WebCoreCompositeToSkiaComposite(CompositeOperator op,
       return SkBlendMode::kPlus;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkBlendMode::kSrcOver;
 }
 
@@ -121,7 +121,7 @@ SkBlendMode WebCoreBlendModeToSkBlendMode(BlendMode blend_mode) {
       return SkBlendMode::kPlus;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkBlendMode::kSrcOver;
 }
 

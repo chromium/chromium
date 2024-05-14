@@ -128,7 +128,7 @@ bool IsSupportedType(ResourceType resource_type, const String& mime_type) {
     case ResourceType::kRaw:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -509,7 +509,7 @@ void PreloadHelper::PreloadIfNeeded(
           fetch_priority_message = " with fetchpriority hint 'auto'";
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -978,7 +978,7 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       resource = RawResource::Fetch(params, resource_fetcher, nullptr);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   base::UmaHistogramMicrosecondsTimes("Blink.PreloadRequestStartDuration",

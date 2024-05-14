@@ -62,7 +62,7 @@ bool SVGStaticStringList::IsAnimating() const {
 }
 
 void SVGStaticStringList::SetAnimatedValue(SVGPropertyBase*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 SVGStringListTearOff* SVGStaticStringList::TearOff() {

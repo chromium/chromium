@@ -52,7 +52,7 @@ struct MarkerPosition {
       case kEndMarker:
         return marker_end;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

@@ -401,7 +401,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
 
   LocalFrame* frame = document->GetFrame();
   if (!frame) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

@@ -104,7 +104,7 @@ WebFileSystemType WebDOMFileSystem::GetType() const {
     case blink::mojom::FileSystemType::kExternal:
       return WebFileSystemType::kWebFileSystemTypeExternal;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebFileSystemType::kWebFileSystemTypeTemporary;
   }
 }

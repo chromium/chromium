@@ -96,7 +96,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
       case EClear::kBoth:
         return std::max(left_clear_offset_, right_clear_offset_);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return LayoutUnit::Min();
     }
   }
@@ -118,7 +118,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
         return std::max(initial_letter_left_clear_offset_,
                         initial_letter_right_clear_offset_);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return LayoutUnit::Min();
     }
   }
@@ -137,7 +137,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
   void SetHasBreakBeforeFloat(EFloat type) {
     switch (type) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case EFloat::kLeft:
         has_break_before_left_float_ = true;
@@ -151,7 +151,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
   void SetHasBreakInsideFloat(EFloat type) {
     switch (type) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case EFloat::kLeft:
         has_break_inside_left_float_ = true;
@@ -166,7 +166,7 @@ class CORE_EXPORT ExclusionSpaceInternal final {
     bool needs_clearance = false;
     switch (type) {
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case EClear::kNone:
         return false;

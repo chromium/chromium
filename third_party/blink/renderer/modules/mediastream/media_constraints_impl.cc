@@ -379,7 +379,7 @@ bool ValidateStringConstraint(
                                error_message);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -405,7 +405,7 @@ bool ValidateStringConstraint(const V8ConstrainDOMString* blink_union_form,
       return ValidateStringSeq(blink_union_form->GetAsStringSequence(),
                                error_message);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -659,7 +659,7 @@ bool UseNakedNumeric(const T& input, NakedValueDisposition which) {
              !(input.HasIdeal() || input.HasMin() || input.HasMax());
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -673,7 +673,7 @@ bool UseNakedNonNumeric(const T& input, NakedValueDisposition which) {
       return input.HasExact() && !input.HasIdeal();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -687,7 +687,7 @@ U GetNakedValue(const T& input, NakedValueDisposition which) {
       return input.Exact();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return input.Exact();
 }
 

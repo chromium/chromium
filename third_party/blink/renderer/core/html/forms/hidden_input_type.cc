@@ -66,7 +66,7 @@ bool HiddenInputType::SupportsValidation() const {
 }
 
 LayoutObject* HiddenInputType::CreateLayoutObject(const ComputedStyle&) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

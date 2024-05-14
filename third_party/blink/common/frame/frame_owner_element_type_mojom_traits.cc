@@ -26,7 +26,7 @@ blink::mojom::FrameOwnerElementType EnumTraits<
     case blink::FrameOwnerElementType::kNone:
       return blink::mojom::FrameOwnerElementType::kNone;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::FrameOwnerElementType::kFrame;
 }
 

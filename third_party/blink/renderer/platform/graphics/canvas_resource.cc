@@ -877,7 +877,7 @@ void ExternalCanvasResource::Abandon() {
 }
 
 void ExternalCanvasResource::TakeSkImage(sk_sp<SkImage> image) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
@@ -1009,7 +1009,7 @@ bool CanvasResourceSwapChain::IsValid() const {
 }
 
 void CanvasResourceSwapChain::TakeSkImage(sk_sp<SkImage> image) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {

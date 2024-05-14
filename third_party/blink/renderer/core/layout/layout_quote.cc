@@ -134,7 +134,7 @@ String LayoutQuote::ComputeText() const {
     case QuoteType::kOpen:
       return GetQuotesData()->GetOpenQuote(depth_).Impl();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 

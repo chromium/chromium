@@ -117,7 +117,7 @@ class SimpleFormDataBytesConsumer : public BytesConsumer {
   }
   PublicState GetPublicState() const override { return state_; }
   Error GetError() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Error();
   }
   String DebugName() const override { return "SimpleFormDataBytesConsumer"; }
@@ -228,7 +228,7 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
       return result;
     }
 
-    NOTREACHED() << "Invalid type: " << iter_->type_;
+    NOTREACHED_IN_MIGRATION() << "Invalid type: " << iter_->type_;
     return Result::kError;
   }
 
@@ -261,7 +261,7 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
       return Result::kOk;
     }
 
-    NOTREACHED() << "No consumer. BeginRead() was not called?";
+    NOTREACHED_IN_MIGRATION() << "No consumer. BeginRead() was not called?";
     return Result::kError;
   }
 
@@ -434,7 +434,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
           }
           break;
         case FormDataElement::kDataPipe:
-          NOTREACHED() << "This consumer can't handle data pipes.";
+          NOTREACHED_IN_MIGRATION() << "This consumer can't handle data pipes.";
           break;
       }
     }

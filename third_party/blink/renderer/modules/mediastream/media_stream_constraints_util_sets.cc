@@ -358,9 +358,9 @@ Point ResolutionSet::SelectClosestPointToIdeal(
       return ClosestPointTo(Point(ideal_height, ideal_width));
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Point(-1, -1);
 }
 

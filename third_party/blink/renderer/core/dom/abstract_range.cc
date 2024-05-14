@@ -35,7 +35,7 @@ unsigned AbstractRange::LengthOfContents(const Node* node) {
     case Node::kDocumentTypeNode:
       return 0;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

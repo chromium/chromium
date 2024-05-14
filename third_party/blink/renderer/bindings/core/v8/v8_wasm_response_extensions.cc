@@ -226,7 +226,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       }
       switch (result) {
         case BytesConsumer::Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case BytesConsumer::Result::kOk:
           break;

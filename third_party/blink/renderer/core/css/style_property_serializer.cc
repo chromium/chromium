@@ -433,7 +433,7 @@ String StylePropertySerializer::CommonShorthandChecks(
     const StylePropertyShorthand& shorthand) const {
   unsigned longhand_count = shorthand.length();
   if (!longhand_count || longhand_count > kMaxShorthandExpansion) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return g_empty_string;
   }
 
@@ -701,7 +701,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kPositionTry:
       return PositionTryValue();
     default:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Shorthand property "
           << CSSPropertyName(property_id).ToAtomicString()
           << " must be handled in StylePropertySerializer::SerializeShorthand.";
@@ -808,7 +808,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
         result.Append(" / ");
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   result.Append(value);

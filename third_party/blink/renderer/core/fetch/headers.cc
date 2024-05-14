@@ -315,7 +315,7 @@ void Headers::FillWith(ScriptState* script_state,
                       exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Headers::FillWith(ScriptState* script_state,

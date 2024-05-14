@@ -152,7 +152,7 @@ String AudioParam::automationRate() const {
     case AudioParamHandler::AutomationRate::kControl:
       return "k-rate";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "a-rate";
   }
 }

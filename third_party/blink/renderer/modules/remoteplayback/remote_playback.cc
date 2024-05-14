@@ -53,7 +53,7 @@ const AtomicString& RemotePlaybackStateToString(
     case mojom::blink::PresentationConnectionState::TERMINATED:
       return disconnected_value;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return disconnected_value;
   }
 }

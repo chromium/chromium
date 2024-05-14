@@ -708,7 +708,7 @@ bool AudioContext::AreAutoplayRequirementsFulfilled() const {
       return AutoplayPolicy::IsDocumentAllowedToPlay(*GetWindow()->document());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -743,7 +743,7 @@ bool AudioContext::IsAllowedToStart() const {
 
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
       DCHECK(window->GetFrame());

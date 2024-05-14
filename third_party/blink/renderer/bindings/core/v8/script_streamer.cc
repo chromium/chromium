@@ -82,7 +82,7 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
       return v8::ScriptType::kClassic;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -620,7 +620,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     char maybe_bom[kMaximumLengthOfBOM] = {};
     if (!script_resource_->ResourceBuffer()->GetBytes(maybe_bom,
                                                       kMaximumLengthOfBOM)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
 
@@ -821,7 +821,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       return;
 
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
 
     default:

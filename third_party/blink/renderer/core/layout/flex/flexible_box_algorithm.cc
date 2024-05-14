@@ -145,7 +145,7 @@ LayoutUnit FlexItem::FlowAwareMarginBefore() const {
     case TransformedWritingMode::kRightToLeftWritingMode:
       return physical_margins_.right;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 
@@ -160,7 +160,7 @@ LayoutUnit FlexItem::FlowAwareMarginAfter() const {
     case TransformedWritingMode::kRightToLeftWritingMode:
       return physical_margins_.left;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 
@@ -318,7 +318,7 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
     case ItemPosition::kAuto:
     case ItemPosition::kNormal:
     case ItemPosition::kAnchorCenter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ItemPosition::kSelfStart:
     case ItemPosition::kSelfEnd:
@@ -326,9 +326,10 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
     case ItemPosition::kEnd:
     case ItemPosition::kLeft:
     case ItemPosition::kRight:
-      NOTREACHED() << static_cast<int>(position)
-                   << " AlignmentForChild should have transformed this "
-                      "position value to something we handle below.";
+      NOTREACHED_IN_MIGRATION()
+          << static_cast<int>(position)
+          << " AlignmentForChild should have transformed this "
+             "position value to something we handle below.";
       break;
     case ItemPosition::kStretch:
       // Actual stretching must be handled by the caller. Since wrap-reverse
@@ -963,7 +964,7 @@ TransformedWritingMode FlexibleBoxAlgorithm::GetTransformedWritingMode(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TransformedWritingMode::kTopToBottomWritingMode;
 }
 

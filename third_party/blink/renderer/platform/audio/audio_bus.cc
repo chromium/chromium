@@ -174,7 +174,7 @@ AudioChannel* AudioBus::ChannelByType(unsigned channel_type) {
       }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -501,7 +501,7 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
 
 void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
   if (!TopologyMatches(source_bus)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     Zero();
     return;
   }
@@ -561,12 +561,12 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
   // Make sure we're processing from the same type of bus.
   // We *are* able to process from mono -> stereo
   if (source_bus.NumberOfChannels() != 1 && !TopologyMatches(source_bus)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   if (!gain_values || number_of_gain_values > source_bus.length()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -691,7 +691,7 @@ scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

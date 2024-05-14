@@ -325,7 +325,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
   }
@@ -373,7 +373,7 @@ CheckPseudoHasArgumentContext::CheckPseudoHasArgumentContext(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

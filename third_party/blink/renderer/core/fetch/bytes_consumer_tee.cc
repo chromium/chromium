@@ -77,7 +77,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           has_enqueued = true;
           break;
         case Result::kShouldWait:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
         case Result::kDone:
           if (chunk) {
@@ -173,7 +173,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
           ClearClient();
           return Result::kError;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Result::kError;
     }
 

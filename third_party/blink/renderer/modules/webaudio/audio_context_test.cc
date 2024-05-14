@@ -80,7 +80,7 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
                     static_cast<double>(playback_size));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

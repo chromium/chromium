@@ -433,8 +433,8 @@ void HTMLPermissionElement::AttributeChanged(
             GetLocale().QueryString(IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE));
         break;
       default:
-        NOTREACHED() << "Unexpected permissions size "
-                     << permission_descriptors_.size();
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected permissions size " << permission_descriptors_.size();
     }
   }
 
@@ -686,7 +686,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
     case EmbeddedPermissionControlResult::kResolvedNoUserGesture:
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

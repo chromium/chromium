@@ -136,7 +136,7 @@ StyleImage* StyleImageLoader::Load(
     return image_set_value->CacheImage(style_image, device_scale_factor_);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -222,7 +222,7 @@ bool ElementStyleResources::IsPending(const CSSValue& value) const {
     return img_set_value->IsCachePending(device_scale_factor_);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -249,7 +249,7 @@ StyleImage* ElementStyleResources::CachedStyleImage(
     return img_set_value->CachedImage(device_scale_factor_);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -315,7 +315,7 @@ void ElementStyleResources::LoadPendingSVGResources(
         LoadResourcesForFilter(builder.MutableFilterOperations(), document);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -468,7 +468,7 @@ void ElementStyleResources::LoadPendingImages(ComputedStyleBuilder& builder) {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

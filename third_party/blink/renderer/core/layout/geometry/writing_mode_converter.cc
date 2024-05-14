@@ -34,7 +34,7 @@ LogicalOffset WritingModeConverter::SlowToLogical(
       }
       return LogicalOffset(offset.top, offset.left);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LogicalOffset();
 }
 
@@ -71,7 +71,7 @@ PhysicalOffset WritingModeConverter::SlowToPhysical(
       }
       return PhysicalOffset(offset.block_offset, offset.inline_offset);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PhysicalOffset();
 }
 

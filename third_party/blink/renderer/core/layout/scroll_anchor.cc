@@ -93,7 +93,7 @@ static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
     case Corner::kTopRight:
       return rect.MaxXMinYCorner();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PhysicalOffset();
 }
 
@@ -119,7 +119,7 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     local_bounds.Unite(text->PhysicalLinesBoundingBox());
   } else {
     // Only LayoutBox and LayoutText are supported.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   gfx::RectF relative_bounds =

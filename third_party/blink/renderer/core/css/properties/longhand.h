@@ -42,7 +42,7 @@ class Longhand : public CSSProperty {
   virtual void ApplyValue(StyleResolverState&,
                           const CSSValue&,
                           ValueMode) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ApplyUnset(StyleResolverState& state) const {
     if (state.IsInheritedForUnset(*this)) {
@@ -55,7 +55,7 @@ class Longhand : public CSSProperty {
       bool,
       const ComputedStyle&,
       bool* is_current_color = nullptr) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Color();
   }
   virtual const CSSValue* InitialValue() const {

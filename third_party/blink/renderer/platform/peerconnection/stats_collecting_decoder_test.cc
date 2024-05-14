@@ -106,7 +106,7 @@ class MockDecodedImageCallback : public webrtc::DecodedImageCallback {
 
   // Implementation of webrtc::DecodedImageCallback.
   int32_t Decoded(webrtc::VideoFrame& decodedImage) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   void Decoded(webrtc::VideoFrame& decodedImage,

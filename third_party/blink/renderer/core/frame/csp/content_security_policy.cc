@@ -118,7 +118,7 @@ bool CheckHeaderTypeMatches(
           return header_type == ContentSecurityPolicyType::kEnforce;
       }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -231,7 +231,7 @@ static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
     case ContentSecurityPolicyType::kReport:
       return WebFeature::kContentSecurityPolicyReportOnly;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebFeature::kNumberOfFeatures;
 }
 
@@ -1500,11 +1500,11 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "worker-src";
 
     case CSPDirectiveName::Unknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

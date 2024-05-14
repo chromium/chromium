@@ -105,7 +105,7 @@ static bool IsPersistentSessionType(WebEncryptedMediaSessionType session_type) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -940,7 +940,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

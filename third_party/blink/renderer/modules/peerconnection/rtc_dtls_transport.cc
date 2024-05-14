@@ -40,7 +40,7 @@ String TransportStateToString(webrtc::DtlsTransportState state) {
     case webrtc::DtlsTransportState::kFailed:
       return String("failed");
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String("failed");
   }
 }

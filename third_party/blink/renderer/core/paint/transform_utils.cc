@@ -26,7 +26,7 @@ PhysicalRect ComputeReferenceBoxInternal(const PhysicalBoxFragment& fragment,
     case ETransformBox::kFillBox:
     case ETransformBox::kStrokeBox:
     case ETransformBox::kViewBox:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return fragment_reference_box;

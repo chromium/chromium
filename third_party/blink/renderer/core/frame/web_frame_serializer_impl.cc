@@ -475,7 +475,7 @@ void WebFrameSerializerImpl::BuildContentForNode(Node* node,
     case Node::kDocumentNode:
     case Node::kDocumentFragmentNode:
       // Should not exist.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     // Document type node can be in DOM?
     case Node::kDocumentTypeNode:

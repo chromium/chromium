@@ -215,7 +215,7 @@ float ScrollableArea::ScrollStep(ui::ScrollGranularity granularity,
     case ui::ScrollGranularity::kScrollByPercentage:
       return PercentageStep(orientation);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0.0f;
   }
 }
@@ -402,7 +402,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       UserScrollHelper(clamped_offset, behavior);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   std::move(run_scroll_complete_callbacks).Run(ScrollCompletionMode::kFinished);
   return true;
@@ -674,7 +674,7 @@ PhysicalRect ScrollableArea::ScrollIntoView(
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   // TODO(bokan): This should really be implemented here but ScrollAlignment is
   // in Core which is a dependency violation.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PhysicalRect();
 }
 

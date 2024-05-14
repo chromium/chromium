@@ -102,7 +102,7 @@ size_t TimeToSampleFrame(double time,
       frame = ceil(frame);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Just return the largest possible size_t value if necessary.

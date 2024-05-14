@@ -23,7 +23,7 @@ class CORE_EXPORT Variable : public Longhand {
 
   bool IsAffectedByAll() const override { return false; }
   CSSPropertyName GetCSSPropertyName() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CSSPropertyName(g_empty_atom);
   }
   const char* GetPropertyName() const override { return "variable"; }

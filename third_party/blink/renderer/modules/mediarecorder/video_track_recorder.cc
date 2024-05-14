@@ -108,7 +108,7 @@ libyuv::RotationMode MediaVideoRotationToRotationMode(
     case media::VIDEO_ROTATION_270:
       return libyuv::kRotate270;
   }
-  NOTREACHED() << rotation;
+  NOTREACHED_IN_MIGRATION() << rotation;
   return libyuv::kRotate0;
 }
 
@@ -331,7 +331,8 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
           }));
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
-      NOTREACHED() << "Unsupported codec=" << static_cast<int>(codec_id);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported codec=" << static_cast<int>(codec_id);
       return base::NullCallback();
   }
 }

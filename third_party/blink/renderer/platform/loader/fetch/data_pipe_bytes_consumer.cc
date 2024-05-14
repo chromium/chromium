@@ -100,7 +100,7 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
       return Result::kError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {

@@ -53,7 +53,7 @@ inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
     case LineBreak::kLoose:
       return LineBreakStrictness::kLoose;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LineBreakStrictness::kDefault;
 }
 
@@ -1019,7 +1019,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
     if (item.Type() == InlineItem::kOutOfFlowPositioned) {
       HandleOutOfFlowPositioned(item, line_info);
     } else if (item.Length()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // For other items with text (e.g., bidi controls), use their text to
       // determine the break opportunity.
       InlineItemResult* item_result = AddItem(item, line_info);
@@ -1032,7 +1032,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       DCHECK(!item_result->can_break_after);
       MoveToNextOf(item);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       MoveToNextOf(item);
     }
   }
@@ -2886,7 +2886,7 @@ void LineBreaker::HandleControlItem(const InlineItem& item,
       HandleEmptyText(item, line_info);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       HandleEmptyText(item, line_info);
       return;
   }
@@ -4040,7 +4040,7 @@ void LineBreaker::Rewind(unsigned new_end, LineInfo* line_info) {
     // we're in the infinite loop.
     if (current_.item_index == last_rewind_->from_item_index &&
         new_end == last_rewind_->to_index) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       state_ = LineBreakState::kDone;
       return;
     }

@@ -732,7 +732,7 @@ PositionTemplate<Strategy> PreviousPositionOfAlgorithm(
         return PositionTemplate<Strategy>(
             node, PreviousGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
     }
   }
 
@@ -788,14 +788,15 @@ PositionTemplate<Strategy> NextPositionOfAlgorithm(
       case PositionMoveType::kCodeUnit:
         return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
       case PositionMoveType::kBackwardDeletion:
-        NOTREACHED() << "BackwardDeletion is only available for prevPositionOf "
-                     << "functions.";
+        NOTREACHED_IN_MIGRATION()
+            << "BackwardDeletion is only available for prevPositionOf "
+            << "functions.";
         return PositionTemplate<Strategy>::EditingPositionOf(node, offset + 1);
       case PositionMoveType::kGraphemeCluster:
         return PositionTemplate<Strategy>::EditingPositionOf(
             node, NextGraphemeBoundaryOf(*node, offset));
       default:
-        NOTREACHED() << "Unhandled moveType: " << move_type;
+        NOTREACHED_IN_MIGRATION() << "Unhandled moveType: " << move_type;
     }
   }
 
@@ -1147,7 +1148,7 @@ HTMLElement* CreateDefaultParagraphElement(Document& document) {
       return MakeGarbageCollected<HTMLParagraphElement>(document);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1333,7 +1334,7 @@ Position ComputePositionForNodeRemoval(const Position& position,
         return position;
       return Position::InParentBeforeNode(node);
   }
-  NOTREACHED() << "We should handle all PositionAnchorType";
+  NOTREACHED_IN_MIGRATION() << "We should handle all PositionAnchorType";
   return position;
 }
 

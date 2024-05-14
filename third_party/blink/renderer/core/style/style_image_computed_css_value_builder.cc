@@ -78,7 +78,7 @@ CSSValue* StyleImageComputedCSSValueBuilder::Build(CSSValue* value) const {
     return image_gradient_value->ComputedCSSValue(style_, allow_visited_style_,
                                                   value_phase_);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return value;
 }
 

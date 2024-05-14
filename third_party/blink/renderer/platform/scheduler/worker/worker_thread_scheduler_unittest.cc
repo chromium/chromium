@@ -207,7 +207,7 @@ class WorkerThreadSchedulerTest : public testing::Test {
                                         String::FromUTF8(task)));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

@@ -103,7 +103,7 @@ class MIDIAccess final : public EventTarget,
   void DidStartSession(midi::mojom::Result) override {
     // This method is for MIDIAccess initialization: MIDIAccessInitializer
     // has the implementation.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void DidReceiveMIDIData(unsigned port_index,
                           const unsigned char* data,

@@ -869,7 +869,7 @@ static Range* FindStringBetweenPositions(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

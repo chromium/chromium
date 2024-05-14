@@ -551,7 +551,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // Init SSL, which will be needed by PeerConnection.
   if (!rtc::InitializeSSL()) {
     LOG(ERROR) << "Failed on InitializeSSL.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

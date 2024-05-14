@@ -52,7 +52,7 @@ void MathRadicalLayoutAlgorithm::GatherChildren(
       continue;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (Node().HasIndex()) {

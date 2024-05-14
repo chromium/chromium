@@ -145,7 +145,7 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
         /*policy_container=*/nullptr, outside_settings_object.CopyData(),
         resource_timing_notifier, *credentials_mode, reject_coep_unsafe_none);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

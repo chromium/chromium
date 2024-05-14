@@ -205,7 +205,7 @@ void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
     BlockId closest_block;
     if (i.value()) {
       // Shouldn't happen, we already tested that Contains(pos) is true.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       closest_block = pos;
     } else if (i == present_.begin()) {
       closest_block = -1;

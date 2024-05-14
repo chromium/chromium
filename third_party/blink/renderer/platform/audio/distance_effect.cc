@@ -51,7 +51,7 @@ double DistanceEffect::Gain(double distance) {
     case kModelExponential:
       return ExponentialGain(distance);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0.0;
 }
 

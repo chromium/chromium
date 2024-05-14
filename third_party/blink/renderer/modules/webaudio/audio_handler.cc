@@ -144,7 +144,7 @@ String AudioHandler::NodeTypeName() const {
     case kNodeTypeUnknown:
     case kNodeTypeEnd:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "UnknownNode";
   }
 }
@@ -240,7 +240,7 @@ String AudioHandler::GetChannelCountMode() {
     case kExplicit:
       return "explicit";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -258,7 +258,7 @@ void AudioHandler::SetChannelCountMode(const String& mode,
   } else if (mode == "explicit") {
     new_channel_count_mode_ = kExplicit;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (new_channel_count_mode_ != old_mode) {
@@ -276,7 +276,7 @@ String AudioHandler::ChannelInterpretation() {
     case AudioBus::kDiscrete:
       return "discrete";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -292,7 +292,7 @@ void AudioHandler::SetChannelInterpretation(const String& interpretation,
   } else if (interpretation == "discrete") {
     new_channel_interpretation_ = AudioBus::kDiscrete;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (new_channel_interpretation_ != old_mode) {

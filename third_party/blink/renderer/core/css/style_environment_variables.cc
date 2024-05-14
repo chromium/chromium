@@ -102,7 +102,7 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const AtomicString StyleEnvironmentVariables::GetVariableName(
@@ -131,7 +131,7 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

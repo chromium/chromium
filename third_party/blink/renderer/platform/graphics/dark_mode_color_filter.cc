@@ -180,7 +180,7 @@ std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
     case DarkModeInversionAlgorithm::kInvertLightnessLAB:
       return std::make_unique<LABColorFilter>();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 DarkModeColorFilter::~DarkModeColorFilter() {}

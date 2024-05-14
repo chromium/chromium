@@ -413,13 +413,13 @@ V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions cache_options,
     case mojom::blink::V8CacheOptions::kNone:
       // Shouldn't happen, as this is handled above.
       // Case is here so that compiler can check all cases are handled.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
   // All switch branches should return and we should never get here.
   // But some compilers aren't sure, hence this default.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::make_tuple(no_code_cache_compile_options,
                          ProduceCacheOptions::kNoProduceCache,
                          v8::ScriptCompiler::kNoCacheNoReason);

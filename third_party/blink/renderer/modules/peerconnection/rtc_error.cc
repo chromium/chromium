@@ -34,7 +34,7 @@ String RTCErrorDetailToString(webrtc::RTCErrorDetailType detail) {
       return "hardware-encoder-error";
     default:
       // Included to ease introduction of new errors at the webrtc layer.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

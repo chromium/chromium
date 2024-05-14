@@ -167,7 +167,7 @@ String SerializeDirection(webrtc::RtpTransceiverDirection direction) {
     case webrtc::RtpTransceiverDirection::kStopped:
       return "'stopped'";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }
@@ -191,7 +191,7 @@ String SerializeTransceiverKind(const String& indent,
   } else if (kind == MediaStreamSource::StreamType::kTypeVideo) {
     result.Append("'video'");
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   result.Append(",\n");
   return result.ToString();
@@ -343,7 +343,7 @@ String SerializeIceTransportType(
       transport_type = "noHost";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return transport_type;
 }
@@ -362,7 +362,7 @@ String SerializeBundlePolicy(
       policy_str = "max-compat";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return policy_str;
 }
@@ -378,7 +378,7 @@ String SerializeRtcpMuxPolicy(
       policy_str = "require";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return policy_str;
 }
@@ -420,7 +420,7 @@ const char* GetTransceiverUpdatedReasonString(
     case PeerConnectionTracker::TransceiverUpdatedReason::kSetRemoteDescription:
       return "setRemoteDescription";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1048,7 +1048,7 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
       update_type = "createAnswer";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   update_type = update_type + callback_type;

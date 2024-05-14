@@ -278,7 +278,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
         return PaintImage::DecodingMode::kAsync;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PaintImage::DecodingMode::kUnspecified;
   }
 

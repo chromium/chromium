@@ -606,7 +606,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         }
         break;
       case BytesConsumer::Result::kShouldWait:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case BytesConsumer::Result::kError:
         GetError();

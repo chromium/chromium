@@ -445,7 +445,7 @@ IDBObjectStore* IDBCursor::EffectiveObjectStore() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -456,7 +456,7 @@ bool IDBCursor::IsDeleted() const {
     case Source::ContentType::kIDBObjectStore:
       return source_->GetAsIDBObjectStore()->IsDeleted();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -472,7 +472,7 @@ mojom::IDBCursorDirection IDBCursor::StringToDirection(
   if (direction_string == indexed_db_names::kPrevunique)
     return mojom::IDBCursorDirection::PrevNoDuplicate;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::IDBCursorDirection::Next;
 }
 
@@ -504,7 +504,7 @@ const String& IDBCursor::direction() const {
       return indexed_db_names::kPrevunique;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return indexed_db_names::kNext;
   }
 }

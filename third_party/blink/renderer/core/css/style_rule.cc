@@ -252,7 +252,7 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
       To<StyleRulePositionTry>(this)->~StyleRulePositionTry();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 StyleRuleBase* StyleRuleBase::Copy() const {
@@ -281,7 +281,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleSupports>(this)->Copy();
     case kImport:
       // FIXME: Copy import rules.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case kKeyframes:
       return To<StyleRuleKeyframes>(this)->Copy();
@@ -294,7 +294,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kCharset:
     case kKeyframe:
     case kFunction:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case kContainer:
       return To<StyleRuleContainer>(this)->Copy();
@@ -307,7 +307,7 @@ StyleRuleBase* StyleRuleBase::Copy() const {
     case kPositionTry:
       return To<StyleRulePositionTry>(this)->Copy();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -403,7 +403,7 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kCharset:
     case kPageMargin:
     case kFunction:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
   if (parent_rule) {

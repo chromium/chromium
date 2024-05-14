@@ -298,7 +298,7 @@ int ComputeAutocapitalizeFlags(const Element* element) {
       flags |= kWebTextInputFlagAutocapitalizeSentences;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return flags;
@@ -491,7 +491,7 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
                                                    kTextEventInputComposition);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

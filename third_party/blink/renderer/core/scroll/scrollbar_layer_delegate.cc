@@ -199,7 +199,7 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

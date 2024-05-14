@@ -268,7 +268,7 @@ Vector<PhysicalRect> BuildBackplate(InlineCursor* descendants,
       }
       continue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (!backplates.current_backplate.IsEmpty())
@@ -729,7 +729,7 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   // a fragment with inline children, without a paint fragment. See:
   // http://crbug.com/1022545
   if (!items_ || layout_object->NeedsLayout()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1572,7 +1572,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // really layout-clean.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       cursor->MoveToNextSkippingChildren();
       continue;
     }
@@ -1596,7 +1596,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
                            &line_box_cursor);
           cursor->MoveToNextSkippingChildren();
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           cursor->MoveToNext();
         }
         break;
@@ -1700,7 +1700,7 @@ void BoxFragmentPainter::PaintLineBoxChildItems(
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -2483,7 +2483,7 @@ bool BoxFragmentPainter::HitTestItemsChildren(
     if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // really layout-clean.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       cursor.MoveToPreviousSibling();
       continue;
     }
@@ -2516,7 +2516,7 @@ bool BoxFragmentPainter::HitTestItemsChildren(
       if (HitTestChildBoxItem(hit_test, container, *item, cursor))
         return true;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     cursor.MoveToPreviousSibling();

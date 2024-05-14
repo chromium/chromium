@@ -100,7 +100,7 @@ const char* ViewTransition::StateToString(State state) {
     case State::kTransitionStateCallbackDispatched:
       return "TransitionStateCallbackDispatched";
   };
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -354,7 +354,7 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kTimedOut:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -383,7 +383,7 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
     case State::kTransitionStateCallbackDispatched:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

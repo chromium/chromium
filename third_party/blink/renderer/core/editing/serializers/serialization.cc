@@ -140,7 +140,7 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
   }
 };

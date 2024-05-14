@@ -72,7 +72,7 @@ const String GetMessageForResponseError(ServiceWorkerResponseError error,
           "is not no-cors";
       break;
     case ServiceWorkerResponseError::kResponseTypeNotBasicOrDefault:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ServiceWorkerResponseError::kBodyUsed:
       error_message =

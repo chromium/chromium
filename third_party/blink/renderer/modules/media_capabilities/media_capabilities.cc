@@ -476,7 +476,7 @@ WebMediaConfiguration ToWebMediaConfiguration(
   else if (configuration->type() == "transmission")
     web_configuration.type = MediaConfigurationType::kTransmission;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   if (configuration->hasAudio()) {
     web_configuration.audio_configuration =
@@ -568,7 +568,7 @@ void ParseDynamicRangeConfigurations(
     } else if (hdr_metadata_type == kSmpteSt209440HdrMetadataType) {
       *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_40;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   } else {
     *hdr_metadata = gfx::HdrMetadataType::kNone;
@@ -584,7 +584,7 @@ void ParseDynamicRangeConfigurations(
     } else if (color_gamut == kRec2020ColorGamut) {
       color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -598,7 +598,7 @@ void ParseDynamicRangeConfigurations(
     } else if (transfer_function == kHlgTransferFunction) {
       color_space->transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

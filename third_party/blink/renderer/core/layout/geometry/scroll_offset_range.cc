@@ -38,7 +38,7 @@ PhysicalScrollRange LogicalScrollRange::SlowToPhysical(
     case WritingMode::kSidewaysLr:
     case WritingMode::kSidewaysRl:
       // Blink doesn't support these writing modes yet.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PhysicalScrollRange();
   }
 }

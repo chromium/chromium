@@ -356,7 +356,7 @@ NavigationBodyLoader::~NavigationBodyLoader() {
 void NavigationBodyLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NavigationBodyLoader::OnReceiveResponse(
@@ -364,21 +364,21 @@ void NavigationBodyLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NavigationBodyLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NavigationBodyLoader::OnUploadProgress(int64_t current_position,
                                             int64_t total_size,
                                             OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {

@@ -23,7 +23,7 @@ bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(
       *out = liburlpattern::Modifier::kNone;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -67,7 +67,7 @@ UnionTraits<blink::mojom::PatternTemplateDataView,
     case liburlpattern::PartType::kSegmentWildcard:
       return blink::mojom::PatternTemplate::Tag::kSegmentWildcard;
     case liburlpattern::PartType::kRegex:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return blink::mojom::PatternTemplate::Tag::kFixed;
   }
 }

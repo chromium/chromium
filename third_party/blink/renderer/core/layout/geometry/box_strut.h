@@ -305,7 +305,7 @@ inline PhysicalBoxStrut BoxStrut::ConvertToPhysical(
       return PhysicalBoxStrut(direction_end, block_end, direction_start,
                               block_start);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PhysicalBoxStrut();
   }
 }

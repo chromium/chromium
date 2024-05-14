@@ -73,7 +73,7 @@ CSSStyleDeclaration* CSSKeyframeRule::style() const {
 
 void CSSKeyframeRule::Reattach(StyleRuleBase*) {
   // No need to reattach, the underlying data is shareable on mutation.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CSSKeyframeRule::Trace(Visitor* visitor) const {

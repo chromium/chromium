@@ -202,7 +202,7 @@ void RecordUma(SubCaptureTarget::Type type,
     base::UmaHistogramEnumeration(
         "Media.ElementCapture.ProduceTarget.Function.Result", result);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -222,7 +222,7 @@ void RecordUma(SubCaptureTarget::Type type, ProduceTargetPromiseResult result) {
     base::UmaHistogramEnumeration(
         "Media.ElementCapture.ProduceTarget.Promise.Result", result);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

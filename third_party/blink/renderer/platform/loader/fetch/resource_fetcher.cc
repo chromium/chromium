@@ -181,7 +181,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       return ResourceLoadPriority::kVeryLow;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ResourceLoadPriority::kUnresolved;
 }
 
@@ -428,7 +428,7 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
     case ResourceType::kDictionary:
       return mojom::blink::RequestContextType::SUBRESOURCE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::blink::RequestContextType::SUBRESOURCE;
 }
 
@@ -461,7 +461,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
     case ResourceType::kDictionary:
       return network::mojom::RequestDestination::kEmpty;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::RequestDestination::kEmpty;
 }
 
@@ -1728,7 +1728,7 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
 
   switch (status) {
     case Resource::MatchStatus::kOk:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Resource::MatchStatus::kUnknownFailure:
       builder.Append("due to an unknown reason.");
@@ -1851,7 +1851,7 @@ const char* ResourceFetcher::GetNameFor(RevalidationPolicy policy) {
     case RevalidationPolicy::kLoad:
       return "load";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::pair<ResourceFetcher::RevalidationPolicy, const char*>
@@ -2563,7 +2563,7 @@ void ResourceFetcher::RemoveResourceLoader(ResourceLoader* loader) {
   else if (non_blocking_loaders_.Contains(loader))
     non_blocking_loaders_.erase(loader);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   if (loaders_.empty() && non_blocking_loaders_.empty())
     keepalive_loaders_task_handle_.Cancel();

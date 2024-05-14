@@ -150,7 +150,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
         // https://w3c.github.io/mathml-core/#prescripts-and-tensor-indices-mmultiscripts
         if (IsPrescriptDelimiter(block_child)) {
           if (!number_of_scripts_is_even || *prescripts) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             return;
           }
           *first_prescript_index = sub_sup_pairs->size() - 1;
@@ -169,7 +169,7 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
         continue;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   DCHECK(number_of_scripts_is_even);

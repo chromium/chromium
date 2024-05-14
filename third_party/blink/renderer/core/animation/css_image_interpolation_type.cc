@@ -29,7 +29,7 @@ const StyleImage* GetStyleImage(const CSSProperty& property,
     case CSSPropertyID::kWebkitMaskBoxImageSource:
       return style.MaskBoxImageSource();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -300,7 +300,7 @@ void CSSImageInterpolationType::ApplyStandardPropertyValue(
       state.StyleBuilder().SetMaskBoxImageSource(image);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

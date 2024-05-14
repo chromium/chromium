@@ -218,7 +218,7 @@ const CSSValue* CustomProperty::ParseSingleValueFromRange(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

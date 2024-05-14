@@ -41,14 +41,14 @@ void FakeBlobURLStore::ResolveAsURLLoaderFactory(
     const KURL&,
     mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>,
     ResolveAsURLLoaderFactoryCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlobURLStore::ResolveForNavigation(
     const KURL&,
     mojo::PendingReceiver<mojom::blink::BlobURLToken>,
     ResolveForNavigationCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

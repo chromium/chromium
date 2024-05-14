@@ -235,7 +235,7 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
       ts << "[type=RADIAL-GRADIENT]";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
@@ -400,7 +400,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return ts;
 }

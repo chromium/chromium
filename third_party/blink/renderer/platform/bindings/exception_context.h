@@ -79,7 +79,7 @@ class PLATFORM_EXPORT ExceptionContext final {
       case ExceptionContextType::kNamedPropertyQuery:
         // Named and indexed property interceptors go through the constructor
         // variant that takes a const String&, never this one.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case ExceptionContextType::kUnknown:
         break;

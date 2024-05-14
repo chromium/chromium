@@ -61,7 +61,7 @@ class CORE_EXPORT DOMMatrixReadOnly : public ScriptWrappable {
           sequence[15]);
       is2d_ = false;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   ~DOMMatrixReadOnly() override;

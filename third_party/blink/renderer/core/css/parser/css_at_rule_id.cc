@@ -239,7 +239,7 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
     case CSSAtRuleID::kCSSAtRuleFunction:
       return "@function";
     case CSSAtRuleID::kCSSAtRuleInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   };
 }
@@ -318,7 +318,7 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
     case CSSAtRuleID::kCSSAtRuleFunction:
       return WebFeature::kCSSFunctions;
     case CSSAtRuleID::kCSSAtRuleInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

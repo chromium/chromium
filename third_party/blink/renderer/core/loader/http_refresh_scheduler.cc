@@ -59,7 +59,7 @@ static ClientNavigationReason ToReason(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ClientNavigationReason::kMetaTagRefresh;
 }
 

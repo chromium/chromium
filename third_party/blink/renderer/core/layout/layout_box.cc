@@ -1455,7 +1455,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
     case EFillBox::kContent:
       return PhysicalContentBoxRect();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return PhysicalRect();
 }
@@ -3334,7 +3334,7 @@ void LayoutBox::SetScrollableOverflowFromLayoutResults() {
         offset_adjust = {consumed_block_size, LayoutUnit()};
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

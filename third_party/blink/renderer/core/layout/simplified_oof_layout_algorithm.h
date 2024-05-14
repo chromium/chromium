@@ -31,7 +31,7 @@ class CORE_EXPORT SimplifiedOofLayoutAlgorithm
 
   const LayoutResult* Layout();
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MinMaxSizesResult();
   }
 

@@ -102,7 +102,7 @@ cc::ScrollState CreateScrollStateForGesture(const WebGestureEvent& event) {
       scroll_state_data.is_ending = true;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   scroll_state_data.is_direct_manipulation =
@@ -130,7 +130,7 @@ ui::ScrollInputType GestureScrollInputType(WebGestureDevice device) {
     case WebGestureDevice::kScrollbar:
       return ui::ScrollInputType::kScrollbar;
     case WebGestureDevice::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ui::ScrollInputType::kMaxValue;
   }
 }
@@ -145,7 +145,7 @@ cc::SnapFlingController::GestureScrollType GestureScrollEventType(
     case WebInputEvent::Type::kGestureScrollEnd:
       return cc::SnapFlingController::GestureScrollType::kEnd;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return cc::SnapFlingController::GestureScrollType::kBegin;
   }
 }
@@ -184,7 +184,7 @@ cc::ScrollBeginThreadState RecordScrollingThread(
     // TODO(crbug.com/1101502): Add support for
     // Renderer4.ScrollingThread.Scrollbar
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return status;
 }
@@ -783,7 +783,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
     // the renderer.
     case WebInputEvent::Type::kGestureFlingStart:
     case WebInputEvent::Type::kGestureFlingCancel:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     default:
@@ -1021,7 +1021,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
       result = DROP_EVENT;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1231,7 +1231,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HitTestTouchEvent(
         result = DROP_EVENT;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         result = DROP_EVENT;
         break;
     }

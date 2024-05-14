@@ -86,7 +86,7 @@ bool AdConfigMaybePromiseTraitsHelper<View, Wrapper>::Read(View in,
       return true;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

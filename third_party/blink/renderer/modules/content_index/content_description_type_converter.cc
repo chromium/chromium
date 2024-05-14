@@ -25,7 +25,7 @@ blink::mojom::ContentCategory GetContentCategory(const WTF::String& category) {
   if (category == "audio")
     return blink::mojom::ContentCategory::AUDIO;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::ContentCategory::NONE;
 }
 

@@ -95,7 +95,7 @@ bool IsActive(const Animation::AnimationPlayState& state) {
       return true;
     default:
       // kUnset and kFinished are not used in WorkletAnimation.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -125,7 +125,7 @@ AnimationTimeline* ConvertAnimationTimeline(
     case V8UnionDocumentTimelineOrScrollTimeline::ContentType::kScrollTimeline:
       return timeline->GetAsScrollTimeline();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

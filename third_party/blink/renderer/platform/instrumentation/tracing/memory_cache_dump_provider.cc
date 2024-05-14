@@ -32,7 +32,7 @@ bool MemoryCacheDumpProvider::OnMemoryDump(
       level = blink::WebMemoryDumpLevelOfDetail::kDetailed;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

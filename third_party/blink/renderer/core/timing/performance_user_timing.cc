@@ -183,7 +183,7 @@ double UserTiming::GetTimeOrFindMarkTime(
           AtomicString(mark_or_time->GetAsString()), exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

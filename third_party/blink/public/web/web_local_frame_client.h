@@ -717,12 +717,12 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Loading --------------------------------------------------------------
 
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   virtual blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

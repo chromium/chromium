@@ -43,14 +43,14 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
   // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CreateStream(
       mojo::ScopedDataPipeConsumerHandle output_consumer,
       mojo::ScopedDataPipeProducerHandle input_producer,
       base::OnceCallback<void(bool, uint32_t)> callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void AcceptBidirectionalStream(

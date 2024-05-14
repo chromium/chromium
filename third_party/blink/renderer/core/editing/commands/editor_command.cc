@@ -288,7 +288,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
       frame.GetEditor().ApplyParagraphStyle(style, input_type);
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -437,7 +437,7 @@ static bool ExecuteDelete(LocalFrame& frame,
               : 0);
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -669,7 +669,7 @@ static bool ExecuteForwardDelete(LocalFrame& frame,
         return false;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1179,7 +1179,7 @@ static bool EnabledDelete(LocalFrame& frame,
       // range if non-empty, otherwise removes a character
       return EnabledInEditableText(frame, event, source);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1369,7 +1369,7 @@ static String ValueDefaultParagraphSeparator(const EditorInternalCommand&,
       return html_names::kPTag.LocalName();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -2121,7 +2121,7 @@ bool EditorCommand::IsSupported() const {
     case EditorCommandSource::kDOM:
       return command_->is_supported_from_dom(frame_);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

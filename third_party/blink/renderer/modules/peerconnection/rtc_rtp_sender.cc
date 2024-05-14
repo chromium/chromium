@@ -429,7 +429,7 @@ double PriorityToDouble(const WTF::String& priority) {
   } else if (priority == "high") {
     result = webrtc::kDefaultBitratePriority * kPriorityWeightHigh;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return result;
 }
@@ -459,7 +459,7 @@ webrtc::Priority PriorityToEnum(const WTF::String& priority) {
   } else if (priority == "high") {
     result = webrtc::Priority::kHigh;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return result;
 }
@@ -490,7 +490,7 @@ ToRtpParameters(ExecutionContext* context,
       degradation_preference =
           webrtc::DegradationPreference::MAINTAIN_RESOLUTION;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -750,7 +750,7 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
         degradation_preference_str = "balanced";
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     parameters->setDegradationPreference(degradation_preference_str);
   }
@@ -905,7 +905,7 @@ void RTCRtpSender::SetTrack(MediaStreamTrack* track) {
     } else if (kind_ != track->kind()) {
       LOG(ERROR) << "Trying to set track to a different kind: Old " << kind_
                  << " new " << track->kind();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

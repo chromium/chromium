@@ -199,7 +199,7 @@ Vector<Length> NormalizeMargins(const Vector<Length>& margins) {
       normalized_margins[3] = margins[3];
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

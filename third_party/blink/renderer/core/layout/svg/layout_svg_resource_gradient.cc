@@ -210,7 +210,7 @@ GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(
       return kSpreadMethodRepeat;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSpreadMethodPad;
 }
 

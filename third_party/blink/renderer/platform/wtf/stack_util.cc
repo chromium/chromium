@@ -126,8 +126,9 @@ void* GetStackStart() {
   // See https://code.google.com/p/nativeclient/issues/detail?id=3431.
   return __libc_stack_end;
 #else
-  NOTREACHED() << "pthread_getattr_np() failed for stack end and no "
-                  "glibc __libc_stack_end is present.";
+  NOTREACHED_IN_MIGRATION()
+      << "pthread_getattr_np() failed for stack end and no "
+         "glibc __libc_stack_end is present.";
   return nullptr;
 #endif
 #elif BUILDFLAG(IS_APPLE)

@@ -136,7 +136,7 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     case kPseudoIdViewTransitionNew:
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -171,7 +171,7 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
     case kPseudoIdMarker:
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

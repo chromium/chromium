@@ -70,7 +70,7 @@ const AtomicString& MouseEventNameForPointerEventInputType(
     case WebInputEvent::Type::kPointerMove:
       return event_type_names::kMousemove;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_atom;
   }
 }

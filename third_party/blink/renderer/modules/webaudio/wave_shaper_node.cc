@@ -149,7 +149,7 @@ void WaveShaperNode::setOversample(const String& type) {
   } else if (type == "4x") {
     GetWaveShaperProcessor()->SetOversample(WaveShaperProcessor::kOverSample4x);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -164,7 +164,7 @@ String WaveShaperNode::oversample() const {
     case WaveShaperProcessor::kOverSample4x:
       return "4x";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "none";
   }
 }

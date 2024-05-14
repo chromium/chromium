@@ -38,7 +38,7 @@ media::VideoFrame::ID GetFrameId(
 }
 
 media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media::VideoFrame::ID();
 }
 

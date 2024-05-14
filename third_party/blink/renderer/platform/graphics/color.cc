@@ -413,7 +413,7 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
   CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
 
   if (!SubstituteMissingParameters(color1, color2)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Color();
   }
 
@@ -507,7 +507,7 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       return gfx::SRGBToXYZD50(r, g, b);
     }
     case ColorSpace::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::tuple<float, float, float>();
   }
 }
@@ -970,7 +970,7 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kHWB:
       return "HWB";
     case ColorSpace::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "None";
   }
 }

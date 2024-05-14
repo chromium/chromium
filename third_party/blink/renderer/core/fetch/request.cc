@@ -843,7 +843,7 @@ Request* Request::Create(ScriptState* script_state,
                     exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -901,7 +901,7 @@ std::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
     return network::mojom::CredentialsMode::kSameOrigin;
   if (credentials_mode == "include")
     return network::mojom::CredentialsMode::kInclude;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -965,7 +965,7 @@ String Request::mode() const {
     case network::mojom::RequestMode::kNavigate:
       return "navigate";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -982,7 +982,7 @@ String Request::credentials() const {
     case network::mojom::CredentialsMode::kInclude:
       return "include";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1003,10 +1003,10 @@ String Request::cache() const {
       return "only-if-cached";
     case mojom::blink::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict:
     case mojom::blink::FetchCacheMode::kUnspecifiedForceCacheMiss:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1020,7 +1020,7 @@ String Request::redirect() const {
     case network::mojom::RedirectMode::kManual:
       return "manual";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1042,7 +1042,7 @@ String Request::targetAddressSpace() const {
     case network::mojom::IPAddressSpace::kUnknown:
       return "unknown";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 

@@ -215,14 +215,14 @@ class CORE_EXPORT ScrollbarTheme {
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
   virtual gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Size();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchThumbAperture(const Scrollbar&) const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Rect();
   }
 

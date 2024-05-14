@@ -81,7 +81,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -127,7 +127,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NodeListSearchRoot::kOwnerNode;
 }
 
@@ -177,7 +177,7 @@ static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kDoNotInvalidateOnAttributeChanges;
 }
 
@@ -281,7 +281,7 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kRadioNodeListType:
     case kRadioImgNodeListType:
     case kLabelsNodeListType:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -339,7 +339,7 @@ static inline IsMatch<HTMLCollectionType> MakeIsMatch(
 }
 
 Element* HTMLCollection::VirtualItemAfter(Element*) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

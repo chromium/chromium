@@ -192,7 +192,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kRelativeChild:
       case CSSSelector::kRelativeDirectAdjacent:
       case CSSSelector::kRelativeIndirectAdjacent:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     relation = current->Relation();

@@ -69,7 +69,7 @@ class AXInlineTextBox final : public AXObject {
   AXObject* PreviousOnLine() const override;
   void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
   ax::mojom::blink::Role NativeRoleIgnoringAria() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ax::mojom::blink::Role::kInlineTextBox;
   }
   void ClearChildren() override;

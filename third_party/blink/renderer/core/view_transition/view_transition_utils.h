@@ -156,7 +156,7 @@ class CORE_EXPORT ViewTransitionUtils {
       case kPseudoIdViewTransitionNew:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

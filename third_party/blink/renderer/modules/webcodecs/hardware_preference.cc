@@ -18,7 +18,7 @@ HardwarePreference StringToHardwarePreference(const String& value) {
   if (value == "prefer-software")
     return HardwarePreference::kPreferSoftware;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return HardwarePreference::kNoPreference;
 }
 

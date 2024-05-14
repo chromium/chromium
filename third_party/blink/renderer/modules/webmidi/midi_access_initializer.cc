@@ -81,13 +81,13 @@ void MIDIAccessInitializer::DidSetInputPortState(unsigned port_index,
   // didSetInputPortState() is not allowed to call before didStartSession()
   // is called. Once didStartSession() is called, MIDIAccessorClient methods
   // are delegated to MIDIAccess. See constructor of MIDIAccess.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MIDIAccessInitializer::DidSetOutputPortState(unsigned port_index,
                                                   PortState state) {
   // See comments on didSetInputPortState().
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MIDIAccessInitializer::DidStartSession(Result result) {
@@ -96,7 +96,7 @@ void MIDIAccessInitializer::DidStartSession(Result result) {
   // SecurityError is handled in onPermission(s)Updated().
   switch (result) {
     case Result::NOT_INITIALIZED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case Result::OK:
       resolver_->Resolve(MakeGarbageCollected<MIDIAccess>(

@@ -38,7 +38,7 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MinMaxSizesResult();
 }
 

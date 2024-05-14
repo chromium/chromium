@@ -74,7 +74,7 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
     Keyframe::PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const final {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
     Interpolation* CreateInterpolation(

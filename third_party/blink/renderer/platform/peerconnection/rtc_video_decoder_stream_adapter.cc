@@ -167,7 +167,7 @@ class RTCVideoDecoderStreamAdapter::InternalDemuxerStream
   }
 
   media::AudioDecoderConfig audio_decoder_config() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::AudioDecoderConfig();
   }
 

@@ -84,7 +84,7 @@ media::AudioParameters GetMixerOutputParams(
     case media::AudioLatency::Type::kExactMS:
     // TODO(olka): add support when WebAudio requires it.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   DCHECK_NE(output_buffer_size, 0);

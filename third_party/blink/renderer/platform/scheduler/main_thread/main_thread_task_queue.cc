@@ -73,10 +73,10 @@ QueueName MainThreadTaskQueue::NameForQueueType(
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
       return QueueName::IPC_TRACKING_FOR_CACHED_PAGES_TQ;
     case MainThreadTaskQueue::QueueType::kCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return QueueName::UNKNOWN_TQ;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return QueueName::UNKNOWN_TQ;
 }
 
@@ -107,10 +107,10 @@ bool MainThreadTaskQueue::IsPerFrameTaskQueue(
     case MainThreadTaskQueue::QueueType::kIPCTrackingForCachedPages:
       return false;
     case MainThreadTaskQueue::QueueType::kCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

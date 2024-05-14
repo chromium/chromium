@@ -219,7 +219,7 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kStopped);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 

@@ -117,7 +117,7 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
         resolver_script_state->GetIsolate(),
         static_cast<DOMExceptionCode>(exception_code), error_details));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     resolver_->Reject(V8ThrowDOMException::CreateOrDie(
         resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
         error_details));

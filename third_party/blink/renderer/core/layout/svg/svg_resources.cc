@@ -80,7 +80,7 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (foreign_object_quirk == ForeignObjectQuirk::kEnabled &&

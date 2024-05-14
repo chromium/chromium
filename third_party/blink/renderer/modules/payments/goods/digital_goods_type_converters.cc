@@ -35,7 +35,7 @@ WTF::String TypeConverter<WTF::String, CreateDigitalGoodsResponseCode>::Convert(
     case CreateDigitalGoodsResponseCode::kUnsupportedContext:
       return "unsupported context";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 blink::ItemDetails* TypeConverter<blink::ItemDetails*, ItemDetailsPtr>::Convert(
@@ -105,7 +105,7 @@ WTF::String TypeConverter<WTF::String, BillingResponseCode>::Convert(
     case BillingResponseCode::kClientAppError:
       return "clientAppError";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 blink::PurchaseDetails*

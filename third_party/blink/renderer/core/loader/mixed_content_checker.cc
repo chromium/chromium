@@ -167,7 +167,7 @@ const char* RequestContextName(mojom::blink::RequestContextType context) {
     case mojom::blink::RequestContextType::XSLT:
       return "XSLT";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "resource";
 }
 
@@ -398,7 +398,7 @@ void MixedContentChecker::Count(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   UseCounter::Count(source->GetDocument(), feature);
@@ -536,7 +536,7 @@ bool MixedContentChecker::ShouldBlockFetch(
         local_frame_host.DidDisplayInsecureContent();
       break;
     case mojom::blink::MixedContentContextType::kNotMixedContent:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   };
 
@@ -1036,7 +1036,7 @@ void MixedContentChecker::UpgradeInsecureRequest(
                 WebFeature::kUpgradeInsecureRequestsUpgradedRequestBlockable);
             break;
           case mojom::blink::MixedContentContextType::kNotMixedContent:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }
     }

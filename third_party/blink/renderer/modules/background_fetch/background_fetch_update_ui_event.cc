@@ -130,7 +130,7 @@ void BackgroundFetchUpdateUIEvent::DidUpdateUI(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

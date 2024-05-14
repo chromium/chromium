@@ -147,7 +147,7 @@ String AudioParamTimeline::EventToString(const ParamEvent& event) const {
     // Fall through; we should never have to print out the internal
     // `kCancelValues` or `kSetValueCurveEnd` event.
     case ParamEvent::kLastType:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   };
 
@@ -764,7 +764,7 @@ bool AudioParamTimeline::HasValues(size_t current_frame,
                (current_time < curve_end_time);
       }
       case ParamEvent::kLastType:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return true;
     }
   }
@@ -928,7 +928,7 @@ void AudioParamTimeline::CancelAndHoldAtTime(double cancel_time,
       // Nothing needs to be done for a SetValue or CancelValues event.
       break;
     case ParamEvent::kLastType:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1187,7 +1187,7 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
           break;
         }
         case ParamEvent::kLastType:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -1478,11 +1478,11 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
               // createCancelValuesEvent doesn't allow them (SetValue,
               // SetTarget, CancelValues) or cancelScheduledValues()
               // doesn't create such an event (SetValueCurve).
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
             case ParamEvent::kLastType:
               // Illegal event type.
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
           }
 
@@ -1499,7 +1499,7 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
         // followed by CancelValues.
         break;
       case ParamEvent::kLastType:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

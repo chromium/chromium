@@ -179,7 +179,7 @@ void AutoplayUmaHelper::Invoke(ExecutionContext* execution_context,
   else if (event->type() == event_type_names::kPause)
     HandlePauseEvent();
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 void AutoplayUmaHelper::HandlePlayingEvent() {

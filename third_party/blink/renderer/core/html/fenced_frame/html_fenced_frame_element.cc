@@ -63,7 +63,7 @@ String DeprecatedFencedFrameModeToString(
       return "opaque-ads";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

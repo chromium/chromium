@@ -111,7 +111,7 @@ v8::Local<v8::Object> ObservableArrayExoticObjectImpl::AssociateWithWrapper(
     v8::Local<v8::Object> wrapper) {
   // The proxy object does not have an internal field and cannot be associated
   // with a Blink object directly.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

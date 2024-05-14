@@ -175,7 +175,7 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
   } else if (name == html_names::kClassidAttr) {
     needs_invalidation = true;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     needs_invalidation = false;
   }
   SetNeedsPluginUpdate(true);

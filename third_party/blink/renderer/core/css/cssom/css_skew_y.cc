@@ -47,7 +47,7 @@ CSSSkewY* CSSSkewY::FromCSSValue(const CSSFunctionValue& value) {
     return CSSSkewY::Create(
         CSSNumericValue::FromCSSValue(To<CSSPrimitiveValue>(value.Item(0))));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -56,7 +56,7 @@ bool ComputeLockPendingUserGestureRequired(const Document& document) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

@@ -340,7 +340,7 @@ void RecordPreferredDisplaySurfaceConstraintUma(
       RecordUma(GetDisplayMediaConstraintsDisplaySurface::kTab);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RecordSuppressLocalAudioPlaybackConstraintUma(
@@ -378,7 +378,7 @@ MediaConstraints ParseOptions(
       }
       return constraints;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MediaConstraints();
 }
 
@@ -830,7 +830,7 @@ void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
         PeerConnectionTracker::From(*window).TrackGetDisplayMediaSuccess(
             this, stream);
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -856,7 +856,7 @@ void UserMediaRequest::FailConstraint(const String& constraint_name,
       PeerConnectionTracker::From(*window).TrackGetDisplayMediaFailure(
           this, "OverConstrainedError", message);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   // After this call, the execution context may be invalid.
@@ -910,7 +910,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       result_enum = UserMediaRequestResult::kSecurityError;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
                               IdentifiabilityBenignStringToken(message));
@@ -924,7 +924,7 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       PeerConnectionTracker::From(*window).TrackGetDisplayMediaFailure(
           this, DOMException::GetErrorName(exception_code), message);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

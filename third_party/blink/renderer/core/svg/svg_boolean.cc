@@ -51,7 +51,7 @@ SVGParsingError SVGBoolean::SetValueAsString(const String& value) {
 }
 
 void SVGBoolean::Add(const SVGPropertyBase*, const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGBoolean::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
@@ -61,7 +61,7 @@ void SVGBoolean::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                         const SVGPropertyBase* to,
                                         const SVGPropertyBase*,
                                         const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGBoolean::CalculateDistance(const SVGPropertyBase*,

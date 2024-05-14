@@ -122,15 +122,15 @@ void OfflineAudioDestinationHandler::StartRendering() {
 
 void OfflineAudioDestinationHandler::StopRendering() {
   // offline audio rendering CANNOT BE stopped by JavaScript.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::Pause() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::Resume() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflineAudioDestinationHandler::InitializeOfflineRenderThread(

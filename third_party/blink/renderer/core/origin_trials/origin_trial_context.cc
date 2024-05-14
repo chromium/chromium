@@ -130,7 +130,7 @@ std::ostream& operator<<(std::ostream& stream, OriginTrialTokenStatus status) {
     case OriginTrialTokenStatus::kUnknownTrial:
       return stream << "kUnknownTrial";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return stream;
 #else
   return stream << (static_cast<int>(status));

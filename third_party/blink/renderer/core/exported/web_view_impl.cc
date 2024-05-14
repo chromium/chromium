@@ -402,7 +402,7 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
     case kNavigationPolicyLinkPreview:
       NOTREACHED_NORETURN();
   }
-  NOTREACHED() << "Unexpected NavigationPolicy";
+  NOTREACHED_IN_MIGRATION() << "Unexpected NavigationPolicy";
   return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
 }
 
@@ -438,7 +438,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
       case gfx::FontRenderParams::HINTING_FULL:
         return SkFontHinting::kNormal;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return SkFontHinting::kNormal;
     }
   }
@@ -454,7 +454,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
     case gfx::FontRenderParams::HINTING_FULL:
       return SkFontHinting::kFull;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SkFontHinting::kNormal;
   }
 }

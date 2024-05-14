@@ -108,7 +108,7 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
     default:
       return media::VideoCodec::kUnknown;
   }
-  NOTREACHED() << "Unsupported video codec";
+  NOTREACHED_IN_MIGRATION() << "Unsupported video codec";
   return media::VideoCodec::kUnknown;
 }
 
@@ -132,7 +132,7 @@ media::VideoCodecProfile MediaVideoCodecProfileFromCodecId(
     default:
       break;
   }
-  NOTREACHED() << "Unsupported video codec";
+  NOTREACHED_IN_MIGRATION() << "Unsupported video codec";
   return media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
 }
 

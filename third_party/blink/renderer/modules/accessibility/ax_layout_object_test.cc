@@ -15,7 +15,7 @@ class AXLayoutObjectTest : public AccessibilityTest {
     if (list_item.IsLayoutListItem()) {
       return To<LayoutListItem>(list_item).Marker();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

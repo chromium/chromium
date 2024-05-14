@@ -439,8 +439,8 @@ InlineCaretPosition ComputeInlineCaretPosition(
     if (position.IsAfterAnchor()) {
       return ComputeInlineCaretPositionAfterInline(position_with_affinity);
     }
-    NOTREACHED() << "Caller should not pass a position inside inline: "
-                 << position;
+    NOTREACHED_IN_MIGRATION()
+        << "Caller should not pass a position inside inline: " << position;
     return InlineCaretPosition();
   }
 
@@ -455,7 +455,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
   if (!mapping) {
     // TODO(yosin): We should find when we reach here[1].
     // [1] http://crbug.com/1100481
-    NOTREACHED() << context;
+    NOTREACHED_IN_MIGRATION() << context;
     return InlineCaretPosition();
   }
   const std::optional<unsigned> maybe_offset =
@@ -466,7 +466,7 @@ InlineCaretPosition ComputeInlineCaretPosition(
       DCHECK_EQ(data->length(), 0u);
     } else {
       // TODO(xiaochengh): Investigate if we reach here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return InlineCaretPosition();
     }
   }
@@ -523,7 +523,8 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
         // TODO(yosin): We're not sure why |mapping| is |nullptr|. It seems
         // we are attempt to use destroyed/moved |FragmentItem|.
         // See http://crbug.com/1145514
-        NOTREACHED() << cursor << " " << cursor.Current().GetLayoutObject();
+        NOTREACHED_IN_MIGRATION()
+            << cursor << " " << cursor.Current().GetLayoutObject();
         return PositionWithAffinity();
       }
       const TextAffinity affinity =
@@ -538,7 +539,7 @@ PositionWithAffinity InlineCaretPosition::ToPositionInDOMTreeWithAffinity()
       }
       return PositionWithAffinity(position, affinity);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PositionWithAffinity();
 }
 

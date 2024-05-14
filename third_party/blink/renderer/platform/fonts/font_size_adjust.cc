@@ -29,7 +29,7 @@ String FontSizeAdjust::ToString(Metric metric) const {
     case Metric::kExHeight:
       return "ex-height";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 String FontSizeAdjust::ToString() const {

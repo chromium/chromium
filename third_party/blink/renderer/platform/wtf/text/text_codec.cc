@@ -53,7 +53,7 @@ uint32_t TextCodec::GetUnencodableReplacement(
     case kNoUnencodables:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   replacement[0] = 0;
   return 0;
 }

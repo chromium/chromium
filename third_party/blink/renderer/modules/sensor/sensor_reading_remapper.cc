@@ -26,7 +26,7 @@ constexpr int SinScreenAngle(uint16_t angle) {
     case 270:
       return -1;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -42,7 +42,7 @@ constexpr int CosScreenAngle(uint16_t angle) {
     case 270:
       return 0;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
   }
 }
@@ -71,7 +71,7 @@ constexpr double SinNegativeHalfScreenAngle(uint16_t angle) {
     case 270:
       return -kInverseSqrt2;  // sin -135
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -88,7 +88,7 @@ constexpr double CosNegativeHalfScreenAngle(uint16_t angle) {
     case 270:
       return -kInverseSqrt2;  // cos -135
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
   }
 }
@@ -123,8 +123,8 @@ void SensorReadingRemapper::RemapToScreenCoords(
     case SensorType::AMBIENT_LIGHT:
     case SensorType::PROXIMITY:
     case SensorType::PRESSURE:
-      NOTREACHED() << "Remap must not be performed for the sensor type "
-                   << type;
+      NOTREACHED_IN_MIGRATION()
+          << "Remap must not be performed for the sensor type " << type;
       break;
     case SensorType::ACCELEROMETER:
     case SensorType::LINEAR_ACCELERATION:
@@ -143,11 +143,11 @@ void SensorReadingRemapper::RemapToScreenCoords(
       break;
     case SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
     case SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
-      NOTREACHED() << "Remap is not yet implemented for the sensor type "
-                   << type;
+      NOTREACHED_IN_MIGRATION()
+          << "Remap is not yet implemented for the sensor type " << type;
       break;
     default:
-      NOTREACHED() << "Unknown sensor type " << type;
+      NOTREACHED_IN_MIGRATION() << "Unknown sensor type " << type;
   }
 }
 

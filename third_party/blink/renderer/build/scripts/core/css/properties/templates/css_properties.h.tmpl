@@ -113,7 +113,7 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
       CSSValuePhase value_phase) const override {
     // Directional properties are resolved by CSSDirectionAwareResolver
     // before calling CSSValueFromComputedStyleInternal.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
     {% endif %}

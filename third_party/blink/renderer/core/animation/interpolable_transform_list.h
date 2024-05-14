@@ -46,7 +46,7 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsTransformList() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void Scale(double scale) final { NOTREACHED(); }
@@ -64,7 +64,7 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
         TransformOperations(operations_), box_size_dependent_);
   }
   InterpolableTransformList* RawCloneAndZero() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

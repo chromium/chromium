@@ -156,7 +156,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   network::mojom::RequestDestination GetDestination() const override {
     // Not called as the current implementation uses the custom module script
     // loader.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
     // Once we migrate to the blink-worklet's script loading infra, this needs
     // to return a valid destination defined in the Fetch standard:

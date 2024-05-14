@@ -159,7 +159,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

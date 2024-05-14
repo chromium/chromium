@@ -60,7 +60,7 @@ class LayoutTextTest : public RenderingTest {
       if (node.GetLayoutObject() && node.GetLayoutObject()->IsText())
         return To<LayoutText>(node.GetLayoutObject());
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

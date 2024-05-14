@@ -393,7 +393,7 @@ int16_t Range::compareBoundaryPoints(unsigned how,
       return compareBoundaryPoints(start_, source_range->end_, exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -1065,7 +1065,7 @@ Node* Range::CheckNodeWOffset(Node* n,
       return child_before;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

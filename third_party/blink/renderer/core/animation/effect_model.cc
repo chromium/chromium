@@ -33,7 +33,7 @@ String EffectModel::CompositeOperationToString(
     case EffectModel::kCompositeReplace:
       return "replace";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

@@ -644,7 +644,7 @@ bool SVGAnimationElement::UpdateAnimationValues() {
     case kPathAnimation:
       break;
     case kNoAnimation:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return true;
 }

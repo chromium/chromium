@@ -144,7 +144,7 @@ FontFace* FontFace::Create(
                     descriptors);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -470,7 +470,7 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       size_adjust_ = ConvertSizeAdjustValue(value);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return true;
@@ -491,7 +491,7 @@ String FontFace::status() const {
     case kError:
       return "error";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return g_empty_string;
 }
@@ -686,7 +686,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                             FontSelectionValue(stretch_value),
                             FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return normal_capabilities;
     }
   }
@@ -763,7 +763,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
         }
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return normal_capabilities;
     }
   }
@@ -784,7 +784,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                                  FontSelectionRange::RangeType::kSetFromAuto};
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     } else if (const auto* weight_list =
@@ -826,7 +826,7 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
                              FontSelectionValue(weight_value),
                              FontSelectionRange::RangeType::kSetExplicitly};
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return normal_capabilities;
     }
   }
@@ -877,7 +877,7 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
     } else if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
       font_selector = scope->GetFontSelector();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     if (!item.IsLocal()) {
       if (ContextAllowsDownload(context) && item.IsSupportedFormat()) {

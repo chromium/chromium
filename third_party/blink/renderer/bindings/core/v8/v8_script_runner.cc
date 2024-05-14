@@ -284,12 +284,12 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
       return script;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // All switch branches should return and we should never get here.
   // But some compilers aren't sure, hence this default.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return v8::MaybeLocal<v8::Script>();
 }
 
@@ -438,7 +438,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

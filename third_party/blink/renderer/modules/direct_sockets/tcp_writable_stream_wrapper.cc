@@ -86,7 +86,7 @@ void TCPWritableStreamWrapper::OnHandleReady(MojoResult result,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -183,7 +183,7 @@ size_t TCPWritableStreamWrapper::WriteDataSynchronously(
       return 0;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

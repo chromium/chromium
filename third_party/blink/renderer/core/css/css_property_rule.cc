@@ -90,7 +90,7 @@ bool CSSPropertyRule::inherits() const {
       case CSSValueID::kFalse:
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

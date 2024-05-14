@@ -81,7 +81,7 @@ const AtomicString& ScreenOrientation::OrientationTypeToString(
       return orientation_map[i].name;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_atom;
 }
 
@@ -94,7 +94,7 @@ static device::mojom::blink::ScreenOrientationLockType StringToOrientationLock(
       return orientation_map[i].orientation;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::blink::ScreenOrientationLockType::DEFAULT;
 }
 

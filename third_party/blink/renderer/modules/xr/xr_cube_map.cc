@@ -140,7 +140,7 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
     }
   } else {
     // No other formats are accepted.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   DrawingBuffer::Client* client = static_cast<DrawingBuffer::Client*>(context);

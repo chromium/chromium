@@ -157,7 +157,7 @@ bool IDBKeyPath::IsValid() const {
       }
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -171,7 +171,7 @@ v8::Local<v8::Value> IDBKeyPath::ToV8(ScriptState* script_state) const {
     case mojom::IDBKeyPathType::Array:
       return ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, Array());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return v8::Undefined(isolate);
 }
 
@@ -187,7 +187,7 @@ bool IDBKeyPath::operator==(const IDBKeyPath& other) const {
     case mojom::IDBKeyPathType::Array:
       return array_ == other.array_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

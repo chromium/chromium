@@ -97,13 +97,13 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
   void GetDeviceSupportedFormats(const base::UnguessableToken&,
                                  const base::UnguessableToken&,
                                  GetDeviceSupportedFormatsCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetDeviceFormatsInUse(const base::UnguessableToken&,
                              const base::UnguessableToken&,
                              GetDeviceFormatsInUseCallback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
@@ -223,7 +223,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
     else if (state == VIDEO_CAPTURE_STATE_STOPPED)
       OnStopped(id);
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   base::OnceClosure StartCapture(const media::VideoCaptureSessionId& id,

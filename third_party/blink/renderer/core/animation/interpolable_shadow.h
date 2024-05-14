@@ -65,7 +65,7 @@ class InterpolableShadow : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsShadow() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void Scale(double scale) final;

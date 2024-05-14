@@ -160,7 +160,7 @@ Frame* WebFrame::ToCoreFrame(const WebFrame& frame) {
     return web_local_frame->GetFrame();
   if (frame.IsWebRemoteFrame())
     return To<WebRemoteFrameImpl>(frame).GetFrame();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

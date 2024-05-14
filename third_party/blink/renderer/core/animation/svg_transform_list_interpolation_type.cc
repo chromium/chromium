@@ -161,9 +161,9 @@ InterpolableValue* ToInterpolableValue(SVGTransform* transform,
       return SkewYToInterpolableValue(transform);
     case SVGTransformType::kMatrix:
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -182,9 +182,9 @@ SVGTransform* FromInterpolableValue(const InterpolableValue& value,
       return SkewYFromInterpolableValue(value);
     case SVGTransformType::kMatrix:
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -229,7 +229,7 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
 InterpolationValue SVGTransformListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // This function is no longer called, because maybeConvertSingle has been
   // overridden.
   return nullptr;

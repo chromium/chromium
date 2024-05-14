@@ -63,7 +63,7 @@ static AtomicString DefaultFontFamily(sk_sp<SkFontMgr> font_manager) {
   // Some devices do not return the default typeface. There's not much we can
   // do here, use "Arial", the value LayoutTheme uses for CSS system font
   // keywords such as "menu".
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return font_family_names::kArial;
 }
 

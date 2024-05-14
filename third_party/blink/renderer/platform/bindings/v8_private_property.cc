@@ -61,7 +61,7 @@ V8PrivateProperty::Symbol V8PrivateProperty::GetCachedAccessor(
     case CachedAccessor::kWindowDocument:
       return GetWindowDocumentCachedAccessor(isolate);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetEmptySymbol();
 }
 

@@ -64,7 +64,7 @@ const CSSValue* CSSCustomListInterpolationType::CreateCSSValue(
 
   switch (syntax_repeat_) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case CSSSyntaxRepeat::kSpaceSeparated:
       list = CSSValueList::CreateSpaceSeparated();

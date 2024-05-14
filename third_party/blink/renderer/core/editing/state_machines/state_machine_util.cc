@@ -81,7 +81,8 @@ bool IsGraphemeBreak(UChar32 prev_code_point, UChar32 next_code_point) {
   //                RI ÷ RI
   if (Character::IsRegionalIndicator(prev_code_point) &&
       Character::IsRegionalIndicator(next_code_point))
-    NOTREACHED() << "Do not use this function for regional indicators.";
+    NOTREACHED_IN_MIGRATION()
+        << "Do not use this function for regional indicators.";
 
   // Rule GB9, x (Extend | ZWJ)
   // Rule GB9a, x SpacingMark

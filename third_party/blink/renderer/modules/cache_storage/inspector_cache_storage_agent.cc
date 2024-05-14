@@ -143,7 +143,7 @@ const char* CacheStorageErrorString(mojom::blink::CacheStorageError error) {
       // This function should only be called upon error.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -163,7 +163,7 @@ CachedResponseType ResponseTypeToString(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return protocol::CacheStorage::CachedResponseTypeEnum::OpaqueRedirect;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

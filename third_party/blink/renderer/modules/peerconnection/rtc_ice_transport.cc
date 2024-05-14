@@ -128,7 +128,7 @@ String RTCIceTransport::role() const {
     case cricket::ICEROLE_UNKNOWN:
       return String();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -149,7 +149,7 @@ String RTCIceTransport::state() const {
     case webrtc::IceTransportState::kClosed:
       return "closed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -162,7 +162,7 @@ String RTCIceTransport::gatheringState() const {
     case cricket::kIceGatheringComplete:
       return "complete";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_string;
   }
 }

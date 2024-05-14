@@ -246,7 +246,7 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
     context.FillPath(path, auto_dark_mode);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -583,7 +583,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         break;
       case HighlightPainter::kFastSpellingGrammar:
       case HighlightPainter::kNoHighlights:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

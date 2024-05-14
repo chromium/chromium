@@ -1448,7 +1448,7 @@ static MutableCSSPropertyValueSet* ExtractEditingProperties(
                                    kOnlyInheritableEditingProperties);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

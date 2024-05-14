@@ -155,7 +155,7 @@ bool LoadsFromCacheOnly(const ResourceRequest& request) {
     case mojom::FetchCacheMode::kUnspecifiedForceCacheMiss:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -174,10 +174,10 @@ SerializeCTPolicyCompliance(net::ct::CTPolicyCompliance ct_compliance) {
         CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
       return protocol::Network::CertificateTransparencyComplianceEnum::Unknown;
     case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // Fallthrough to default.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Network::CertificateTransparencyComplianceEnum::Unknown;
 }
 
@@ -386,7 +386,7 @@ String ResourcePriorityJSON(ResourceLoadPriority priority) {
     case ResourceLoadPriority::kUnresolved:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Network::ResourcePriorityEnum::Medium;
 }
 
@@ -424,12 +424,12 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
     case ResourceRequestBlockedReason::kConversionRequest:
       // This is actually never reached, as the conversion request
       // is marked as successful and no blocking reason is reported.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return protocol::Network::BlockedReasonEnum::Other;
     case blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
       return protocol::Network::BlockedReasonEnum::Other;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Network::BlockedReasonEnum::Other;
 }
 
@@ -756,7 +756,7 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
   if (type == ContentEncodingEnum::Zstd) {
     return SourceTypeEnum::TYPE_ZSTD;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SourceTypeEnum::TYPE_UNKNOWN;
 }
 

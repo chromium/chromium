@@ -306,7 +306,7 @@ mojom::blink::ScrollAlignment AlignmentFromOptions(
         case WritingMode::kSidewaysLr:
           return ScrollAlignment::LeftAlways();
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ScrollAlignment::LeftAlways();
       }
     } else {
@@ -322,7 +322,7 @@ mojom::blink::ScrollAlignment AlignmentFromOptions(
           return is_ltr ? ScrollAlignment::BottomAlways()
                         : ScrollAlignment::TopAlways();
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ScrollAlignment::TopAlways();
       }
     }
@@ -340,7 +340,7 @@ mojom::blink::ScrollAlignment AlignmentFromOptions(
         case WritingMode::kSidewaysLr:
           return ScrollAlignment::RightAlways();
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ScrollAlignment::RightAlways();
       }
     } else {
@@ -356,7 +356,7 @@ mojom::blink::ScrollAlignment AlignmentFromOptions(
           return is_ltr ? ScrollAlignment::TopAlways()
                         : ScrollAlignment::BottomAlways();
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return ScrollAlignment::BottomAlways();
       }
     }

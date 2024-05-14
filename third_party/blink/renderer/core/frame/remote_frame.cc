@@ -676,7 +676,8 @@ void RemoteFrame::UpdateUserActivationState(
       break;
     case mojom::blink::UserActivationUpdateType::
         kNotifyActivationPendingBrowserVerification:
-      NOTREACHED() << "Unexpected UserActivationUpdateType from browser";
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected UserActivationUpdateType from browser";
       break;
   }
 }

@@ -283,7 +283,7 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
       return;
 
     default:
-      NOTREACHED() << "Unexpected result: " << result;
+      NOTREACHED_IN_MIGRATION() << "Unexpected result: " << result;
       return;
   }
 }

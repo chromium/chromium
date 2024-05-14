@@ -249,7 +249,7 @@ int8_t HighlightRegistry::CompareOverlayStackingPosition(
         return kOverlayStackingPositionAbove;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kOverlayStackingPositionEquivalent;
   }
 

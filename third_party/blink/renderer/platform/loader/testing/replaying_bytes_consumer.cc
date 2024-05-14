@@ -57,7 +57,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
                                    WrapPersistent(this), notification_token_));
       return Result::kShouldWait;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Result::kError;
 }
 

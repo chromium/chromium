@@ -92,7 +92,7 @@ class HandledEvent : public HandledTask {
 
   blink::WebCoalescedInputEvent* taskAsEvent() override { return &event_; }
   unsigned taskAsClosure() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -106,7 +106,7 @@ class HandledClosure : public HandledTask {
   ~HandledClosure() override = default;
 
   blink::WebCoalescedInputEvent* taskAsEvent() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   unsigned taskAsClosure() const override { return closure_id_; }

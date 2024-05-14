@@ -60,7 +60,7 @@ ScriptRunIterator::UScriptCodeList GetHanScriptExtensions() {
     list.resize(count);
     return list;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ScriptRunIterator::UScriptCodeList();
 }
 
@@ -102,7 +102,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
     if (UNLIKELY(han_scripts.empty())) {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     set->Shrink(0);

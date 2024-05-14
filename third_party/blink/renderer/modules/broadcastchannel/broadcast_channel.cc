@@ -329,7 +329,7 @@ BroadcastChannel::BroadcastChannel(
         name_, receiver_.BindNewEndpointAndPassRemote(receiver_task_runner),
         remote_client_.BindNewEndpointAndPassReceiver(client_task_runner));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   SetupDisconnectHandlers();

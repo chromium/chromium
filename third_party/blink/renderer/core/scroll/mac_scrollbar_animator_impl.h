@@ -78,7 +78,7 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
   void UpdateScrollerStyle() final { NOTREACHED(); }
   bool ScrollbarPaintTimerIsActive() const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void StartScrollbarPaintTimer() final { NOTREACHED(); }

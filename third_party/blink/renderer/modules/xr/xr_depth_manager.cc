@@ -116,7 +116,7 @@ XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
     return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

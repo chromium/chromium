@@ -181,7 +181,7 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
       }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kInvalidTexelBlockInfo;
   }
 }

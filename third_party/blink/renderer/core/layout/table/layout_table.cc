@@ -424,7 +424,7 @@ unsigned LayoutTable::AbsoluteColumnToEffectiveColumn(
     unsigned absolute_column_index) const {
   NOT_DESTROYED();
   if (!cached_table_columns_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return absolute_column_index;
   }
   unsigned effective_column_index = 0;

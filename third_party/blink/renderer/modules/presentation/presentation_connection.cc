@@ -67,7 +67,7 @@ const AtomicString& ConnectionStateToString(
       return terminated_value;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return terminated_value;
 }
 
@@ -86,7 +86,7 @@ const AtomicString& ConnectionCloseReasonToString(
       return went_away_value;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return error_value;
 }
 
@@ -206,7 +206,7 @@ void PresentationConnection::DidChangeState(
                    TaskType::kPresentation);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PresentationConnection::DidClose(
@@ -549,7 +549,7 @@ String PresentationConnection::binaryType() const {
     case kBinaryTypeArrayBuffer:
       return "arraybuffer";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -562,7 +562,7 @@ void PresentationConnection::setBinaryType(const String& binary_type) {
     binary_type_ = kBinaryTypeArrayBuffer;
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PresentationConnection::SendMessageToTargetConnection(
@@ -597,7 +597,7 @@ void PresentationConnection::DidReceiveBinaryMessage(const uint8_t* data,
       DispatchEvent(*MessageEvent::Create(buffer));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 mojom::blink::PresentationConnectionState PresentationConnection::GetState()

@@ -263,7 +263,7 @@ class ContentCaptureTest : public PageTestBase,
       }
     }
     // Didn't find unsent nodes.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   size_t GetExpectedFirstResultSize() { return ContentCaptureTask::kBatchSize; }

@@ -902,7 +902,7 @@ ScrollTimeline::ScrollAxis ComputeAxis(TimelineAxis axis) {
       return ScrollTimeline::ScrollAxis::kY;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ScrollTimeline::ScrollAxis::kBlock;
 }
 
@@ -1724,7 +1724,7 @@ void CSSAnimations::CalculateAnimationUpdate(
 
             default:
               // kUnset and kPending.
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
           }
         } else if (!animation->GetIgnoreCSSPlayState()) {
           will_be_playing = !is_paused && play_state != Animation::kIdle;

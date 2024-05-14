@@ -35,22 +35,22 @@ class CSSPercentageInterpolationType : public CSSInterpolationType {
   // properties.
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   InterpolationValue MaybeConvertInitial(const StyleResolverState&,
                                          ConversionCheckers&) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

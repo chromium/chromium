@@ -382,7 +382,7 @@ uint32_t AlgorithmIdForWireFormat(WebCryptoAlgorithmId id) {
     case kWebCryptoAlgorithmIdX25519:
       return kX25519Tag;
   }
-  NOTREACHED() << "Unknown algorithm ID " << id;
+  NOTREACHED_IN_MIGRATION() << "Unknown algorithm ID " << id;
   return 0;
 }
 
@@ -395,7 +395,7 @@ uint32_t AsymmetricKeyTypeForWireFormat(WebCryptoKeyType key_type) {
     case kWebCryptoKeyTypeSecret:
       break;
   }
-  NOTREACHED() << "Unknown asymmetric key type " << key_type;
+  NOTREACHED_IN_MIGRATION() << "Unknown asymmetric key type " << key_type;
   return 0;
 }
 
@@ -408,7 +408,7 @@ uint32_t NamedCurveForWireFormat(WebCryptoNamedCurve named_curve) {
     case kWebCryptoNamedCurveP521:
       return kP521Tag;
   }
-  NOTREACHED() << "Unknown named curve " << named_curve;
+  NOTREACHED_IN_MIGRATION() << "Unknown named curve " << named_curve;
   return 0;
 }
 
@@ -655,9 +655,9 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
     case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
-      NOTREACHED() << "device type is " << device->type
-                   << " but track impl subtype is "
-                   << static_cast<uint32_t>(track_impl_subtype);
+      NOTREACHED_IN_MIGRATION()
+          << "device type is " << device->type << " but track impl subtype is "
+          << static_cast<uint32_t>(track_impl_subtype);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
           "MediaStreamTrack could not be serialized.");

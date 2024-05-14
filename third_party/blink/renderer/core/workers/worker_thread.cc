@@ -409,7 +409,7 @@ bool WorkerThread::IsForciblyTerminated() {
     case ExitCode::kAsyncForciblyTerminated:
       return true;
   }
-  NOTREACHED() << static_cast<int>(exit_code_);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(exit_code_);
   return false;
 }
 
@@ -507,7 +507,7 @@ WorkerThread::TerminationState WorkerThread::ShouldTerminateScriptExecution() {
                  ? TerminationState::kTerminate
                  : TerminationState::kTerminationUnnecessary;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TerminationState::kTerminationUnnecessary;
 }
 
@@ -827,7 +827,7 @@ void WorkerThread::PerformShutdownOnWorkerThread() {
 void WorkerThread::SetThreadState(ThreadState next_thread_state) {
   switch (next_thread_state) {
     case ThreadState::kNotStarted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case ThreadState::kRunning:
       DCHECK_EQ(ThreadState::kNotStarted, thread_state_);

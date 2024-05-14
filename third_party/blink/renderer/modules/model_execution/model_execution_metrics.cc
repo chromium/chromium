@@ -14,7 +14,7 @@ const char* ModelExecutionMetrics::GetModelExecutionAPIUsageMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Generic.APIUsage";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -24,7 +24,7 @@ const char* ModelExecutionMetrics::GetModelExecutionAvailabilityMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Generic.Availability";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -35,7 +35,7 @@ ModelExecutionMetrics::GetModelExecutionSessionRequestSizeMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Session.Generic.ExecutionRequestSize";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -46,7 +46,7 @@ ModelExecutionMetrics::GetModelExecutionSessionResponseStatusMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Session.Generic.ExecutionResponseStatus";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -57,7 +57,7 @@ ModelExecutionMetrics::GetModelExecutionSessionResponseSizeMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Session.Generic.ExecutionResponseSize";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static
@@ -68,6 +68,6 @@ ModelExecutionMetrics::GetModelExecutionSessionResponseCallbackCountMetricName(
     case ModelExecutionSessionType::kGeneric:
       return "ModelExecution.Session.Generic.ExecutionResponseCallbackCount";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 }  // namespace blink

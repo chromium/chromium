@@ -159,12 +159,12 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 
@@ -254,7 +254,7 @@ class TestURLLoaderClient : public URLLoaderClient {
   }
 
   void DidReceiveData(const char* data, size_t dataLength) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void DidFinishLoading(base::TimeTicks finishTime,

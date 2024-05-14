@@ -1187,7 +1187,7 @@ void ReadableByteStreamController::PullInto(
         ctor = &CreateAsArrayBufferView<DOMBigUint64Array>;
         break;
       case DOMArrayBufferView::kTypeDataView:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   // 5. Let byteOffset be view.[[ByteOffset]].

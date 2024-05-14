@@ -95,7 +95,7 @@ CSSMathExpressionNode* CSSMathClamp::ToCalcExpressionNode() const {
     if (!operand) {
       // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
       // overrides are implemented.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
     operands.push_back(value->ToCalcExpressionNode());

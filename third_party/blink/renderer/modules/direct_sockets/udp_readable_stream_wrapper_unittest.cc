@@ -43,14 +43,14 @@ class FakeRestrictedUDPSocket final
   explicit FakeRestrictedUDPSocket(ContextLifecycleNotifier* notifier)
       : remote_(notifier) {}
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SendTo(base::span<const uint8_t> data,
               const net::HostPortPair& dest_addr,
               net::DnsQueryType dns_query_type,
               SendToCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ReceiveMore(uint32_t num_additional_datagrams) override {

@@ -138,7 +138,7 @@ std::optional<device::mojom::XRSessionFeature> MapReferenceSpaceTypeToFeature(
       return device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -162,7 +162,7 @@ EntityTypeForHitTestFromString(const String& string) {
   if (string == "point")
     return device::mojom::blink::EntityTypeForHitTest::POINT;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -395,8 +395,8 @@ XRSession::XRSession(
       blend_mode_string_ = "alpha-blend";
       break;
     default:
-      NOTREACHED() << "Unknown environment blend mode: "
-                   << environment_blend_mode;
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown environment blend mode: " << environment_blend_mode;
   }
 
   switch (interaction_mode) {

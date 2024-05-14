@@ -242,7 +242,7 @@ class Comparator {
         return kAIsAfterB;
       ++offset;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return result_of_a_is_equal_to_b;
   }
 
@@ -334,7 +334,7 @@ class Comparator {
         return kAIsAfterB;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return result_of_a_is_equal_to_b;
   }
 

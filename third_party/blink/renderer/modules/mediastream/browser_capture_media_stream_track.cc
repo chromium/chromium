@@ -109,7 +109,7 @@ void ResolveApplySubCaptureTargetPromiseHelper(
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 base::expected<MediaStreamVideoSource*, DOMException*> GetNativeVideoSource(

@@ -56,7 +56,7 @@ WebNavigationType WebPerformanceMetricsForReporting::GetNavigationType() const {
     case PerformanceNavigation::kTypeReserved:
       return kWebNavigationTypeOther;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kWebNavigationTypeOther;
 }
 

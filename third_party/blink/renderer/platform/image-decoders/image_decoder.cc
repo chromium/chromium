@@ -410,7 +410,7 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
         return kUndefinedFormat;
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -489,17 +489,17 @@ cc::YUVSubsampling ImageDecoder::GetYUVSubsampling() const {
 }
 
 gfx::Size ImageDecoder::DecodedYUVSize(cc::YUVIndex) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Size();
 }
 
 wtf_size_t ImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 SkYUVColorSpace ImageDecoder::GetYUVColorSpace() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkYUVColorSpace::kIdentity_SkYUVColorSpace;
 }
 
@@ -693,7 +693,7 @@ void ImageDecoder::SetMemoryAllocator(SkBitmap::Allocator* allocator) {
 }
 
 void ImageDecoder::DecodeToYUV() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool ImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
@@ -956,7 +956,7 @@ wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
                  : prev_frame;
     case ImageFrame::kDisposeOverwritePrevious:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kNotFound;
   }
 }

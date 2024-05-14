@@ -97,7 +97,7 @@ FontHeight LogicalBoxFragment::BaselineMetrics(
         return metrics;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // For checkbox and radio controls, we always use the border edge instead of

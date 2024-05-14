@@ -43,7 +43,7 @@ StringView TypeToString(Component::Type type) {
     case Component::Type::kHash:
       return "hash";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Utility method to get the correct encoding callback for a given type.
@@ -98,7 +98,7 @@ liburlpattern::EncodeCallback GetEncodeCallback(std::string_view pattern_utf8,
     case Component::Type::kHash:
       return ::url_pattern::HashEncodeCallback;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Utility method to get the correct liburlpattern parse options for a given

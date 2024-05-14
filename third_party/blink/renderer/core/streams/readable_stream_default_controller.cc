@@ -109,7 +109,7 @@ void ReadableStreamDefaultController::close(ScriptState* script_state,
           break;
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

@@ -81,7 +81,7 @@ mojom::blink::ScrollAlignment::Behavior ToBlinkScrollAlignmentBehavior(
     case ax::mojom::ScrollAlignment::kScrollAlignmentClosestEdge:
       return mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
   }
-  NOTREACHED() << alignment;
+  NOTREACHED_IN_MIGRATION() << alignment;
 }
 }  // namespace
 
@@ -492,7 +492,7 @@ static ax::mojom::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::TextAffinity::kDownstream;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ax::mojom::TextAffinity::kDownstream;
   }
 }

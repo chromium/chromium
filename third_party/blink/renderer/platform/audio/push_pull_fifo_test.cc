@@ -402,7 +402,7 @@ TEST_P(PushPullFIFOEarmarkFramesTest, FeatureTests) {
       fifo->PullAndUpdateEarmark(output_bus.get(), action.number_of_frames);
       LOG(INFO) << "PULL_EARMARK " << action.number_of_frames << " frames";
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

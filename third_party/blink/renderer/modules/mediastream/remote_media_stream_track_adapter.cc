@@ -146,7 +146,7 @@ void RemoteAudioTrackAdapter::OnChangedOnMainThread(
       track()->Source()->SetReadyState(MediaStreamSource::kReadyStateEnded);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

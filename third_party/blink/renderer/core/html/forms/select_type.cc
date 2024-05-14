@@ -1678,12 +1678,12 @@ void SelectType::UpdateTextStyle() {}
 void SelectType::UpdateTextStyleAndContent() {}
 
 HTMLOptionElement* SelectType::OptionToBeShown() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 const ComputedStyle* SelectType::OptionStyle() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1694,7 +1694,7 @@ HTMLOptionElement* SelectType::SpatialNavigationFocusedOption() {
 }
 
 HTMLOptionElement* SelectType::ActiveSelectionEnd() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1703,7 +1703,7 @@ void SelectType::ScrollToSelection() {}
 void SelectType::ScrollToOption(HTMLOptionElement* option) {}
 
 void SelectType::SelectAll() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SelectType::SaveListboxActiveSelection() {}
@@ -1715,7 +1715,7 @@ void SelectType::ListBoxOnChange() {}
 void SelectType::ClearLastOnChangeSelection() {}
 
 Element& SelectType::InnerElementForAppearanceAuto() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // Returning select_ doesn't make sense, but we need to return an element
   // to compile this source. This function must not be called.
   return *select_;
@@ -1724,15 +1724,15 @@ Element& SelectType::InnerElementForAppearanceAuto() const {
 void SelectType::ShowPicker() {}
 
 void SelectType::ShowPopup(PopupMenu::ShowEventType) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SelectType::HidePopup() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SelectType::PopupDidHide() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool SelectType::PopupIsVisible() const {
@@ -1740,12 +1740,12 @@ bool SelectType::PopupIsVisible() const {
 }
 
 PopupMenu* SelectType::PopupForTesting() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 AXObject* SelectType::PopupRootAXObject() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

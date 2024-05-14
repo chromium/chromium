@@ -37,7 +37,7 @@ GamepadHapticEffectType EffectTypeFromString(const String& type) {
   if (type == kGamepadHapticEffectTypeTriggerRumble)
     return GamepadHapticEffectType::GamepadHapticEffectTypeTriggerRumble;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble;
 }
 
@@ -54,7 +54,7 @@ V8GamepadHapticsResult ResultToV8(GamepadHapticsResult result) {
       return V8GamepadHapticsResult(
           V8GamepadHapticsResult::Enum::kNotSupported);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return V8GamepadHapticsResult(V8GamepadHapticsResult::Enum::kNotSupported);
 }
@@ -89,7 +89,7 @@ void GamepadHapticActuator::SetType(device::GamepadHapticActuatorType type) {
       type_ = kGamepadHapticActuatorTypeDualRumble;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

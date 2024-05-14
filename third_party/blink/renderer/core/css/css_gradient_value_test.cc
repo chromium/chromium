@@ -30,7 +30,7 @@ const CSSGradientValue* ParseSingleGradient(const char* text) {
     DCHECK_EQ(list->length(), 1u);
     return &To<CSSGradientValue>(list->Item(0));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

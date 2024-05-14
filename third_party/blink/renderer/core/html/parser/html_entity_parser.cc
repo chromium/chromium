@@ -79,7 +79,7 @@ static UChar AsHexDigit(UChar cc) {
     return 10 + cc - 'a';
   if (cc >= 'A' && cc <= 'Z')
     return 10 + cc - 'A';
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

@@ -227,8 +227,9 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
       }
 
       if (!key->IsNumber()) {
-        NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
-                     << "\" is not a number";
+        NOTREACHED_IN_MIGRATION()
+            << "Key \"" << *v8::String::Utf8Value(isolate, key)
+            << "\" is not a number";
         continue;
       }
 

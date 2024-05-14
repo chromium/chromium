@@ -121,7 +121,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
             execution_context->GetTaskRunner(TaskType::kFileReading));
       }
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   } else {
     BlobDataHandle::GetBlobRegistry()->URLStoreForOrigin(

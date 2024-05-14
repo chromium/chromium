@@ -25,7 +25,7 @@ RTCRtpSource::Type RTCRtpSource::SourceType() const {
     case webrtc::RtpSourceType::CSRC:
       return RTCRtpSource::Type::kCSRC;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return RTCRtpSource::Type::kSSRC;
   }
 }

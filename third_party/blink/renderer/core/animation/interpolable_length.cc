@@ -115,7 +115,7 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
     case CSSValueID::kWebkitFillAvailable:
       return Length::Type::kFillAvailable;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Length::Type::kFixed;
   }
 }
@@ -319,7 +319,7 @@ bool InterpolableLength::HasPercentage() const {
     case Type::kExpression:
       return expression_->HasPercentage();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

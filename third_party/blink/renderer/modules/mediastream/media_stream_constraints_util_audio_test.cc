@@ -599,7 +599,7 @@ class MediaStreamConstraintsRemoteAPMTest
       case ChromeWideAecExperiment::kEnabledWithResamplingMitigation:
         return ApmLocation::kAudioServiceAvoidResampling;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

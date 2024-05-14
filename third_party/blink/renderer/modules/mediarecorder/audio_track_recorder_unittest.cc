@@ -483,7 +483,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         frames_per_buffer_ = kAacFramesPerBuffer;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -675,7 +675,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
 #endif  // HAS_AAC_DECODER
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     DoOnEncodedAudio(params, std::move(encoded_data), timestamp);
@@ -735,7 +735,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         channel_layout = media::ChannelLayout::CHANNEL_LAYOUT_5_1_BACK;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     media::AudioDecoderConfig config(media::AudioCodec::kAAC,
                                      media::SampleFormat::kSampleFormatS16,

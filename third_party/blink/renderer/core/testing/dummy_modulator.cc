@@ -25,14 +25,14 @@ class EmptyModuleRecordResolver final : public ModuleRecordResolver {
 
   const ModuleScript* GetModuleScriptFromModuleRecord(
       v8::Local<v8::Module>) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> referrer,
                                 ExceptionState&) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Module>();
   }
 };
@@ -50,7 +50,7 @@ void DummyModulator::Trace(Visitor* visitor) const {
 }
 
 ScriptState* DummyModulator::GetScriptState() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -67,7 +67,7 @@ ModuleRecordResolver* DummyModulator::GetModuleRecordResolver() {
 }
 
 base::SingleThreadTaskRunner* DummyModulator::TaskRunner() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -80,7 +80,7 @@ void DummyModulator::FetchTree(const KURL&,
                                ModuleScriptCustomFetchType,
                                ModuleTreeClient*,
                                String referrer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DummyModulator::FetchSingle(const ModuleScriptFetchRequest&,
@@ -88,7 +88,7 @@ void DummyModulator::FetchSingle(const ModuleScriptFetchRequest&,
                                  ModuleGraphLevel,
                                  ModuleScriptCustomFetchType,
                                  SingleModuleClient*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DummyModulator::FetchDescendantsForInlineScript(
@@ -97,18 +97,18 @@ void DummyModulator::FetchDescendantsForInlineScript(
     mojom::blink::RequestContextType,
     network::mojom::RequestDestination,
     ModuleTreeClient*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ModuleScript* DummyModulator::GetFetchedModuleScript(const KURL&, ModuleType) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 KURL DummyModulator::ResolveModuleSpecifier(const String&,
                                             const KURL&,
                                             String*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KURL();
 }
 
@@ -127,12 +127,12 @@ bool DummyModulator::HasValidContext() {
 void DummyModulator::ResolveDynamically(const ModuleRequest& module_request,
                                         const ReferrerScriptInfo&,
                                         ScriptPromiseResolver<IDLAny>*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ModuleImportMeta DummyModulator::HostGetImportMetaProperties(
     v8::Local<v8::Module>) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ModuleImportMeta(String());
 }
 
@@ -162,7 +162,7 @@ ModuleType DummyModulator::ModuleTypeFromRequest(
 ModuleScriptFetcher* DummyModulator::CreateModuleScriptFetcher(
     ModuleScriptCustomFetchType,
     base::PassKey<ModuleScriptLoader> pass_key) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

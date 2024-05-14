@@ -525,7 +525,7 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
       // Smooth interpolation not supported for these types.
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

@@ -114,10 +114,11 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
-      NOTREACHED() << "These should only be used for viewport definitions";
+      NOTREACHED_IN_MIGRATION()
+          << "These should only be used for viewport definitions";
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return unresolvable_length_result;
   }
 }
@@ -202,10 +203,11 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
-      NOTREACHED() << "These should only be used for viewport definitions";
+      NOTREACHED_IN_MIGRATION()
+          << "These should only be used for viewport definitions";
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return border_padding.BlockSum();
   }
 }
@@ -914,7 +916,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       size = ResolveMainInlineLength(
           space, style, border_padding,
           [](MinMaxSizesType) -> MinMaxSizesResult {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             return MinMaxSizesResult();
           },
           Length::FillAvailable(), /* auto_length */ nullptr,
@@ -1389,7 +1391,7 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
       return space_left;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LayoutUnit();
   }
 }

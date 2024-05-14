@@ -32,7 +32,7 @@ mojom::blink::NotificationDirection ToDirectionEnumValue(
     return mojom::blink::NotificationDirection::RIGHT_TO_LEFT;
   if (direction == "auto")
     return mojom::blink::NotificationDirection::AUTO;
-  NOTREACHED() << "Unknown direction: " << direction;
+  NOTREACHED_IN_MIGRATION() << "Unknown direction: " << direction;
   return mojom::blink::NotificationDirection::AUTO;
 }
 
@@ -41,7 +41,7 @@ mojom::blink::NotificationScenario ToScenarioEnumValue(const String& scenario) {
     return mojom::blink::NotificationScenario::DEFAULT;
   if (scenario == "incoming-call")
     return mojom::blink::NotificationScenario::INCOMING_CALL;
-  NOTREACHED() << "Unknown scenario: " << scenario;
+  NOTREACHED_IN_MIGRATION() << "Unknown scenario: " << scenario;
   return mojom::blink::NotificationScenario::DEFAULT;
 }
 
@@ -152,8 +152,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     } else if (action->type() == "text") {
       notification_action->type = mojom::blink::NotificationActionType::TEXT;
     } else {
-      NOTREACHED() << "Unknown action type: "
-                   << IDLEnumAsString(action->type());
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown action type: " << IDLEnumAsString(action->type());
     }
 
     if (!action->placeholder().IsNull() &&

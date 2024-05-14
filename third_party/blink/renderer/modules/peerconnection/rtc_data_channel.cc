@@ -378,7 +378,7 @@ String RTCDataChannel::readyState() const {
       return "closed";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -401,7 +401,7 @@ String RTCDataChannel::binaryType() const {
     case kBinaryTypeArrayBuffer:
       return "arraybuffer";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -416,7 +416,7 @@ void RTCDataChannel::setBinaryType(const String& binary_type,
     ThrowNoBlobSupportException(&exception_state);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool RTCDataChannel::ValidateSendLength(size_t length,
@@ -647,7 +647,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
       DispatchEvent(*MessageEvent::Create(dom_buffer));
       return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else {
     String text =
         buffer.data.size() > 0

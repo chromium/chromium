@@ -159,7 +159,7 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -312,7 +312,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

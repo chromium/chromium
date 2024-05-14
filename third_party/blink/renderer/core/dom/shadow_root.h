@@ -84,7 +84,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
         return "closed";
       case ShadowRootMode::kUserAgent:
         // UA ShadowRoot should not be exposed to the Web.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
     }
   }

@@ -234,7 +234,7 @@ bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

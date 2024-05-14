@@ -38,10 +38,10 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
 
     // The method corresponding to createLoaderAs... is called on success.
     virtual void DidFetchDataLoadedBlobHandle(scoped_refptr<BlobDataHandle>) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     virtual void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer*) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     virtual void DidFetchDataLoadedFormData(FormData*) { NOTREACHED(); }
     virtual void DidFetchDataLoadedString(const String&) { NOTREACHED(); }
@@ -50,7 +50,7 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     // or a new pipe that data will be copied into.
     virtual void DidFetchDataStartedDataPipe(
         mojo::ScopedDataPipeConsumerHandle handle) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     // This is called after all data are read from |handle| and written
     // to |out_data_pipe|, and |out_data_pipe| is closed or aborted.

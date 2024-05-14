@@ -316,7 +316,7 @@ void DevToolsSession::FallThrough(int call_id,
                                   crdtp::span<uint8_t> method,
                                   crdtp::span<uint8_t> message) {
   // There's no other layer to handle the command.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DevToolsSession::sendResponse(

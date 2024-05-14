@@ -553,7 +553,7 @@ void PeriodicWaveImpl::GenerateBasicWaveform(int shape) {
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         b = 0;
         break;
     }

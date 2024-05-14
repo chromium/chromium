@@ -433,7 +433,7 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
     case HTMLToken::kCharacter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HTMLToken::DOCTYPE:
       ProcessDoctypeToken(token);
@@ -1614,7 +1614,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
       ProcessStartTag(token);
       break;
     case kTextMode:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case kTemplateContentsMode:
       switch (tag) {
@@ -3012,7 +3012,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
 
   switch (token->GetType()) {
     case HTMLToken::kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case HTMLToken::DOCTYPE:
     // TODO(crbug.com/1453291) This needs to be expanded to properly handle
@@ -3148,7 +3148,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       break;
     case HTMLToken::kCharacter:
     case HTMLToken::kEndOfFile:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

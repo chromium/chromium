@@ -222,7 +222,7 @@ class CORE_EXPORT AtomicHTMLToken {
       : type_(token.GetType()), name_(HTMLTokenNameFromToken(token)) {
     switch (type_) {
       case HTMLToken::kUninitialized:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case HTMLToken::DOCTYPE:
         doctype_data_ = token.ReleaseDoctypeData();

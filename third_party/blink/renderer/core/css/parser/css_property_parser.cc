@@ -49,7 +49,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kPositionTry:
       return property.IsValidForPositionTry();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

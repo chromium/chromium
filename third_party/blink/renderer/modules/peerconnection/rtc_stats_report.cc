@@ -53,7 +53,7 @@ v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
   }
   v8::Local<v8::Object> v8_object = builder.V8Value();
   if (v8_object.IsEmpty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Undefined(script_state->GetIsolate());
   }
   return v8_object;

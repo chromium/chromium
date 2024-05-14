@@ -189,7 +189,7 @@ void StyleableMarkerPainter::PaintUnderline(const StyleableMarker& marker,
         // it specially in the else condition below only for composition
         // markers.
       case UnderlineStyle::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     context.SetStrokeColor(marker_color);

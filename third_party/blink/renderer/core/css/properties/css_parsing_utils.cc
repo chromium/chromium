@@ -1174,13 +1174,13 @@ CSSPrimitiveValue* ConsumeIntegerOrNumberCalc(
   double minimum_value = -std::numeric_limits<double>::max();
   switch (value_range) {
     case CSSPrimitiveValue::ValueRange::kAll:
-      NOTREACHED() << "unexpected value range for integer parsing";
+      NOTREACHED_IN_MIGRATION() << "unexpected value range for integer parsing";
       [[fallthrough]];
     case CSSPrimitiveValue::ValueRange::kInteger:
       minimum_value = -std::numeric_limits<double>::max();
       break;
     case CSSPrimitiveValue::ValueRange::kNonNegative:
-      NOTREACHED() << "unexpected value range for integer parsing";
+      NOTREACHED_IN_MIGRATION() << "unexpected value range for integer parsing";
       [[fallthrough]];
     case CSSPrimitiveValue::ValueRange::kNonNegativeInteger:
       minimum_value = 0.0;
@@ -2320,7 +2320,7 @@ Color ResolveColor(CSSValue* value, const ui::ColorProvider* color_provider) {
         color_id, mojom::blink::ColorScheme::kLight, color_provider);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Color();
 }
 
@@ -3928,7 +3928,7 @@ static CSSValue* ConsumeImageSet(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -4186,7 +4186,7 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
           context.Count(WebFeature::kCSSValueUserModifyReadWritePlaintextOnly);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       break;
     }
@@ -4508,7 +4508,7 @@ CSSValue* ConsumeCSSWideKeyword(CSSParserTokenRange& range) {
     case CSSValueID::kRevertLayer:
       return cssvalue::CSSRevertLayerValue::Create();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -4529,7 +4529,7 @@ CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
     case CSSValueID::kRevertLayer:
       return cssvalue::CSSRevertLayerValue::Create();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -6400,7 +6400,7 @@ bool IsSupportedKeywordTech(CSSValueID keyword) {
     default:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -6514,7 +6514,7 @@ bool IsGridBreadthFixedSized(const CSSValue& value) {
     return !primitive_value->IsFlex();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

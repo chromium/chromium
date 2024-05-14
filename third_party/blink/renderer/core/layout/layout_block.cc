@@ -334,7 +334,7 @@ void LayoutBlock::Paint(const PaintInfo& paint_info) const {
 
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(NeedsLayout() && !ChildLayoutBlockedByDisplayLock())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -731,7 +731,7 @@ LayoutBox* LayoutBlock::CreateAnonymousBoxWithSameTypeAs(
 
 const char* LayoutBlock::GetName() const {
   NOT_DESTROYED();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "LayoutBlock";
 }
 

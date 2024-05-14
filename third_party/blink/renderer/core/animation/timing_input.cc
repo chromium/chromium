@@ -118,7 +118,7 @@ Timing TimingInput::Convert(
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Timing();
 }
 
@@ -149,7 +149,7 @@ Timing TimingInput::Convert(
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Timing();
 }
 

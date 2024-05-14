@@ -115,7 +115,7 @@ WTF::String InteractionTypeToString(UserInteractionType interaction_type) {
     case UserInteractionType::kTapOrClick:
       return "tapOrClick";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

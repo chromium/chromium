@@ -97,7 +97,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
                                     "content-security-policy-report-only")) {
     window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

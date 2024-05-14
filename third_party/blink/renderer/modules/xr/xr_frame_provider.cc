@@ -718,7 +718,8 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
   // Hardware-accelerated rendering should always be texture backed. Ensure this
   // is the case, don't attempt to render if using an unexpected drawing path.
   if (!image_ref->IsTextureBacked()) {
-    NOTREACHED() << "WebXR requires hardware-accelerated rendering to texture";
+    NOTREACHED_IN_MIGRATION()
+        << "WebXR requires hardware-accelerated rendering to texture";
     return;
   }
 

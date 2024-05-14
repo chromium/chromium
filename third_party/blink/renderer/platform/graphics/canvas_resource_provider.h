@@ -223,16 +223,16 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   virtual gpu::Mailbox GetBackingMailboxForOverwrite(
       MailboxSyncMode sync_mode) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::Mailbox();
   }
   virtual GLenum GetBackingTextureTarget() const { return GL_TEXTURE_2D; }
   virtual void* GetPixelBufferAddressForOverwrite() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   virtual uint32_t GetSharedImageUsageFlags() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

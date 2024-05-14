@@ -90,7 +90,7 @@ class PairSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
       }
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 
@@ -160,7 +160,7 @@ class ValueSyncIterationSource : public SyncIteratorBase::IterationSourceBase {
                                         v8_value);
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

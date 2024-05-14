@@ -356,7 +356,7 @@ void CanvasRenderingContext2DState::SetFontStretch(
       stretch_value = kSemiExpandedWidthValue;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   FontDescription font_description(GetFontDescription());
@@ -404,7 +404,7 @@ void CanvasRenderingContext2DState::ValidateFilterState() const {
       DCHECK(css_filter_value_ || canvas_filter_);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #endif
 }
@@ -676,7 +676,7 @@ String CanvasRenderingContext2DState::ImageSmoothingQuality() const {
     case cc::PaintFlags::FilterQuality::kHigh:
       return "high";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "low";
   }
 }
@@ -708,7 +708,7 @@ const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
       flags = &stroke_flags_;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // no break on purpose: flags needs to be assigned to avoid compiler warning
       // about uninitialized variable.
       [[fallthrough]];
@@ -823,7 +823,7 @@ void CanvasRenderingContext2DState::SetTextRendering(
       text_rendering_mode = TextRenderingMode::kAutoTextRendering;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   DCHECK(realized_font_);
   FontDescription font_description(GetFontDescription());

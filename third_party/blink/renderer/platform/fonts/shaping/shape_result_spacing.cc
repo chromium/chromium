@@ -50,7 +50,7 @@ template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
   // Available only for TextRun since it has expansion data.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <>
@@ -95,7 +95,7 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
 template <typename TextContainerType>
 float ShapeResultSpacing<TextContainerType>::NextExpansion() {
   if (!expansion_opportunity_count_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

@@ -161,7 +161,7 @@ class OutsideSettingsCSPDelegate final
   void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) override {
     // This shouldn't be called during top-level worker script fetch.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void DidAddContentSecurityPolicies(
@@ -249,8 +249,9 @@ WorkerOrWorkletGlobalScope::~WorkerOrWorkletGlobalScope() = default;
 
 // EventTarget
 const AtomicString& WorkerOrWorkletGlobalScope::InterfaceName() const {
-  NOTREACHED() << "Each global scope that uses events should define its own "
-                  "interface name.";
+  NOTREACHED_IN_MIGRATION()
+      << "Each global scope that uses events should define its own "
+         "interface name.";
   return g_null_atom;
 }
 

@@ -55,7 +55,7 @@ const AtomicString& EventTypeForKeyboardEventType(WebInputEvent::Type type) {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return event_type_names::kKeydown;
 }
 

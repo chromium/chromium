@@ -61,7 +61,7 @@ static String LocalizedUnavailablePluginReplacementText(
                         // empty String(). See crbug.com/302130 for more
                         // details.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

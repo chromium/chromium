@@ -291,8 +291,9 @@ void ColorChooserPopupUIController::OpenSystemColorChooser() {
 #if BUILDFLAG(IS_MAC)
   OpenColorChooser();
 #else
-  NOTREACHED() << "ColorChooserPopupUIController -> ColorChooserUIController "
-                  "should only be used on macOS";
+  NOTREACHED_IN_MIGRATION()
+      << "ColorChooserPopupUIController -> ColorChooserUIController "
+         "should only be used on macOS";
 #endif
 }
 

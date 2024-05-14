@@ -99,7 +99,7 @@ void LayoutRuby::RemoveChild(LayoutObject* child) {
     return;
   }
 
-  NOTREACHED() << child;
+  NOTREACHED_IN_MIGRATION() << child;
 }
 
 void LayoutRuby::DidRemoveChildFromColumn(LayoutObject& child) {

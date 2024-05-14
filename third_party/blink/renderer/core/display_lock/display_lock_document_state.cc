@@ -316,7 +316,7 @@ void DisplayLockDocumentState::EndForcedScope(
     }
   }
   // We should always find a scope to erase.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DisplayLockDocumentState::EnsureMinimumForcedPhase(

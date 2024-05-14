@@ -354,7 +354,7 @@ CheckPseudoHasCacheScope::Context::EnsureFastRejectFilter(Element* element,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

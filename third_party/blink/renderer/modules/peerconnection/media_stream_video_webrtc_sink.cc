@@ -40,7 +40,7 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
       return webrtc::VideoTrackInterface::ContentHint::kNone;
     case WebMediaStreamTrack::ContentHintType::kAudioSpeech:
     case WebMediaStreamTrack::ContentHintType::kAudioMusic:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case WebMediaStreamTrack::ContentHintType::kVideoMotion:
       return webrtc::VideoTrackInterface::ContentHint::kFluid;
@@ -49,7 +49,7 @@ webrtc::VideoTrackInterface::ContentHint ContentHintTypeToWebRtcContentHint(
     case WebMediaStreamTrack::ContentHintType::kVideoText:
       return webrtc::VideoTrackInterface::ContentHint::kText;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return webrtc::VideoTrackInterface::ContentHint::kNone;
 }
 

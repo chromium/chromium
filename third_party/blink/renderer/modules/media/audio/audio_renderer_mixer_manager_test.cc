@@ -147,7 +147,7 @@ class AudioRendererMixerManagerTest : public testing::Test {
       return CreateMatchedDeviceSink();
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

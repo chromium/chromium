@@ -195,7 +195,7 @@ const DOMExceptionEntry* FindErrorEntry(DOMExceptionCode exception_code) {
     if (exception_code == entry.code)
       return &entry;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

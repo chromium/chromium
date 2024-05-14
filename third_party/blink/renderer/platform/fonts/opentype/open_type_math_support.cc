@@ -121,7 +121,7 @@ std::optional<float> OpenTypeMathSupport::MathConstant(
     case kRadicalKernAfterDegree:
       return std::optional<float>(HarfBuzzUnitsToFloat(harfbuzz_value));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::nullopt;
 }

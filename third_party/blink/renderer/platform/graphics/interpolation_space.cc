@@ -55,7 +55,7 @@ sk_sp<cc::ColorFilter> GetConversionFilter(
       return cc::ColorFilter::MakeLinearToSRGBGamma();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

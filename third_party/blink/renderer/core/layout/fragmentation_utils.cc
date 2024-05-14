@@ -36,7 +36,7 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
 
   switch (break_value) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case EBreakBetween::kAuto:
       return 0;
@@ -1396,7 +1396,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return idx;
 }
 

@@ -892,7 +892,7 @@ v8::Local<v8::Value> WritableStream::CreateCannotActionOnStateStreamException(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return v8::Exception::TypeError(
       CreateCannotActionOnStateStreamMessage(isolate, action, state_name));

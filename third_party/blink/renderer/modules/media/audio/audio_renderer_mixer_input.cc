@@ -137,7 +137,8 @@ bool AudioRendererMixerInput::SetVolume(double volume) {
 }
 
 media::OutputDeviceInfo AudioRendererMixerInput::GetOutputDeviceInfo() {
-  NOTREACHED();  // The blocking API is intentionally not supported.
+  NOTREACHED_IN_MIGRATION();  // The blocking API is intentionally not
+                              // supported.
   return media::OutputDeviceInfo();
 }
 

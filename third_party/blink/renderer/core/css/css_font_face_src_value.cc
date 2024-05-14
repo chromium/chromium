@@ -72,7 +72,7 @@ String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
     case CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX:
       return "color-sbix";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }

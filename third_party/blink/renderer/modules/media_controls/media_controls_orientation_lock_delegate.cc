@@ -244,7 +244,7 @@ void MediaControlsOrientationLockDelegate::Invoke(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 device::mojom::blink::ScreenOrientationLockType
@@ -281,7 +281,7 @@ MediaControlsOrientationLockDelegate::ComputeOrientationLock() const {
       return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
 }
 

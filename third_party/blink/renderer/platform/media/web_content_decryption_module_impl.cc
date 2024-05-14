@@ -82,7 +82,7 @@ void WebContentDecryptionModuleImpl::Create(
   // TODO(ddorwin): Guard against this in supported types check and remove this.
   // Chromium only supports ASCII key systems.
   if (!base::IsStringASCII(key_system)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(web_cdm_created_cb).Run(nullptr, "Invalid keysystem.");
     return;
   }

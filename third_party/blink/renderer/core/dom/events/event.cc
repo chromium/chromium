@@ -323,7 +323,7 @@ HeapVector<Member<EventTarget>> Event::composedPath(
       if (node == context.GetNode())
         return context.GetTreeScopeEventContext().EnsureEventPath(*event_path_);
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (LocalDOMWindow* window = current_target_->ToLocalDOMWindow()) {

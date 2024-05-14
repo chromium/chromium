@@ -427,7 +427,7 @@ String SVGPreserveAspectRatio::ValueAsString() const {
 
 void SVGPreserveAspectRatio::Add(const SVGPropertyBase* other,
                                  const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGPreserveAspectRatio::CalculateAnimatedValue(
@@ -438,7 +438,7 @@ void SVGPreserveAspectRatio::CalculateAnimatedValue(
     const SVGPropertyBase* to_value,
     const SVGPropertyBase*,
     const SVGElement*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGPreserveAspectRatio::CalculateDistance(

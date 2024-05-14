@@ -111,14 +111,14 @@ class WTF_EXPORT TextCodec {
                                       wtf_size_t length,
                                       unsigned char* destination,
                                       size_t capacity) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EncodeIntoResult{0, 0};
   }
   virtual EncodeIntoResult EncodeInto(const UChar*,
                                       wtf_size_t length,
                                       unsigned char* destination,
                                       size_t capacity) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EncodeIntoResult{0, 0};
   }
 

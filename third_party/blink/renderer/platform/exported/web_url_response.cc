@@ -114,7 +114,7 @@ void SetSecurityStyleAndDetails(const GURL& url,
   }
 
   if (!ssl_info.cert) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     response->SetSecurityStyle(SecurityStyle::kUnknown);
     return;
   }

@@ -61,11 +61,11 @@ class EmptyMdnsResponder : public webrtc::MdnsResponderInterface {
  public:
   void CreateNameForAddress(const rtc::IPAddress& addr,
                             NameCreatedCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RemoveNameForAddress(const rtc::IPAddress& addr,
                             NameRemovedCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 

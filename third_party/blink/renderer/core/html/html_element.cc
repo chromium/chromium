@@ -1221,7 +1221,7 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
       UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeManual);
       break;
     case PopoverValueType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   CHECK_EQ(type, GetPopoverTypeFromAttributeValue(
                      FastGetAttribute(html_names::kPopoverAttr)));
@@ -1642,7 +1642,7 @@ void HTMLElement::HideAllPopoversUntil(
       }
       last_to_hide = *it;
     }
-    NOTREACHED() << "ancestor must be in the stack";
+    NOTREACHED_IN_MIGRATION() << "ancestor must be in the stack";
     return nullptr;
   };
 

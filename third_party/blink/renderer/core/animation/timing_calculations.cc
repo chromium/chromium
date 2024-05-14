@@ -181,7 +181,7 @@ std::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
       DCHECK(!local_time.has_value());
       return std::nullopt;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

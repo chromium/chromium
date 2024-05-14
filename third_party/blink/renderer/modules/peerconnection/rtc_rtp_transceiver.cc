@@ -33,7 +33,7 @@ String TransceiverDirectionToString(
     case webrtc::RtpTransceiverDirection::kStopped:
       return "stopped";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }

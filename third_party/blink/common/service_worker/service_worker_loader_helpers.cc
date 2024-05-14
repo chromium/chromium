@@ -199,7 +199,7 @@ const char* ServiceWorkerLoaderHelpers::FetchResponseSourceToSuffix(
     case network::mojom::FetchResponseSource::kCacheStorage:
       return "CacheStorage";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 

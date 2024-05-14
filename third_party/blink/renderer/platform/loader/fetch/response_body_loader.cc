@@ -234,7 +234,7 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     if (has_pending_state_change_signal_) {
       switch (state_) {
         case State::kLoading:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case State::kDone:
           loader_->DidFinishLoadingBody();

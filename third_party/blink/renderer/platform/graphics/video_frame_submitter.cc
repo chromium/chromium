@@ -128,7 +128,7 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void DidNotProduceFrame(const viz::BeginFrameAck& ack) override {

@@ -82,7 +82,7 @@ void NavigationPreloadRequest::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NavigationPreloadRequest::OnTransferSizeUpdated(

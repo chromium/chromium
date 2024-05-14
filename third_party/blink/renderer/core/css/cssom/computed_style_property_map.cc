@@ -164,7 +164,7 @@ String ComputedStylePropertyMap::SerializationForShorthand(
     return value->CssText();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -432,14 +432,14 @@ void SynchronousLayerTreeFrameSink::DidAllocateSharedBitmap(
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
   // but this is called for software /resources/).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SynchronousLayerTreeFrameSink::DidDeleteSharedBitmap(
     const viz::SharedBitmapId& id) {
   // Webview does not use software compositing (other than resourceless draws,
   // but this is called for software /resources/).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {

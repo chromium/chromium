@@ -51,11 +51,11 @@ static String ErrorCodeToString(mojom::blink::SpeechRecognitionErrorCode code) {
     case mojom::blink::SpeechRecognitionErrorCode::kLanguageNotSupported:
       return "language-not-supported";
     case mojom::blink::SpeechRecognitionErrorCode::kNoMatch:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

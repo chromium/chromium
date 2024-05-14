@@ -102,7 +102,7 @@ class SignaledValue {
 
   ~SignaledValue() {
     if (IsValid() && !event->IsSignaled()) {
-      NOTREACHED() << "never signaled";
+      NOTREACHED_IN_MIGRATION() << "never signaled";
       event->Signal();
     }
   }
@@ -544,7 +544,8 @@ webrtc::VideoCodecType ProfileToWebRtcVideoCodecType(
       return webrtc::kVideoCodecH265;
 #endif
     default:
-      NOTREACHED() << "Invalid profile " << GetProfileName(profile);
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid profile " << GetProfileName(profile);
       return webrtc::kVideoCodecGeneric;
   }
 }
@@ -2501,7 +2502,8 @@ void RTCVideoEncoder::PreInitializeEncoder(
         encoder_info_.fps_allocation[i] = {255 / 4, 255 / 2, 255};
         break;
       default:
-        NOTREACHED() << "Unexpected temporal layers: " << num_temporal_layers;
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected temporal layers: " << num_temporal_layers;
     }
   }
   auto preferred_pixel_format = pixel_format == media::PIXEL_FORMAT_I420

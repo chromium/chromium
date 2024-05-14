@@ -1233,7 +1233,7 @@ AtomicString GetTypeExtension(
                         WebFeature::kDocumentCreateElement2ndArgStringHandling);
       return AtomicString(string_or_options->GetAsString());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AtomicString();
 }
 
@@ -1569,7 +1569,7 @@ String Document::readyState() const {
       return complete;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -2415,7 +2415,8 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(*this);
 
   if (InStyleRecalc()) {
-    NOTREACHED() << "We should not re-enter style recalc for the same document";
+    NOTREACHED_IN_MIGRATION()
+        << "We should not re-enter style recalc for the same document";
     return;
   }
 
@@ -4381,7 +4382,7 @@ Document::PageDismissalType Document::PageDismissalEventBeingDispatched()
     case kUnloadEventHandled:
       return kNoDismissal;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kNoDismissal;
 }
 
@@ -7493,7 +7494,7 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
   if (auto* view = View()) {
     view->BeginLifecycleUpdates();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     base::debug::DumpWithoutCrashing();
   }
 }
@@ -7554,7 +7555,7 @@ Vector<IconURL> Document::IconURLs(int icon_types_mask) {
         secondary_icons.push_back(first_touch_precomposed_icon);
       first_touch_precomposed_icon = new_url;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

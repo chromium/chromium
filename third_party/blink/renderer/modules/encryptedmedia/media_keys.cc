@@ -520,7 +520,7 @@ void MediaKeys::TimerFired(TimerBase*) {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

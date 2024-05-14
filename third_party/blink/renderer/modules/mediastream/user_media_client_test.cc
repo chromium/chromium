@@ -211,17 +211,17 @@ class MediaDevicesDispatcherHostMock
                         bool request_video_input_capabilities,
                         bool request_audio_input_capabilities,
                         EnumerateDevicesCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetVideoInputCapabilities(
       GetVideoInputCapabilitiesCallback client_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetAudioInputCapabilities(
       GetAudioInputCapabilitiesCallback client_callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void AddMediaDevicesListener(
@@ -230,22 +230,22 @@ class MediaDevicesDispatcherHostMock
       bool subscribe_audio_output,
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesListener> listener)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ProduceSubCaptureTargetId(
       SubCaptureTargetType type,
       ProduceSubCaptureTargetIdCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 #endif
 
@@ -277,7 +277,7 @@ class MockMediaDevicesDispatcherHost
                         bool request_video_input_capabilities,
                         bool request_audio_input_capabilities,
                         EnumerateDevicesCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetVideoInputCapabilities(
@@ -349,16 +349,16 @@ class MockMediaDevicesDispatcherHost
       bool subscribe_audio_output,
       mojo::PendingRemote<blink::mojom::blink::MediaDevicesListener> listener)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void CloseFocusWindowOfOpportunity(const String& label) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ProduceSubCaptureTargetId(

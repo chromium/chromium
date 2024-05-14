@@ -159,7 +159,7 @@ std::unique_ptr<StylusWritingGesture> CreateGesture(
           text_alternative, gesture_data->granularity);
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
   }

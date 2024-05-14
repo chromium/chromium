@@ -328,7 +328,7 @@ void MediaStreamVideoSource::Restart(
 
 void MediaStreamVideoSource::RestartSourceImpl(
     const media::VideoCaptureFormat& new_format) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaStreamVideoSource::OnRestartDone(bool did_restart) {

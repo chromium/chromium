@@ -172,7 +172,7 @@ SVGTransformData TransformDataFromValues(SVGTransformType type,
     case SVGTransformType::kMatrix:
       return MatrixTransformValue(arguments);
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ScaleTransformValue(1, 1);
   }
 }
@@ -232,7 +232,7 @@ CSSValueID MapTransformFunction(const SVGTransform& transform) {
       return CSSValueID::kSkewY;
     case SVGTransformType::kUnknown:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return CSSValueID::kInvalid;
 }
@@ -286,7 +286,7 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
           transform.Matrix().F(), CSSPrimitiveValue::UnitType::kUserUnits));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return transform_value;
 }

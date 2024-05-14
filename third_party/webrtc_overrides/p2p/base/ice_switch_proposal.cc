@@ -36,7 +36,7 @@ IceSwitchReason ConvertFromWebrtcIceSwitchReason(
     case cricket::IceSwitchReason::APPLICATION_REQUESTED:
       return IceSwitchReason::kApplicationRequested;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IceSwitchReason::kUnknown;
   }
 }
@@ -68,7 +68,7 @@ std::string IceSwitchReasonToString(IceSwitchReason reason) {
     case IceSwitchReason::kApplicationRequested:
       return "ApplicationRequested";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -100,7 +100,7 @@ cricket::IceSwitchReason ConvertToWebrtcIceSwitchReason(
       return cricket::IceSwitchReason::APPLICATION_REQUESTED;
     case IceSwitchReason::kUnknown:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return cricket::IceSwitchReason::UNKNOWN;
   }
 }

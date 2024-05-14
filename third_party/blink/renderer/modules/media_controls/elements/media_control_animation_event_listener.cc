@@ -41,7 +41,7 @@ void MediaControlAnimationEventListener::Invoke(ExecutionContext* context,
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaControlAnimationEventListener::Observer::Trace(Visitor*) const {}

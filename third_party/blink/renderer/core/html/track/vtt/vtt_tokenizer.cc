@@ -256,7 +256,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
     END_STATE()
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

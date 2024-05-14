@@ -204,7 +204,7 @@ std::optional<V8VideoPixelFormat> ToV8VideoPixelFormat(
     case media::PIXEL_FORMAT_XRGB:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kBGRX);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -685,7 +685,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
           source_frame = wmp->GetCurrentFrameThenUpdate();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     if (!source_frame) {

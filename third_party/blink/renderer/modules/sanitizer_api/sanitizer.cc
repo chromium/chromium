@@ -206,7 +206,7 @@ DocumentFragment* Sanitizer::PrepareFragment(LocalDOMWindow* window,
                         WebFeature::kSanitizerAPIFromFragment);
       return input->GetAsDocumentFragment();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -294,7 +294,7 @@ void PaintChunker::CreateScrollHitTestChunk(
       DCHECK(scroll_translation->ScrollNode());
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 #endif
 

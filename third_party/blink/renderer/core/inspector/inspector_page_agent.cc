@@ -124,7 +124,7 @@ String ClientNavigationReasonToProtocol(ClientNavigationReason reason) {
     case ClientNavigationReason::kReload:
       return ReasonEnum::Reload;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ReasonEnum::Reload;
 }

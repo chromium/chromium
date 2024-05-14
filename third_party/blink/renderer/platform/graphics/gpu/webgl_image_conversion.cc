@@ -855,7 +855,7 @@ float ConvertHalfFloatToFloat(uint16_t half) {
 // Pixel unpacking routines.
 template <int format, typename SourceType, typename DstType>
 void Unpack(const SourceType*, DstType*, unsigned) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <>
@@ -1186,7 +1186,7 @@ void Unpack<WebGLImageConversion::kDataFormatRGBA16F, uint16_t, uint8_t>(
 
 template <int format, int alphaOp, typename SourceType, typename DstType>
 void Pack(const SourceType*, DstType*, unsigned) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <>
@@ -3316,7 +3316,7 @@ void FormatConverter::Convert(WebGLImageConversion::DataFormat src_format,
     // Only used by ImageBitmap, when colorspace conversion is needed.
     FORMATCONVERTER_CASE_SRCFORMAT(WebGLImageConversion::kDataFormatRGBA16F)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #undef FORMATCONVERTER_CASE_SRCFORMAT
 }
@@ -3358,7 +3358,7 @@ void FormatConverter::Convert(WebGLImageConversion::DataFormat dst_format,
     FORMATCONVERTER_CASE_DSTFORMAT(WebGLImageConversion::kDataFormatRG16F)
     FORMATCONVERTER_CASE_DSTFORMAT(WebGLImageConversion::kDataFormatRG32F)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
 #undef FORMATCONVERTER_CASE_DSTFORMAT
@@ -3376,7 +3376,7 @@ void FormatConverter::Convert(WebGLImageConversion::AlphaOp alpha_op) {
     FORMATCONVERTER_CASE_ALPHAOP(WebGLImageConversion::kAlphaDoPremultiply)
     FORMATCONVERTER_CASE_ALPHAOP(WebGLImageConversion::kAlphaDoUnmultiply)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 #undef FORMATCONVERTER_CASE_ALPHAOP
 }
@@ -3414,13 +3414,13 @@ void FormatConverter::Convert() {
   // try to return immediately in these cases to avoid generating useless code.
   if (SrcFormat == DstFormat &&
       alphaOp == WebGLImageConversion::kAlphaDoNothing) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // Note that ImageBitmaps with SrcFormat==kDataFormatRGBA16F return
   // false for IsFloatFormat since the input data is uint16_t.
   if (!IsFloatFormat<DstFormat>::value && IsFloatFormat<SrcFormat>::value) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -3430,25 +3430,25 @@ void FormatConverter::Convert() {
       WebGLImageConversion::SrcFormatComesFromDOMElementOrImageData(SrcFormat);
   if (!src_format_comes_from_dom_element_or_image_data &&
       SrcFormat != DstFormat) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // Likewise, only textures uploaded from DOM elements or ImageData can
   // possibly need to be unpremultiplied.
   if (!src_format_comes_from_dom_element_or_image_data &&
       alphaOp == WebGLImageConversion::kAlphaDoUnmultiply) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (src_format_comes_from_dom_element_or_image_data &&
       alphaOp == WebGLImageConversion::kAlphaDoUnmultiply &&
       !SupportsConversionFromDomElements<DstFormat>::value) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if ((!HasAlpha(SrcFormat) || !HasColor(SrcFormat) || !HasColor(DstFormat)) &&
       alphaOp != WebGLImageConversion::kAlphaDoNothing) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // If converting DOM element data to UNSIGNED_INT_5_9_9_9_REV or
@@ -3458,7 +3458,7 @@ void FormatConverter::Convert() {
       SrcFormat != DstFormat &&
       (DstFormat == WebGLImageConversion::kDataFormatRGB5999 ||
        DstFormat == WebGLImageConversion::kDataFormatRGB10F11F11F)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -3559,7 +3559,7 @@ WebGLImageConversion::DataFormat WebGLImageConversion::SkColorTypeToDataFormat(
     case kRGBA_F32_SkColorType:
       return kDataFormatRGBA32F;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kDataFormatNumFormats;
   }
 }

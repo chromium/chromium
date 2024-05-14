@@ -1183,7 +1183,7 @@ String HTMLCanvasElement::ToDataURLInternal(
                                   scaled_time_int);
     } else {
       // Currently we only support three encoding types.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     IdentifiabilityReportWithDigest(IdentifiabilityBenignStringToken(data_url));
     return data_url;

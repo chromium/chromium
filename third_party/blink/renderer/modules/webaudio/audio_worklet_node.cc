@@ -222,7 +222,7 @@ void AudioWorkletNode::FireProcessorError(
   String error_message = "an error thrown from ";
   switch (error_state) {
     case AudioWorkletProcessorErrorState::kNoError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case AudioWorkletProcessorErrorState::kConstructionError:
       error_message = error_message + "AudioWorkletProcessor constructor";

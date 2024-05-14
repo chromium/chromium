@@ -96,7 +96,7 @@ void AbstractInlineTextBox::WillDestroy(const InlineCursor& cursor) {
   if (cursor.CurrentItem()) {
     return AbstractInlineTextBoxCache::WillDestroy(cursor);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 AbstractInlineTextBox::AbstractInlineTextBox(const InlineCursor& cursor)

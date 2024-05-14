@@ -679,7 +679,7 @@ void IDBRequest::SendResultCursor(
           transaction_.Get());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   SendResultCursorInternal(cursor, std::move(key), std::move(primary_key),
                            std::move(value));
@@ -690,14 +690,14 @@ static IDBObjectStore* EffectiveObjectStore(const IDBRequest::Source* source) {
   DCHECK(source);
   switch (source->GetContentType()) {
     case IDBRequest::Source::ContentType::kIDBCursor:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case IDBRequest::Source::ContentType::kIDBIndex:
       return source->GetAsIDBIndex()->objectStore();
     case IDBRequest::Source::ContentType::kIDBObjectStore:
       return source->GetAsIDBObjectStore();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 #endif  // DCHECK_IS_ON()

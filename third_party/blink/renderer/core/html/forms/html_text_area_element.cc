@@ -706,7 +706,7 @@ void HTMLTextAreaElement::SetPlaceholderVisibility(bool visible) {
 void HTMLTextAreaElement::CreateInnerEditorElementIfNecessary() const {
   // HTMLTextArea immediately creates the inner-editor, so this function should
   // never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool HTMLTextAreaElement::IsInnerEditorValueEmpty() const {

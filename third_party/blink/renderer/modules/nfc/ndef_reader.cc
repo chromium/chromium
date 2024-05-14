@@ -60,7 +60,7 @@ v8::Local<v8::Value> NDEFErrorTypeToDOMException(
       return V8ThrowDOMException::CreateOrDie(
           isolate, DOMExceptionCode::kNetworkError, error_message);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // Don't need to handle the case after a NOTREACHED().
   return v8::Local<v8::Value>();
 }

@@ -181,7 +181,7 @@ int LazyLoadImageObserver::GetLazyLoadingImageMarginPx(
     case WebEffectiveConnectionType::kType4G:
       return settings->GetLazyLoadingImageMarginPx4G();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

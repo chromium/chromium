@@ -146,7 +146,7 @@ std::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
     case CSSAtRuleID::kCSSAtRuleAnnotation:
       return StyleRuleFontFeature::FeatureType::kAnnotation;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::nullopt;
 }
@@ -653,7 +653,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
       allowed_rules = kFontFeatureRules;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   bool seen_rule = false;
@@ -939,7 +939,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1118,7 +1118,7 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
 
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case CSSNestingType::kNesting:
       // kPseudoParent

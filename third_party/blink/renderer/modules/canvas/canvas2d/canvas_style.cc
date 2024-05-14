@@ -109,7 +109,7 @@ void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
       flags.setColor(SkColor4f(0.0f, 0.0f, 0.0f, global_alpha));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

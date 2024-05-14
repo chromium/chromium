@@ -90,7 +90,7 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
     case MediaSessionAction::kEnterPictureInPicture:
       return enter_picture_in_picture_action_name;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return WTF::g_empty_atom;
 }
@@ -129,7 +129,7 @@ std::optional<MediaSessionAction> ActionNameToMojomAction(
     return MediaSessionAction::kEnterPictureInPicture;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -147,7 +147,7 @@ const AtomicString& MediaSessionPlaybackStateToString(
     case mojom::blink::MediaSessionPlaybackState::PLAYING:
       return playing_value;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WTF::g_empty_atom;
 }
 

@@ -34,7 +34,7 @@ inline {{enum_name}} cssValueIDToPlatformEnumGenerated(CSSValueID v) {
       return {{enum_name}}::{{value}};
   {% endfor %}
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {{mapping['default_value']}};
   }
 }
@@ -46,7 +46,7 @@ inline CSSValueID platformEnumToCSSValueIDGenerated({{enum_name}} v) {
       return CSSValueID::{{value}};
   {% endfor %}
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CSSValueID::kNone;
   }
 }

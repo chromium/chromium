@@ -70,7 +70,7 @@ Length::ValueRange CSSPrimitiveValue::ConversionToLengthValueRange(
     case ValueRange::kAll:
       return Length::ValueRange::kAll;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Length::ValueRange::kAll;
   }
 }
@@ -268,7 +268,7 @@ CSSPrimitiveValue* CSSPrimitiveValue::CreateFromLength(const Length& length,
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -830,7 +830,7 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
     case kLengthUnitTypeCount:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CSSPrimitiveValue::UnitType::kUnknown;
 }
 
@@ -970,7 +970,7 @@ const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

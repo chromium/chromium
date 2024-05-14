@@ -613,7 +613,7 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           break;
         case PopoverTriggerAction::kNone:
           action = InvokeAction::kNone;
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 

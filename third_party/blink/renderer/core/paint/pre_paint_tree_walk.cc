@@ -190,7 +190,7 @@ bool HasBlockingEventHandlerHelper(const LocalFrame& frame,
         registry.EventHandlerTargets(EventHandlerRegistry::kWheelEventBlocking);
     return blocking->Contains(&target);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -345,7 +345,7 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
   DCHECK(!object.DescendantNeedsPaintPropertyUpdate());
   DCHECK(!object.DescendantShouldCheckLayoutForPaintInvalidation());
   DCHECK(!object.ShouldCheckLayoutForPaintInvalidation());
-  NOTREACHED() << "Unknown reason.";
+  NOTREACHED_IN_MIGRATION() << "Unknown reason.";
 }
 #endif
 

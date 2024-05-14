@@ -105,7 +105,7 @@ String InitiatorFor(const StringImpl* tag_impl, bool link_is_modulepreload) {
     return html_names::kScriptTag.LocalName();
   if (Match(tag_impl, html_names::kVideoTag))
     return html_names::kVideoTag.LocalName();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -658,7 +658,7 @@ class TokenPreloadScanner::StartTagScanner {
       return ResourceType::kCSSStyleSheet;
     if (link_is_preconnect_)
       return ResourceType::kRaw;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ResourceType::kRaw;
   }
 

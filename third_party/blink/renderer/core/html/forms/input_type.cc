@@ -206,7 +206,7 @@ bool InputType::IsAutoDirectionalityFormAssociated() const {
 template <typename T>
 bool ValidateInputType(const T& input_type, const String& value) {
   if (!input_type.CanSetStringValue()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   return !input_type.TypeMismatchFor(value) &&
@@ -263,7 +263,7 @@ bool InputType::IsValidValue(const String& value) const {
     case Type::kText:
       return ValidateInputType(To<TextInputType>(*this), value);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -363,7 +363,7 @@ bool InputType::TypeMismatchFor(const String& value) const {
     case Type::kText:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -408,7 +408,7 @@ bool InputType::ValueMissing(const String& value) const {
     case Type::kSubmit:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -450,7 +450,7 @@ bool InputType::PatternMismatch(const String& value) const {
     case Type::kSubmit:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -557,12 +557,12 @@ bool InputType::StepMismatch(const String& value) const {
 }
 
 String InputType::BadInputText() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetLocale().QueryString(IDS_FORM_VALIDATION_TYPE_MISMATCH);
 }
 
 String InputType::ValueNotEqualText(const Decimal& value) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -571,10 +571,11 @@ String InputType::RangeOverflowText(const Decimal&) const {
       "input-type", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
       input_type, FormControlTypeAsString().GetString().Utf8().c_str());
-  NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlTypeAsString()
-               << "' should have a RangeOverflowText implementation."
-               << "See crbug.com/1423280";
+  NOTREACHED_IN_MIGRATION()
+      << "This should not get called. Check if input type '"
+      << FormControlTypeAsString()
+      << "' should have a RangeOverflowText implementation."
+      << "See crbug.com/1423280";
   return String();
 }
 
@@ -583,16 +584,17 @@ String InputType::RangeUnderflowText(const Decimal&) const {
       "input-type", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
       input_type, FormControlTypeAsString().GetString().Utf8().c_str());
-  NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlTypeAsString()
-               << "' should have a RangeUnderflowText implementation."
-               << "See crbug.com/1423280";
+  NOTREACHED_IN_MIGRATION()
+      << "This should not get called. Check if input type '"
+      << FormControlTypeAsString()
+      << "' should have a RangeUnderflowText implementation."
+      << "See crbug.com/1423280";
   return String();
 }
 
 String InputType::ReversedRangeOutOfRangeText(const Decimal&,
                                               const Decimal&) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -601,10 +603,11 @@ String InputType::RangeInvalidText(const Decimal&, const Decimal&) const {
       "input-type", base::debug::CrashKeySize::Size32);
   base::debug::SetCrashKeyString(
       input_type, FormControlTypeAsString().GetString().Utf8().c_str());
-  NOTREACHED() << "This should not get called. Check if input type '"
-               << FormControlTypeAsString()
-               << "' should have a RangeInvalidText implementation."
-               << "See crbug.com/1474270";
+  NOTREACHED_IN_MIGRATION()
+      << "This should not get called. Check if input type '"
+      << FormControlTypeAsString()
+      << "' should have a RangeInvalidText implementation."
+      << "See crbug.com/1474270";
   return String();
 }
 
@@ -724,7 +727,7 @@ std::pair<String, String> InputType::ValidationMessage(
 
 Decimal InputType::ParseToNumber(const String&,
                                  const Decimal& default_value) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return default_value;
 }
 
@@ -733,7 +736,7 @@ Decimal InputType::ParseToNumberOrNaN(const String& string) const {
 }
 
 String InputType::Serialize(const Decimal&) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -776,7 +779,7 @@ bool InputType::CanSetStringValue() const {
     case Type::kSubmit:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -827,7 +830,7 @@ void InputType::SetFilesAndDispatchEvents(FileList*) {}
 void InputType::SetFilesFromPaths(const Vector<String>& paths) {}
 
 String InputType::ValueInFilenameValueMode() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -906,12 +909,12 @@ void InputType::WarnIfValueIsInvalidAndElementIsVisible(
 void InputType::WarnIfValueIsInvalid(const String&) const {}
 
 bool InputType::ReceiveDroppedFiles(const DragData*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 String InputType::DroppedFileSystemId() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -967,7 +970,7 @@ bool InputType::IsSteppable() const {
     case Type::kText:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1003,7 +1006,7 @@ String InputType::DefaultToolTip(const InputTypeView& input_type_view) const {
 }
 
 Decimal InputType::FindClosestTickMarkValue(const Decimal&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Decimal::Nan();
 }
 
@@ -1146,7 +1149,7 @@ bool InputType::GetAllowedValueStep(Decimal* step) const {
 }
 
 StepRange InputType::CreateStepRange(AnyStepHandling) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return StepRange();
 }
 

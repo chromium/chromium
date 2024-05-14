@@ -1067,7 +1067,7 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
       context.Add("Pbkdf2Params");
       return ParsePbkdf2Params(isolate, raw, params, context, exception_state);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

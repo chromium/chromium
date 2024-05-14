@@ -1309,7 +1309,7 @@ void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

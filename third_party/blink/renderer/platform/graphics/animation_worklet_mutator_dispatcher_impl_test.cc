@@ -377,7 +377,8 @@ class AnimationWorkletMutatorDispatcherImplAsyncTest
   AnimationWorkletMutatorDispatcher::AsyncMutationCompleteCallback
   CreateNotReachedCallback() {
     return CrossThreadBindOnce([](MutateStatus unused) {
-      NOTREACHED() << "Mutate complete callback should not have been triggered";
+      NOTREACHED_IN_MIGRATION()
+          << "Mutate complete callback should not have been triggered";
     });
   }
 

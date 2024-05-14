@@ -125,7 +125,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
     if (host->IsOffscreenCanvas()) {
       switch (canvas_rendering_type_) {
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kOffscreenCanvas_2D;
@@ -146,7 +146,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
     } else {
       switch (canvas_rendering_type_) {
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kHTMLCanvasElement_2D;

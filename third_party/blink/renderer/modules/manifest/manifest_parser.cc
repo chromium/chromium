@@ -558,7 +558,7 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
       return resolved;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KURL();
 }
 

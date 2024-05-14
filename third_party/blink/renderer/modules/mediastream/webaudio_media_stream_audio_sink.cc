@@ -149,7 +149,7 @@ void WebAudioMediaStreamAudioSink::OnData(
 
 void WebAudioMediaStreamAudioSink::SetClient(
     WebAudioSourceProviderClient* client) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebAudioMediaStreamAudioSink::ProvideInput(

@@ -150,7 +150,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   virtual VideoFrameStats GetVideoFrameStats() const {
     // This method is only callable on video tracks.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 
@@ -160,7 +160,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // consecutive but non-overlaping intervals.
   virtual void TransferAudioFrameStatsTo(AudioFrameStats& destination) {
     // This method is only callable on audio tracks.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   virtual CaptureHandle GetCaptureHandle();
@@ -193,7 +193,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
                        const VideoCaptureDeliverFrameCB& callback,
                        MediaStreamVideoSink::IsSecure is_secure,
                        MediaStreamVideoSink::UsesAlpha uses_alpha) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

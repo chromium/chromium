@@ -105,7 +105,7 @@ CSSValueList* CSSValueList::Copy() const {
       new_list = CreateSlashSeparated();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   new_list->values_ = values_;
   new_list->needs_tree_scope_population_ = needs_tree_scope_population_;
@@ -131,7 +131,7 @@ const CSSValueList& CSSValueList::PopulateWithTreeScope(
       new_list = CreateSlashSeparated();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   new_list->values_.ReserveInitialCapacity(values_.size());
   for (const CSSValue* value : values_) {
@@ -153,7 +153,7 @@ String CSSValueList::CustomCSSText() const {
       separator = " / ";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   StringBuilder result;

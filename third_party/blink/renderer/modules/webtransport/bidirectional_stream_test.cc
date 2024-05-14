@@ -109,7 +109,7 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
   // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void CreateStream(

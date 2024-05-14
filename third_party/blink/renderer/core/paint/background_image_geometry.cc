@@ -324,7 +324,7 @@ BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     case EFillBox::kNoClip:
     case EFillBox::kText:
       // These are not supported mask-origin values.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return box_outset;
 }
@@ -509,10 +509,10 @@ void BackgroundImageGeometry::CalculateFillTileSize(
     }
     case EFillSizeType::kSizeNone:
       // This value should only be used while resolving style.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -707,7 +707,7 @@ gfx::RectF BackgroundImageGeometry::ComputePositioningArea(
   switch (layer.Origin()) {
     case EFillBox::kNoClip:
     case EFillBox::kText:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case EFillBox::kBorder:
     case EFillBox::kContent:

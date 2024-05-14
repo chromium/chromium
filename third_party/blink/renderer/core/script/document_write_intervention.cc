@@ -86,7 +86,7 @@ bool IsConnectionEffectively2G(WebEffectiveConnectionType effective_type) {
     case WebEffectiveConnectionType::kTypeOffline:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

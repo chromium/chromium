@@ -438,7 +438,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // they are also a ScriptWrappable. This casts the ExecutionContext to a
   // ScriptWrappable if possible.
   virtual ScriptWrappable* ToScriptWrappable() {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

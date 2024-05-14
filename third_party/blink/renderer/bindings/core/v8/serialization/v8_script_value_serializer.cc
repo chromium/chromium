@@ -1054,7 +1054,7 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
     }
 
     case Options::kUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return v8::Nothing<uint32_t>();
 }

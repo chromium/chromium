@@ -1360,7 +1360,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
         case Length::kDeviceHeight:
         case Length::kNone:
         case Length::kContent:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       break;
@@ -1371,8 +1371,9 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                                                       : BlockContributionSize();
       break;
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED() << "|kForFreeSpace| should only be used to distribute extra "
-                      "space in maximize tracks and stretch auto tracks steps.";
+      NOTREACHED_IN_MIGRATION()
+          << "|kForFreeSpace| should only be used to distribute extra "
+             "space in maximize tracks and stretch auto tracks steps.";
       break;
   }
   return (contribution + margin_sum).ClampNegativeToZero();
@@ -2133,7 +2134,7 @@ LayoutUnit AffectedSizeForContribution(
     case GridItemContributionType::kForMaxContentMaximums:
       return DefiniteGrowthLimit(set);
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LayoutUnit();
   }
 }
@@ -2166,7 +2167,7 @@ void GrowAffectedSizeByPlannedIncrease(
       set->IncreaseGrowthLimit(DefiniteGrowthLimit(*set) + planned_increase);
       return;
     case GridItemContributionType::kForFreeSpace:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -3175,7 +3176,7 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
     case AxisEdge::kLastBaseline:
       return baseline_offset;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 

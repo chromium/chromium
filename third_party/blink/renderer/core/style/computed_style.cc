@@ -1916,7 +1916,7 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
       }
       return text_align;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GetTextAlign();
 }
 
@@ -1996,7 +1996,7 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text, offset_map);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
@@ -2051,11 +2051,11 @@ const AtomicString& ComputedStyle::TextEmphasisMarkString() const {
                  : open_sesame_string;
     }
     case TextEmphasisMark::kAuto:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_null_atom;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_atom;
 }
 
@@ -2097,7 +2097,7 @@ FontBaseline ComputedStyle::GetFontBaseline() const {
     case EDominantBaseline::kUseScript:
     case EDominantBaseline::kNoChange:
     case EDominantBaseline::kResetSize:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -2941,7 +2941,7 @@ FontOrientation ComputedStyleBuilder::ComputeFontOrientation() const {
     case ETextOrientation::kSideways:
       return FontOrientation::kVerticalRotated;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return FontOrientation::kVerticalMixed;
   }
 }

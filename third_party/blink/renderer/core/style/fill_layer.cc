@@ -515,7 +515,7 @@ CompositeOperator FillLayer::Composite() const {
     case CompositingOperator::kPlusLighter:
       return kCompositePlusLighter;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

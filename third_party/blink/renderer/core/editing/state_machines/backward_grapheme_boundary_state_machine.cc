@@ -163,9 +163,10 @@ BackwardGraphemeBoundaryStateMachine::FeedPrecedingCodeUnit(UChar code_unit) {
         boundary_offset_ -= 2;
       return Finish();
     case InternalState::kFinished:
-      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedPrecedingCodeUnit() once it finishes.";
   }
-  NOTREACHED() << "Unhandled state: " << internal_state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
   return Finish();
 }
 
@@ -191,15 +192,16 @@ BackwardGraphemeBoundaryStateMachine::TellEndOfPrecedingText() {
         boundary_offset_ -= 2;
       return Finish();
     case InternalState::kFinished:
-      NOTREACHED() << "Do not call tellEndOfPrecedingText() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call tellEndOfPrecedingText() once it finishes.";
   }
-  NOTREACHED() << "Unhandled state: " << internal_state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << internal_state_;
   return Finish();
 }
 
 TextSegmentationMachineState
 BackwardGraphemeBoundaryStateMachine::FeedFollowingCodeUnit(UChar code_unit) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TextSegmentationMachineState::kInvalid;
 }
 

@@ -51,7 +51,7 @@ SVGTransformDistance::SVGTransformDistance(
 
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SVGTransformType::kUnknown:
       break;
@@ -88,7 +88,7 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
     float scale_factor) const {
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SVGTransformType::kUnknown:
       return SVGTransformDistance();
@@ -113,7 +113,7 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
                                   AffineTransform());
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SVGTransformDistance();
 }
 
@@ -126,7 +126,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
 
   switch (first->TransformType()) {
     case SVGTransformType::kMatrix:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SVGTransformType::kUnknown:
       return transform;
@@ -160,7 +160,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
       transform->SetSkewY(first->Angle() + second->Angle() * repeat_count);
       return transform;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return transform;
 }
 
@@ -173,7 +173,7 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
 
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SVGTransformType::kUnknown:
       return MakeGarbageCollected<SVGTransform>();
@@ -205,14 +205,14 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
       return new_transform;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return new_transform;
 }
 
 float SVGTransformDistance::Distance() const {
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case SVGTransformType::kUnknown:
       return 0;
@@ -228,7 +228,7 @@ float SVGTransformDistance::Distance() const {
     case SVGTransformType::kSkewy:
       return angle_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

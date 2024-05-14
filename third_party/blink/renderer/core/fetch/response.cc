@@ -474,7 +474,7 @@ String Response::type() const {
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return "opaqueredirect";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

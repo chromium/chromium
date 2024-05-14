@@ -44,7 +44,7 @@ class WorkerLocation final : public ScriptWrappable,
 
   KURL Url() const override { return url_; }
   String Input() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return String();
   }
 

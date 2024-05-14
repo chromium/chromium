@@ -55,7 +55,7 @@ const char* StreamTypeToString(MediaStreamSource::StreamType type) {
     case MediaStreamSource::kTypeVideo:
       return "Video";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "Invalid";
 }
@@ -69,7 +69,7 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
     case MediaStreamSource::kReadyStateEnded:
       return "Ended";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "Invalid";
 }

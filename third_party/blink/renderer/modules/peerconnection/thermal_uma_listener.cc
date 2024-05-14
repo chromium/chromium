@@ -38,7 +38,7 @@ ThermalStateUMA ToThermalStateUMA(mojom::blink::DeviceThermalState state) {
     case mojom::blink::DeviceThermalState::kCritical:
       return ThermalStateUMA::kCritical;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ThermalStateUMA::kNominal;
   }
 }

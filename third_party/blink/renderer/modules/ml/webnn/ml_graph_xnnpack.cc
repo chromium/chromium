@@ -142,7 +142,7 @@ DOMExceptionCode XnnStatusToDOMExceptionCode(xnn_status status) {
   switch (status) {
     case xnn_status_success:
       // This function should only be called with an error.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DOMExceptionCode::kNoError;
     case xnn_status_uninitialized:
       return DOMExceptionCode::kUnknownError;
@@ -450,7 +450,7 @@ xnn_status DefineXnnValue(xnn_subgraph_t subgraph,
         break;
       case webnn::mojom::blink::Operand::Kind::kConstant:
         // Should not define an external Value for constant operand.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -2352,7 +2352,7 @@ xnn_status MLGraphXnnpack::CreateXnnSubgraph(
           // Because the operators are visited in topological order, if this
           // operand is an intermediate operand, it should already be defined as
           // an output operand of the dependent operator.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

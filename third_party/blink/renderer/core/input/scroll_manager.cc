@@ -86,7 +86,7 @@ bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
     case ScrollPropagationDirection::kNone:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -257,7 +257,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     ScrollableArea::ScrollCallback callback(WTF::BindOnce(

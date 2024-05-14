@@ -221,7 +221,7 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
       }
       break;
     case kDoneParsingImportRules:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

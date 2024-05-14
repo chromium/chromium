@@ -42,7 +42,7 @@ SkMatrix BoxReflection::ReflectionMatrix() const {
       break;
     default:
       // MSVC requires that SkMatrix be initialized in this unreachable case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       flip_matrix.reset();
       break;
   }

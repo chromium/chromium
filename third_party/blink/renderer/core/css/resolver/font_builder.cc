@@ -73,7 +73,7 @@ AtomicString FontBuilder::GenericFontFamilyName(
     FontDescription::GenericFamilyType generic_family) const {
   switch (generic_family) {
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case FontDescription::kNoFamily:
       return AtomicString();

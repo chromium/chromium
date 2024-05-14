@@ -64,7 +64,7 @@ CSSTranslate* FromCSSTranslateXYZ(const CSSFunctionValue& value) {
           CSSUnitValue::Create(0, CSSPrimitiveValue::UnitType::kPixels),
           length);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -133,7 +133,7 @@ CSSTranslate* CSSTranslate::FromCSSValue(const CSSFunctionValue& value) {
     case CSSValueID::kTranslate3d:
       return FromCSSTranslate3D(value);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

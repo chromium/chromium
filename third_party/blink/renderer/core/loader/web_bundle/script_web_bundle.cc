@@ -180,7 +180,7 @@ void ScriptWebBundle::NotifyLoadingFinished() {
       resource_fetcher->CancelWebBundleSubresourceLoadersFor(web_bundle_token);
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

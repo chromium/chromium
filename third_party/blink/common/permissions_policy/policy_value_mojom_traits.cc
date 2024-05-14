@@ -25,7 +25,7 @@ bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::Read(
     case blink::mojom::PolicyValueDataView::Tag::kNullValue:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -113,7 +113,7 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
       break;
     }
     case CSSBoxType::kMissing:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -272,7 +272,7 @@ inline LayoutUnit BorderBeforeInWritingMode(const LayoutBox& layout_box,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit(layout_box.BorderBlockStart());
 }
 
@@ -291,7 +291,7 @@ inline LayoutUnit BorderAndPaddingBeforeInWritingMode(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return layout_box.BorderAndPaddingBlockStart();
 }
 
@@ -314,7 +314,7 @@ LayoutUnit ShapeOutsideInfo::LogicalTopOffset() const {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 
@@ -365,7 +365,7 @@ LayoutUnit ShapeOutsideInfo::LogicalLeftOffset() const {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 

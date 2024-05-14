@@ -226,7 +226,7 @@ bool LineInfo::ShouldHangTrailingSpaces() const {
     case ETextAlign::kWebkitRight:
       return IsRtl(BaseDirection());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool LineInfo::IsHyphenated() const {

@@ -52,7 +52,7 @@ const char* ModuleScriptLoader::StateToString(ModuleScriptLoader::State state) {
     case State::kFinished:
       return "Finished";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 #endif
@@ -66,7 +66,7 @@ void ModuleScriptLoader::AdvanceState(ModuleScriptLoader::State new_state) {
       DCHECK_EQ(new_state, State::kFinished);
       break;
     case State::kFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -335,7 +335,7 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
       module_script_ = JSModuleScript::Create(params, modulator_, options_);
       break;
     case ModuleType::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   AdvanceState(State::kFinished);

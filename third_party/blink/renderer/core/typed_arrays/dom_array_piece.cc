@@ -34,7 +34,7 @@ DOMArrayPiece::DOMArrayPiece(
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   InitNull();
 }
 

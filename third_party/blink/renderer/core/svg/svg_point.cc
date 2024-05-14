@@ -46,7 +46,7 @@ SVGPoint* SVGPoint::Clone() const {
 
 SVGPropertyBase* SVGPoint::CloneForAnimation(const String& value) const {
   // SVGPoint is not animated by itself.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -60,7 +60,7 @@ String SVGPoint::ValueAsString() const {
 
 void SVGPoint::Add(const SVGPropertyBase* other, const SVGElement*) {
   // SVGPoint is not animated by itself.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SVGPoint::CalculateAnimatedValue(
@@ -72,13 +72,13 @@ void SVGPoint::CalculateAnimatedValue(
     const SVGPropertyBase* to_at_end_of_duration_value,
     const SVGElement*) {
   // SVGPoint is not animated by itself.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 float SVGPoint::CalculateDistance(const SVGPropertyBase* to,
                                   const SVGElement* context_element) const {
   // SVGPoint is not animated by itself.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0.0f;
 }
 

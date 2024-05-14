@@ -337,7 +337,7 @@ void BackgroundFetchRegistration::DidAbort(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const String BackgroundFetchRegistration::result() const {
@@ -349,7 +349,7 @@ const String BackgroundFetchRegistration::result() const {
     case mojom::BackgroundFetchResult::UNSET:
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const String BackgroundFetchRegistration::failureReason() const {
@@ -378,7 +378,7 @@ const String BackgroundFetchRegistration::failureReason() const {
     case mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED:
       return "download-total-exceeded";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool BackgroundFetchRegistration::HasPendingActivity() const {

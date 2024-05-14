@@ -595,7 +595,7 @@ class DepthStencilTrackingGLES2Interface
         depth_stencil_attachment_ = renderbuffer;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

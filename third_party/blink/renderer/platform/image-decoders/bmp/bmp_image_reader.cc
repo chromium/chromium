@@ -514,7 +514,7 @@ bool BMPImageReader::IsInfoHeaderValid() const {
     default:
       // Some type we don't understand.  This should have been caught in
       // ReadInfoHeader().
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

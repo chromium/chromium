@@ -60,7 +60,7 @@ String ToCookieListItemSameSite(net::CookieSameSite same_site) {
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 String ToCookieListItemEffectiveSameSite(

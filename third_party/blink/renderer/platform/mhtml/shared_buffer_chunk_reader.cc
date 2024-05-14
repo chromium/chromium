@@ -113,7 +113,7 @@ bool SharedBufferChunkReader::NextChunk(Vector<char>& chunk,
     segment_ = it->data();
     segment_length_ = base::checked_cast<uint32_t>(it->size());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

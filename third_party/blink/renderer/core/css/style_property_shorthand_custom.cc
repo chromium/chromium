@@ -48,7 +48,7 @@ unsigned indexOfShorthandForLonghand(
       return i;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

@@ -173,7 +173,7 @@ unsigned LayoutTableRow::RowIndex() const {
       return index;
     ++index;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

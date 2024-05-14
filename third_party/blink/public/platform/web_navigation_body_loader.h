@@ -45,7 +45,7 @@ class BLINK_EXPORT WebNavigationBodyLoader {
     virtual void DecodedBodyDataReceived(const WebString& data,
                                          const WebEncodingData& encoding_data,
                                          base::span<const char> encoded_data) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     // Called once at the end. If something went wrong, |error| will be set.

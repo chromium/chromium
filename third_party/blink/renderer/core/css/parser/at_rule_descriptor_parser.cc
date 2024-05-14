@@ -105,7 +105,7 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
     case CSSValueID::kColorSbix:
       return CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown;
   }
 }
@@ -300,7 +300,7 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
     case StyleRule::kFunction:
     case StyleRule::kPositionTry:
       // TODO(andruud): Handle other descriptor types here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

@@ -53,7 +53,7 @@ const char* KeyTypeToString(WebCryptoKeyType type) {
     case kWebCryptoKeyTypePrivate:
       return "private";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -84,7 +84,7 @@ const char* KeyUsageToString(WebCryptoKeyUsage usage) {
     if (kKeyUsageMappings[i].value == usage)
       return kKeyUsageMappings[i].name;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

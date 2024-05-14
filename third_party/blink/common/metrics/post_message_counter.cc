@@ -88,7 +88,7 @@ PostMessageType GetPostMessageType(
           kThirdPartyToThirdPartyDifferentBucketDifferentOrigin;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PostMessageType::kOpaque;
 }
 
@@ -243,7 +243,7 @@ bool ShouldSendPostMessage(PostMessageType type) {
                    kPostMessageThirdPartyToThirdPartyDifferentBucketSameOriginBlockedIfStorageIsPartitioned) &&
            blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 }  // namespace

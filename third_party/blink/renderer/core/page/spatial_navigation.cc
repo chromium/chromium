@@ -105,7 +105,7 @@ static bool RectsIntersectOnOrthogonalAxis(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return a.Right() > b.X() && a.X() < b.Right();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -139,7 +139,7 @@ static bool IsRectInDirection(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return Below(target_rect, cur_rect);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -310,7 +310,7 @@ bool ScrollInDirection(Node* container, SpatialNavigationDirection direction) {
       dy = pixels_per_line_step;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -406,7 +406,7 @@ bool CanScrollInDirection(const Node* container,
                       container->GetLayoutBox()->ClientHeight() <
                   container->GetLayoutBox()->ScrollHeight());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -444,7 +444,7 @@ bool CanScrollInDirection(const LocalFrame* frame,
     case SpatialNavigationDirection::kDown:
       return rect.Height() + offset.y() < size.height();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -510,7 +510,7 @@ void EntryAndExitPointsForDirection(SpatialNavigationDirection direction,
         entry_point.SetY(starting_rect.Bottom());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   switch (direction) {
@@ -553,7 +553,7 @@ void EntryAndExitPointsForDirection(SpatialNavigationDirection direction,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -574,7 +574,7 @@ double ProjectedOverlap(SpatialNavigationDirection direction,
       current.Intersect(candidate);
       return current.Width();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kMaxDistance;
   }
 }
@@ -595,7 +595,7 @@ double Alignment(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return (kAlignWeight * projected_overlap) / current.Width();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kMaxDistance;
   }
 }
@@ -699,7 +699,7 @@ double ComputeDistanceDataForNode(SpatialNavigationDirection direction,
           (x_axis + orthogonal_bias) * kOrthogonalWeightForUpDown;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kMaxDistance;
   }
 
@@ -737,7 +737,7 @@ PhysicalRect OppositeEdge(SpatialNavigationDirection side,
       thin_rect.offset.top += 1;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return thin_rect;

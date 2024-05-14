@@ -249,7 +249,8 @@ bool MatchLocator(const ElementLocator& locator,
         break;
       }
       case ElementLocator_Component::COMPONENT_NOT_SET:
-        NOTREACHED() << "ElementLocator_Component::component not populated";
+        NOTREACHED_IN_MIGRATION()
+            << "ElementLocator_Component::component not populated";
         return false;
     }
   }

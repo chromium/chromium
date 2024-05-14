@@ -157,7 +157,7 @@ String ServiceWorker::state() const {
     case mojom::blink::ServiceWorkerState::kRedundant:
       return "redundant";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_atom;
 }
 

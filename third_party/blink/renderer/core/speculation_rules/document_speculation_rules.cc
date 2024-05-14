@@ -66,7 +66,7 @@ bool AcceptableReferrerPolicy(const Referrer& referrer,
       return true;
 
     case network::mojom::ReferrerPolicy::kDefault:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -252,7 +252,7 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
     } else if (rule_set->source()->IsFromBrowserInjected()) {
       outcome = SpeculationRulesLoadOutcome::kParseErrorBrowserInjected;
     } else {
-      NOTREACHED() << "error with unknown rule source";
+      NOTREACHED_IN_MIGRATION() << "error with unknown rule source";
     }
   } else if (rule_set->source()->IsFromBrowserInjected()) {
     // Don't insert browser-injected rule sets on pages that have other rules.

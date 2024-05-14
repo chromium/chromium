@@ -57,7 +57,7 @@ void CheckSourceAndTrackSameType(
             MediaStreamTrackPlatform::StreamType::kVideo);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

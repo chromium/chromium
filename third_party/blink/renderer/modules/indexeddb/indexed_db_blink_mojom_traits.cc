@@ -105,7 +105,7 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     case blink::mojom::IDBKeyType::Min:      // Only used in the browser.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::IDBKeyDataView::Tag::kOtherNone;
 }
 
@@ -292,7 +292,7 @@ StructTraits<blink::mojom::IDBKeyPathDataView, blink::IDBKeyPath>::data(
     case blink::mojom::IDBKeyPathType::Null:
       break;  // Not used, NOTREACHED.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

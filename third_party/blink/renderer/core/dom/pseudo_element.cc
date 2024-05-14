@@ -126,7 +126,7 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       return transition_outgoing_image;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   DEFINE_STATIC_LOCAL(QualifiedName, name, (AtomicString("::unknown")));
   return name;
@@ -421,7 +421,7 @@ bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
                               parent_style->GeneratesMarkerImage());
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

@@ -18,7 +18,7 @@ TEST(AssertionsTest, Assertions) {
   EXPECT_DEATH_IF_SUPPORTED(DCHECK_AT(false, __FILE__, __LINE__), "");
 #else
   DCHECK(false);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   DCHECK_AT(false, __FILE__, __LINE__);
 #endif
 

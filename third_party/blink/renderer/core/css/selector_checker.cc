@@ -591,7 +591,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kScopeActivation:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSelectorFailsCompletely;
 }
 
@@ -663,7 +663,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       }
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -810,7 +810,7 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
       return CheckPseudoElement(context, result);
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -936,7 +936,7 @@ inline bool CacheMatchedElementsAndReturnMatchedResult(
           has_anchor_element, has_argument_leftmost_compound_matches,
           cache_scope_context, TraverseToPreviousSibling);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -1004,7 +1004,7 @@ void SetAffectedByHasFlagsForHasAnchorElement(
           argument_context.GetSiblingsAffectedByHasFlags());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -2051,7 +2051,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return true;
     case CSSSelector::kPseudoUnknown:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return false;
@@ -2086,7 +2086,7 @@ bool SelectorChecker::CheckPseudoAutofill(CSSSelector::PseudoType pseudo_type,
     case CSSSelector::kPseudoAutofillSelected:
       return form_control_element->IsAutofilled();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

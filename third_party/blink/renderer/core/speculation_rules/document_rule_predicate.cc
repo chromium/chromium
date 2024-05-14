@@ -650,19 +650,19 @@ DocumentRulePredicate* DocumentRulePredicate::MakeDefaultPredicate() {
 
 HeapVector<Member<DocumentRulePredicate>>
 DocumentRulePredicate::GetSubPredicatesForTesting() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
 HeapVector<Member<URLPattern>> DocumentRulePredicate::GetURLPatternsForTesting()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
 HeapVector<Member<StyleRule>> DocumentRulePredicate::GetStyleRulesForTesting()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

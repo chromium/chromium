@@ -54,7 +54,7 @@ media::CdmSessionType ConvertSessionType(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media::CdmSessionType::kTemporary;
 }
 
@@ -112,7 +112,7 @@ bool SanitizeInitData(media::EmeInitDataType init_data_type,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   error_message->assign("Initialization data type is not supported.");
   return false;
 }

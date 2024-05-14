@@ -50,7 +50,7 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
       case BasicShape::kBasicShapePolygonType:
         return GetWindRule() == other.GetWindRule() && size() == other.size();
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }
@@ -714,7 +714,7 @@ InterpolationValue basic_shape_interpolation_functions::MaybeConvertBasicShape(
     case BasicShape::kStylePathType:
       return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -733,7 +733,7 @@ InterpolableValue* basic_shape_interpolation_functions::CreateNeutralValue(
     case BasicShape::kBasicShapePolygonType:
       return polygon_functions::CreateNeutralValue(non_interpolable_value);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -765,7 +765,7 @@ scoped_refptr<BasicShape> basic_shape_interpolation_functions::CreateBasicShape(
       return polygon_functions::CreateBasicShape(
           interpolable_value, non_interpolable_value, conversion_data);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

@@ -93,7 +93,7 @@ inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
     case LineBreakStrictness::kLoose:
       return "loose";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -400,7 +400,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
       (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return string_;
 }
 

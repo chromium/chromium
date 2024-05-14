@@ -267,7 +267,7 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
     case kDefaultContext:
       // Feature usage for the default context is recorded on the browser side.
       // components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case kExtensionContext:
       UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Extensions.Features", feature,
@@ -278,10 +278,10 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
                                 WebFeature::kNumberOfFeatures);
       return;
     case kDisabledContext:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,

@@ -34,7 +34,7 @@ ExceptionCode WebCdmExceptionToExceptionCode(
       return ToExceptionCode(DOMExceptionCode::kQuotaExceededError);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ToExceptionCode(DOMExceptionCode::kUnknownError);
 }
 
@@ -48,7 +48,7 @@ ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;
 
 void ContentDecryptionModuleResultPromise::Complete() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
   Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
@@ -57,7 +57,7 @@ void ContentDecryptionModuleResultPromise::Complete() {
 
 void ContentDecryptionModuleResultPromise::CompleteWithContentDecryptionModule(
     WebContentDecryptionModule* cdm) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
   Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),
@@ -66,7 +66,7 @@ void ContentDecryptionModuleResultPromise::CompleteWithContentDecryptionModule(
 
 void ContentDecryptionModuleResultPromise::CompleteWithSession(
     WebContentDecryptionModuleResult::SessionStatus status) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   if (!IsValidToFulfillPromise())
     return;
   Reject(ToExceptionCode(DOMExceptionCode::kInvalidStateError),

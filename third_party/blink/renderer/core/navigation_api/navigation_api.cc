@@ -362,7 +362,7 @@ void NavigationApi::SetEntriesForRestore(
       navigation_type = "replace";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   activation_->Update(currentEntry(),

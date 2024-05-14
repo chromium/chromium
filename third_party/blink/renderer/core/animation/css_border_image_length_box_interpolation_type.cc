@@ -43,7 +43,7 @@ const BorderImageLengthBox& GetBorderImageLengthBox(
     case CSSPropertyID::kWebkitMaskBoxImageWidth:
       return style.MaskBoxImageWidth();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return style.BorderImageOutset();
   }
 }
@@ -65,7 +65,7 @@ void SetBorderImageLengthBox(const CSSProperty& property,
       builder.SetMaskBoxImageWidth(box);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -267,7 +267,7 @@ void CompositeSide(UnderlyingValue& underlying_value,
     case SideType::kAuto:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -411,7 +411,7 @@ void CSSBorderImageLengthBoxInterpolationType::ApplyStandardPropertyValue(
             .CreateLength(state.CssToLengthConversionData(),
                           Length::ValueRange::kNonNegative);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return Length::Auto();
     }
   };

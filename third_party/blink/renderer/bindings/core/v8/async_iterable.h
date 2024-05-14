@@ -150,7 +150,7 @@ class PairAsyncIterationSource : public AsyncIterationSourceBase {
         return ESCreateIterResultObject(script_state, false, v8_key, v8_value);
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Value>();
   }
 };

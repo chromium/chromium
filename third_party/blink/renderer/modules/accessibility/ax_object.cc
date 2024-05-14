@@ -196,7 +196,7 @@ String IgnoredReasonName(AXIgnoredReason reason) {
     case kAXUninteresting:
       return "uninteresting";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -821,7 +821,7 @@ void AXObject::SetParent(AXObject* new_parent) {
         break;
       }
     }
-    NOTREACHED() << message.str();
+    NOTREACHED_IN_MIGRATION() << message.str();
   }
 
   if (new_parent) {
@@ -919,7 +919,7 @@ AXObject* AXObject::ComputeParentOrNull() const {
 
   AXObject* ax_parent = nullptr;
   if (IsAXInlineTextBox()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "AXInlineTextBox box tried to compute a new parent, but they are "
            "not allowed to exist even temporarily without a parent, as their "
            "existence depends on the parent text object. Parent text = "
@@ -3037,7 +3037,7 @@ bool AXObject::IsIgnored() {
   UpdateCachedAttributeValuesIfNeeded();
 #if defined(AX_FAIL_FAST_BUILD)
   if (!cached_is_ignored_ && IsDetached()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "A detached node cannot be ignored: " << this
         << "\nThe Detach() method sets cached_is_ignored_ to true, but "
            "something has recomputed it.";
@@ -5447,9 +5447,10 @@ const AXObject::AXObjectVector AXObject::UnignoredChildren() {
   UpdateChildrenIfNecessary();
 
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support finding the unignored children of "
-                    "objects excluded from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support finding the unignored children of "
+           "objects excluded from the accessibility tree: "
+        << this;
     return {};
   }
 
@@ -5505,7 +5506,7 @@ AXObject* AXObject::LastChildIncludingIgnored() const {
 
 AXObject* AXObject::DeepestFirstChildIncludingIgnored() const {
   if (IsDetached()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   if (!ChildCountIncludingIgnored())
@@ -5520,7 +5521,7 @@ AXObject* AXObject::DeepestFirstChildIncludingIgnored() const {
 
 AXObject* AXObject::DeepestLastChildIncludingIgnored() const {
   if (IsDetached()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   if (!ChildCountIncludingIgnored())
@@ -5535,9 +5536,10 @@ AXObject* AXObject::DeepestLastChildIncludingIgnored() const {
 
 AXObject* AXObject::NextSiblingIncludingIgnored() const {
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << this;
     return nullptr;
   }
 
@@ -5553,9 +5555,10 @@ AXObject* AXObject::NextSiblingIncludingIgnored() const {
 
 AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << this;
     return nullptr;
   }
 
@@ -5571,9 +5574,10 @@ AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
 
 AXObject* AXObject::CachedPreviousSiblingIncludingIgnored() const {
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << this;
     return nullptr;
   }
 
@@ -5624,9 +5628,10 @@ AXObject* AXObject::NextInPreOrderIncludingIgnored(
 AXObject* AXObject::PreviousInPreOrderIncludingIgnored(
     const AXObject* within) const {
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << this;
     return nullptr;
   }
   if (within == this)
@@ -5644,9 +5649,10 @@ AXObject* AXObject::PreviousInPreOrderIncludingIgnored(
 AXObject* AXObject::PreviousInPostOrderIncludingIgnored(
     const AXObject* within) const {
   if (!IsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << this;
     return nullptr;
   }
 
@@ -5732,10 +5738,11 @@ AXObject* AXObject::UnignoredNextSibling() const {
 
 AXObject* AXObject::UnignoredPreviousSibling() const {
   if (IsIgnored()) {
-    NOTREACHED() << "We don't support finding unignored siblings for ignored "
-                    "objects because it is not clear whether to search for the "
-                    "sibling in the unignored tree or in the whole tree: "
-                 << this;
+    NOTREACHED_IN_MIGRATION()
+        << "We don't support finding unignored siblings for ignored "
+           "objects because it is not clear whether to search for the "
+           "sibling in the unignored tree or in the whole tree: "
+        << this;
     return nullptr;
   }
 
@@ -5971,11 +5978,11 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
           parent_for_repair->CheckIncludedObjectConnectedToRoot();
         }
 
-        NOTREACHED() << "Cannot find included child in parents children:\n"
-                     << "\n* Child: " << included_child
-                     << "\n* Parent:  " << included_parent
-                     << "\n--------------\n"
-                     << included_parent->GetAXTreeForThis();
+        NOTREACHED_IN_MIGRATION()
+            << "Cannot find included child in parents children:\n"
+            << "\n* Child: " << included_child
+            << "\n* Parent:  " << included_parent << "\n--------------\n"
+            << included_parent->GetAXTreeForThis();
       }
       if (included_parent->IsRoot()) {
         return;
@@ -5984,9 +5991,10 @@ void AXObject::CheckIncludedObjectConnectedToRoot() const {
     }
   }
 
-  NOTREACHED() << "Did not find included parent path to root:"
-               << "\n* Last found included parent: " << included_parent
-               << "\n* Current object in tree: " << GetAXTreeForThis();
+  NOTREACHED_IN_MIGRATION()
+      << "Did not find included parent path to root:"
+      << "\n* Last found included parent: " << included_parent
+      << "\n* Current object in tree: " << GetAXTreeForThis();
 }
 #endif
 
@@ -6430,7 +6438,7 @@ void AXObject::Scroll(ax::mojom::blink::Action scroll_action) const {
       x = std::min(initial.x() + page_x, max.x());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   SetScrollOffset(gfx::Point(x, y));
@@ -7148,7 +7156,7 @@ void AXObject::DispatchKeyboardEvent(LocalDOMWindow* local_dom_window,
       key.native_key_code = key.windows_key_code = blink::VKEY_NEXT;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   GetNode()->DispatchEvent(
       *blink::KeyboardEvent::Create(key, local_dom_window, true));

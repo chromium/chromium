@@ -21,7 +21,7 @@ String Directive::type() const {
 
   switch (type_) {
     case kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
     case kText:
       return text;
@@ -29,7 +29,7 @@ String Directive::type() const {
       return selector;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

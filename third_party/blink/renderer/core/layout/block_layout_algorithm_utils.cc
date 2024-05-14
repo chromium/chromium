@@ -114,7 +114,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
     case ContentPosition::kLastBaseline:
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return BlockContentAlignment::kStart;
 }

@@ -70,7 +70,7 @@ WebInputEventResult ToWebInputEventResult(DispatchEventResult result) {
     case DispatchEventResult::kCanceledBeforeDispatch:
       return WebInputEventResult::kHandledSuppressed;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebInputEventResult::kHandledSystem;
   }
 }

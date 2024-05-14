@@ -517,7 +517,7 @@ HTMLTableElement::CellBorders HTMLTableElement::GetCellBorders() const {
         return kSolidBorders;
       return kInsetBorders;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kNoBorders;
 }
 

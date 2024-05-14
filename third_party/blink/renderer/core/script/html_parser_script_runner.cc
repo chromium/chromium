@@ -586,7 +586,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
       case ScriptSchedulingType::kForceInOrder:
       case ScriptSchedulingType::kImmediate:
       case ScriptSchedulingType::kNotSet:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

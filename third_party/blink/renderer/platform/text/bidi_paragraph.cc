@@ -29,7 +29,7 @@ bool BidiParagraph::SetParagraph(const String& text,
   ubidi_setPara(ubidi_.get(), text.Characters16(), text.length(), para_level,
                 nullptr, &error);
   if (U_FAILURE(error)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     ubidi_ = nullptr;
     return false;
   }

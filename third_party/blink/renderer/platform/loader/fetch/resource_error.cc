@@ -240,7 +240,7 @@ BlockedByResponseReasonToResourceRequestBlockedReason(
     case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
       return blink::ResourceRequestBlockedReason::kCorpNotSameSite;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::ResourceRequestBlockedReason::kOther;
 }
 }  // namespace
@@ -282,7 +282,7 @@ String DescriptionForBlockedByClientOrResponse(
   std::string detail;
   switch (*reason) {
     case ResourceRequestBlockedReason::kOther:
-      NOTREACHED();  // handled above
+      NOTREACHED_IN_MIGRATION();  // handled above
       break;
     case ResourceRequestBlockedReason::kCSP:
       detail = "CSP";

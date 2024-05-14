@@ -446,7 +446,7 @@ FileSystemHandle* V8ScriptValueDeserializerForModules::ReadFileSystemHandle(
           execution_context, name, std::move(directory_handle));
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
   }
@@ -593,7 +593,7 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
       break;
     case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
     case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
       uint32_t read_sub_capture_target_version;

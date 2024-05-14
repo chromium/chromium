@@ -194,7 +194,7 @@ Node* PositionTemplate<Strategy>::ComputeContainerNode() const {
       return parent;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -226,7 +226,7 @@ int PositionTemplate<Strategy>::ComputeOffsetInContainerNode() const {
     case PositionAnchorType::kAfterAnchor:
       return Strategy::Index(*anchor_node_) + 1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -291,7 +291,7 @@ Node* PositionTemplate<Strategy>::ComputeNodeBeforePosition() const {
     case PositionAnchorType::kAfterAnchor:
       return anchor_node_.Get();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -310,7 +310,7 @@ Node* PositionTemplate<Strategy>::ComputeNodeAfterPosition() const {
     case PositionAnchorType::kAfterAnchor:
       return Strategy::NextSibling(*anchor_node_);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -452,7 +452,7 @@ bool PositionTemplate<Strategy>::AtFirstEditingPositionForNode() const {
       // of DOM tree version.
       return !EditingStrategy::LastOffsetForEditing(AnchorNode());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -648,7 +648,7 @@ Position ToPositionInDOMTree(const PositionInFlatTree& position) {
       return Position::LastPositionInNode(*anchor_node);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Position();
   }
 }
@@ -670,7 +670,7 @@ String PositionTemplate<Strategy>::ToAnchorTypeAndOffsetString() const {
     case PositionAnchorType::kAfterAnchor:
       return "afterAnchor";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -721,7 +721,7 @@ std::ostream& operator<<(std::ostream& ostream,
     case PositionAnchorType::kOffsetInAnchor:
       return ostream << "offsetInAnchor";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ostream << "anchorType=" << static_cast<int>(anchor_type);
 }
 

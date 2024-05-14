@@ -74,7 +74,7 @@ CanvasImageSource* ToCanvasImageSource(const V8CanvasImageSource* value,
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

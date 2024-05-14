@@ -207,7 +207,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
   for (auto& unit : base::Reversed(mapping_units_)) {
     if (unit.text_content_end_ < offset) {
       // There are no collapsed unit.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     if (unit.text_content_start_ != offset ||
@@ -233,7 +233,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
                           unit.text_content_end_, unit.text_content_end_));
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 

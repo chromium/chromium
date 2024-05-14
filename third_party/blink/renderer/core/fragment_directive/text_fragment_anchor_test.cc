@@ -162,8 +162,9 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
           WebCoalescedInputEvent(event, ui::LatencyInfo()));
       WebView().MainFrameWidget()->DispatchBufferedTouchEvents();
     } else {
-      NOTREACHED() << "Only needed to support Gesture/Touch until now. "
-                      "Implement others if new modality is needed.";
+      NOTREACHED_IN_MIGRATION()
+          << "Only needed to support Gesture/Touch until now. "
+             "Implement others if new modality is needed.";
     }
   }
 };

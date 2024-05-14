@@ -156,7 +156,7 @@ static EphemeralRangeInFlatTree CalcSelectionInFlatTree(
                              : EphemeralRangeInFlatTree(focus, anchor);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -419,7 +419,7 @@ static OldSelectedNodes ResetOldSelectedNodes(
           break;
         }
         default: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         }
       }
@@ -610,7 +610,7 @@ static LayoutTextSelectionStatus ComputeSelectionStatusForNode(
       return {start_offset.value(), end_offset.value(),
               SelectionIncludeEnd::kNotInclude};
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {0, 0, SelectionIncludeEnd::kNotInclude};
   }
 }

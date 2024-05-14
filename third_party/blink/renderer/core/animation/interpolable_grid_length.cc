@@ -37,7 +37,7 @@ Length CreateContentSizedLength(
     case InterpolableGridLength::kMaxContent:
       return Length(Length::kMaxContent);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Length(Length::kFixed);
   }
 }

@@ -25,7 +25,7 @@ std::ostream& operator<<(std::ostream& out, const SelectionState state) {
     case SelectionState::kContain:
       return out << "Contain";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return out;
 }
 

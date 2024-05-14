@@ -400,7 +400,7 @@ TextDecorationStyleToAXTextDecorationStyle(
       return ax::mojom::blink::TextDecorationStyle::kWavy;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ax::mojom::blink::TextDecorationStyle::kNone;
 }
 
@@ -2353,7 +2353,8 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
 #endif
 
   if (IsDetached()) {
-    NOTREACHED() << "Do not compute role on detached object: " << this;
+    NOTREACHED_IN_MIGRATION()
+        << "Do not compute role on detached object: " << this;
     return ax::mojom::blink::Role::kUnknown;
   }
 
@@ -3263,7 +3264,7 @@ ax::mojom::blink::ListStyle AXNodeObject::GetListStyle() const {
         return ax::mojom::blink::ListStyle::kOther;
       case CounterStyleSpeakAs::kAuto:
       case CounterStyleSpeakAs::kReference:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return ax::mojom::blink::ListStyle::kOther;
     }
   }
@@ -3508,7 +3509,7 @@ ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AXObject::GetTextDirection();
 }
 
@@ -4492,7 +4493,7 @@ static LayoutBlockFlow* GetNearestBlockFlow(LayoutObject* object) {
     current = current->Parent();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -5525,10 +5526,10 @@ void AXNodeObject::AddOwnedChildren() {
 }
 
 void AXNodeObject::AddChildrenImpl() {
-#define CHECK_ATTACHED()                                  \
-  if (IsDetached()) {                                     \
-    NOTREACHED() << "Detached adding children: " << this; \
-    return;                                               \
+#define CHECK_ATTACHED()                                               \
+  if (IsDetached()) {                                                  \
+    NOTREACHED_IN_MIGRATION() << "Detached adding children: " << this; \
+    return;                                                            \
   }
 
   CHECK(NeedsToUpdateChildren());

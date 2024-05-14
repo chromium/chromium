@@ -272,7 +272,7 @@ const AtomicString& AudioKindToString(
       return AudioTrack::CommentaryKeyword();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_atom;
 }
 
@@ -295,7 +295,7 @@ const AtomicString& VideoKindToString(
       return VideoTrack::CommentaryKeyword();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_atom;
 }
 
@@ -343,7 +343,7 @@ String PreloadTypeToString(WebMediaPlayer::Preload preload_type) {
       return "auto";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -1222,7 +1222,7 @@ void HTMLMediaElement::SelectMediaResource() {
       DVLOG(3) << "selectMediaResource(" << *this << "), using source element";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -2814,7 +2814,7 @@ ScriptPromise<IDLUndefined> HTMLMediaElement::playForBindings(
         message = "The element has no supported sources.";
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     resolver->Reject(MakeGarbageCollected<DOMException>(code.value(), message));
     return promise;
@@ -4581,7 +4581,7 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
       reason = " because a pause was requested by the browser";
       break;
     case PlayPromiseError::kNotSupported:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   RejectPlayPromisesInternal(
       DOMExceptionCode::kAbortError,
@@ -4721,7 +4721,7 @@ void HTMLMediaElement::PausePlayback(PauseReason pause_reason) {
     case PauseReason::kRemotePlayStateChange:
       return PauseInternal(PlayPromiseError::kPaused_RemotePlayStateChange);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {

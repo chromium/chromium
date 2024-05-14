@@ -101,7 +101,7 @@ media::EncryptionScheme ConvertEncryptionScheme(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return media::EncryptionScheme::kUnencrypted;
 }
 
@@ -242,7 +242,7 @@ class FakeKeySystems : public media::KeySystems {
       case EmeInitDataType::KEYIDS:
         return init_data_type_keyids_supported_;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -348,7 +348,7 @@ class FakeKeySystems : public media::KeySystems {
       return EmeConfig::UnsupportedRule();
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EmeConfig::UnsupportedRule();
   }
 

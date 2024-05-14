@@ -60,7 +60,7 @@ StringView ShortAddressSpace(network::mojom::IPAddressSpace space) {
       return "local";
   }
 
-  NOTREACHED() << "Invalid IPAddressSpace enum value: " << space;
+  NOTREACHED_IN_MIGRATION() << "Invalid IPAddressSpace enum value: " << space;
   return "invalid";
 }
 

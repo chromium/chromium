@@ -111,7 +111,7 @@ mojom::blink::LockMode Lock::StringToMode(const String& string) {
     return mojom::blink::LockMode::SHARED;
   if (string == kLockModeNameExclusive)
     return mojom::blink::LockMode::EXCLUSIVE;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::blink::LockMode::SHARED;
 }
 
@@ -123,7 +123,7 @@ String Lock::ModeToString(mojom::blink::LockMode mode) {
     case mojom::blink::LockMode::EXCLUSIVE:
       return kLockModeNameExclusive;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 

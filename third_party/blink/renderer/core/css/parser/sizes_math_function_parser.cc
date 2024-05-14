@@ -220,7 +220,7 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
       case kEOFToken:
         break;
       case kCommentToken:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case kCDOToken:
       case kCDCToken:

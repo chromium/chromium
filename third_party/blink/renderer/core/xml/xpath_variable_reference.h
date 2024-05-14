@@ -41,7 +41,7 @@ class VariableReference final : public Expression {
  private:
   Value Evaluate(EvaluationContext&) const override;
   Value::Type ResultType() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return Value::kNumberValue;
   }
 

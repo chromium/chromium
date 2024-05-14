@@ -113,7 +113,7 @@ WebGPUExecutionContextToken GetExecutionContextToken(
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebGPUExecutionContextToken();
 }
 

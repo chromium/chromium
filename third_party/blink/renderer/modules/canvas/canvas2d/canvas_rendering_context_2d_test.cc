@@ -1404,7 +1404,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
           data_array = data_f32;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
 
       image_data = ImageData::CreateForTest(gfx::Size(2, 2), data_array,
@@ -1424,7 +1424,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
               ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
 
       // Convert the original data used to create ImageData to the

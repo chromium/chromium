@@ -37,7 +37,7 @@ wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
     case media::VIDEO_ROTATION_270:
       return wgpu::ExternalTextureRotation::Rotate270Degrees;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 }  // namespace
 

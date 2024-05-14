@@ -29,7 +29,7 @@ class WebAudioLatencyHint {
     } else if (category == "playback") {
       category_ = kCategoryPlayback;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       category_ = kCategoryInteractive;
     }
   }

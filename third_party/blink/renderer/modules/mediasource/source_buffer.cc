@@ -1548,7 +1548,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       DVLOG(3) << __func__ << " this=" << this
                << " failed: unsupported track type " << track_info.track_type;
       // TODO(servolk): Add handling of text tracks.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     if (first_initialization_segment_received_ && !track) {
       DVLOG(3) << __func__ << " this=" << this

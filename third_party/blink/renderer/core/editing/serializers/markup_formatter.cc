@@ -158,7 +158,7 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
                                         const Node& node) {
   switch (node.getNodeType()) {
     case Node::kTextNode:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Node::kCommentNode:
       AppendComment(result, To<Comment>(node).data());
@@ -177,13 +177,13 @@ void MarkupFormatter::AppendStartMarkup(StringBuilder& result,
                                   To<ProcessingInstruction>(node).data());
       break;
     case Node::kElementNode:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Node::kCdataSectionNode:
       AppendCDATASection(result, To<CDATASection>(node).data());
       break;
     case Node::kAttributeNode:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

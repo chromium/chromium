@@ -438,7 +438,7 @@ static Position PositionForIndex(HTMLElement* inner_editor, unsigned index) {
       continue;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   DCHECK(last_br_or_text);
   return LastPositionInOrAfterNode(*last_br_or_text);
@@ -651,7 +651,7 @@ static const AtomicString& DirectionString(
       return backward;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return none;
 }
 

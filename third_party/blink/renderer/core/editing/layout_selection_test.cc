@@ -938,7 +938,7 @@ class NGLayoutSelectionTest
       if (auto* text_node = DynamicTo<Text>(runner))
         return text_node;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

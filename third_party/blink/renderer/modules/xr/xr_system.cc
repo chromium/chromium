@@ -112,7 +112,7 @@ device::mojom::blink::XRSessionMode stringToSessionMode(
     return device::mojom::blink::XRSessionMode::kImmersiveAr;
   }
 
-  NOTREACHED();  // Only strings in the enum are allowed by IDL.
+  NOTREACHED_IN_MIGRATION();  // Only strings in the enum are allowed by IDL.
   return device::mojom::blink::XRSessionMode::kInline;
 }
 
@@ -126,7 +126,7 @@ const char* SessionModeToString(device::mojom::blink::XRSessionMode mode) {
       return "immersive-ar";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

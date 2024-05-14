@@ -146,7 +146,7 @@ inline ImageBitmapSource* ToImageBitmapSourceInternal(
       return value->GetAsVideoFrame();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -324,7 +324,7 @@ void ImageBitmapFactories::ImageBitmapLoader::RejectPromise(
           "The ImageBitmap could not be allocated."));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   if (loader_) {
     loader_->Cancel();

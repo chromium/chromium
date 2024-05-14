@@ -74,24 +74,24 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              bool,
                              const gfx::Point&,
                              const gfx::Rect&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   virtual bool CopyToResourceProvider(CanvasResourceProvider*) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   virtual bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                                       const gfx::Rect& copy_rect) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
   virtual gpu::MailboxHolder GetMailboxHolder() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gpu::MailboxHolder();
   }
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // underlying gpu::SharedImage may be used with.
   // The gpu::SharedImageInterface is using uint32_t directly.
   virtual uint32_t GetUsage() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
   bool IsPremultiplied() const {

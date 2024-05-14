@@ -128,7 +128,7 @@ gfx::RectF TransformHelper::ComputeReferenceBox(
     }
     case ETransformBox::kContentBox:
     case ETransformBox::kBorderBox:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   const float zoom = style.EffectiveZoom();

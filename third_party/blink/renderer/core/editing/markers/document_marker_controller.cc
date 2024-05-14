@@ -87,7 +87,7 @@ DocumentMarker::MarkerTypeIndex MarkerTypeToMarkerIndex(
       return DocumentMarker::kCustomHighlightMarkerIndex;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DocumentMarker::kSpellingMarkerIndex;
 }
 
@@ -111,7 +111,7 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
       return MakeGarbageCollected<CustomHighlightMarkerListImpl>();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

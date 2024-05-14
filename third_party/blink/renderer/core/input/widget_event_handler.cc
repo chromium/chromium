@@ -150,7 +150,7 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     case WebInputEvent::Type::kTouchEnd:
     case WebInputEvent::Type::kTouchCancel:
     case WebInputEvent::Type::kTouchScrollStarted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebInputEventResult::kNotHandled;
 
     case WebInputEvent::Type::kGesturePinchBegin:

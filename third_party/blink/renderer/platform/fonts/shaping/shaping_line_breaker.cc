@@ -496,7 +496,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
         break;
       if (UNLIKELY(last_safe > break_opportunity.offset)) {
         // TODO(crbug.com/1787026): This should not happen, but we see crashes.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
 

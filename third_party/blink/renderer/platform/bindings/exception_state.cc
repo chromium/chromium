@@ -87,7 +87,7 @@ void ExceptionState::ThrowException(ExceptionCode exception_code,
             isolate_, static_cast<DOMExceptionCode>(exception_code),
             processed_message, String());
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         exception = s_create_dom_exception_func_(
             isolate_, DOMExceptionCode::kUnknownError, processed_message,
             String());
@@ -273,7 +273,7 @@ String AddContextToMessage(const String& message,
     case ExceptionContextType::kUnknown:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return m;

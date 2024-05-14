@@ -100,7 +100,7 @@ CSSMathOperator CanonicalOperator(CSSMathOperator op) {
     case CSSMathOperator::kDivide:
       return CSSMathOperator::kMultiply;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CSSMathOperator::kInvalid;
   }
 }

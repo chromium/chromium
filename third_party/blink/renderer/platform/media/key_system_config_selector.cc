@@ -47,7 +47,7 @@ EmeConfig::Rule GetDistinctiveIdentifierConfigRule(
     EmeFeatureSupport support,
     EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EmeConfig::UnsupportedRule();
   }
 
@@ -88,7 +88,7 @@ EmeConfig::Rule GetPersistentStateConfigRule(
     EmeFeatureSupport support,
     EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EmeConfig::UnsupportedRule();
   }
 
@@ -138,7 +138,7 @@ bool IsPersistentSessionType(WebEncryptedMediaSessionType sessionType) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -330,7 +330,7 @@ class KeySystemConfigSelector::ConfigState {
 
     // No rule specified, this should not happen
     if (!rule.has_value()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -485,7 +485,7 @@ EmeConfig::Rule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
       return EmeConfig::UnsupportedRule();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EmeConfig::UnsupportedRule();
 }
 
@@ -798,7 +798,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     EmeConfig::Rule session_type_rule = EmeConfig::UnsupportedRule();
     switch (session_type) {
       case WebEncryptedMediaSessionType::kUnknown:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CONFIGURATION_NOT_SUPPORTED;
       case WebEncryptedMediaSessionType::kTemporary:
         session_type_rule = EmeConfig::SupportedRule();
@@ -929,7 +929,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
       config_state->AddRule(required_rule);
     } else {
       // We should not have passed step 6.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CONFIGURATION_NOT_SUPPORTED;
     }
   }
@@ -968,7 +968,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
       config_state->AddRule(required_rule);
     } else {
       // We should not have passed step 5.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CONFIGURATION_NOT_SUPPORTED;
     }
   }

@@ -465,7 +465,7 @@ bool FocusgroupController::AdvanceInGrid(Element* initial_element,
         current = helper->NextCellInColumn(current);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -586,7 +586,7 @@ Element* FocusgroupController::WrapOrFlowInGrid(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

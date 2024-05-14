@@ -91,7 +91,7 @@ InsetBias GetAlignmentInsetBias(
                                                  : bias.InlineEnd();
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return InsetBias::kStart;
   }
 }

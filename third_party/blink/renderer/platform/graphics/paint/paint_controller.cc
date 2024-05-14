@@ -412,7 +412,7 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
                              return index < chunk.end_index;
                            });
       DCHECK_NE(chunk, chunks.end());
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "DisplayItem "
           << display_item.AsDebugString(*new_paint_artifact_).Utf8()
           << " (index="

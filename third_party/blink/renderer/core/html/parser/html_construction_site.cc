@@ -322,7 +322,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren)
     return ExecuteTakeAllChildrenTask(task);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // This is only needed for TextDocuments where we might have text nodes

@@ -74,7 +74,7 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
     case CSSSyntaxType::kCustomIdent:
       return css_parsing_utils::ConsumeCustomIdent(range, context);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

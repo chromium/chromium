@@ -294,7 +294,7 @@ SVGPropertyBase* SVGAnimateElement::CreateUnderlyingValueForAttributeAnimation()
     case kAnimatedTransform:
     case kAnimatedTransformList:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -350,7 +350,7 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

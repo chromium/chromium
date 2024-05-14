@@ -124,7 +124,7 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // network::mojom::URLLoader implementation.

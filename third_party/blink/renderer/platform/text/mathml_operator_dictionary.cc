@@ -202,7 +202,7 @@ MathMLOperatorDictionaryCategory FindCategory(
       return MathMLOperatorDictionaryCategory::kJ;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MathMLOperatorDictionaryCategory::kNone;
 }
 

@@ -76,7 +76,7 @@ void SVGPathTraversalState::EmitSegment(const PathSegmentData& segment) {
           segment.point1, segment.point2, segment.target_point);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   traversal_state_.ProcessSegment();
 }

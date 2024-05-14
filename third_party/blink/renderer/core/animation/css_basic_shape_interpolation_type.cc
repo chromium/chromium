@@ -69,7 +69,7 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
     case CSSPropertyID::kObjectViewBox:
       return style.ObjectViewBox();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -229,7 +229,7 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
       state.StyleBuilder().SetObjectViewBox(std::move(shape));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

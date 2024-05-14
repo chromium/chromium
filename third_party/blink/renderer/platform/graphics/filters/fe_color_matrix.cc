@@ -188,7 +188,7 @@ static bool ValuesIsValidForType(ColorMatrixType type,
     case FECOLORMATRIX_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

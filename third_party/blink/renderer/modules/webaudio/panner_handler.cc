@@ -344,7 +344,7 @@ String PannerHandler::PanningModel() const {
     case Panner::PanningModel::kHRTF:
       return kHrtfString;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kEqualPowerString;
 }
 
@@ -356,7 +356,7 @@ void PannerHandler::SetPanningModel(const String& model) {
   } else if (model == kHrtfString) {
     SetPanningModel(Panner::PanningModel::kHRTF);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -397,7 +397,7 @@ String PannerHandler::DistanceModel() const {
     case DistanceEffect::kModelExponential:
       return "exponential";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "inverse";
   }
 }
@@ -426,7 +426,7 @@ bool PannerHandler::SetDistanceModel(unsigned model) {
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

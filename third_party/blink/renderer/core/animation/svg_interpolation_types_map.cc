@@ -164,7 +164,7 @@ const InterpolationTypes& SVGInterpolationTypesMap::Get(
              attribute == svg_names::kYChannelSelectorAttr) {
     // Use default SVGValueInterpolationType.
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   applicable_types->push_back(

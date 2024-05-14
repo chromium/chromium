@@ -578,7 +578,7 @@ const char* MediaQueryOperatorToString(MediaQueryOperator op) {
       return ">=";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

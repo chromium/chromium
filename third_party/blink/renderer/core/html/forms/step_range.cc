@@ -111,7 +111,7 @@ Decimal StepRange::ParseStep(AnyStepHandling any_step_handling,
       case kAnyIsDefaultStep:
         return step_description.DefaultValue();
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -135,7 +135,7 @@ Decimal StepRange::ParseStep(AnyStepHandling any_step_handling,
       step = std::max(step.Round(), Decimal(1));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   DCHECK_GT(step, 0);

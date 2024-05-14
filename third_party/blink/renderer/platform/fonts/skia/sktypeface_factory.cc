@@ -24,7 +24,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFontConfigInterfaceIdAndTtcIndex(
   font_identity.fTTCIndex = ttc_index;
   return fci->makeTypeface(font_identity, skia::DefaultFontMgr());
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }
@@ -37,7 +37,7 @@ sk_sp<SkTypeface> SkTypeface_Factory::FromFilenameAndTtcIndex(
     !BUILDFLAG(IS_APPLE)
   return skia::DefaultFontMgr()->makeFromFile(filename.c_str(), ttc_index);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

@@ -29,7 +29,7 @@ struct BLINK_COMMON_EXPORT
         return blink::mojom::PolicyValueDataView::Tag::kEnumValue;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return blink::mojom::PolicyValueDataView::Tag::kNullValue;
   }
   static bool null_value(const blink::PolicyValue& value) { return false; }

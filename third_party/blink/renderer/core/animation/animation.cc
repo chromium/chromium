@@ -1031,7 +1031,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   } else if (old_current_time && old_timeline &&
              !old_timeline->IsMonotonicallyIncreasing()) {
@@ -1310,7 +1310,7 @@ const char* Animation::PlayStateString(AnimationPlayState play_state) {
     case kFinished:
       return "finished";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1982,7 +1982,7 @@ void Animation::updatePlaybackRate(double playback_rate,
 
     case kUnset:
     case kPending:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -2517,7 +2517,7 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (snapshot_changed || needs_new_start_time || range_changed) {
@@ -3196,7 +3196,7 @@ String Animation::replaceState() {
       return "persisted";
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

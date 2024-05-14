@@ -22,7 +22,7 @@ TypeConverter<blink::ServiceWorkerStatusCode,
     case blink::mojom::ServiceWorkerEventStatus::TIMEOUT:
       return blink::ServiceWorkerStatusCode::kErrorTimeout;
   }
-  NOTREACHED() << status;
+  NOTREACHED_IN_MIGRATION() << status;
   return blink::ServiceWorkerStatusCode::kErrorFailed;
 }
 
@@ -36,7 +36,7 @@ TypeConverter<blink::ServiceWorkerStatusCode,
     case blink::mojom::ServiceWorkerStartStatus::kAbruptCompletion:
       return blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed;
   }
-  NOTREACHED() << status;
+  NOTREACHED_IN_MIGRATION() << status;
   return blink::ServiceWorkerStatusCode::kErrorFailed;
 }
 

@@ -237,7 +237,7 @@ String ServiceWorkerRegistration::updateViaCache() const {
     case mojom::ServiceWorkerUpdateViaCache::kNone:
       return "none";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

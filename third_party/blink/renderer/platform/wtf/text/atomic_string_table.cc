@@ -149,7 +149,7 @@ struct HashAndUTF8CharactersTranslator {
       if (unicode::ConvertUTF8ToUTF16(&source, source + buffer.length(),
                                       &target, target + buffer.utf16_length(),
                                       &is_all_ascii) != unicode::kConversionOK)
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     } else {
       new_string = StringImpl::Create(buffer.characters(), buffer.length());
     }

@@ -35,7 +35,7 @@ WebFeature GetWebFeature(
         kSRISignatureSuccess:
       return WebFeature::kSRISignatureSuccess;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebFeature::kSRIElementWithUnparsableIntegrityAttribute;
 }
 

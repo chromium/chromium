@@ -484,7 +484,7 @@ ScriptValue XMLHttpRequest::response(ScriptState* script_state,
       return ScriptValue(isolate, ToV8Traits<IDLNullable<DOMArrayBuffer>>::ToV8(
                                       script_state, ResponseArrayBuffer()));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ScriptValue();
   }
 }
@@ -548,7 +548,7 @@ void XMLHttpRequest::setResponseType(const String& response_type,
   } else if (response_type == "arraybuffer") {
     response_type_code_ = kResponseTypeArrayBuffer;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -835,7 +835,7 @@ void XMLHttpRequest::send(const V8UnionDocumentOrXMLHttpRequestBodyInit* body,
       return send(body->GetAsUSVString(), exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool XMLHttpRequest::AreMethodAndURLValidForSend() {
@@ -914,7 +914,7 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
       if (!file->GetPath().empty())
         http_body->AppendFile(file->GetPath(), file->LastModifiedTime());
       else
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     } else {
       http_body->AppendBlob(body->Uuid(), body->GetBlobDataHandle());
     }
@@ -1930,10 +1930,10 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
     case kResponseTypeJSON:
     case kResponseTypeBlob:
     case kResponseTypeArrayBuffer:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

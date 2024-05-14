@@ -31,7 +31,7 @@ class TestTypeAheadDataSource : public TypeAheadDataSource {
       case 3:
         return "bb";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "NOTREACHED";
   }
 

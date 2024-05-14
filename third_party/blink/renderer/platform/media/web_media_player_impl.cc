@@ -194,7 +194,7 @@ int GetSwitchToLocalMessage(
     case media::MediaObserverClient::ReasonToSwitchToLocal::ROUTE_TERMINATED:
       return WebMediaPlayerClient::kMediaRemotingStopNoText;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // To suppress compiler warning on Windows.
   return WebMediaPlayerClient::kMediaRemotingStopNoText;
 }
@@ -1633,7 +1633,7 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
       ToWebContentDecryptionModuleImpl(cdm);
   auto cdm_context_ref = web_cdm->GetCdmContextRef();
   if (!cdm_context_ref) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     OnCdmAttached(false);
     return;
   }
@@ -1875,7 +1875,7 @@ void WebMediaPlayerImpl::RestartForHls() {
       media::RendererType::kMediaPlayer);
 #else
   // Shouldn't be reachable from desktop where hls is not enabled.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   SetMemoryReportingState(false);
   StartPipeline();

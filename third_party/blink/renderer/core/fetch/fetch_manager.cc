@@ -650,7 +650,7 @@ void FetchManager::Loader::DidReceiveResponse(
       tainted_response = response_data->CreateOpaqueRedirectFilteredResponse();
       break;
     case FetchResponseType::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // TODO(crbug.com/1288221): Remove this once the investigation is done.

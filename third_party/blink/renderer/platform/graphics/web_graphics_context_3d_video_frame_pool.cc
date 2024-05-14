@@ -292,7 +292,7 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
       texture_format = viz::SinglePlaneFormat::kBGRA_8888;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

@@ -455,7 +455,7 @@ String DOMWebSocket::binaryType() const {
     case kBinaryTypeArrayBuffer:
       return "arraybuffer";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -468,7 +468,7 @@ void DOMWebSocket::setBinaryType(const String& binary_type) {
     binary_type_ = kBinaryTypeArrayBuffer;
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const AtomicString& DOMWebSocket::InterfaceName() const {

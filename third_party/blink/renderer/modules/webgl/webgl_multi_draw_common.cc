@@ -60,7 +60,7 @@ base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
       return base::span<const int32_t>(array->GetAsLongSequence().data(),
                                        array->GetAsLongSequence().size());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -80,7 +80,7 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
           array->GetAsUnsignedLongSequence().data(),
           array->GetAsUnsignedLongSequence().size());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 

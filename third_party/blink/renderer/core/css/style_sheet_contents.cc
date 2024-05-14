@@ -653,7 +653,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(const T& rules) {
       case StyleRuleBase::kCharset:
       case StyleRuleBase::kImport:
       case StyleRuleBase::kNamespace:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case StyleRuleBase::kPage:
       case StyleRuleBase::kPageMargin:

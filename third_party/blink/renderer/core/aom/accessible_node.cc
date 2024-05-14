@@ -66,7 +66,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMStringProperty property) {
       return html_names::kAriaVirtualcontentAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -76,7 +76,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMRelationProperty property) {
       return html_names::kAriaActivedescendantAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -100,7 +100,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMRelationListProperty property) {
       return html_names::kAriaOwnsAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -130,7 +130,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMBooleanProperty property) {
       return html_names::kAriaSelectedAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -145,7 +145,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMFloatProperty property) {
       return html_names::kAriaValuenowAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -165,7 +165,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMUIntProperty property) {
       return html_names::kAriaRowspanAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 
@@ -179,7 +179,7 @@ QualifiedName GetCorrespondingARIAAttribute(AOMIntProperty property) {
       return html_names::kAriaSetsizeAttr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 

@@ -15,7 +15,7 @@ LayoutRubyBase::~LayoutRubyBase() = default;
 
 bool LayoutRubyBase::IsChildAllowed(LayoutObject*, const ComputedStyle&) const {
   NOT_DESTROYED();
-  NOTREACHED();  // Because LayoutRubyColumn manages child types.
+  NOTREACHED_IN_MIGRATION();  // Because LayoutRubyColumn manages child types.
   return true;
 }
 

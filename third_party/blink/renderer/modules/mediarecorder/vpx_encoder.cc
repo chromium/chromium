@@ -165,7 +165,8 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
       break;
     }
     default:
-      NOTREACHED() << media::VideoPixelFormatToString(frame->format());
+      NOTREACHED_IN_MIGRATION()
+          << media::VideoPixelFormatToString(frame->format());
   }
   frame = nullptr;
 

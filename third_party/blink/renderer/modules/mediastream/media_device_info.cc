@@ -54,7 +54,7 @@ String MediaDeviceInfo::kind() const {
     case mojom::blink::MediaDeviceType::kMediaVideoInput:
       return "videoinput";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 }

@@ -26,7 +26,7 @@ void NoopURLLoader::LoadSynchronously(
     scoped_refptr<BlobDataHandle>& downloaded_blob,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NoopURLLoader::LoadAsynchronously(

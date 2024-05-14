@@ -138,7 +138,7 @@ const char* UIElementTypeToString(ChromeClient::UIElementType ui_element_type) {
     case ChromeClient::UIElementType::kPopup:
       return "popup";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -153,9 +153,9 @@ const char* DismissalTypeToString(Document::PageDismissalType dismissal_type) {
     case Document::kUnloadDismissal:
       return "unload";
     case Document::kNoDismissal:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -775,7 +775,8 @@ ColorChooser* ChromeClientImpl::OpenColorChooser(
         frame, this, chooser_client);
   } else {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    NOTREACHED() << "Page popups should be enabled on all but Android or iOS";
+    NOTREACHED_IN_MIGRATION()
+        << "Page popups should be enabled on all but Android or iOS";
 #endif
     controller =
         MakeGarbageCollected<ColorChooserUIController>(frame, chooser_client);

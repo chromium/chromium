@@ -48,7 +48,7 @@ bool IndexedDBKeyPath::operator==(const IndexedDBKeyPath& other) const {
     case mojom::IDBKeyPathType::Array:
       return array_ == other.array_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

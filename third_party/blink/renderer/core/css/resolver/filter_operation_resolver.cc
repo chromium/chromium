@@ -69,7 +69,7 @@ FilterOperation::OperationType FilterOperationResolver::FilterOperationForType(
     case CSSValueID::kDropShadow:
       return FilterOperation::OperationType::kDropShadow;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // FIXME: We shouldn't have a type None since we never create them
       return FilterOperation::OperationType::kNone;
   }
@@ -86,7 +86,7 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
     case FilterOperation::OperationType::kConvolveMatrix:
     case FilterOperation::OperationType::kComponentTransfer:
     case FilterOperation::OperationType::kTurbulence:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case FilterOperation::OperationType::kReference:
       feature = WebFeature::kCSSFilterReference;
@@ -238,7 +238,7 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -321,7 +321,7 @@ FilterOperations FilterOperationResolver::CreateOffscreenFilterOperations(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

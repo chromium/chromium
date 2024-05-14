@@ -47,7 +47,7 @@ String EncryptedMediaUtils::ConvertFromInitDataType(
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -73,11 +73,11 @@ String EncryptedMediaUtils::ConvertFromSessionType(
       return kPersistentLicense;
     case WebEncryptedMediaSessionType::kUnknown:
       // Unexpected session type from Chromium.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return String();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -101,7 +101,7 @@ String EncryptedMediaUtils::ConvertKeyStatusToString(
       return "internal-error";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "internal-error";
 }
 
@@ -136,7 +136,7 @@ EncryptedMediaUtils::ConvertToMediaKeysRequirement(const String& requirement) {
   if (requirement == "not-allowed")
     return WebMediaKeySystemConfiguration::Requirement::kNotAllowed;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebMediaKeySystemConfiguration::Requirement::kOptional;
 }
 
@@ -152,7 +152,7 @@ String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
       return "not-allowed";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "not-allowed";
 }
 

@@ -150,7 +150,7 @@ PixelsAndPercent Length::GetPixelsAndPercent() const {
     case kCalculated:
       return GetCalculationValue().GetPixelsAndPercent();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PixelsAndPercent(0.0f, 0.0f, false, false);
   }
 }

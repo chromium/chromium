@@ -218,7 +218,7 @@ void ContentIndex::DidAdd(ScriptPromiseResolver<IDLUndefined>* resolver,
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
       // The renderer should have been killed.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case mojom::blink::ContentIndexError::NO_SERVICE_WORKER:
       resolver->RejectWithTypeError("Service worker must be active");
@@ -269,11 +269,11 @@ void ContentIndex::DidDeleteDescription(
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
       // The renderer should have been killed.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case mojom::blink::ContentIndexError::NO_SERVICE_WORKER:
       // This value shouldn't apply to this callback.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -328,11 +328,11 @@ void ContentIndex::DidGetDescriptions(
       return;
     case mojom::blink::ContentIndexError::INVALID_PARAMETER:
       // The renderer should have been killed.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case mojom::blink::ContentIndexError::NO_SERVICE_WORKER:
       // This value shouldn't apply to this callback.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

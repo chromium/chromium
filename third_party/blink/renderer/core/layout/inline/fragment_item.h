@@ -259,7 +259,7 @@ class CORE_EXPORT FragmentItem final {
       line_.descendants_count = count;
       return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Returns |PhysicalBoxFragment| if one is associated with this item.
@@ -307,7 +307,7 @@ class CORE_EXPORT FragmentItem final {
   LineBoxType GetLineBoxType() const {
     if (Type() == kLine)
       return static_cast<LineBoxType>(sub_type_);
-    NOTREACHED() << this;
+    NOTREACHED_IN_MIGRATION() << this;
     return LineBoxType::kNormalLineBox;
   }
 
@@ -380,7 +380,7 @@ class CORE_EXPORT FragmentItem final {
     }
     if (Type() == kGeneratedText)
       return TextItemType::kLayoutGenerated;
-    NOTREACHED() << this;
+    NOTREACHED_IN_MIGRATION() << this;
     return TextItemType::kNormal;
   }
 

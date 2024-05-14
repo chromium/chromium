@@ -514,7 +514,7 @@ const char* IdleHelper::IdlePeriodStateToString(
     case IdlePeriodState::kInLongIdlePeriodPaused:
       return "in_long_idle_period_paused";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

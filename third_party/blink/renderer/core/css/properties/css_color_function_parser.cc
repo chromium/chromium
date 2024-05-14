@@ -294,7 +294,7 @@ std::optional<double> ConsumeRelativeColorChannel(
           value = calc_value->ComputeDegrees();
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return std::nullopt;
       }
       // Consume the range, since it has succeeded.

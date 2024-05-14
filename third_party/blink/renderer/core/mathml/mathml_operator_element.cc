@@ -60,7 +60,7 @@ static const QualifiedName& OperatorPropertyFlagToAttributeName(
     case MathMLOperatorElement::kSymmetric:
       return mathml_names::kSymmetricAttr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_null_name;
 }
 

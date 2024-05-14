@@ -244,7 +244,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
     // If no previous child owned by root is found, return null. This shouldn't
     // happen because all items in reading_order_previous_elements_ are owned
     // by root.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -1344,7 +1344,7 @@ bool FocusController::AdvanceFocus(
       // Fallthrough - SpatialNavigation should use
       // SpatialNavigationController.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return false;

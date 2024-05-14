@@ -206,7 +206,7 @@ MediaControlInputElement::MediaControlInputElement(
       MediaControlElementBase(media_controls, this) {}
 
 int MediaControlInputElement::GetOverflowStringId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IDS_AX_AM_PM_FIELD_TEXT;
 }
 

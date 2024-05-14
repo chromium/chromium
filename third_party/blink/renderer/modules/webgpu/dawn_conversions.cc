@@ -245,7 +245,7 @@ wgpu::PipelineLayout AsDawnType(
       return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

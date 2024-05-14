@@ -135,7 +135,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
         Append(trad);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     static constexpr hb_feature_t fwid = CreateFeature('f', 'w', 'i', 'd', 1);
     static constexpr hb_feature_t pwid = CreateFeature('p', 'w', 'i', 'd', 1);
@@ -149,7 +149,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
         Append(pwid);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     static constexpr hb_feature_t ruby = CreateFeature('r', 'u', 'b', 'y', 1);
     if (east_asian.Ruby())

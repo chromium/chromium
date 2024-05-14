@@ -20,7 +20,7 @@ const FillLayer* GetFillLayerForPosition(const CSSProperty& property,
     case CSSPropertyID::kWebkitMaskPositionY:
       return &style.MaskLayers();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -35,7 +35,7 @@ FillLayer* AccessFillLayerForPosition(const CSSProperty& property,
     case CSSPropertyID::kWebkitMaskPositionY:
       return &builder.AccessMaskLayers();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -60,7 +60,7 @@ struct FillLayerMethods {
         clear = &FillLayer::ClearPositionY;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -96,7 +96,7 @@ Length::ValueRange LengthListPropertyFunctions::GetValueRange(
       return Length::ValueRange::kNonNegative;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Length::ValueRange::kAll;
   }
 }
@@ -181,7 +181,7 @@ bool LengthListPropertyFunctions::GetLengthList(const CSSProperty& property,
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -264,7 +264,7 @@ void LengthListPropertyFunctions::SetLengthList(const CSSProperty& property,
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

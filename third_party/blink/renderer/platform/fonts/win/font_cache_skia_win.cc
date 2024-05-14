@@ -135,7 +135,7 @@ void FontCache::PrewarmFamily(const AtomicString& family_name) {
 void FontCache::SetSystemFontFamily(const AtomicString&) {
   // TODO(https://crbug.com/808221) Use this instead of
   // SetMenuFontMetrics for the system font family.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

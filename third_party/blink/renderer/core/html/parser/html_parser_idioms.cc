@@ -265,7 +265,7 @@ bool ParseHTMLClampedNonNegativeInteger(const String& input,
     case WTF::NumberParsingResult::kError:
       return false;
     case WTF::NumberParsingResult::kOverflowMin:
-      NOTREACHED() << input;
+      NOTREACHED_IN_MIGRATION() << input;
       return false;
     case WTF::NumberParsingResult::kOverflowMax:
       value = max;

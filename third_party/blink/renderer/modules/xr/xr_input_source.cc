@@ -150,7 +150,7 @@ const String XRInputSource::handedness() const {
       return "right";
   }
 
-  NOTREACHED() << "Unknown handedness: " << state_.handedness;
+  NOTREACHED_IN_MIGRATION() << "Unknown handedness: " << state_.handedness;
 }
 
 const String XRInputSource::targetRayMode() const {
@@ -163,7 +163,8 @@ const String XRInputSource::targetRayMode() const {
       return "screen";
   }
 
-  NOTREACHED() << "Unknown target ray mode: " << state_.target_ray_mode;
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown target ray mode: " << state_.target_ray_mode;
 }
 
 XRSpace* XRInputSource::targetRaySpace() const {

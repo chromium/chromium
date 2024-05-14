@@ -68,7 +68,7 @@ std::optional<TileParameters> ComputeTileParameters(
     case kStretchImageRule:
       return TileParameters{1, 0, 0};
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::nullopt;
 }

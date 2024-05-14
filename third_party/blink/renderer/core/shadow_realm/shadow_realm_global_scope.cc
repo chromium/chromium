@@ -54,31 +54,31 @@ bool ShadowRealmGlobalScope::IsShadowRealmGlobalScope() const {
 }
 
 const KURL& ShadowRealmGlobalScope::Url() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return url_;
 }
 
 const KURL& ShadowRealmGlobalScope::BaseURL() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return url_;
 }
 
 KURL ShadowRealmGlobalScope::CompleteURL(const String& url) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return url_;
 }
 
 void ShadowRealmGlobalScope::DisableEval(const String& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShadowRealmGlobalScope::SetWasmEvalErrorMessage(
     const String& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 String ShadowRealmGlobalScope::UserAgent() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -87,20 +87,20 @@ HttpsState ShadowRealmGlobalScope::GetHttpsState() const {
 }
 
 ResourceFetcher* ShadowRealmGlobalScope::Fetcher() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void ShadowRealmGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShadowRealmGlobalScope::AddInspectorIssue(AuditsIssue issue) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 EventTarget* ShadowRealmGlobalScope::ErrorEventTarget() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -117,12 +117,12 @@ bool ShadowRealmGlobalScope::IsIsolatedContext() const {
 }
 
 ukm::UkmRecorder* ShadowRealmGlobalScope::UkmRecorder() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 ukm::SourceId ShadowRealmGlobalScope::UkmSourceID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ukm::kInvalidSourceId;
 }
 
@@ -132,7 +132,7 @@ ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {
 
 void ShadowRealmGlobalScope::AddConsoleMessageImpl(ConsoleMessage* message,
                                                    bool discard_duplicates) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

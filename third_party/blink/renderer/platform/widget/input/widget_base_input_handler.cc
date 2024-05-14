@@ -79,7 +79,7 @@ void LogPassiveEventListenersUma(WebInputEventResult result,
         enum_value = PASSIVE_LISTENER_UMA_ENUM_CANCELABLE;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

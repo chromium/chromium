@@ -523,7 +523,7 @@ index 4996f7959be4..332673d93f77 100644
 +      bool clean_string = true;
 +      for (char c : s) {
 +        if (MarkedBigEndianU15::IsPossibleMarkerByte(c)) {
-+          NOTREACHED() << "RankedDicts bad character "
++          NOTREACHED_IN_MIGRATION() << "RankedDicts bad character "
 +                       << static_cast<unsigned char>(c);
 +          clean_string = false;
 +        }

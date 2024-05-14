@@ -101,7 +101,7 @@ CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
     case EaseType::EASE_IN_OUT:
       return ease_in_out;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -122,7 +122,7 @@ String CubicBezierTimingFunction::ToString() const {
              String::NumberToStringECMAScript(X2()) + ", " +
              String::NumberToStringECMAScript(Y2()) + ")";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -203,7 +203,8 @@ double StepsTimingFunction::Evaluate(double fraction,
 }
 
 double StepsTimingFunction::Evaluate(double fraction) const {
-  NOTREACHED() << "Use Evaluate(fraction, limit_direction) instead.";
+  NOTREACHED_IN_MIGRATION()
+      << "Use Evaluate(fraction, limit_direction) instead.";
   return steps_->GetPreciseValue(fraction, LimitDirection::RIGHT);
 }
 
@@ -248,7 +249,7 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -301,7 +302,7 @@ bool operator==(const TimingFunction& lhs, const TimingFunction& rhs) {
       return (step == rhs);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

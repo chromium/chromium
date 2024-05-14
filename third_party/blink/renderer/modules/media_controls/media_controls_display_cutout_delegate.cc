@@ -101,7 +101,7 @@ void MediaControlsDisplayCutoutDelegate::Invoke(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaControlsDisplayCutoutDelegate::HandleTouchEvent(TouchEvent* event) {

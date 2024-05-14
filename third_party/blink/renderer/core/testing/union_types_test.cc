@@ -26,7 +26,7 @@ UnionTypesTest::doubleOrStringOrStringSequenceAttribute() const {
       return MakeGarbageCollected<V8UnionDoubleOrStringOrStringSequence>(
           attribute_string_sequence_);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -62,7 +62,7 @@ String UnionTypesTest::doubleOrStringArg(V8UnionDoubleOrString* arg) {
       return "string is passed: " + arg->GetAsString();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -78,7 +78,7 @@ String UnionTypesTest::doubleOrInternalEnumArg(
       return "InternalEnum is passed: " + arg->GetAsInternalEnum().AsString();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -122,7 +122,7 @@ String UnionTypesTest::nodeListOrElementOrNullArg(
       return "nodelist is passed";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -153,7 +153,7 @@ String UnionTypesTest::doubleOrStringOrStringSequenceArg(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

@@ -47,7 +47,7 @@ const int kMaxBufferSize = 16 * 1024 * 1024; /* 16 MiB */
 bool SendErrorIsFatal(SerialSendError error) {
   switch (error) {
     case SerialSendError::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case SerialSendError::SYSTEM_ERROR:
       return false;
@@ -59,7 +59,7 @@ bool SendErrorIsFatal(SerialSendError error) {
 bool ReceiveErrorIsFatal(SerialReceiveError error) {
   switch (error) {
     case SerialReceiveError::NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case SerialReceiveError::BREAK:
     case SerialReceiveError::FRAME_ERROR:
@@ -152,7 +152,7 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
   } else if (options->parity() == "odd") {
     mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   switch (options->stopBits()) {

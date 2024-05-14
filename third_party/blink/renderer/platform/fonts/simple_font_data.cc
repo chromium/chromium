@@ -402,7 +402,7 @@ LayoutUnit SimpleFontData::VerticalPosition(
     case FontVerticalPositionType::BottomOfEmHeight:
       return -NormalizedTypoDescent(baseline_type);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 

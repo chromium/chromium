@@ -130,7 +130,7 @@ void WorkerMainScriptLoader::Cancel() {
 void WorkerMainScriptLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerMainScriptLoader::OnReceiveResponse(
@@ -138,14 +138,14 @@ void WorkerMainScriptLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle handle,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerMainScriptLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerMainScriptLoader::OnUploadProgress(
@@ -153,7 +153,7 @@ void WorkerMainScriptLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerMainScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -229,7 +229,7 @@ void WorkerMainScriptLoader::OnReadable(MojoResult) {
   switch (rv) {
     case MOJO_RESULT_BUSY:
     case MOJO_RESULT_INVALID_ARGUMENT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case MOJO_RESULT_FAILED_PRECONDITION:
       has_seen_end_of_data_ = true;

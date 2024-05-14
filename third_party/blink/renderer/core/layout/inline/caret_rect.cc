@@ -98,7 +98,7 @@ bool ShouldAlignCaretRight(ETextAlign text_align, TextDirection direction) {
     case ETextAlign::kEnd:
       return IsLtr(direction);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -218,7 +218,7 @@ LocalCaretRect ComputeLocalCaretRect(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {layout_object, PhysicalRect()};
 }
 

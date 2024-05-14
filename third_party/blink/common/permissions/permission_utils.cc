@@ -22,7 +22,7 @@ mojom::PermissionStatus ToPermissionStatus(const std::string& status) {
     return mojom::PermissionStatus::ASK;
   if (status == "denied")
     return mojom::PermissionStatus::DENIED;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::PermissionStatus::DENIED;
 }
 
@@ -97,10 +97,10 @@ std::string GetPermissionString(PermissionType permission) {
     case PermissionType::POINTER_LOCK:
       return "PointerLock";
     case PermissionType::NUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -168,10 +168,10 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return std::nullopt;
 
     case PermissionType::NUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -293,7 +293,7 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
     case PermissionName::POINTER_LOCK:
       return PermissionType::POINTER_LOCK;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

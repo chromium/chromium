@@ -375,7 +375,7 @@ void SpellChecker::MarkAndReplaceFor(
         }
         continue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

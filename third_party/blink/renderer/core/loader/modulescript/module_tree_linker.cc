@@ -96,7 +96,7 @@ const char* ModuleTreeLinker::StateToString(ModuleTreeLinker::State state) {
     case State::kFinished:
       return "Finished";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 #endif
@@ -126,7 +126,7 @@ void ModuleTreeLinker::AdvanceState(State new_state) {
       CHECK_EQ(new_state, State::kFinished);
       break;
     case State::kFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

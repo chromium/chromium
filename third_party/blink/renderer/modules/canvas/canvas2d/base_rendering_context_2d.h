@@ -355,7 +355,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual bool HasAlpha() const = 0;
 
   virtual bool IsDesynchronized() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -541,11 +541,11 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                            size_t row_bytes,
                            int x,
                            int y) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -757,7 +757,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                     const gfx::Rect& source_rect,
                     const gfx::Vector2d& dest_offset);
   virtual bool IsCanvas2DBufferValid() const {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

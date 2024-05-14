@@ -31,7 +31,7 @@ class CORE_EXPORT InterpolableAspectRatio final : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsAspectRatio() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   void Scale(double scale) final;

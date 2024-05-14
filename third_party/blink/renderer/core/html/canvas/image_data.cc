@@ -243,7 +243,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
                           : DOMFloat32Array::CreateUninitializedOrNull(length));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   size_t expected_size;
@@ -329,7 +329,7 @@ bool ImageData::IsBufferBaseDetached() const {
       return data_->GetAsUint8ClampedArray()->BufferBase()->IsDetached();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -450,7 +450,7 @@ ImageData::ImageData(const gfx::Size& size,
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
