@@ -3780,6 +3780,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FocusMode.TimeAdded.{TimeAddedType}" units="minutes"
+    expires_after="2025-05-01">
+  <owner>nupurjain@google.com</owner>
+  <owner>richui@chromium.org</owner>
+  <owner>skau@chromium.org</owner>
+  <owner>hongyulong@chromium.org</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Records the number of minutes that were added to a session (bucketed by the
+    initial session duration) when a session is over. This is for the
+    {TimeAddedType} type of `Short` (&lt; 11 mins), `Medium` (11 - 29 mins), and
+    `Long` (&gt; 29 mins).
+  </summary>
+  <token key="TimeAddedType">
+    <variant name="Long"/>
+    <variant name="Medium"/>
+    <variant name="Short"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Frame.ColorChangeCount.{AppType}" units="count"
     expires_after="2024-11-03">
   <owner>lingyufeng@google.com</owner>

@@ -527,4 +527,54 @@ TEST_F(FocusModeControllerMultiUserTest, CheckDNDStateOnFocusEndHistogram) {
       /*expected_count=*/1);
 }
 
+// Verify that when a session is over, the histogram will record how many
+// minutes the user extended during the session.
+TEST_F(FocusModeControllerMultiUserTest, CheckTimeAddedOnSessionEndHistogram) {
+  base::HistogramTester histogram_tester;
+  constexpr base::TimeDelta kShortDuration = base::Minutes(10);
+  constexpr base::TimeDelta kMediumDuration = base::Minutes(11);
+  constexpr base::TimeDelta kLongDuration = base::Minutes(30);
+
+  // 1. Start a session with 10 minutes and extend the session duration while in
+  // an active session.
+  auto* controller = FocusModeController::Get();
+  controller->SetInactiveSessionDuration(kShortDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kShortDuration, controller->session_duration());
+
+  controller->ExtendSessionDuration();
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kShortTimeAddedOnSessionEndHistogramName,
+      /*sample=*/10, /*expected_count=*/1);
+
+  // 2. Start a session with 11 minutes. Even not extending the session will
+  // still trigger the metric to be recorded.
+  controller->SetInactiveSessionDuration(kMediumDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kMediumDuration, controller->session_duration());
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kMediumTimeAddedOnSessionEndHistogramName,
+      /*sample=*/0, /*expected_count=*/1);
+
+  // 3. Start a session with 30 minutes and extend the session.
+  controller->SetInactiveSessionDuration(kLongDuration);
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_EQ(kLongDuration, controller->session_duration());
+
+  controller->ExtendSessionDuration();
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      focus_mode_histogram_names::kLongTimeAddedOnSessionEndHistogramName,
+      /*sample=*/10, /*expected_count=*/1);
+}
+
 }  // namespace ash

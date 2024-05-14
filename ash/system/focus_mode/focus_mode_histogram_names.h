@@ -23,6 +23,12 @@ constexpr char kToggleEndButtonDuringSessionHistogramName[] =
 constexpr char kTasksSelectedHistogramName[] = "Ash.FocusMode.TasksSelected";
 constexpr char kDNDStateOnFocusEndHistogramName[] =
     "Ash.FocusMode.DNDStateOnFocusEnd";
+constexpr char kShortTimeAddedOnSessionEndHistogramName[] =
+    "Ash.FocusMode.TimeAdded.Short";
+constexpr char kMediumTimeAddedOnSessionEndHistogramName[] =
+    "Ash.FocusMode.TimeAdded.Medium";
+constexpr char kLongTimeAddedOnSessionEndHistogramName[] =
+    "Ash.FocusMode.TimeAdded.Long";
 
 // This enum is used for metrics, so enum values should not be changed. New enum
 // values can be added, but existing enums must never be renumbered or deleted

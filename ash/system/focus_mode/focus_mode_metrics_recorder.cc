@@ -6,7 +6,9 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -78,6 +80,28 @@ void RecordDNDStateOnFocusEndHistogram(
       /*sample=*/type);
 }
 
+void RecordTimeAddedOnSessionEndHistogram(int initial_session_duration,
+                                          int current_session_duration) {
+  std::string histogram_name;
+  if (initial_session_duration <= 10) {
+    histogram_name =
+        focus_mode_histogram_names::kShortTimeAddedOnSessionEndHistogramName;
+  } else if (initial_session_duration >= 30) {
+    histogram_name =
+        focus_mode_histogram_names::kLongTimeAddedOnSessionEndHistogramName;
+  } else {
+    histogram_name =
+        focus_mode_histogram_names::kMediumTimeAddedOnSessionEndHistogramName;
+  }
+
+  base::UmaHistogramCustomCounts(
+      /*name=*/histogram_name,
+      /*sample=*/current_session_duration - initial_session_duration,
+      /*min=*/0,
+      /*exclusive_max=*/focus_mode_util::kMaximumDuration.InMinutes(),
+      /*buckets=*/50);
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -113,6 +137,13 @@ void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {
   RecordTasksSelectedHistogram(tasks_selected_count_);
   RecordDNDStateOnFocusEndHistogram(
       has_user_interactions_on_dnd_in_focus_session_);
+
+  if (auto current_session = FocusModeController::Get()->current_session();
+      current_session.has_value()) {
+    RecordTimeAddedOnSessionEndHistogram(
+        initial_session_duration_.InMinutes(),
+        current_session->session_duration().InMinutes());
+  }
 }
 
 }  // namespace ash
