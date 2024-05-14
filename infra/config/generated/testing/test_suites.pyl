@@ -7418,11 +7418,17 @@
 
     'lacros_skylab_arm64': {
       'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
         ],
       },
       'lacros_skylab_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
         ],

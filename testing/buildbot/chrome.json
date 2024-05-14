@@ -2546,6 +2546,7 @@
         "autotest_name": "chromium",
         "cros_board": "strongbad",
         "name": "chromeos_integration_tests STRONGBAD_RELEASE_LKGM",
+        "run_cft": true,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -2559,6 +2560,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "run_cft": true,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",

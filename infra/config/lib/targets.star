@@ -279,6 +279,7 @@ def _skylab(
         public_builder = None,
         public_builder_bucket = None,
         shards = None,
+        run_cft = False,
         args = []):
     """Define a Skylab test target.
 
@@ -303,6 +304,7 @@ def _skylab(
         public_builder_bucket: Optional luci bucket. See public_builder
             above.
         shards: The number of shards used to run the test.
+        run_cft: Whether enabled CFT mode for chromium tests on Skylab.
         args: The list of test arguments to be added to test CLI.
     """
     return struct(
@@ -316,6 +318,7 @@ def _skylab(
         public_builder = public_builder,
         public_builder_bucket = public_builder_bucket,
         shards = shards,
+        run_cft = run_cft,
         args = args,
     )
 
@@ -1255,6 +1258,8 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
+        if skylab.run_cft:
+            formatter.add_line("'run_cft': {},".format(skylab.run_cft))
         if skylab.args:
             formatter.add_line("'args': {},".format(skylab.args))
         if generate_skylab_container:

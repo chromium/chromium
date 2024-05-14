@@ -1199,11 +1199,17 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_arm64",
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
