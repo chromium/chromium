@@ -49,9 +49,7 @@ void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? vector_icons::kEditChromeRefreshIcon
-                                         : vector_icons::kEditIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
                                      ui::kColorIcon, icon_size),
       base::BindRepeating(
           &CustomizeChromeSidePanelController::CreateCustomizeChromeWebView,

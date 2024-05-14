@@ -17,18 +17,15 @@ SidePanelHeader::SidePanelHeader() {
 void SidePanelHeader::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
-  if (features::IsChromeRefresh2023()) {
-    // The side panel header should draw on top of its parent's border.
-    gfx::Rect contents_bounds = parent()->GetContentsBounds();
+  // The side panel header should draw on top of its parent's border.
+  gfx::Rect contents_bounds = parent()->GetContentsBounds();
 
-    const int header_padding_bottom =
-        features::IsSidePanelPinningEnabled() ? 0 : 6;
-    gfx::Rect header_bounds =
-        gfx::Rect(contents_bounds.x(),
-                  contents_bounds.y() - GetPreferredSize().height() -
-                      header_padding_bottom,
-                  contents_bounds.width(), GetPreferredSize().height());
+  const int header_padding_bottom =
+      features::IsSidePanelPinningEnabled() ? 0 : 6;
+  gfx::Rect header_bounds = gfx::Rect(
+      contents_bounds.x(),
+      contents_bounds.y() - GetPreferredSize().height() - header_padding_bottom,
+      contents_bounds.width(), GetPreferredSize().height());
 
-    SetBoundsRect(header_bounds);
-  }
+  SetBoundsRect(header_bounds);
 }

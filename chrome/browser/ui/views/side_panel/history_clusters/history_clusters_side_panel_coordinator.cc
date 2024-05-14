@@ -67,12 +67,9 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kHistoryClusters,
       l10n_util::GetStringUTF16(IDS_HISTORY_TITLE),
-      ui::ImageModel::FromVectorIcon(
-          features::IsChromeRefresh2023()
-              ? vector_icons::kHistoryChromeRefreshIcon
-              : kHistoryIcon,
-          ui::kColorIcon,
-          /*icon_size=*/16),
+      ui::ImageModel::FromVectorIcon(vector_icons::kHistoryChromeRefreshIcon,
+                                     ui::kColorIcon,
+                                     /*icon_size=*/16),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
           base::Unretained(this)),

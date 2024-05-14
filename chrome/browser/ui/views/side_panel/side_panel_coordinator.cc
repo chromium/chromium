@@ -122,12 +122,8 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  const gfx::VectorIcon& pin_icon = features::IsChromeRefresh2023()
-                                        ? kKeepPinChromeRefreshIcon
-                                        : views::kPinIcon;
-  const gfx::VectorIcon& unpin_icon = features::IsChromeRefresh2023()
-                                          ? kKeepPinFilledChromeRefreshIcon
-                                          : views::kUnpinIcon;
+  const gfx::VectorIcon& pin_icon = kKeepPinChromeRefreshIcon;
+  const gfx::VectorIcon& unpin_icon = kKeepPinFilledChromeRefreshIcon;
   views::SetImageFromVectorIconWithColorId(
       button.get(), pin_icon, kColorSidePanelHeaderButtonIcon,
       kColorSidePanelHeaderButtonIconDisabled, dip_size);
@@ -309,9 +305,7 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
 
   SidePanelUtil::PopulateGlobalEntries(browser_view->browser(),
                                        global_registry_);
-  if (features::IsChromeRefresh2023()) {
-    browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
-  }
+  browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
 
   if (features::IsSidePanelPinningEnabled() &&
       !browser_view_->GetIsWebAppType()) {
@@ -733,12 +727,6 @@ void SidePanelCoordinator::InitializeSidePanel() {
   container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   container->SetID(kSidePanelContentContainerViewId);
 
-  if (!features::IsChromeRefresh2023()) {
-    container->AddChildView(CreateHeader());
-    container->AddChildView(std::make_unique<views::Separator>())
-        ->SetColorId(kColorSidePanelContentAreaSeparator);
-  }
-
   auto content_wrapper = std::make_unique<SidePanelContentSwappingContainer>(
       no_delays_for_testing_);
   container->AddChildView(std::move(content_wrapper));
@@ -978,11 +966,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
           .WithAlignment(views::LayoutAlignment::kStart));
   combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   combobox->SetBackgroundColorId(ui::kColorSidePanelComboboxBackground);
-  if (features::IsChromeRefresh2023()) {
-    combobox->SetForegroundColorId(kColorSidePanelComboboxEntryTitle);
-    combobox->SetForegroundIconColorId(kColorSidePanelComboboxEntryIcon);
-    combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
-  }
+  combobox->SetForegroundColorId(kColorSidePanelComboboxEntryTitle);
+  combobox->SetForegroundIconColorId(kColorSidePanelComboboxEntryIcon);
+  combobox->SetForegroundTextStyle(views::style::STYLE_HEADLINE_5);
   combobox->SetEventHighlighting(true);
   combobox->SetSizeToLargestLabel(false);
   return combobox;

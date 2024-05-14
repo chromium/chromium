@@ -42,9 +42,7 @@ void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kBookmarks,
       l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kBookmarksSidePanelRefreshIcon
-                                         : omnibox::kStarIcon,
+      ui::ImageModel::FromVectorIcon(kBookmarksSidePanelRefreshIcon,
                                      ui::kColorIcon),
       base::BindRepeating(
           &BookmarksSidePanelCoordinator::CreateBookmarksWebView,

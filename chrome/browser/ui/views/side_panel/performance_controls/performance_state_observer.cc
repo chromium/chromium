@@ -30,9 +30,8 @@ void PerformanceStateObserver::OnBatterySaverActiveChanged(bool is_active) {
           kActionSidePanelShowPerformance, browser_actions->root_action_item());
   CHECK(action_item);
   if (is_active) {
-    action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsChromeRefresh2023() ? kBatterySaverRefreshIcon
-                                        : kBatterySaverIcon));
+    action_item->SetImage(
+        ui::ImageModel::FromVectorIcon(kBatterySaverRefreshIcon));
   } else {
     action_item->SetImage(ui::ImageModel::FromVectorIcon(kPerformanceIcon));
   }
