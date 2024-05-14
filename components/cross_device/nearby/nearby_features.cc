@@ -45,6 +45,11 @@ BASE_FEATURE(kNearbySharingWebRtc,
              "NearbySharingWebRtc",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables use of WifiDirect in Nearby Share.
+BASE_FEATURE(kNearbySharingWifiDirect,
+             "NearbySharingWifiDirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables use of WifiLan in Nearby Share.
 BASE_FEATURE(kNearbySharingWifiLan,
              "NearbySharingWifiLan",

@@ -52,6 +52,31 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+// Noop implementation for tests.
+class FakeWifiDirectManager
+    : public ash::wifi_direct::mojom::WifiDirectManager {
+  // ash::wifi_direct::mojom::WifiDirectManager
+  void CreateWifiDirectGroup(
+      ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
+      CreateWifiDirectGroupCallback callback) override {
+    // Noop
+  }
+  void ConnectToWifiDirectGroup(
+      ash::wifi_direct::mojom::WifiCredentialsPtr credentials,
+      std::optional<uint32_t> frequency,
+      ConnectToWifiDirectGroupCallback callback) override {
+    // Noop
+  }
+  void GetWifiP2PCapabilities(
+      GetWifiP2PCapabilitiesCallback callback) override {
+    // Noop
+  }
+};
+
+}  // namespace
+
 namespace ash {
 namespace nearby {
 namespace {
@@ -157,6 +182,19 @@ class NearbyProcessManagerImplTest : public testing::Test {
                   net::IPAddress(192, 168, 86, 75), 44444)),
           tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
 
+      // Set up fake WiFiDirect mojo services.
+      mojo::PendingRemote<ash::wifi_direct::mojom::WifiDirectManager>
+          wifi_direct_manager_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<FakeWifiDirectManager>(),
+          wifi_direct_manager_remote.InitWithNewPipeAndPassReceiver());
+      mojo::PendingRemote<::sharing::mojom::FirewallHoleFactory>
+          wifi_direct_firewall_hole_factory_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
+          wifi_direct_firewall_hole_factory_remote
+              .InitWithNewPipeAndPassReceiver());
+
       return sharing::mojom::NearbyDependencies::New(
           fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
           sharing::mojom::WebRtcDependencies::New(
@@ -170,6 +208,9 @@ class NearbyProcessManagerImplTest : public testing::Test {
               std::move(cros_network_config_remote),
               std::move(firewall_hole_factory_remote),
               std::move(tcp_socket_factory_remote)),
+          ::sharing::mojom::WifiDirectDependencies::New(
+              std::move(wifi_direct_manager_remote),
+              std::move(wifi_direct_firewall_hole_factory_remote)),
           fake_nearby_presence_credential_storage_->receiver()
               .BindNewPipeAndPassRemote(),
           ::nearby::api::LogMessage::Severity::kInfo);

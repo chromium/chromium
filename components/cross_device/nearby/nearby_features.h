@@ -20,6 +20,7 @@ bool IsNearbyBleV2GattServerEnabled();
 bool IsNearbyBluetoothClassicAdvertisingEnabled();
 bool IsNearbyBluetoothClassicScanningEnabled();
 BASE_DECLARE_FEATURE(kNearbySharingWebRtc);
+BASE_DECLARE_FEATURE(kNearbySharingWifiDirect);
 BASE_DECLARE_FEATURE(kNearbySharingWifiLan);
 
 }  // namespace features

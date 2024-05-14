@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -65,8 +66,11 @@ class NearbyDependenciesProvider : public KeyedService {
 
   ::sharing::mojom::WifiLanDependenciesPtr GetWifiLanDependencies();
 
+  sharing::mojom::WifiDirectDependenciesPtr GetWifiDirectDependencies();
+
   network::mojom::NetworkContext* GetNetworkContext();
 
+  std::unique_ptr<wifi_direct::WifiDirectManager> wifi_direct_manager_;
   std::unique_ptr<BluetoothAdapterManager> bluetooth_manager_;
 
   std::unique_ptr<presence::CredentialStorageInitializer>

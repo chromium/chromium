@@ -14,6 +14,7 @@ import "chromeos/ash/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom";
+import "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -28,6 +29,13 @@ struct WifiLanDependencies {
   pending_remote<TcpSocketFactory> tcp_socket_factory;
 };
 
+// Collection of dependencies required by WifiDirect medium.
+struct WifiDirectDependencies {
+  pending_remote<ash.wifi_direct.mojom.WifiDirectManager> wifi_direct_manager;
+  // Used to open a firewall hole for a TCP server socket.
+  pending_remote<FirewallHoleFactory> firewall_hole_factory;
+};
+
 // A collection of dependencies required by the Nearby Presence and
 // Nearby Connections libraries. These are generally system resources that
 // the utility process (which the Nearby libraries are hosted in) does not
@@ -40,6 +48,9 @@ struct NearbyDependencies {
 
   // Null if the WifiLan feature flag is disabled.
   WifiLanDependencies? wifilan_dependencies;
+
+  // Null if the WifiDirect feature flag is disabled.
+  WifiDirectDependencies? wifidirect_dependencies;
 
   pending_remote<ash.nearby.presence.mojom.NearbyPresenceCredentialStorage>?
       nearby_presence_credential_storage;

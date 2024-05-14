@@ -11,6 +11,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
+#include "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -44,6 +45,10 @@ struct NearbySharedRemotes {
   mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
       nearby_presence_credential_storage;
+  mojo::SharedRemote<ash::wifi_direct::mojom::WifiDirectManager>
+      wifi_direct_manager;
+  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+      wifi_direct_firewall_hole_factory;
 };
 
 }  // namespace nearby

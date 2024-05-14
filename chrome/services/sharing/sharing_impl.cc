@@ -186,6 +186,27 @@ void SharingImpl::InitializeNearbySharedRemotes(NearbyDependenciesPtr deps) {
                        MojoDependencyName::kTcpSocketFactory),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
+
+  if (deps->wifidirect_dependencies) {
+    nearby_shared_remotes_->wifi_direct_firewall_hole_factory.Bind(
+        std::move(deps->wifidirect_dependencies->firewall_hole_factory),
+        io_task_runner_);
+    nearby_shared_remotes_->wifi_direct_firewall_hole_factory
+        .set_disconnect_handler(
+            base::BindOnce(&SharingImpl::OnDisconnect,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           MojoDependencyName::kFirewallHoleFactory),
+            base::SequencedTaskRunner::GetCurrentDefault());
+
+    nearby_shared_remotes_->wifi_direct_manager.Bind(
+        std::move(deps->wifidirect_dependencies->wifi_direct_manager),
+        io_task_runner_);
+    nearby_shared_remotes_->wifi_direct_manager.set_disconnect_handler(
+        base::BindOnce(&SharingImpl::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kWifiDirectManager),
+        base::SequencedTaskRunner::GetCurrentDefault());
+  }
 }
 
 std::string SharingImpl::GetMojoDependencyName(
@@ -217,6 +238,8 @@ std::string SharingImpl::GetMojoDependencyName(
       return "Quick Start Decoder";
     case MojoDependencyName::kNearbyPresenceCredentialStorage:
       return "Nearby Presence Credential Storage";
+    case MojoDependencyName::kWifiDirectManager:
+      return "WiFi Direct Manager";
   }
 }
 

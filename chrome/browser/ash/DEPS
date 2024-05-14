@@ -2,6 +2,7 @@ include_rules = [
   # See README.md.
   "+ash",
 
+  "+components/cross_device/nearby",
   "+components/guest_os",
   "+components/qr_code_generator",
   "+components/metrics/structured/test/test_structured_metrics_recorder.h",
