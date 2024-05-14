@@ -420,6 +420,45 @@ TEST_F(TitledUrlIndexTest, GetResultsMatchingWithURLs) {
   }
 }
 
+TEST_F(TitledUrlIndexTest, GetResultsMatchingWithSymbols) {
+  auto does_query_match_title = [&](std::string query, std::string title) {
+    ResetNodes();
+    AddNode(title, kAboutBlankURL);
+    size_t num_matches = GetResultsMatching(query, 10).size();
+    EXPECT_LE(num_matches, 1u);
+    return num_matches > 0;
+  };
+
+  // Symbols should act as word breaks and don't need to match between the query
+  // and title.
+  EXPECT_TRUE(does_query_match_title("abc@xyz", "xyz@abc"));
+  EXPECT_TRUE(does_query_match_title("abc&xyz", "xyz&abc"));
+  EXPECT_TRUE(does_query_match_title("abc@xyz", "xyz abc"));
+  EXPECT_TRUE(does_query_match_title("abc xyz", "xyz@abc"));
+
+  // Treating symbols as word breaks doesn't mean simply pretending they're not
+  // there.
+  EXPECT_FALSE(does_query_match_title("xyz@abc", "xyzabc"));
+  EXPECT_FALSE(does_query_match_title("xyzabc", "xyz@abc"));
+
+  // '@' as the first character of the query should be treated special since it
+  // indicates the user likely wants search scope.
+  EXPECT_FALSE(does_query_match_title("@abc", "@abc"));
+  // Other symbols shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("&abc", "@abc"));
+  // '@' as the first character of the node shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("abc", "@abc"));
+  // '@' in other locations in the query shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("abc @abc", "@abc"));
+  // '@' followed by other symbols shouldn't have that exception.
+  EXPECT_TRUE(does_query_match_title("@ abc", "@abc"));
+  EXPECT_TRUE(does_query_match_title("@@abc", "@abc"));
+  EXPECT_TRUE(does_query_match_title("@&abc", "@abc"));
+
+  // '@' input or title shouldn't crash.
+  EXPECT_FALSE(does_query_match_title("@", "@"));
+}
+
 TEST_F(TitledUrlIndexTest, Normalization) {
   struct TestData {
     const char* const title;

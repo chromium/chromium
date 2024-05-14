@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/bookmarks/browser/titled_url_index.h"
-#include "base/strings/utf_string_conversions.h"
 
 #include <stdint.h>
 
@@ -85,6 +84,15 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   std::vector<std::u16string> terms = ExtractQueryWords(query);
   if (terms.empty())
     return {};
+
+  // `ExtractQueryWords()` splits on symbols like '@'. That's usually good; e.g.
+  // it allows 'xyz@gmail' to match 'xyz gmail'. But for inputs starting with
+  // '@', like '@h', the user's more likely wants to enter the history scope
+  // search than to select a 'https://google.com' bookmark.
+  if (query.starts_with('@') && query.size() >= 2 && terms[0].size() >= 1 &&
+      query[1] == terms[0][0]) {
+    return {};
+  }
 
   // `matches` shouldn't exclude nodes that don't match every query term, as the
   // query terms may match in the ancestors. `MatchTitledUrlNodeWithQuery()`
