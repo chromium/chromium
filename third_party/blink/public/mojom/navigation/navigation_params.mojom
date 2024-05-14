@@ -369,15 +369,6 @@ struct CommitNavigationParams {
   // taking into account the origin computed by the renderer.
   blink.mojom.StorageKey storage_key;
 
-  // The storage key here is the one the browser process believes the renderer
-  // should use when binding session storage. This may differ from `storage_key`
-  // as a deprecation trial can prevent the partitioning of session storage.
-  // The document loader should verify this storage key is (1) the same as
-  // `storage_key` or (2) a first-party storage key at `storage_key.origin`.
-  //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
-  blink.mojom.StorageKey session_storage_key;
-
   // Whether or not the user agent override string should be used.
   bool is_overriding_user_agent = false;
 

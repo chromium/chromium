@@ -3778,7 +3778,7 @@ enum WebFeature {
   kCSSBackgroundClipBorder = 4436,
   kCSSBackgroundClipContent = 4437,
   kCSSBackgroundClipPadding = 4438,
-  kDisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
+  kOBSOLETE_DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning = 4439,
   kOBSOLETE_kCSSPseudoHasContainsMixOfValidAndInvalid = 4440,
   kOBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid = 4441,
   kPrivateNetworkAccessFetchedSubFrame = 4442,

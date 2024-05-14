@@ -7315,8 +7315,6 @@ data/session_history/post.html
 data/session_history/record_length.html
 data/session_history/replace.html
 data/session_history/top.html
-data/session_storage/partition_deprecation_trial.html
-data/session_storage/partition_deprecation_trial.html.mock-http-headers
 data/set_cookie.html
 data/set_cookie.html.mock-http-headers
 data/set_document_cookie.html

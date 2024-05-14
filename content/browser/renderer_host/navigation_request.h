@@ -1986,16 +1986,6 @@ class CONTENT_EXPORT NavigationRequest
   // `resume_commit_closure_` asynchronously.
   void PostResumeCommitTask();
 
-  // Used to detect if the page being navigated to is participating in the
-  // related deprecation trial and recording that in NavigationControllerImpl.
-  //
-  // Not called for same-document navigation requests nor for requests served
-  // from the back-forward cache or from prerendered pages as work would be
-  // redundant.
-  //
-  // TODO(crbug.com/40887671): Remove this when deprecation trial is complete.
-  void MaybeRegisterOriginForUnpartitionedSessionStorageAccess();
-
   // See https://crbug.com/1412365
   void CheckSoftNavigationHeuristicsInvariants();
 

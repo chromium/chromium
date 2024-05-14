@@ -10984,7 +10984,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4437" label="CSSBackgroundClipContent"/>
   <int value="4438" label="CSSBackgroundClipPadding"/>
   <int value="4439"
-      label="DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
+      label="OBSOLETE_DisableThirdPartySessionStoragePartitioningAfterGeneralPartitioning"/>
   <int value="4440" label="OBSOLETE_kCSSPseudoHasContainsMixOfValidAndInvalid"/>
   <int value="4441"
       label="OBSOLETE_kCSSPseudoIsWhereContainsMixOfValidAndInvalid"/>

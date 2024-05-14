@@ -300,18 +300,7 @@ bool DOMStorageContextWrapper::IsRequestValid(
     if (!host) {
       return false;
     }
-    switch (type) {
-      case StorageType::kLocalStorage: {
-        host_storage_key_did_not_match = host->GetStorageKey() != storage_key;
-        break;
-      }
-      case StorageType::kSessionStorage: {
-        host_storage_key_did_not_match =
-            host->frame_tree()->GetSessionStorageKey(host->GetStorageKey()) !=
-            storage_key;
-        break;
-      }
-    }
+    host_storage_key_did_not_match = host->GetStorageKey() != storage_key;
     // If the storage keys did not match, but storage access has been granted
     // and the request was for a first-party storage key on the same origin as
     // the frame's storage key, we can allow the request to proceed. See:

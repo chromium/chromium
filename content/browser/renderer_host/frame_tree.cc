@@ -43,7 +43,6 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 
 namespace content {
@@ -1030,30 +1029,6 @@ void FrameTree::FocusOuterFrameTrees() {
     }
     frame_tree_to_focus = &outer_node->frame_tree();
   }
-}
-
-void FrameTree::RegisterOriginForUnpartitionedSessionStorageAccess(
-    const url::Origin& origin) {
-  if (origin.opaque()) {
-    return;
-  }
-  unpartitioned_session_storage_origins_.insert(origin);
-}
-
-void FrameTree::UnregisterOriginForUnpartitionedSessionStorageAccess(
-    const url::Origin& origin) {
-  unpartitioned_session_storage_origins_.erase(origin);
-}
-
-const blink::StorageKey FrameTree::GetSessionStorageKey(
-    const blink::StorageKey& storage_key) {
-  if (unpartitioned_session_storage_origins_.find(storage_key.origin()) !=
-      unpartitioned_session_storage_origins_.end()) {
-    // If the storage key matches a participating origin we need to return the
-    // first-party version for use in binding session storage.
-    return blink::StorageKey::CreateFirstParty(storage_key.origin());
-  }
-  return storage_key;
 }
 
 }  // namespace content
