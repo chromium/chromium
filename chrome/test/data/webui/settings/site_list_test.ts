@@ -201,6 +201,7 @@ function populateTestExceptions() {
         ContentSettingsTypes.GEOLOCATION,
         [createRawSiteException('https://foo-allow.com:443', {
           embeddingOrigin: '',
+          type: ContentSettingsTypes.GEOLOCATION,
         })]),
   ]);
 
