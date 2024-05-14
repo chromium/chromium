@@ -55,8 +55,8 @@ public abstract class LanguageItemListFragment extends Fragment
         /** Return LanguageItems to show in LanguageItemListFragment. */
         Collection<LanguageItem> getLanguageItems();
 
-        /** Return class name to launch this LanguageItemListFragment from an Intent. */
-        String getFragmentClassName();
+        /** Return class to launch this LanguageItemListFragment from an Intent. */
+        Class<? extends Fragment> getFragmentClass();
     }
 
     private class ListAdapter extends LanguageListBaseAdapter {
@@ -144,7 +144,7 @@ public abstract class LanguageItemListFragment extends Fragment
                     recordAddLanguageImpression();
                     Intent intent =
                             mSettingsLauncher.createSettingsActivityIntent(
-                                    getActivity(), SelectLanguageFragment.class.getName());
+                                    getActivity(), SelectLanguageFragment.class);
                     intent.putExtra(
                             SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES,
                             getPotentialLanguageType());

@@ -990,7 +990,7 @@ public class NotificationPlatformBridge {
         Intent settingsIntent =
                 settingsLauncher.createSettingsActivityIntent(
                         context,
-                        SingleWebsiteSettings.class.getName(),
+                        SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(origin));
         settingsIntent.setData(makeIntentData(notificationId, origin, /* actionIndex= */ -1));
         PendingIntentProvider settingsIntentProvider =

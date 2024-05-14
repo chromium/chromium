@@ -326,9 +326,7 @@ public class TracingSettingsTest {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             Intent intent =
                     settingsLauncher.createSettingsActivityIntent(
-                            context,
-                            TracingCategoriesSettings.class.getName(),
-                            categoriesPref.getExtras());
+                            context, TracingCategoriesSettings.class, categoriesPref.getExtras());
             SettingsActivity categoriesActivity =
                     (SettingsActivity)
                             InstrumentationRegistry.getInstrumentation().startActivitySync(intent);

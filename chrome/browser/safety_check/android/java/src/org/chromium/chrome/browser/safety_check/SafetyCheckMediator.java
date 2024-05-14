@@ -306,14 +306,11 @@ class SafetyCheckMediator {
                                     SAFETY_CHECK_INTERACTIONS,
                                     SafetyCheckInteractions.SAFE_BROWSING_MANAGE,
                                     SafetyCheckInteractions.MAX_VALUE + 1);
-                            String safeBrowsingSettingsClassName;
                             // Open the Safe Browsing settings.
-                            safeBrowsingSettingsClassName =
-                                    SafeBrowsingSettingsFragment.class.getName();
                             Intent intent =
                                     settingsLauncher.createSettingsActivityIntent(
                                             p.getContext(),
-                                            safeBrowsingSettingsClassName,
+                                            SafeBrowsingSettingsFragment.class,
                                             SafeBrowsingSettingsFragment.createArguments(
                                                     SettingsAccessPoint.SAFETY_CHECK));
                             p.getContext().startActivity(intent);

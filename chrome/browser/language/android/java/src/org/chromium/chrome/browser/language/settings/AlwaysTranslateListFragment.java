@@ -83,8 +83,8 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
         }
 
         @Override
-        public String getFragmentClassName() {
-            return AlwaysTranslateListFragment.class.getName();
+        public Class<AlwaysTranslateListFragment> getFragmentClass() {
+            return AlwaysTranslateListFragment.class;
         }
     }
 }

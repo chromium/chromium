@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
@@ -82,11 +83,6 @@ public class PasswordManagerHelper {
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
     private static final long LOADING_DIALOG_DISMISS_DELAY_MS = 300L;
-
-    // |PasswordSettings| full class name to open the fragment. Will be changed to
-    // |PasswordSettings.class.getName()| once it's modularized.
-    private static final String PASSWORD_SETTINGS_CLASS =
-            "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
 
     /**
      * The identifier of the loading dialog outcome.
@@ -216,7 +212,7 @@ public class PasswordManagerHelper {
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(
                 settingsLauncher.createSettingsActivityIntent(
-                        context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+                        context, SettingsFragment.PASSWORDS, fragmentArgs));
     }
 
     /**

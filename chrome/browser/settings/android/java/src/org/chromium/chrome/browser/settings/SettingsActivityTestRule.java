@@ -71,7 +71,7 @@ public class SettingsActivityTestRule<T extends Fragment>
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
-                        context, mFragmentClass.getName(), fragmentArgs);
+                        context, mFragmentClass, fragmentArgs);
         launchActivity(intent);
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         return getActivity();

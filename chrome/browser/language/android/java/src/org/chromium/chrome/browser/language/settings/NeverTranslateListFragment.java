@@ -84,8 +84,8 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
         }
 
         @Override
-        public String getFragmentClassName() {
-            return NeverTranslateListFragment.class.getName();
+        public Class<NeverTranslateListFragment> getFragmentClass() {
+            return NeverTranslateListFragment.class;
         }
     }
 }

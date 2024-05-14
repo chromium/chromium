@@ -61,11 +61,11 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
-import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -562,7 +562,7 @@ public class PasswordManagerHelperTest {
         verify(mockContext).startActivity(any());
         verify(mSettingsLauncherMock)
                 .createSettingsActivityIntent(
-                        eq(mockContext), eq(PasswordSettings.class.getName()), any(Bundle.class));
+                        eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 
     @Test
@@ -581,7 +581,7 @@ public class PasswordManagerHelperTest {
         verify(mockContext).startActivity(any());
         verify(mSettingsLauncherMock)
                 .createSettingsActivityIntent(
-                        eq(mockContext), eq(PasswordSettings.class.getName()), any(Bundle.class));
+                        eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 
     @Test

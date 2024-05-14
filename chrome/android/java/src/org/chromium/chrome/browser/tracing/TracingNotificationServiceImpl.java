@@ -66,8 +66,7 @@ public class TracingNotificationServiceImpl extends TracingNotificationService.I
     public static PendingIntent getOpenSettingsIntent(Context context) {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
-                        context, TracingSettings.class.getName());
+                settingsLauncher.createSettingsActivityIntent(context, TracingSettings.class);
         return PendingIntent.getActivity(
                 context,
                 0,

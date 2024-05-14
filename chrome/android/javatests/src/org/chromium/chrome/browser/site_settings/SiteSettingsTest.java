@@ -2320,7 +2320,7 @@ public class SiteSettingsTest {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         context,
-                        SingleWebsiteSettings.class.getName(),
+                        SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(url));
         final SettingsActivity settingsActivity =
                 (SettingsActivity)
@@ -2447,7 +2447,7 @@ public class SiteSettingsTest {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         context,
-                        SingleWebsiteSettings.class.getName(),
+                        SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(rpUrl));
         final SettingsActivity settingsActivity =
                 (SettingsActivity)

@@ -56,7 +56,7 @@ public class SiteSettingsHelper {
                         .getString(ContentSettingsResources.getTitleForCategory(category)));
         Intent preferencesIntent =
                 settingsLauncher.createSettingsActivityIntent(
-                        context, SingleCategorySettings.class.getName(), extras);
+                        context, SingleCategorySettings.class, extras);
         launchIntent(context, preferencesIntent);
     }
 

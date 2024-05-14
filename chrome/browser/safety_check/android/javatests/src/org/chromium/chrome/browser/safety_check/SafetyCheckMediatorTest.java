@@ -10,6 +10,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -802,7 +803,7 @@ public class SafetyCheckMediatorTest {
 
             Intent settingsLauncherIntent = new Intent();
             settingsLauncherIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            when(mSettingsLauncher.createSettingsActivityIntent(any(), any(), any()))
+            when(mSettingsLauncher.createSettingsActivityIntent(any(), anyInt(), any()))
                     .thenReturn(settingsLauncherIntent);
             intending(anyIntent())
                     .respondWith(new ActivityResult(Activity.RESULT_OK, new Intent()));
@@ -825,7 +826,7 @@ public class SafetyCheckMediatorTest {
                 .getLocalCredentialManagerIntent(
                         eq(ManagePasswordsReferrer.SAFETY_CHECK), any(), any());
         verify(mSettingsLauncher, times(mUseGmsApi ? 0 : 1))
-                .createSettingsActivityIntent(any(), any(), any());
+                .createSettingsActivityIntent(any(), anyInt(), any());
     }
 
     @Test

@@ -367,7 +367,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
             @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent =
                 mSettingsLauncher.createSettingsActivityIntent(
-                        getActivity(), SelectLanguageFragment.class.getName());
+                        getActivity(), SelectLanguageFragment.class);
         intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
@@ -382,7 +382,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                 preference -> {
                     Intent intent =
                             mSettingsLauncher.createSettingsActivityIntent(
-                                    getActivity(), listPreference.getFragmentClassName());
+                                    getActivity(), listPreference.getFragmentClass());
                     startActivity(intent);
                     return true;
                 });

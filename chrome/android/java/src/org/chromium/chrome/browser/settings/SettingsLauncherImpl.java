@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragm
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
+import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
@@ -41,47 +42,30 @@ public class SettingsLauncherImpl implements SettingsLauncher {
 
     @Override
     public void launchSettingsActivity(Context context, @SettingsFragment int settingsFragment) {
-        Class<? extends Fragment> fragment = null;
         Bundle fragmentArgs = null;
-
         switch (settingsFragment) {
-            case SettingsFragment.MAIN:
-                break;
-
             case SettingsFragment.CLEAR_BROWSING_DATA:
-                fragment = ClearBrowsingDataTabsFragment.class;
                 fragmentArgs =
                         ClearBrowsingDataTabsFragment.createFragmentArgs(
                                 context.getClass().getName());
                 break;
-
             case SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE:
-                fragment = ClearBrowsingDataFragmentAdvanced.class;
                 fragmentArgs =
                         ClearBrowsingDataFragment.createFragmentArgs(
                                 context.getClass().getName(),
                                 /* isFetcherSuppliedFromOutside= */ false);
                 break;
-
-            case SettingsFragment.PAYMENT_METHODS:
-                fragment = AutofillPaymentMethodsFragment.class;
-                break;
-
             case SettingsFragment.SAFETY_CHECK:
-                fragment = SafetyCheckSettingsFragment.class;
                 fragmentArgs = SafetyCheckSettingsFragment.createBundle(true);
                 break;
-
+            case SettingsFragment.MAIN:
+            case SettingsFragment.PAYMENT_METHODS:
             case SettingsFragment.SITE:
-                fragment = SiteSettings.class;
-                break;
-
             case SettingsFragment.ACCESSIBILITY:
-                fragment = AccessibilitySettings.class;
+            case SettingsFragment.PASSWORDS:
                 break;
         }
-
-        launchSettingsActivity(context, fragment, fragmentArgs);
+        launchSettingsActivity(context, getFragmentClassFromEnum(settingsFragment), fragmentArgs);
     }
 
     @Override
@@ -95,31 +79,64 @@ public class SettingsLauncherImpl implements SettingsLauncher {
             Context context,
             @Nullable Class<? extends Fragment> fragment,
             @Nullable Bundle fragmentArgs) {
-        String fragmentName = fragment != null ? fragment.getName() : null;
-        Intent intent = createSettingsActivityIntent(context, fragmentName, fragmentArgs);
+        Intent intent = createSettingsActivityIntent(context, fragment, fragmentArgs);
         IntentUtils.safeStartActivity(context, intent);
     }
 
     @Override
-    public Intent createSettingsActivityIntent(Context context, @Nullable String fragmentName) {
-        return createSettingsActivityIntent(context, fragmentName, null);
+    public Intent createSettingsActivityIntent(
+            Context context, @Nullable Class<? extends Fragment> fragment) {
+        return createSettingsActivityIntent(context, fragment, null);
     }
 
     @Override
     public Intent createSettingsActivityIntent(
-            Context context, @Nullable String fragmentName, @Nullable Bundle fragmentArgs) {
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs) {
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
-        if (fragmentName != null) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
+        if (fragment != null) {
+            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragment.getName());
         }
         if (fragmentArgs != null) {
             intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragmentArgs);
         }
         return intent;
+    }
+
+    @Override
+    public Intent createSettingsActivityIntent(
+            Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs) {
+        return createSettingsActivityIntent(
+                context, getFragmentClassFromEnum(fragment), fragmentArgs);
+    }
+
+    private static @Nullable Class<? extends Fragment> getFragmentClassFromEnum(
+            @SettingsFragment int fragment) {
+        switch (fragment) {
+            case SettingsFragment.MAIN:
+                return null;
+            case SettingsFragment.CLEAR_BROWSING_DATA:
+                return ClearBrowsingDataTabsFragment.class;
+            case SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE:
+                return ClearBrowsingDataFragmentAdvanced.class;
+            case SettingsFragment.PAYMENT_METHODS:
+                return AutofillPaymentMethodsFragment.class;
+            case SettingsFragment.SAFETY_CHECK:
+                return SafetyCheckSettingsFragment.class;
+            case SettingsFragment.SITE:
+                return SiteSettings.class;
+            case SettingsFragment.ACCESSIBILITY:
+                return AccessibilitySettings.class;
+            case SettingsFragment.PASSWORDS:
+                return PasswordSettings.class;
+        }
+        assert false;
+        return null;
     }
 }

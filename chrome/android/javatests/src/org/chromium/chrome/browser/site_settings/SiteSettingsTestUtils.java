@@ -46,7 +46,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        SiteSettings.class.getName(),
+                        SiteSettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -69,7 +69,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        SingleCategorySettings.class.getName(),
+                        SingleCategorySettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -84,7 +84,7 @@ public class SiteSettingsTestUtils {
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
-                        context, StorageAccessSubpageSettings.class.getName(), fragmentArgs);
+                        context, StorageAccessSubpageSettings.class, fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
     }
@@ -96,7 +96,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        SingleWebsiteSettings.class.getName(),
+                        SingleWebsiteSettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -109,7 +109,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        GroupedWebsitesSettings.class.getName(),
+                        GroupedWebsitesSettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -123,7 +123,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        AllSiteSettings.class.getName(),
+                        AllSiteSettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
@@ -139,7 +139,7 @@ public class SiteSettingsTestUtils {
         Intent intent =
                 settingsLauncher.createSettingsActivityIntent(
                         ApplicationProvider.getApplicationContext(),
-                        AllSiteSettings.class.getName(),
+                        AllSiteSettings.class,
                         fragmentArgs);
         return (SettingsActivity)
                 InstrumentationRegistry.getInstrumentation().startActivitySync(intent);

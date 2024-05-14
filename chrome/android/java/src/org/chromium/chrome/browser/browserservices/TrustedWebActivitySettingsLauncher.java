@@ -111,6 +111,6 @@ public class TrustedWebActivitySettingsLauncher {
         Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         return settingsLauncher.createSettingsActivityIntent(
-                context, SingleWebsiteSettings.class.getName(), args);
+                context, SingleWebsiteSettings.class, args);
     }
 }
