@@ -384,10 +384,10 @@ TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
   }
 }
 
-// When the client asks for WEBGPU usage with a single-plane format,
-// GL_TEXTURE_2D should be used as the texture target on all platforms other
-// than Mac, where the MacOS-specific target for native buffers should be used.
-TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_WebGPUUsage) {
+// When the client asks for WEBGPU usage, GL_TEXTURE_2D should be used as the
+// texture target on all platforms other than Mac, where the MacOS-specific
+// target for native buffers should be used.
+TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
   auto sii = base::MakeRefCounted<TestSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
@@ -397,12 +397,22 @@ TEST(ClientSharedImageTest, GetTextureTarget_SinglePlaneFormats_WebGPUUsage) {
   sii->set_macos_specific_texture_target(kMacOSSpecificTarget);
 #endif
 
+  // Test all single-plane formats as well as multiplane formats for which
+  // hardware GMBs are supported.
+  std::vector<viz::SharedImageFormat> formats_to_test;
+  for (auto format : viz::SinglePlaneFormat::kAll) {
+    formats_to_test.push_back(format);
+  }
+  for (auto format : kMultiPlaneFormatsWithHardwareGMBs) {
+    formats_to_test.push_back(format);
+  }
+
   for (uint32_t webgpu_usage :
        {SHARED_IMAGE_USAGE_WEBGPU_READ, SHARED_IMAGE_USAGE_WEBGPU_WRITE}) {
     const gfx::Size kSize(256, 256);
     const uint32_t kUsage = webgpu_usage;
 
-    for (auto format : viz::SinglePlaneFormat::kAll) {
+    for (auto format : formats_to_test) {
       SharedImageInfo si_info{format,
                               kSize,
                               gfx::ColorSpace(),
