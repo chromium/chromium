@@ -25,6 +25,7 @@
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -301,12 +302,17 @@ template <typename T, typename V = std::decay_t<T>>
 bool MatchAndExplain(std::string_view test_name,
                      const testing::Matcher<V>& matcher,
                      const T& value) {
-  if (matcher.Matches(value))
+  testing::StringMatchResultListener listener;
+  if (matcher.MatchAndExplain(value, &listener)) {
     return true;
+  }
   std::ostringstream oss;
   oss << test_name << " failed.\nExpected: ";
   matcher.DescribeTo(&oss);
   oss << "\nActual: " << testing::PrintToString(value);
+  if (!listener.str().empty()) {
+    oss << "\n" << listener.str();
+  }
   LOG(ERROR) << oss.str();
   return false;
 }
