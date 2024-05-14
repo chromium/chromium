@@ -145,7 +145,10 @@ import java.util.concurrent.ExecutionException;
 // TODO(crbug.com/40252540): Disabling the shopping CPA should not be a requirement for these tests.
 @DisableFeatures({
     ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
+    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE,
+    // TODO(crbug.com/331759747): Re-enable this feature when
+    //  ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE is enabled by default.
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
 })
 // TODO(crbug.com/40899175): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
