@@ -50,7 +50,7 @@ public final class DataSharingServiceFactory {
 
     /**
      * A factory method to create or retrieve a {@link DataSharingUIDelegate} object for a given
-     * profile.
+     * profile. TODO(b/339685767): Deprecate this function.
      *
      * @return The {@link DataSharingUIDelegate} for the given profile.
      */

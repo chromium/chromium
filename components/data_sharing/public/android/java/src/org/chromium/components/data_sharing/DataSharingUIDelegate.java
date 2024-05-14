@@ -10,15 +10,20 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UserData;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
 import org.chromium.components.data_sharing.configs.GroupMemberConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
-/** An interface that shows sharing UI screens. */
+/** An interface that shows sharing UI screens. TODO(b/339685767): Remove UserData base class. */
+@JNINamespace("data_sharing")
 public interface DataSharingUIDelegate extends UserData {
 
     /** Interface for callback when members are picked. */
@@ -93,4 +98,12 @@ public interface DataSharingUIDelegate extends UserData {
             String groupId,
             String tokenSecret,
             GroupMemberConfig config);
+
+    /**
+     * Handle the intercepted URL to show relevant data sharing group information.
+     *
+     * @param url The URL of the current share action.
+     */
+    @CalledByNative
+    public void handleShareURLIntercepted(GURL url);
 }

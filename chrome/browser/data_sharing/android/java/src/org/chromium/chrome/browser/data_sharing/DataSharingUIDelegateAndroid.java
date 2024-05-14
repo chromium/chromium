@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
-import org.chromium.base.UserData;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
@@ -21,13 +22,17 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/** Implementation of {@link DataSharingUIDelegate}. */
-class DataSharingUIDelegateImpl implements DataSharingUIDelegate, UserData {
+class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
 
-    private final Profile mProfile;
+    private final DataSharingUIDelegate mDelegate;
 
-    DataSharingUIDelegateImpl(Profile profile) {
-        mProfile = profile;
+    DataSharingUIDelegateAndroid(Profile profile) {
+        mDelegate = new DataSharingUIDelegateImpl(profile);
+    }
+
+    @CalledByNative
+    private static DataSharingUIDelegateAndroid create(Profile profile) {
+        return new DataSharingUIDelegateAndroid(profile);
     }
 
     @Override
@@ -35,14 +40,18 @@ class DataSharingUIDelegateImpl implements DataSharingUIDelegate, UserData {
             @NonNull Activity activity,
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
-            MemberPickerConfig config) {}
+            MemberPickerConfig config) {
+        mDelegate.showMemberPicker(activity, view, memberResult, config);
+    }
 
     @Override
     public void showFullPicker(
             @NonNull Activity activity,
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
-            MemberPickerConfig config) {}
+            MemberPickerConfig config) {
+        mDelegate.showFullPicker(activity, view, memberResult, config);
+    }
 
     @Override
     public void showAvatars(
@@ -50,7 +59,9 @@ class DataSharingUIDelegateImpl implements DataSharingUIDelegate, UserData {
             List<ViewGroup> views,
             List<String> emails,
             Callback<Boolean> success,
-            AvatarConfig config) {}
+            AvatarConfig config) {
+        mDelegate.showAvatars(context, views, emails, success, config);
+    }
 
     @Override
     public void createGroupMemberListView(
@@ -58,8 +69,13 @@ class DataSharingUIDelegateImpl implements DataSharingUIDelegate, UserData {
             @NonNull ViewGroup view,
             String groupId,
             String tokenSecret,
-            GroupMemberConfig config) {}
+            GroupMemberConfig config) {
+        mDelegate.createGroupMemberListView(activity, view, groupId, tokenSecret, config);
+    }
 
     @Override
-    public void handleShareURLIntercepted(GURL url) {}
+    @CalledByNative
+    public void handleShareURLIntercepted(GURL url) {
+        // TODO(haileywang): Implement redirecting to the recipient/inviter flow.
+    }
 }

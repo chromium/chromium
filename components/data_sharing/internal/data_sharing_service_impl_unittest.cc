@@ -15,6 +15,7 @@
 #include "base/version_info/channel.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/entity_change.h"
@@ -279,7 +280,8 @@ class DataSharingServiceImplTest : public testing::Test {
         std::move(test_url_loader_factory),
         identity_test_env_.identity_manager(),
         syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        version_info::Channel::UNKNOWN, std::move(sdk_delegate));
+        version_info::Channel::UNKNOWN, std::move(sdk_delegate),
+        /*ui_delegate=*/nullptr);
   }
 
  protected:
