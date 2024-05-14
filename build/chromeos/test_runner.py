@@ -500,6 +500,7 @@ class GTestTest(RemoteTest):
     self._trace_dir = args.trace_dir
     self._run_test_sudo_helper = args.run_test_sudo_helper
     self._set_selinux_label = args.set_selinux_label
+    self._use_deployed_dbus_configs = args.use_deployed_dbus_configs
 
   @property
   def suite_name(self):
@@ -610,6 +611,14 @@ class GTestTest(RemoteTest):
             'setfiles -F %s %s' % (specfile, filename),
         ])
 
+    # Mount the deploy dbus config dir on top of chrome's dbus dir. Send SIGHUP
+    # to dbus daemon to reload config from the newly mounted dir.
+    if self._use_deployed_dbus_configs:
+      device_test_script_contents.extend([
+          'mount --bind ./dbus /opt/google/chrome/dbus',
+          'kill -s HUP $(pgrep dbus)',
+      ])
+
     if self._additional_args:
       test_invocation += ' %s' % ' '.join(self._additional_args)
 
@@ -655,6 +664,13 @@ class GTestTest(RemoteTest):
           'pkill -P $TEST_SUDO_HELPER_PID',
           'kill $TEST_SUDO_HELPER_PID',
           'unlink ${TEST_SUDO_HELPER_PATH}',
+      ])
+
+    # Undo the dbus config mount and reload dbus config.
+    if self._use_deployed_dbus_configs:
+      device_test_script_contents.extend([
+          'umount /opt/google/chrome/dbus',
+          'kill -s HUP $(pgrep dbus)',
       ])
 
     # This command should always be the last bash commandline so infra can
@@ -1005,6 +1021,11 @@ def main():
       'So:\n'
       '  --set-selinux-label=my_test=u:r:cros_foo_label:s0\n'
       'You can specify it more than one time to set multiple files tags.')
+  gtest_parser.add_argument(
+      '--use-deployed-dbus-configs',
+      action='store_true',
+      help='When set, will bind mount deployed dbus config to chrome dbus dir '
+      'and ask dbus daemon to reload config before running tests.')
 
   # Tast test args.
   # pylint: disable=line-too-long

@@ -255,15 +255,15 @@ class TastTests(TestRunnerTest):
 class GTestTest(TestRunnerTest):
 
   @parameterized.expand([
-      [True, True, True, False],
-      [True, False, False, False],
-      [False, True, True, True],
-      [False, False, False, True],
-      [False, True, True, False],
-      [False, False, False, False],
+      [True, True, True, False, True],
+      [True, False, False, False, False],
+      [False, True, True, True, True],
+      [False, False, False, True, False],
+      [False, True, True, False, True],
+      [False, False, False, False, False],
   ])
   def test_gtest(self, use_vm, stop_ui, use_test_sudo_helper,
-                 fetch_cros_hostname):
+                 fetch_cros_hostname, use_deployed_dbus_configs):
     """Tests running a gtest."""
     fd_mock = mock.mock_open()
 
@@ -281,6 +281,8 @@ class GTestTest(TestRunnerTest):
       args.append('--stop-ui')
     if use_test_sudo_helper:
       args.append('--run-test-sudo-helper')
+    if use_deployed_dbus_configs:
+      args.append('--use-deployed-dbus-configs')
 
     with mock.patch.object(sys, 'argv', args),\
          mock.patch.object(test_runner.subprocess, 'Popen') as mock_popen,\
@@ -324,6 +326,12 @@ class GTestTest(TestRunnerTest):
           """)
         core_cmd += ' --test-sudo-helper-socket-path=${TEST_SUDO_HELPER_PATH}'
 
+      if use_deployed_dbus_configs:
+        expected_device_script += dedent("""\
+            mount --bind ./dbus /opt/google/chrome/dbus
+            kill -s HUP $(pgrep dbus)
+          """)
+
       if stop_ui:
         dbus_cmd = 'dbus-send --system --type=method_call'\
           ' --dest=org.chromium.PowerManager'\
@@ -349,6 +357,13 @@ class GTestTest(TestRunnerTest):
             kill $TEST_SUDO_HELPER_PID
             unlink ${TEST_SUDO_HELPER_PATH}
           """)
+
+      if use_deployed_dbus_configs:
+        expected_device_script += dedent("""\
+            umount /opt/google/chrome/dbus
+            kill -s HUP $(pgrep dbus)
+          """)
+
       expected_device_script += dedent("""\
           exit $TEST_RETURN_CODE
         """)

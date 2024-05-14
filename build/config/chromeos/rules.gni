@@ -367,6 +367,9 @@ template("generate_runner_script") {
         if (is_chromeos_ash) {
           # For ash, it need to first stop the existing ash.
           executable_args += [ "--stop-ui" ]
+
+          # Use the deployed dbus configs.
+          executable_args += [ "--use-deployed-dbus-configs" ]
         }
 
         # Lacros need to know the wayland socket file created by Ash.
