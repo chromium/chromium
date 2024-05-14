@@ -84,16 +84,14 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
     client_for_testing_ = std::move(client);
   }
 
-  void SetDisableBrowserCreationAfterInterceptionForTesting(bool disable) {
-    disable_browser_creation_after_interception_for_testing_ = disable;
-  }
-
   OidcInterceptionStatus interception_status() { return interception_status_; }
 
- private:
-  void CreateBrowserAfterSigninInterception();
+ protected:
+  virtual void CreateBrowserAfterSigninInterception();
   // Cancels any current signin interception and resets the interceptor to its
   // initial state.
+
+ private:
   void Reset();
 
   // Try to send OIDC tokens to DM server for registration.
@@ -142,7 +140,6 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
       interception_bubble_handle_;
 
   std::unique_ptr<CloudPolicyClient> client_for_testing_ = nullptr;
-  bool disable_browser_creation_after_interception_for_testing_ = false;
 
   OidcInterceptionCallback oidc_callback_;
 

@@ -43,6 +43,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -349,14 +350,6 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched sucessfully";
   }
 
-  if (!disable_browser_creation_after_interception_for_testing_) {
-    // Work is done in this profile, the flow continues in the
-    // OidcAuthenticationSigninInterceptor that is attached to the new profile.
-    // We pass relevant parameters from this instance to the new one.
-    OidcAuthenticationSigninInterceptorFactory::GetForProfile(new_profile.get())
-        ->CreateBrowserAfterSigninInterception();
-  }
-
   policy::UserPolicyOidcSigninService* policy_service =
       policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
           new_profile.get());
@@ -390,6 +383,10 @@ void OidcAuthenticationSigninInterceptor::
 void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
     Profile* new_profile,
     bool success) {
+  if (success) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Policy fetched for OIDC profile.";
+  }
+
   if (success && dasher_based_ && !switch_to_entry_) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Policy fetched for Dasher-based OIDC profile, adding the user as "
@@ -424,18 +421,22 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
         << " received the following result: "
         << static_cast<int>(set_primary_account_result);
 
-    interception_status_ = OidcInterceptionStatus::kCompleted;
-
-    Reset();
+    interception_status_ =
+        (set_primary_account_result ==
+         signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
+            ? OidcInterceptionStatus::kCompleted
+            : OidcInterceptionStatus::kError;
+  } else {
+    interception_status_ = success ? OidcInterceptionStatus::kCompleted
+                                   : OidcInterceptionStatus::kError;
   }
 
-  interception_status_ = success ? OidcInterceptionStatus::kCompleted
-                                 : OidcInterceptionStatus::kError;
-
-  if (success) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Policy fetched for Dasherless OIDC profile.";
-  }
+  // Work is done in this profile, creating a new browser window/tab for the
+  // new/existing profile with chrome://newtab/, using the new profile's
+  // interceptor. We can create the window regardless of policy fetch and
+  // primary account setting succeeds or not.
+  OidcAuthenticationSigninInterceptorFactory::GetForProfile(new_profile)
+      ->CreateBrowserAfterSigninInterception();
 
   Reset();
 }
