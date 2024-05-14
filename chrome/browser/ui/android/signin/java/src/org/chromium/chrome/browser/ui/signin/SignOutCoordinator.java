@@ -213,10 +213,12 @@ public class SignOutCoordinator {
                     public void preWipeData() {
                         snackbarManager.showSnackbar(
                                 Snackbar.make(
-                                        context.getString(R.string.sign_out_snackbar_message),
-                                        /* controller= */ null,
-                                        Snackbar.TYPE_ACTION,
-                                        Snackbar.UMA_SIGN_OUT));
+                                                context.getString(
+                                                        R.string.sign_out_snackbar_message),
+                                                /* controller= */ null,
+                                                Snackbar.TYPE_ACTION,
+                                                Snackbar.UMA_SIGN_OUT)
+                                        .setSingleLine(false));
                     }
 
                     @Override

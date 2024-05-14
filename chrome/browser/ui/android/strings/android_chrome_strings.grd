@@ -2176,20 +2176,16 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SIGNOUT_MANAGED_ACCOUNT_MESSAGE" desc="Message to display for sign out of Chrome dialog when the account has enterprise management, and all user data will be erased">
         Because you're signing out of an account managed by <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. It will remain in your Google Account.
       </message>
-      <!-- TODO(crbug.com/41493790): Add description and remove translateable once strings are finalized. -->
-      <message name="IDS_SIGN_OUT_SNACKBAR_MESSAGE" desc="to be added" translateable="false">
-          Signed out. Sign back in to use the bookmarks, passwords and more in your account.
+      <message name="IDS_SIGN_OUT_SNACKBAR_MESSAGE" desc="Snackbar message shown after signing out from account settings">
+        Signed out. Sign back in to use the bookmarks, passwords and more in your account.
       </message>
-      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
-      <message name="IDS_SIGN_OUT_UNSAVED_DATA_TITLE" desc="to be added" translateable="false">
-        Unsaved data
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_TITLE" desc="Title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.">
+        Some data isn\u2019t saved yet
       </message>
-      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
-      <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE" desc="to be added" translateable="false">
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_MESSAGE" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.">
         Some of your Chrome data hasn\u2019t been saved in your Google Account yet.\nTry waiting a few minutes before signing out. If you sign out now, this data will be deleted.
       </message>
-      <!-- TODO(crbug.com/41493791): Add description and remove translateable once strings are finalized. -->
-      <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="to be added" translateable="false">
+      <message name="IDS_SIGN_OUT_UNSAVED_DATA_PRIMARY_BUTTON" desc="Button title of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is parmanently deleted if the user proceeds by pressing this button">
         Delete and sign out
       </message>
       <message name="IDS_SIGN_IN_GETTING_ACCOUNT_MANAGEMENT_POLICY" desc="Title of progress bar dialog for getting management policy">
