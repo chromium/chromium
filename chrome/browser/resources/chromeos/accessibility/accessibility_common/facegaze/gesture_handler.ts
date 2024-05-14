@@ -185,7 +185,7 @@ export class GestureHandler {
 
 export namespace GestureHandler {
   /** The default confidence threshold for facial gestures. */
-  export const DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
+  export const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
 
   /** Minimum repeat rate of a gesture. */
   // TODO(b:322511275): Move to a pref in settings.
