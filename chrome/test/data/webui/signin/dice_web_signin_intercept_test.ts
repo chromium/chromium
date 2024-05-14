@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
+import 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
-import type {InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
-import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
+import type {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_app.js';
+import type {InterceptionParameters} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept.top-chrome/dice_web_signin_intercept_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';

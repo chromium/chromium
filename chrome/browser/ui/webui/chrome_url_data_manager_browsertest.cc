@@ -502,7 +502,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://conflicts",
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    "chrome://signin-dice-web-intercept/?debug",
+    "chrome://signin-dice-web-intercept.top-chrome/?debug",
     // Note: Disabled because a DCHECK fires when directly visiting the URL.
     // "chrome://signin-reauth",
 #endif

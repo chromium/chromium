@@ -45,7 +45,7 @@ build_webui_tests("build") {
     "chrome://profile-picker/lazy_load.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/profile_picker/tsc/lazy_load.d.ts",
             target_gen_dir),
-    "chrome://signin-dice-web-intercept/*|" + rebase_path(
+    "chrome://signin-dice-web-intercept.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/signin/tsc/dice_web_signin_intercept/*",
             target_gen_dir),
     "chrome://managed-user-profile-notice/*|" + rebase_path(

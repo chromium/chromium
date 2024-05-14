@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
 // tab.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                        OpenLearnMoreLinkInNewTab) {
-  const GURL bubble_url("chrome://signin-dice-web-intercept/");
+  const GURL bubble_url(chrome::kChromeUIDiceWebSigninInterceptURL);
   const GURL learn_more_url = google_util::AppendGoogleLocaleParam(
       GURL(chrome::kSigninInterceptManagedDisclaimerLearnMoreURL),
       g_browser_process->GetApplicationLocale());
