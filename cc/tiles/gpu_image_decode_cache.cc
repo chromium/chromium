@@ -211,7 +211,7 @@ size_t EstimateHardwareDecodedDataSize(
     case YUVSubsampling::k444:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0u;
   }
   base::CheckedNumeric<size_t> uv_data_size(uv_width * uv_height);
@@ -1918,7 +1918,7 @@ bool GpuImageDecodeCache::OnMemoryDump(
 
         case DecodedDataMode::kCpu:
           // Not uploaded in this case.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -2382,7 +2382,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     DCHECK(!draw_image.paint_image().IsLazyGenerated());
     if (image_data->info.yuva.has_value()) {
       DLOG(ERROR) << "YUV + Bitmap is unknown and unimplemented!";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     } else {
       image_data->decode.SetBitmapImage(
           draw_image.paint_image().GetSwSkImage());

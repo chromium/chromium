@@ -356,7 +356,7 @@ class PaintOpHelper {
       case SkColorChannel::kA:
         return "kA";
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "unknown";
   }
 

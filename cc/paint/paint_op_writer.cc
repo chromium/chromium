@@ -748,7 +748,7 @@ void PaintOpWriter::Write(const PaintFilter* filter, const SkM44& current_ctm) {
   AssertFieldAlignment();
   switch (filter->type()) {
     case PaintFilter::Type::kNullFilter:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case PaintFilter::Type::kColorFilter:
       Write(static_cast<const ColorFilterPaintFilter&>(*filter), current_ctm);

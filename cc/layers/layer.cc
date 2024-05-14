@@ -833,7 +833,7 @@ void Layer::SetBlendMode(SkBlendMode blend_mode) {
     case SkBlendMode::kModulate:
       // Porter Duff Compositing Operators are not yet supported
       // http://dev.w3.org/fxtf/compositing-1/#porterduffcompositingoperators
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

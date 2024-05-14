@@ -286,7 +286,7 @@ int GetGestureScrollIndex(EventMetrics::EventType type) {
       return 4;
     default:
       // We are only interested in 5 categories of EventType for scroll input
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return kMaxGestureScrollHistogramIndex;
 }
@@ -313,7 +313,7 @@ const char* GetVSyncRatioTypeName(
         kGenerationVsVsyncRatioBeforeVSync:
       return "GenerationVsVsyncRatio.BeforeVSync";
     case CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -638,7 +638,7 @@ const char* CompositorFrameReporter::GetStageName(
         case BlinkBreakdown::kBeginMainSentToStarted:
           return "SendBeginMainFrameToCommit.BeginMainSentToStarted";
         case BlinkBreakdown::kBreakdownCount:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return "";
       }
     case StageType::kCommit:
@@ -682,13 +682,13 @@ const char* CompositorFrameReporter::GetStageName(
           return "SubmitCompositorFrameToPresentationCompositorFrame."
                  "LatchToSwapEnd";
         case VizBreakdown::kBreakdownCount:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return "";
       }
     case StageType::kTotalLatency:
       return "TotalLatency";
     case StageType::kStageTypeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -716,7 +716,7 @@ const char* CompositorFrameReporter::GetVizBreakdownName(
     case VizBreakdown::kLatchToSwapEnd:
       return "LatchToSwapEnd";
     case VizBreakdown::kBreakdownCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -1061,7 +1061,7 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
           break;
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -1611,7 +1611,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
         fling_input_count += scroll_update->coalesced_event_count();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

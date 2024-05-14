@@ -198,22 +198,22 @@ void RecordPaintCanvas::clipPathInternal(const SkPath& path,
 }
 
 SkImageInfo RecordPaintCanvas::imageInfo() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkImageInfo();
 }
 
 bool RecordPaintCanvas::getLocalClipBounds(SkRect* bounds) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool RecordPaintCanvas::getDeviceClipBounds(SkIRect* bounds) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 SkM44 RecordPaintCanvas::getLocalToDevice() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkM44();
 }
 

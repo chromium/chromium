@@ -93,7 +93,7 @@ class DummyImageProvider : public ImageProvider {
   ~DummyImageProvider() override = default;
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ScopedResult();
   }
 };

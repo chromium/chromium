@@ -159,7 +159,7 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         // back with an invalid element id. If we somehow get here, we should
         // drop the scroll as continuing could cause us to infinitely bounce
         // back and forth between here and hit testing on the main thread.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         scroll_status.thread = InputHandler::ScrollThread::kScrollIgnored;
         return scroll_status;
       }

@@ -401,7 +401,7 @@ void TilingSetRasterQueueAll::TilingIterator::AdvancePhase() {
     phase_ = static_cast<Phase>(phase_ + 1);
     switch (phase_) {
       case Phase::VISIBLE_RECT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case Phase::PENDING_VISIBLE_RECT:
         pending_visible_iterator_ =

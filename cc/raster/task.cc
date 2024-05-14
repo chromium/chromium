@@ -60,7 +60,7 @@ std::string TaskState::ToString() const {
     case Value::kCanceled:
       return "CANCELED";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

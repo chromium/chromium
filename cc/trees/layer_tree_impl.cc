@@ -1979,7 +1979,7 @@ LayerTreeImpl::CreateScrollbarAnimationController(ElementId scroll_element_id,
               thinning_duration, initial_opacity, idle_thickness_scale);
     }
     case LayerTreeSettings::NO_ANIMATOR:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;

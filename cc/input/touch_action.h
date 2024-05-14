@@ -209,7 +209,7 @@ inline const char* TouchActionToString(TouchAction touch_action) {
     case 63:
       return "AUTO";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

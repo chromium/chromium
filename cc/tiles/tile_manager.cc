@@ -219,7 +219,7 @@ bool IsForegroundCategory(uint16_t category) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -841,7 +841,7 @@ bool TileManager::TilePriorityViolatesMemoryPolicy(
       return priority.distance_to_visible ==
              std::numeric_limits<float>::infinity();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

@@ -857,7 +857,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
   }
 
   DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DrawResult::kSuccess;
   }
 
@@ -964,7 +964,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
   }
 
   DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return DrawResult::kSuccess;
   }
 

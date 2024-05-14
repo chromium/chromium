@@ -116,7 +116,7 @@ void RasterBufferProvider::PlaybackToMemory(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RasterBufferProvider::FlushIfNeeded() {

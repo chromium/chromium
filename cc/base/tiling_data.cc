@@ -302,7 +302,7 @@ int TilingData::TileSizeX(int x_index) const {
     return tiling_rect_.right() - TilePositionX(x_index);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -323,7 +323,7 @@ int TilingData::TileSizeY(int y_index) const {
     return tiling_rect_.bottom() - TilePositionY(y_index);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

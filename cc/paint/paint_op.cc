@@ -183,7 +183,7 @@ struct Rasterizer {
         !T::kHasPaintFlags,
         "This function should not be used for a PaintOp that has PaintFlags");
     DCHECK(op->IsValid());
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   static void Raster(const T* op,
                      SkCanvas* canvas,
@@ -533,7 +533,7 @@ void DrawRecordOp::Serialize(PaintOpWriter& writer,
                              const SkM44& current_ctm,
                              const SkM44& original_ctm) const {
   // These are flattened in PaintOpBufferSerializer.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrawRectOp::Serialize(PaintOpWriter& writer,
@@ -557,7 +557,7 @@ void DrawScrollingContentsOp::Serialize(PaintOpWriter& writer,
                                         const SkM44& current_ctm,
                                         const SkM44& original_ctm) const {
   // These are flattened in PaintOpBufferSerializer.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DrawVerticesOp::Serialize(PaintOpWriter& writer,
@@ -1063,7 +1063,7 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -2161,7 +2161,7 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       return true;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

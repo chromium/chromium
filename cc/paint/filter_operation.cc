@@ -182,7 +182,7 @@ static FilterOperation CreateNoOpFilter(FilterOperation::FilterType type) {
     case FilterOperation::OFFSET:
       return FilterOperation::CreateOffsetFilter(gfx::Point(0, 0));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return FilterOperation::CreateEmptyFilter();
 }
 
@@ -209,10 +209,10 @@ static float ClampAmountForFilterType(float amount,
     case FilterOperation::COLOR_MATRIX:
     case FilterOperation::OFFSET:
     case FilterOperation::REFERENCE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return amount;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return amount;
 }
 

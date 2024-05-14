@@ -1343,7 +1343,7 @@ TEST_F(PictureLayerTilingIteratorTest,
         EXPECT_EQ(gfx::RectF(1.125f, 0.125f, 92, 2), texture_rect);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   EXPECT_EQ(3, i);

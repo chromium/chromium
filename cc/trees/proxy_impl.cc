@@ -321,7 +321,7 @@ bool ProxyImpl::IsInSynchronousComposite() const {
 
 void ProxyImpl::FrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProxyImpl::SetHasActiveThreadedScroll(bool is_scrolling) {

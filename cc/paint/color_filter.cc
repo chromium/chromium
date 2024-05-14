@@ -231,7 +231,7 @@ sk_sp<ColorFilter> ColorFilter::Deserialize(PaintOpReader& reader, Type type) {
       return MakeHighContrast(config);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

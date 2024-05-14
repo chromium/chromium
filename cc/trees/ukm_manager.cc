@@ -61,7 +61,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
       case StageType::kStageTypeCount:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -88,7 +88,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
       case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -113,7 +113,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
       case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -145,7 +145,7 @@ void UkmManager::RecordCompositorLatencyUKM(
         break;
       case FrameSequenceTrackerType::kCustom:
       case FrameSequenceTrackerType::kMaxType:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -216,7 +216,7 @@ void UkmManager::RecordEventLatencyUKM(
               builder.SetGenerationToRendererCompositor(dispatch_latency);
               break;
             default:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
           }
           break;
@@ -240,7 +240,7 @@ void UkmManager::RecordEventLatencyUKM(
               builder.SetRendererCompositorToMain(dispatch_latency);
               break;
             default:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               break;
           }
           break;
@@ -260,7 +260,7 @@ void UkmManager::RecordEventLatencyUKM(
           builder.SetRendererMainProcessing(dispatch_latency);
           break;
         case EventMetrics::DispatchStage::kRendererMainFinished:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 
@@ -303,7 +303,7 @@ void UkmManager::RecordEventLatencyUKM(
 #undef CASE_FOR_STAGE
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
@@ -325,12 +325,12 @@ void UkmManager::RecordEventLatencyUKM(
 #undef CASE_FOR_STAGE
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     for (; stage_it != stage_history.end(); ++stage_it) {
@@ -355,7 +355,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
         case StageType::kStageTypeCount:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -382,7 +382,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
         case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }
@@ -407,7 +407,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
         case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

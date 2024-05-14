@@ -473,7 +473,7 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       }
       break;
     case Type::kShaderCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -567,7 +567,7 @@ bool PaintShader::IsOpaque() const {
     case Type::kPaintRecord:
       return false;
     case Type::kShaderCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return fallback_color_.isOpaque();

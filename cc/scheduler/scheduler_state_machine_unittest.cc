@@ -76,7 +76,7 @@ const char* BeginImplFrameStateToString(
     case BeginImplFrameState::INSIDE_DEADLINE:
       return "BeginImplFrameState::INSIDE_DEADLINE";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 const char* BeginMainFrameStateToString(
@@ -90,7 +90,7 @@ const char* BeginMainFrameStateToString(
     case BeginMainFrameState::READY_TO_COMMIT:
       return "BeginMainFrameState::READY_TO_COMMIT";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 
@@ -126,7 +126,7 @@ const char* ActionToString(SchedulerStateMachine::Action action) {
     case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
       return "Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 

@@ -458,7 +458,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       // TIME_UPDATED events are used to synchronize effect time between cc and
       // main thread worklet animations. Keyframe models are not involved in
       // this process.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return dispatched;

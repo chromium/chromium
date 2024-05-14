@@ -205,7 +205,7 @@ void ElementAnimations::OnFloatAnimated(const float& value,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -228,7 +228,7 @@ void ElementAnimations::OnFilterAnimated(const FilterOperations& filters,
         OnFilterAnimated(ElementListType::PENDING, filters, keyframe_model);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -402,7 +402,7 @@ void ElementAnimations::AttachToCurve(gfx::AnimationCurve* c) {
           this);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -141,7 +141,7 @@ class ImageTransferCacheEntryTest
           CreateSolidPlane(gr_context(), 32, 32, GL_RG8_EXT, SkColors::kWhite,
                            release_flags->get() + 1)};
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {};
     }
     if (!base::Contains(plane_images, nullptr)) {
@@ -377,7 +377,7 @@ std::string TestParamToString(
     case SkYUVAInfo::PlaneConfig::kY_UV:
       return "Y_UV";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

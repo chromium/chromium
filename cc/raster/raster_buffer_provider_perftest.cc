@@ -554,7 +554,7 @@ class RasterBufferProviderPerfTest
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         return std::string("_bitmap_raster_buffer_provider");
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 

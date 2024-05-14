@@ -36,7 +36,7 @@ std::unique_ptr<RasterTilePriorityQueue> RasterTilePriorityQueue::Create(
       return std::move(queue);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

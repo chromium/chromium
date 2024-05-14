@@ -122,7 +122,7 @@ bool PathEffect::EqualsForTesting(const PathEffect& other) const {
     case Type::kCorner:
       return AreEqualForTesting<CornerPathEffect>(*this, other);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -144,7 +144,7 @@ sk_sp<PathEffect> PathEffect::Deserialize(PaintOpReader& reader, Type type) {
       return reader.valid() ? MakeCorner(radius) : nullptr;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

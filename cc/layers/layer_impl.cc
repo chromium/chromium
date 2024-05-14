@@ -281,7 +281,7 @@ void LayerImpl::AppendDebugBorderQuad(
 void LayerImpl::GetContentsResourceId(viz::ResourceId* resource_id,
                                       gfx::Size* resource_size,
                                       gfx::SizeF* resource_uv_size) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   *resource_id = viz::kInvalidResourceId;
 }
 

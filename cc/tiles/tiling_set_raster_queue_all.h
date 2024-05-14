@@ -159,7 +159,7 @@ class CC_EXPORT TilingSetRasterQueueAll {
         case Phase::EVENTUALLY_RECT:
           return TilePriority::EVENTUALLY;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return TilePriority::EVENTUALLY;
     }
 

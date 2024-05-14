@@ -65,7 +65,7 @@ const char* GetThreadTypeName(SmoothEffectDrivingThread type) {
     case SmoothEffectDrivingThread::kMain:
       return "MainThread";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -189,7 +189,7 @@ SmoothEffectDrivingThread FrameSequenceMetrics::GetEffectiveThread() const {
       return SmoothEffectDrivingThread::kMain;
 
     case FrameSequenceTrackerType::kMaxType:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return SmoothEffectDrivingThread::kUnknown;
 }
@@ -472,7 +472,7 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       }
       break;
     case SmoothEffectDrivingThread::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   v3_.last_begin_frame_args = args;

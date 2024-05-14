@@ -835,7 +835,7 @@ class LayerTreeHostTestSetNeedsCommit2 : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -987,7 +987,7 @@ class LayerTreeHostTestInvisibleLayersSkipRenderPass
     ++index_;
     switch (index_) {
       case kAllInvisible:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case kOneVisible:
         child1_->SetHideLayerAndSubtree(false);
@@ -2867,7 +2867,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -2919,7 +2919,7 @@ class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
       case 6:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -2983,7 +2983,7 @@ class LayerTreeHostTestSetNeedsCommitWithForcedRedraw
         EXPECT_EQ(gfx::Rect(bounds_), root_damage_rect);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     return draw_result;
@@ -3079,7 +3079,7 @@ class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {
         EXPECT_EQ(gfx::Rect(child_layer_bounds_), root_damage_rect);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     return draw_result;
@@ -3103,7 +3103,7 @@ class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -3191,7 +3191,7 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     return draw_result;
@@ -3208,7 +3208,7 @@ class LayerTreeHostTestDamageWithScale : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -4294,7 +4294,7 @@ class LayerTreeHostTestSynchronousCompositorActivateWithoutDraw
     } else if (activate_count_ == 2) {
       EndTest();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -5952,7 +5952,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -6207,7 +6207,7 @@ class LayerTreeHostTestKeepSwapPromise : public LayerTreeHostTest {
       case 2:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -6289,7 +6289,7 @@ class LayerTreeHostTestKeepSwapPromiseMFBA : public LayerTreeHostTest {
     if (host_impl->sync_tree()->source_frame_number() == 0) {
       host_impl->BlockNotifyReadyToActivateForTesting(true);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -6323,7 +6323,7 @@ class LayerTreeHostTestKeepSwapPromiseMFBA : public LayerTreeHostTest {
       case 2:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -7557,7 +7557,8 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
         // try to draw once more.
         break;
       case 7:
-        NOTREACHED() << "No draws should happen once we have a complete frame.";
+        NOTREACHED_IN_MIGRATION()
+            << "No draws should happen once we have a complete frame.";
         break;
     }
     return draw_result;
@@ -8457,7 +8458,7 @@ class LayerTreeHostTestImageAnimation : public LayerTreeHostTest {
         break;
       default:
         // Only 3 draws should happen for 3 frames of the animate image.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     if (draw_count_ == 3)
@@ -8722,7 +8723,7 @@ class LayerTreeHostTestNewLocalSurfaceIdForcesDraw : public LayerTreeHostTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 };
@@ -9625,7 +9626,7 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -9913,7 +9914,7 @@ class LayerTreeHostTestHideLayerAndSubtree
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -9964,7 +9965,7 @@ class LayerTreeHostTestHideLayerAndSubtreeOnParent
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -10185,7 +10186,8 @@ class LayerTreeHostTestDelayRecreateTiling
         }
         break;
       case 3:
-        NOTREACHED() << "We shouldn't see another commit in this test";
+        NOTREACHED_IN_MIGRATION()
+            << "We shouldn't see another commit in this test";
         break;
     }
   }

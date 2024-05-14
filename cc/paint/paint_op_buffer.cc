@@ -403,7 +403,7 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
       static_cast<SaveLayerAlphaOp*>(op)->bounds = bounds;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -60,7 +60,7 @@ float TestLayer::brightness() const {
       return filter.amount();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -71,7 +71,7 @@ float TestLayer::invert() const {
       return filter.amount();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

@@ -459,7 +459,7 @@ void SingleThreadProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {
 
 void SingleThreadProxy::SetPaintWorkletLayerPainter(
     std::unique_ptr<PaintWorkletLayerPainter> painter) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SingleThreadProxy::OnCanDrawStateChanged(bool can_draw) {
@@ -628,7 +628,8 @@ void SingleThreadProxy::DidReceiveCompositorFrameAckOnImplThread() {
 void SingleThreadProxy::OnDrawForLayerTreeFrameSink(
     bool resourceless_software_draw,
     bool skip_draw) {
-  NOTREACHED() << "Implemented by ThreadProxy for synchronous compositor.";
+  NOTREACHED_IN_MIGRATION()
+      << "Implemented by ThreadProxy for synchronous compositor.";
 }
 
 void SingleThreadProxy::NeedsImplSideInvalidation(
@@ -694,7 +695,7 @@ void SingleThreadProxy::NotifyAnimationWorkletStateChange(
 void SingleThreadProxy::NotifyPaintWorkletStateChange(
     Scheduler::PaintWorkletState state) {
   // Off-Thread PaintWorklet is only supported on the threaded compositor.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SingleThreadProxy::NotifyThroughputTrackerResults(
@@ -941,13 +942,13 @@ void SingleThreadProxy::SetHasActiveThreadedScroll(bool is_scrolling) {
   // `scheduler_on_impl_thread_` when properly created with
   // `single_thread_proxy_scheduler`.
   if (scheduler_on_impl_thread_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 void SingleThreadProxy::SetWaitingForScrollEvent(
     bool waiting_for_scroll_event) {
   if (scheduler_on_impl_thread_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1185,7 +1186,7 @@ DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
 }
 
 DrawResult SingleThreadProxy::ScheduledActionDrawForced() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DrawResult::kInvalidResult;
 }
 
@@ -1236,7 +1237,7 @@ void SingleThreadProxy::ScheduledActionInvalidateLayerTreeFrameSink(
     bool needs_redraw) {
   // This is an Android WebView codepath, which only uses multi-thread
   // compositor. So this should not occur in single-thread mode.
-  NOTREACHED() << "Android Webview use-case, so multi-thread only";
+  NOTREACHED_IN_MIGRATION() << "Android Webview use-case, so multi-thread only";
 }
 
 void SingleThreadProxy::ScheduledActionPerformImplSideInvalidation() {

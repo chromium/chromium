@@ -42,7 +42,7 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_ACTIVATION:
       return pbzeroMajorStateV2::LAYER_TREE_FRAME_WAITING_FOR_FIRST_ACTIVATION;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroMajorStateV2::LAYER_TREE_FRAME_UNSPECIFIED;
 }
 
@@ -60,7 +60,7 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     case BeginImplFrameState::INSIDE_DEADLINE:
       return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_INSIDE_DEADLINE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_UNSPECIFIED;
 }
 
@@ -80,7 +80,7 @@ const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
     case BeginImplFrameDeadlineMode::BLOCKED:
       return "BeginImplFrameDeadlineMode::BLOCKED";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "???";
 }
 
@@ -104,7 +104,7 @@ perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2::
     case BeginImplFrameDeadlineMode::BLOCKED:
       return pbzeroSchedulerState::DEADLINE_MODE_BLOCKED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroSchedulerState::DEADLINE_MODE_UNSPECIFIED;
 }
 
@@ -122,7 +122,7 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     case BeginMainFrameState::READY_TO_COMMIT:
       return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_READY_TO_COMMIT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_UNSPECIFIED;
 }
 
@@ -142,7 +142,7 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     case ForcedRedrawOnTimeoutState::WAITING_FOR_DRAW:
       return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_DRAW;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroMajorStateV2::FORCED_REDRAW_UNSPECIFIED;
 }
 
@@ -157,7 +157,7 @@ perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
     case ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER:
       return pbzeroMinorStateV2::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroMinorStateV2::SCROLL_HANDLER_UNSPECIFIED;
 }
 
@@ -201,7 +201,7 @@ SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
       return pbzeroSchedulerAction::
           CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UNSPECIFIED;
 }
 
@@ -1024,8 +1024,8 @@ void SchedulerStateMachine::WillDrawInternal() {
 void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
   switch (draw_result) {
     case DrawResult::kInvalidResult:
-      NOTREACHED() << "Invalid return DrawResult:"
-                   << static_cast<int>(DrawResult::kInvalidResult);
+      NOTREACHED_IN_MIGRATION() << "Invalid return DrawResult:"
+                                << static_cast<int>(DrawResult::kInvalidResult);
       break;
     case DrawResult::kAbortedCantDraw:
       if (consecutive_cant_draw_count_++ < 3u) {
@@ -1712,7 +1712,7 @@ bool SchedulerStateMachine::HasInitializedLayerTreeFrameSink() const {
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_ACTIVATION:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -72,7 +72,7 @@ class LayerTreeHostDamageTestSetNeedsRedraw
         EndTest();
         break;
       case 2:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     ++draw_count_;
@@ -134,7 +134,7 @@ class LayerTreeHostDamageTestSetViewportRectAndScale
         EndTest();
         break;
       case 2:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     ++draw_count_;
@@ -491,7 +491,7 @@ class LayerTreeHostDamageTestScrollbarCommitDoesNoDamage
         EXPECT_FALSE(root_damage.Intersects(gfx::Rect(300, 300, 10, 100)));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     return draw_result;
@@ -517,7 +517,7 @@ class LayerTreeHostDamageTestScrollbarCommitDoesNoDamage
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

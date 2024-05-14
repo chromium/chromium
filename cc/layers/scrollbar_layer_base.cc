@@ -58,7 +58,7 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
           static_cast<NinePatchThumbScrollbarLayer*>(existing_layer));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

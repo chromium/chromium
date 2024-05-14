@@ -134,7 +134,7 @@ std::string PaintFilter::TypeToString(Type type) {
     case Type::kLightingSpot:
       return "kLightingSpot";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 
@@ -234,7 +234,7 @@ bool PaintFilter::EqualsForTesting(const PaintFilter& other) const {
     case Type::kLightingSpot:
       return AreEqualForTesting<LightingSpotPaintFilter>(*this, other);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

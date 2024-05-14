@@ -149,7 +149,7 @@ size_t GetAlignmentForColorType(SkColorType color_type) {
     return 4;
   if (bpp <= 16)
     return 16;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -788,7 +788,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         }
         SkPixmap pixmap;
         if (!image->peekPixels(&pixmap)) {
-          NOTREACHED()
+          NOTREACHED_IN_MIGRATION()
               << "Image should be referencing transfer buffer SkPixmap";
         }
         image = SkImages::RasterFromPixmapCopy(pixmap);

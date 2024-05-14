@@ -34,7 +34,7 @@ const char* LCDTextDisallowedReasonToString(LCDTextDisallowedReason reason) {
     case LCDTextDisallowedReason::kNoText:
       return "no-text";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

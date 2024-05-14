@@ -792,7 +792,7 @@ class LayerTreeHostContextTestLayersNotified : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1045,7 +1045,7 @@ class ScrollbarLayerLostContext : public LayerTreeHostContextTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1129,7 +1129,7 @@ class UIResourceLostAfterCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 5:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1223,7 +1223,7 @@ class UIResourceLostBeforeCommit : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 6:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1298,7 +1298,7 @@ class UIResourceLostBeforeActivateTree : public UIResourceLostTest {
         break;
       case 6:
         // Make sure no extra commits happened.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1400,7 +1400,7 @@ class UIResourceLostEviction : public UIResourceLostTestSimple {
         EndTest();
         break;
       case 4:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -1672,7 +1672,7 @@ class LayerTreeHostAnimationTestIsAnimating
       case 3:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1701,7 +1701,7 @@ class LayerTreeHostAnimationTestIsAnimating
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -1721,7 +1721,7 @@ class LayerTreeHostAnimationTestIsAnimating
         EXPECT_FALSE(child->screen_space_transform_is_animating());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

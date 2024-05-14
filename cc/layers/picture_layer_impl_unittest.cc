@@ -4541,7 +4541,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
         EXPECT_EQ(occluded_tile_count, 2);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -4578,7 +4578,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
         EXPECT_EQ(4, occluded_tile_count);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

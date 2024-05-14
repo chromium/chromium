@@ -1746,12 +1746,12 @@ void LayerTreeHostImpl::EvictTexturesForTesting() {
 void LayerTreeHostImpl::BlockNotifyReadyToActivateForTesting(
     bool block,
     bool notify_if_blocked) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LayerTreeHostImpl::BlockImplSideInvalidationRequestsForTesting(
     bool block) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LayerTreeHostImpl::ResetTreesForTesting() {

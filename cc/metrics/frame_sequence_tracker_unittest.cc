@@ -160,7 +160,7 @@ class FrameSequenceTrackerTest : public testing::Test {
           break;
 
         default:
-          NOTREACHED() << command << str;
+          NOTREACHED_IN_MIGRATION() << command << str;
       }
 
       switch (command) {
@@ -232,7 +232,7 @@ class FrameSequenceTrackerTest : public testing::Test {
         }
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

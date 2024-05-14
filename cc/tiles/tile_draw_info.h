@@ -31,7 +31,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   bool NeedsRaster() const {
@@ -43,7 +43,7 @@ class CC_EXPORT TileDrawInfo {
       case OOM_MODE:
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

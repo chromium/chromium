@@ -405,7 +405,7 @@ CompositorTimingHistory::CreateUMAReporter(UMACategory category) {
     case NULL_UMA:
       return base::WrapUnique(new NullUMAReporter);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::WrapUnique<CompositorTimingHistory::UMAReporter>(nullptr);
 }
 

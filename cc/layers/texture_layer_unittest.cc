@@ -715,7 +715,7 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
         EndTest();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1019,7 +1019,7 @@ class TextureLayerNoExtraCommitForMailboxTest : public LayerTreeTest,
       case 2:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

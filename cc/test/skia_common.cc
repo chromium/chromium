@@ -123,7 +123,7 @@ SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
                                    bool has_alpha) {
   // TODO(skbug.com/10632): Update this when we have planar configs with alpha.
   if (has_alpha) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return SkYUVAPixmapInfo();
   }
   SkYUVAInfo::Subsampling subsampling;
@@ -147,7 +147,7 @@ SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
       subsampling = SkYUVAInfo::Subsampling::k444;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SkYUVAPixmapInfo();
   }
   SkYUVAInfo yuva_info({image_size.width(), image_size.height()},
