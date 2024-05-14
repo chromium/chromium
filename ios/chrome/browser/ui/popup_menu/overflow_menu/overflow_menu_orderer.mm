@@ -852,9 +852,26 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
                       true);
   }
 
-  // Iterate over the list of destinations with badges twice, inserting them
-  // into the ranking. First, add items with new badges, then add items with
-  // error badges, so items with error badges appear first.
+  // Iterate over the list of destinations with badges three times, inserting
+  // them into the ranking. First, add items with new badges that aren't feature
+  // driven, then add items with new badges that are feature driven, then add
+  // items with error badges, so the final order is: error badges -> new feature
+  // driven badges -> new items.
+  for (auto& pair : _destinationBadgeData) {
+    if (!remainingDestinations.contains(pair.first)) {
+      continue;
+    }
+
+    if (pair.second.isFeatureDrivenBadge) {
+      continue;
+    }
+
+    if (pair.second.badgeType == BadgeTypeNew ||
+        pair.second.badgeType == BadgeTypePromo) {
+      InsertDestination(pair.first, remainingDestinations,
+                        newDestinationRanking, false);
+    }
+  }
   for (auto& pair : _destinationBadgeData) {
     if (!remainingDestinations.contains(pair.first)) {
       continue;

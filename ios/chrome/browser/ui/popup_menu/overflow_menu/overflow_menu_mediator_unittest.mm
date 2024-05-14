@@ -501,6 +501,8 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
     @(number_of_tab_actions),
     // Other actions, depending on configuration.
     @(number_of_action_items),
+    // Customization button
+    @(1),
     // Feedback/help actions.
     @(number_of_help_items),
   ]);
