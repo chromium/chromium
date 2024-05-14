@@ -14,8 +14,9 @@
   <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
     Pix
   </message>
+  <!--TODO(b/339939404): Fix typo and make PIX related strings to generic names shared between bottom sheet and settings page. -->
   <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">
-    Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> •• <ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
+    Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> ••••<ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
   </message>
   <message name="IDS_BANK_ACCOUNT_TYPE_CHECKING" desc="A checking bank account is for users to transact their regular expenses. This is the string to describe a checking bank account." formatter_data="android_java">
     Checking

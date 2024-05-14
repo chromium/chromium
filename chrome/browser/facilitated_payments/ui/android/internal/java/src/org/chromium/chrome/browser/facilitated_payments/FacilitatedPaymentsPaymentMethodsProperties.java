@@ -25,18 +25,23 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         // The header at the top of the FacilitatedPayments bottom sheet.
         int HEADER = 0;
 
-        // A section containing the payment instrument data.
-        int PAYMENT_INSTRUMENT = 1;
+        // A section containing the bank account data.
+        int BANK_ACCOUNT = 1;
 
         // A footer section containing additional actions.
         int FOOTER = 2;
     }
 
     /** Properties for a payment instrument entry in the facilitated payments bottom sheet. */
-    static class PaymentInstrumentProperties {
-        static final PropertyKey[] NON_TRANSFORMING_KEYS = {};
+    static class BankAccountProperties {
+        static final ReadableObjectPropertyKey<String> BANK_NAME =
+                new ReadableObjectPropertyKey("bank_name");
+        static final ReadableObjectPropertyKey<String> BANK_ACCOUNT_SUMMARY =
+                new ReadableObjectPropertyKey("bank_account_summary");
 
-        private PaymentInstrumentProperties() {}
+        static final PropertyKey[] NON_TRANSFORMING_KEYS = {BANK_NAME, BANK_ACCOUNT_SUMMARY};
+
+        private BankAccountProperties() {}
     }
 
     /**

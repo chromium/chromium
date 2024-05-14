@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
@@ -12,6 +13,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,15 +33,15 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     @Override
     public void initialize(Context context, BottomSheetController bottomSheetController) {
         mFacilitatedPaymentsPaymentMethodsModel = createModel();
-        mMediator.initialize(mFacilitatedPaymentsPaymentMethodsModel);
+        mMediator.initialize(context, mFacilitatedPaymentsPaymentMethodsModel);
         setUpModelChangeProcessors(
                 mFacilitatedPaymentsPaymentMethodsModel,
                 new FacilitatedPaymentsPaymentMethodsView(context, bottomSheetController));
     }
 
     @Override
-    public void showSheet() {
-        mMediator.showSheet();
+    public void showSheet(BankAccount[] bankAccounts) {
+        mMediator.showSheet(bankAccounts);
     }
 
     /**
@@ -72,6 +74,10 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 HEADER,
                 FacilitatedPaymentsPaymentMethodsViewBinder::createHeaderItemView,
                 FacilitatedPaymentsPaymentMethodsViewBinder::bindHeaderView);
+        adapter.registerType(
+                BANK_ACCOUNT,
+                BankAccountViewBinder::createBankAccountItemView,
+                BankAccountViewBinder::bindBankAccountItemView);
         view.getSheetItemListView().setAdapter(adapter);
     }
 

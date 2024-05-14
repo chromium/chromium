@@ -80,7 +80,7 @@ class FacilitatedPaymentsPaymentMethodsView extends TouchToFillViewBase {
 
     @Override
     protected Set<Integer> listedItemTypes() {
-        return Set.of(FacilitatedPaymentsPaymentMethodsProperties.ItemType.PAYMENT_INSTRUMENT);
+        return Set.of(FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT);
     }
 
     @Override

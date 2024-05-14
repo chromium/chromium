@@ -2945,6 +2945,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/banners/android:javatests",
       "//chrome/browser/download/internal/android:javatests",
       "//chrome/browser/engagement/android:javatests",
+      "//chrome/browser/facilitated_payments/ui/android/internal:javatests",
       "//chrome/browser/flags:javatests",
       "//chrome/browser/gesturenav/android:javatests",
       "//chrome/browser/password_check/android:test_java",

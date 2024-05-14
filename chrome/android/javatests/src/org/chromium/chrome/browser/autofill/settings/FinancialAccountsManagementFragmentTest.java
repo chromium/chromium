@@ -192,7 +192,7 @@ public class FinancialAccountsManagementFragmentTest {
 
         String expectedPrefSummary =
                 String.format(
-                        "Pix  •  %s •• %s",
+                        "Pix  •  %s ••••%s",
                         activity.getString(R.string.bank_account_type_checking),
                         PIX_BANK_ACCOUNT.getAccountNumberSuffix());
         Preference bankAccountPref = getBankAccountPreference(activity, PIX_BANK_ACCOUNT);
