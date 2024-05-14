@@ -6,14 +6,15 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/app_discovery_metrics.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -30,14 +31,6 @@ int64_t ToLong(web_app::WebAppInstallStatus web_app_install_status) {
 }
 
 bool g_auto_accept_for_testing = false;
-
-// TODO(b/330414871): AppInstallService shouldn't know about publisher specific
-// logic, remove the generation of app_ids.
-std::string GetAppId(const apps::PackageId& package_id) {
-  CHECK_EQ(package_id.package_type(), apps::PackageType::kWeb);
-  // data->package_id.identifier() is the manifest ID for web apps.
-  return web_app::GenerateAppIdFromManifestId(GURL(package_id.identifier()));
-}
 
 }  // namespace
 
@@ -87,26 +80,31 @@ void AppInstallPageHandler::CloseDialog() {
     return;
   }
 
-  if (auto* app_info_args = absl::get_if<AppInfoArgs>(&dialog_args_.value())) {
-    if (app_info_args->dialog_accepted_callback) {
-      base::RecordAction(
-          base::UserMetricsAction("ChromeOS.AppInstallDialog.Cancelled"));
+  // Ensure that `close_dialog_callback_` always runs. `close_dialog_callback_`
+  // could be null if the close button is clicked multiple times . In this case,
+  // the ScopedClosureRunner will not run anything.
+  base::ScopedClosureRunner close_callback_runner(
+      std::move(close_dialog_callback_));
 
+  if (auto* app_info_args = absl::get_if<AppInfoArgs>(&dialog_args_.value())) {
+    if (!app_info_args->dialog_accepted_callback) {
+      return;
+    }
+
+    base::RecordAction(
+        base::UserMetricsAction("ChromeOS.AppInstallDialog.Cancelled"));
+
+    if (std::optional<std::string> metrics_id =
+            apps::AppDiscoveryMetrics::GetAppStringToRecordForPackage(
+                app_info_args->package_id)) {
       metrics::structured::StructuredMetricsClient::Record(
           cros_events::AppDiscovery_Browser_AppInstallDialogResult()
               .SetWebAppInstallStatus(
                   ToLong(web_app::WebAppInstallStatus::kCancelled))
-              // TODO(b/333643533): This should be using
-              // AppDiscoveryMetrics::GetAppStringToRecord().
-              .SetAppId(GetAppId(app_info_args->package_id)));
-      std::move(app_info_args->dialog_accepted_callback).Run(false);
+              .SetAppId(*metrics_id));
     }
-  }
 
-  // The callback could be null if the close button is clicked a second time
-  // before the dialog closes.
-  if (close_dialog_callback_) {
-    std::move(close_dialog_callback_).Run();
+    std::move(app_info_args->dialog_accepted_callback).Run(false);
   }
 }
 
@@ -119,13 +117,16 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
 
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
-  metrics::structured::StructuredMetricsClient::Record(
-      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-          .SetWebAppInstallStatus(
-              ToLong(web_app::WebAppInstallStatus::kAccepted))
-          // TODO(b/333643533): This should be using
-          // AppDiscoveryMetrics::GetAppStringToRecord().
-          .SetAppId(GetAppId(app_info_args.package_id)));
+
+  if (std::optional<std::string> metrics_id =
+          apps::AppDiscoveryMetrics::GetAppStringToRecordForPackage(
+              app_info_args.package_id)) {
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+            .SetWebAppInstallStatus(
+                ToLong(web_app::WebAppInstallStatus::kAccepted))
+            .SetAppId(*metrics_id));
+  }
 
   install_app_callback_ = std::move(callback);
   std::move(app_info_args.dialog_accepted_callback).Run(true);
