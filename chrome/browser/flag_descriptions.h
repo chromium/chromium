@@ -4719,6 +4719,9 @@ extern const char kDesktopPWAsUserLinkCapturingDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
+
+extern const char kSyncEnableContactInfoDataTypeInTransportModeName[];
+extern const char kSyncEnableContactInfoDataTypeInTransportModeDescription[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
