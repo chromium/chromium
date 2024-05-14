@@ -609,8 +609,9 @@ public class MultiInstanceManager
      * Close a Chrome window instance only if it contains no open tabs including incognito ones.
      *
      * @param instanceId Instance id of the Chrome window that needs to be closed.
+     * @return {@code true} if the window was closed, {@code false} otherwise.
      */
-    public void closeChromeWindowIfEmpty(int instanceId) {
-        // Not implemented.
+    public boolean closeChromeWindowIfEmpty(int instanceId) {
+        return false;
     }
 }

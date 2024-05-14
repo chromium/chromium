@@ -1334,6 +1334,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.Tab.SourceWindowClosed" enum="Boolean"
+    expires_after="2025-05-13">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records true when a tab drag/drop results in closing the source Chrome
+    window because it was the last tab in the window, false when the drop does
+    not close the source window. Only recorded when tab drag/drop is handled.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.Tab.Type" enum="DragDropType"
     expires_after="2024-10-28">
   <owner>shuyng@google.com</owner>

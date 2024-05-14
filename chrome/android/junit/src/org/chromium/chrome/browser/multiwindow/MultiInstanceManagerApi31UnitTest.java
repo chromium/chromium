@@ -1260,7 +1260,9 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
 
         // Action
-        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+        assertTrue(
+                "Chrome instance should be closed.",
+                mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
@@ -1278,7 +1280,9 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Action
-        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+        assertTrue(
+                "Chrome instance should be closed.",
+                mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, times(1))
                 .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
@@ -1296,7 +1300,9 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
 
         // Action
-        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+        assertFalse(
+                "Chrome instance should not be closed.",
+                mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
         verify(mMultiInstanceManager, never()).closeInstance(anyInt(), anyInt());
     }

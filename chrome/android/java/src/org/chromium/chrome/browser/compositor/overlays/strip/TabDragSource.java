@@ -462,9 +462,14 @@ public class TabDragSource implements View.OnDragListener {
             DragDropGlobalState.clear(sDragTrackerToken);
             sDragTrackerToken = null;
         }
+
+        // Close the source instance window if it has no tabs.
+        boolean didCloseWindow = mMultiInstanceManager.closeChromeWindowIfEmpty(sourceInstanceId);
+
         // Only record for source strip to avoid duplicate.
         if (dropHandled) {
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.SUCCESS);
+            DragDropMetricUtils.recordTabDragDropClosedWindow(didCloseWindow);
         } else if (MultiWindowUtils.getInstanceCount() == MultiWindowUtils.getMaxInstances()) {
             Toast.makeText(
                             mWindowAndroid.getContext().get(),
@@ -474,8 +479,6 @@ public class TabDragSource implements View.OnDragListener {
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_MAX_INSTANCES);
         }
 
-        // Close the source instance window if it has no tabs.
-        mMultiInstanceManager.closeChromeWindowIfEmpty(sourceInstanceId);
         return true;
     }
 

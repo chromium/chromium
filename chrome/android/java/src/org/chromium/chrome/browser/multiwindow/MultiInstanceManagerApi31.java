@@ -1030,19 +1030,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      * Close a Chrome window instance only if it contains no open tabs including incognito ones.
      *
      * @param instanceId Instance id of the Chrome window that needs to be closed.
+     * @return {@code true} if the window was closed, {@code false} otherwise.
      */
     @Override
-    public void closeChromeWindowIfEmpty(int instanceId) {
+    public boolean closeChromeWindowIfEmpty(int instanceId) {
         if (canCloseChromeWindow(instanceId)) {
             TabModelSelector selector =
                     TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
             // Determine if the drag source Chrome instance window has any tabs including incognito
-            // ones
-            // left so as to close if it is empty.
+            // ones left so as to close if it is empty.
             if (selector.getTotalTabCount() == 0) {
                 Log.i(TAG, "Closing empty Chrome instance as no tabs exist.");
                 closeInstance(instanceId, INVALID_TASK_ID);
+                return true;
             }
         }
+        return false;
     }
 }

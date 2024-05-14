@@ -199,6 +199,8 @@ public class TabDragSourceTest {
                         mWindowAndroid,
                         mTabStripHeightSupplier);
         mDestInstance.setTabModelSelector(mTabModelSelector);
+
+        when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
     }
 
     @After
@@ -751,7 +753,7 @@ public class TabDragSourceTest {
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
-    public void test_onDrag_dropInStrip_differentModel_Destination() {
+    public void test_onDrag_dropInStrip_differentModel_destination() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -988,6 +990,45 @@ public class TabDragSourceTest {
                         mTabsToolbarView,
                         mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
         assertFalse("onDrag should return false.", res);
+    }
+
+    @Test
+    public void testHistogram_nonLastTabDroppedInStripDoesNotCloseWindow_source() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DragDrop.Tab.SourceWindowClosed", false);
+        when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
+
+        invokeDropInDestinationStrip(true);
+
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testHistogram_lastTabDroppedInStripClosesWindow_source() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DragDrop.Tab.SourceWindowClosed", true);
+        // When the last tab is dragged/dropped, the source window will be closed.
+        when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(true);
+
+        invokeDropInDestinationStrip(true);
+
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testHistogram_lastTabDragUnhandled_source() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.DragDrop.Tab.SourceWindowClosed")
+                        .build();
+        when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
+
+        // Assume that the drag was not handled.
+        new DragEventInvoker().dragExit(mSourceInstance).end(false);
+
+        histogramExpectation.assertExpected();
     }
 
     private void invokeDropInDestinationStrip(boolean dragEndRes) {

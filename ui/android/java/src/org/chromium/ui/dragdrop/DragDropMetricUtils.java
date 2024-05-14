@@ -123,4 +123,15 @@ public class DragDropMetricUtils {
         RecordHistogram.recordMediumTimesHistogram(
                 "Android.DragDrop.Tab.Duration.WithinDestStrip", duration);
     }
+
+    /**
+     * Record boolean histogram Android.DragDrop.Tab.SourceWindowClosed.
+     *
+     * @param didCloseWindow Whether a successful tab drag/drop resulted in closing the source
+     *     Chrome window.
+     */
+    public static void recordTabDragDropClosedWindow(boolean didCloseWindow) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.DragDrop.Tab.SourceWindowClosed", didCloseWindow);
+    }
 }
