@@ -334,13 +334,17 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         host_content_settings_map_->GetContentSetting(
             current_url, GURL(), ContentSettingsType::COOKIES);
 
-    content_settings::SettingInfo info;
-    const base::Value value = host_content_settings_map_->GetWebsiteSetting(
-        site_origin.GetURL(), current_url, ContentSettingsType::COOKIES, &info);
-
-    bool has_site_level_exception =
-        info.primary_pattern != ContentSettingsPattern::Wildcard() ||
-        info.secondary_pattern != ContentSettingsPattern::Wildcard();
+    // Check for either a COOKIES or TRACKING_PROTECTION site exception.
+    bool has_site_level_exception = false;
+    for (const auto type : {ContentSettingsType::COOKIES,
+                            ContentSettingsType::TRACKING_PROTECTION}) {
+      content_settings::SettingInfo info;
+      host_content_settings_map_->GetContentSetting(site_origin.GetURL(),
+                                                    current_url, type, &info);
+      has_site_level_exception |=
+          info.primary_pattern != ContentSettingsPattern::Wildcard() ||
+          info.secondary_pattern != ContentSettingsPattern::Wildcard();
+    }
 
     // Partitioned access is displayed when all of these conditions are met:
     return
