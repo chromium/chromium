@@ -82,6 +82,7 @@ class CC_PAINT_EXPORT PaintOpReader {
 
   void Read(SkPath* path);
   void Read(PaintFlags* flags);
+  void Read(CorePaintFlags* flags);
   void Read(PaintImage* image,
             PaintFlags::DynamicRangeLimitMixture dynamic_range_limit);
   void Read(sk_sp<SkData>* data);

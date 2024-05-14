@@ -306,6 +306,13 @@ void PaintOpReader::Read(PaintFlags* flags) {
   Read(&flags->shader_);
 }
 
+void PaintOpReader::Read(CorePaintFlags* flags) {
+  Read(&flags->color);
+  Read(&flags->width);
+  Read(&flags->miter_limit);
+  ReadSimple(&flags->bitfields_uint);
+}
+
 void PaintOpReader::Read(
     PaintImage* image,
     PaintFlags::DynamicRangeLimitMixture dynamic_range_limit) {

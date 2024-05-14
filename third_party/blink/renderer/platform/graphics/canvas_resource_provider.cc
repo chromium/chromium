@@ -32,6 +32,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_feature_type.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1312,6 +1313,11 @@ const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
                                                 "max_pinned_image_kb",
                                                 32 * 1024);
 
+// Feature only consulted if graphite is enabled.
+BASE_FEATURE(kUseLargerRecordedPaintOpBuffer,
+             "UseLargerRecordedPaintOpBuffer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
     const SkImageInfo& info,
@@ -1336,6 +1342,14 @@ CanvasResourceProvider::CanvasResourceProvider(
     const auto& caps =
         context_provider_wrapper_->ContextProvider()->GetCapabilities();
     oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+    // Graphite can handle a large buffer size.
+    if (base::FeatureList::IsEnabled(kUseLargerRecordedPaintOpBuffer) &&
+        context_provider_wrapper_->ContextProvider()
+                ->GetGpuFeatureInfo()
+                .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+            gpu::kGpuFeatureStatusEnabled) {
+      max_recorded_op_bytes_ = 4 * 1024 * 1024;
+    }
   }
 
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);

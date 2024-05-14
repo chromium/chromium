@@ -22,15 +22,32 @@ namespace cc {
 class PaintFilter;
 class PaintShader;
 
+// Minimal set of commonly used paint state. Using a minimal set means PaintOps
+// takes up less space in memory as well as less data to read/write.
+//
+// TODO(crbug.com/340122178): figure out a way to merge this with PaintFlags.
+struct CC_PAINT_EXPORT CorePaintFlags {
+  bool operator==(const CorePaintFlags& other) const = default;
+
+  SkColor4f color = SkColors::kBlack;
+  float width = 0.f;
+  float miter_limit = 4.f;
+  uint32_t bitfields_uint;
+};
+
 class CC_PAINT_EXPORT PaintFlags {
  public:
   PaintFlags();
   PaintFlags(const PaintFlags& flags);
+  explicit PaintFlags(const CorePaintFlags& flags);
   PaintFlags(PaintFlags&& other);
   ~PaintFlags();
 
   PaintFlags& operator=(const PaintFlags& other);
   PaintFlags& operator=(PaintFlags&& other);
+
+  bool CanConvertToCorePaintFlags() const;
+  CorePaintFlags ToCorePaintFlags() const;
 
   enum Style {
     kFill_Style = SkPaint::kFill_Style,

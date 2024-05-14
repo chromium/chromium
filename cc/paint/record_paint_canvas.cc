@@ -238,6 +238,13 @@ void RecordPaintCanvas::drawLine(SkScalar x0,
       draw_path_count_ = 0;
     }
   }
+  // TODO(crbug.com/5524058): investigate if it makes sense to add support for
+  // draw_path_count > 4 to the lite op.
+  if (draw_path_count_ <= 4 && AreLiteOpsEnabled() &&
+      flags.CanConvertToCorePaintFlags()) {
+    push<DrawLineLiteOp>(x0, y0, x1, y1, flags.ToCorePaintFlags());
+    return;
+  }
   // Render lines as paths if there have been a number of drawPaths() recently.
   // See description in header for more details.
   push<DrawLineOp>(x0, y0, x1, y1, flags, draw_path_count_ > 4);
@@ -247,6 +254,11 @@ void RecordPaintCanvas::drawArc(const SkRect& oval,
                                 SkScalar start_angle_degrees,
                                 SkScalar sweep_angle_degrees,
                                 const PaintFlags& flags) {
+  if (AreLiteOpsEnabled() && flags.CanConvertToCorePaintFlags()) {
+    push<DrawArcLiteOp>(oval, start_angle_degrees, sweep_angle_degrees,
+                        flags.ToCorePaintFlags());
+    return;
+  }
   push<DrawArcOp>(oval, start_angle_degrees, sweep_angle_degrees, flags);
 }
 

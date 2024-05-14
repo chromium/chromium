@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/values_equivalent.h"
@@ -50,6 +51,11 @@
 
 namespace cc {
 namespace {
+
+BASE_FEATURE(kUseLitePaintOps,
+             "UseLitePaintOps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // In a future CL, convert DrawImage to explicitly take sampling instead of
 // quality
 PaintFlags::FilterQuality sampling_to_quality(
@@ -130,12 +136,14 @@ void DrawImageRect(SkCanvas* canvas,
   M(ConcatOp)                \
   M(CustomDataOp)            \
   M(DrawArcOp)               \
+  M(DrawArcLiteOp)           \
   M(DrawColorOp)             \
   M(DrawDRRectOp)            \
   M(DrawImageOp)             \
   M(DrawImageRectOp)         \
   M(DrawIRectOp)             \
   M(DrawLineOp)              \
+  M(DrawLineLiteOp)          \
   M(DrawOvalOp)              \
   M(DrawPathOp)              \
   M(DrawRecordOp)            \
@@ -478,6 +486,13 @@ void DrawLineOp::Serialize(PaintOpWriter& writer,
   writer.WriteSimpleMultiple(x0, y0, x1, y1, draw_as_path);
 }
 
+void DrawLineLiteOp::Serialize(PaintOpWriter& writer,
+                               const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
+                               const SkM44& original_ctm) const {
+  writer.WriteSimpleMultiple(x0, y0, x1, y1, core_paint_flags);
+}
+
 void DrawArcOp::Serialize(PaintOpWriter& writer,
                           const PaintFlags* flags_to_serialize,
                           const SkM44& current_ctm,
@@ -486,6 +501,14 @@ void DrawArcOp::Serialize(PaintOpWriter& writer,
   writer.Write(oval);
   writer.Write(start_angle_degrees);
   writer.Write(sweep_angle_degrees);
+}
+
+void DrawArcLiteOp::Serialize(PaintOpWriter& writer,
+                              const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
+                              const SkM44& original_ctm) const {
+  writer.WriteSimpleMultiple(oval, start_angle_degrees, sweep_angle_degrees,
+                             core_paint_flags);
 }
 
 void DrawOvalOp::Serialize(PaintOpWriter& writer,
@@ -838,12 +861,31 @@ PaintOp* DrawLineOp::Deserialize(PaintOpReader& reader, void* output) {
   return op;
 }
 
+PaintOp* DrawLineLiteOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawLineLiteOp* op = new (output) DrawLineLiteOp;
+  reader.Read(&op->x0);
+  reader.Read(&op->y0);
+  reader.Read(&op->x1);
+  reader.Read(&op->y1);
+  reader.Read(&op->core_paint_flags);
+  return op;
+}
+
 PaintOp* DrawArcOp::Deserialize(PaintOpReader& reader, void* output) {
   DrawArcOp* op = new (output) DrawArcOp;
   reader.Read(&op->flags);
   reader.Read(&op->oval);
   reader.Read(&op->start_angle_degrees);
   reader.Read(&op->sweep_angle_degrees);
+  return op;
+}
+
+PaintOp* DrawArcLiteOp::Deserialize(PaintOpReader& reader, void* output) {
+  DrawArcLiteOp* op = new (output) DrawArcLiteOp;
+  reader.Read(&op->oval);
+  reader.Read(&op->start_angle_degrees);
+  reader.Read(&op->sweep_angle_degrees);
+  reader.Read(&op->core_paint_flags);
   return op;
 }
 
@@ -1415,6 +1457,15 @@ void DrawLineOp::RasterWithFlags(const DrawLineOp* op,
   });
 }
 
+void DrawLineLiteOp::Raster(const DrawLineLiteOp* op,
+                            SkCanvas* canvas,
+                            const PlaybackParams& params) {
+  PaintFlags flags(op->core_paint_flags);
+  flags.DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
+    c->drawLine(op->x0, op->y0, op->x1, op->y1, p);
+  });
+}
+
 void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
                                 const PaintFlags* flags,
                                 SkCanvas* canvas,
@@ -1435,6 +1486,26 @@ void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
       return;
     }
     c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+  });
+}
+
+void DrawArcLiteOp::Raster(const DrawArcLiteOp* op,
+                           SkCanvas* canvas,
+                           const PlaybackParams& params) {
+  PaintFlags flags(op->core_paint_flags);
+  flags.DrawToSk(canvas, [op, &flags](SkCanvas* c, const SkPaint& p) {
+    if (flags.isArcClosed() &&
+        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(360)) &&
+        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(-360))) {
+      SkPath path;
+      path.arcTo(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+                 false);
+      path.close();
+      c->drawPath(path, p);
+      return;
+    }
+    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+               false, p);
   });
 }
 
@@ -1765,11 +1836,23 @@ bool DrawLineOp::EqualsForTesting(const DrawLineOp& other) const {
          x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1;
 }
 
+bool DrawLineLiteOp::EqualsForTesting(const DrawLineLiteOp& other) const {
+  return x0 == other.x0 && y0 == other.y0 && x1 == other.x1 && y1 == other.y1 &&
+         core_paint_flags == other.core_paint_flags;
+}
+
 bool DrawArcOp::EqualsForTesting(const DrawArcOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
          oval == other.oval &&
          start_angle_degrees == other.start_angle_degrees &&
          sweep_angle_degrees == other.sweep_angle_degrees;
+}
+
+bool DrawArcLiteOp::EqualsForTesting(const DrawArcLiteOp& other) const {
+  return oval == other.oval &&
+         start_angle_degrees == other.start_angle_degrees &&
+         sweep_angle_degrees == other.sweep_angle_degrees &&
+         core_paint_flags == other.core_paint_flags;
 }
 
 bool DrawOvalOp::EqualsForTesting(const DrawOvalOp& other) const {
@@ -2014,6 +2097,12 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
     }
     case PaintOpType::kDrawArc: {
       const auto& arc_op = static_cast<const DrawArcOp&>(op);
+      *rect = arc_op.oval;
+      rect->sort();
+      return true;
+    }
+    case PaintOpType::kDrawArcLite: {
+      const auto& arc_op = static_cast<const DrawArcLiteOp&>(op);
       *rect = arc_op.oval;
       rect->sort();
       return true;
@@ -2464,5 +2553,10 @@ SaveLayerFiltersOp::SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
 SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
 
 SaveLayerFiltersOp::~SaveLayerFiltersOp() = default;
+
+bool AreLiteOpsEnabled() {
+  static const bool enabled = base::FeatureList::IsEnabled(kUseLitePaintOps);
+  return enabled;
+}
 
 }  // namespace cc

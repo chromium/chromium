@@ -47,6 +47,12 @@ PaintFlags::PaintFlags() {
 
 PaintFlags::PaintFlags(const PaintFlags& flags) = default;
 
+PaintFlags::PaintFlags(const CorePaintFlags& flags)
+    : color_(flags.color),
+      width_(flags.width),
+      miter_limit_(flags.miter_limit),
+      bitfields_uint_(flags.bitfields_uint) {}
+
 PaintFlags::PaintFlags(PaintFlags&& other) = default;
 
 PaintFlags::~PaintFlags() {
@@ -66,6 +72,16 @@ PaintFlags::~PaintFlags() {
 PaintFlags& PaintFlags::operator=(const PaintFlags& other) = default;
 
 PaintFlags& PaintFlags::operator=(PaintFlags&& other) = default;
+
+bool PaintFlags::CanConvertToCorePaintFlags() const {
+  return IsValid() && !path_effect_ && !shader_ && !color_filter_ &&
+         !draw_looper_ && !image_filter_;
+}
+
+CorePaintFlags PaintFlags::ToCorePaintFlags() const {
+  DCHECK(CanConvertToCorePaintFlags());
+  return {color_, width_, miter_limit_, bitfields_uint_};
+}
 
 void PaintFlags::setImageFilter(sk_sp<PaintFilter> filter) {
   image_filter_ = std::move(filter);

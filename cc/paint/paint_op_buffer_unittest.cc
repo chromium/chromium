@@ -1570,6 +1570,22 @@ void PushDrawLineOps(PaintOpBuffer* buffer) {
   EXPECT_THAT(*buffer, Each(PaintOpIs<DrawLineOp>()));
 }
 
+void PushDrawLineLiteOps(PaintOpBuffer* buffer) {
+  size_t len = std::min(test_floats.size() - 3, test_flags.size());
+  for (size_t i = 0; i < len; ++i) {
+    if (test_flags[i].CanConvertToCorePaintFlags()) {
+      buffer->push<DrawLineLiteOp>(test_floats[i], test_floats[i + 1],
+                                   test_floats[i + 2], test_floats[i + 3],
+                                   test_flags[i].ToCorePaintFlags());
+    } else {
+      buffer->push<DrawLineOp>(test_floats[i], test_floats[i + 1],
+                               test_floats[i + 2], test_floats[i + 3],
+                               test_flags[i]);
+    }
+  }
+  EXPECT_THAT(*buffer, Each(PaintOpIs<DrawLineLiteOp, DrawLineOp>()));
+}
+
 void PushDrawArcOps(PaintOpBuffer* buffer) {
   size_t len = std::min(test_angles.size() / 2, test_flags.size());
   for (size_t i = 0; i < len; ++i) {
@@ -1577,6 +1593,21 @@ void PushDrawArcOps(PaintOpBuffer* buffer) {
                             test_angles[2 * i + 1], test_flags[i]);
   }
   EXPECT_THAT(*buffer, Each(PaintOpIs<DrawArcOp>()));
+}
+
+void PushDrawArcLiteOps(PaintOpBuffer* buffer) {
+  size_t len = std::min(test_angles.size() / 2, test_flags.size());
+  for (size_t i = 0; i < len; ++i) {
+    if (test_flags[i].CanConvertToCorePaintFlags()) {
+      buffer->push<DrawArcLiteOp>(test_rects[i], test_angles[2 * i],
+                                  test_angles[2 * i + 1],
+                                  test_flags[i].ToCorePaintFlags());
+    } else {
+      buffer->push<DrawArcOp>(test_rects[i], test_angles[2 * i],
+                              test_angles[2 * i + 1], test_flags[i]);
+    }
+  }
+  EXPECT_THAT(*buffer, Each(PaintOpIs<DrawArcLiteOp, DrawArcOp>()));
 }
 
 void PushDrawOvalOps(PaintOpBuffer* buffer) {
@@ -1907,6 +1938,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
       case PaintOpType::kDrawArc:
         PushDrawArcOps(&buffer_);
         break;
+      case PaintOpType::kDrawArcLite:
+        PushDrawArcLiteOps(&buffer_);
+        break;
       case PaintOpType::kDrawColor:
         PushDrawColorOps(&buffer_);
         break;
@@ -1924,6 +1958,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
         break;
       case PaintOpType::kDrawLine:
         PushDrawLineOps(&buffer_);
+        break;
+      case PaintOpType::kDrawLineLite:
+        PushDrawLineLiteOps(&buffer_);
         break;
       case PaintOpType::kDrawOval:
         PushDrawOvalOps(&buffer_);
@@ -2101,8 +2138,12 @@ TEST_P(PaintOpSerializationTest, SmokeTest) {
 // Verify for all test ops that serializing into a smaller size aborts
 // correctly and doesn't write anything.
 TEST_P(PaintOpSerializationTest, SerializationFailures) {
-  if (!IsTypeSupported())
+  // The majority of the PaintFlags created by this test can not be converted
+  // to CorePaintFlags.
+  if (!IsTypeSupported() || GetParamType() == PaintOpType::kDrawArcLite ||
+      GetParamType() == PaintOpType::kDrawLineLite) {
     return;
+  }
 
   PushTestOps(GetParamType());
 
@@ -2145,8 +2186,12 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
 // Verify that deserializing test ops from too small buffers aborts
 // correctly, in case the deserialized data is lying about how big it is.
 TEST_P(PaintOpSerializationTest, DeserializationFailures) {
-  if (!IsTypeSupported())
+  // The majority of the PaintFlags created by this test can not be converted
+  // to CorePaintFlags.
+  if (!IsTypeSupported() || GetParamType() == PaintOpType::kDrawArcLite ||
+      GetParamType() == PaintOpType::kDrawLineLite) {
     return;
+  }
 
   PushTestOps(GetParamType());
 

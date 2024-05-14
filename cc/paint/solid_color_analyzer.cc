@@ -281,7 +281,9 @@ std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::kDrawImageRect:
       case PaintOpType::kDrawIRect:
       case PaintOpType::kDrawLine:
+      case PaintOpType::kDrawLineLite:
       case PaintOpType::kDrawArc:
+      case PaintOpType::kDrawArcLite:
       case PaintOpType::kDrawOval:
       case PaintOpType::kDrawPath:
       case PaintOpType::kDrawScrollingContents:
