@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
-import {loadTimeData, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -167,6 +167,8 @@ suite('ClearBrowsingDataDesktop', function() {
       enableCbdTimeframeRequired: false,
       unoDesktopEnabled: false,
     });
+    resetRouterForTesting();
+
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -405,6 +407,8 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({enableCbdTimeframeRequired: true});
+    resetRouterForTesting();
+
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -528,6 +532,8 @@ suite('CbdTimeRangeExperiment_ExperimentOff', function() {
     ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({enableCbdTimeframeRequired: false});
+    resetRouterForTesting();
+
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
     document.body.appendChild(element);
@@ -1091,9 +1097,8 @@ suite('ClearBrowsingDataForSupervisedUsers', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('settings-clear-browsing-data-dialog');
     element.set('prefs', getClearBrowsingDataPrefs());
-    loadTimeData.overrideValues({
-      isChildAccount: true,
-    });
+    loadTimeData.overrideValues({isChildAccount: true});
+    resetRouterForTesting();
   });
 
   teardown(function() {
