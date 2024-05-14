@@ -78,7 +78,8 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
     for (const auto& token : override_it->second) {
       blink::TrialTokenResult result = validator.ValidateTokenAndTrial(
           token, first_party_origin, third_party_origins, base::Time::Now());
-      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
+      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess &&
+          result.ParsedToken()->is_third_party()) {
         return blink::origin_trials::IsTrialValid(result.ParsedToken()->feature_name()) &&
           blink::origin_trials::IsTrialEnabledForBrowserProcessReadAccess(
               result.ParsedToken()->feature_name());
