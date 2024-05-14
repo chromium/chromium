@@ -439,7 +439,8 @@ H265Delegate::Status H265Delegate::SubmitSlice(
   // supported in ChromeOS require the start code prefix.
   std::vector<uint8_t> slice_data = {0x00, 0x00, 0x01};
   slice_data.insert(slice_data.end(), data, data + size);
-  ctx_->slice_data = slice_data;
+  ctx_->slice_data.insert(ctx_->slice_data.end(), slice_data.begin(),
+                          slice_data.end());
 
   return H265Delegate::Status::kOk;
 }
@@ -475,6 +476,8 @@ H265Delegate::Status H265Delegate::SubmitDecode(
                                      stateless_h265_picture->dec_surface())) {
     return H265Delegate::Status::kFail;
   }
+
+  ctx_->slice_data.clear();
 
   return H265Delegate::Status::kOk;
 }
