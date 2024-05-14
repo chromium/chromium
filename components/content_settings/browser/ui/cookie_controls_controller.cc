@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/common/third_party_site_data_access_type.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -146,6 +147,12 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
         status.protections_on, status.blocking_status,
         ShouldHighlightUserBypass());
   }
+}
+
+void CookieControlsController::OnSubresourceBlocked() {
+  // When a subresource is blocked by fingerprinting protection,
+  // `UpdateUserBypass` will show the User Bypass.
+  UpdateUserBypass();
 }
 
 CookieControlsController::Status CookieControlsController::GetStatus(
@@ -325,6 +332,14 @@ int CookieControlsController::GetStatefulBounceCount() const {
   } else {
     return 0;
   }
+}
+
+bool CookieControlsController::GetIsSubresourceBlocked() const {
+  auto* fpf_web_contents_helper = fingerprinting_protection_filter::
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          GetWebContents());
+  return fpf_web_contents_helper != nullptr &&
+         fpf_web_contents_helper->is_subresource_blocked();
 }
 
 void CookieControlsController::UpdateUserBypass() {
@@ -514,8 +529,9 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // with: `Content-Security-Policy: sandbox`. In that case, we render the UI to
   // allow the user to opt into sending SameSite=None cookies again in those
   // contexts.
-  return controls_visible && (HasOriginSandboxedTopLevelDocument() ||
-                              !protections_on || site_data_access_attempted);
+  return controls_visible &&
+         (HasOriginSandboxedTopLevelDocument() || !protections_on ||
+          site_data_access_attempted || GetIsSubresourceBlocked());
 }
 
 CookieControlsController::TabObserver::TabObserver(
@@ -527,9 +543,18 @@ CookieControlsController::TabObserver::TabObserver(
       cookie_controls_(cookie_controls) {
   last_visited_url_ =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
+  auto* fpf_web_contents_helper = fingerprinting_protection_filter::
+      FingerprintingProtectionWebContentsHelper::FromWebContents(web_contents);
+  if (fpf_web_contents_helper) {
+    fpf_observation_.Observe(fpf_web_contents_helper);
+  }
 }
 
 CookieControlsController::TabObserver::~TabObserver() = default;
+
+void CookieControlsController::TabObserver::WebContentsDestroyed() {
+  fpf_observation_.Reset();
+}
 
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
     const AccessDetails& access_details) {
@@ -562,6 +587,10 @@ void CookieControlsController::TabObserver::OnSiteDataAccessed(
 
 void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
   cookie_controls_->UpdateUserBypass();
+}
+
+void CookieControlsController::TabObserver::OnSubresourceBlocked() {
+  cookie_controls_->OnSubresourceBlocked();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(
