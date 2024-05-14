@@ -15,8 +15,9 @@
 typedef uint32_t MojoTrapEventFlags;
 
 #ifdef __cplusplus
-const MojoTrapEventFlags MOJO_TRAP_EVENT_FLAG_NONE = 0;
-const MojoTrapEventFlags MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL = 1 << 0;
+inline constexpr MojoTrapEventFlags MOJO_TRAP_EVENT_FLAG_NONE = 0;
+inline constexpr MojoTrapEventFlags MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL = 1
+                                                                           << 0;
 #else
 #define MOJO_TRAP_EVENT_FLAG_NONE ((MojoTrapEventFlags)0)
 #define MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL ((MojoTrapEventFlags)1 << 0)
@@ -79,8 +80,10 @@ MOJO_STATIC_ASSERT(sizeof(struct MojoTrapEvent) == 32,
 typedef uint32_t MojoTriggerCondition;
 
 #ifdef __cplusplus
-const MojoTriggerCondition MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED = 0;
-const MojoTriggerCondition MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED = 1;
+inline constexpr MojoTriggerCondition
+    MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED = 0;
+inline constexpr MojoTriggerCondition MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED =
+    1;
 #else
 #define MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED ((MojoTriggerCondition)0)
 #define MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED ((MojoTriggerCondition)1)
@@ -90,7 +93,7 @@ const MojoTriggerCondition MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED = 1;
 typedef uint32_t MojoCreateTrapFlags;
 
 #ifdef __cplusplus
-const MojoCreateTrapFlags MOJO_CREATE_TRAP_FLAG_NONE = 0;
+inline constexpr MojoCreateTrapFlags MOJO_CREATE_TRAP_FLAG_NONE = 0;
 #else
 #define MOJO_CREATE_TRAP_FLAG_NONE ((MojoCreateTrapFlags)0)
 #endif
@@ -110,7 +113,7 @@ MOJO_STATIC_ASSERT(sizeof(struct MojoCreateTrapOptions) == 8,
 typedef uint32_t MojoAddTriggerFlags;
 
 #ifdef __cplusplus
-const MojoAddTriggerFlags MOJO_ADD_TRIGGER_FLAG_NONE = 0;
+inline constexpr MojoAddTriggerFlags MOJO_ADD_TRIGGER_FLAG_NONE = 0;
 #else
 #define MOJO_ADD_TRIGGER_FLAG_NONE ((MojoAddTriggerFlags)0)
 #endif
@@ -130,7 +133,7 @@ MOJO_STATIC_ASSERT(sizeof(struct MojoAddTriggerOptions) == 8,
 typedef uint32_t MojoRemoveTriggerFlags;
 
 #ifdef __cplusplus
-const MojoRemoveTriggerFlags MOJO_REMOVE_TRIGGER_FLAG_NONE = 0;
+inline constexpr MojoRemoveTriggerFlags MOJO_REMOVE_TRIGGER_FLAG_NONE = 0;
 #else
 #define MOJO_REMOVE_TRIGGER_FLAG_NONE ((MojoRemoveTriggerFlags)0)
 #endif
@@ -150,7 +153,7 @@ MOJO_STATIC_ASSERT(sizeof(struct MojoRemoveTriggerOptions) == 8,
 typedef uint32_t MojoArmTrapFlags;
 
 #ifdef __cplusplus
-const MojoArmTrapFlags MOJO_ARM_TRAP_FLAG_NONE = 0;
+inline constexpr MojoArmTrapFlags MOJO_ARM_TRAP_FLAG_NONE = 0;
 #else
 #define MOJO_ARM_TRAP_FLAG_NONE ((MojoArmTrapFlags)0)
 #endif
