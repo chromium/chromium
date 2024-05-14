@@ -111,9 +111,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // the |decoder_| member variable.
   bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
 
-  // Continue with the resolution change after allowing the teardown of the
-  // queues to occur.
-  void ContinueApplyResolutionChange();
+  // Allocate and configure buffers necessary for the current video bitstream.
+  void ConfigureInputQueue();
 
   // The uncompressed format that the driver produces is setup by the
   // |output_queue_|. This format then needs to be passed further down the
@@ -209,7 +208,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Queue holding surfaces in display order.
   std::queue<scoped_refptr<StatelessDecodeSurface>> display_queue_;
 
-  // Prevent nested resolution changes by tracking when one is occurring.
+  // Indicates that a resolution change has been signaled by the |decoder_|,
+  // but the queues have not yet been configured for the new resolution.
   bool resolution_changing_ = false;
 
   // High priority task runner that can block. This task runner is to be used

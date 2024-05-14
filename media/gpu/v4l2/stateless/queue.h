@@ -37,6 +37,9 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool StartStreaming();
   bool StopStreaming();
   bool BuffersAvailable() const { return free_buffer_indices_.size() > 0; }
+  bool OutstandingBuffers() const {
+    return free_buffer_indices_.size() < buffers_.size();
+  }
   virtual const std::optional<Buffer> DequeueBuffer() = 0;
 
  protected:
