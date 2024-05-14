@@ -97,17 +97,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
           return loadTimeData.getBoolean('enableLiveCaption');
         },
       },
-
-      /**
-       * Whether to show the focus highlight setting.
-       * Depends on feature flag for focus highlight.
-       */
-      showFocusHighlightOption_: {
-        type: Boolean,
-        value: function() {
-          return loadTimeData.getBoolean('showFocusHighlightOption');
-        },
-      },
       // </if>
 
       /**
@@ -178,7 +167,6 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   languageHelper: LanguageHelper;
 
   private enableLiveCaption_: boolean;
-  private showFocusHighlightOption_: boolean;
   // </if>
 
   private captionSettingsOpensExternally_: boolean;

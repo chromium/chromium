@@ -287,11 +287,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  html_source->AddBoolean(
-      "showFocusHighlightOption",
-      base::FeatureList::IsEnabled(features::kAccessibilityFocusHighlight));
-#endif
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(features::kPdfOcr));
