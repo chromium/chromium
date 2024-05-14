@@ -2246,6 +2246,9 @@ extern const char kUseIDNA2008NonTransitionalDescription[];
 extern const char kEnablePasswordSharingName[];
 extern const char kEnablePasswordSharingDescription[];
 
+extern const char kEnableMantaServiceName[];
+extern const char kEnableMantaServiceDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2782,9 +2785,6 @@ extern const char kEnableLiveCaptionMultilangDescription[];
 
 extern const char kEnableCrOSSodaLanguagesName[];
 extern const char kEnableCrOSSodaLanguagesDescription[];
-
-extern const char kEnableMantaServiceName[];
-extern const char kEnableMantaServiceDescription[];
 
 extern const char kEsbDownloadRowPromoFeatureName[];
 extern const char kEsbDownloadRowPromoFeatureDescription[];

@@ -4,8 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(!is_android)
-
 component("manta") {
   sources = [
     "base_provider.cc",
