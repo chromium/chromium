@@ -61,6 +61,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/variations/service/google_groups_updater_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -204,6 +205,11 @@ std::unique_ptr<KeyedService> BuildSyncService(
       PrefServiceSyncableFromProfile(profile);
   pref_service->OnSyncServiceInitialized(sync_service.get());
 
+  if (GoogleGroupsUpdaterService* groups_updater_service =
+          GoogleGroupsUpdaterServiceFactory::GetForBrowserContext(profile)) {
+    groups_updater_service->OnSyncServiceInitialized(sync_service.get());
+  }
+
   return sync_service;
 }
 
@@ -253,9 +259,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
-  // Sync needs this service to still be present when the sync engine is
-  // disabled, so that preferences can be cleared.
-  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());

@@ -39,7 +39,6 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/sync_user_events/user_event_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
-#import "components/variations/service/google_groups_updater_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
@@ -48,7 +47,6 @@
 #import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/metrics/model/google_groups_updater_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_receiver_service_factory.h"
@@ -298,12 +296,6 @@ bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
 void IOSChromeSyncClient::OnLocalSyncTransportDataCleared() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   metrics::ClearDemographicsPrefs(browser_state_->GetPrefs());
-
-  GoogleGroupsUpdaterService* google_groups_updater =
-      GoogleGroupsUpdaterServiceFactory::GetForBrowserState(browser_state_);
-  if (google_groups_updater != nullptr) {
-    google_groups_updater->ClearSigninScopedState();
-  }
 }
 
 bool IOSChromeSyncClient::IsPasswordSyncAllowed() {

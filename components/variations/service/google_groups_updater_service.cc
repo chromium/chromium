@@ -8,6 +8,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sync/service/sync_service.h"
 #include "components/variations/pref_names.h"
 
 GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
@@ -44,6 +45,37 @@ void GoogleGroupsUpdaterService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF
 #endif
   );
+}
+
+void GoogleGroupsUpdaterService::Shutdown() {
+  sync_service_observation_.Reset();
+}
+
+void GoogleGroupsUpdaterService::OnSyncServiceInitialized(
+    syncer::SyncService* sync_service) {
+  sync_service_observation_.Observe(sync_service);
+
+  // Honor the initial state, in case OnStateChanged() never gets called.
+  OnStateChanged(sync_service);
+}
+
+void GoogleGroupsUpdaterService::OnStateChanged(syncer::SyncService* sync) {
+  switch (sync->GetTransportState()) {
+    case syncer::SyncService::TransportState::DISABLED:
+      ClearSigninScopedState();
+      break;
+    case syncer::SyncService::TransportState::PAUSED:
+    case syncer::SyncService::TransportState::START_DEFERRED:
+    case syncer::SyncService::TransportState::INITIALIZING:
+    case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
+    case syncer::SyncService::TransportState::CONFIGURING:
+    case syncer::SyncService::TransportState::ACTIVE:
+      break;
+  }
+}
+
+void GoogleGroupsUpdaterService::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
 }
 
 void GoogleGroupsUpdaterService::ClearSigninScopedState() {

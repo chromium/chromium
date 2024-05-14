@@ -26,6 +26,7 @@
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
@@ -140,6 +141,12 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state)
       ->OnSyncServiceInitialized(sync_service.get());
 
+  if (GoogleGroupsUpdaterService* groups_updater_service =
+          GoogleGroupsUpdaterServiceFactory::GetForBrowserState(
+              browser_state)) {
+    groups_updater_service->OnSyncServiceInitialized(sync_service.get());
+  }
+
   return sync_service;
 }
 
@@ -198,9 +205,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
-  // Sync needs this service to still be present when the sync engine is
-  // disabled, so that preferences can be cleared.
-  DependsOn(GoogleGroupsUpdaterServiceFactory::GetInstance());
   DependsOn(ios::AboutSigninInternalsFactory::GetInstance());
   DependsOn(ios::AccountBookmarkModelFactory::GetInstance());
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());

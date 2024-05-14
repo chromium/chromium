@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/variations/service/google_groups_updater_service.h"
+
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/pref_names.h"
 #include "google_groups_updater_service.h"
@@ -121,22 +123,28 @@ TEST_F(GoogleGroupsUpdaterServiceTest,
 }
 
 TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsNotPreviouslySet) {
+  syncer::TestSyncService sync_service;
   GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
+  google_groups_updater.OnSyncServiceInitialized(&sync_service);
   // This just checks that ClearSigninScopedState() deals with the case where
   // the source pref was unset (i.e. is a no-op and doesn't crash).
-  google_groups_updater.ClearSigninScopedState();
+  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  google_groups_updater.OnStateChanged(&sync_service);
 
   CheckTargetPref({});
 }
 
 TEST_F(GoogleGroupsUpdaterServiceTest, ClearProfilePrefsClearsTargetPref) {
+  syncer::TestSyncService sync_service;
   GoogleGroupsUpdaterService google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
+  google_groups_updater.OnSyncServiceInitialized(&sync_service);
   SetSourcePref({"123", "456"});
   CheckTargetPref({"123", "456"});
 
-  google_groups_updater.ClearSigninScopedState();
+  sync_service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
+  google_groups_updater.OnStateChanged(&sync_service);
 
   // Check the source and target prefs have been cleared.
   CheckSourcePrefCleared();
