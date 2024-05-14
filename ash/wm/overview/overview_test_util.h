@@ -17,6 +17,8 @@ namespace ash {
 class OverviewGrid;
 class OverviewItemBase;
 
+// TODO(sammiequon): Remove this and replace uses with
+// `AshTestBase::PressAndReleaseKey()`.
 void SendKey(ui::KeyboardCode key, int flags = ui::EF_NONE);
 
 // Focuses `window` in the active overview session by cycling through all

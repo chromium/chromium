@@ -121,6 +121,9 @@ std::unique_ptr<views::Widget> PineContentsView::Create(
       display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
 
   views::Widget::InitParams params;
+  params.activatable = features::IsOverviewNewFocusEnabled()
+                           ? views::Widget::InitParams::Activatable::kYes
+                           : views::Widget::InitParams::Activatable::kNo;
   params.bounds = contents_bounds;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);

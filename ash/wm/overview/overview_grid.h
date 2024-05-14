@@ -469,16 +469,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return item_list_;
   }
 
-  RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
   const SplitViewDragIndicators* split_view_drag_indicators() const {
     return split_view_drag_indicators_.get();
   }
-
-  const views::Widget* desks_widget() const { return desks_widget_.get(); }
-
-  const LegacyDeskBarView* desks_bar_view() const { return desks_bar_view_; }
-  LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }
 
   bool should_animate_when_exiting() const {
     return should_animate_when_exiting_;
@@ -492,19 +486,33 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   aura::Window* dragged_window() { return dragged_window_.get(); }
 
-  views::Widget* saved_desk_library_widget() {
-    return saved_desk_library_widget_.get();
-  }
+  // TODO(sammiequon): Remove some of these getters by using friend or helper
+  // function.
+  RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
-  views::Widget* save_desk_button_container_widget() {
-    return save_desk_button_container_widget_.get();
-  }
+  const views::Widget* desks_widget() const { return desks_widget_.get(); }
+
+  const LegacyDeskBarView* desks_bar_view() const { return desks_bar_view_; }
+  LegacyDeskBarView* desks_bar_view() { return desks_bar_view_; }
+
+  views::Widget* birch_bar_widget() { return birch_bar_widget_.get(); }
 
   views::Widget* faster_splitview_widget() {
     return faster_splitview_widget_.get();
   }
 
+  views::Widget* saved_desk_library_widget() {
+    return saved_desk_library_widget_.get();
+  }
+
+  views::Widget* pine_widget() { return pine_widget_.get(); }
   const views::Widget* pine_widget() const { return pine_widget_.get(); }
+
+  views::Widget* feedback_widget() { return feedback_widget_.get(); }
+
+  views::Widget* save_desk_button_container_widget() {
+    return save_desk_button_container_widget_.get();
+  }
 
   ScopedOverviewWallpaperClipper* scoped_overview_wallpaper_clipper() {
     return scoped_overview_wallpaper_clipper_.get();
@@ -677,12 +685,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Vector containing all the items in this grid.
   std::vector<std::unique_ptr<OverviewItemBase>> item_list_;
 
-  // A widget that is shown if we entered overview without any windows opened.
-  std::unique_ptr<RoundedLabelWidget> no_windows_widget_;
-
   // The owner of the widget that displays split-view-related information. Null
   // if split view is unsupported (see |ShouldAllowSplitView|).
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
+
+  // A widget that is shown if we entered overview without any windows opened.
+  std::unique_ptr<RoundedLabelWidget> no_windows_widget_;
 
   // Widget that contains the DeskBarView contents when the Virtual Desks
   // feature is enabled.
@@ -701,6 +709,19 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Widget that appears during faster splitview setup. Contains the faster
   // splitview toast and the overview settings button.
   std::unique_ptr<views::Widget> faster_splitview_widget_;
+
+  // The widget that contains the view for all saved desks.
+  std::unique_ptr<views::Widget> saved_desk_library_widget_;
+
+  // The widget that contains the `PineContentsView`.
+  std::unique_ptr<views::Widget> pine_widget_;
+
+  // The widget that contains a `PillButton` to open a feedback page.
+  std::unique_ptr<views::Widget> feedback_widget_;
+
+  // A widget that contains save desk buttons which save desk as template or for
+  // later when pressed.
+  std::unique_ptr<views::Widget> save_desk_button_container_widget_;
 
   // The subscription of birch bar relayout callback.
   base::CallbackListSubscription birch_bar_relayout_callback_subscription_;
@@ -751,19 +772,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   //  during overview mode.
   std::unique_ptr<ScopedOverviewWallpaperClipper>
       scoped_overview_wallpaper_clipper_;
-
-  // The widget that contains the view for all saved desks.
-  std::unique_ptr<views::Widget> saved_desk_library_widget_;
-
-  // The widget that contains the `PineContentsView`.
-  std::unique_ptr<views::Widget> pine_widget_;
-
-  // The widget that contains a `PillButton` to open a feedback page.
-  std::unique_ptr<views::Widget> feedback_widget_;
-
-  // A widget that contains save desk buttons which save desk as template or for
-  // later when pressed.
-  std::unique_ptr<views::Widget> save_desk_button_container_widget_;
 
   // The number of incognito windows in this grid. Used by saved desks to
   // identify the unsupported window type to the user.

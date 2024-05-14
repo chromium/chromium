@@ -1155,4 +1155,6 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   }
 }
 
+// TODO(http://b/325335020): Add tests for tab traversal.
+
 }  // namespace ash

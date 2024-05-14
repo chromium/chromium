@@ -323,8 +323,10 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   // If Chromevox is on, let the widget be activatable.
   const bool spoken_feedback_enabled =
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
-  if (spoken_feedback_enabled)
-    params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.activatable =
+      (spoken_feedback_enabled || features::IsOverviewNewFocusEnabled())
+          ? views::Widget::InitParams::Activatable::kDefault
+          : views::Widget::InitParams::Activatable::kNo;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "SaveDeskButtonContainerWidget";
@@ -3344,6 +3346,9 @@ void OverviewGrid::UpdateFasterSplitViewWidget() {
 
   if (!faster_splitview_widget_) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+    params.activatable = features::IsOverviewNewFocusEnabled()
+                             ? views::Widget::InitParams::Activatable::kYes
+                             : views::Widget::InitParams::Activatable::kNo;
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.parent = desks_util::GetActiveDeskContainerForRoot(root_window_);
     params.name = "FasterSplitViewWidget";
@@ -3418,6 +3423,9 @@ void OverviewGrid::UpdateFeedbackButton() {
         &kFeedbackIcon);
 
     views::Widget::InitParams params;
+    params.activatable = features::IsOverviewNewFocusEnabled()
+                             ? views::Widget::InitParams::Activatable::kYes
+                             : views::Widget::InitParams::Activatable::kNo;
     params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
     params.init_properties_container.SetProperty(kOverviewUiKey, true);
     params.name = "PineFeedbackButton";

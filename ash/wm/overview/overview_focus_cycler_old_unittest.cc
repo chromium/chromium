@@ -58,7 +58,8 @@ class OverviewFocusCyclerOldTest : public OverviewTestBase,
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kDesksTemplates, AreDeskTemplatesEnabled()},
          {features::kFasterSplitScreenSetup, true},
-         {features::kOsSettingsRevampWayfinding, true}});
+         {features::kOsSettingsRevampWayfinding, true},
+         {features::kOverviewNewFocus, false}});
     OverviewTestBase::SetUp();
     ScopedOverviewTransformWindow::SetImmediateCloseForTests(true);
   }
