@@ -1168,7 +1168,8 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
     }
   }
 
-  if (text_content.Is8Bit() && !data->is_bidi_enabled_) {
+  if ((text_content.Is8Bit() || !data->HasNonOrc16BitCharacters()) &&
+      !data->is_bidi_enabled_) {
     if (data->items.size()) {
       RunSegmenter::RunSegmenterRange range = {
           0u, data->text_content.length(), USCRIPT_LATIN,

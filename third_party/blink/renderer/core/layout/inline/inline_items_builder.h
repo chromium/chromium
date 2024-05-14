@@ -206,6 +206,9 @@ class InlineItemsBuilderTemplate {
   bool has_unicode_bidi_plain_text_ = false;
   bool is_bisect_line_break_disabled_ = false;
   bool is_score_line_break_disabled_ = false;
+  // True if `text_` contains non-latin1 characters other than
+  // kObjectReplacementCharacter.
+  bool has_non_orc_16bit_ = false;
 
   // Append a character.
   // Currently this function is for adding control characters such as

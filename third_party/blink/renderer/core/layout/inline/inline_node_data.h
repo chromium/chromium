@@ -18,6 +18,9 @@ class InlineItemsBuilderTemplate;
 struct CORE_EXPORT InlineNodeData final : InlineItemsData {
  public:
   InlineNodeData() = default;
+  // Returns true if `text_content` contains non-latin1 characters other than
+  // kObjectReplacementCharacter.
+  bool HasNonOrc16BitCharacters() const { return has_non_orc_16bit_; }
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
     return static_cast<TextDirection>(base_direction_);
@@ -69,6 +72,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
 
   Member<SvgInlineNodeData> svg_node_data_;
 
+  unsigned has_non_orc_16bit_ : 1;
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection
 
