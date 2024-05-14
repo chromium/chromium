@@ -1723,7 +1723,7 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
 
   StringBuilder builder;
   builder.Append("A preload for '");
-  builder.Append(resource->Url());
+  builder.Append(resource->Url().GetString());
   builder.Append("' is found, but is not used ");
 
   switch (status) {

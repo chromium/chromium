@@ -375,7 +375,7 @@ struct ToV8Traits<
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const AtomicString& value) {
     DCHECK(!value.empty());
-    return V8String(script_state->GetIsolate(), value);
+    return V8String(script_state->GetIsolate(), value.GetString());
   }
 };
 

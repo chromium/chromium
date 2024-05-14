@@ -132,7 +132,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
   DCHECK(p256dh_);
 
   V8ObjectBuilder result(script_state);
-  result.AddString("endpoint", endpoint());
+  result.AddString("endpoint", endpoint().GetString());
 
   if (expiration_time_) {
     result.AddNumber("expirationTime", *expiration_time_);

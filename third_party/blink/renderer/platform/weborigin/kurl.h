@@ -240,7 +240,6 @@ class PLATFORM_EXPORT KURL {
   unsigned PathAfterLastSlash() const;
 
   operator const String&() const { return GetString(); }
-  operator StringView() const { return StringView(GetString()); }
 
   const url::Parsed& GetParsed() const { return parsed_; }
 

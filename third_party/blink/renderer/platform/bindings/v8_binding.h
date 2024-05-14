@@ -238,6 +238,20 @@ inline String ToCoreStringWithUndefinedOrNullCheck(v8::Isolate* isolate,
 // Convert a string to a V8 string.
 
 inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
+                                      const String& string) {
+  if (string.empty()) {
+    return v8::String::Empty(isolate);
+  }
+  return V8PerIsolateData::From(isolate)->GetStringCache()->V8ExternalString(
+      isolate, string.Impl());
+}
+
+inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
+                                      const AtomicString& string) {
+  return V8String(isolate, string.GetString());
+}
+
+inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
                                       const StringView& string) {
   DCHECK(isolate);
   if (string.IsNull())
