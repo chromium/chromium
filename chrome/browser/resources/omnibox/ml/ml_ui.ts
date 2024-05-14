@@ -14,7 +14,7 @@ import type {Signals} from '../omnibox.mojom-webui.js';
 
 import {MlBrowserProxy} from './ml_browser_proxy.js';
 // @ts-ignore:next-line
-import sheet from './ml_ui.css' assert {type : 'css'};
+import sheet from './ml_ui.css' with {type : 'css'};
 import {getTemplate} from './ml_ui.html.js';
 
 declare global {

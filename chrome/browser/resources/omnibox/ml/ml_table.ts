@@ -12,7 +12,7 @@ import {clearChildren, createEl, setFormattedClipboardForMl, signalNames} from '
 import type {MlBrowserProxy} from './ml_browser_proxy.js';
 import {ResponseFilter} from './ml_browser_proxy.js';
 // @ts-ignore:next-line
-import sheet from './ml_table.css' assert {type : 'css'};
+import sheet from './ml_table.css' with {type : 'css'};
 import {getTemplate} from './ml_table.html.js';
 
 export class MlTableElement extends CustomElement {
