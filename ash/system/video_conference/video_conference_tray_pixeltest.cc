@@ -36,9 +36,7 @@ class VideoConferenceTrayPixelTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kJellyroll,
-                              features::kVcStopAllScreenShare,
-                              chromeos::features::kJelly,
+        /*enabled_features=*/{features::kVcStopAllScreenShare,
                               features::kFeatureManagementVideoConference},
         /*disabled_features=*/{features::kVcBackgroundReplace});
     // TODO(b/334375880): Add a specific pixel test for the feature
