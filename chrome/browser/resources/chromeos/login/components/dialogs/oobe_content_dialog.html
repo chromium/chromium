@@ -55,12 +55,16 @@ found in the LICENSE file.
     --gaia-horizontal-padding-offset: 20px;
   }
 
-  :host-context([orientation=vertical]) {
-    --oobe-adaptive-dialog-item-alignment: center;
+  @media (orientation: portrait) {
+    :host {
+      --oobe-adaptive-dialog-item-alignment: center;
+    }
   }
 
-  :host-context([orientation=horizontal]) {
-    --oobe-adaptive-dialog-item-alignment: unset;
+  @media (orientation: landscape) {
+    :host {
+      --oobe-adaptive-dialog-item-alignment: unset;
+    }
   }
 
   #mainContainer {

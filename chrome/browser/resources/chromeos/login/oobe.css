@@ -287,10 +287,13 @@ Styles related to the `md-screen-container`
   min-width: 100vw;
   transform: translateY(0) rotateX(0);
 }
-:root.boot-animation-enabled [orientation=vertical] #oobe.connect
-#inner-container.down {
-  min-height: 100vw;
-  min-width: 100vh;
+
+@media (orientation: portrait) {
+  :root.boot-animation-enabled #oobe.connect
+  #inner-container.down {
+    min-height: 100vw;
+    min-width: 100vh;
+  }
 }
 :root.boot-animation-enabled #oobe.connect #inner-container.down #connect {
   opacity: 0;

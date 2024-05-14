@@ -62,36 +62,40 @@ found in the LICENSE file.
     width: var(--oobe-adaptive-dialog-width);
   }
 
-  :host-context([orientation=horizontal]) {
-    --oobe-adaptive-dialog-content-direction: row;
-    --oobe-adaptive-dialog-item-alignment: unset;
-    --oobe-text-alignment: start;
-    --oobe-adaptive-dialog-content-width: calc(
-        var(--oobe-adaptive-dialog-width) -
-        4 * var(--oobe-adaptive-dialog-content-padding) -
-        var(--oobe-adaptive-dialog-header-width));
-    /* Header takes 40% of the width remaining after applying padding */
-    --oobe-adaptive-dialog-header-width: clamp(302px,
-        calc(0.4 * (var(--oobe-adaptive-dialog-width) -
-        4 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
-    --oobe-adaptive-dialog-content-top-padding: 0;
+  @media (orientation: landscape) {
+    :host {
+      --oobe-adaptive-dialog-content-direction: row;
+      --oobe-adaptive-dialog-item-alignment: unset;
+      --oobe-text-alignment: start;
+      --oobe-adaptive-dialog-content-width: calc(
+          var(--oobe-adaptive-dialog-width) -
+          4 * var(--oobe-adaptive-dialog-content-padding) -
+          var(--oobe-adaptive-dialog-header-width));
+      /* Header takes 40% of the width remaining after applying padding */
+      --oobe-adaptive-dialog-header-width: clamp(302px,
+          calc(0.4 * (var(--oobe-adaptive-dialog-width) -
+          4 * var(--oobe-adaptive-dialog-content-padding))) , 346px);
+      --oobe-adaptive-dialog-content-top-padding: 0;
+    }
+
+    :host([single-column]) {
+      --oobe-adaptive-dialog-header-width: 456px;
+    }
   }
 
-  :host-context([orientation=horizontal]):host([single-column]) {
-    --oobe-adaptive-dialog-header-width: 456px;
-  }
-
-  :host-context([orientation=vertical]) {
-    --oobe-adaptive-dialog-content-direction: column;
-    --oobe-adaptive-dialog-item-alignment: center;
-    --oobe-text-alignment: center;
-    --oobe-adaptive-dialog-content-width: calc(
-        var(--oobe-adaptive-dialog-width) -
-        2 * var(--oobe-adaptive-dialog-content-padding));
-    /* Header takes 60% of the width remaining after applying padding */
-    --oobe-adaptive-dialog-header-width: clamp(346px,
-        calc(0.6 * (var(--oobe-adaptive-dialog-width) -
-        2 * var(--oobe-adaptive-dialog-content-padding))) , 520px);
+  @media (orientation: portrait) {
+    :host {
+      --oobe-adaptive-dialog-content-direction: column;
+      --oobe-adaptive-dialog-item-alignment: center;
+      --oobe-text-alignment: center;
+      --oobe-adaptive-dialog-content-width: calc(
+          var(--oobe-adaptive-dialog-width) -
+          2 * var(--oobe-adaptive-dialog-content-padding));
+      /* Header takes 60% of the width remaining after applying padding */
+      --oobe-adaptive-dialog-header-width: clamp(346px,
+          calc(0.6 * (var(--oobe-adaptive-dialog-width) -
+          2 * var(--oobe-adaptive-dialog-content-padding))) , 520px);
+    }
   }
 
   #oobe-title ::slotted(h1) {

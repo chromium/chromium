@@ -62,7 +62,7 @@ export class OobeAdaptiveDialog extends PolymerElement {
 
       /**
        * If set, the width of the dialog header will be wider compared to the
-       * the normal dialog in horizontal orientation.
+       * the normal dialog in landscape orientation.
        */
       singleColumn: {
         type: Boolean,
