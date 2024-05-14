@@ -8,18 +8,18 @@
 #include "base/check.h"
 #include "base/logging.h"
 
-#define TEST_AND_RETURN_FALSE(_x)   \
-  do {                              \
-    if (!(_x)) {                    \
-      LOG(ERROR) << #_x " failed."; \
-      return false;                 \
-    }                               \
+#define TEST_AND_RETURN_FALSE(_x)    \
+  do {                               \
+    if (!(_x)) {                     \
+      VLOG(1) << #_x " failed.";     \
+      return false;                  \
+    }                                \
   } while (0)
 
 #define TEST_AND_RETURN_VALUE(_x, _v) \
   do {                                \
     if (!(_x)) {                      \
-      LOG(ERROR) << #_x " failed.";   \
+      VLOG(1) << #_x " failed.";      \
       return (_v);                    \
     }                                 \
   } while (0)
