@@ -68,10 +68,20 @@ class TouchToFillPaymentMethodControllerBridge
     }
 
     @Override
-    public void ibanSuggestionSelected(String guid) {
+    public void localIbanSuggestionSelected(String guid) {
         if (mNativeTouchToFillPaymentMethodViewController != 0) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
-                    .ibanSuggestionSelected(mNativeTouchToFillPaymentMethodViewController, guid);
+                    .localIbanSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, guid);
+        }
+    }
+
+    @Override
+    public void serverIbanSuggestionSelected(long instrumentId) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .serverIbanSuggestionSelected(
+                            mNativeTouchToFillPaymentMethodViewController, instrumentId);
         }
     }
 
@@ -89,6 +99,10 @@ class TouchToFillPaymentMethodControllerBridge
                 String uniqueId,
                 boolean isVirtual);
 
-        void ibanSuggestionSelected(long nativeTouchToFillPaymentMethodViewController, String guid);
+        void localIbanSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController, String guid);
+
+        void serverIbanSuggestionSelected(
+                long nativeTouchToFillPaymentMethodViewController, long instrumentId);
     }
 }

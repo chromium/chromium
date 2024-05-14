@@ -37,11 +37,18 @@ interface TouchToFillPaymentMethodComponent {
         void creditCardSuggestionSelected(String uniqueId, boolean isVirtual);
 
         /**
-         * Called when the user selects an IBAN.
+         * Called when the user selects a local IBAN.
          *
-         * @param guid GUID of the IBAN.
+         * @param GUID of the selected local IBAN.
          */
-        void ibanSuggestionSelected(String guid);
+        void localIbanSuggestionSelected(String guid);
+
+        /**
+         * Called when the user selects a server IBAN.
+         *
+         * @param InstrumentId of the selected server IBAN.
+         */
+        void serverIbanSuggestionSelected(long instrumentId);
     }
 
     /**

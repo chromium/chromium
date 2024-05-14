@@ -977,12 +977,35 @@ TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
   touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
 }
 
-TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest, IbanSelectionFillsIbanForm) {
+TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
+       LocalIbanSelectionFillsIbanForm) {
   std::string guid = ConfigureForIbans();
   TryToShowTouchToFill(/*expected_success=*/true);
 
   EXPECT_CALL(*(autofill_client_.GetMockIbanAccessManager()), FetchValue);
   touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
+}
+
+TEST_F(TouchToFillDelegateAndroidImplIbanUnitTest,
+       ServerIbanSelectionFillsIbanForm) {
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .SetSyncingForTest(true);
+  std::string guid = ConfigureForIbans();
+  // Add a server IBAN with a different instrument_id and verify `FetchValue`
+  // is not triggered.
+  long instrument_id = 123245678L;
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(instrument_id));
+  autofill_client_.GetPersonalDataManager()
+      ->test_payments_data_manager()
+      .AddServerIban(server_iban);
+
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(*(autofill_client_.GetMockIbanAccessManager()), FetchValue);
+  touch_to_fill_delegate_->IbanSuggestionSelected(
+      Iban::InstrumentId(instrument_id));
 }
 
 }  // namespace autofill

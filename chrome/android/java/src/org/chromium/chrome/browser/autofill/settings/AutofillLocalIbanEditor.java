@@ -84,7 +84,7 @@ public class AutofillLocalIbanEditor extends AutofillIbanEditor {
         // case of a new IBAN, these values are set right before being written to the autofill
         // table.
         Iban iban =
-                Iban.create(
+                Iban.createLocal(
                         /* guid= */ mGUID,
                         /* label= */ "",
                         /* nickname= */ mNickname.getText().toString().trim(),

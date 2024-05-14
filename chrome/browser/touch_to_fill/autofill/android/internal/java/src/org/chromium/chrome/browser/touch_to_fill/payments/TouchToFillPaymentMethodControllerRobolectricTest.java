@@ -137,7 +137,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* obfuscatedLastFourDigits= */ "• • • • 1111");
 
     private static final Iban LOCAL_IBAN =
-            Iban.create(
+            Iban.createLocal(
                     /* guid= */ "000000111111",
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "My brother's IBAN",
@@ -145,7 +145,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* value= */ "CH5604835012345678009");
 
     private static final Iban LOCAL_IBAN_NO_NICKNAME =
-            Iban.create(
+            Iban.createLocal(
                     /* guid= */ "000000222222",
                     /* label= */ "FR76 **** **** **** **** ***0 189",
                     /* nickname= */ "",

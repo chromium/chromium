@@ -437,6 +437,7 @@ public class PersonalDataManager implements Destroyable {
     /** Autofill IBAN information. */
     public static class Iban {
         private String mGuid;
+        private Long mInstrumentId;
         // Obfuscated IBAN value. This is used for displaying the IBAN in the Payment methods page.
         private String mLabel;
         private String mNickname;
@@ -445,11 +446,13 @@ public class PersonalDataManager implements Destroyable {
 
         private Iban(
                 String guid,
+                Long instrumentId,
                 String label,
                 String nickname,
                 @IbanRecordType int recordType,
                 String value) {
             mGuid = guid;
+            mInstrumentId = instrumentId;
             mLabel = label;
             mNickname = nickname;
             mRecordType = recordType;
@@ -457,12 +460,13 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("Iban")
-        public static Iban create(
+        public static Iban createLocal(
                 String guid,
                 String label,
                 String nickname,
                 @IbanRecordType int recordType,
                 String value) {
+            assert recordType != IbanRecordType.SERVER_IBAN;
             return new Iban.Builder()
                     .setGuid(guid)
                     .setLabel(label)
@@ -473,8 +477,26 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative("Iban")
+        public static Iban createServer(
+                long instrumentId, String label, String nickname, String value) {
+            return new Iban.Builder()
+                    .setInstrumentId(Long.valueOf(instrumentId))
+                    .setLabel(label)
+                    .setNickname(nickname)
+                    .setRecordType(IbanRecordType.SERVER_IBAN)
+                    .setValue(value)
+                    .build();
+        }
+
+        @CalledByNative("Iban")
         public String getGuid() {
             return mGuid;
+        }
+
+        public Long getInstrumentId() {
+            assert mInstrumentId != null;
+            assert mRecordType == IbanRecordType.SERVER_IBAN;
+            return mInstrumentId;
         }
 
         public String getLabel() {
@@ -516,6 +538,8 @@ public class PersonalDataManager implements Destroyable {
                     && Objects.equals(mLabel, otherIban.getLabel())
                     && Objects.equals(mNickname, otherIban.getNickname())
                     && mRecordType == otherIban.getRecordType()
+                    && (mRecordType != IbanRecordType.SERVER_IBAN
+                            || Objects.equals(mInstrumentId, otherIban.getInstrumentId()))
                     && Objects.equals(mValue, otherIban.getValue());
         }
 
@@ -527,6 +551,7 @@ public class PersonalDataManager implements Destroyable {
         /** Builder for {@link Iban}. */
         public static final class Builder {
             private String mGuid;
+            private Long mInstrumentId;
             private String mLabel;
             private String mNickname;
             private @IbanRecordType int mRecordType;
@@ -534,6 +559,11 @@ public class PersonalDataManager implements Destroyable {
 
             public Builder setGuid(String guid) {
                 mGuid = guid;
+                return this;
+            }
+
+            public Builder setInstrumentId(Long instrumentId) {
+                mInstrumentId = instrumentId;
                 return this;
             }
 
@@ -567,10 +597,11 @@ public class PersonalDataManager implements Destroyable {
                         assert !mGuid.isEmpty() : "Local IBANs must have a non-empty GUID.";
                         break;
                     case IbanRecordType.SERVER_IBAN:
-                        throw new UnsupportedOperationException(
-                                "Server IBANs are not supported yet.");
+                        assert mInstrumentId != null && mInstrumentId != 0L
+                                : "Server IBANs must have a non-zero instrumentId.";
+                        break;
                 }
-                return new Iban(mGuid, mLabel, mNickname, mRecordType, mValue);
+                return new Iban(mGuid, mInstrumentId, mLabel, mNickname, mRecordType, mValue);
             }
         }
     }

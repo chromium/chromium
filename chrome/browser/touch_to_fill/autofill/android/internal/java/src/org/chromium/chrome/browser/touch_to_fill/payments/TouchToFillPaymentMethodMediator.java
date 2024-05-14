@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
+import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.payments.InputProtector;
@@ -54,7 +55,7 @@ class TouchToFillPaymentMethodMediator {
     /**
      * The final outcome that closes the Touch To Fill sheet.
      *
-     * Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
      * in sync with TouchToFill.CreditCard.Outcome in enums.xml.
      */
     @IntDef({
@@ -219,7 +220,11 @@ class TouchToFillPaymentMethodMediator {
 
     public void onSelectedIban(Iban iban) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
-        mDelegate.ibanSuggestionSelected(iban.getGuid());
+        if (iban.getRecordType() == IbanRecordType.LOCAL_IBAN) {
+            mDelegate.localIbanSuggestionSelected(iban.getGuid());
+        } else {
+            mDelegate.serverIbanSuggestionSelected(iban.getInstrumentId());
+        }
     }
 
     private PropertyModel createCardModel(

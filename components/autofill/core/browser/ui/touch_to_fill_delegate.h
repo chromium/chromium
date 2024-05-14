@@ -49,8 +49,11 @@ class TouchToFillDelegate {
   virtual void ShowPaymentMethodSettings() = 0;
   virtual void CreditCardSuggestionSelected(std::string unique_id,
                                             bool is_virtual) = 0;
-  // TODO(b/334098318): Extend this method to support server IBAN.
-  virtual void IbanSuggestionSelected(Iban::Guid guid) = 0;
+  // Called when an IBAN suggestion was selected.
+  // An Iban::Guid is passed in case of a locally stored IBAN and an
+  // Iban::InstrumentId for server IBANs.
+  virtual void IbanSuggestionSelected(
+      absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 
   virtual void LogMetricsAfterSubmission(

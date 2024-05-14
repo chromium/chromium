@@ -119,7 +119,7 @@ public class TouchToFillPaymentMethodViewTest {
                     "visa");
 
     private static final Iban LOCAL_IBAN =
-            Iban.create(
+            Iban.createLocal(
                     /* guid= */ "000000111111",
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "My brother's IBAN",
