@@ -56,7 +56,7 @@ void ServerLogEntry::AddModeField(ServerLogEntry::Mode mode) {
       mode_value = kValueModeMe2Me;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   Set(kKeyMode, mode_value);
 }

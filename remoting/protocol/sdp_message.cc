@@ -95,7 +95,7 @@ bool SdpMessage::PreferVideoCodec(const std::string& codec) {
 
   // If has_video_ is true (tested at the very beginning of the function), we
   // should always return within the for-loop above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -49,18 +49,18 @@ void RejectingAuthenticator::ProcessMessage(
 
 std::unique_ptr<jingle_xmpp::XmlElement>
 RejectingAuthenticator::GetNextMessage() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 const std::string& RejectingAuthenticator::GetAuthKey() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return auth_key_;
 }
 
 std::unique_ptr<ChannelAuthenticator>
 RejectingAuthenticator::CreateChannelAuthenticator() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

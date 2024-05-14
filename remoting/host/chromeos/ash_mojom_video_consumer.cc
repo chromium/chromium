@@ -203,7 +203,7 @@ void AshMojomVideoConsumer::OnFrameCaptured(
 
 void AshMojomVideoConsumer::OnFrameWithEmptyRegionCapture() {
   // This method is not invoked when capturing entire desktops.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AshMojomVideoConsumer::OnStopped() {

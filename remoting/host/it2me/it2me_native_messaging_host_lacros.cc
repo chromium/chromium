@@ -296,7 +296,7 @@ void It2MeNativeMessagingHostLacros::HandleHostStateChange(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

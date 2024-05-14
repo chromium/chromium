@@ -209,7 +209,8 @@ void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
 
 bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
+  NOTREACHED_IN_MIGRATION()
+      << "Received unexpected IPC type: " << message.type();
   return false;
 }
 

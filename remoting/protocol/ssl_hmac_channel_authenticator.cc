@@ -110,17 +110,17 @@ class NetStreamSocketAdapter : public net::StreamSocket {
   }
 
   int SetReceiveBufferSize(int32_t size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_FAILED;
   }
 
   int SetSendBufferSize(int32_t size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_FAILED;
   }
 
   int Connect(net::CompletionOnceCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_FAILED;
   }
   void Disconnect() override { socket_.reset(); }
@@ -132,20 +132,20 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     return net::OK;
   }
   int GetLocalAddress(net::IPEndPoint* address) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_FAILED;
   }
   const net::NetLogWithSource& NetLog() const override { return net_log_; }
   bool WasEverUsed() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
   net::NextProto GetNegotiatedProtocol() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::kProtoUnknown;
   }
   bool GetSSLInfo(net::SSLInfo* ssl_info) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   int64_t GetTotalReceivedBytes() const override {

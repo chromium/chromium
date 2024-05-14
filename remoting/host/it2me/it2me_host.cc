@@ -99,8 +99,9 @@ void It2MeHost::set_chrome_os_enterprise_params(
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   chrome_os_enterprise_params_ = std::move(params);
 #else
-  NOTREACHED() << "It2MeHost::set_chrome_os_enterprise_params is only "
-               << "supported on ChromeOS";
+  NOTREACHED_IN_MIGRATION()
+      << "It2MeHost::set_chrome_os_enterprise_params is only "
+      << "supported on ChromeOS";
 #endif
 }
 
@@ -112,7 +113,8 @@ void It2MeHost::set_reconnect_params(ReconnectParams reconnect_params) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
   reconnect_params_.emplace(std::move(reconnect_params));
 #else
-  NOTREACHED() << "It2MeHost::set_reconnect_params is only supported on CrOS";
+  NOTREACHED_IN_MIGRATION()
+      << "It2MeHost::set_reconnect_params is only supported on CrOS";
 #endif
 }
 

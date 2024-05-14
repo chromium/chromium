@@ -119,7 +119,7 @@ bool ShowSetUpUrlForwarderDialog() {
     case IDCANCEL:
       return false;
     default:
-      NOTREACHED() << "Unknown button: " << *button_result;
+      NOTREACHED_IN_MIGRATION() << "Unknown button: " << *button_result;
       return false;
   }
 }

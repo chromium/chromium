@@ -468,7 +468,7 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

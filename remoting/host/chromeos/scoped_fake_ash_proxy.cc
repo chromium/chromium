@@ -74,7 +74,7 @@ void ScopedFakeAshProxy::RemoveDisplay(DisplayId id) {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ScopedFakeAshProxy::UpdateDisplaySpec(DisplayId id,

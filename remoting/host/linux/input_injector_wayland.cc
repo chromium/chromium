@@ -278,7 +278,7 @@ void InputInjectorWayland::Core::ProcessKeyEvent(
     case State::STOPPED:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 void InputInjectorWayland::Core::ProcessMouseEvent(
@@ -296,7 +296,7 @@ void InputInjectorWayland::Core::ProcessMouseEvent(
     case State::STOPPED:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

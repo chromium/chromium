@@ -188,7 +188,7 @@ struct EnumTraits<remoting::mojom::DesktopCaptureResult,
         return remoting::mojom::DesktopCaptureResult::kErrorPermanent;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::DesktopCaptureResult::kSuccess;
   }
 
@@ -206,7 +206,7 @@ struct EnumTraits<remoting::mojom::DesktopCaptureResult,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -310,7 +310,7 @@ struct EnumTraits<remoting::mojom::MouseButton,
         break;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::MouseButton::kUndefined;
   }
 
@@ -337,7 +337,7 @@ struct EnumTraits<remoting::mojom::MouseButton,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -354,7 +354,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_BytesPerSample,
         return remoting::mojom::AudioPacket_BytesPerSample::kBytesPerSample_2;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::AudioPacket_BytesPerSample::kInvalid;
   }
 
@@ -369,7 +369,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_BytesPerSample,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -400,7 +400,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_Channels,
         return remoting::mojom::AudioPacket_Channels::kChannel_7_1;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::AudioPacket_Channels::kInvalid;
   }
 
@@ -436,7 +436,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_Channels,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -455,7 +455,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_Encoding,
         return remoting::mojom::AudioPacket_Encoding::kOpus;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::AudioPacket_Encoding::kInvalid;
   }
 
@@ -473,7 +473,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_Encoding,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -492,7 +492,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_SamplingRate,
         return remoting::mojom::AudioPacket_SamplingRate::kRate_48000;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::AudioPacket_SamplingRate::kInvalid;
   }
 
@@ -510,7 +510,7 @@ struct EnumTraits<remoting::mojom::AudioPacket_SamplingRate,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -586,7 +586,7 @@ class UnionTraits<
     else if (result.is_error())
       return remoting::mojom::ReadChunkResultDataView::Tag::kError;
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::ReadChunkResultDataView::Tag::kError;
   }
 
@@ -670,7 +670,7 @@ struct EnumTraits<remoting::mojom::FileTransferError_Type,
         return remoting::mojom::FileTransferError_Type::kNotLoggedIn;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::FileTransferError_Type::kUnknown;
   }
 
@@ -703,7 +703,7 @@ struct EnumTraits<remoting::mojom::FileTransferError_Type,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -724,7 +724,7 @@ class UnionTraits<
     else if (result.is_error())
       return remoting::mojom::FileChooserResultDataView::Tag::kError;
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::FileChooserResultDataView::Tag::kError;
   }
 
@@ -775,7 +775,7 @@ class UnionTraits<remoting::mojom::KeyActionDataView,
       case ::remoting::protocol::KeyboardLayout_KeyAction::kCharacter:
         return remoting::mojom::KeyActionDataView::Tag::kCharacter;
       case ::remoting::protocol::KeyboardLayout_KeyAction::ACTION_NOT_SET:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         // Returning a value to make the compiler happy and ensure that any
         // future enum values must be added to this switch.
         return remoting::mojom::KeyActionDataView::Tag::kCharacter;
@@ -947,7 +947,7 @@ struct EnumTraits<remoting::mojom::LayoutKeyFunction,
         return remoting::mojom::LayoutKeyFunction::kHanja;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::LayoutKeyFunction::kUnknown;
   }
 
@@ -1149,7 +1149,7 @@ struct EnumTraits<remoting::mojom::LayoutKeyFunction,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -1357,7 +1357,7 @@ struct EnumTraits<remoting::mojom::TouchEventType,
         return remoting::mojom::TouchEventType::kCancel;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::TouchEventType::kUndefined;
   }
 
@@ -1381,7 +1381,7 @@ struct EnumTraits<remoting::mojom::TouchEventType,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -1419,7 +1419,7 @@ struct EnumTraits<remoting::mojom::TransportRouteType,
         return remoting::mojom::TransportRouteType::kRelay;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::TransportRouteType::kUndefined;
   }
 
@@ -1441,7 +1441,7 @@ struct EnumTraits<remoting::mojom::TransportRouteType,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };
@@ -1522,7 +1522,7 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kReauthzPolicyCheckFailed;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return remoting::mojom::ProtocolErrorCode::kUnknownError;
   }
 
@@ -1598,7 +1598,7 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

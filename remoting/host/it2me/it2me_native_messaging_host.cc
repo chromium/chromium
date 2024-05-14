@@ -744,7 +744,7 @@ bool It2MeNativeMessagingHost::DelegateToElevatedHost(
 
 bool It2MeNativeMessagingHost::DelegateToElevatedHost(
     base::Value::Dict message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

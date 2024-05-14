@@ -18,7 +18,7 @@ std::string TransportRoute::GetTypeString(RouteType type) {
     case RELAY:
       return "relay";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

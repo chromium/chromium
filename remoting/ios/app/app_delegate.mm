@@ -133,7 +133,7 @@
 }
 
 - (void)emailSetupInstructions {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #pragma mark - FirstLaunchViewPresenterDelegate

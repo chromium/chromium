@@ -110,7 +110,7 @@ void PrintTo(It2MeHostState state, std::ostream* os) {
     CASE(kError);
     CASE(kInvalidDomainError);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   *os << "Unknown state " << static_cast<int>(state);
   return;
 }

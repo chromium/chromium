@@ -21,7 +21,7 @@ const char* ConnectionToHost::StateToString(State state) {
     RETURN_STRING_LITERAL(CLOSED);
     RETURN_STRING_LITERAL(FAILED);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

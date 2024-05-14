@@ -72,7 +72,7 @@ void HostStarterOAuthHelper::OnRefreshTokenResponse(
     const std::string& access_token,
     int expires_in_seconds) {
   // We never request a new access token using a refresh token.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void HostStarterOAuthHelper::OnGetUserEmailResponse(

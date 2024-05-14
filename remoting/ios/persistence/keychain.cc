@@ -16,7 +16,7 @@ std::string Keychain::KeyToString(Key key) {
     case Key::PAIRING_INFO:
       return "PairingInfo";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

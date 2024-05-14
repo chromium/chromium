@@ -203,11 +203,11 @@ void RtcLogFileWriter::Open(const base::FilePath& filename, Callback callback) {
 
 void RtcLogFileWriter::WriteChunk(std::vector<std::uint8_t> data,
                                   Callback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RtcLogFileWriter::Close(Callback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 FileOperations::State RtcLogFileWriter::state() const {

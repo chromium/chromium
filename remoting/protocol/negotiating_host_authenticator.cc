@@ -144,7 +144,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
 
   switch (current_method_) {
     case Method::INVALID:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519: {

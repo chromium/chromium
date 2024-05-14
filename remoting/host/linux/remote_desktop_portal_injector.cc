@@ -52,7 +52,7 @@ int EvdevCodeToMouseButton(int code) {
     case BUTTON_FORWARD_KEYCODE:
       return BTN_FORWARD;
     default:
-      NOTREACHED() << "Undefined code: " << code;
+      NOTREACHED_IN_MIGRATION() << "Undefined code: " << code;
       return BTN_UNKNOWN;
   }
 }

@@ -87,7 +87,7 @@ void SoftwareVideoRenderer::OnSessionConfig(
   } else if (codec == ChannelConfig::CODEC_H264) {
     NOTIMPLEMENTED() << "H264 software decoding is not supported.";
   } else {
-    NOTREACHED() << "Invalid Encoding found: " << codec;
+    NOTREACHED_IN_MIGRATION() << "Invalid Encoding found: " << codec;
   }
 
   decoder_->SetPixelFormat(

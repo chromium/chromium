@@ -312,8 +312,9 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
                      remote_response->get_response_data());
         break;
       default:
-        NOTREACHED() << "Unexpected create response tag: "
-                     << static_cast<uint32_t>(remote_response->which());
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected create response tag: "
+            << static_cast<uint32_t>(remote_response->which());
     }
   }
 
@@ -344,8 +345,9 @@ void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
         response.Set(kGetResponseDataKey, remote_response->get_response_data());
         break;
       default:
-        NOTREACHED() << "Unexpected get response tag: "
-                     << static_cast<uint32_t>(remote_response->which());
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected get response tag: "
+            << static_cast<uint32_t>(remote_response->which());
     }
   }
 

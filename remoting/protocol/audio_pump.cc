@@ -76,7 +76,7 @@ media::ChannelLayout RetrieveLayout(const remoting::AudioPacket& packet) {
     case remoting::AudioPacket::CHANNELS_7_1:
       return media::CHANNEL_LAYOUT_7_1;
   }
-  NOTREACHED() << "Invalid AudioPacket::Channels";
+  NOTREACHED_IN_MIGRATION() << "Invalid AudioPacket::Channels";
   return media::CHANNEL_LAYOUT_UNSUPPORTED;
 }
 

@@ -366,7 +366,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
   } else if (*new_state == kHostStateDomainError) {
     remote_->OnInvalidDomainError();
   } else {
-    NOTREACHED() << "Unknown state: " << *new_state;
+    NOTREACHED_IN_MIGRATION() << "Unknown state: " << *new_state;
     CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
     return;
   }

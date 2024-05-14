@@ -25,7 +25,7 @@ constexpr char kUnknownSeverity[] = "UNKNOWN";
 logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
   switch (level) {
     case TRACE_LEVEL_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return logging::LOGGING_ERROR;
     case TRACE_LEVEL_FATAL:
       return logging::LOGGING_FATAL;
@@ -101,7 +101,7 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
 
     DCHECK_EQ(event->MofLength, offset);
   } else {
-    NOTREACHED() << "Unknown event type: " << data.event_type;
+    NOTREACHED_IN_MIGRATION() << "Unknown event type: " << data.event_type;
   }
 
   return data;
@@ -122,7 +122,7 @@ std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
       if (severity < 0) {
         return kVerboseSeverity;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kUnknownSeverity;
   }
 }

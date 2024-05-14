@@ -359,7 +359,8 @@ void WtsSessionProcessDelegate::Core::OnIOCompleted(
 bool WtsSessionProcessDelegate::Core::OnMessageReceived(
     const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  NOTREACHED() << "Received unexpected IPC type: " << message.type();
+  NOTREACHED_IN_MIGRATION()
+      << "Received unexpected IPC type: " << message.type();
   return false;
 }
 

@@ -539,7 +539,7 @@ void ProtocolPerfTest::MeasureTotalLatency(bool use_webrtc) {
           stats.client_stats.time_rendered - change_info.timestamp;
       switch (change_info.type) {
         case test::CyclicFrameGenerator::ChangeType::NO_CHANGES:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case test::CyclicFrameGenerator::ChangeType::FULL:
           total_latency_big_updates += latency;

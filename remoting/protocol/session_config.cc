@@ -212,7 +212,7 @@ bool CandidateSessionConfig::IsSupported(const SessionConfig& config) const {
       return webrtc_supported();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

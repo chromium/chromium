@@ -130,7 +130,7 @@ bool VerifyWellformedness(const base::Value::Dict& changed_policies) {
     case ThirdPartyAuthConfig::InvalidPolicy:
       return false;  // Malformed.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -494,7 +494,8 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
                                             std::move(owned_policy_service),
                                             nullptr, CreateSchemaRegistry()));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED() << "CreateWithPolicyService() should be used on ChromeOS.";
+  NOTREACHED_IN_MIGRATION()
+      << "CreateWithPolicyService() should be used on ChromeOS.";
   return nullptr;
 #else
 #error OS that is not yet supported by PolicyWatcher code.

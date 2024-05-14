@@ -103,7 +103,7 @@ std::unique_ptr<ChromotingHostContext> ChromotingHostContextChromeOs::Copy() {
 
 scoped_refptr<net::URLRequestContextGetter>
 ChromotingHostContextChromeOs::url_request_context_getter() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

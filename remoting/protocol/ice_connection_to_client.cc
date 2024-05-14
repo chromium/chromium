@@ -46,7 +46,7 @@ std::unique_ptr<AudioEncoder> CreateAudioEncoder(
   }
 #endif
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

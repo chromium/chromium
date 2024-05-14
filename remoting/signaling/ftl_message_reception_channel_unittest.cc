@@ -103,8 +103,9 @@ base::OnceClosure NotReachedClosure() {
 base::RepeatingCallback<void(const ProtobufHttpStatus&)>
 NotReachedStatusCallback(const base::Location& location) {
   return base::BindLambdaForTesting([=](const ProtobufHttpStatus& status) {
-    NOTREACHED() << "Location: " << location.ToString()
-                 << ", status code: " << static_cast<int>(status.error_code());
+    NOTREACHED_IN_MIGRATION()
+        << "Location: " << location.ToString()
+        << ", status code: " << static_cast<int>(status.error_code());
   });
 }
 

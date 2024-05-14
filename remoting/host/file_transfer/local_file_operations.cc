@@ -276,7 +276,7 @@ void LocalFileReader::OnReadResult(ReadCallback callback,
 void LocalFileReader::SetState(FileOperations::State state) {
   switch (state) {
     case FileOperations::kCreated:
-      NOTREACHED();  // Can never return to initial state.
+      NOTREACHED_IN_MIGRATION();  // Can never return to initial state.
       break;
     case FileOperations::kReady:
       DCHECK_EQ(FileOperations::kBusy, state_);
@@ -524,7 +524,7 @@ void LocalFileWriter::OnMoveResult(Callback callback, bool success) {
 void LocalFileWriter::SetState(FileOperations::State state) {
   switch (state) {
     case FileOperations::kCreated:
-      NOTREACHED();  // Can never return to initial state.
+      NOTREACHED_IN_MIGRATION();  // Can never return to initial state.
       break;
     case FileOperations::kReady:
       DCHECK(state_ == FileOperations::kBusy);

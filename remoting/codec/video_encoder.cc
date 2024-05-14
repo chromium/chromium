@@ -25,7 +25,7 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     return std::make_unique<VideoEncoderVerbatim>();
   }
 
-  NOTREACHED() << "Unknown codec type: " << video_config.codec;
+  NOTREACHED_IN_MIGRATION() << "Unknown codec type: " << video_config.codec;
   return nullptr;
 }
 

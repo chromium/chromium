@@ -33,7 +33,7 @@ void IosOauthTokenGetter::CallWithToken(TokenCallback on_access_token) {
             oauth_status = Status::NETWORK_ERROR;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
         std::move(block_callback)
             .Run(oauth_status, base::SysNSStringToUTF8(userEmail),

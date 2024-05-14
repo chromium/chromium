@@ -437,7 +437,7 @@ void WebrtcVideoEncoderVpx::UpdateConfig(const FrameParams& params) {
 
   // Update encoder context.
   if (vpx_codec_enc_config_set(codec_.get(), &config_)) {
-    NOTREACHED() << "Unable to set encoder config";
+    NOTREACHED_IN_MIGRATION() << "Unable to set encoder config";
   }
 }
 
@@ -521,7 +521,7 @@ void WebrtcVideoEncoderVpx::PrepareImage(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

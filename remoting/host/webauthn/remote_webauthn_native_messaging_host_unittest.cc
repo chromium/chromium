@@ -175,7 +175,7 @@ void RemoteWebAuthnNativeMessagingHostTest::PostMessageFromNativeHost(
 
 void RemoteWebAuthnNativeMessagingHostTest::CloseChannel(
     const std::string& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 testing::Expectation

@@ -139,7 +139,7 @@ BreakpadWin::BreakpadWin() : handling_exception_(0) {
 BreakpadWin::~BreakpadWin() {
   // This object should be leaked so that crashes which occur during process
   // shutdown will be caught.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // static

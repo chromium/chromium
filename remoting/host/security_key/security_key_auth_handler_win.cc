@@ -203,7 +203,7 @@ size_t SecurityKeyAuthHandlerWin::GetActiveConnectionCountForTest() const {
 void SecurityKeyAuthHandlerWin::SetRequestTimeoutForTest(
     base::TimeDelta timeout) {
   // SecurityKeyAuthHandlerWin tests don't override request timeout.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurityKeyAuthHandlerWin::OnSecurityKeyRequest(

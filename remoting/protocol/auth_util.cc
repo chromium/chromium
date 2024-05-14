@@ -51,12 +51,12 @@ std::string GetAuthBytes(net::SSLSocket* socket,
   // Generate auth digest based on the keying material and shared secret.
   crypto::HMAC response(crypto::HMAC::SHA256);
   if (!response.Init(key_material, kAuthDigestLength)) {
-    NOTREACHED() << "HMAC::Init failed";
+    NOTREACHED_IN_MIGRATION() << "HMAC::Init failed";
     return std::string();
   }
   unsigned char out_bytes[kAuthDigestLength];
   if (!response.Sign(shared_secret, out_bytes, kAuthDigestLength)) {
-    NOTREACHED() << "HMAC::Sign failed";
+    NOTREACHED_IN_MIGRATION() << "HMAC::Sign failed";
     return std::string();
   }
 

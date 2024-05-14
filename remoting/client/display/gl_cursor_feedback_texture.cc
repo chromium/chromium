@@ -38,7 +38,7 @@ uint32_t GetColorByRadius(float radius) {
   }
 
   if (ring_index < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

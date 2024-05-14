@@ -48,7 +48,7 @@ class ScopedClipboard {
     const base::TimeDelta kSleepTimeBetweenAttempts = base::Milliseconds(5);
 
     if (opened_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return true;
     }
 
@@ -67,7 +67,7 @@ class ScopedClipboard {
 
   BOOL Empty() {
     if (!opened_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     return ::EmptyClipboard();
@@ -75,7 +75,7 @@ class ScopedClipboard {
 
   void SetData(UINT uFormat, HANDLE hMem) {
     if (!opened_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     // The caller must not close the handle that ::SetClipboardData returns.
@@ -87,7 +87,7 @@ class ScopedClipboard {
   // before this ScopedClipboard is destroyed.
   HANDLE GetData(UINT format) {
     if (!opened_) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     }
     return ::GetClipboardData(format);

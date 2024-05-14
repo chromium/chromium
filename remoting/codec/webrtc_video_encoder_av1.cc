@@ -307,7 +307,7 @@ void WebrtcVideoEncoderAV1::PrepareImage(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -386,7 +386,7 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
 
   // Update encoder context.
   if (aom_codec_enc_config_set(codec_.get(), &config_)) {
-    NOTREACHED() << "Unable to set encoder config";
+    NOTREACHED_IN_MIGRATION() << "Unable to set encoder config";
   }
 }
 

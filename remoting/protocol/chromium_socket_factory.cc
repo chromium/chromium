@@ -202,7 +202,7 @@ rtc::SocketAddress UdpPacketSocket::GetLocalAddress() const {
 
 rtc::SocketAddress UdpPacketSocket::GetRemoteAddress() const {
   // UDP sockets are not connected - this method should never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return rtc::SocketAddress();
 }
 
@@ -210,7 +210,7 @@ int UdpPacketSocket::Send(const void* data,
                           size_t data_size,
                           const rtc::PacketOptions& options) {
   // UDP sockets are not connected - this method should never be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EWOULDBLOCK;
 }
 
@@ -219,7 +219,7 @@ int UdpPacketSocket::SendTo(const void* data,
                             const rtc::SocketAddress& address,
                             const rtc::PacketOptions& options) {
   if (state_ != STATE_BOUND) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EINVAL;
   }
 
@@ -262,7 +262,7 @@ int UdpPacketSocket::GetOption(rtc::Socket::Option option, int* value) {
 
 int UdpPacketSocket::SetOption(rtc::Socket::Option option, int value) {
   if (state_ != STATE_BOUND) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return EINVAL;
   }
 
@@ -283,7 +283,7 @@ int UdpPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
     case rtc::Socket::OPT_NODELAY:
       // OPT_NODELAY is only for TCP sockets.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return -1;
 
     case rtc::Socket::OPT_IPV6_V6ONLY:
@@ -303,7 +303,7 @@ int UdpPacketSocket::SetOption(rtc::Socket::Option option, int value) {
       return -1;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 
@@ -398,7 +398,7 @@ void UdpPacketSocket::HandleReadResult(int result) {
   if (result > 0) {
     rtc::SocketAddress address;
     if (!webrtc::IPEndPointToSocketAddress(receive_address_, &address)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       LOG(ERROR) << "Failed to convert address received from RecvFrom().";
       return;
     }

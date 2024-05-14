@@ -321,8 +321,8 @@ fetchSecretWithPairingSupported:(BOOL)pairingSupported
 
 - (void)handleExtensionMessageOfType:(NSString*)type
                              message:(NSString*)message {
-  NOTREACHED() << "handleExtensionMessageOfType is unimplemented. " << type
-               << ":" << message;
+  NOTREACHED_IN_MIGRATION() << "handleExtensionMessageOfType is unimplemented. "
+                            << type << ":" << message;
 }
 
 - (void)setHostResolution:(CGSize)resolutionPixels scale:(int)scale {

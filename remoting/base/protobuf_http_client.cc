@@ -90,7 +90,8 @@ void ProtobufHttpClient::DoExecuteRequest(
         code = ProtobufHttpStatus::Code::UNAVAILABLE;
         break;
       default:
-        NOTREACHED() << "Unknown OAuthTokenGetter Status: " << status;
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown OAuthTokenGetter Status: " << status;
         code = ProtobufHttpStatus::Code::UNKNOWN;
     }
     request->OnAuthFailed(ProtobufHttpStatus(code, error_message));

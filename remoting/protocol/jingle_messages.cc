@@ -505,7 +505,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (!text.empty()) {

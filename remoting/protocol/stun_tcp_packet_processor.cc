@@ -68,7 +68,7 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Pack(
   // Each packet is expected to have header (STUN/TURN ChannelData), where
   // header contains message type and and length of message.
   if (data_size < kPacketHeaderSize + kPacketLengthOffset) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -77,7 +77,7 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Pack(
 
   // Accepts only complete STUN/TURN packets.
   if (data_size != expected_len) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
