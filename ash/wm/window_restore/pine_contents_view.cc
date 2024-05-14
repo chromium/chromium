@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/rounded_rect_cutout_path_builder.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_properties.h"
@@ -430,58 +431,16 @@ void PineContentsView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 
   const gfx::Size icon_row_size = screenshot_icon_row_view_->GetPreferredSize();
-  const int icon_row_width = icon_row_size.width();
-  const int icon_row_height = icon_row_size.height();
-
-  const gfx::Size image_view_size = image_view_->GetPreferredSize();
-  const int image_view_width = image_view_size.width();
-  const int image_view_height = image_view_size.height();
-
-  const auto top_left = SkPoint::Make(0, 0);
-  const auto bottom_right = SkPoint::Make(image_view_width, image_view_height);
-  const auto top_right = SkPoint::Make(image_view_width, 0);
-
-  const int cutout_curve1_end_x = pine::kPreviewContainerRadius;
-  const int cutout_curve1_end_y =
-      image_view_height - icon_row_height + pine::kPreviewContainerRadius;
-
-  const int cutout_curve2_end_x =
-      icon_row_width - pine::kPreviewContainerRadius;
-  const int cutout_curve2_end_y = image_view_height;
-
-  auto clip_path =
-      SkPath()
-          // Start from the top-left point.
-          .moveTo(top_left)
-          // Draw the first concave arc at the bottom-left and a horizontal line
-          // connecting it to the bottom-right concave arc.
-          .arcTo(SkPoint::Make(0, cutout_curve1_end_y),
-                 SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
-                 pine::kPreviewContainerRadius)
-          // Draw the bottom-right concave arc and a horizontal line connecting
-          // it to the bottom-right rounded corner.
-          .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve1_end_y),
-                 SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
-                 pine::kPreviewContainerRadius)
-          .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
-                 bottom_right, pine::kPreviewContainerRadius)
-          // Draw the bottom-right rounded corner.
-          .arcTo(
-              bottom_right,
-              SkPoint::Make(image_view_width,
-                            image_view_height - pine::kPreviewContainerRadius),
-              pine::kPreviewContainerRadius)
-          // Draw the top-right rounded corner.
-          .arcTo(top_right,
-                 SkPoint::Make(image_view_width - pine::kPreviewContainerRadius,
-                               0),
-                 pine::kPreviewContainerRadius)
-          // Draw the top-left rounded corner.
-          .arcTo(top_left, SkPoint::Make(0, pine::kPreviewContainerRadius),
-                 pine::kPreviewContainerRadius)
-          .close();
-  CHECK(image_view_);
-  image_view_->SetClipPath(clip_path);
+  auto builder =
+      RoundedRectCutoutPathBuilder(gfx::SizeF(image_view_->GetPreferredSize()));
+  builder.CornerRadius(pine::kPreviewContainerRadius);
+  builder.AddCutout(
+      RoundedRectCutoutPathBuilder::Corner::kLowerLeft,
+      gfx::SizeF(icon_row_size.width() - pine::kPreviewContainerRadius,
+                 icon_row_size.height() - pine::kPreviewContainerRadius));
+  builder.CutoutOuterCornerRadius(pine::kPreviewContainerRadius);
+  builder.CutoutInnerCornerRadius(pine::kPreviewContainerRadius);
+  image_view_->SetClipPath(builder.Build());
 }
 
 BEGIN_METADATA(PineContentsView)
