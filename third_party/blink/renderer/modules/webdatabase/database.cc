@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/modules/webdatabase/change_version_wrapper.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_authorizer.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"
-#include "third_party/blink/renderer/modules/webdatabase/database_manager.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_task.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_thread.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
@@ -265,8 +264,8 @@ Database::Database(DatabaseContext* database_context,
     guid_ = cache.RegisterOriginAndName(GetSecurityOrigin()->ToString(), name);
   }
 
-  filename_ = DatabaseManager::Manager().FullPathForDatabase(
-      GetSecurityOrigin(), name_);
+  filename_ = DatabaseTracker::Tracker().FullPathForDatabase(
+      GetSecurityOrigin(), name_, /*create_if_does_not_exist=*/true);
 
   database_thread_security_origin_ =
       context_thread_security_origin_->IsolatedCopy();

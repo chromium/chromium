@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sql_statement_error_callback.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
-#include "third_party/blink/renderer/modules/webdatabase/database_manager.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_error.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_statement_backend.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction.h"
