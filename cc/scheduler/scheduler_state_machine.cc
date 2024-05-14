@@ -585,10 +585,12 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
     return false;
   }
 
-  // Don't send BeginMainFrame early if we are prioritizing the active tree
-  // because of ImplLatencyTakesPriority.
+  // Don't send BeginMainFrame early if we are prioritizing a committed
+  // active tree because of ImplLatencyTakesPriority.
   if (ImplLatencyTakesPriority() &&
-      (has_pending_tree_ || active_tree_needs_first_draw_)) {
+      ((has_pending_tree_ && !current_pending_tree_is_impl_side_) ||
+       (active_tree_needs_first_draw_ &&
+        !previous_pending_tree_was_impl_side_))) {
     return false;
   }
 
