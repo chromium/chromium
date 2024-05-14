@@ -42,9 +42,12 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -56,6 +59,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -70,6 +74,13 @@ constexpr int kScrollViewBottomMargin = 12;
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
+
+constexpr base::TimeDelta kBubbleExpandAnimationDuration =
+    base::Milliseconds(300);
+constexpr base::TimeDelta kBubbleCollapseAnimationDuration =
+    base::Milliseconds(250);
+constexpr gfx::Tween::Type kBubbleAnimationTweenType =
+    gfx::Tween::FAST_OUT_SLOW_IN;
 
 // This should be the same value as the one in ash/style/combobox.cc
 constexpr gfx::Insets kComboboxBorderInsets = gfx::Insets::TLBR(4, 10, 4, 4);
@@ -157,11 +168,10 @@ class AddNewTaskButton : public views::LabelButton {
 BEGIN_METADATA(AddNewTaskButton)
 END_METADATA
 
-class TaskListScrollView : public views::ScrollView,
-                           public views::ViewObserver {
+class TaskListScrollView : public views::ScrollView {
   METADATA_HEADER(TaskListScrollView, views::ScrollView)
  public:
-  TaskListScrollView() : scoped_observation_(this) {
+  TaskListScrollView() {
     SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleListScrollView));
     ClipHeightTo(0, std::numeric_limits<int>::max());
     SetBackgroundColor(std::nullopt);
@@ -172,31 +182,37 @@ class TaskListScrollView : public views::ScrollView,
   TaskListScrollView& operator=(const TaskListScrollView&) = delete;
   ~TaskListScrollView() override = default;
 
-  views::View* SetContents(std::unique_ptr<views::View> view) {
-    views::View* contents = views::ScrollView::SetContents(std::move(view));
-    scoped_observation_.Observe(contents);
-    return contents;
-  }
-
-  // views::ViewObserver:
-  void OnViewBoundsChanged(View* observed_view) override {
-    // Updates the preferred size of the scroll view when the content's
-    // preferred size changed.
-    if (contents_old_size_ != observed_view->size()) {
-      contents_old_size_ = observed_view->size();
-      PreferredSizeChanged();
-    }
+  // views::ScrollView:
+  void ChildPreferredSizeChanged(views::View* view) override {
+    PreferredSizeChanged();
   }
 
  private:
   gfx::Size contents_old_size_;
-  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_;
 };
 
 BEGIN_METADATA(TaskListScrollView)
 END_METADATA
 
 }  // namespace
+
+GlanceablesTasksView::ResizeAnimation::ResizeAnimation(
+    int start_height,
+    int end_height,
+    gfx::AnimationDelegate* delegate)
+    : gfx::LinearAnimation(delegate),
+      start_height_(start_height),
+      end_height_(end_height) {
+  SetDuration((start_height > end_height ? kBubbleCollapseAnimationDuration
+                                         : kBubbleExpandAnimationDuration) *
+              ui::ScopedAnimationDurationScaleMode::duration_multiplier());
+}
+
+int GlanceablesTasksView::ResizeAnimation::GetCurrentHeight() const {
+  return gfx::Tween::IntValueBetween(
+      gfx::Tween::CalculateValue(kBubbleAnimationTweenType, GetCurrentValue()),
+      start_height_, end_height_);
+}
 
 // It is the parent container of GlanceablesTasksView that matches the style
 // of GlanceableTrayChildBubble, so `use_glanceables_container_style` is set to
@@ -349,6 +365,66 @@ void GlanceablesTasksView::OnViewFocused(views::View* view) {
   AnnounceListStateOnComboBoxAccessibility();
 }
 
+void GlanceablesTasksView::Layout(PassKey) {
+  LayoutSuperclass<GlanceablesTimeManagementBubbleView>(this);
+
+  // Set the sentinel bounds to track the bottom of the last task view. Note
+  // that the sentinel is the last view in `task_view_model_`.
+  if (task_list_sentinel_) {
+    if (task_view_model_.view_size() > 1) {
+      auto* last_task =
+          task_view_model_.view_at(task_view_model_.view_size() - 2);
+      task_list_sentinel_->SetBoundsRect(gfx::Rect(
+          gfx::Point(
+              0, last_task->bounds().bottom() + kListViewBetweenChildSpacing),
+          task_list_sentinel_->GetPreferredSize()));
+    } else {
+      task_list_sentinel_->SetBoundsRect(
+          gfx::Rect(task_list_sentinel_->GetPreferredSize()));
+    }
+  }
+}
+
+gfx::Size GlanceablesTasksView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const gfx::Size base_preferred_size =
+      GlanceablesTimeManagementBubbleView::CalculatePreferredSize(
+          available_size);
+
+  if (resize_animation_) {
+    // If bottom of the task list is animating, offset the tasks view
+    // preferred size so the tasks matches the animating bottom of the task
+    // list. This reduces animation jankiness of the timing of the resize
+    // animation gets slightly out of sync with the task views animations.
+    const int sentinel_offset =
+        task_list_sentinel_ && task_list_sentinel_->layer()
+            ? task_list_sentinel_->layer()->transform().To2dTranslation().y()
+            : 0;
+    if (sentinel_offset != 0) {
+      return gfx::Size(base_preferred_size.width(),
+                       base_preferred_size.height() + sentinel_offset);
+    }
+    return gfx::Size(base_preferred_size.width(),
+                     resize_animation_->GetCurrentHeight());
+  }
+
+  return base_preferred_size;
+}
+
+void GlanceablesTasksView::AnimationEnded(const gfx::Animation* animation) {
+  resize_animation_.reset();
+  PreferredSizeChanged();
+}
+
+void GlanceablesTasksView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  PreferredSizeChanged();
+}
+
+void GlanceablesTasksView::AnimationCanceled(const gfx::Animation* animation) {
+  resize_animation_.reset();
+}
+
 void GlanceablesTasksView::CancelUpdates() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -413,24 +489,30 @@ void GlanceablesTasksView::ToggleExpandState() {
   SetExpandState(!is_expanded_);
 }
 
+void GlanceablesTasksView::EndResizeAnimationForTest() {
+  if (resize_animation_) {
+    resize_animation_->End();
+  }
+}
+
 void GlanceablesTasksView::AddNewTaskButtonPressed() {
   // TODO(b/301253574): make sure there is only one view is in `kEdit` state.
   task_items_container_view_->SetVisible(true);
   auto* const pending_new_task = task_items_container_view_->AddChildViewAt(
       CreateTaskView(GetActiveTaskList()->id, /*task=*/nullptr),
       /*index=*/0);
+  task_view_model_.Add(pending_new_task, 0u);
   pending_new_task->UpdateTaskTitleViewForState(
       GlanceablesTaskView::TaskTitleViewState::kEdit);
-
+  AnimateTaskViewVisibility(pending_new_task, true);
+  HandleTaskViewStateChange(/*view_expanding=*/true);
   RecordUserStartedAddingTask();
-
-  PreferredSizeChanged();
 }
 
 std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
     const std::string& task_list_id,
     const api::Task* task) {
-  return std::make_unique<GlanceablesTaskView>(
+  auto task_view = std::make_unique<GlanceablesTaskView>(
       task,
       base::BindRepeating(&GlanceablesTasksView::MarkTaskAsCompleted,
                           base::Unretained(this), task_list_id),
@@ -443,6 +525,14 @@ std::unique_ptr<GlanceablesTaskView> GlanceablesTasksView::CreateTaskView(
                                                  : GURL(kTasksManagementPage)),
       base::BindRepeating(&GlanceablesTasksView::ShowErrorMessageWithType,
                           base::Unretained(this)));
+  if (task) {
+    // Start observing for state changes after setting the default task view
+    // state.
+    task_view->set_state_change_observer(
+        base::BindRepeating(&GlanceablesTasksView::HandleTaskViewStateChange,
+                            base::Unretained(this)));
+  }
+  return task_view;
 }
 
 void GlanceablesTasksView::SelectedTasksListChanged() {
@@ -552,24 +642,41 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   }
 
   add_new_task_button_->SetVisible(true);
-  task_items_container_view_->RemoveAllChildViews();
+
+  task_list_sentinel_ = nullptr;
+  task_view_model_.Clear();
   cached_selected_list_index_ = task_list_combo_box_view_->GetSelectedIndex();
 
   size_t num_tasks_shown = 0;
   user_with_no_tasks_ =
       tasks->item_count() == 0 && tasks_combobox_model_->GetItemCount() == 1;
 
+  task_items_container_view_->SetVisible(false);
   for (const auto& task : *tasks) {
     if (task->completed) {
       continue;
     }
 
     if (num_tasks_shown < kMaximumTasks) {
-      task_items_container_view_->AddChildView(
+      auto* task_view = task_items_container_view_->AddChildView(
           CreateTaskView(task_list_id, task.get()));
+      task_view_model_.Add(task_view, task_view_model_.view_size());
       ++num_tasks_shown;
     }
   }
+
+  task_items_container_view_->SetVisible(true);
+
+  task_list_sentinel_ = AddChildView(std::make_unique<views::View>());
+  task_list_sentinel_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  // The view is hidden, and excluded from the layout - size is set to an
+  // arbitrary non empty value.
+  task_list_sentinel_->SetPreferredSize(gfx::Size(1, 1));
+  task_list_sentinel_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  task_list_sentinel_->layer()->SetFillsBoundsOpaquely(false);
+  task_list_sentinel_->layer()->SetOpacity(0.0f);
+  task_view_model_.Add(task_list_sentinel_.get(), task_view_model_.view_size());
+
   task_list_initially_empty_ = num_tasks_shown == 0;
   // Set `task_items_container_view_` to invisible if there is no task so that
   // the layout manager won't include it as a visible view.
@@ -593,10 +700,10 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   AnnounceListStateOnComboBoxAccessibility();
 
   if (old_preferred_size != GetPreferredSize()) {
-    PreferredSizeChanged();
     if (context == ListShownContext::kUserSelectedList) {
-      GetWidget()->LayoutRootViewIfNecessary();
-      ScrollViewToVisible();
+      AnimateResize();
+    } else {
+      PreferredSizeChanged();
     }
   }
 
@@ -624,6 +731,55 @@ void GlanceablesTasksView::AnnounceListStateOnComboBoxAccessibility() {
     task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
         list_footer_view_->items_count_label()->GetText());
   }
+}
+
+void GlanceablesTasksView::HandleTaskViewStateChange(bool view_expanding) {
+  // NOTE: A single event may cause one task view to expand, and another one to
+  // collapse - the animation will use parameters for the event that comes in
+  // later, which depends on how the views handle events.
+  auto animation = views::AnimationBuilder();
+  animation.Once().SetDuration(view_expanding
+                                   ? kBubbleExpandAnimationDuration
+                                   : kBubbleCollapseAnimationDuration);
+
+  int target_offset = 0;
+  for (size_t i = 0; i < task_view_model_.view_size(); ++i) {
+    auto* child = task_view_model_.view_at(i);
+
+    // Calculate the current apparent bounds for the view - the view transform
+    // is set to animate it to its ideal bounds, which may differ from the
+    // current view bounds if a layout is still pending.
+    gfx::Rect current_bounds = task_view_model_.ideal_bounds(i);
+    if (current_bounds.height() == 0) {
+      current_bounds = child->bounds();
+    }
+    int current_offset =
+        current_bounds.y() + child->layer()->transform().To2dTranslation().y();
+
+    // Update the child transform to be relative to it's new target bounds,
+    // which are expected to be set after an imminent layout pass.
+    child->layer()->SetTransform(
+        gfx::Transform::MakeTranslation(0, current_offset - target_offset));
+
+    // Animate the view into the expected new position.
+    if (current_offset != target_offset) {
+      animation.GetCurrentSequence().SetTransform(child, gfx::Transform(),
+                                                  kBubbleAnimationTweenType);
+    }
+
+    const gfx::Size preferred_size = child->GetPreferredSize();
+    // Cache the bounds relative to which the transform was calculated, so they
+    // can be used to update the view transform if a view state changes before
+    // the imminent layout pass.
+    task_view_model_.set_ideal_bounds(
+        i, gfx::Rect(gfx::Point(current_bounds.x(), target_offset),
+                     preferred_size));
+
+    // Update the target offset for the next task view in the task list.
+    target_offset += preferred_size.height() + kListViewBetweenChildSpacing;
+  }
+
+  AnimateResize();
 }
 
 void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
@@ -666,6 +822,11 @@ void GlanceablesTasksView::SaveTask(
       return;
     }
 
+    if (view) {
+      view->set_state_change_observer(
+          base::BindRepeating(&GlanceablesTasksView::HandleTaskViewStateChange,
+                              base::Unretained(this)));
+    }
     ++added_tasks_;
     RecordTaskAdditionResult(TaskModificationResult::kCommitted);
   }
@@ -697,10 +858,10 @@ void GlanceablesTasksView::OnTaskSaved(
       // Empty `task_id` means that the task has not yet been created. Delete
       // the corresponding `view` from the scrollable container in case of
       // error.
-      task_items_container_view_->RemoveChildViewT(view.get());
+      RemoveTaskView(view);
     }
   } else if (task->title.empty()) {
-    task_items_container_view_->RemoveChildViewT(view.get());
+    RemoveTaskView(view);
   }
   SetIsLoading(false);
   std::move(callback).Run(task);
@@ -735,6 +896,72 @@ void GlanceablesTasksView::ShowErrorMessageWithType(
   }
   ShowErrorMessage(GetErrorString(error_type), std::move(callback),
                    button_type);
+}
+
+void GlanceablesTasksView::AnimateTaskViewVisibility(views::View* task,
+                                                     bool visible) {
+  if (!visible) {
+    animating_task_view_layer_ = task->RecreateLayer();
+  } else {
+    task->layer()->SetOpacity(animating_task_view_layer_
+                                  ? animating_task_view_layer_->opacity()
+                                  : 0.0f);
+    animating_task_view_layer_.reset();
+  }
+
+  task->SetVisible(visible);
+
+  // Animate the transform back to the identity transform.
+  views::AnimationBuilder()
+      .OnEnded(
+          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
+                         weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(&GlanceablesTasksView::OnTaskViewAnimationCompleted,
+                         weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .At(visible ? base::Milliseconds(50) : base::TimeDelta())
+      .SetOpacity(visible ? task->layer() : animating_task_view_layer_.get(),
+                  visible ? 1.0f : 0.0f, gfx::Tween::LINEAR)
+      .SetDuration(base::Milliseconds(visible ? 100 : 50));
+}
+
+void GlanceablesTasksView::OnTaskViewAnimationCompleted() {
+  animating_task_view_layer_.reset();
+}
+
+void GlanceablesTasksView::AnimateResize() {
+  const int current_height = size().height();
+  if (current_height == 0) {
+    return;
+  }
+  resize_animation_.reset();
+
+  const int preferred_height = GetPreferredSize().height();
+  if (current_height == preferred_height) {
+    return;
+  }
+
+  if (!ui::ScopedAnimationDurationScaleMode::duration_multiplier()) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  // If the scroll view is in overflow, and is expected to remain in overflow
+  // after resizing, no need to animate the bubble size, as it's not actually
+  // going to change.
+  const int visible_scroll_height =
+      content_scroll_view_->GetVisibleRect().height();
+  if (content_scroll_view_->contents()->height() > visible_scroll_height &&
+      content_scroll_view_->contents()->GetPreferredSize().height() >
+          visible_scroll_height) {
+    PreferredSizeChanged();
+    return;
+  }
+
+  resize_animation_ =
+      std::make_unique<ResizeAnimation>(current_height, preferred_height, this);
+  resize_animation_->Start();
 }
 
 std::u16string GlanceablesTasksView::GetErrorString(
@@ -779,10 +1006,18 @@ void GlanceablesTasksView::RemoveTaskView(
   if (task_view->Contains(GetFocusManager()->GetFocusedView())) {
     add_new_task_button_->RequestFocus();
   }
+
+  AnimateTaskViewVisibility(task_view.get(), false);
+
+  auto index_in_model = task_view_model_.GetIndexOfView(task_view.get());
+  if (index_in_model) {
+    task_view_model_.Remove(*index_in_model);
+  }
   task_items_container_view_->RemoveChildViewT(task_view.get());
+  HandleTaskViewStateChange(/*view_expanding=*/false);
+
   task_items_container_view_->SetVisible(
       !task_items_container_view_->children().empty());
-  PreferredSizeChanged();
 }
 
 void GlanceablesTasksView::CreateComboBoxView() {

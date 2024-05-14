@@ -353,8 +353,10 @@ TEST_F(GlanceablesTasksViewTest, TabbingOutOfNewTaskTextfieldAddsTask) {
   EXPECT_TRUE(edit_in_browser_button->GetVisible());
   EXPECT_TRUE(edit_in_browser_button->HasFocus());
 
-  EXPECT_FALSE(task_view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  const auto* title_label =
+      views::AsViewClass<views::Label>(task_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  EXPECT_FALSE(title_label);
 
   // Verify executed callbacks number.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
@@ -364,7 +366,7 @@ TEST_F(GlanceablesTasksViewTest, TabbingOutOfNewTaskTextfieldAddsTask) {
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   base::RunLoop().RunUntilIdle();
 
-  const auto* const title_text_field =
+  const auto* title_text_field =
       views::AsViewClass<views::Textfield>(task_view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
   ASSERT_TRUE(title_text_field);
@@ -386,12 +388,15 @@ TEST_F(GlanceablesTasksViewTest, TabbingOutOfNewTaskTextfieldAddsTask) {
   EXPECT_FALSE(GetEditInBrowserButton());
 
   task_view = GetTaskItemsContainerView()->children()[0].get();
-  EXPECT_FALSE(task_view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
-  const auto* title_label =
-      views::AsViewClass<views::Label>(task_view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  title_text_field =
+      views::AsViewClass<views::Textfield>(task_view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+  EXPECT_FALSE(title_text_field);
+
+  title_label = views::AsViewClass<views::Label>(task_view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
   EXPECT_EQ(u"New1", title_label->GetText());
 
   // Edit the same task.
@@ -410,6 +415,7 @@ TEST_F(GlanceablesTasksViewTest, TabbingOutOfNewTaskTextfieldAddsTask) {
       GetTaskItemsContainerView()->children()[0]->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
   EXPECT_EQ(u"New1 1", title_label->GetText());
 
   histogram_tester.ExpectTotalCount(

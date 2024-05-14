@@ -18,14 +18,17 @@
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_model.h"
 #include "ui/views/view_observer.h"
 
 class GURL;
 
 namespace views {
 class LabelButton;
+class ScrollView;
 }  // namespace views
 
 namespace ash {
@@ -40,14 +43,24 @@ class GlanceablesTaskView;
 // Glanceables view responsible for interacting with Google Tasks.
 class ASH_EXPORT GlanceablesTasksView
     : public GlanceablesTimeManagementBubbleView,
+      public gfx::AnimationDelegate,
       public views::ViewObserver {
   METADATA_HEADER(GlanceablesTasksView, GlanceablesTimeManagementBubbleView)
-
  public:
   explicit GlanceablesTasksView(const ui::ListModel<api::TaskList>* task_lists);
   GlanceablesTasksView(const GlanceablesTasksView&) = delete;
   GlanceablesTasksView& operator=(const GlanceablesTasksView&) = delete;
   ~GlanceablesTasksView() override;
+
+  // views::View:
+  void Layout(PassKey) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
+  // gfx::AnimationDelegate:
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
@@ -66,7 +79,25 @@ class ASH_EXPORT GlanceablesTasksView
   void SetExpandState(bool is_expanded);
   bool is_expanded() const { return is_expanded_; }
 
+  void EndResizeAnimationForTest();
+
  private:
+  // Linear animation to track tasks bubble resize animation - as the animation
+  // progresses, the bubble view preferred size will change causing bubble
+  // bounds updates. `ResizeAnimation` will provide the expected preferred
+  // tasks bubble height.
+  class ResizeAnimation : public gfx::LinearAnimation {
+   public:
+    ResizeAnimation(int start_height,
+                    int end_height,
+                    gfx::AnimationDelegate* delegate);
+    int GetCurrentHeight() const;
+
+   private:
+    const int start_height_;
+    const int end_height_;
+  };
+
   // The context of why the current task list is shown.
   enum class ListShownContext {
     // The list is a cached one that will be updated later after the lists data
@@ -103,6 +134,12 @@ class ASH_EXPORT GlanceablesTasksView
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.
   void AnnounceListStateOnComboBoxAccessibility();
+
+  // Called as a `state_change_callback` when a task view state changes between
+  // "view" and "edit" state, which causes changes in the task view preferred
+  // size. `view_expanding` indicates whether the task view is expanding or
+  // collapsing in size.
+  void HandleTaskViewStateChange(bool view_expanding);
 
   // Marks the specified task as completed.
   void MarkTaskAsCompleted(const std::string& task_list_id,
@@ -156,6 +193,20 @@ class ASH_EXPORT GlanceablesTasksView
   // states by calling with `is_loading` = false.
   void SetIsLoading(bool is_loading);
 
+  // Triggers tasks bubble resize animation to new preferred size, if an
+  // animation is required.
+  void AnimateResize();
+
+  // Animates visibility updates for a task view. It assumes that at most one
+  // task view changes visibility at the time - currently, this is exclusively
+  // used for task view added to the list in response to the user clicking the
+  // button to add a new task.
+  // When hiding/removing the task view, a copy of the task view layer will
+  // be created for the animation, so the view can be hidden/removed
+  // immediately.
+  void AnimateTaskViewVisibility(views::View* task, bool visible);
+  void OnTaskViewAnimationCompleted();
+
   // Model for the combobox used to change the active task list.
   std::unique_ptr<GlanceablesTasksComboboxModel> tasks_combobox_model_;
 
@@ -180,6 +231,23 @@ class ASH_EXPORT GlanceablesTasksView
   raw_ptr<GlanceablesListFooterView> list_footer_view_ = nullptr;
   raw_ptr<GlanceablesProgressBarView> progress_bar_ = nullptr;
   raw_ptr<CounterExpandButton> expand_button_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+
+  // An invisible view added at the last element to the task list container to
+  // more easily track the offset of the bottom of the list from the target
+  // position mid task view state change animations. The transform will be used
+  // to synchronize `resize_animation_` with task view resize / task list layout
+  // animations - if the sentinel, i.e. the bottom of the task list is
+  // animating, the bubble preferred size will be "offset" by the sentinel
+  // transform so the bottom of the bubble tracks the bottom of the task list
+  // (otherwise, if the animations get slightly out of sync, animating task
+  // views may appear to jitter as their bottom padding changes slightly).
+  raw_ptr<views::View> task_list_sentinel_ = nullptr;
+
+  // Copy of a task view whose visibility is animating to "hidden". The copy
+  // of the layer is used so the original view can be removed from the view
+  // hierarchy immediately.
+  std::unique_ptr<ui::Layer> animating_task_view_layer_;
 
   // Whether the view is expanded and showing the contents in
   // `content_scroll_view_`.
@@ -207,6 +275,21 @@ class ASH_EXPORT GlanceablesTasksView
 
   // Time stamp of when the view was created.
   const base::Time shown_time_;
+
+  // Linear animation that drive tasks bubble resize animation - the animation
+  // updates the tasks bubble view preferred size, which causes layout updates.
+  // Runs when the bubble preferred size changes.
+  std::unique_ptr<ResizeAnimation> resize_animation_;
+
+  // The model containing task views shown within the tasks bubble. Used to set
+  // up task view animations in response to a task view change. When animating
+  // task views, their transform is calculated relative to expected view bounds
+  // after an imminent layout. The reference/target bounds for the animation
+  // are cached as view ideal bounds in the model, so the transform can be
+  // recalculated if another task view state changes before the task list view
+  // layout gets updated (e.g. if the same user action causes once view to
+  // transition to kEdit, and another one to kView state).
+  views::ViewModelT<views::View> task_view_model_;
 
   // Callback that recreates `task_list_combo_box_view_`.
   base::OnceClosure recreate_combobox_callback_;

@@ -62,7 +62,8 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
   using ShowErrorMessageCallback = base::RepeatingCallback<void(
       GlanceablesTasksErrorType,
       GlanceablesErrorMessageView::ButtonActionType)>;
-
+  using StateChangeObserverCallback =
+      base::RepeatingCallback<void(bool view_expanding)>;
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kNotInitialized, kView, kEdit };
 
@@ -74,6 +75,10 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
   GlanceablesTaskView(const GlanceablesTaskView&) = delete;
   GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
   ~GlanceablesTaskView() override;
+
+  void set_state_change_observer(const StateChangeObserverCallback& observer) {
+    state_change_observer_ = observer;
+  }
 
   // views::ViewObserver:
   void OnViewBlurred(views::View* observed_view) override;
@@ -94,6 +99,12 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   // Updates the margins of views in `contents_view_`.
   void UpdateContentsMargins(TaskTitleViewState state);
+
+  // Updates the edit in browser button visibility, animating the button
+  // opacity. When hiding the button, the button is hidden immediately, but copy
+  // of its layer is created, and animated in its place.
+  void AnimateEditInBrowserButtonVisibility(bool visible);
+  void OnEditInBrowserVisibilityAnimationCompleted();
 
   // Handles press events on `check_button_`.
   void CheckButtonPressed();
@@ -141,6 +152,16 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView,
 
   // Shows an error message in the parent `GlanceablesTasksView`.
   const ShowErrorMessageCallback show_error_message_callback_;
+
+  // Callback which, if set, gets called when the task view state changes
+  // between editing and viewing state.
+  StateChangeObserverCallback state_change_observer_;
+
+  // Copy of edit in browser button layer used for the button visibility
+  // animation when hiding the button. The button view gets hidden immediately,
+  // and the layer is faded out in its place. Deleted when the fade out
+  // animation completes.
+  std::unique_ptr<ui::Layer> animating_edit_in_browser_layer_;
 
   base::ScopedMultiSourceObservation<views::View, GlanceablesTaskView>
       edit_exit_observer_{this};

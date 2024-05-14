@@ -31,12 +31,14 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -122,8 +124,7 @@ class TaskViewTextField : public SystemTextfield,
   using OnFinishedEditingCallback =
       base::RepeatingCallback<void(const std::u16string& title)>;
 
-  TaskViewTextField(const std::u16string& title,
-                    OnFinishedEditingCallback on_finished_editing)
+  explicit TaskViewTextField(OnFinishedEditingCallback on_finished_editing)
       : SystemTextfield(Type::kMedium),
         SystemTextfieldController(/*textfield=*/this),
         on_finished_editing_(std::move(on_finished_editing)) {
@@ -134,7 +135,6 @@ class TaskViewTextField : public SystemTextfield,
     SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER));
-    SetText(title);
     SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
     SetActiveStateChangedCallback(base::BindRepeating(
@@ -264,14 +264,16 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
   METADATA_HEADER(TaskTitleButton, views::LabelButton)
 
  public:
-  TaskTitleButton(const std::u16string& title, PressedCallback pressed_callback)
-      : views::LabelButton(std::move(pressed_callback), title) {
+  explicit TaskTitleButton(PressedCallback pressed_callback)
+      : views::LabelButton(std::move(pressed_callback)) {
     SetBorder(nullptr);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
 
     label()->SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
     label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosButton2));
+    button_controller()->set_notify_action(
+        views::ButtonController::NotifyAction::kOnPress);
   }
 
   void UpdateLabelForState(bool completed) {
@@ -305,6 +307,9 @@ GlanceablesTaskView::GlanceablesTaskView(
   SetAccessibleRole(ax::mojom::Role::kListItem);
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
 
   check_button_ =
       AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
@@ -370,6 +375,14 @@ GlanceablesTaskView::GlanceablesTaskView(
         CreateSecondRowIcon(kGlanceablesTasksNotesIcon));
   }
 
+  // If the task view is not associated with a task - e.g. for the view to add
+  // a new task, the edit in browser button will remain visible, and thus does
+  // not require a layer (used to animate the button visibility).
+  if (!task) {
+    edit_in_browser_button_ = contents_view_->AddChildView(
+        std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
+  }
+
   UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   // Use different margins depending on the number of
@@ -394,8 +407,8 @@ GlanceablesTaskView::~GlanceablesTaskView() = default;
 void GlanceablesTaskView::OnViewBlurred(views::View* observed_view) {
   if ((observed_view == edit_in_browser_button_ ||
        observed_view == task_title_textfield_) &&
-      (!edit_in_browser_button_ || !edit_in_browser_button_->HasFocus()) &&
-      (!task_title_textfield_ || !task_title_textfield_->HasFocus())) {
+      !(edit_in_browser_button_ && edit_in_browser_button_->HasFocus()) &&
+      !(task_title_textfield_ && task_title_textfield_->HasFocus())) {
     edit_exit_observer_.RemoveAllObservations();
     // Schedule a task to update task view state to kView. Done asynchronously
     // to let the focus change to complete. State update will remove the blurred
@@ -438,37 +451,44 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
     case TaskTitleViewState::kNotInitialized:
       NOTREACHED_NORETURN();
     case TaskTitleViewState::kView:
-      if (contents_view_ && edit_in_browser_button_) {
-        contents_view_->RemoveChildViewT(
-            std::exchange(edit_in_browser_button_, nullptr));
-      }
       task_title_button_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
-              task_title_,
               base::BindRepeating(&GlanceablesTaskView::TaskTitleButtonPressed,
                                   base::Unretained(this))));
+      task_title_button_->SetText(task_title_);
       task_title_button_->SetEnabled(!saving_task_changes_);
       task_title_button_->UpdateLabelForState(
           /*completed=*/check_button_->checked());
+
+      if (!task_id_.empty()) {
+        AnimateEditInBrowserButtonVisibility(false);
+      }
       break;
     case TaskTitleViewState::kEdit:
       task_title_before_edit_ = task_title_;
       task_title_textfield_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
-              task_title_,
               base::BindRepeating(&GlanceablesTaskView::OnFinishedEditing,
                                   base::Unretained(this))));
+      task_title_textfield_->SetText(task_title_);
       GetWidget()->widget_delegate()->SetCanActivate(true);
       task_title_textfield_->RequestFocus();
 
-      edit_in_browser_button_ = contents_view_->AddChildView(
-          std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
+      if (!task_id_.empty()) {
+        AnimateEditInBrowserButtonVisibility(true);
+      }
+
       edit_exit_observer_.AddObservation(task_title_textfield_);
       edit_exit_observer_.AddObservation(edit_in_browser_button_);
       break;
   }
 
   UpdateContentsMargins(state);
+
+  if (!state_change_observer_.is_null()) {
+    state_change_observer_.Run(/*view_expanding=*/state ==
+                               TaskTitleViewState::kEdit);
+  }
 }
 
 void GlanceablesTaskView::UpdateContentsMargins(TaskTitleViewState state) {
@@ -491,6 +511,47 @@ void GlanceablesTaskView::UpdateContentsMargins(TaskTitleViewState state) {
                                        kDetailMarginsInEditState);
       break;
   }
+}
+
+void GlanceablesTaskView::AnimateEditInBrowserButtonVisibility(bool visible) {
+  if (visible == !!edit_in_browser_button_) {
+    return;
+  }
+
+  if (!visible) {
+    animating_edit_in_browser_layer_ = edit_in_browser_button_->RecreateLayer();
+    contents_view_->RemoveChildViewT(
+        std::exchange(edit_in_browser_button_, nullptr));
+  } else {
+    edit_in_browser_button_ = contents_view_->AddChildView(
+        std::make_unique<EditInBrowserButton>(edit_in_browser_callback_));
+
+    edit_in_browser_button_->SetPaintToLayer();
+    edit_in_browser_button_->layer()->SetFillsBoundsOpaquely(false);
+    edit_in_browser_button_->layer()->SetOpacity(
+        animating_edit_in_browser_layer_
+            ? animating_edit_in_browser_layer_->opacity()
+            : 0.0f);
+    animating_edit_in_browser_layer_.reset();
+  }
+
+  // Animate the transform back to the identity transform.
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(
+          &GlanceablesTaskView::OnEditInBrowserVisibilityAnimationCompleted,
+          weak_ptr_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(
+          &GlanceablesTaskView::OnEditInBrowserVisibilityAnimationCompleted,
+          weak_ptr_factory_.GetWeakPtr()))
+      .Once()
+      .SetOpacity(visible ? edit_in_browser_button_->layer()
+                          : animating_edit_in_browser_layer_.get(),
+                  visible ? 1.0f : 0.5f, gfx::Tween::LINEAR)
+      .SetDuration(base::Milliseconds(visible ? 100 : 50));
+}
+
+void GlanceablesTaskView::OnEditInBrowserVisibilityAnimationCompleted() {
+  animating_edit_in_browser_layer_.reset();
 }
 
 void GlanceablesTaskView::CheckButtonPressed() {
@@ -544,6 +605,15 @@ void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
     if (task_title_textfield_) {
       task_title_textfield_->SetEnabled(false);
     }
+    if (edit_in_browser_button_ && !edit_in_browser_button_->layer()) {
+      edit_in_browser_button_->SetPaintToLayer();
+      edit_in_browser_button_->layer()->SetFillsBoundsOpaquely(false);
+    }
+    if (task_id_.empty() && edit_in_browser_button_ &&
+        !edit_in_browser_button_->HasFocus()) {
+      AnimateEditInBrowserButtonVisibility(false);
+    }
+
     // Note: result for task addition flow will be recorded in the parent view,
     // which initialized add task flow.
     if (!task_id_.empty()) {

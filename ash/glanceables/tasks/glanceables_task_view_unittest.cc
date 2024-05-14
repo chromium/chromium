@@ -122,6 +122,7 @@ TEST_F(GlanceablesTaskViewTest,
       views::AsViewClass<views::Label>(view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
 
   // No `STRIKE_THROUGH` style applied initially.
   EXPECT_FALSE(view->GetCompletedForTest());
@@ -166,6 +167,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
       views::AsViewClass<views::Label>(view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
 
   {
     // Tap on the checkbox. The action shouldn't be complete because there is no
@@ -189,8 +191,9 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     GestureTapOn(title_label);
     EXPECT_EQ(title_label, view->GetViewByID(base::to_underlying(
                                GlanceablesViewId::kTaskItemTitleLabel)));
-    EXPECT_FALSE(view->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+    const auto* title_text_field = view->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+    EXPECT_FALSE(title_text_field);
     const auto [task_error_type, button_action_type] = error_future.Take();
     EXPECT_EQ(task_error_type,
               GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
@@ -267,8 +270,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
             base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     ASSERT_TRUE(title_label);
-    ASSERT_FALSE(title_text_field);
+    EXPECT_TRUE(title_label->IsDrawn());
     EXPECT_EQ(title_label->GetText(), u"Task title");
+
+    EXPECT_FALSE(title_text_field);
 
     LeftClickOn(title_label);
   }
@@ -281,8 +286,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
         views::AsViewClass<views::Textfield>(view->GetViewByID(
             base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
-    ASSERT_FALSE(title_label);
+    EXPECT_FALSE(title_label);
+
     ASSERT_TRUE(title_text_field);
+    EXPECT_TRUE(title_text_field->IsDrawn());
     EXPECT_EQ(title_text_field->GetText(), u"Task title");
 
     PressAndReleaseKey(ui::VKEY_SPACE);
@@ -303,8 +310,9 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
             base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     ASSERT_TRUE(title_label);
-    ASSERT_FALSE(title_text_field);
+    EXPECT_TRUE(title_label->IsDrawn());
     EXPECT_EQ(title_label->GetText(), u"Task title upd");
+    EXPECT_FALSE(title_text_field);
   }
 }
 
@@ -417,10 +425,14 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
     std::move(callback).Run(&updated_task);
   }
 
-  EXPECT_FALSE(views::AsViewClass<views::Label>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel))));
-  EXPECT_TRUE(views::AsViewClass<views::Textfield>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField))));
+  const auto* title_label = views::AsViewClass<views::Label>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  EXPECT_FALSE(title_label);
+  const auto* title_text_field =
+      views::AsViewClass<views::Textfield>(view->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+  ASSERT_TRUE(title_text_field);
+  EXPECT_TRUE(title_text_field->IsDrawn());
   const auto* edit_in_browser_button = view->GetViewByID(
       base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
   ASSERT_TRUE(edit_in_browser_button);
@@ -449,12 +461,16 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
   view->GetFocusManager()->ClearFocus();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(views::AsViewClass<views::Label>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel))));
-  EXPECT_FALSE(views::AsViewClass<views::Textfield>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField))));
-  EXPECT_FALSE(views::AsViewClass<views::Textfield>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel))));
+  title_label = views::AsViewClass<views::Label>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
+  title_text_field = views::AsViewClass<views::Textfield>(view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+  EXPECT_FALSE(title_text_field);
+  edit_in_browser_button = view->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+  EXPECT_FALSE(edit_in_browser_button);
 }
 
 TEST_F(GlanceablesTaskViewTest, SupportsEditingRightAfterAdding) {
@@ -549,6 +565,7 @@ TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
       views::AsViewClass<views::Label>(view->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
+  EXPECT_TRUE(title_label->IsDrawn());
   const auto* const title_button =
       views::AsViewClass<views::LabelButton>(title_label->parent());
   ASSERT_TRUE(title_button);

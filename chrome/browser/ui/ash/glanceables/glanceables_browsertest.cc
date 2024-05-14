@@ -152,8 +152,9 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return fake_glanceables_tasks_client_.get();
   }
 
-  views::View* GetTasksView() const {
-    return GetGlanceableTrayBubble()->GetTasksView();
+  GlanceablesTasksView* GetTasksView() const {
+    return views::AsViewClass<GlanceablesTasksView>(
+        GetGlanceableTrayBubble()->GetTasksView());
   }
 
   Combobox* GetTasksComboBoxView() const {
@@ -524,8 +525,9 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, AddTaskItem) {
             base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "edit" mode (the text field is displayed).
-    ASSERT_FALSE(title_label);
+    EXPECT_FALSE(title_label);
     ASSERT_TRUE(title_text_field);
+    EXPECT_TRUE(title_text_field->IsDrawn());
     EXPECT_TRUE(title_text_field->GetText().empty());
 
     // Append "New task" text.
@@ -553,7 +555,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, AddTaskItem) {
 
     // Check that the view is in "view" mode with the expected label
     ASSERT_TRUE(title_label);
-    ASSERT_FALSE(title_text_field);
+    EXPECT_TRUE(title_label->IsDrawn());
+    EXPECT_FALSE(title_text_field);
     EXPECT_EQ(title_label->GetText(), u"New task");
   }
 }
@@ -583,7 +586,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
 
     // Check that the view is in "view" mode (the label is displayed).
     ASSERT_TRUE(title_label);
-    ASSERT_FALSE(title_text_field);
+    EXPECT_TRUE(title_label->IsDrawn());
+    EXPECT_FALSE(title_text_field);
     EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title");
 
     // Click the label to switch to "edit" mode.
@@ -601,8 +605,9 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
             base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     // Check that the view is in "edit" mode (the text field is displayed).
-    ASSERT_FALSE(title_label);
+    EXPECT_FALSE(title_label);
     ASSERT_TRUE(title_text_field);
+    EXPECT_TRUE(title_text_field->IsDrawn());
     EXPECT_EQ(title_text_field->GetText(), u"Task List 1 Item 1 Title");
 
     // Append " upd" text.
@@ -626,8 +631,9 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, EditTaskItem) {
 
     // Check that the view is in "view" mode with the updated label
     ASSERT_TRUE(title_label);
-    ASSERT_FALSE(title_text_field);
+    EXPECT_TRUE(title_label->IsDrawn());
     EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title upd");
+    EXPECT_FALSE(title_text_field);
   }
 }
 
@@ -667,6 +673,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, TasksViewLayout) {
       add_task_button->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_EQ(task_items_container->children().size(), 3u);
+  GetTasksView()->EndResizeAnimationForTest();
+  GetTasksView()->GetWidget()->LayoutRootViewIfNecessary();
 
   // The tasks view should update its height if there is space available.
   EXPECT_GT(GetTasksView()->height(), original_task_view_height);
@@ -675,6 +683,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesTasksBrowserTest, TasksViewLayout) {
   // Commit the empty new task, which removes the temporary task view.
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE);
   base::RunLoop().RunUntilIdle();
+  GetTasksView()->EndResizeAnimationForTest();
   GetTasksView()->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_EQ(task_items_container->children().size(), 2u);
 
