@@ -56,15 +56,18 @@ swarming_lib.task_triggerers(
     groups = ["project-findit-owners"],
 )
 
-defaults.auto_builder_dimension.set(False)
-defaults.bucket.set("findit")
-defaults.build_numbers.set(True)
-defaults.builderless.set(True)
-defaults.list_view.set("findit")
-defaults.ssd.set(True)
-defaults.execution_timeout.set(8 * time.hour)
-defaults.pool.set("luci.chromium.findit")
-defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
+defaults.set(
+    bucket = "findit",
+    pool = "luci.chromium.findit",
+    builderless = True,
+    ssd = True,
+    list_view = "findit",
+    auto_builder_dimension = False,
+    build_numbers = True,
+    execution_timeout = 8 * time.hour,
+    service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
+)
 
 # Builders are defined in lexicographic order by name
 
