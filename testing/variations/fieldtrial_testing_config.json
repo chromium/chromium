@@ -862,16 +862,16 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledAC",
+                    "name": "EnabledAC_V2",
                     "params": {
-                        "delay_ms": "120000",
+                        "delay_ms": "420000",
                         "ignore_battery_for_test": "true",
                         "pending_idle_reactivate": "false"
                     },
                     "enable_features": [
                         "ArcIdleManager"
                     ],
-                    "min_os_version": "15591.0.0"
+                    "min_os_version": "15795.0.0"
                 }
             ]
         }
