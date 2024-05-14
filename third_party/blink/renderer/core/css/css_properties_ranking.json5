@@ -300,6 +300,7 @@
         "border-image-width",
         "text-align-last",
         "text-decoration-style",
+        "text-box-edge",
         "stroke-miterlimit",
         "border-image-outset",
         "grid-auto-flow",
