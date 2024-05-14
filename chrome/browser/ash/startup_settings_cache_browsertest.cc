@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, RendererLocale) {
   // The localized button label in the renderer is in Spanish.
   WaitForAccessibilityTreeToContainNodeWithName(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      "Seleccionar archivo");
+      "Seleccionar archivo: Ning\u00FAn archivo seleccionado");
 }
 
 }  // namespace

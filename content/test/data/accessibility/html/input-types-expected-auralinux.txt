@@ -16,7 +16,6 @@
 ++++[label] label-for=[push button]
 ++++++[static] name='File: '
 ++++++[push button] name='File:: No file chosen' labelled-by=[label]
-++++++++[push button] name='Choose File'
 ++++[label] label-for=[push button]
 ++++++[static] name='Image: '
 ++++++[push button] name='Image:' labelled-by=[label]

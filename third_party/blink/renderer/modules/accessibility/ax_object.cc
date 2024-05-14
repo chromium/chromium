@@ -3855,11 +3855,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return true;
   }
 
-  // UA form controls can use aria-hidden to prune a11y subtrees.
-  if (node->IsInUserAgentShadowRoot() && IsAriaHidden()) {
-    return false;
-  }
-
   // Custom elements and their children are included in the tree.
   // <slot>s and their children are included in the tree.
   // Also children of <label> elements, for accname calculation purposes.

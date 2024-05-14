@@ -28,7 +28,6 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='File: '
 ++++++++++UNKNOWN label='File: '
 ++++++++BUTTON focusable label='File:: No file chosen' actions='{DEFAULT}' value='No file chosen'
-++++++++++BUTTON hidden focusable label='Choose File' actions='{DEFAULT}'
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Image: '
 ++++++++++UNKNOWN label='Image: '

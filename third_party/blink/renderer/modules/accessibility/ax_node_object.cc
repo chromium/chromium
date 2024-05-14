@@ -6533,6 +6533,28 @@ String AXNodeObject::NativeTextAlternative(
     return text_alternative;
   }
 
+  // <input type="file">
+  if (input_element &&
+      input_element->FormControlType() == FormControlType::kInputFile) {
+    // Append label of inner shadow root button + value attribute.
+    name_from = ax::mojom::blink::NameFrom::kContents;
+    if (name_sources) {
+      name_sources->push_back(NameSource(*found_text_alternative, kValueAttr));
+      name_sources->back().type = name_from;
+    }
+    if (ShadowRoot* shadow_root = input_element->UserAgentShadowRoot()) {
+      text_alternative =
+          To<HTMLInputElement>(shadow_root->firstElementChild())->Value();
+      if (name_sources) {
+        NameSource& source = name_sources->back();
+        source.text = text_alternative;
+        *found_text_alternative = true;
+      } else {
+        return text_alternative;
+      }
+    }
+  }
+
   // 5.1 Text inputs - step 3 (placeholder attribute)
   if (html_element && html_element->IsTextControl()) {
     // title attr

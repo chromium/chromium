@@ -476,12 +476,6 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     // aria-hidden contents.
     if (const Element* element = DynamicTo<Element>(node)) {
       if (element->FastGetAttribute(html_names::kAriaHiddenAttr) == "true") {
-        if (auto* input =
-                DynamicTo<HTMLInputElement>(element->OwnerShadowHost())) {
-          if (input->FormControlType() == FormControlType::kInputFile) {
-            return true;
-          }
-        }
         return false;
       }
     }

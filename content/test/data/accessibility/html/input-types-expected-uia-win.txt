@@ -16,7 +16,6 @@ Document
 ++++Group IsControlElement=false
 ++++++Text Name='File: '
 ++++++Button Name='File:: No file chosen' Value.Value='No file chosen'
-++++++++Button Name='Choose File' IsControlElement=false
 ++++Group IsControlElement=false
 ++++++Text Name='Image: '
 ++++++Button Name='Image:'
