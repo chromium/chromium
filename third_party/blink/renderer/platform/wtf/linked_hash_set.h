@@ -85,11 +85,19 @@ class LinkedHashSet {
   template <typename T>
   class IteratorWrapper {
    public:
+    using value_type = typename T::value_type;
+    using size_type = typename T::size_type;
+    using difference_type = typename T::difference_type;
+    using pointer = typename T::pointer;
+    using reference = typename T::reference;
+
+    constexpr IteratorWrapper() = default;
+
     IteratorWrapper(const IteratorWrapper&) = default;
     IteratorWrapper& operator=(const IteratorWrapper&) = default;
 
-    const Value& operator*() const { return *(iterator_.Get()); }
-    const Value* operator->() const { return iterator_.Get(); }
+    const Value& operator*() const { return *iterator_; }
+    const Value* operator->() const { return &*iterator_; }
 
     IteratorWrapper& operator++() {
       ++iterator_;
@@ -441,17 +449,17 @@ LinkedHashSet<T, TraitsArg, Allocator>::InsertOrMoveBefore(
     BackingConstIterator stored_position_iterator = list_.insert(
         position.iterator_, std::forward<IncomingValueType>(value));
     result.stored_value->value = stored_position_iterator.GetIndex();
-    return AddResult(stored_position_iterator.Get(), true);
+    return AddResult(&*stored_position_iterator, true);
   }
 
   BackingConstIterator stored_position_iterator =
       list_.MakeConstIterator(result.stored_value->value);
   if (type == MoveType::kDontMove)
-    return AddResult(stored_position_iterator.Get(), false);
+    return AddResult(&*stored_position_iterator, false);
 
   BackingConstIterator moved_position_iterator =
       list_.MoveTo(stored_position_iterator, position.iterator_);
-  return AddResult(moved_position_iterator.Get(), false);
+  return AddResult(&*moved_position_iterator, false);
 }
 
 }  // namespace WTF

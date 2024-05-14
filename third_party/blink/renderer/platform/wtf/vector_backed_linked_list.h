@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_BACKED_LINKED_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_VECTOR_BACKED_LINKED_LIST_H_
 
+#include <stddef.h>
+
+#include <iterator>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
@@ -350,16 +354,30 @@ class VectorBackedLinkedList {
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListIterator {
   DISALLOW_NEW();
-  using ReferenceType = typename VectorBackedLinkedListType::Value&;
-  using PointerType = typename VectorBackedLinkedListType::Value*;
-  using Node = typename VectorBackedLinkedListConstIterator<
-      VectorBackedLinkedListType>::Node;
+
   using const_iterator =
       VectorBackedLinkedListConstIterator<VectorBackedLinkedListType>;
 
  public:
-  ReferenceType operator*() const { return *Get(); }
-  PointerType operator->() const { return Get(); }
+  using value_type = typename VectorBackedLinkedListType::Value;
+  using size_type = wtf_size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
+  constexpr VectorBackedLinkedListIterator() = default;
+
+  VectorBackedLinkedListIterator(const VectorBackedLinkedListIterator&) =
+      default;
+  VectorBackedLinkedListIterator& operator=(
+      const VectorBackedLinkedListIterator&) = default;
+
+  VectorBackedLinkedListIterator(VectorBackedLinkedListIterator&&) = default;
+  VectorBackedLinkedListIterator& operator=(VectorBackedLinkedListIterator&&) =
+      default;
+
+  reference operator*() const { return *Get(); }
+  pointer operator->() const { return Get(); }
 
   VectorBackedLinkedListIterator& operator++() {
     ++iterator_;
@@ -371,8 +389,17 @@ class VectorBackedLinkedListIterator {
     return *this;
   }
 
-  VectorBackedLinkedListIterator& operator++(int) = delete;
-  VectorBackedLinkedListIterator& operator--(int) = delete;
+  VectorBackedLinkedListIterator operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  VectorBackedLinkedListIterator operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   bool operator==(const VectorBackedLinkedListIterator& other) const {
     return iterator_ == other.iterator_;
@@ -385,36 +412,45 @@ class VectorBackedLinkedListIterator {
   operator const_iterator() const { return iterator_; }
 
  private:
+  template <typename T, typename U, typename V>
+  friend class LinkedHashSet;
+  template <typename T, typename Allocator>
+  friend class VectorBackedLinkedList;
+
   VectorBackedLinkedListIterator(const wtf_size_t index,
                                  VectorBackedLinkedListType* container)
       : iterator_(index, container) {}
 
-  PointerType Get() const { return const_cast<PointerType>(iterator_.Get()); }
+  pointer Get() const { return const_cast<pointer>(iterator_.Get()); }
   wtf_size_t GetIndex() const { return iterator_.GetIndex(); }
 
   const_iterator iterator_;
-
-  template <typename T, typename Allocator>
-  friend class VectorBackedLinkedList;
 };
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListConstIterator {
   DISALLOW_NEW();
-  using ReferenceType = const typename VectorBackedLinkedListType::Value&;
-  using PointerType = const typename VectorBackedLinkedListType::Value*;
-  using Node = typename VectorBackedLinkedListType::Node;
-
  public:
-  PointerType Get() const {
-    DCHECK(!container_->IsAnchor(GetIndex()));
-    return &container_->nodes_[index_].value_;
-  }
+  using value_type = typename VectorBackedLinkedListType::Value;
+  using size_type = wtf_size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = const value_type*;
+  using reference = const value_type&;
 
-  ReferenceType operator*() const { return *Get(); }
-  PointerType operator->() const { return Get(); }
+  constexpr VectorBackedLinkedListConstIterator() = default;
 
-  wtf_size_t GetIndex() const { return index_; }
+  VectorBackedLinkedListConstIterator(
+      const VectorBackedLinkedListConstIterator&) = default;
+  VectorBackedLinkedListConstIterator& operator=(
+      const VectorBackedLinkedListConstIterator&) = default;
+
+  VectorBackedLinkedListConstIterator(VectorBackedLinkedListConstIterator&&) =
+      default;
+  VectorBackedLinkedListConstIterator& operator=(
+      VectorBackedLinkedListConstIterator&&) = default;
+
+  reference operator*() const { return *Get(); }
+  pointer operator->() const { return Get(); }
 
   VectorBackedLinkedListConstIterator& operator++() {
     wtf_size_t next_index = container_->nodes_[index_].next_index_;
@@ -430,8 +466,17 @@ class VectorBackedLinkedListConstIterator {
     return *this;
   }
 
-  VectorBackedLinkedListConstIterator operator++(int) = delete;
-  VectorBackedLinkedListConstIterator operator--(int) = delete;
+  VectorBackedLinkedListConstIterator operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  VectorBackedLinkedListConstIterator operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
   bool operator==(const VectorBackedLinkedListConstIterator& other) const {
     DCHECK_EQ(container_, other.container_);
@@ -449,28 +494,52 @@ class VectorBackedLinkedListConstIterator {
       : index_(index), container_(container) {}
 
  private:
-  // The conservative stack scanning will strongly trace container_ and it
-  // ensures that the container is kept alive during iteration.
-  wtf_size_t index_;
-  const VectorBackedLinkedListType* container_;
-
+  template <typename T, typename U, typename V>
+  friend class LinkedHashSet;
   template <typename T, typename Allocator>
   friend class VectorBackedLinkedList;
   friend class VectorBackedLinkedListIterator<VectorBackedLinkedListType>;
+
+  pointer Get() const {
+    DCHECK(!container_->IsAnchor(GetIndex()));
+    return &container_->nodes_[index_].value_;
+  }
+  wtf_size_t GetIndex() const { return index_; }
+
+  // The conservative stack scanning will strongly trace container_ and it
+  // ensures that the container is kept alive during iteration.
+  wtf_size_t index_ = 0;
+  const VectorBackedLinkedListType* container_ = nullptr;
 };
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListReverseIterator {
-  using ReferenceType = typename VectorBackedLinkedListType::Value&;
-  using PointerType = typename VectorBackedLinkedListType::Value*;
-  using Node = typename VectorBackedLinkedListConstIterator<
-      VectorBackedLinkedListType>::Node;
+  DISALLOW_NEW();
+
   using const_reverse_iterator =
       VectorBackedLinkedListConstReverseIterator<VectorBackedLinkedListType>;
 
  public:
-  ReferenceType operator*() const { return *Get(); }
-  PointerType operator->() const { return Get(); }
+  using value_type = typename VectorBackedLinkedListType::Value;
+  using size_type = wtf_size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
+  constexpr VectorBackedLinkedListReverseIterator() = default;
+
+  VectorBackedLinkedListReverseIterator(
+      const VectorBackedLinkedListReverseIterator&) = default;
+  VectorBackedLinkedListReverseIterator& operator=(
+      const VectorBackedLinkedListReverseIterator&) = default;
+
+  VectorBackedLinkedListReverseIterator(
+      VectorBackedLinkedListReverseIterator&&) = default;
+  VectorBackedLinkedListReverseIterator& operator=(
+      VectorBackedLinkedListReverseIterator&&) = default;
+
+  reference operator*() const { return *Get(); }
+  pointer operator->() const { return Get(); }
 
   VectorBackedLinkedListReverseIterator& operator++() {
     ++iterator_;
@@ -482,8 +551,17 @@ class VectorBackedLinkedListReverseIterator {
     return *this;
   }
 
-  VectorBackedLinkedListReverseIterator& operator++(int) = delete;
-  VectorBackedLinkedListReverseIterator& operator--(int) = delete;
+  VectorBackedLinkedListReverseIterator operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  VectorBackedLinkedListReverseIterator operator--(int) {
+    auto copy = this;
+    --(*this);
+    return copy;
+  }
 
   bool operator==(const VectorBackedLinkedListReverseIterator& other) const {
     return iterator_ == other.iterator_;
@@ -496,27 +574,48 @@ class VectorBackedLinkedListReverseIterator {
   operator const_reverse_iterator() const { return iterator_; }
 
  private:
+  template <typename T, typename U, typename V>
+  friend class LinkedHashSet;
+  template <typename T, typename Allocator>
+  friend class VectorBackedLinkedList;
+
   VectorBackedLinkedListReverseIterator(const wtf_size_t index,
                                         VectorBackedLinkedListType* container)
       : iterator_(index, container) {}
 
-  PointerType Get() const { return const_cast<PointerType>(iterator_.Get()); }
+  pointer Get() const { return const_cast<pointer>(&*iterator_); }
   wtf_size_t GetIndex() const { return iterator_.GetIndex(); }
 
   const_reverse_iterator iterator_;
-
-  template <typename T, typename Allocator>
-  friend class VectorBackedLinkedList;
 };
 
 template <typename VectorBackedLinkedListType>
 class VectorBackedLinkedListConstReverseIterator
     : public VectorBackedLinkedListConstIterator<VectorBackedLinkedListType> {
+  DISALLOW_NEW();
+
   using Superclass =
       VectorBackedLinkedListConstIterator<VectorBackedLinkedListType>;
-  using Node = typename Superclass::Node;
 
  public:
+  using value_type = typename VectorBackedLinkedListType::Value;
+  using size_type = wtf_size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
+  constexpr VectorBackedLinkedListConstReverseIterator() = default;
+
+  VectorBackedLinkedListConstReverseIterator(
+      const VectorBackedLinkedListConstReverseIterator&) = default;
+  VectorBackedLinkedListConstReverseIterator& operator=(
+      const VectorBackedLinkedListConstReverseIterator&) = default;
+
+  VectorBackedLinkedListConstReverseIterator(
+      VectorBackedLinkedListConstReverseIterator&&) = default;
+  VectorBackedLinkedListConstReverseIterator& operator=(
+      VectorBackedLinkedListConstReverseIterator&&) = default;
+
   VectorBackedLinkedListConstReverseIterator& operator++() {
     Superclass::operator--();
     return *this;
@@ -527,19 +626,31 @@ class VectorBackedLinkedListConstReverseIterator
     return *this;
   }
 
-  VectorBackedLinkedListConstReverseIterator operator++(int) = delete;
-  VectorBackedLinkedListConstReverseIterator operator--(int) = delete;
+  VectorBackedLinkedListConstReverseIterator operator++(int) {
+    auto copy = *this;
+    ++(*this);
+    return copy;
+  }
+
+  VectorBackedLinkedListConstReverseIterator operator--(int) {
+    auto copy = *this;
+    --(*this);
+    return copy;
+  }
 
  private:
+  template <typename T, typename U, typename V>
+  friend class LinkedHashSet;
+  template <typename T, typename Allocator>
+  friend class VectorBackedLinkedList;
+  friend class VectorBackedLinkedListReverseIterator<
+      VectorBackedLinkedListType>;
+
   VectorBackedLinkedListConstReverseIterator(
       const wtf_size_t index,
       const VectorBackedLinkedListType* container)
       : Superclass(index, container) {}
 
-  template <typename T, typename Allocator>
-  friend class VectorBackedLinkedList;
-  friend class VectorBackedLinkedListReverseIterator<
-      VectorBackedLinkedListType>;
 };
 
 template <typename T, typename Allocator>
