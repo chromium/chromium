@@ -253,7 +253,9 @@ IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
             PasswordSelectionScreen::Result::LOCAL_PASSWORD_FORCED);
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest, RecoveryGaiaPassword) {
+// TODO(crbug.com/337379954): Flaky on linux-chromeos-chrome.
+IN_PROC_BROWSER_TEST_F(PasswordSelectionScreenTest,
+                       DISABLED_RecoveryGaiaPassword) {
   StartLogin();
   auto user_context = BorrowUserContext();
   LoginDisplayHost::default_host()
