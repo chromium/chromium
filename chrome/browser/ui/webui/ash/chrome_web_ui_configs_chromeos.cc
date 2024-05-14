@@ -58,7 +58,7 @@
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_overview_tracing/arc_overview_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
@@ -216,7 +216,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
   map.AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
   map.AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ArcGraphicsTracingUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());

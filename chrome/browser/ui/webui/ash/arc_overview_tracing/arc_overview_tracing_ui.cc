@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/arc_graphics_tracing/arc_graphics_tracing_ui.h"
+#include "chrome/browser/ui/webui/ash/arc_overview_tracing/arc_overview_tracing_ui.h"
 
 #include <memory>
 #include <string>
@@ -216,17 +216,17 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
 
 }  // anonymous namespace
 
-ArcGraphicsTracingUIConfig::ArcGraphicsTracingUIConfig()
+ArcOverviewTracingUIConfig::ArcOverviewTracingUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
                          chrome::kChromeUIArcOverviewTracingHost) {}
 
-bool ArcGraphicsTracingUIConfig::IsWebUIEnabled(
+bool ArcOverviewTracingUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return arc::IsArcAllowedForProfile(
       Profile::FromBrowserContext(browser_context));
 }
 
-ArcGraphicsTracingUI::ArcGraphicsTracingUI(content::WebUI* web_ui)
+ArcOverviewTracingUI::ArcOverviewTracingUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<Handler>());
   CreateAndAddOverviewDataSource(Profile::FromWebUI(web_ui));
