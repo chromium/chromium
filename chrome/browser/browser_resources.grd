@@ -26,6 +26,7 @@
         <structure type="lottie" name="IDR_WEBAUTHN_GPM_PIN_DARK" file="resources/webauthn/gpm_pin_dark.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_LIGHT" file="resources/webauthn/laptop_light.json" compress="brotli" />
         <structure type="lottie" name="IDR_WEBAUTHN_LAPTOP_DARK" file="resources/webauthn/laptop_dark.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WEBAUTHN_GPM_INCOGNITO" file="resources/webauthn/gpm_incognito.json" compress="brotli" />
       </if>
     </structures>
     <includes>
