@@ -484,10 +484,6 @@ crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [
 crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
 # Failures on Windows with SkiaGraphite
-crbug.com/329235191 [ amd-0x7340 graphite-enabled release-x64 win10 ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
-crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 win11 ] Pixel_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/329235191 [ graphite-enabled nvidia-0x2184 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 target-cpu-64 win11 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
