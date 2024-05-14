@@ -39,7 +39,6 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
@@ -58,10 +57,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FileUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -84,8 +81,8 @@ import java.io.IOException;
 
 /** Tests for exports started at the "Passwords" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "Tests are flaky on API Q+ with batching. This might be fixable. b/40926377")
 public class PasswordSettingsExportTest {
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mSettingsActivityTestRule =
@@ -184,7 +181,6 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "crbug.com/1376453")
     public void testExportMenuItem() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
@@ -200,6 +196,7 @@ public class PasswordSettingsExportTest {
 
         // Check that the warning dialog is displayed.
         onView(withText(R.string.settings_passwords_export_description))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
     }
 
@@ -265,7 +262,6 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/1471922")
     public void testExportFlowWithNoScreenLockRecordsMetrics() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
@@ -636,7 +632,6 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "crbug.com/1376453")
     public void testExportCancelOnWarning() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
@@ -662,7 +657,7 @@ public class PasswordSettingsExportTest {
         reauthenticateAndRequestExport(settingsActivity);
 
         // Cancel the export warning.
-        onView(withText(R.string.cancel)).perform(click());
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
 
         // Check that the cancellation succeeded by checking that the export menu is available and
         // enabled.
@@ -1060,7 +1055,6 @@ public class PasswordSettingsExportTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/1223404")
     public void testExportHelpSite() {
         mTestHelper.setPasswordSource(
                 new SavedPasswordEntry("https://example.com", "test user", "password"));
@@ -1078,7 +1072,8 @@ public class PasswordSettingsExportTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.password_settings_export_action_title),
-                                isCompletelyDisplayed()))
+                                isCompletelyDisplayed()),
+                        true)
                 .perform(click());
 
         // Show an arbitrary error but ensure that the positive button label is the one for the
@@ -1094,7 +1089,9 @@ public class PasswordSettingsExportTest {
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
 
         // Hit the positive button to navigate to the help site.
-        onView(withText(R.string.password_settings_export_learn_google_drive)).perform(click());
+        onView(withText(R.string.password_settings_export_learn_google_drive))
+                .inRoot(isDialog())
+                .perform(click());
 
         intended(
                 allOf(
