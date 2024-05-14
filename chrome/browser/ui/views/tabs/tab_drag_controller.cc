@@ -13,6 +13,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -607,6 +609,17 @@ bool TabDragController::CanRemoveTabDuringDrag(
   return !IsDraggingTab(contents) || is_mutating_;
 }
 
+bool TabDragController::CanRestoreFullscreenWindowDuringDrag() const {
+#if BUILDFLAG(IS_MAC)
+  // On macOS in immersive fullscreen mode restoring the window moves the tab
+  // strip between widgets breaking a number of assumptions during the drag.
+  // Disable window restoration during a drag while in immersive fullscreen.
+  return !base::FeatureList::IsEnabled(features::kImmersiveFullscreen);
+#else
+  return true;
+#endif
+}
+
 void TabDragController::Drag(const gfx::Point& point_in_screen) {
   TRACE_EVENT1("views", "TabDragController::Drag", "point_in_screen",
                point_in_screen.ToString());
@@ -673,7 +686,8 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
       views::Widget* widget = GetAttachedBrowserWidget();
       gfx::Rect new_bounds;
       gfx::Vector2d drag_offset;
-      if (was_source_maximized_ || was_source_fullscreen_) {
+      if (was_source_maximized_ ||
+          (was_source_fullscreen_ && CanRestoreFullscreenWindowDuringDrag())) {
         did_restore_window_ = true;
         // When all tabs in a maximized browser are dragged the browser gets
         // restored during the drag and maximized back when the drag ends.
