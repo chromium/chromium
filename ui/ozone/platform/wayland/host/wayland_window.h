@@ -143,8 +143,8 @@ class WaylandWindow : public PlatformWindow,
 
   // Set a child of this window. It is very important in case of nested
   // shell_popups as long as they must be destroyed in the back order.
-  void set_child_window(WaylandWindow* window) { child_window_ = window; }
-  WaylandWindow* child_window() const { return child_window_; }
+  void set_child_popup(WaylandPopup* window) { child_popup_ = window; }
+  WaylandPopup* child_popup() const { return child_popup_; }
 
   // Called only by `WaylandBubble`s that are managed in this instance's
   // `child_bubbles_` list.
@@ -584,8 +584,7 @@ class WaylandWindow : public PlatformWindow,
   raw_ptr<PlatformWindowDelegate> delegate_;
   raw_ptr<WaylandConnection> connection_;
   raw_ptr<WaylandWindow> parent_window_ = nullptr;
-  // TODO(crbug.com/329705709): Rename to `child_popup_`.
-  raw_ptr<WaylandWindow> child_window_ = nullptr;
+  raw_ptr<WaylandPopup> child_popup_ = nullptr;
 
   // `active_bubble_` represents the WaylandBubble that should take activation
   // when this WaylandWindow has activation from wayland server. It can be set

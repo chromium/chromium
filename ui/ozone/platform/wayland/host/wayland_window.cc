@@ -52,6 +52,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
@@ -122,13 +123,13 @@ WaylandWindow::~WaylandWindow() {
   }
 
   // This might have already been hidden and another window has been shown.
-  // Thus, the parent will have another child window. Do not reset it.
-  if (parent_window_ && parent_window_->child_window() == this) {
-    parent_window_->set_child_window(nullptr);
+  // Thus, the parent will have another child popup. Do not reset it.
+  if (parent_window_ && parent_window_->child_popup() == this) {
+    parent_window_->set_child_popup(nullptr);
   }
 
-  if (child_window_) {
-    child_window_->set_parent_window(nullptr);
+  if (child_popup_) {
+    child_popup_->set_parent_window(nullptr);
   }
 
   for (auto bubble : child_bubbles_) {
@@ -166,12 +167,12 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   float new_scale = output->scale_factor();
   SetWindowScale(new_scale);
 
-  // Propagate update to the child windows
-  if (child_window_) {
-    child_window_->UpdateWindowScale(update_bounds);
+  // Propagate update to the popups.
+  if (child_popup_) {
+    child_popup_->UpdateWindowScale(update_bounds);
   }
 
-  // Propagate update to the bubble windows
+  // Propagate update to the bubble windows.
   for (auto bubble : child_bubbles_) {
     bubble->UpdateWindowScale(update_bounds);
   }
@@ -232,7 +233,7 @@ void WaylandWindow::SetWindowScale(float new_scale) {
 }
 
 std::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
-  // Child windows don't store entered outputs. Instead, take the window's
+  // Child popups don't store entered outputs. Instead, take the window's
   // root parent window and use its preferred output.
   if (parent_window_) {
     return GetRootParentWindow()->GetPreferredEnteredOutputId();
@@ -984,7 +985,7 @@ void WaylandWindow::OnLeftOutput() {
 }
 
 WaylandWindow* WaylandWindow::GetTopMostChildWindow() {
-  return child_window_ ? child_window_->GetTopMostChildWindow() : this;
+  return child_popup_ ? child_popup_->GetTopMostChildWindow() : this;
 }
 
 WaylandWindow* WaylandWindow::GetXdgParentWindow() {

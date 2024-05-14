@@ -114,7 +114,7 @@ bool WaylandPopup::CreateShellPopup() {
     zaura_surface->set_delegate(AsWeakPtr());
   }
 
-  parent_window()->set_child_window(this);
+  parent_window()->set_child_popup(this);
   UpdateDecoration();
   return true;
 }
@@ -157,8 +157,9 @@ void WaylandPopup::Hide() {
   if (!shell_popup_)
     return;
 
-  if (child_window())
-    child_window()->Hide();
+  if (child_popup()) {
+    child_popup()->Hide();
+  }
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
   if (WaylandWindow::primary_subsurface()) {
@@ -170,7 +171,7 @@ void WaylandPopup::Hide() {
   }
 
   if (shell_popup_) {
-    parent_window()->set_child_window(nullptr);
+    parent_window()->set_child_popup(nullptr);
     shell_popup_.reset();
     decorated_via_aura_popup_ = false;
   }
