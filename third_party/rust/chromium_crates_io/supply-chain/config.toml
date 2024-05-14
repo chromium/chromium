@@ -47,7 +47,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."anstyle:1.0.7"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."anyhow:1.0.82"]
+[policy."anyhow:1.0.83"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."base64:0.13.1"]
