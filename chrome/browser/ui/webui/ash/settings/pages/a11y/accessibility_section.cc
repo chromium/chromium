@@ -673,8 +673,6 @@ void AccessibilitySection::AddLoadTimeData(
       {"mouseKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL},
       {"mouseKeysDescription",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION},
-      {"mouseKeysDisableInTextFields",
-       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DISABLE_IN_TEXT_FIELDS},
       {"mouseKeysAcceleration",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION},
       {"mouseKeysAccelerationMinLabel",

@@ -14,9 +14,6 @@
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/ash/ime_bridge.h"
-#include "ui/base/ime/input_method.h"
-#include "ui/base/ime/text_input_client.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -71,17 +68,9 @@ MouseKeysController::MouseKeysController() {
   }
   Shell::Get()->AddAccessibilityEventHandler(
       this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
-  if (ash::IMEBridge::Get()) {
-    ash::IMEBridge::Get()->AddObserver(this);
-    OnInputContextHandlerChanged();
-  }
 }
 
 MouseKeysController::~MouseKeysController() {
-  input_method_observer_.Reset();
-  if (ash::IMEBridge::Get()) {
-    ash::IMEBridge::Get()->RemoveObserver(this);
-  }
   Shell* shell = Shell::Get();
   shell->RemoveAccessibilityEventHandler(this);
 }
@@ -113,16 +102,6 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
       }
     }
     return true;
-  }
-
-  if (paused_for_text_) {
-    if (key_event->code() == ui::DomCode::ESCAPE) {
-      if (key_event->type() == ui::ET_KEY_RELEASED) {
-        paused_for_text_ = false;
-      }
-      return true;
-    }
-    return false;
   }
 
   if (paused_) {
@@ -159,28 +138,6 @@ void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
   if (event->target()) {
     last_mouse_position_dips_ = event->target()->GetScreenLocation(*event);
   }
-}
-
-void MouseKeysController::OnInputContextHandlerChanged() {
-  ui::InputMethod* input_method =
-      Shell::Get()->window_tree_host_manager()->input_method();
-  if (!input_method_observer_.IsObservingSource(input_method)) {
-    input_method_observer_.Observe(input_method);
-    paused_for_text_ = false;
-  }
-}
-
-void MouseKeysController::OnTextInputStateChanged(
-    const ui::TextInputClient* client) {
-  paused_for_text_ =
-      disable_in_text_fields_ && (client != nullptr) &&
-      (client->GetFocusReason() != ui::TextInputClient::FOCUS_REASON_NONE ||
-       client->GetFocusReason() != ui::TextInputClient::FOCUS_REASON_OTHER);
-}
-
-void MouseKeysController::OnInputMethodDestroyed(
-    const ui::InputMethod* input_method) {
-  paused_for_text_ = false;
 }
 
 void MouseKeysController::SendMouseEventToLocation(ui::EventType type,

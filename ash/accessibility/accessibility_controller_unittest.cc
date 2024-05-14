@@ -175,8 +175,6 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityMonoAudioEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityMouseKeysEnabled));
   EXPECT_TRUE(
-      prefs->FindPreference(prefs::kAccessibilityMouseKeysDisableInTextFields));
-  EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityMouseKeysAcceleration));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityMouseKeysMaxSpeed));
   EXPECT_TRUE(

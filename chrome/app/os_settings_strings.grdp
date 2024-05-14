@@ -1759,9 +1759,6 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION" desc="Description of the mouse keys setting toggle." translateable="false">
     Use your Chromebook keyboard or a numeric keypad to control the cursor
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DISABLE_IN_TEXT_FIELDS" desc="Description of the setting to disable mouse keys in text fields." translateable="false">
-    Temporarily disable mouse keys when you are in a text field.  Press esc to resume.
-  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION" desc="Label for the mouse keys acceleration slider." translateable="false">
     Acceleration
   </message>

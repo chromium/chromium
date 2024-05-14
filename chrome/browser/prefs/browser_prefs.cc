@@ -1082,6 +1082,10 @@ inline constexpr char kHasShownRefreshWhatsNew[] =
 // keyboard shortcut.
 inline constexpr char kAccessibilityMouseKeysShortcutToPauseEnabled[] =
     "settings.a11y.mouse_keys.ctrl_to_pause_enabled";
+// A boolean pref which determines if mouse keys is automatically disabled in
+// text fields.
+inline constexpr char kAccessibilityMouseKeysDisableInTextFields[] =
+    "settings.a11y.mouse_keys.disable_in_text_fields";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1552,6 +1556,8 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAccessibilityMouseKeysShortcutToPauseEnabled,
+                                true);
+  registry->RegisterBooleanPref(kAccessibilityMouseKeysDisableInTextFields,
                                 true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -2916,6 +2922,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 05/2024.
   profile_prefs->ClearPref(kAccessibilityMouseKeysShortcutToPauseEnabled);
+  profile_prefs->ClearPref(kAccessibilityMouseKeysDisableInTextFields);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

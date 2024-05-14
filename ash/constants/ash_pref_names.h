@@ -508,10 +508,6 @@ inline constexpr char kAccessibilityMonoAudioEnabled[] =
 // A boolean pref which determines if mouse keys are enabled.
 inline constexpr char kAccessibilityMouseKeysEnabled[] =
     "settings.a11y.mouse_keys.enabled";
-// A boolean pref which determines if mouse keys is automatically disabled in
-// text fields.
-inline constexpr char kAccessibilityMouseKeysDisableInTextFields[] =
-    "settings.a11y.mouse_keys.disable_in_text_fields";
 // A double pref which determines the acceleration of mouse keys as a scale
 // factor ranging from 0-1 (0%-100%) inclusive.
 inline constexpr char kAccessibilityMouseKeysAcceleration[] =

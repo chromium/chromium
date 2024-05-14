@@ -653,46 +653,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertNull(enableMouseKeysToggle);
   });
 
-  test('Moust keys: Disable in text fields', async () => {
-    await initPage();
-
-    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
-      // Skip if the flag isn't enabled.
-      return;
-    }
-
-    // If the flag is enabled, check that the UI works.
-    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
-
-    const enableMouseKeysToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeys');
-    assert(enableMouseKeysToggle);
-    assertTrue(isVisible(enableMouseKeysToggle));
-
-    enableMouseKeysToggle.click();
-    await waitBeforeNextRender(page);
-    flush();
-
-    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
-
-    // kAccessibilityMouseKeysDisableInTextFields
-    assertTrue(
-        page.prefs.settings.a11y.mouse_keys.disable_in_text_fields.value);
-    const enableMouseKeysDisableInTextFieldsToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeysDisableInTextFields');
-    assert(enableMouseKeysDisableInTextFieldsToggle);
-    assertTrue(isVisible(enableMouseKeysDisableInTextFieldsToggle));
-
-    enableMouseKeysDisableInTextFieldsToggle.click();
-    await waitBeforeNextRender(page);
-    flush();
-
-    assertFalse(
-        page.prefs.settings.a11y.mouse_keys.disable_in_text_fields.value);
-  });
-
   test('Mouse keys: Dominant Hand', async () => {
     await initPage();
 
