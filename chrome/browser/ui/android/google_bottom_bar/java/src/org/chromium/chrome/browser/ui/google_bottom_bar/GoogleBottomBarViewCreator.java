@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
@@ -31,17 +32,23 @@ public class GoogleBottomBarViewCreator {
      * @param activity An Android activity.
      * @param tabProvider Supplier for the current activity tab.
      * @param shareDelegateSupplier Supplier for the the share delegate.
+     * @param pageInsightsCoordinatorSupplier Supplier for the page insights coordinator.
      * @param config Bottom bar configuration for the buttons that will be displayed.
      */
     public GoogleBottomBarViewCreator(
             Activity activity,
             Supplier<Tab> tabProvider,
             Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier,
             BottomBarConfig config) {
         mContext = activity;
         mConfig = config;
         mActionsHandler =
-                new GoogleBottomBarActionsHandler(activity, tabProvider, shareDelegateSupplier);
+                new GoogleBottomBarActionsHandler(
+                        activity,
+                        tabProvider,
+                        shareDelegateSupplier,
+                        pageInsightsCoordinatorSupplier);
     }
 
     /**
@@ -60,9 +67,22 @@ public class GoogleBottomBarViewCreator {
                         ? createGoogleBottomBarSpotlightLayoutView()
                         : createGoogleBottomBarEvenLayoutView();
 
-        initSaveButton(mRootView);
+        initButtons();
 
         return mRootView;
+    }
+
+    private void initButtons() {
+        initButton(R.id.google_bottom_bar_save_button, ButtonId.SAVE);
+        initButton(R.id.google_bottom_bar_share_button, ButtonId.SHARE);
+        initButton(R.id.google_bottom_bar_page_insights_button, ButtonId.PIH_BASIC);
+    }
+
+    private void initButton(int viewId, @ButtonId int buttonConfigId) {
+        assert mRootView != null;
+        ImageView imageView = mRootView.findViewById(viewId);
+        ButtonConfig buttonConfig = findButtonConfig(buttonConfigId);
+        maybeUpdateButton(imageView, buttonConfig);
     }
 
     boolean updateBottomBarButton(@Nullable ButtonConfig buttonConfig) {
@@ -71,12 +91,6 @@ public class GoogleBottomBarViewCreator {
         }
         ImageView button = mRootView.findViewById(buttonConfig.getId());
         return maybeUpdateButton(button, buttonConfig);
-    }
-
-    private void initSaveButton(View rootView) {
-        ImageView imageView = rootView.findViewById(R.id.google_bottom_bar_save_button);
-        ButtonConfig buttonConfig = findButtonConfig(ButtonId.SAVE);
-        maybeUpdateButton(imageView, buttonConfig);
     }
 
     private @Nullable ButtonConfig findButtonConfig(@ButtonId int buttonId) {

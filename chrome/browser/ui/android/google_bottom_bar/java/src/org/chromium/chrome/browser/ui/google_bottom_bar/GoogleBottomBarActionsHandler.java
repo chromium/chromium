@@ -14,6 +14,7 @@ import android.view.View;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
@@ -27,16 +28,18 @@ class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
     private final Activity mActivity;
     private final Supplier<Tab> mTabProvider;
-
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<PageInsightsCoordinator> mPageInsightsCoordinatorSupplier;
 
     GoogleBottomBarActionsHandler(
             Activity activity,
             Supplier<Tab> tabProvider,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<PageInsightsCoordinator> pageInsightsCoordinatorSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mShareDelegateSupplier = shareDelegateSupplier;
+        mPageInsightsCoordinatorSupplier = pageInsightsCoordinatorSupplier;
     }
 
     View.OnClickListener getClickListener(ButtonConfig buttonConfig) {
@@ -47,16 +50,28 @@ class GoogleBottomBarActionsHandler {
             case ButtonId.SHARE -> {
                 return v -> onShareButtonClick();
             }
-            case ButtonId.PIH_BASIC,
-                    ButtonId.PIH_EXPANDED,
-                    ButtonId.PIH_COLORED,
-                    ButtonId.ADD_NOTES,
-                    ButtonId.REFRESH -> {
+            case ButtonId.PIH_BASIC, ButtonId.PIH_EXPANDED, ButtonId.PIH_COLORED -> {
+                return v -> onPageInsightsButtonClick(buttonConfig);
+            }
+            case ButtonId.ADD_NOTES, ButtonId.REFRESH -> {
                 Log.e(TAG, "Unsupported action: %s", buttonConfig.getId());
                 return null;
             }
         }
         return null;
+    }
+
+    private void onPageInsightsButtonClick(ButtonConfig buttonConfig) {
+        if (mPageInsightsCoordinatorSupplier.get() != null) {
+            mPageInsightsCoordinatorSupplier.get().launch();
+        } else {
+            PendingIntent pendingIntent = buttonConfig.getPendingIntent();
+            if (pendingIntent != null) {
+                sendPendingIntentWithUrl(pendingIntent);
+            } else {
+                Log.e(TAG, "Can't perform page insights action as pending intent is null.");
+            }
+        }
     }
 
     private void onShareButtonClick() {

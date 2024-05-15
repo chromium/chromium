@@ -30,7 +30,7 @@ found in the LICENSE file.
       android:contentDescription="@null"
       android:src="@drawable/bookmark" />
   <ImageView
-      android:id="@+id/google_bottom_bar_page_insights_icon"
+      android:id="@+id/google_bottom_bar_page_insights_button"
       android:layout_width="0dp"
       android:layout_weight="1"
       android:layout_height="@dimen/google_bottom_bar_button_size"
