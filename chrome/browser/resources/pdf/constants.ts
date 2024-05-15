@@ -2,6 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="enable_pdf_ink2">
+// Some brushes don't need colors and a size, but the brushes that do should
+// have values for the red, green, and blue colors and a value for the size.
+export interface AnnotationBrush {
+  type: AnnotationBrushType;
+  params?: AnnotationBrushParams;
+}
+
+// The annotation brush params, required for certain brush types.
+export interface AnnotationBrushParams {
+  colorR: number;
+  colorG: number;
+  colorB: number;
+  size: number;
+}
+
+// The different types of annotation brushes.
+export enum AnnotationBrushType {
+  ERASER = 'eraser',
+  HIGHLIGHTER = 'highlighter',
+  PEN = 'pen',
+}
+// </if>
+
 export interface Attachment {
   name: string;
   size: number;

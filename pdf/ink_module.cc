@@ -120,6 +120,7 @@ bool InkModule::OnMessage(const base::Value::Dict& message) {
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
+          {"setAnnotationBrush", &InkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &InkModule::HandleSetAnnotationModeMessage},
       });
 
@@ -204,6 +205,11 @@ bool InkModule::OnMouseMove(const blink::WebMouseEvent& event) {
 
   // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
   return true;
+}
+
+void InkModule::HandleSetAnnotationBrushMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/335524382): Implement setting the brush for Ink2.
 }
 
 void InkModule::HandleSetAnnotationModeMessage(

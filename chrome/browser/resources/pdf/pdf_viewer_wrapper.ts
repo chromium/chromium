@@ -9,6 +9,9 @@ export {AnnotationTool} from './annotation_tool.js';
 // </if>
 export {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
+// <if expr="enable_pdf_ink2">
+export {AnnotationBrush, AnnotationBrushParams, AnnotationBrushType} from './constants.js';
+// </if>
 export {Attachment, FittingType, Point, Rect, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 export {ViewerAttachmentBarElement} from './elements/viewer-attachment-bar.js';

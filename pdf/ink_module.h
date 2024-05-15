@@ -50,6 +50,7 @@ class InkModule {
   bool OnMouseUp(const blink::WebMouseEvent& event);
   bool OnMouseMove(const blink::WebMouseEvent& event);
 
+  void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
 
   bool enabled_ = false;

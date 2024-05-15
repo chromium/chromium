@@ -17,7 +17,10 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {AnnotationTool} from '../annotation_tool.js';
-
+// <if expr="enable_pdf_ink2">
+import type {AnnotationBrush, AnnotationBrushType} from '../constants.js';
+import {PluginController} from '../controller.js';
+// </if>
 // <if expr="enable_ink">
 import {InkController, InkControllerEventType} from '../ink_controller.js';
 // </if>
@@ -63,6 +66,10 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      // <if expr="enable_pdf_ink2">
+      pdfInk2Enabled: Boolean,
+      // </if>
     };
   }
 
@@ -73,6 +80,10 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
   // <if expr="enable_ink">
   private inkController_: InkController = InkController.getInstance();
   private tracker_: EventTracker = new EventTracker();
+  // </if>
+  // <if expr="enable_pdf_ink2">
+  pdfInk2Enabled: boolean;
+  private pluginController_: PluginController = PluginController.getInstance();
   // </if>
 
   constructor() {
@@ -146,15 +157,74 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
         '--pen-tip-border',
         options.selectedColor === '#000000' ? 'currentcolor' :
                                               options.selectedColor);
-    this.annotationTool_ = {
+    const newAnnotationTool: AnnotationTool = {
       tool: tool,
       size: options.selectedSize,
       color: options.selectedColor ? options.selectedColor : undefined,
     };
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled) {
+      // Only set the annotation brush and `this.annotationTool_` if the values
+      // have changed.
+      if (this.isNewAnnotationTool_(newAnnotationTool)) {
+        this.pluginController_.setAnnotationBrush(
+            this.getAnnotationBrush_(newAnnotationTool));
+        this.annotationTool_ = newAnnotationTool;
+      }
+      return;
+    }
+    // </if>
+
+    this.annotationTool_ = newAnnotationTool;
+
     // <if expr="enable_ink">
     this.inkController_.setAnnotationTool(this.annotationTool_);
     // </if>
   }
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * Returns whether `annotationTool` is different from `this.annotationTool_`.
+   * @param annotationTool The `AnnotationTool` to check.
+   * @returns True if `this.annotationTool_` is null or doesn't have the same
+   *     values as `annotationTool`, false otherwise.
+   */
+  private isNewAnnotationTool_(annotationTool: AnnotationTool): boolean {
+    if (!this.annotationTool_) {
+      return true;
+    }
+
+    return this.annotationTool_.tool !== annotationTool.tool ||
+        this.annotationTool_.size !== annotationTool.size ||
+        this.annotationTool_.color !== annotationTool.color;
+  }
+
+  /**
+   * @return The `AnnotationBrush` constructed using the values in
+   *     `annotationTool`.
+   */
+  private getAnnotationBrush_(annotationTool: AnnotationTool): AnnotationBrush {
+    const brush: AnnotationBrush = {
+      type: annotationTool.tool as AnnotationBrushType,
+    };
+
+    if (annotationTool.color !== undefined) {
+      // `AnnotationTool`'s color is a hex-coded color string, formatted as
+      // '#ffffff'.
+      const hexColor = annotationTool.color;
+      assert(/^#[0-9a-f]{6}$/.test(hexColor));
+
+      brush.params = {
+        colorR: parseInt(hexColor.substring(1, 3), 16),
+        colorG: parseInt(hexColor.substring(3, 5), 16),
+        colorB: parseInt(hexColor.substring(5, 7), 16),
+        size: annotationTool.size,
+      };
+    }
+
+    return brush;
+  }
+  // </if>
 
   /** @return Whether the annotation tool is using tool `toolName`. */
   private isAnnotationTool_(toolName: string): boolean {
