@@ -3239,6 +3239,166 @@ chromium-metrics-reviews@google.com.
   <token key="VPNType" variants="VPNType"/>
 </histogram>
 
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv4ExcludedRoutesLargestPrefix"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful split-routing
+    {VPNType} VPN connection that tracks the length of the largest IPv4 excluded
+    route (the route with the shortest prefix).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv4ExcludedRoutesNumber"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the number of IPv4 excluded routes.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv4IncludedRoutesLargestPrefix"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful split-routing
+    {VPNType} VPN connection that tracks the length of the largest IPv4 included
+    route (the route with the shortest prefix).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv4IncludedRoutesNumber"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the number of IPv4 included routes. Note that for a
+    default route, it will always be counted as an included route, even if it is
+    not explicitly set.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv4RoutingType"
+    enum="VPNRoutingType" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the type of routing setup for IPv4. Caveat: when we
+    calculate whether the address space is fully covered, we will only check if
+    there is a default route and no excluded route. If there is no /0 route but
+    the address space is fully covered by multiple routes, it will be considered
+    as split-routing.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv6ExcludedRoutesLargestPrefix"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful split-routing
+    {VPNType} VPN connection that tracks the length of the largest IPv6 excluded
+    route (the route with the shortest prefix).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv6ExcludedRoutesNumber"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the number of IPv4 excluded routes.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv6IncludedRoutesLargestPrefix"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful split-routing
+    {VPNType} VPN connection that tracks the length of the largest IPv6 included
+    route (the route with the shortest prefix).
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv6IncludedRoutesNumber"
+    units="units" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the number of IPv6 included routes. Note that for a
+    default route, it will always be counted as an included route, even if it is
+    not explicitly set.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.IPv6RoutingType"
+    enum="VPNRoutingType" expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the type of routing setup for IPv6. Caveat: when we
+    calculate whether the address space is fully covered, we will only check if
+    there is a default route and no excluded route. If there is no /0 route but
+    the address space is fully covered by multiple routes, it will be considered
+    as split-routing.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.MTU" units="units"
+    expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the MTU value of this connection.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.{VPNType}.NameServers" enum="VPNNameServers"
+    expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each successful {VPNType} VPN
+    connection that tracks the type of the DNS setup.
+  </summary>
+  <token key="VPNType" variants="VPNType"/>
+</histogram>
+
 <histogram
     name="Network.Shill.Vpn.{VPNType}.TimeConnectedToDisconnectedSeconds"
     units="seconds" expires_after="2025-02-20">

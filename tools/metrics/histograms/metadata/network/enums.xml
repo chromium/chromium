@@ -2423,6 +2423,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Tunnel group is used"/>
 </enum>
 
+<enum name="VPNNameServers">
+  <int value="0" label="None"/>
+  <int value="1" label="IPv4 only"/>
+  <int value="2" label="IPv6 only"/>
+  <int value="3" label="Dual stack"/>
+</enum>
+
 <enum name="VPNOpenVPNCipher">
   <int value="0" label="Unknown"/>
   <int value="1" label="BF-CBC"/>
@@ -2436,6 +2443,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="L2TP/IPsec Default"/>
   <int value="3" label="L2TP/IPsec Certificate"/>
   <int value="4" label="L2TP/IPsec PSK"/>
+</enum>
+
+<enum name="VPNRoutingType">
+  <int value="0" label="Full"/>
+  <int value="1" label="Split routing"/>
+  <int value="2" label="Bypass"/>
+  <int value="3" label="Blocked"/>
 </enum>
 
 <enum name="VPNUserAuthenticationType">
