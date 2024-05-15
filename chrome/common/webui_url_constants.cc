@@ -771,7 +771,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUINewTabPageThirdPartyHost,
     kChromeUISettingsHost,
     kChromeUISystemInfoHost,
+#if !BUILDFLAG(IS_CHROMEOS)
     kChromeUIWhatsNewHost,
+#endif
 #endif
 #if BUILDFLAG(IS_ANDROID)
     kChromeUIOfflineInternalsHost,
