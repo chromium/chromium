@@ -63,7 +63,7 @@ def main():
     print(f.stack)
     return 1
 
-  with tempfile.NamedTemporaryFile() as temp:
+  with tempfile.NamedTemporaryFile(mode='w') as temp:
     json.dump(mre_result.pairs.get('histograms', []), temp, indent=2,
               sort_keys=True, separators=(',', ': '))
     temp.flush()
@@ -72,7 +72,7 @@ def main():
     if result.returncode != 0:
       print('histograms_to_csv.HistogramsToCsv returned %d' % result.returncode)
       return result.returncode
-    with open(args.output_csv, 'w') as f:
+    with open(args.output_csv, 'wb') as f:
       f.write(result.stdout.rstrip())
     print('Output CSV created in file://' + args.output_csv)
 
