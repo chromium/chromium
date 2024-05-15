@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -337,9 +338,9 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   // TODO(b/333742126): Remove migration code in M135.
   PrefService* pref_service = profile()->GetPrefs();
   if (tab_groups::IsTabGroupsSaveUIUpdateEnabled() &&
-      !SavedTabGroupUtils::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
+      !saved_tab_groups::prefs::IsTabGroupSavesUIUpdateMigrated(pref_service)) {
     model_.MigrateTabGroupSavesUIUpdate();
-    SavedTabGroupUtils::SetTabGroupSavesUIUpdateMigrated(pref_service);
+    saved_tab_groups::prefs::SetTabGroupSavesUIUpdateMigrated(pref_service);
   }
 
   for (const auto& [saved_guid, local_group_id] :

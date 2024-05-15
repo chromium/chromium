@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -116,19 +117,19 @@ bool IsDialogSkippedByUserSettings(Profile* profile,
   switch (type) {
     case DeletionDialogController::DialogType::DeleteSingle: {
       return pref_service->GetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnDelete);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete);
     }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return pref_service->GetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnUngroup);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnUngroup);
     }
     case DeletionDialogController::DialogType::RemoveTabAndDelete: {
       return pref_service->GetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnRemoveTab);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnRemoveTab);
     }
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
       return pref_service->GetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnCloseTab);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab);
     }
   }
 }
@@ -144,19 +145,23 @@ void SetSkipDialogForType(Profile* profile,
   switch (type) {
     case DeletionDialogController::DialogType::DeleteSingle: {
       return pref_service->SetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnDelete, new_value);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete,
+          new_value);
     }
     case DeletionDialogController::DialogType::UngroupSingle: {
       return pref_service->SetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnUngroup, new_value);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnUngroup,
+          new_value);
     }
     case DeletionDialogController::DialogType::RemoveTabAndDelete: {
       return pref_service->SetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnRemoveTab, new_value);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnRemoveTab,
+          new_value);
     }
     case DeletionDialogController::DialogType::CloseTabAndDelete: {
       return pref_service->SetBoolean(
-          prefs::kTabGroupsDeletionSkipDialogOnCloseTab, new_value);
+          saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
+          new_value);
     }
   }
 }

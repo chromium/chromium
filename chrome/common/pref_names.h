@@ -1936,17 +1936,6 @@ inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
 inline constexpr char kNetworkAnnotationBlocklist[] =
     "network_annotation_blocklist";
 
-// Booleans indicating whether the user had dismissed the dialog with "Dont ask
-// again". This value is assumed false, if true the dialog should not show.
-inline constexpr char kTabGroupsDeletionSkipDialogOnDelete[] =
-    "tab_groups.deletion.skip_dialog_on_delete";
-inline constexpr char kTabGroupsDeletionSkipDialogOnUngroup[] =
-    "tab_groups.deletion.skip_dialog_on_ungroup";
-inline constexpr char kTabGroupsDeletionSkipDialogOnRemoveTab[] =
-    "tab_groups.deletion.skip_dialog_on_remove_tab";
-inline constexpr char kTabGroupsDeletionSkipDialogOnCloseTab[] =
-    "tab_groups.deletion.skip_dialog_on_close_tab";
-
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
@@ -4158,9 +4147,6 @@ inline constexpr char kProfileLabelPreset[] = "profile.label.preset";
 inline constexpr char kBreachedCredentialsCount[] =
     "profile.safety_hub_breached_credentials_count";
 #endif  // BUILDFLAG(IS_ANDROID)
-
-inline constexpr char kTabGroupSavesUIUpdateMigrated[] =
-    "tab_group_saves_ui_update_migrated";
 
 }  // namespace prefs
 

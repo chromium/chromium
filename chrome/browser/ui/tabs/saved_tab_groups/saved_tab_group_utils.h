@@ -11,8 +11,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/window_open_disposition.h"
@@ -131,12 +129,6 @@ class SavedTabGroupUtils {
   // Returns whether the tab's URL is viable for saving in a saved tab
   // group.
   static bool IsURLValidForSavedTabGroups(const GURL& gurl);
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  static bool IsTabGroupSavesUIUpdateMigrated(PrefService* pref_service);
-
-  static void SetTabGroupSavesUIUpdateMigrated(PrefService* pref_service);
 };
 
 }  // namespace tab_groups
