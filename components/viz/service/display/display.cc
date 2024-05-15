@@ -61,6 +61,7 @@
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -707,9 +708,12 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     }
   }
 
-  base::ScopedClosureRunner visual_debugger_sync_scoped_exit(
-      base::BindOnce(&VisualDebuggerSync, current_display_transform,
-                     current_surface_size_, last_presented_trace_id_));
+  absl::Cleanup visual_debugger_sync_scoped_exit =
+      [current_display_transform, current_surface_size = current_surface_size_,
+       last_presented_trace_id = last_presented_trace_id_] {
+        VisualDebuggerSync(current_display_transform, current_surface_size,
+                           last_presented_trace_id);
+      };
 
   // During aggregation, SurfaceAggregator marks all resources used for a draw
   // in the resource provider.  This has the side effect of deleting unused
