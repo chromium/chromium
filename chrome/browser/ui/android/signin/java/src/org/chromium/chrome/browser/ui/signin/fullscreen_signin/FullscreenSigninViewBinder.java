@@ -222,7 +222,7 @@ class FullscreenSigninViewBinder {
             Context context = accountPickerView.getContext();
             accountPickerView.setBackground(
                     AppCompatResources.getDrawable(
-                            context, R.drawable.existing_account_row_background));
+                            context, R.drawable.account_row_background_rounded_all));
 
             int padding = ViewUtils.dpToPx(context, 16);
             accountPickerView.setPadding(padding, padding, padding, padding);

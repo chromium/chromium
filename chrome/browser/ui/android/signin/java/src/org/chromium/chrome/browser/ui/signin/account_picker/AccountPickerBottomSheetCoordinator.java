@@ -9,8 +9,10 @@ import android.view.View;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -89,9 +91,23 @@ public class AccountPickerBottomSheetCoordinator {
         mView =
                 new AccountPickerBottomSheetView(
                         windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
-        mAccountPickerCoordinator =
-                new AccountPickerCoordinator(
-                        mView.getAccountListView(), mAccountPickerBottomSheetMediator);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            mAccountPickerCoordinator =
+                    new AccountPickerCoordinator(
+                            mView.getAccountListView(),
+                            mAccountPickerBottomSheetMediator,
+                            R.layout.account_picker_bottom_sheet_row,
+                            R.layout.account_picker_bottom_sheet_new_account_row);
+        } else {
+            mAccountPickerCoordinator =
+                    new AccountPickerCoordinator(
+                            mView.getAccountListView(),
+                            mAccountPickerBottomSheetMediator,
+                            R.layout.account_picker_row,
+                            R.layout.account_picker_new_account_row);
+        }
 
         mBottomSheetController = bottomSheetController;
         PropertyModelChangeProcessor.create(

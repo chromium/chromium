@@ -94,9 +94,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     AccountPickerBottomSheetView(Activity activity, BackPressListener backPressListener) {
         mActivity = activity;
         mBackPressListener = backPressListener;
-        mContentView =
-                LayoutInflater.from(mActivity)
-                        .inflate(R.layout.account_picker_bottom_sheet_view, null);
+
+        int contentLayoutId =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        ? R.layout.account_picker_bottom_sheet_view
+                        : R.layout.account_picker_bottom_sheet_view_old;
+
+        mContentView = LayoutInflater.from(mActivity).inflate(contentLayoutId, null);
 
         mViewFlipper = mContentView.findViewById(R.id.account_picker_state_view_flipper);
         checkViewFlipperChildrenAndViewStateMatch(mViewFlipper);
@@ -132,6 +137,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 .getChildAt(ViewState.CONFIRM_MANAGEMENT)
                 .findViewById(R.id.confirm_management_cancel_button)
                 .setOnClickListener((View v) -> handleBackPress());
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            getAccountListView().addItemDecoration(new AccountPickerItemDecoration());
+            // TODO(b/40944124): Duplicate the xml instead of updating the UI programmatically.
+            revampSelectedAccountView();
+        }
     }
 
     /** The account list view is visible when the account list is expanded. */
@@ -171,21 +183,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     /**
      * Updates the views related to the selected account.
      *
-     * This method only updates the UI elements like text related to the selected account, it
+     * <p>This method only updates the UI elements like text related to the selected account, it
      * does not change the visibility.
      */
     void updateSelectedAccount(DisplayableProfileData accountProfileData) {
         View view = mViewFlipper.getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST);
         ExistingAccountRowViewBinder.bindAccountView(
                 accountProfileData, mSelectedAccountView, /* isCurrentlySelected= */ true);
-        // The layout is updated in this place instead of the view's constructor since native is not
-        // guaranteed to be initialized when the view is created (e.g. bottom sheet should be able
-        // to show with a loading state during native initialization in the new sign-in flow), so
-        // we may not be able to check the flag's value there.
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-            revampSelectedAccountView();
-        }
         ButtonCompat continueButton = view.findViewById(R.id.account_picker_continue_as_button);
         continueButton.setText(
                 SigninUtils.getContinueAsButtonText(view.getContext(), accountProfileData));
@@ -340,7 +344,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         Context context = mSelectedAccountView.getContext();
         mSelectedAccountView.setBackground(
                 AppCompatResources.getDrawable(
-                        context, R.drawable.existing_account_row_background));
+                        context, R.drawable.account_row_background_rounded_all));
         int padding = ViewUtils.dpToPx(context, 16);
         mSelectedAccountView.setPadding(padding, padding, padding, padding);
         int horizontalMargin = ViewUtils.dpToPx(context, 24);

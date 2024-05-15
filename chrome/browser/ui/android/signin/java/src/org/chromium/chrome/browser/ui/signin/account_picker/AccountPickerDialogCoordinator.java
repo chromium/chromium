@@ -33,7 +33,12 @@ public class AccountPickerDialogCoordinator {
     public AccountPickerDialogCoordinator(
             Context context, Listener listener, ModalDialogManager modalDialogManager) {
         mAccountPickerView = inflateAccountPickerView(context);
-        mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener);
+        mCoordinator =
+                new AccountPickerCoordinator(
+                        mAccountPickerView,
+                        listener,
+                        R.layout.account_picker_row,
+                        R.layout.account_picker_new_account_row);
         mDialogManager = modalDialogManager;
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)

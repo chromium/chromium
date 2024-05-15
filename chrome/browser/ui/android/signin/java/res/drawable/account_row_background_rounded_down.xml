@@ -11,7 +11,10 @@ found in the LICENSE file.
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:shape="rectangle"
             app:surfaceElevation="@dimen/default_elevation_1">
-            <corners android:radius="10dp"/>
+            <corners android:bottomLeftRadius="@dimen/card_rounded_corner_radius"
+                android:bottomRightRadius="@dimen/card_rounded_corner_radius"
+                android:topLeftRadius="@dimen/card_rounded_corner_small_radius"
+                android:topRightRadius="@dimen/card_rounded_corner_small_radius"/>
         </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
     </item>
 </ripple>

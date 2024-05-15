@@ -115,6 +115,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_FIRST_RUN)
                     .build();
 
