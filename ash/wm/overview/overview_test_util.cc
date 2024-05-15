@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -191,6 +192,23 @@ bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window) {
   }
 
   return false;
+}
+
+views::View* GetFocusedView() {
+  if (!features::IsOverviewNewFocusEnabled()) {
+    auto* focused_view =
+        GetOverviewSession()->focus_cycler_old()->focused_view();
+    return focused_view ? focused_view->GetView() : nullptr;
+  }
+
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window) {
+    return nullptr;
+  }
+
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(active_window);
+  return widget ? widget->GetFocusManager()->GetFocusedView() : nullptr;
 }
 
 }  // namespace ash

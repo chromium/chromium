@@ -28,12 +28,12 @@ class OverviewFocusCycler {
   // next traversable widget if necessary.
   void MoveFocus(bool reverse);
 
+  // Returns the current overview UI focused view if there is one.
+  views::View* GetOverviewFocusedView();
+
  private:
   // Gets the list of traversable widgets in overview.
   std::vector<views::Widget*> GetTraversableWidgets() const;
-
-  // Returns the current overview UI focused view if there is one.
-  views::View* GetOverviewFocusedView();
 
   // The overview session which owns this object. Guaranteed to be non-null for
   // the lifetime of `this`.

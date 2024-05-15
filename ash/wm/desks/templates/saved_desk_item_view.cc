@@ -249,6 +249,7 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       l10n_util::GetStringUTF16(button_text_id),
       PillButton::Type::kDefaultWithoutIcon,
       /*icon=*/nullptr));
+  launch_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   // Users cannot delete admin templates.
   if (!is_admin_managed) {
@@ -261,6 +262,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
             /*has_border=*/false));
     delete_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON));
+    delete_button_->SetFocusBehavior(
+        views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   // Use a border to create spacing between `name_view_`s background (set in
@@ -280,12 +283,14 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
 
   views::FocusRing* focus_ring =
       StyleUtil::SetUpFocusRingForView(this, kWindowMiniViewFocusRingHaloInset);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<SavedDeskItemView>(view);
-        CHECK(v);
-        return v->is_focused();
-      }));
+  if (!features::IsOverviewNewFocusEnabled()) {
+    focus_ring->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<SavedDeskItemView>(view);
+          CHECK(v);
+          return v->is_focused();
+        }));
+  }
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
@@ -451,7 +456,7 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
                            ->overview_controller()
                            ->overview_session()
                            ->focus_cycler_old();
-  if (focus_cycler->IsFocusVisible()) {
+  if (focus_cycler && focus_cycler->IsFocusVisible()) {
     focus_cycler->MoveFocusToView(name_view_);
 
     // Update a11y focus window.

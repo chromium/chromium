@@ -18,6 +18,7 @@
 #include "ash/style/rounded_label_widget.h"
 #include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -62,6 +63,7 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/scoped_animation_disabler.h"
@@ -1210,6 +1212,8 @@ void OverviewSession::ShowSavedDeskLibrary(
   if (focus_cycler_old_) {
     focus_cycler_old_->MoveFocusToView(grid_items.front(),
                                        /*suppress_accessibility_event=*/false);
+  } else {
+    grid_items.front()->RequestFocus();
   }
 }
 
@@ -1423,7 +1427,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   }
 
   // If any name is being modified, let the name view handle the key events.
-  // Note that Tab presses should commit any pending name changes.
+  // Note that Tab presses should commit any pending name changes. With new
+  // focus enabled, a Tab will blur the textfield which will commit the name
+  // changes.
   const ui::KeyboardCode key_code = event->key_code();
   const bool is_key_press = event->type() == ui::ET_KEY_PRESSED;
   const bool should_commit_name_changes =
@@ -1431,11 +1437,14 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
   for (auto& grid : grid_list_) {
     if (grid->IsDeskNameBeingModified() ||
         grid->IsSavedDeskNameBeingModified()) {
-      if (!should_commit_name_changes)
+      if (!should_commit_name_changes) {
         return;
+      }
 
       // Commit and proceed.
-      grid->CommitNameChanges();
+      if (!features::IsOverviewNewFocusEnabled()) {
+        grid->CommitNameChanges();
+      }
       break;
     }
   }
@@ -1520,6 +1529,15 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     case ui::VKEY_RETURN: {
       if (focus_cycler_old_ && !focus_cycler_old_->MaybeActivateFocusedView()) {
         return;
+      }
+
+      // Let the textfield handle the key if one is focused.
+      if (focus_cycler_) {
+        if (views::View* view = focus_cycler_->GetOverviewFocusedView()) {
+          if (views::IsViewClass<DeskTextfield>(view)) {
+            return;
+          }
+        }
       }
       break;
     }

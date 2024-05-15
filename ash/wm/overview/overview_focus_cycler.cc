@@ -83,24 +83,6 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   GetFirstOrLastFocusableView(widgets[next_index], reverse)->RequestFocus();
 }
 
-std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
-  std::vector<views::Widget*> traversable_widgets;
-
-  auto add_widget = [&traversable_widgets](views::Widget* widget) {
-    if (widget && widget->CanActivate()) {
-      traversable_widgets.push_back(widget);
-    }
-  };
-
-  // TODO(http://b/325335020): Handle multidisplay focus.
-  OverviewGrid* primary_grid =
-      overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
-  add_widget(primary_grid->pine_widget());
-  add_widget(primary_grid->feedback_widget());
-  add_widget(primary_grid->birch_bar_widget());
-  return traversable_widgets;
-}
-
 views::View* OverviewFocusCycler::GetOverviewFocusedView() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window) {
@@ -118,6 +100,35 @@ views::View* OverviewFocusCycler::GetOverviewFocusedView() {
   }
 
   return widget->GetFocusManager()->GetFocusedView();
+}
+
+std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets() const {
+  std::vector<views::Widget*> traversable_widgets;
+
+  auto maybe_add_widget = [&traversable_widgets](views::Widget* widget) {
+    if (!widget || !widget->CanActivate()) {
+      return;
+    }
+
+    // Skip this widget if it has no focusable views. (i.e. Saved desks library
+    // with all saved desks deleted.)
+    if (!widget->GetFocusManager()->GetNextFocusableView(
+            /*starting_view=*/nullptr, widget, /*reverse=*/false,
+            /*dont_loop=*/false)) {
+      return;
+    }
+
+    traversable_widgets.push_back(widget);
+  };
+
+  // TODO(http://b/325335020): Handle multidisplay focus.
+  OverviewGrid* primary_grid =
+      overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
+  maybe_add_widget(primary_grid->pine_widget());
+  maybe_add_widget(primary_grid->feedback_widget());
+  maybe_add_widget(primary_grid->birch_bar_widget());
+  maybe_add_widget(primary_grid->saved_desk_library_widget());
+  return traversable_widgets;
 }
 
 }  // namespace ash

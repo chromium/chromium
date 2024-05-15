@@ -333,10 +333,6 @@ class SavedDeskTest : public OverviewTestBase,
     return overview_session->grid_list();
   }
 
-  OverviewFocusableView* GetFocusedView() {
-    return GetOverviewSession()->focus_cycler_old()->focused_view();
-  }
-
   // Opens overview mode and then clicks the save desk as template button. This
   // should save a new desk template and open the saved desk grid.
   void OpenOverviewAndSaveTemplate(aura::Window* root) {
@@ -824,7 +820,9 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
 
   // Checks that pressing tab does not trigger overview keyboard traversal.
   SendKey(ui::VKEY_TAB);
-  EXPECT_FALSE(GetOverviewSession()->focus_cycler_old()->IsFocusVisible());
+  if (!features::IsOverviewNewFocusEnabled()) {
+    EXPECT_FALSE(GetOverviewSession()->focus_cycler_old()->IsFocusVisible());
+  }
 
   // Fetch the widget for the dialog and test that it appears on the primary
   // root window.
@@ -832,6 +830,7 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   ASSERT_TRUE(dialog_widget);
   EXPECT_EQ(Shell::GetPrimaryRootWindow(),
             dialog_widget->GetNativeWindow()->GetRootWindow());
+  EXPECT_EQ(dialog_widget->GetNativeWindow(), window_util::GetActiveWindow());
 
   // Hit escape to delete the dialog. Tests that there are no more system modal
   // windows open, and that we are still in overview because the dialog takes
@@ -979,6 +978,12 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
 // Tests that the focus ring of the save desk button focus ring is as shown as
 // expected.
 TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
+  // TODO(http://b/325335020): Enable this test once support for desk bar focus
+  // has been added.
+  if (features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
+
   // Create a test window in the current desk.
   auto test_window = CreateAppWindow();
 
@@ -2002,7 +2007,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 
   // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_NE(button, GetFocusedView()->GetView());
+  EXPECT_NE(button, GetFocusedView());
 
   // Test the case where it was visible at one point, but became invisible (last
   // template was deleted).
@@ -2028,7 +2033,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
 
   // Test that we do not focus the templates button.
   SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_NE(button, GetFocusedView()->GetView());
+  EXPECT_NE(button, GetFocusedView());
 }
 
 // Tests that the desks bar does not return to zero state if the second-to-last
@@ -4120,13 +4125,21 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     SavedDeskItemView* item_view = GetItemViewFromSavedDeskGrid(i);
 
     // Verify item view is focused and fully visible.
-    EXPECT_TRUE(item_view->is_focused());
+    if (features::IsOverviewNewFocusEnabled()) {
+      EXPECT_TRUE(item_view->HasFocus());
+    } else {
+      EXPECT_TRUE(item_view->is_focused());
+    }
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
     SendKey(ui::VKEY_TAB);
 
     // Verify name view is focused and fully visible.
-    EXPECT_TRUE(item_view->name_view()->is_focused());
+    if (features::IsOverviewNewFocusEnabled()) {
+      EXPECT_TRUE(item_view->name_view()->HasFocus());
+    } else {
+      EXPECT_TRUE(item_view->name_view()->is_focused());
+    }
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
     SendKey(ui::VKEY_TAB);

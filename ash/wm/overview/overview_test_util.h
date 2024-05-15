@@ -8,6 +8,10 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ui::test {
 class EventGenerator;
 }  // namespace ui::test
@@ -74,6 +78,8 @@ void WaitForOcclusionStateChange(aura::Window* window,
 // Returns true if the given `window` is on its corresponding overview grid,
 // returns false otherwise.
 bool IsWindowInItsCorrespondingOverviewGrid(aura::Window* window);
+
+views::View* GetFocusedView();
 
 }  // namespace ash
 
