@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.save_card;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -138,8 +139,7 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
                 mCoordinator
                         .getPropertyModelForTesting()
                         .get(AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL));
-        assertEquals(
-                false,
+        assertFalse(
                 mCoordinator
                         .getPropertyModelForTesting()
                         .get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE));
