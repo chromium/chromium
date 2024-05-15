@@ -170,12 +170,12 @@ export class CardsElement extends CrLitElement {
   }
 
   protected onCardCheckboxChange_(e: CustomEvent<boolean>) {
-    const index = Number((e.target as HTMLElement).dataset['index']);
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     this.setModuleStatus(index, /*checked= */ e.detail);
   }
 
   protected onCardClick_(e: Event) {
-    const index = Number((e.target as HTMLElement).dataset['index']);
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const module = this.modules_[index]!;
     this.setModuleStatus(index, !module.enabled);
   }
