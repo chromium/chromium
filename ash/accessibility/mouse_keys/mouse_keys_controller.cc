@@ -24,6 +24,7 @@ namespace {
 const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
     kLeftHandedKeys({
         {ui::DomCode::US_W, MouseKeysController::kKeyClick},
+        {ui::DomCode::US_V, MouseKeysController::kKeyDoubleClick},
         {ui::DomCode::DIGIT1, MouseKeysController::kKeyUpLeft},
         {ui::DomCode::DIGIT2, MouseKeysController::kKeyUp},
         {ui::DomCode::DIGIT3, MouseKeysController::kKeyUpRight},
@@ -38,6 +39,7 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
 const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
     kRightHandedKeys({
         {ui::DomCode::US_I, MouseKeysController::kKeyClick},
+        {ui::DomCode::SLASH, MouseKeysController::kKeyDoubleClick},
         {ui::DomCode::DIGIT7, MouseKeysController::kKeyUpLeft},
         {ui::DomCode::DIGIT8, MouseKeysController::kKeyUp},
         {ui::DomCode::DIGIT9, MouseKeysController::kKeyUpRight},
@@ -51,6 +53,7 @@ const base::flat_map<ui::DomCode, MouseKeysController::MouseKey>
 
 const base::flat_map<ui::DomCode, MouseKeysController::MouseKey> kNumPadKeys({
     {ui::DomCode::NUMPAD5, MouseKeysController::kKeyClick},
+    {ui::DomCode::NUMPAD_ADD, MouseKeysController::kKeyDoubleClick},
     {ui::DomCode::NUMPAD7, MouseKeysController::kKeyUpLeft},
     {ui::DomCode::NUMPAD8, MouseKeysController::kKeyUp},
     {ui::DomCode::NUMPAD9, MouseKeysController::kKeyUpRight},
@@ -146,7 +149,9 @@ void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void MouseKeysController::SendMouseEventToLocation(ui::EventType type,
-                                                   const gfx::Point& location) {
+                                                   const gfx::Point& location,
+                                                   int flags) {
+  int event_flags = event_flags_ | flags;
   int button = 0;
   switch (current_mouse_button_) {
     case kLeft:
@@ -167,7 +172,7 @@ void MouseKeysController::SendMouseEventToLocation(ui::EventType type,
   aura::WindowTreeHost* host = root_window->GetHost();
   host->ConvertDIPToPixels(&location_in_pixels);
   ui::MouseEvent press_event(type, location_in_pixels, location_in_pixels,
-                             ui::EventTimeForNow(), event_flags_ | button,
+                             ui::EventTimeForNow(), event_flags | button,
                              button);
 
   (void)host->GetEventSink()->OnEventFromSource(&press_event);
@@ -242,6 +247,20 @@ void MouseKeysController::PressKey(MouseKey key) {
       break;
     case kKeyClick:
       SendMouseEventToLocation(ui::ET_MOUSE_PRESSED, last_mouse_position_dips_);
+      break;
+    case kKeyDoubleClick:
+      if (current_mouse_button_ == kLeft) {
+        SendMouseEventToLocation(ui::ET_MOUSE_PRESSED,
+                                 last_mouse_position_dips_);
+        SendMouseEventToLocation(ui::ET_MOUSE_RELEASED,
+                                 last_mouse_position_dips_);
+        SendMouseEventToLocation(ui::ET_MOUSE_PRESSED,
+                                 last_mouse_position_dips_,
+                                 ui::EF_IS_DOUBLE_CLICK);
+        SendMouseEventToLocation(ui::ET_MOUSE_RELEASED,
+                                 last_mouse_position_dips_,
+                                 ui::EF_IS_DOUBLE_CLICK);
+      }
       break;
     case kKeySelectLeftButton:
       current_mouse_button_ = kLeft;

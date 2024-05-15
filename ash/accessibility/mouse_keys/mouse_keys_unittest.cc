@@ -162,12 +162,36 @@ class MouseKeysTest : public AshTestBase {
                    int buttons,
                    const gfx::Point& position) {
     ASSERT_EQ(2u, mouse_events.size());
-    EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-    EXPECT_TRUE(buttons & mouse_events[0].flags());
-    EXPECT_EQ(mouse_events[0].location(), position);
-    EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-    EXPECT_TRUE(buttons & mouse_events[1].flags());
-    EXPECT_EQ(mouse_events[1].location(), position);
+    ExpectClick(mouse_events[0], mouse_events[1], buttons, false, position);
+  }
+
+  void ExpectDoubleClick(const std::vector<ui::MouseEvent>& mouse_events,
+                         const gfx::Point& position) {
+    ASSERT_EQ(4u, mouse_events.size());
+    ExpectClick(mouse_events[0], mouse_events[1], ui::EF_LEFT_MOUSE_BUTTON,
+                false, position);
+    ExpectClick(mouse_events[2], mouse_events[3], ui::EF_LEFT_MOUSE_BUTTON,
+                true, position);
+  }
+
+  void ExpectClick(const ui::MouseEvent& mouse_event0,
+                   const ui::MouseEvent& mouse_event1,
+                   int buttons,
+                   bool is_double_click,
+                   const gfx::Point& position) {
+    EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_event0.type());
+    EXPECT_TRUE(buttons & mouse_event0.flags());
+    EXPECT_EQ(mouse_event0.location(), position);
+    EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_event1.type());
+    EXPECT_TRUE(buttons & mouse_event1.flags());
+    EXPECT_EQ(mouse_event1.location(), position);
+    if (is_double_click) {
+      EXPECT_TRUE(ui::EF_IS_DOUBLE_CLICK & mouse_event0.flags());
+      EXPECT_TRUE(ui::EF_IS_DOUBLE_CLICK & mouse_event1.flags());
+    } else {
+      EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & mouse_event0.flags());
+      EXPECT_FALSE(ui::EF_IS_DOUBLE_CLICK & mouse_event1.flags());
+    }
   }
 
   MouseKeysController* GetMouseKeysController() {
@@ -354,6 +378,32 @@ TEST_F(MouseKeysTest, Click) {
   SetEnabled(false);
   EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+}
+
+TEST_F(MouseKeysTest, DoubleClick) {
+  SetEnabled(true);
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // Enable Mouse Keys, and we should be able to double click by pressing /.
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_2);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ExpectDoubleClick(CheckForMouseEvents(), kDefaultPosition);
+
+  // Switch to right mouse button, we shouldn't get a double click.
+  PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_2);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+
+  // Switch to both mouse buttons, we shouldn't get a double click.
+  PressAndReleaseKey(ui::VKEY_OEM_COMMA);
+  ClearEvents();
+  PressAndReleaseKey(ui::VKEY_OEM_2);
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
   EXPECT_EQ(0u, CheckForMouseEvents().size());
 }
 

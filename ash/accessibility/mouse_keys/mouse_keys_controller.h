@@ -66,6 +66,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
     kKeyDown,
     kKeyDownRight,
     kKeyClick,
+    kKeyDoubleClick,
     kKeySelectLeftButton,
     kKeySelectRightButton,
     kKeySelectBothButtons,
@@ -83,7 +84,9 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
-  void SendMouseEventToLocation(ui::EventType type, const gfx::Point& location);
+  void SendMouseEventToLocation(ui::EventType type,
+                                const gfx::Point& location,
+                                int flags = 0);
   void MoveMouse(const gfx::Vector2d& move_delta_dip);
   void CenterMouseIfUninitialized();
 
