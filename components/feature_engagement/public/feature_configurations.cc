@@ -289,6 +289,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHExplicitBrowserSigninPreferenceRememberedFeature.name ==
+      feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::ALL;
+    config->trigger = EventConfig(
+        "iph_explicit_browser_signin_preference_remembered_triggered",
+        Comparator(ANY, 0), 0, 0);
+    config->used =
+        EventConfig("iph_explicit_browser_signin_preference_remembered_used",
+                    Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+
   if (kIPHTrackingProtectionOffboardingFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
