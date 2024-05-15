@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -98,6 +99,9 @@ constexpr int kDialogWidth = 240;
 constexpr const char kLearnMoreURL[] =
     "https://support.google.com/chrome/answer/165139";
 static constexpr int kDefaultIconSize = 20;
+// The maximum number of times we will show the footer section with the learn
+// more link.
+constexpr int kFooterDisplayLimit = 5;
 
 std::unique_ptr<views::LabelButton> CreateMenuItem(
     int button_id,
@@ -126,6 +130,8 @@ std::unique_ptr<views::LabelButton> CreateMenuItem(
 }
 
 }  // namespace
+
+namespace saved_tab_group_prefs = tab_groups::saved_tab_groups::prefs;
 
 // static
 views::Widget* TabGroupEditorBubbleView::Show(
@@ -346,10 +352,19 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                             base::Unretained(this)),
         ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon)));
     menu_items_.push_back(std::move(delete_group_menu_item));
-    delete_group_menu_item->SetProperty(
-        views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
 
-    footer_ = AddChildView(std::make_unique<Footer>(browser_));
+    PrefService* pref_service = browser_->profile()->GetPrefs();
+    CHECK(pref_service);
+    if (pref_service && saved_tab_group_prefs::GetLearnMoreFooterShownCount(
+                            pref_service) < kFooterDisplayLimit) {
+      // Add additional padding before the footer if it is visible.
+      delete_group_menu_item->SetProperty(
+          views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
+
+      footer_ = AddChildView(std::make_unique<Footer>(browser_));
+      saved_tab_group_prefs::IncrementLearnMoreFooterShownCountPref(
+          pref_service);
+    }
   }
 
   // The move menu item must be added to the menu by this point.

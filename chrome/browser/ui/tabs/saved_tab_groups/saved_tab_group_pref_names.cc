@@ -14,6 +14,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnUngroup, false);
   registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnRemoveTab, false);
   registry->RegisterBooleanPref(kTabGroupsDeletionSkipDialogOnCloseTab, false);
+  registry->RegisterIntegerPref(kTabGroupLearnMoreFooterShownCount, 0);
 }
 
 bool IsTabGroupSavesUIUpdateMigrated(PrefService* pref_service) {
@@ -22,6 +23,14 @@ bool IsTabGroupSavesUIUpdateMigrated(PrefService* pref_service) {
 
 void SetTabGroupSavesUIUpdateMigrated(PrefService* pref_service) {
   pref_service->SetBoolean(kTabGroupSavesUIUpdateMigrated, true);
+}
+
+int GetLearnMoreFooterShownCount(PrefService* pref_service) {
+  return pref_service->GetInteger(kTabGroupLearnMoreFooterShownCount);
+}
+void IncrementLearnMoreFooterShownCountPref(PrefService* pref_service) {
+  pref_service->SetInteger(kTabGroupLearnMoreFooterShownCount,
+                           GetLearnMoreFooterShownCount(pref_service) + 1);
 }
 
 }  // namespace tab_groups::saved_tab_groups::prefs

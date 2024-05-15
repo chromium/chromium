@@ -33,11 +33,20 @@ inline constexpr char kTabGroupsDeletionSkipDialogOnRemoveTab[] =
 inline constexpr char kTabGroupsDeletionSkipDialogOnCloseTab[] =
     "tab_groups.deletion.skip_dialog_on_close_tab";
 
+// Integer that keep track of how many times the learn more footer in the
+// TabGroupEditorBubbleView has been seen by the user. Once this value reaches
+// 5, stop showing the footer.
+inline constexpr char kTabGroupLearnMoreFooterShownCount[] =
+    "tab_groups.editor_bubble.learn_more_footer_shown_count";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Helps manage the state of the kTabGroupSavesUIUpdateMigrated migration pref.
 bool IsTabGroupSavesUIUpdateMigrated(PrefService* pref_service);
 void SetTabGroupSavesUIUpdateMigrated(PrefService* pref_service);
+
+int GetLearnMoreFooterShownCount(PrefService* pref_service);
+void IncrementLearnMoreFooterShownCountPref(PrefService* pref_service);
 
 }  // namespace tab_groups::saved_tab_groups::prefs
 
