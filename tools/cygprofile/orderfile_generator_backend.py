@@ -441,18 +441,15 @@ class OrderfileUpdater:
       # dep_str is a python representation of the object, not valid JSON.
       dep_objects = ast.literal_eval(dep_str)
       values = []
+      # Same set as depot_tools/gclient.py (CMDsetdep).
+      allowed_keys = ['object_name', 'sha256sum', 'size_bytes', 'generation']
+      # Order matters here, so preserve the order in dep_objects.
       for dep_object in dep_objects:
         if dep_object['output_file'] == output_file:
-          # Replace the values in this matching object with the new object.
-          values.append(",".join([
-              json_object['object_name'],
-              json_object['sha256sum'],
-              str(json_object['size_bytes']),
-              str(json_object['generation']),
-              output_file,
-          ]))
-        else:
-          values.append(",".join(map(str, dep_object.values())))
+          # Use our newly uploaded info to update DEPS.
+          dep_object = json_object
+          # For 'gcs' deps `gclient setdep` only allows these specific keys.
+        values.append(','.join(str(dep_object[k]) for k in allowed_keys))
       setdep_cmd = ['gclient', 'setdep', '-r', f'orderfiles@{"?".join(values)}']
       self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
     print('Download: https://sandbox.google.com/storage/%s/%s' %
