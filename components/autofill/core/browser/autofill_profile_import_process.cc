@@ -4,8 +4,12 @@
 
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 
+#include <map>
+
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_data_cleaner.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
@@ -48,6 +52,11 @@ bool ShouldCountryApproximationBeRemoved(
 }
 
 }  // namespace
+
+ProfileImportMetadata::ProfileImportMetadata() = default;
+ProfileImportMetadata::ProfileImportMetadata(const ProfileImportMetadata&) =
+    default;
+ProfileImportMetadata::~ProfileImportMetadata() = default;
 
 ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
@@ -195,6 +204,14 @@ void ProfileImportProcess::DetermineProfileImportType() {
     MaybeSetMigrationCandidate(migration_candidate, merged_profile);
   }
 
+  // If the profile wasn't mergeable with an existing profile, but is a quasi
+  // duplicate of an existing profile, offer updating the quasi duplicate.
+  if (!is_mergeable_with_existing_profile &&
+      IsObservedProfileAutofilledQuasiDuplicate(comparator)) {
+    is_mergeable_with_existing_profile = true;
+    --number_of_unchanged_profiles;
+  }
+
   // If the profile is not mergeable with an existing profile, the import
   // corresponds to a new profile.
   if (!is_mergeable_with_existing_profile) {
@@ -269,6 +286,61 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
               import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     import_candidate_ = import_candidate_->ConvertToAccountProfile();
   }
+}
+
+bool ProfileImportProcess::IsObservedProfileAutofilledQuasiDuplicate(
+    const AutofillProfileComparator& comparator) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUpdateLowQualityTokenOnImport)) {
+    return false;
+  }
+
+  // `filled_types_to_autofill_guid` is a map from type to optional GUID,
+  // representing the profile that was used to fill the field from which the
+  // value for `type` was derived. It is nullopt if the field wasn't autofilled
+  // with an `AutofillProfile` at submission.
+  // Invert this map.
+  std::map<std::optional<std::string>, FieldTypeSet> guid_to_types;
+  for (const auto& [type, optional_guid] :
+       import_metadata_.filled_types_to_autofill_guid) {
+    guid_to_types[optional_guid].insert(type);
+  }
+
+  // Check that all but exactly one of the values were autofilled.
+  // Due to the data model, changes to the country are not possible either.
+  FieldTypeSet& non_autofilled_types = guid_to_types[std::nullopt];
+  if (non_autofilled_types.size() != 1 ||
+      non_autofilled_types == FieldTypeSet{ADDRESS_HOME_COUNTRY}) {
+    return false;
+  }
+  FieldType non_autofilled_type = *non_autofilled_types.begin();
+
+  // Check that exactly one profile was used to autofill the remaining types.
+  // This is indicated by the presence of exactly one non-std::nullopt entry.
+  if (guid_to_types.size() != 2) {
+    return false;
+  }
+  AutofillProfile* autofilled_profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          *guid_to_types.rbegin()->first);
+  if (!autofilled_profile) {
+    return false;
+  }
+
+  // Determine if the `non_autofilled_type` qualifies for an update.
+  if (!AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
+          *autofilled_profile, non_autofilled_type)) {
+    return false;
+  }
+  // Create the merge and import candidate from the `autofilled_profile`.
+  merge_candidate_ = *autofilled_profile;
+  import_candidate_ = *autofilled_profile;
+  import_candidate_->SetInfo(
+      non_autofilled_type,
+      observed_profile_.GetInfo(non_autofilled_type, app_locale_), app_locale_);
+  // Ensure that potential substructure is cleared.
+  import_candidate_->FinalizeAfterImport();
+  return true;
 }
 
 void ProfileImportProcess::MaybeSetMigrationCandidate(

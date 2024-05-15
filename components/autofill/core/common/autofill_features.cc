@@ -702,6 +702,17 @@ BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
              "AutofillSilentlyRemoveQuasiDuplicates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Currently, the importing logic offers new profile creation if the observed
+// profile is non-mergeable with any existing profile. With this feature, low-
+// quality tokens receive special treatment and can bypass this requirement.
+// In particular, if the observed profile was autofilled, except for an edit in
+// a single type, this qualifies for an update of the autofilled profile, in
+// case the edited type has low-quality.
+// TODO(b/325451601): Remove when launched.
+BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
+             "AutofillUpdateLowQualityTokenOnImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls if Chrome Autofill UI surfaces ignore touch events if something is
 // fully or partially obscuring the Chrome window.

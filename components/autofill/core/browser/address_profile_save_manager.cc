@@ -31,7 +31,8 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
   // invalid phone number made the import possible. Just like regular updates,
   // future multi-step updates shouldn't claim impact of this feature again.
   // The `import_metadata` is thus initialized to a neutral element.
-  ProfileImportMetadata import_metadata{.origin = origin};
+  ProfileImportMetadata import_metadata;
+  import_metadata.origin = origin;
   form_data_importer->AddMultiStepImportCandidate(profile, import_metadata,
                                                   /*is_imported=*/true);
 }

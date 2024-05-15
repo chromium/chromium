@@ -570,6 +570,14 @@ FormDataImporter::GetAddressObservedFieldValues(
 
     observed_field_values.insert_or_assign(autofill_type.GetStorableType(),
                                            value);
+    // The `autofill_source_profile_guid()` is not reset when a field is
+    // manually edited or filled with non-address information later.
+    import_metadata.filled_types_to_autofill_guid.insert_or_assign(
+        autofill_type.GetStorableType(),
+        field->is_autofilled() &&
+                field->filling_product() == FillingProduct::kAddress
+            ? field->autofill_source_profile_guid()
+            : std::nullopt);
 
     if (FieldTypeGroupToFormType(autofill_type.group()) ==
         FormType::kAddressForm) {
@@ -597,8 +605,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   bool has_invalid_field_types = false;
 
   // Metadata about the way we construct candidate_profile.
-  ProfileImportMetadata import_metadata{.origin =
-                                            url::Origin::Create(source_url)};
+  ProfileImportMetadata import_metadata;
+  import_metadata.origin = url::Origin::Create(source_url);
 
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;
