@@ -30,9 +30,9 @@ namespace {
 // devices. It's known *not* to be present on caroline.
 // TODO(tnagel): Remove "Product_S/N" after all devices that have it are AUE.
 const char* const kMachineInfoSerialNumberKeys[] = {
-    "flex_id",        // Used by Reven devices
-    "Product_S/N",    // Samsung legacy
-    "serial_number",  // VPD v2+ devices (Samsung: caroline and later)
+    kSerialNumberKey,        // VPD v2+ devices (Samsung: caroline and later)
+    kFlexIdKey,              // Used by Reven devices
+    kLegacySerialNumberKey,  // Samsung legacy
 };
 }  // namespace
 
@@ -75,6 +75,7 @@ const char kRlzBrandCodeKey[] = "rlz_brand_code";
 const char kRegionKey[] = "region";
 const char kSerialNumberKey[] = "serial_number";
 const char kLegacySerialNumberKey[] = "Product_S/N";
+const char kFlexIdKey[] = "flex_id";
 const char kInitialLocaleKey[] = "initial_locale";
 const char kInitialTimezoneKey[] = "initial_timezone";
 const char kKeyboardLayoutKey[] = "keyboard_layout";

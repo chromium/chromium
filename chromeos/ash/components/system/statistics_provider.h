@@ -168,6 +168,11 @@ extern const char kLegacySerialNumberKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kSerialNumberKey[];
 
+// Serial number key for Flex devices. In most cases, GetEnterpriseMachineID()
+// is the appropriate way to obtain the serial number.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kFlexIdKey[];
+
 // Display Profiles key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kDisplayProfilesKey[];
