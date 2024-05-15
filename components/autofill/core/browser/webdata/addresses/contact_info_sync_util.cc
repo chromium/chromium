@@ -112,10 +112,6 @@ class ContactInfoEntryDataSetter {
                    FieldType type) const {
     metadata->set_status(ConvertProfileToSpecificsVerificationStatus(
         profile_->GetVerificationStatus(type)));
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillTrackProfileTokenQuality)) {
-      return;
-    }
     if (auto observations = profile_->token_quality().observations_.find(type);
         observations != profile_->token_quality().observations_.end()) {
       for (const ProfileTokenQuality::Observation& observation :
@@ -150,9 +146,7 @@ class ContactInfoProfileSetter {
  private:
   void SetObservations(const ContactInfoSpecifics::TokenMetadata& metadata,
                        FieldType type) const {
-    if (metadata.observations().empty() ||
-        !base::FeatureList::IsEnabled(
-            features::kAutofillTrackProfileTokenQuality)) {
+    if (metadata.observations().empty()) {
       return;
     }
     // If the value of the `type` was changed by an external integrator, the

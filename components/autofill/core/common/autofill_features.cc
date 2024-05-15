@@ -613,13 +613,6 @@ BASE_FEATURE(kAutofillContentEditableChangeEvents,
              "AutofillContentEditableChangeEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, on form submit, observations for every used profile are
-// collected into the profile's `token_quality()`.
-// TODO(crbug.com/40271999): Remove when launched.
-BASE_FEATURE(kAutofillTrackProfileTokenQuality,
-             "AutofillTrackProfileTokenQuality",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Whether to favor credit card number that user typed into input field vs
 // input field value (which was potentially modified via JavaScript).
 BASE_FEATURE(kAutofillUseTypedCreditCardNumber,

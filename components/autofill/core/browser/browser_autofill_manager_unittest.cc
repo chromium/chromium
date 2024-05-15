@@ -7755,8 +7755,6 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
 // Tests that `ProfileTokenQuality` is correctly integrated into
 // `AutofillProfile` and that on form submit, observations are collected.
 TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
-  base::test::ScopedFeatureList profile_token_quality_feature{
-      features::kAutofillTrackProfileTokenQuality};
   personal_data().ClearProfiles();
   AutofillProfile profile = test::GetFullProfile();
   // This is needed to not get an update prompt that would compromise the test.

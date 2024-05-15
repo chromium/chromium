@@ -844,10 +844,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
 void AutofillProfile::MergeFormGroupTokenQuality(
     const FormGroup& merged_group,
     const AutofillProfile& other_profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
   FieldTypeSet supported_types;
   merged_group.GetSupportedTypes(&supported_types);
   for (FieldType type : supported_types) {

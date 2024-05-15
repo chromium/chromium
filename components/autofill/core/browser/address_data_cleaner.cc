@@ -218,10 +218,6 @@ AddressDataCleaner::CalculateMinimalIncompatibleTypeSets(
 bool AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
     const AutofillProfile& profile,
     FieldType type) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return false;
-  }
   using ObservationType = ProfileTokenQuality::ObservationType;
   // A token is considered low quality for deduplication purposes, if the
   // majority of its observers are "bad", as defined by the switch below.

@@ -72,8 +72,6 @@ class ProfileTokenQualityTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillTrackProfileTokenQuality};
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient client_;

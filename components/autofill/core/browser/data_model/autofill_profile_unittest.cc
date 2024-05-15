@@ -1185,9 +1185,6 @@ TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
 
 // Tests that when merging two profiles, the token quality is merged.
 TEST(AutofillProfileTest, MergeDataFrom_TokenQuality) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackProfileTokenQuality};
-
   AutofillProfile a(i18n_model_definition::kLegacyHierarchyCountryCode);
   AutofillProfile b((i18n_model_definition::kLegacyHierarchyCountryCode));
   // Set the same state for both profiles. Expect that a's quality will be kept.

@@ -688,8 +688,7 @@ class ContactInfoSyncUtilTest
          features::kAutofillEnableSupportForAddressOverflowAndLandmark,
          features::kAutofillEnableSupportForAdminLevel2,
          features::kAutofillEnableSupportForApartmentNumbers,
-         features::kAutofillEnableDependentLocalityParsing,
-         features::kAutofillTrackProfileTokenQuality},
+         features::kAutofillEnableDependentLocalityParsing},
         {});
   }
 

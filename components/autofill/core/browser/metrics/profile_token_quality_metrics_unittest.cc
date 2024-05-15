@@ -25,13 +25,7 @@ namespace {
 
 using ObservationType = ProfileTokenQuality::ObservationType;
 
-class ProfileTokenQualityMetricsTest : public testing::Test {
- private:
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackProfileTokenQuality};
-};
-
-TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationCount) {
+TEST(ProfileTokenQualityMetricsTest, LogStoredObservationCount) {
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST, ObservationType::kAccepted);
@@ -45,7 +39,7 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationCount) {
       "Autofill.ProfileTokenQuality.StoredObservationsCount.PerProfile", 2, 1);
 }
 
-TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationsPerType) {
+TEST(ProfileTokenQualityMetricsTest, LogStoredObservationsPerType) {
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST, ObservationType::kAccepted);
@@ -67,7 +61,7 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredObservationsPerType) {
       ObservationType::kEditedToSimilarValue, 1);
 }
 
-TEST_F(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
+TEST(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
   AutofillProfile profile = test::GetFullProfile();
   // NAME_FIRST has a 50% acceptance rate.
   test_api(profile.token_quality())
@@ -97,8 +91,8 @@ TEST_F(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
                                       33, 1);
 }
 
-TEST_F(ProfileTokenQualityMetricsTest,
-       LogObservationCountBeforeSubmissionMetric) {
+TEST(ProfileTokenQualityMetricsTest,
+     LogObservationCountBeforeSubmissionMetric) {
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile.token_quality())
       .AddObservation(NAME_FIRST, ObservationType::kAccepted);

@@ -604,9 +604,6 @@ TEST_F(AddressDataManagerTest, AddUpdateRemoveProfiles) {
 // Tests that `UpdateProfile()` takes changes in the `ProfileTokenQuality`
 // observations into considerations.
 TEST_F(AddressDataManagerTest, UpdateProfile_NewObservations) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackProfileTokenQuality};
-
   // Add a profile without observations at `kArbitraryTime`.
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime);
@@ -634,9 +631,6 @@ TEST_F(AddressDataManagerTest, UpdateProfile_NewObservations) {
 // Tests that when the value for a type changes, `UpdateProfile()` resets the
 // observations for that type.
 TEST_F(AddressDataManagerTest, UpdateProfile_ResetObservations) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackProfileTokenQuality};
-
   // Add a profile with observations for NAME_FIRST and NAME_LAST.
   AutofillProfile profile = test::GetFullProfile();
   test_api(profile.token_quality())

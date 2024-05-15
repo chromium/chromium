@@ -180,11 +180,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     const FormStructure& form_structure,
     const FormData& form_data,
     PersonalDataManager& pdm) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
-
   autofill_metrics::LogObservationCountBeforeSubmissionMetric(form_structure,
                                                               pdm);
 
@@ -339,10 +334,6 @@ void ProfileTokenQuality::ResetObservationsForStoredType(FieldType type) {
 
 void ProfileTokenQuality::ResetObservationsForDifferingTokens(
     const AutofillProfile& other) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
       ResetObservationsForStoredType(type);

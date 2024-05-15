@@ -237,11 +237,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
 // Tests that quasi duplicates are not silently removed, if the corresponding
 // token doesn't have low quality.
 TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_NoQuality) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillTrackProfileTokenQuality,
-                            features::kAutofillSilentlyRemoveQuasiDuplicates},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillSilentlyRemoveQuasiDuplicates);
   const AutofillProfile profile = test::GetFullProfile();
   test_adm_.AddProfile(profile);
   AutofillProfile quasi_duplicate = test::GetFullProfile();
@@ -256,11 +253,8 @@ TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_NoQuality) {
 // Tests that quasi duplicates are silently removed, if the corresponding
 // token has low quality.
 TEST_F(AddressDataCleanerTest, Deduplicate_QuasiDuplicate_LowQuality) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillTrackProfileTokenQuality,
-                            features::kAutofillSilentlyRemoveQuasiDuplicates},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features(
+      features::kAutofillSilentlyRemoveQuasiDuplicates);
   const AutofillProfile profile = test::GetFullProfile();
   test_adm_.AddProfile(profile);
   AutofillProfile quasi_duplicate = test::GetFullProfile();
@@ -316,8 +310,6 @@ TEST_F(AddressDataCleanerTest, CalculateMinimalIncompatibleTypeSets) {
 }
 
 TEST_F(AddressDataCleanerTest, IsTokenLowQualityForDeduplicationPurposes) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackProfileTokenQuality};
   using ObservationType = ProfileTokenQuality::ObservationType;
 
   AutofillProfile profile = test::GetFullProfile();

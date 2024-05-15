@@ -487,21 +487,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
                   .Wait());
 }
 
-class TwoClientProfileTokenQualityAutofillProfileSyncTest : public SyncTest {
- public:
-  TwoClientProfileTokenQualityAutofillProfileSyncTest()
-      : SyncTest(TWO_CLIENT) {}
-
- private:
-  base::test::ScopedFeatureList feature_{
-      autofill::features::kAutofillTrackProfileTokenQuality};
-};
-
 // ProfileTokenQuality observations are not synced. This test ensures that for
 // incoming updates through sync, local observations are reset only when the
 // value of the corresponding token has changed.
-IN_PROC_BROWSER_TEST_F(TwoClientProfileTokenQualityAutofillProfileSyncTest,
-                       ProfileTokenQuality) {
+IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ProfileTokenQuality) {
   ASSERT_TRUE(SetupSync());
 
   // Create a profile with observations on client 0 and sync it to client 1.

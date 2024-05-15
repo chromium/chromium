@@ -126,10 +126,6 @@ void LogStoredTokenQuality(const AutofillProfile& profile,
 
 void LogStoredProfileTokenQualityMetrics(
     const std::vector<AutofillProfile*>& profiles) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillTrackProfileTokenQuality)) {
-    return;
-  }
   for (const AutofillProfile* profile : profiles) {
     FieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
     base::UmaHistogramCounts1000(
