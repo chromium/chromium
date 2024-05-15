@@ -14,8 +14,6 @@
 
 namespace features {
 
-// Keep sorted!
-
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kExperimentalFlingAnimation);
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kFocusFollowsCursor);
