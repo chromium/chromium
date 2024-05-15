@@ -866,6 +866,7 @@ class Browser : public TabStripModelObserver,
   // BrowserWindowInterface overrides:
   views::WebView* GetWebView() override;
   void OpenURL(const GURL& gurl, WindowOpenDisposition disposition) override;
+  const SessionID& GetSessionID() override;
 
  private:
   friend class BrowserTest;

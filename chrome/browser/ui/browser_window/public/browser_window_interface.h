@@ -19,6 +19,7 @@ class WebView;
 }  // namespace views
 
 class GURL;
+class SessionID;
 
 class BrowserWindowInterface {
  public:
@@ -29,6 +30,9 @@ class BrowserWindowInterface {
 
   // Opens a URL, with the given disposition.
   virtual void OpenURL(const GURL& gurl, WindowOpenDisposition disposition) = 0;
+
+  // Returns a session-unique ID.
+  virtual const SessionID& GetSessionID() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/sessions/core/session_id.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -625,6 +626,8 @@ class LensOverlayController : public LensSearchboxClient,
   views::UniqueWidgetPtr overlay_widget_;
   // Pointer to the web view within the overlay widget if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
+  // Stores the session ID for the window of the widget on creation.
+  std::optional<const SessionID> overlay_widget_window_session_id_;
 
   // Pointer to the WebViews that are being glued by this class. Only used to
   // clean up stale pointers. Only valid while `overlay_widget_` is showing.

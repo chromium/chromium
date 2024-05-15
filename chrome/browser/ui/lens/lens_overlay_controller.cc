@@ -139,6 +139,14 @@ gfx::Rect ComputeOverlayBounds(content::WebContents* contents) {
   return bounds;
 }
 
+gfx::NativeView TopLevelNativeView(content::WebContents* contents) {
+  gfx::NativeWindow top_level_native_window =
+      contents->GetTopLevelNativeWindow();
+  views::Widget* top_level_widget =
+      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
+  return top_level_widget->GetNativeView();
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -713,10 +721,29 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
 }
 
 void LensOverlayController::ShowOverlayWidget() {
+  content::WebContents* active_web_contents = tab_->GetContents();
+
   if (overlay_widget_) {
     CHECK(overlay_web_view_);
     CHECK(!overlay_widget_->IsVisible());
+
+    // If the tab has moved windows, the widget must be reparented.
+    if (overlay_widget_window_session_id_.value() !=
+        tab_->GetBrowserWindowInterface()->GetSessionID()) {
+      views::Widget::ReparentNativeView(
+          overlay_widget_->GetNativeView(),
+          TopLevelNativeView(tab_->GetContents()));
+    }
+
+    // Regardless, reset state associated with the parent widget.
+    tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+        active_web_contents, this);
+    overlay_widget_window_session_id_.emplace(
+        tab_->GetBrowserWindowInterface()->GetSessionID());
+    ResetUIBounds();
+
     overlay_widget_->Show();
+
     // The overlay needs to be focused on show to immediately begin
     // receiving key events.
     overlay_web_view_->RequestFocus();
@@ -726,8 +753,9 @@ void LensOverlayController::ShowOverlayWidget() {
   overlay_widget_ = std::make_unique<views::Widget>();
   overlay_widget_->Init(CreateWidgetInitParams());
   overlay_widget_->SetContentsView(CreateViewForOverlay());
+  overlay_widget_window_session_id_.emplace(
+      tab_->GetBrowserWindowInterface()->GetSessionID());
 
-  content::WebContents* active_web_contents = tab_->GetContents();
   tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
       active_web_contents, this);
 
@@ -748,6 +776,7 @@ void LensOverlayController::ShowOverlayWidget() {
 void LensOverlayController::BackgroundUI() {
   RemoveBackgroundBlur();
   overlay_widget_->Hide();
+  tab_contents_observer_.reset();
   state_ = State::kBackground;
   // TODO(b/335516480): Schedule the UI to be suspended.
 }
@@ -831,6 +860,7 @@ void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
     overlay_widget_->SetContentsView(std::make_unique<views::View>());
   }
   overlay_widget_.reset();
+  overlay_widget_window_session_id_.reset();
   tab_contents_observer_.reset();
 
   searchbox_handler_.reset();
@@ -883,12 +913,7 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
   params.name = "LensOverlayWidget";
   params.child = true;
 
-  gfx::NativeWindow top_level_native_window =
-      active_web_contents->GetTopLevelNativeWindow();
-  views::Widget* top_level_widget =
-      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
-  gfx::NativeView top_level_native_view = top_level_widget->GetNativeView();
-  params.parent = top_level_native_view;
+  params.parent = TopLevelNativeView(active_web_contents);
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
