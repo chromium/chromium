@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
     friend class Encryptor;
     // OSCryptAsync and tests need to be able to Clone() keys.
     friend class OSCryptAsync;
+    friend class TestOSCryptAsync;
     friend class EncryptorTestBase;
     friend struct mojo::StructTraits<os_crypt_async::mojom::KeyDataView,
                                      os_crypt_async::Encryptor::Key>;

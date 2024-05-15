@@ -12,8 +12,10 @@
 namespace os_crypt_async {
 
 // Obtain a test OSCryptAsync. This OSCryptAsync will vend test Encryptors that
-// perform encryption/decryption using a random test key.
-std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting();
+// perform encryption/decryption using a random test key. In unit tests without
+// a full task environment, `is_sync_for_unittests` can be set to true.
+std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
+    bool is_sync_for_unittests = false);
 
 // Obtain a test Encryptor. This Encryptor will perform encryption using a
 // random key. The key for test Encryptors is different each time this function

@@ -19,14 +19,20 @@ namespace os_crypt_async {
 
 class TestOSCryptAsync : public OSCryptAsync {
  public:
-  TestOSCryptAsync()
+  explicit TestOSCryptAsync(bool is_sync_for_unittests)
       : OSCryptAsync(
             std::vector<std::pair<Precedence, std::unique_ptr<KeyProvider>>>()),
-        encryptor_(GetTestEncryptorForTesting()) {}
+        encryptor_(GetTestEncryptorForTesting()),
+        is_sync_for_unittests_(is_sync_for_unittests) {}
 
   [[nodiscard]] base::CallbackListSubscription GetInstance(
       InitCallback callback,
       Encryptor::Option option) override {
+    if (is_sync_for_unittests_) {
+      std::move(callback).Run(encryptor_.Clone(option), true);
+      return base::CallbackListSubscription();
+    }
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -39,19 +45,28 @@ class TestOSCryptAsync : public OSCryptAsync {
 
   static Encryptor GetTestEncryptorForTesting() {
     Encryptor::KeyRing keys;
-    std::vector<uint8_t> key(Encryptor::Key::kAES256GCMKeySize);
-    crypto::RandBytes(key);
-    keys.emplace("_", Encryptor::Key(key, mojom::Algorithm::kAES256GCM));
+    std::vector<uint8_t> key_data(Encryptor::Key::kAES256GCMKeySize);
+    crypto::RandBytes(key_data);
+    Encryptor::Key key(key_data, mojom::Algorithm::kAES256GCM);
+    // The test key used here indicates it is compatible with OSCrypt Sync
+    // because otherwise tests that ask for instances with the
+    // kEncryptSyncCompat option would fall back to OSCrypt Sync, and this
+    // requires the OSCrypt mocker to be installed, which should not be needed
+    // in tests and code ported to OSCrypt Async.
+    key.is_os_crypt_sync_compatible_ = true;
+    keys.emplace("_", std::move(key));
     Encryptor encryptor(std::move(keys), "_");
     return encryptor;
   }
 
  private:
   Encryptor encryptor_;
+  const bool is_sync_for_unittests_;
 };
 
-std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting() {
-  return std::make_unique<TestOSCryptAsync>();
+std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
+    bool is_sync_for_unittests) {
+  return std::make_unique<TestOSCryptAsync>(is_sync_for_unittests);
 }
 
 Encryptor GetTestEncryptorForTesting() {
