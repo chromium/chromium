@@ -224,12 +224,14 @@ void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
   client_->AddSiteToNeverPromptList(origin);
   compose::LogComposeProactiveNudgeCtr(
       compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
+  client_->getPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 void ComposeManagerImpl::DisableCompose() {
   client_->DisableProactiveNudge();
   compose::LogComposeProactiveNudgeCtr(
       compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
+  client_->getPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 }
 
 void ComposeManagerImpl::GoToSettings() {

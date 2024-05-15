@@ -157,12 +157,9 @@ class ComposeManagerImplTest : public testing::Test {
   }
 
   std::vector<ukm::TestAutoSetUkmRecorder::HumanReadableUkmEntry>
-  GetUkmPageEntries() {
+  GetUkmPageEntries(const std::vector<std::string>& metric_names) {
     return ukm_recorder_->GetEntries(
-        ukm::builders::Compose_PageEvents::kEntryName,
-        {ukm::builders::Compose_PageEvents::kMenuItemClickedName,
-         ukm::builders::Compose_PageEvents::kMissingFormDataName,
-         ukm::builders::Compose_PageEvents::kMissingFormFieldDataName});
+        ukm::builders::Compose_PageEvents::kEntryName, metric_names);
   }
 
  private:
@@ -314,7 +311,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
-  auto ukm_entries = GetUkmPageEntries();
+  auto ukm_entries = GetUkmPageEntries(
+      {ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kMissingFormDataName,
+       ukm::builders::Compose_PageEvents::kMissingFormFieldDataName});
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_THAT(
       ukm_entries[0].metrics,
@@ -360,7 +360,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
-  auto ukm_entries = GetUkmPageEntries();
+  auto ukm_entries = GetUkmPageEntries(
+      {ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kMissingFormDataName,
+       ukm::builders::Compose_PageEvents::kMissingFormFieldDataName});
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_THAT(
       ukm_entries[0].metrics,
@@ -406,7 +409,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   run_loop.RunUntilIdle();
   SimulateComposeSessionEnd();
 
-  auto ukm_entries = GetUkmPageEntries();
+  auto ukm_entries = GetUkmPageEntries(
+      {ukm::builders::Compose_PageEvents::kMenuItemClickedName,
+       ukm::builders::Compose_PageEvents::kMissingFormDataName,
+       ukm::builders::Compose_PageEvents::kMissingFormFieldDataName});
   ASSERT_EQ(ukm_entries.size(), 1UL);
   EXPECT_THAT(
       ukm_entries[0].metrics,
@@ -427,21 +433,49 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
 }
 
-TEST_F(ComposeManagerImplTest, NeverShowForOrigin_HistogramTest) {
+TEST_F(ComposeManagerImplTest, NeverShowForOrigin_MetricsTest) {
   auto test_origin = url::Origin::Create(GURL("http://foo"));
   compose_manager_impl().NeverShowComposeForOrigin(test_origin);
+  SimulateComposeSessionEnd();
 
   histograms().ExpectUniqueSample(
       compose::kComposeProactiveNudgeCtr,
       compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite, 1);
+
+  auto ukm_entries = GetUkmPageEntries(
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                0),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                1)));
 }
 
-TEST_F(ComposeManagerImplTest, DisableCompose_HistogramTest) {
+TEST_F(ComposeManagerImplTest, DisableCompose_MetricTest) {
   compose_manager_impl().DisableCompose();
+  SimulateComposeSessionEnd();
 
   histograms().ExpectUniqueSample(
       compose::kComposeProactiveNudgeCtr,
       compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
+
+  auto ukm_entries = GetUkmPageEntries(
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                1),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                0)));
 }
 
 TEST_F(ComposeManagerImplTest, GoToSettings_HistogramTest) {

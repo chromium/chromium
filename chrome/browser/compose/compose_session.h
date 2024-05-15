@@ -200,7 +200,7 @@ class ComposeSession
   bool get_fre_complete() { return fre_complete_; }
 
   void set_started_with_proactive_nudge() {
-    started_with_proactive_nudge_ = true;
+    session_events_.started_with_proactive_nudge = true;
   }
 
   void SetFirstRunCompleted();
@@ -316,9 +316,6 @@ class ComposeSession
 
   // True if we have checked if autocompose is possible this session.
   bool has_checked_autocompose_ = false;
-
-  // True if the session started with the proactive nudge.
-  bool started_with_proactive_nudge_ = false;
 
   // Reason that a FRE session was exited, used for metrics.
   compose::ComposeFirstRunSessionCloseReason fre_close_reason_;

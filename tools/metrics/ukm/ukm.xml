@@ -8094,11 +8094,51 @@ be describing additional metrics about the same event.
       privacy.
     </summary>
   </metric>
+  <metric name="ProactiveNudgeDisabledForSite" enum="Boolean">
+    <summary>
+      True if the proactive nudge was disabled for this site during this page
+      load. Added in M126.
+    </summary>
+  </metric>
+  <metric name="ProactiveNudgeDisabledGlobally" enum="Boolean">
+    <summary>
+      True if the proactive nudge was globally disabled this page load. Added in
+      M126.
+    </summary>
+  </metric>
+  <metric name="ProactiveNudgeOpened">
+    <summary>
+      The number of times the Compose dialog is opened from the proactive nudge
+      during this page load. Recorded everytime the nudge is opened. Added in
+      M126.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="ProactiveNudgeShouldShow">
     <summary>
-      The number of times the Compose proactive nudge should show during This
+      The number of times the Compose proactive nudge should show during this
       page load. Recorded any time Compose is asked to show the proactive nudge
       even if it is eventually not shown. Added in M125.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ProactiveNudgeShown">
+    <summary>
+      The number of times the Compose proactive nudge is shown during this page
+      load. Recorded everytime a request to show the nudge returns true. Added
+      in M126.
     </summary>
     <aggregation>
       <history>
@@ -8232,6 +8272,19 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="StartedWithProactiveNudge" enum="Boolean">
+    <summary>
+      True if the session started with the proactive nudge rather than the
+      context menu option. Added in M126.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>

@@ -371,6 +371,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
     compose::LogComposeProactiveNudgeCtr(
         compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
     current_session->set_started_with_proactive_nudge();
+    page_ukm_tracker_->ProactiveNudgeOpened();
   }
 }
 
@@ -539,6 +540,7 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   if (nudge_can_show) {
     compose::LogComposeProactiveNudgeCtr(
         compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
+    page_ukm_tracker_->ProactiveNudgeShown();
   }
   return nudge_can_show;
 }
