@@ -205,69 +205,56 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    # Read event messages. The order can vary, so read all and sort them.
+    # Read event messages. The order can vary, so read all and sort them. Ignore
+    # optional "browsingContext.domContentLoaded" event for "about:blank" pages.
     # Expected sorted messages order:
     # 1. Command result.
     # 2. "browsingContext.contextCreated" event.
-    # 3. "browsingContext.domContentLoaded" event for "about:blank".
-    # 4. "browsingContext.domContentLoaded" event for the example_url.
-    # 5. "browsingContext.load" event.
-    messages = await read_sorted_messages(5)
+    # (optional). "browsingContext.domContentLoaded" event for "about:blank".
+    #             Omitted in headful mode.
+    # 3. "browsingContext.domContentLoaded" event for the example_url.
+    # 4. "browsingContext.load" event.
+    messages = await read_sorted_messages(
+        4, lambda m: 'method' not in m or
+        (m['method'] != 'browsingContext.domContentLoaded') or m['params'][
+            'url'] != 'about:blank')
 
     # Get the new context id from the "browsingContext.contextCreated" event.
     new_context_id = messages[1]['params']['context']
 
-    assert messages == [
-        {
-            'id': command_id,
-            'type': 'success',
-            'result': ANY_DICT
-        },
-        {
-            'type': 'event',
-            'method': 'browsingContext.contextCreated',
-            'params': {
-                'context': ANY_STR,
-                'url': 'about:blank',
-                'children': None,
-                'parent': None,
-                'userContext': 'default'
-            }
-        },
-        # TODO: CDP sends Lifecycle events when we send Lifecycle event enable
-        # These events correspond to the initial about:blank creation
-        # We should try to ignore the from Mapper.
-        {
-            'type': 'event',
-            'method': 'browsingContext.domContentLoaded',
-            'params': {
-                'context': new_context_id,
-                'navigation': ANY_STR,
-                'timestamp': ANY_TIMESTAMP,
-                'url': 'about:blank'
-            }
-        },
-        {
-            'type': 'event',
-            'method': 'browsingContext.domContentLoaded',
-            'params': {
-                'context': new_context_id,
-                'navigation': ANY_STR,
-                'timestamp': ANY_TIMESTAMP,
-                'url': example_url
-            }
-        },
-        {
-            'type': 'event',
-            'method': 'browsingContext.load',
-            'params': {
-                'context': new_context_id,
-                'navigation': ANY_STR,
-                'timestamp': ANY_TIMESTAMP,
-                'url': example_url
-            }
+    assert messages == [{
+        'id': command_id,
+        'type': 'success',
+        'result': ANY_DICT
+    }, {
+        'type': 'event',
+        'method': 'browsingContext.contextCreated',
+        'params': {
+            'context': ANY_STR,
+            'url': 'about:blank',
+            'children': None,
+            'parent': None,
+            'userContext': 'default'
         }
-    ]
+    }, {
+        'type': 'event',
+        'method': 'browsingContext.domContentLoaded',
+        'params': {
+            'context': new_context_id,
+            'navigation': ANY_STR,
+            'timestamp': ANY_TIMESTAMP,
+            'url': example_url
+        }
+    }, {
+        'type': 'event',
+        'method': 'browsingContext.load',
+        'params': {
+            'context': new_context_id,
+            'navigation': ANY_STR,
+            'timestamp': ANY_TIMESTAMP,
+            'url': example_url
+        }
+    }]
 
 
 @pytest.mark.asyncio

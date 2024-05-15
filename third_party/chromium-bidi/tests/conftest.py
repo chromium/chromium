@@ -16,6 +16,7 @@
 import asyncio
 import os
 import ssl
+from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
 
@@ -294,11 +295,18 @@ def cacheable_url(local_server: LocalHttpServer):
 @pytest.fixture
 def read_sorted_messages(websocket):
     """Read the given number of messages from the websocket, and returns them
-    in consistent order."""
-    async def read_sorted_messages(message_count):
+    in consistent order. Ignore messages that do not match the filter."""
+    async def read_sorted_messages(
+            message_count,
+            filter_lambda: Callable[[dict], bool] = lambda _: True):
         messages = []
         for _ in range(message_count):
-            messages.append(await read_JSON_message(websocket))
+            # Get the next message matching the filter.
+            while True:
+                message = await read_JSON_message(websocket)
+                if filter_lambda(message):
+                    break
+            messages.append(message)
         messages.sort(key=lambda x: x["method"]
                       if "method" in x else str(x["id"]) if "id" in x else "")
         return messages
