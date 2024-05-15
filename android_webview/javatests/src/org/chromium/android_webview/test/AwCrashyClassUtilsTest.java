@@ -54,6 +54,7 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({AwSwitches.WEBVIEW_FORCE_CRASH_JAVA})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
     public void testJavaCrashWhenEnabled() {
         Assert.assertTrue(AwCrashyClassUtils.shouldCrashJava());
         AwCrashyClassUtils.maybeCrashIfEnabled();
@@ -62,7 +63,6 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
     @CommandLineFlags.Add(AwSwitches.WEBVIEW_FORCE_CRASH_JAVA)
     public void testNoJavaCrashWhenEnabledAndExperimentDisabled() {
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
@@ -73,7 +73,6 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
     @CommandLineFlags.Add(AwSwitches.WEBVIEW_FORCE_CRASH_NATIVE)
     public void testNoNativeCrashWhenEnabledAndExperimentDisabled() {
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
@@ -84,7 +83,6 @@ public class AwCrashyClassUtilsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
     public void testNoCrashWhenCompletelyDisabled() {
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashJava());
         Assert.assertFalse(AwCrashyClassUtils.shouldCrashNative());
