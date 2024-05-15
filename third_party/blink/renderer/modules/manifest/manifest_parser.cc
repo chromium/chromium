@@ -690,6 +690,9 @@ KURL ManifestParser::ParseScope(const JSONObject* object,
     return KURL(default_value.BaseAsString());
   }
 
+  scope.RemoveFragmentIdentifier();
+  scope.SetQuery(String());
+
   DCHECK(scope.IsValid());
   DCHECK(SecurityOrigin::AreSameOrigin(scope, document_url_));
   return scope;

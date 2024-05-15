@@ -671,9 +671,28 @@ TEST_F(ManifestParserTest, ScopeParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 
+  // Scope removes query args.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "start_url": "app/index.html",
+             "scope": "/?test=abc" })");
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Scope removes fragments.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "start_url": "app/index.html",
+             "scope": "/#abc" })");
+    ASSERT_EQ(manifest->scope.GetString(), "http://foo.com/");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
   // Scope defaults to start_url with the filename, query, and fragment removed.
   {
-    auto& manifest = ParseManifest(R"({ "start_url": "land/landing.html" })");
+    auto& manifest =
+        ParseManifest(R"({ "start_url": "land/landing.html?query=test#abc" })");
     ASSERT_EQ(manifest->scope, KURL(DefaultDocumentUrl(), "land/"));
     EXPECT_EQ(0u, GetErrorCount());
   }
