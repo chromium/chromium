@@ -353,6 +353,12 @@ enum class PresentedState {
     return;
   }
   DCHECK(self.bookmarkNavigationController);
+  for (UIViewController* controller in self.bookmarkNavigationController
+           .viewControllers) {
+    BookmarksHomeViewController* bookmarksHomeViewController =
+        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
+    [bookmarksHomeViewController willDismiss];
+  }
 
   if (urlsToOpen.empty()) {
     default_browser::NotifyBookmarkManagerClosed(

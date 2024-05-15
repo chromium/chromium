@@ -233,6 +233,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   raw_ptr<const bookmarks::BookmarkNode> _externalBookmark;
   // Whether the view controller was requested to shutdown.
   BOOL _isShutDown;
+  // Whether the navigation controller is being dismissed.
+  // In which case, do not open anything on top of it.
+  BOOL _isBeingDismissed;
 }
 
 @synthesize editingFolderCell = _editingFolderCell;
@@ -381,12 +384,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return stack;
 }
 
+- (void)willDismiss {
+  _isBeingDismissed = YES;
+}
+
 - (void)willDismissBySwipeDown {
   if (self.searchController.active) {
     // Dismiss the keyboard if trying to dismiss the VC so the keyboard doesn't
     // linger until the VC dismissal has completed.
     [self.searchController.searchBar endEditing:YES];
   }
+  [self willDismiss];
 }
 
 #pragma mark - UIViewController
@@ -1054,6 +1062,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)jumpToFolder:(const bookmarks::BookmarkNode*)folder {
   // Clear bookmark path cache.
+  if (_isBeingDismissed) {
+    // The navigation controller is being dismissed.
+    // Do not open more views.
+    return;
+  }
   int64_t unusedFolderId;
   BookmarkModelType modelType;
   int unusedIndexPathRow;
