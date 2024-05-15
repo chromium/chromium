@@ -5466,10 +5466,6 @@ const char kUseAngleDescriptionMac[] =
 
 const char kUseAngleMetal[] = "Metal";
 
-const char kSystemColorChooserName[] = "System Color Chooser";
-const char kSystemColorChooserDescription[] =
-    "Enables a button that launches the macOS native color chooser.";
-
 const char kUseAdHocSigningForWebAppShimsName[] =
     "Use Ad-hoc Signing for Web App Shims";
 const char kUseAdHocSigningForWebAppShimsDescription[] =

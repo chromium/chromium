@@ -368,9 +368,6 @@ below:
         <message name="IDS_AX_COLOR_WELL_ROLEDESCRIPTION" desc="Accessibility description of the color well for choosing saturation and lighness in a color picker popup">
           Color well with two-dimensional slider for selecting saturation and lightness
         </message>
-        <message name="IDS_SYSTEM_COLOR_CHOOSER" desc="Label for a button which opens a system color picker.">
-          System Colors
-        </message>
       </if>
 
       <!-- Accessibility state localized descriptions -->

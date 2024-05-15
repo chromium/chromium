@@ -71,8 +71,6 @@ class CORE_EXPORT ColorChooserPopupUIController final
   void OpenEyeDropper();
   void EyeDropperResponseHandler(bool success, uint32_t color);
 
-  void OpenSystemColorChooser();
-
  private:
   ChromeClient& GetChromeClient() override;
 

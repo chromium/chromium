@@ -8010,11 +8010,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "system-color-chooser",
-    "owners": [ "bur@chromium.org", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "system-keyboard-lock",
     "owners": [ "joedow@chromium.org", "garykac@chromium.org", "jamiewalch@chromium.org" ],
     // This flag allows users to prevent the keyboard-lock API from capturing

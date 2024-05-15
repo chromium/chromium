@@ -2312,10 +2312,6 @@ BASE_FEATURE(kStylusRichGestures,
              "StylusRichGestures",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSystemColorChooser,
-             "SystemColorChooser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables third party script regex matching for detecting technologies.
 BASE_FEATURE(kThirdPartyScriptDetection,
              "ThirdPartyScriptDetection",
