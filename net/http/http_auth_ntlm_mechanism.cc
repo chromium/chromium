@@ -149,7 +149,7 @@ int HttpAuthNtlmMechanism::GenerateAuthToken(
     return ERR_UNEXPECTED;
 
   uint8_t client_challenge[8];
-  g_generate_random_proc(client_challenge);
+  g_generate_random_proc(base::span<uint8_t>(client_challenge));
 
   auto next_token = ntlm_client_.GenerateAuthenticateMessage(
       domain, user, credentials->password(), hostname, channel_bindings, spn,
