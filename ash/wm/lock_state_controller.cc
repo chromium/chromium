@@ -307,6 +307,21 @@ void LockStateController::StartLockAnimation() {
     return;
   }
 
+  views::MenuController* active_menu_controller =
+      views::MenuController::GetActiveInstance();
+
+  if (active_menu_controller) {
+    // TODO(http://b/328064674): Please remove the below crash keys once the
+    // the crash is fixed. It seems after post lock animation finished there
+    // is active menu. This check is moved to the StartLockAnimation, since it
+    // seems the check in the post lock animation is too late.
+
+    views::Widget* owner = active_menu_controller->owner();
+    SCOPED_CRASH_KEY_STRING256("LockStateController", "StartLockAnimation",
+                               owner ? owner->GetName() : "ownerless");
+    CHECK(false);
+  }
+
   animating_lock_ = true;
   StoreUnlockedProperties();
   VLOG(1) << "StartLockAnimation";
@@ -686,19 +701,6 @@ void LockStateController::PostLockAnimationFinished(bool aborted) {
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
     std::move(lock_screen_displayed_callback_).Run();
-  views::MenuController* active_menu_controller =
-      views::MenuController::GetActiveInstance();
-
-  if (active_menu_controller) {
-    // TODO(http://b/328064674): Please remove the below crash keys once the
-    // the crash is fixed. It seems after post lock animation finished there
-    // is active menu.
-
-    views::Widget* owner = active_menu_controller->owner();
-    SCOPED_CRASH_KEY_STRING256("LockStateController", "PostLockAnimation",
-                               owner ? owner->GetName() : "ownerless");
-    CHECK(false);
-  }
 }
 
 void LockStateController::UnlockAnimationAfterLockUIDestroyedFinished(
