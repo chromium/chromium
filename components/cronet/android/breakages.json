@@ -13,6 +13,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "I8c8c4e96b90675894ff49dc1ad6f8ecf23b38f1e",
+      "good_change_id": "I53ec88bf393d58106bb8724036255b42de8b9434",
+      "bugs": ["b/340192797"],
+      "comment": "Crash in setNetworkThreadPriorityOnNetworkThread() if ProGuarded"
+    },
+    {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
       "good_change_id": "Iab6e97af48769ee45fb5bb48d71453d08f542532",
       "bugs": ["b/329601514","b/330325607","b/331164502","b/331160704"],
