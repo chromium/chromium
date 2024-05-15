@@ -356,6 +356,53 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
                   .IsAutofillSyncToggleAvailable());
 }
 
+// Regression test for https://crbug.com/340194452
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
+                       IsAutofillSyncToggleAvailable) {
+  // Setup transport mode.
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  // The toggle is available.
+  EXPECT_TRUE(GetPersonalDataManager()
+                  ->address_data_manager()
+                  .IsAutofillSyncToggleAvailable());
+
+  // Turn account storage OFF.
+  GetPersonalDataManager()
+      ->address_data_manager()
+      .SetAutofillSelectableTypeEnabled(
+          /*enabled=*/false);
+  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
+                                       /*expect_active=*/false)
+                  .Wait());
+
+  // The toggle is still available.
+  EXPECT_TRUE(GetPersonalDataManager()
+                  ->address_data_manager()
+                  .IsAutofillSyncToggleAvailable());
+
+  // Turn on Sync.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // The toggle is no longer available.
+  EXPECT_FALSE(GetPersonalDataManager()
+                   ->address_data_manager()
+                   .IsAutofillSyncToggleAvailable());
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sign out.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // The toggle is not available.
+  EXPECT_FALSE(GetPersonalDataManager()
+                   ->address_data_manager()
+                   .IsAutofillSyncToggleAvailable());
+#endif
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.
