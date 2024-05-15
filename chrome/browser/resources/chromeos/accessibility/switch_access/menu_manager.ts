@@ -186,6 +186,6 @@ export class MenuManager {
     if (!this.isMenuOpen_ || !selectedAction) {
       return;
     }
-    ActionManager.performAction(selectedAction as unknown as typeof MenuAction);
+    ActionManager.performAction(selectedAction as MenuAction);
   }
 }

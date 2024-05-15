@@ -30,6 +30,7 @@ common_tsc_dir =
 
 # TS files to compile.
 ts_modules = [
+  "action_manager.ts",
   "auto_scan_manager.ts",
   "cache.ts",
   "commands.ts",
@@ -54,7 +55,6 @@ ts_modules = [
 
 # JS files needed to compile TS.
 js_modules = [
-  "action_manager.js",
   "nodes/combo_box_node.js",
   "nodes/desktop_node.js",
   "nodes/editable_text_node.js",
