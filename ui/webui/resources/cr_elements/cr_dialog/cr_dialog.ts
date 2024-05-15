@@ -111,7 +111,6 @@ export class CrDialogElement extends CrDialogElementBase {
   showOnAttach: boolean = false;
   ariaDescriptionText?: string;
 
-  private intersectionObserver_: IntersectionObserver|null = null;
   private mutationObserver_: MutationObserver|null = null;
   private boundKeydown_: ((e: KeyboardEvent) => void)|null = null;
 

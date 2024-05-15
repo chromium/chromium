@@ -65,7 +65,6 @@ export class CrTabsElement extends CrLitElement {
   selected: number;
 
   private isRtl_: boolean = false;
-  private lastSelected_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();

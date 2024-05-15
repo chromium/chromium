@@ -87,7 +87,6 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     selectOnClick: boolean = true;
 
     private items_: Element[] = [];
-    private observer_: MutationObserver;
     private selectedItem_: Element|null = null;
 
     override firstUpdated(changedProperties: PropertyValues<this>) {

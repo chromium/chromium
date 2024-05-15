@@ -59,8 +59,8 @@ export class CrButtonElement extends CrButtonElementBase {
   }
 
   disabled: boolean = false;
-  private hasPrefixIcon_: boolean = false;
-  private hasSuffixIcon_: boolean = false;
+  protected hasPrefixIcon_: boolean = false;
+  protected hasSuffixIcon_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When

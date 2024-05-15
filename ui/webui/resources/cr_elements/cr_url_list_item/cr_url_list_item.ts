@@ -120,7 +120,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     };
   }
 
-  alwaysShowSuffix: boolean;
+  alwaysShowSuffix: boolean = false;
   asAnchor: boolean = false;
   itemAriaLabel?: string;
   itemAriaDescription?: string;
@@ -128,9 +128,9 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   description?: string;
   reverseElideDescription: boolean = false;
   hasBadges: boolean = false;
-  private hasDescriptions_: boolean = false;
-  private hasSlottedContent_: boolean = false;
-  private isFolder_: boolean = false;
+  protected hasDescriptions_: boolean = false;
+  protected hasSlottedContent_: boolean = false;
+  protected isFolder_: boolean = false;
   size: CrUrlListItemSize = CrUrlListItemSize.MEDIUM;
   override title: string = '';
   url?: string;

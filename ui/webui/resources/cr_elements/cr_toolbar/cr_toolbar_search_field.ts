@@ -76,11 +76,11 @@ export class CrToolbarSearchFieldElement extends
     };
   }
 
-  narrow: boolean;
+  narrow: boolean = false;
   showingSearch: boolean = false;
   disabled: boolean = false;
   override autofocus: boolean = false;
-  spinnerActive: boolean;
+  spinnerActive: boolean = false;
   private searchFocused_: boolean = false;
   iconOverride?: string;
 

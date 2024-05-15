@@ -40,8 +40,8 @@ export class CrIconElement extends CrLitElement {
 
     if (changedProperties.has('icon')) {
       const [iconsetName, iconName] = this.icon.split(':');
-      this.iconName_ = iconName;
-      this.iconsetName_ = iconsetName;
+      this.iconName_ = iconName || '';
+      this.iconsetName_ = iconsetName || '';
       this.updateIcon();
     }
   }

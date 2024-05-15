@@ -180,10 +180,10 @@ export class CrSliderElement extends CrSliderElementBase {
   ticks: SliderTick[]|number[] = [];
   value: number;
 
-  private disabled_: boolean;
+  protected disabled_: boolean;
   protected label_: string = '';
-  private showLabel_: boolean = false;
-  private transiting_: boolean = false;
+  protected showLabel_: boolean = false;
+  protected transiting_: boolean = false;
 
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;

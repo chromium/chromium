@@ -96,14 +96,14 @@ export class CrToolbarElement extends CrLitElement {
   searchPrompt: string;
   clearLabel: string;
   menuLabel: string;
-  spinnerActive: boolean;
+  spinnerActive: boolean = false;
   showMenu: boolean = false;
   showSearch: boolean = true;
   override autofocus: boolean = false;
-  narrow: boolean;
+  narrow: boolean = false;
   narrowThreshold: number = 900;
   alwaysShowLogo: boolean = false;
-  protected showingSearch_: boolean;
+  protected showingSearch_: boolean = false;
   searchIconOverride?: string;
   private narrowQuery_: MediaQueryList|null = null;
 

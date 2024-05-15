@@ -49,7 +49,7 @@ export class CrDrawerElement extends CrLitElement {
 
   heading: string;
   align: 'ltr'|'rtl' = 'ltr';
-  private show_: boolean;
+  protected show_: boolean = false;
 
   get open(): boolean {
     return this.$.dialog.open;
