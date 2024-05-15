@@ -149,7 +149,7 @@ suite('Consent', function() {
     // In the initial state, the content area isn't scrollable and doesn't have
     // a separator in the bottom (represented by 'can-scroll' class).
     // The collapse section is closed.
-    const collapseElement = page.shadowRoot!.querySelector('iron-collapse');
+    const collapseElement = page.shadowRoot!.querySelector('cr-collapse');
     const contentArea: HTMLElement|null =
         page.shadowRoot!.querySelector('#contentArea');
     let hasScrollbar = doesElemenHaveScrollbar(contentArea!);
@@ -449,7 +449,7 @@ suite('Combined', function() {
     const learnMoreElement = consentStep!.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
     const collapseElement =
-        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+        learnMoreElement!.shadowRoot!.querySelector('cr-collapse');
     assertFalse(collapseElement!.opened);
 
     // The collapse section is opened and the native UI is notified about the
@@ -587,7 +587,7 @@ suite('NoticeEEA', function() {
     const learnMoreElement = noticeStep!.shadowRoot!.querySelector(
         'privacy-sandbox-dialog-learn-more');
     const collapseElement =
-        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+        learnMoreElement!.shadowRoot!.querySelector('cr-collapse');
     assertFalse(collapseElement!.opened);
 
     // The collapse section is opened and the native UI is notified about the
@@ -708,7 +708,7 @@ suite('NoticeROW', function() {
     const learnMoreElement =
         page.shadowRoot!.querySelector('privacy-sandbox-dialog-learn-more');
     const collapseElement =
-        learnMoreElement!.shadowRoot!.querySelector('iron-collapse');
+        learnMoreElement!.shadowRoot!.querySelector('cr-collapse');
     assertFalse(collapseElement!.opened);
 
     // The collapse section is opened and the native UI is notified about the
