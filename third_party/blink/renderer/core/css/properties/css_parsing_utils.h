@@ -140,7 +140,7 @@ CSSPrimitiveValue* ConsumeNumberOrPercent(CSSParserTokenRange&,
                                           const CSSParserContext&,
                                           CSSPrimitiveValue::ValueRange);
 
-CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenRange&,
+CSSPrimitiveValue* ConsumeAlphaValue(CSSParserTokenStream&,
                                      const CSSParserContext&);
 CSSPrimitiveValue* ConsumeLengthOrPercent(
     CSSParserTokenRange&,
@@ -185,6 +185,9 @@ CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
 CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenRange&,
                                       CSSValueID lower,
                                       CSSValueID upper);
+CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream&,
+                                      CSSValueID lower,
+                                      CSSValueID upper);
 template <CSSValueID, CSSValueID...>
 inline bool IdentMatches(CSSValueID id);
 template <CSSValueID... allowedIdents>
@@ -197,6 +200,7 @@ CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenRange&,
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenRange&);
+CSSStringValue* ConsumeString(CSSParserTokenStream&);
 StringView ConsumeStringAsStringView(CSSParserTokenRange&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
                                   const CSSParserContext&);
@@ -205,7 +209,7 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
 
 // Some properties accept non-standard colors, like rgb values without a
 // preceding hash, in quirks mode.
-CORE_EXPORT CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenRange&,
+CORE_EXPORT CSSValue* ConsumeColorMaybeQuirky(CSSParserTokenStream&,
                                               const CSSParserContext&);
 
 // https://drafts.csswg.org/css-color-5/#typedef-color
@@ -360,13 +364,13 @@ bool IsCustomIdent(CSSValueID);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-name
 bool IsTimelineName(const CSSParserToken&);
 
-CSSValue* ConsumeSelfPositionOverflowPosition(CSSParserTokenRange&,
+CSSValue* ConsumeSelfPositionOverflowPosition(CSSParserTokenStream&,
                                               IsPositionKeyword);
 CSSValue* ConsumeSimplifiedDefaultPosition(CSSParserTokenRange&,
                                            IsPositionKeyword);
 CSSValue* ConsumeSimplifiedSelfPosition(CSSParserTokenRange&,
                                         IsPositionKeyword);
-CSSValue* ConsumeContentDistributionOverflowPosition(CSSParserTokenRange&,
+CSSValue* ConsumeContentDistributionOverflowPosition(CSSParserTokenStream&,
                                                      IsPositionKeyword);
 CSSValue* ConsumeSimplifiedContentPosition(CSSParserTokenRange&,
                                            IsPositionKeyword);
@@ -454,7 +458,7 @@ template <typename T>
   requires std::is_same_v<T, CSSParserTokenStream> ||
            std::is_same_v<T, CSSParserTokenRange>
 CSSRepeatStyleValue* ConsumeRepeatStyleValue(T& range);
-CSSValueList* ParseRepeatStyle(CSSParserTokenRange& range);
+CSSValueList* ParseRepeatStyle(CSSParserTokenStream& stream);
 
 CSSValue* ConsumeWebkitBorderImage(CSSParserTokenStream&,
                                    const CSSParserContext&);
@@ -483,10 +487,13 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
-CSSValue* ConsumeShadow(CSSParserTokenRange&,
+CSSValue* ConsumeShadow(CSSParserTokenStream&,
                         const CSSParserContext&,
                         AllowInsetAndSpread);
-CSSShadowValue* ParseSingleShadow(CSSParserTokenRange&,
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+CSSShadowValue* ParseSingleShadow(T&,
                                   const CSSParserContext&,
                                   AllowInsetAndSpread);
 
@@ -604,14 +611,17 @@ bool ConsumeFromColumnOrPageBreakInside(CSSParserTokenStream&, CSSValueID&);
 
 bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context);
 
-CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange&,
+CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenStream&,
                                   const CSSParserContext&,
                                   UnitlessQuirk = UnitlessQuirk::kForbid);
-CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange&,
+template <typename T>
+  requires std::is_same_v<T, CSSParserTokenStream> ||
+           std::is_same_v<T, CSSParserTokenRange>
+CSSValue* ConsumeWidthOrHeight(T&,
                                const CSSParserContext&,
                                UnitlessQuirk = UnitlessQuirk::kForbid);
 
-CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
+CSSValue* ConsumeMarginOrOffset(CSSParserTokenStream&,
                                 const CSSParserContext&,
                                 UnitlessQuirk,
                                 CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
@@ -644,7 +654,7 @@ bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   const CSSParserContext&,
                   bool use_legacy_parsing);
 
-CSSValue* ConsumeTextDecorationLine(CSSParserTokenRange&);
+CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
 CSSValue* ConsumeTextBoxEdge(CSSParserTokenRange&);
 
 // Consume the `autospace` production.
