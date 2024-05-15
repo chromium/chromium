@@ -385,6 +385,34 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Returns the background color for the suggestions dropdown in a "standard" (non-incognito)
+     * TabModel with the given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownStandardBackgroundColor(Context context) {
+        return ChromeColors.getSurfaceColor(
+                context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+    }
+
+    /**
+     * Returns the background color for the suggestions dropdown in an incognito TabModel with the
+     * given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownIncognitoBackgroundColor(Context context) {
+        return context.getColor(R.color.omnibox_dropdown_bg_incognito);
+    }
+
+    /**
+     * Returns the background color for the suggestions dropdown for the given {@link
+     * BrandedColorScheme} with the given context.
+     */
+    public static @ColorInt int getSuggestionsDropdownBackgroundColorForColorScheme(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        return brandedColorScheme == BrandedColorScheme.INCOGNITO
+                ? getSuggestionsDropdownIncognitoBackgroundColor(context)
+                : getSuggestionsDropdownStandardBackgroundColor(context);
+    }
+
+    /**
      * Resolves the attribute based on the current theme.
      *
      * @param context The {@link Context} used to retrieve resources.

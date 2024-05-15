@@ -28,10 +28,13 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.InsetObserver;
+
+import java.util.Optional;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
@@ -41,6 +44,8 @@ public class BottomAttachedUiObserverTest {
     private static final int OVERLAY_PANEL_COLOR = Color.BLUE;
     private static final int BOTTOM_SHEET_YELLOW = Color.YELLOW;
     private static final int BOTTOM_SHEET_CYAN = Color.CYAN;
+    private static final int OMNIBOX_SUGGESTIONS_COLOR = Color.MAGENTA;
+    private static final int OMNIBOX_SUGGESTIONS_COLOR_2 = Color.DKGRAY;
 
     private static final WindowInsetsCompat BOTTOM_NAV_BAR_INSETS =
             new WindowInsetsCompat.Builder()
@@ -74,6 +79,8 @@ public class BottomAttachedUiObserverTest {
     @Mock private BottomSheetContent mBottomSheetContentYellowBackground;
     @Mock private BottomSheetContent mBottomSheetContentCyanBackground;
 
+    @Mock private OmniboxSuggestionsVisualState mOmniboxSuggestionsVisualState;
+
     @Mock private InsetObserver mInsetObserver;
 
     @Before
@@ -88,6 +95,7 @@ public class BottomAttachedUiObserverTest {
                         mSnackbarManager,
                         mContextualSearchManagerSupplier,
                         mBottomSheetController,
+                        Optional.of(mOmniboxSuggestionsVisualState),
                         mInsetObserver);
         mBottomAttachedUiObserver.onInsetChanged(0, 0, 0, 0);
 
@@ -244,6 +252,27 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
+    public void testAdaptsColorToOmniboxSuggestions() {
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
+                OMNIBOX_SUGGESTIONS_COLOR);
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR);
+
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mColorChangeObserver.assertColor(null);
+
+        mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
+                OMNIBOX_SUGGESTIONS_COLOR_2);
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR_2);
+
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mColorChangeObserver.assertColor(null);
+    }
+
+    @Test
     public void testColorPrioritization() {
         mColorChangeObserver.assertColor(null);
 
@@ -266,6 +295,16 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onSheetOpened(0);
         mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
 
+        // Show omnibox suggestions.
+        mBottomAttachedUiObserver.onOmniboxSuggestionsBackgroundColorChanged(
+                OMNIBOX_SUGGESTIONS_COLOR);
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(true);
+        mColorChangeObserver.assertColor(OMNIBOX_SUGGESTIONS_COLOR);
+
+        // Hide omnibox suggestions.
+        mBottomAttachedUiObserver.onOmniboxSuggestionsVisibilityChanged(false);
+        mColorChangeObserver.assertColor(BOTTOM_SHEET_YELLOW);
+
         // Hide bottom sheet.
         mBottomAttachedUiObserver.onSheetClosed(0);
         mColorChangeObserver.assertColor(OVERLAY_PANEL_COLOR);
@@ -285,6 +324,8 @@ public class BottomAttachedUiObserverTest {
         setOverlayPanelObserver();
 
         mBottomAttachedUiObserver.destroy();
+        verify(mOmniboxSuggestionsVisualState)
+                .setOmniboxSuggestionsVisualStateObserver(eq(Optional.empty()));
         verify(mBottomSheetController).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mBrowserControlsStateProvider).removeObserver(eq(mBottomAttachedUiObserver));

@@ -30,11 +30,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -50,8 +50,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     private static final long LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS = 300;
 
-    private final int mStandardBgColor;
-    private final int mIncognitoBgColor;
+    private final Context mContext;
 
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
@@ -243,11 +242,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
         ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
 
-        mStandardBgColor =
-                ChromeColors.getSurfaceColor(
-                        context, R.dimen.omnibox_suggestion_dropdown_bg_elevation);
-        int incognitoBgColorRes = R.color.omnibox_dropdown_bg_incognito;
-        mIncognitoBgColor = context.getColor(incognitoBgColorRes);
+        mContext = context;
         if (!mForcePhoneStyleOmnibox
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && context.getResources().getConfiguration().screenWidthDp
@@ -367,9 +362,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
         int color =
-                brandedColorScheme == BrandedColorScheme.INCOGNITO
-                        ? mIncognitoBgColor
-                        : mStandardBgColor;
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColorForColorScheme(
+                        mContext, brandedColorScheme);
+
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
             // mOmniboxResultsContainer' background from the area not covered by
@@ -598,16 +593,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                                             mAdapter.getItemCount()));
                 },
                 LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS);
-    }
-
-    @VisibleForTesting
-    public int getStandardBgColor() {
-        return mStandardBgColor;
-    }
-
-    @VisibleForTesting
-    public int getIncognitoBgColor() {
-        return mIncognitoBgColor;
     }
 
     @VisibleForTesting

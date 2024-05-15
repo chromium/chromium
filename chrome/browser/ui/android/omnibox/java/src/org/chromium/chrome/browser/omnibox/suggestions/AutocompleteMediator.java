@@ -73,6 +73,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.Optional;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 class AutocompleteMediator
@@ -171,6 +172,10 @@ class AutocompleteMediator
     // The suggestion that the last prefetch was started for within the current omnibox session.
     private @Nullable AutocompleteMatch mLastPrefetchStartedSuggestion;
 
+    // Observer watching for changes to the visual state of the omnibox suggestions.
+    private @NonNull Optional<AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver>
+            mOmniboxSuggestionsVisualStateObserver = Optional.empty();
+
     public AutocompleteMediator(
             @NonNull Context context,
             @NonNull AutocompleteDelegate delegate,
@@ -227,6 +232,18 @@ class AutocompleteMediator
                         embedder::getVerticalTranslationForAnimation,
                         () -> updateOmniboxSuggestionsVisibility(true),
                         addedVerticalOffset);
+    }
+
+    /**
+     * Sets the observer watching the state of the omnibox suggestions. This observer will be
+     * notifying of visual changes to the omnibox suggestions view, such as visibility or background
+     * color changes.
+     */
+    void setOmniboxSuggestionsVisualStateObserver(
+            Optional<AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver>
+                    omniboxSuggestionsVisualStateObserver) {
+        assert omniboxSuggestionsVisualStateObserver != null;
+        mOmniboxSuggestionsVisualStateObserver = omniboxSuggestionsVisualStateObserver;
     }
 
     /** Initialize the Mediator with default set of suggestion processors. */
@@ -311,6 +328,12 @@ class AutocompleteMediator
     void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         mDropdownViewInfoListManager.setBrandedColorScheme(brandedColorScheme);
         mListPropertyModel.set(SuggestionListProperties.COLOR_SCHEME, brandedColorScheme);
+        mOmniboxSuggestionsVisualStateObserver.ifPresent(
+                (observer) ->
+                        observer.onOmniboxSuggestionsBackgroundColorChanged(
+                                OmniboxResourceProvider
+                                        .getSuggestionsDropdownBackgroundColorForColorScheme(
+                                                mContext, brandedColorScheme)));
     }
 
     /**
@@ -1059,12 +1082,15 @@ class AutocompleteMediator
      *
      * @param shouldBeVisible whether the omnibox suggestions are visible
      */
-    private void updateOmniboxSuggestionsVisibility(boolean shouldBeVisible) {
+    @VisibleForTesting
+    void updateOmniboxSuggestionsVisibility(boolean shouldBeVisible) {
         boolean wasVisible = mListPropertyModel.get(SuggestionListProperties.VISIBLE);
         mListPropertyModel.set(SuggestionListProperties.VISIBLE, shouldBeVisible);
         if (shouldBeVisible && !wasVisible) {
             mIgnoreOmniboxItemSelection = true; // Reset to default value.
         }
+        mOmniboxSuggestionsVisualStateObserver.ifPresent(
+                (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(shouldBeVisible));
     }
 
     /**
@@ -1074,13 +1100,17 @@ class AutocompleteMediator
      *
      * @see AutocompleteController#stop(boolean)
      */
-    private void hideSuggestions() {
+    @VisibleForTesting
+    void hideSuggestions() {
         if (!mNativeInitialized || mAutocomplete == null) return;
         stopAutocomplete(true);
         dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         mDropdownViewInfoListManager.clear();
         mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
+
+        mOmniboxSuggestionsVisualStateObserver.ifPresent(
+                (observer) -> observer.onOmniboxSuggestionsVisibilityChanged(false));
     }
 
     /**

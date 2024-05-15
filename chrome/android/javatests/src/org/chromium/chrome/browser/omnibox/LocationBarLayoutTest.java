@@ -122,10 +122,7 @@ public class LocationBarLayoutTest {
     private LocationBarMediator getLocationBarMediator() {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator)
-                        mActivityTestRule
-                                .getActivity()
-                                .getToolbarManager()
-                                .getLocationBarForTesting();
+                        mActivityTestRule.getActivity().getToolbarManager().getLocationBar();
         return locationBarCoordinator.getMediatorForTesting();
     }
 

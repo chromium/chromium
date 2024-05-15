@@ -199,7 +199,7 @@ public class ToolbarTest {
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
                             Matchers.is(true));
@@ -212,7 +212,7 @@ public class ToolbarTest {
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
                             Matchers.is(false));
@@ -240,7 +240,7 @@ public class ToolbarTest {
                 () -> {
                     Criteria.checkThat(
                             activity.getToolbarManager()
-                                    .getLocationBarForTesting()
+                                    .getLocationBar()
                                     .getOmniboxStub()
                                     .isUrlBarFocused(),
                             Matchers.is(true));

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -61,6 +62,7 @@ import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -839,5 +841,13 @@ public class LocationBarCoordinator
 
     public int getUrlActionContainerEndMarginForTesting() {
         return mLocationBarLayout.getUrlActionContainerEndMarginForTesting(); // IN-TEST
+    }
+
+    /**
+     * @return The location bar's {@link OmniboxSuggestionsVisualState}.
+     */
+    @Override
+    public @NonNull Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState() {
+        return Optional.of(mAutocompleteCoordinator);
     }
 }

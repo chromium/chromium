@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -73,6 +75,7 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -99,6 +102,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /** Tests for {@link AutocompleteMediator}. */
@@ -146,6 +150,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private @Mock InsetObserver mInsetObserver;
+    private @Mock AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver
+            mVisualStateObserver;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Captor ArgumentCaptor<SuggestionsListAnimationDriver> mDriverCaptor;
 
@@ -253,6 +259,8 @@ public class AutocompleteMediatorUnitTest {
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
         setUpLocationBarDataProvider(
                 JUnitTestGURLs.NTP_URL, "New Tab Page", PageClassification.NTP_VALUE);
+
+        mMediator.setOmniboxSuggestionsVisualStateObserver(Optional.of(mVisualStateObserver));
     }
 
     /**
@@ -1495,5 +1503,42 @@ public class AutocompleteMediatorUnitTest {
             verify(ShadowCachedSuggestionsManager.mock, never()).saveToCache(any());
             clearInvocations(ShadowCachedSuggestionsManager.mock);
         }
+    }
+
+    @Test
+    public void updateVisualsForState_informsVisualStateObserver() {
+        mMediator.updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        verify(mVisualStateObserver)
+                .onOmniboxSuggestionsBackgroundColorChanged(
+                        eq(
+                                OmniboxResourceProvider
+                                        .getSuggestionsDropdownStandardBackgroundColor(mActivity)));
+
+        mMediator.updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        verify(mVisualStateObserver)
+                .onOmniboxSuggestionsBackgroundColorChanged(
+                        eq(
+                                OmniboxResourceProvider
+                                        .getSuggestionsDropdownIncognitoBackgroundColor(
+                                                mActivity)));
+    }
+
+    @Test
+    public void hideSuggestions_informsVisualStateObserver() {
+        mMediator.onNativeInitialized();
+        mMediator.setAutocompleteProfile(mProfile);
+
+        mMediator.hideSuggestions();
+        verify(mVisualStateObserver).onOmniboxSuggestionsVisibilityChanged(eq(false));
+    }
+
+    @Test
+    public void updateOmniboxSuggestionsVisibility_informsVisualStateObserver() {
+        mMediator.updateOmniboxSuggestionsVisibility(true);
+        verify(mVisualStateObserver, atLeastOnce()).onOmniboxSuggestionsVisibilityChanged(eq(true));
+
+        mMediator.updateOmniboxSuggestionsVisibility(false);
+        verify(mVisualStateObserver, atLeastOnce())
+                .onOmniboxSuggestionsVisibilityChanged(eq(false));
     }
 }

@@ -49,6 +49,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -140,11 +141,11 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Feature("Omnibox")
     public void testBackgroundColor() {
         assertEquals(
-                mDropdown.getStandardBgColor(),
+                OmniboxResourceProvider.getSuggestionsDropdownStandardBackgroundColor(mContext),
                 ChromeColors.getSurfaceColor(
                         mContext, R.dimen.omnibox_suggestion_dropdown_bg_elevation));
         assertEquals(
-                mDropdown.getIncognitoBgColor(),
+                OmniboxResourceProvider.getSuggestionsDropdownIncognitoBackgroundColor(mContext),
                 mContext.getColor(R.color.omnibox_dropdown_bg_incognito));
     }
 

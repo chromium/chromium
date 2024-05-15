@@ -16,11 +16,14 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.InsetObserver;
+
+import java.util.Optional;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -48,6 +51,8 @@ public class TabbedSystemUiCoordinator {
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param omniboxSuggestionsVisualState An optional {@link OmniboxSuggestionsVisualState} for
+     *     access to the visual state of the omnibox suggestions.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public TabbedSystemUiCoordinator(
@@ -59,7 +64,8 @@ public class TabbedSystemUiCoordinator {
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
             InsetObserver insetObserver) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
@@ -74,6 +80,7 @@ public class TabbedSystemUiCoordinator {
                             snackbarManagerSupplier,
                             contextualSearchManagerSupplier,
                             bottomSheetController,
+                            omniboxSuggestionsVisualState,
                             insetObserver);
         }
     }

@@ -2693,8 +2693,8 @@ public class ToolbarManager
         return mToolbar.getToolbarAlphaInOverviewObserver();
     }
 
-    /** Returns {@link LocationBar} for access in tests. */
-    public LocationBar getLocationBarForTesting() {
+    /** Returns {@link LocationBar}. */
+    public LocationBar getLocationBar() {
         return mLocationBar;
     }
 

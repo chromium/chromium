@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.omnibox;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.Optional;
 
 /** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
 public interface LocationBar {
@@ -105,6 +109,9 @@ public interface LocationBar {
     /** Removes an observer for suggestions scroll events. */
     default void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {}
+
+    @NonNull
+    Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState();
 
     /** Destroys the LocationBar. */
     void destroy();

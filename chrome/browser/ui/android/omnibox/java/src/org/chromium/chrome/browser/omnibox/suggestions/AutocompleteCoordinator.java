@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -64,9 +65,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /** Coordinator that handles the interactions with the autocomplete system. */
-public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextChangeListener {
+public class AutocompleteCoordinator
+        implements UrlFocusChangeListener, UrlTextChangeListener, OmniboxSuggestionsVisualState {
     private final @NonNull ViewGroup mParent;
     private final @NonNull ObservableSupplier<Profile> mProfileSupplier;
     private final @NonNull Callback<Profile> mProfileChangeCallback;
@@ -77,6 +80,15 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private @NonNull ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
+
+    /** An observer watching for changes to the visual state of the omnibox suggestions. */
+    public interface OmniboxSuggestionsVisualStateObserver {
+        /** Called when the visibility of the omnibox suggestions changes. */
+        void onOmniboxSuggestionsVisibilityChanged(boolean visible);
+
+        /** Called when the background color of the omnibox suggestions changes. */
+        void onOmniboxSuggestionsBackgroundColorChanged(@ColorInt int color);
+    }
 
     public AutocompleteCoordinator(
             @NonNull ViewGroup parent,
@@ -173,6 +185,17 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             mDropdown.destroy();
             mDropdown = null;
         }
+    }
+
+    /**
+     * Sets the observer watching the state of the omnibox suggestions. This observer will be
+     * notifying of visual changes to the omnibox suggestions view, such as visibility or background
+     * color changes.
+     */
+    @Override
+    public void setOmniboxSuggestionsVisualStateObserver(
+            Optional<OmniboxSuggestionsVisualStateObserver> omniboxSuggestionsVisualStateObserver) {
+        mMediator.setOmniboxSuggestionsVisualStateObserver(omniboxSuggestionsVisualStateObserver);
     }
 
     private ViewProvider<SuggestionListViewHolder> createViewProvider(

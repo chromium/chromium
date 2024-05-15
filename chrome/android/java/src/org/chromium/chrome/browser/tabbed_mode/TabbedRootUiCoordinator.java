@@ -530,6 +530,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mSnackbarManagerSupplier,
                         mContextualSearchManagerSupplier,
                         getBottomSheetController(),
+                        mToolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
                         mInsetObserverViewSupplier.get());
     }
 

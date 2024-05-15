@@ -15,11 +15,15 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelStateProvider;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserver;
+
+import java.util.Optional;
 
 /**
  * An observer class that listens for changes in UI components that are attached to the bottom of
@@ -32,7 +36,9 @@ public class BottomAttachedUiObserver
                 SnackbarStateProvider.Observer,
                 OverlayPanelStateProvider.Observer,
                 BottomSheetObserver,
-                InsetObserver.WindowInsetObserver {
+                InsetObserver.WindowInsetObserver,
+                AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver {
+
     /**
      * An observer to be notified of changes to what kind of UI is currently bordering the bottom of
      * the screen.
@@ -63,6 +69,10 @@ public class BottomAttachedUiObserver
     private boolean mOverlayPanelVisible;
     private boolean mOverlayPanelPeeked;
 
+    private Optional<OmniboxSuggestionsVisualState> mOmniboxSuggestionsVisualState;
+    private boolean mOmniboxSuggestionsVisible;
+    private @Nullable @ColorInt Integer mOmniboxSuggestionsColor;
+
     private final InsetObserver mInsetObserver;
 
     /**
@@ -76,13 +86,16 @@ public class BottomAttachedUiObserver
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param omniboxSuggestionsVisualState An optional {@link OmniboxSuggestionsVisualState} for
+     *     access to the visual state of the omnibox suggestions.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public BottomAttachedUiObserver(
-            BrowserControlsStateProvider browserControlsStateProvider,
-            SnackbarStateProvider snackbarStateProvider,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull SnackbarStateProvider snackbarStateProvider,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
             InsetObserver insetObserver) {
         mObservers = new ObserverList<>();
 
@@ -114,6 +127,11 @@ public class BottomAttachedUiObserver
                                         }
                                     });
                 });
+
+        mOmniboxSuggestionsVisualState = omniboxSuggestionsVisualState;
+        mOmniboxSuggestionsVisualState.ifPresent(
+                coordinator ->
+                        coordinator.setOmniboxSuggestionsVisualStateObserver(Optional.of(this)));
     }
 
     /**
@@ -131,6 +149,10 @@ public class BottomAttachedUiObserver
     }
 
     public void destroy() {
+        mOmniboxSuggestionsVisualState.ifPresent(
+                autocompleteCoordinator ->
+                        autocompleteCoordinator.setOmniboxSuggestionsVisualStateObserver(
+                                Optional.empty()));
         if (mBottomSheetController != null) {
             mBottomSheetController.removeObserver(this);
         }
@@ -165,6 +187,9 @@ public class BottomAttachedUiObserver
     }
 
     private @Nullable @ColorInt Integer calculateBottomAttachedColor() {
+        if (mOmniboxSuggestionsVisible && mOmniboxSuggestionsColor != null) {
+            return mOmniboxSuggestionsColor;
+        }
         if (mBottomSheetVisible) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
@@ -273,6 +298,20 @@ public class BottomAttachedUiObserver
 
     @Override
     public void onSheetStateChanged(int newState, int reason) {}
+
+    // Omnibox Suggestions
+
+    @Override
+    public void onOmniboxSuggestionsVisibilityChanged(boolean visible) {
+        mOmniboxSuggestionsVisible = visible;
+        updateBottomAttachedColor();
+    }
+
+    @Override
+    public void onOmniboxSuggestionsBackgroundColorChanged(int color) {
+        mOmniboxSuggestionsColor = color;
+        updateBottomAttachedColor();
+    }
 
     // InsetObserver.WindowInsetObserver
 

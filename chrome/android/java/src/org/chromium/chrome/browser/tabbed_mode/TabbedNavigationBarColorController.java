@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -48,6 +49,8 @@ import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.Optional;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @RequiresApi(Build.VERSION_CODES.O_MR1)
@@ -109,6 +112,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param omniboxSuggestionsVisualState An optional {@link OmniboxSuggestionsVisualState} for
+     *     access to the visual state of the omnibox suggestions.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     TabbedNavigationBarColorController(
@@ -120,7 +125,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController,
+            @NonNull BottomSheetController bottomSheetController,
+            Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
             InsetObserver insetObserver) {
         this(
                 window,
@@ -134,6 +140,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
                                 snackbarManagerSupplier.get(),
                                 contextualSearchManagerSupplier,
                                 bottomSheetController,
+                                omniboxSuggestionsVisualState,
                                 insetObserver)
                         : null);
     }
