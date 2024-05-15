@@ -130,7 +130,7 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
 
     case AV1PROFILE_PROFILE_PRO:
       // We don't build libaom with high bit depth support.
-      return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+      return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile,
                            "Professional profile is unsupported.");
 
     default:
@@ -423,7 +423,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   if (!frame) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+        EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
                       "No frame provided for encoding."));
     return;
   }
@@ -432,7 +432,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kSystemAPICallError,
                         "Convert GMB frame to MemoryMappedFrame failed."));
       return;
     }
@@ -440,10 +440,9 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   if (!frame->IsMappable()) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                      "Unexpected frame format.")
-            .WithData("IsMappable", frame->IsMappable())
-            .WithData("HasGpuMemoryBuffer", frame->HasGpuMemoryBuffer())
+        EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
+                      "Frame is not mappable")
+            .WithData("storage type", frame->storage_type())
             .WithData("format", frame->format()));
     return;
   }
@@ -459,7 +458,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         options_.frame_size, frame->timestamp());
     if (!temp_frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError,
                         "Can't allocate a temporary frame for conversion"));
       return;
     }
@@ -467,9 +466,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     // If `frame->format()` is unsupported ConvertAndScale() will fail.
     auto convert_status = frame_converter_.ConvertAndScale(*frame, *temp_frame);
     if (!convert_status.is_ok()) {
-      std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
-              .AddCause(std::move(convert_status)));
+      std::move(done_cb).Run(std::move(convert_status));
       return;
     }
 
