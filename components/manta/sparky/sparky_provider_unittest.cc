@@ -126,16 +126,10 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
   base::HistogramTester histogram_tester;
   manta::proto::Response response;
   manta::proto::OutputData& output_data = *response.add_output_data();
-  manta::proto::Proto3Any& custom_response = *output_data.mutable_custom();
-  custom_response.set_type_url(
-      "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse");
-  proto::SparkyResponse sparky_response;
+  manta::proto::SparkyResponse& sparky_response =
+      *output_data.mutable_sparky_response();
   auto* final_response = sparky_response.mutable_final_response();
   final_response->set_answer("text answer");
-
-  std::string serialized_sparky_response;
-  sparky_response.SerializeToString(&serialized_sparky_response);
-  custom_response.set_value(serialized_sparky_response);
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -168,7 +162,7 @@ TEST_F(SparkyProviderTest, SimpleRequestPayload) {
 
 // Tests that the return string is empty if the returned proto does not contain
 // a custom sparky response.
-TEST_F(SparkyProviderTest, EmptyResponseIfCustomIsNotSet) {
+TEST_F(SparkyProviderTest, EmptyResponseIfSparkyDataIsNotSet) {
   base::HistogramTester histogram_tester;
   manta::proto::Response response;
   manta::proto::OutputData& output_data = *response.add_output_data();
@@ -230,10 +224,9 @@ TEST_F(SparkyProviderTest, SettingAction) {
   base::HistogramTester histogram_tester;
   manta::proto::Response response;
   manta::proto::OutputData& output_data = *response.add_output_data();
-  manta::proto::Proto3Any& custom_response = *output_data.mutable_custom();
-  custom_response.set_type_url(
-      "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse");
-  proto::SparkyResponse sparky_response;
+  manta::proto::SparkyResponse& sparky_response =
+      *output_data.mutable_sparky_response();
+
   auto* final_response = sparky_response.mutable_final_response();
   final_response->set_answer("text answer");
   auto* action = final_response->mutable_action();
@@ -243,10 +236,6 @@ TEST_F(SparkyProviderTest, SettingAction) {
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
   settings_value->set_bool_val(true);
-
-  std::string serialized_sparky_response;
-  sparky_response.SerializeToString(&serialized_sparky_response);
-  custom_response.set_value(serialized_sparky_response);
 
   std::string response_data;
   response.SerializeToString(&response_data);
@@ -288,10 +277,9 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   base::HistogramTester histogram_tester;
   manta::proto::Response response;
   manta::proto::OutputData& output_data = *response.add_output_data();
-  manta::proto::Proto3Any& custom_response = *output_data.mutable_custom();
-  custom_response.set_type_url(
-      "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse");
-  proto::SparkyResponse sparky_response;
+  manta::proto::SparkyResponse& sparky_response =
+      *output_data.mutable_sparky_response();
+
   auto* final_response = sparky_response.mutable_final_response();
   final_response->set_answer("text answer");
   auto* action = final_response->mutable_action();
@@ -306,10 +294,6 @@ TEST_F(SparkyProviderTest, SettingActionWith2Actions) {
   double_setting->set_settings_id("ash.night_light.color_temperature");
   auto* double_value = double_setting->mutable_value();
   double_value->set_double_val(0.5);
-
-  std::string serialized_sparky_response;
-  sparky_response.SerializeToString(&serialized_sparky_response);
-  custom_response.set_value(serialized_sparky_response);
 
   std::string response_data;
   response.SerializeToString(&response_data);

@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   using SparkyShowAnswerCallback =
       base::OnceCallback<void(const std::string&, MantaStatus)>;
 
+  using SparkyProtoResponseCallback =
+      base::OnceCallback<void(std::unique_ptr<manta::proto::SparkyResponse>,
+                              MantaStatus)>;
+
   void QuestionAndAnswer(const std::string& content,
                          const std::vector<SparkyQAPair> QAHistory,
                          const std::string& question,
@@ -79,14 +83,17 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                                     SparkyShowAnswerCallback done_callback,
                                     manta::MantaStatus status);
 
-  void OnResponseReceived(SparkyShowAnswerCallback done_callback,
-                          const std::string& original_content,
-                          const std::vector<SparkyQAPair> QAHistory,
-                          const std::string& question,
-                          std::unique_ptr<proto::Response> output_data,
-                          manta::MantaStatus status);
+  void OnResponseReceived(
+      SparkyShowAnswerCallback done_callback,
+      const std::string& original_content,
+      const std::vector<SparkyQAPair> QAHistory,
+      const std::string& question,
+      std::unique_ptr<proto::SparkyResponse> sparky_response,
+      manta::MantaStatus status);
 
-  void UpdateSettings(proto::SettingsData);
+  // If the setting was updated correctly, then the return will be true. If an
+  // error occurred, then the return type will be false.
+  bool UpdateSettings(proto::SettingsData);
 
   // If the response back is the final response to show to the user.
   void OnActionResponse(proto::FinalResponse,

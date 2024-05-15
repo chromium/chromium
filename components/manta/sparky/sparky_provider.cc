@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -35,14 +36,9 @@ namespace {
 // TODO (b/336703051) Update with new Oauth.
 constexpr char kOauthConsumerName[] = "manta_sparky";
 
-constexpr char kTypeURLSparkyResponse[] =
-    "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyResponse";
-constexpr char kTypeURLSparkyContextData[] =
-    "type.googleapis.com/mdi.aretea.sparky_interaction.SparkyContextData";
-
 // Handles the QA response from the server.
 void OnQAServerResponseOrErrorReceived(
-    MantaProtoResponseCallback callback,
+    SparkyProvider::SparkyProtoResponseCallback callback,
     std::unique_ptr<proto::Response> manta_response,
     MantaStatus manta_status) {
   if (manta_status.status_code != MantaStatusCode::kOk) {
@@ -53,7 +49,7 @@ void OnQAServerResponseOrErrorReceived(
 
   CHECK(manta_response != nullptr);
   if (manta_response->output_data_size() < 1 ||
-      !manta_response->output_data(0).has_custom()) {
+      !manta_response->output_data(0).has_sparky_response()) {
     std::string message = std::string();
 
     // Tries to find more information from filtered_data
@@ -64,12 +60,14 @@ void OnQAServerResponseOrErrorReceived(
           proto::FilteredReason_Name(manta_response->filtered_data(0).reason())
               .c_str());
     }
-    std::move(callback).Run(std::make_unique<proto::Response>(),
+    std::move(callback).Run(std::make_unique<proto::SparkyResponse>(),
                             {MantaStatusCode::kBlockedOutputs, message});
     return;
   }
 
-  std::move(callback).Run(std::move(manta_response), std::move(manta_status));
+  std::move(callback).Run(std::make_unique<proto::SparkyResponse>(
+                              manta_response->output_data(0).sparky_response()),
+                          std::move(manta_status));
 }
 
 }  // namespace
@@ -108,41 +106,34 @@ void SparkyProvider::QuestionAndAnswer(
   request.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
 
   auto* input_data = request.add_input_data();
+  input_data->set_tag("sparky_context");
 
-  auto* custom_data = input_data->mutable_custom();
+  auto* sparky_context_data = input_data->mutable_sparky_context_data();
 
-  proto::SparkyContextData sparky_context_data;
-
-  auto* input_text = sparky_context_data.add_q_and_a();
+  auto* input_text = sparky_context_data->add_q_and_a();
   input_text->set_tag("new_question");
   input_text->set_text(question);
 
   for (const auto& [previous_question, previous_answer] : QAHistory) {
-    input_text = sparky_context_data.add_q_and_a();
+    input_text = sparky_context_data->add_q_and_a();
     input_text->set_tag("previous_question");
     input_text->set_text(previous_question);
 
-    input_text = sparky_context_data.add_q_and_a();
+    input_text = sparky_context_data->add_q_and_a();
     input_text->set_tag("previous_answer");
     input_text->set_text(previous_answer);
   }
 
-  sparky_context_data.set_task(task);
-  sparky_context_data.set_page_contents(original_content);
+  sparky_context_data->set_task(task);
+  sparky_context_data->set_page_contents(original_content);
 
   if (task == proto::Task::TASK_SETTINGS) {
     auto* settings_list = sparky_delegate_->GetSettingsList();
     if (settings_list) {
-      auto* settings_data = sparky_context_data.mutable_settings_data();
+      auto* settings_data = sparky_context_data->mutable_settings_data();
       AddSettingsProto(*settings_list, settings_data);
     }
   }
-
-  std::string serialized_sparky_data;
-  sparky_context_data.SerializeToString(&serialized_sparky_data);
-
-  custom_data->set_type_url(kTypeURLSparkyContextData);
-  custom_data->set_value(serialized_sparky_data);
 
   MantaProtoResponseCallback internal_callback = base::BindOnce(
       &OnQAServerResponseOrErrorReceived,
@@ -162,34 +153,24 @@ void SparkyProvider::OnResponseReceived(
     const std::string& original_content,
     const std::vector<SparkyQAPair> QAHistory,
     const std::string& question,
-    std::unique_ptr<proto::Response> response,
+    std::unique_ptr<proto::SparkyResponse> sparky_response,
     manta::MantaStatus status) {
   if (status.status_code != manta::MantaStatusCode::kOk) {
     std::move(done_callback).Run("", status);
     return;
   }
 
-  if (!response->output_data(0).has_custom()) {
-    std::move(done_callback).Run("", status);
+  if (sparky_response->has_context_request()) {
+    RequestAdditionalInformation(sparky_response->context_request(),
+                                 original_content, QAHistory, question,
+                                 std::move(done_callback), status);
+    return;
+  } else if (sparky_response->has_final_response()) {
+    OnActionResponse(sparky_response->final_response(),
+                     std::move(done_callback), status);
     return;
   }
-  proto::Proto3Any custom_response = response->output_data(0).custom();
 
-  if (custom_response.type_url() == kTypeURLSparkyResponse) {
-    proto::SparkyResponse sparky_response;
-    sparky_response.ParseFromString(custom_response.value());
-
-    if (sparky_response.has_context_request()) {
-      RequestAdditionalInformation(sparky_response.context_request(),
-                                   original_content, QAHistory, question,
-                                   std::move(done_callback), status);
-      return;
-    } else if (sparky_response.has_final_response()) {
-      OnActionResponse(sparky_response.final_response(),
-                       std::move(done_callback), status);
-      return;
-    }
-  }
   // Occurs if the response cannot be parsed correctly.
   std::move(done_callback).Run("", status);
   return;
@@ -223,7 +204,11 @@ void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,
     if (final_response.has_action()) {
       auto action = final_response.action();
       if (action.has_settings()) {
-        UpdateSettings(action.settings());
+        const bool setting_was_updated = UpdateSettings(action.settings());
+        if (!setting_was_updated) {
+          std::move(done_callback)
+              .Run("Unable to update the setting for that value", status);
+        }
       }
     }
     std::move(done_callback).Run(answer, status);
@@ -232,8 +217,11 @@ void SparkyProvider::OnActionResponse(proto::FinalResponse final_response,
   }
 }
 
-void SparkyProvider::UpdateSettings(proto::SettingsData settings) {
+bool SparkyProvider::UpdateSettings(proto::SettingsData settings) {
   int settings_length = settings.setting_size();
+  // TODO (b:338483338) Add in error handling for the case where one setting is
+  // set correctly, and a different one is not set correctly.
+  bool has_set = false;
   for (int index = 0; index < settings_length; index++) {
     auto setting = settings.setting(index);
     std::unique_ptr<SettingsData> setting_data = nullptr;
@@ -260,9 +248,11 @@ void SparkyProvider::UpdateSettings(proto::SettingsData settings) {
     }
 
     if (setting_data != nullptr) {
+      has_set = true;
       sparky_delegate_->SetSettings(std::move(setting_data));
     }
   }
+  return has_set;
 }
 
 }  // namespace manta

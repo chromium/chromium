@@ -6,6 +6,7 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
 import "components/manta/proto/common.proto";
+import "components/manta/proto/sparky.proto";
 
 package manta.proto;
 
@@ -91,6 +92,7 @@ message InputData {
   oneof input_data {
     string text = 1;
     Proto3Any custom = 3;
+    SparkyContextData sparky_context_data = 5;
   }
   optional string tag = 4;
 }
@@ -112,6 +114,7 @@ message OutputData {
     string text = 1;
     Image image = 2;
     Proto3Any custom = 3;
+    SparkyResponse sparky_response = 7;
   }
 
   optional uint32 generation_seed = 6;
