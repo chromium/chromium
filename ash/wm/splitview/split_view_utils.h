@@ -218,7 +218,7 @@ ASH_EXPORT bool IsPhysicallyLeftOrTop(SnapPosition position,
 int GetDividerPositionUpperLimit(aura::Window* root_window);
 
 // Returns the minimum length of the window according to the screen orientation.
-int GetMinimumWindowLength(aura::Window* window, bool horizontal);
+ASH_EXPORT int GetMinimumWindowLength(aura::Window* window, bool horizontal);
 
 // Returns the target divider position for `root_window` for `snap_ratio` at
 // `snap_position`, clamped between 0 and the upper limit of `root_window`.

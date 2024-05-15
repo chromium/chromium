@@ -3328,8 +3328,9 @@ TEST_F(SnapGroupDividerTest, ResizeCursor) {
     event_generator->set_current_screen_location(divider_point);
     event_generator->PressLeftButton();
     const bool horizontal = IsLayoutHorizontal(display);
-    gfx::Point resize_point1 = horizontal ? gfx::Point(10, divider_point.y())
-                                          : gfx::Point(divider_point.x(), 10);
+    const gfx::Point resize_point1 = horizontal
+                                         ? gfx::Point(10, divider_point.y())
+                                         : gfx::Point(divider_point.x(), 10);
     event_generator->MoveMouseTo(resize_point1, /*count=*/2);
     ASSERT_TRUE(snap_group_divider->is_resizing_with_divider());
     EXPECT_EQ(min_width, GetWindowLength(w1.get(), horizontal));
@@ -6309,16 +6310,44 @@ TEST_F(SnapGroupMultiDisplayTest, SnapGroupCreationOnExternalDisplay) {
   std::unique_ptr<aura::Window> w2(
       CreateAppWindow(gfx::Rect(1000, 50, 100, 200)));
   SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
 
   // Verify that both windows and divider are visible on display #2.
-  display::Screen* screen = display::Screen::GetScreen();
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w1.get()).id());
-  EXPECT_EQ(displays[1].id(), screen->GetDisplayNearestWindow(w2.get()).id());
-  EXPECT_EQ(displays[1].id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    snap_group_divider()->divider_widget()->GetNativeWindow())
-                .id());
+  VerifySnapGroupOnDisplay(snap_group, displays[1].id());
+
+  // Start resizing to the left.
+  auto* event_generator = GetEventGenerator();
+  auto* snap_group_divider = snap_group->snap_group_divider();
+  const gfx::Point divider_point(
+      snap_group_divider_bounds_in_screen().CenterPoint());
+  event_generator->set_current_screen_location(divider_point);
+  event_generator->PressLeftButton();
+
+  // Resize to a point between `w1` and `w2`'s minimum sizes.
+  const gfx::Point resize_point1 = gfx::Point(950, divider_point.y());
+  const bool horizontal = IsLayoutHorizontal(displays[1]);
+  // The windows have a default min width of 104.
+  const int min_length = GetMinimumWindowLength(w1.get(), horizontal);
+  ASSERT_EQ(min_length, GetMinimumWindowLength(w2.get(), horizontal));
+  ASSERT_EQ(104, min_length);
+  event_generator->MoveMouseTo(resize_point1, /*count=*/2);
+  EXPECT_EQ(resize_point1.x(),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Resize to the left to a point less than `w1`'s minimum width.
+  const gfx::Point resize_point2 = gfx::Point(810, divider_point.y());
+  event_generator->MoveMouseTo(resize_point2, /*count=*/2);
+  EXPECT_EQ(min_length, w1->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
+
+  // Resize to the right to a point less than `w2`'s minimum width.
+  const gfx::Point resize_point3 = gfx::Point(1500, divider_point.y());
+  event_generator->MoveMouseTo(resize_point3, /*count=*/2);
+  EXPECT_EQ(min_length, w2->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider);
 }
 
 TEST_F(SnapGroupMultiDisplayTest, NoGapAfterSnapGroupCreation) {
