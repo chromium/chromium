@@ -6,16 +6,16 @@
 // to create the authentication packages used to sign the user into a Windows
 // system.
 
-#include <vector>
-
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
 
+#include <vector>
+
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace credential_provider {
 
@@ -402,9 +402,9 @@ HRESULT BuildCredPackAuthenticationBuffer(
   }
 
   // Protected password may still be insecure so make sure to zero it out.
-  base::ScopedClosureRunner zero_buffer_on_exit(
-      base::BindOnce(base::IgnoreResult(&SecurelyClearBuffer),
-                     &protected_password[0], protected_password.size()));
+  absl::Cleanup zero_buffer_on_exit = [&protected_password] {
+    SecurelyClearBuffer(protected_password.data(), protected_password.size());
+  };
 
   wchar_t* logon_domain = domain;
 
