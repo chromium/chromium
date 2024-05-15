@@ -66,11 +66,11 @@ interface CircleProperties {
 // The colors of the different circles that compose the shimmer. One circle
 // will be generated for each color hex in this array.
 export const COLOR_HEXES = [
-  '#0B57D0',
-  '#5B8CFF',
-  '#FDACEE',
-  '#E5EDFF',
-  '#88A9FF',
+  '#5B5E66',
+  '#8E9199',
+  '#A6C8FF',
+  '#EEF0F9',
+  '#A8ABB3',
 ];
 
 // INVOCATION CONSTANTS: These are the values that the circles will have on

@@ -283,6 +283,7 @@ export class ObjectLayerElement extends PolymerElement {
 
     // Draw the highlight image clipped to the path.
     context.save();
+    context.filter = 'none';
     context.clip();
     context.drawImage(
         this.$.highlightImg, 0, 0, this.canvasWidth, this.canvasHeight);
@@ -291,7 +292,8 @@ export class ObjectLayerElement extends PolymerElement {
     // Stroke the path on top of the image.
     context.lineCap = 'round';
     context.lineJoin = 'round';
-    context.lineWidth = 4;
+    context.lineWidth = 2;
+    context.filter = 'blur(4px)';
     // Fit a square around the bounding box to use for gradient coordinates.
     const objectBoundingBox = object.geometry.boundingBox;
     const longestEdge =
@@ -308,8 +310,8 @@ export class ObjectLayerElement extends PolymerElement {
         right,
         bottom,
     );
-    gradient.addColorStop(0, '#0177DC');
-    gradient.addColorStop(1, '#D5E3FF');
+    gradient.addColorStop(0, '#ffffff');
+    gradient.addColorStop(1, '#ffffff');
     context.strokeStyle = gradient;
     context.stroke();
   }
