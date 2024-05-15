@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_CREDIT_CARD_SAVE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_TEST_CREDIT_CARD_SAVE_MANAGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"

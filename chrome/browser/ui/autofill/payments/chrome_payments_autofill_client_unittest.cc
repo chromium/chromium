@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include <optional>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
@@ -20,6 +22,8 @@
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+using ::testing::_;
 
 namespace autofill {
 
@@ -40,7 +44,13 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       : SaveCardBubbleControllerImpl(web_contents) {}
   ~MockSaveCardBubbleController() override = default;
 
-  MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
+  MOCK_METHOD(
+      void,
+      ShowConfirmationBubbleView,
+      (bool,
+       std::optional<
+           payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
+      (override));
 };
 #endif
 
@@ -136,15 +146,16 @@ TEST_F(ChromePaymentsAutofillClientTest,
   MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
   EXPECT_CALL(*save_card_bridge, Hide());
-  chrome_payments_client()->CreditCardUploadCompleted(true);
+  chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
 }
 #else   // !BUILDFLAG(IS_ANDROID)
 // Test that calling CreditCardUploadCompleted calls
 // SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.
 TEST_F(ChromePaymentsAutofillClientTest,
        CreditCardUploadCompleted_CallsShowConfirmationBubbleView) {
-  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(true));
-  chrome_payments_client()->CreditCardUploadCompleted(true);
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(true, _));
+  chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

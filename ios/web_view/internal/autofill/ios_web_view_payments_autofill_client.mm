@@ -4,6 +4,8 @@
 
 #import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 
+#import <optional>
+
 #import "base/check_deref.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -35,7 +37,9 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
 }
 
 void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved) {
+    bool card_saved,
+    std::optional<OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {
   [bridge_ handleCreditCardUploadCompleted:card_saved];
 }
 

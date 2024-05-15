@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -72,6 +73,7 @@ namespace {
 using test::CreateFormDataForRenderFrameHost;
 using test::CreateTestFormField;
 using ::testing::_;
+using ::testing::A;
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -100,7 +102,13 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
       : SaveCardBubbleControllerImpl(web_contents) {}
   ~MockSaveCardBubbleController() override = default;
 
-  MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
+  MOCK_METHOD(
+      void,
+      ShowConfirmationBubbleView,
+      (bool,
+       std::optional<
+           payments::PaymentsAutofillClient::OnConfirmationClosedCallback>),
+      (override));
 };
 #endif
 
@@ -417,14 +425,22 @@ TEST_F(ChromeAutofillClientTest,
 
 TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardSaved) {
-  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(true));
-  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(true);
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(
+                  true, A<std::optional<payments::PaymentsAutofillClient::
+                                            OnConfirmationClosedCallback>>()));
+  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
+      true, /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_ShowConfirmationBubbleView_CardNotSaved) {
-  EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView(false));
-  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(false);
+  EXPECT_CALL(save_card_bubble_controller(),
+              ShowConfirmationBubbleView(
+                  false, A<std::optional<payments::PaymentsAutofillClient::
+                                             OnConfirmationClosedCallback>>()));
+  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
+      false, /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
 TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {

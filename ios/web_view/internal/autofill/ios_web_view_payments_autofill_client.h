@@ -5,6 +5,8 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_AUTOFILL_IOS_WEB_VIEW_PAYMENTS_AUTOFILL_CLIENT_H_
 #define IOS_WEB_VIEW_INTERNAL_AUTOFILL_IOS_WEB_VIEW_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include <optional>
+
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -41,7 +43,9 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
-  void CreditCardUploadCompleted(bool card_saved) override;
+  void CreditCardUploadCompleted(bool card_saved,
+                                 std::optional<OnConfirmationClosedCallback>
+                                     on_confirmation_closed_callback) override;
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
   void ShowUnmaskPrompt(
       const CreditCard& card,

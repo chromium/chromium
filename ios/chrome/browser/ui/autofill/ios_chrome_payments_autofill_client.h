@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 
 #import <memory>
+#include <optional>
 
 #import "base/functional/callback.h"
 #import "base/memory/raw_ref.h"
@@ -59,7 +60,9 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
-  void CreditCardUploadCompleted(bool card_saved) override;
+  void CreditCardUploadCompleted(bool card_saved,
+                                 std::optional<OnConfirmationClosedCallback>
+                                     on_confirmation_closed_callback) override;
   void ShowCardUnmaskOtpInputDialog(
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;

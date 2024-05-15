@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include <optional>
 
+#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
@@ -69,7 +70,9 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
   }
 
   void ShowBubble(bool card_saved) {
-    GetController()->ShowConfirmationBubbleView(card_saved);
+    GetController()->ShowConfirmationBubbleView(
+        card_saved,
+        /*on_confirmation_closed_callback=*/std::nullopt);
   }
 
   void HideBubble(views::Widget::ClosedReason closed_reason) {

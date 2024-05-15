@@ -198,19 +198,8 @@ class CreditCardSaveManager {
   FRIEND_TEST_ALL_PREFIXES(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
                            Feedback_CardSavingAnimation);
 
-  // Offers virtual card enrollment if the uploaded card is eligible. Prepares
-  // credit card to be enrolled with response details required for virtual card
-  // enrollment server request. Triggers `InitVirtualCardEnroll()` with or
-  // without delay depending on the visibility of save card confirmation prompt
-  // showing prior to virtual card enrollment.
-  void PrepareAndTriggerDelayedVirtualCardEnroll(
-      payments::PaymentsNetworkInterface::UploadCardResponseDetails
-          upload_card_response_details);
-
-  // Starts upstream virtual card enrollment flow. Takes `credit_card` and
-  // `get_details_for_enrollment_response_details` that gets used throughout
-  // the flow by VirtualCardEnrollmentManager to show virtual card enroll
-  // dialog.
+  // Starts upstream virtual card enrollment flow. Hides save card confirmation
+  // prompt before showing virtual card enrollment prompt.
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
       std::optional<payments::PaymentsNetworkInterface::

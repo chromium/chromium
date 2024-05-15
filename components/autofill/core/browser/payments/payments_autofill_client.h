@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_AUTOFILL_CLIENT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -75,6 +76,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
                               std::u16string_view nickname)>;
 
+  // Callback to run after credit card upload confirmation prompt is closed.
+  using OnConfirmationClosedCallback = base::OnceClosure;
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
   // exist.
@@ -109,18 +113,20 @@ class PaymentsAutofillClient : public RiskDataLoader {
       MigrationDeleteCardCallback delete_local_card_callback);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Called after credit card upload is finished. Will show upload result to
-  // users. `card_saved` indicates if the card is successfully saved.
+  // Shows upload result to users. Called after credit card upload is finished.
+  // `card_saved` indicates if the card is successfully saved.
+  // `on_confirmation_closed_callback` should run after confirmation prompt is
+  // closed.
   // TODO(crbug.com/40614280): This function is overridden in iOS codebase and
   // in the desktop codebase. If iOS is not using it to do anything, please keep
   // this function for desktop.
-  virtual void CreditCardUploadCompleted(bool card_saved);
-
-  // Returns true if save card offer or confirmation prompt is visible.
-  virtual bool IsSaveCardPromptVisible() const;
+  virtual void CreditCardUploadCompleted(
+      bool card_saved,
+      std::optional<OnConfirmationClosedCallback>
+          on_confirmation_closed_callback);
 
   // Hides save card offer or confirmation prompt.
-  virtual void HideSaveCardPromptPrompt();
+  virtual void HideSaveCardPrompt();
 
   // Called after virtual card enrollment is finished. Shows enrollment
   // result to users. `is_vcn_enrolled` indicates if the card was successfully

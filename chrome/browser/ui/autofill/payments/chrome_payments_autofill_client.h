@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -73,9 +74,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback) override;
 #endif  // BUILDFLAG(IS_ANDROID)
-  void CreditCardUploadCompleted(bool card_saved) override;
-  bool IsSaveCardPromptVisible() const override;
-  void HideSaveCardPromptPrompt() override;
+  void CreditCardUploadCompleted(bool card_saved,
+                                 std::optional<OnConfirmationClosedCallback>
+                                     on_confirmation_closed_callback) override;
+  void HideSaveCardPrompt() override;
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,

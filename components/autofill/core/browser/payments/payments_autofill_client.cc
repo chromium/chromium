@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -39,13 +41,12 @@ void PaymentsAutofillClient::ShowLocalCardMigrationResults(
     MigrationDeleteCardCallback delete_local_card_callback) {}
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
+void PaymentsAutofillClient::CreditCardUploadCompleted(
+    bool card_saved,
+    std::optional<OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {}
 
-bool PaymentsAutofillClient::IsSaveCardPromptVisible() const {
-  return false;
-}
-
-void PaymentsAutofillClient::HideSaveCardPromptPrompt() {}
+void PaymentsAutofillClient::HideSaveCardPrompt() {}
 
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 

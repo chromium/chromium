@@ -183,7 +183,11 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
   ShowBubble();
 }
 
-void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(bool card_saved) {
+void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
+    bool card_saved,
+    std::optional<
+        payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     // Hide the current bubble if still showing.
@@ -197,9 +201,19 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(bool card_saved) {
                          CreateForSaveCardSuccess()
                    : SaveCardAndVirtualCardEnrollConfirmationUiParams::
                          CreateForSaveCardFailure();
+    on_confirmation_closed_callback_ =
+        std::move(on_confirmation_closed_callback);
 
     // Show upload confirmation bubble.
     ShowBubble();
+
+    // Auto close confirmation bubble when card saved is successful.
+    if (card_saved) {
+      auto_close_confirmation_timer_.Start(
+          FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
+          base::BindOnce(&SaveCardBubbleControllerImpl::HideSaveCardBubble,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   } else {
     autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
         /*is_shown=*/false, card_saved);
@@ -538,14 +552,18 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   }
 
   // If the bubble is closed with the current_bubble_type_ as
-  // UPLOAD_COMPLETED, transition the current_bubble_type_ to INACTIVE and reset
-  // the confirmation_ui_model.
+  // UPLOAD_COMPLETED, transition the current_bubble_type_ to INACTIVE, reset
+  // the confirmation_ui_model and run `on_confirmation_closed_callback_`.
   if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
     current_bubble_type_ = BubbleType::INACTIVE;
     confirmation_ui_params_.reset();
 
     UpdatePageActionIcon();
 
+    if (on_confirmation_closed_callback_) {
+      (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
+    }
+    auto_close_confirmation_timer_.Stop();
     return;
   }
 

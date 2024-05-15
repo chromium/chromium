@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include <optional>
+
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -121,7 +123,10 @@ void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
+void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
+    bool card_saved,
+    std::optional<OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {
 #if BUILDFLAG(IS_ANDROID)
   if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
     bridge->Hide();
@@ -129,22 +134,13 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
 #else  // !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-    controller->ShowConfirmationBubbleView(card_saved);
+    controller->ShowConfirmationBubbleView(
+        card_saved, std::move(on_confirmation_closed_callback));
   }
 #endif
 }
 
-bool ChromePaymentsAutofillClient::IsSaveCardPromptVisible() const {
-#if !BUILDFLAG(IS_ANDROID)
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  return controller && controller->IsIconVisible();
-#else
-  return false;
-#endif
-}
-
-void ChromePaymentsAutofillClient::HideSaveCardPromptPrompt() {
+void ChromePaymentsAutofillClient::HideSaveCardPrompt() {
 #if !BUILDFLAG(IS_ANDROID)
   SaveCardBubbleControllerImpl* controller =
       SaveCardBubbleControllerImpl::FromWebContents(web_contents());

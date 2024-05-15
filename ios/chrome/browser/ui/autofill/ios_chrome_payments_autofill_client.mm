@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
+#import <optional>
+
 #import "base/check_deref.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ref.h"
@@ -57,7 +59,9 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
 }
 
 void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
-    bool card_saved) {
+    bool card_saved,
+    std::optional<OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {
   NOTIMPLEMENTED();
 }
 

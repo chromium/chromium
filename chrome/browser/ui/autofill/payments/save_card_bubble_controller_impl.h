@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_CARD_BUBBLE_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -16,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -41,6 +44,10 @@ class SaveCardBubbleControllerImpl
   SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
       delete;
   ~SaveCardBubbleControllerImpl() override;
+
+  // Time in sec to wait before auto-closing confirmation bubble.
+  static constexpr base::TimeDelta kAutoCloseConfirmationBubbleWaitSec =
+      base::Seconds(3);
 
   // Sets up the controller and is responsible for offering both local card save
   // and local CVC save. The offer-to-save CVC bubble saves CVC for an existing
@@ -90,7 +97,17 @@ class SaveCardBubbleControllerImpl
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
   void ReshowBubble(bool is_user_gesture);
-  virtual void ShowConfirmationBubbleView(bool card_saved);
+
+  // Shows upload result to users. `card_saved` indicates if the card is
+  // successfully saved. `on_confirmation_closed_callback` will be invoked
+  // once confirmation bubble is closed. Posts a delayed task to auto-close the
+  // confirmation bubble if user doesn't close the bubble before
+  // `kAutoCloseConfirmationBubbleWaitSec`.
+  virtual void ShowConfirmationBubbleView(
+      bool card_saved,
+      std::optional<
+          payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
+          on_confirmation_closed_callback);
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -187,6 +204,10 @@ class SaveCardBubbleControllerImpl
   // credit card offer-to-save prompt or the local CVC offer-to-save prompt.
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
+  // Callback to run after save card confirmation bubble is closed.
+  std::optional<payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
+      on_confirmation_closed_callback_;
+
   // Governs whether the upload or local save version of the UI should be shown.
   bool is_upload_save_ = false;
 
@@ -227,6 +248,10 @@ class SaveCardBubbleControllerImpl
   // UI parameters needed to display the save card confirmation view.
   std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
       confirmation_ui_params_;
+
+  // Timer that controls auto closure of confirmation bubble. Should be
+  // stopped once the bubble is closed.
+  base::OneShotTimer auto_close_confirmation_timer_;
 
   // Weak pointer factory for this save card bubble controller.
   base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_{this};

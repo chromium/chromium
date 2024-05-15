@@ -28,6 +28,11 @@ bool VirtualCardFeatureEnabled();
 // authentication option.
 bool IsVcn3dsEnabled();
 
+// Returns whether the save card dialog will present a loading spinner when
+// uploading the card to the server and present a confirmation dialog with the
+// result when completed.
+bool IsSaveCardLoadingAndConfirmationEnabled();
+
 // TODO(crbug.com/40263500): Move here payments related feature availability
 // checks from autofill_experiments.
 

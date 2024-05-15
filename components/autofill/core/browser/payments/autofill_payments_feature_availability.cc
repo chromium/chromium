@@ -47,4 +47,9 @@ bool IsVcn3dsEnabled() {
          !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 }
 
+bool IsSaveCardLoadingAndConfirmationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableSaveCardLoadingAndConfirmation);
+}
+
 }  // namespace autofill
