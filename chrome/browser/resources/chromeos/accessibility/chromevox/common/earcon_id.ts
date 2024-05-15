@@ -43,6 +43,12 @@ export enum EarconId {
   WRAP_EDGE = 'wrap_edge',
 }
 
+export namespace EarconId {
+  export function fromName(name: string): EarconId {
+    return (EarconId as {[key: string]: any})[name];
+  }
+}
+
 /**
  * Maps a earcon id to a message id description.
  * Only add mappings for earcons used in ChromeVox Next. This map gets

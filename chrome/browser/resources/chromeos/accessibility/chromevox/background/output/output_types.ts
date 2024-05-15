@@ -142,6 +142,11 @@ export const OutputPropertyMap: Record<string, Record<string, string>> = {
   },
 };
 
+export interface StateOutputInfo {
+  msgId?: string;
+  earcon?: EarconId;
+}
+
 /**
   * on: info used to describe a state that is set to true.
   * off: info used to describe a state that is set to undefined.

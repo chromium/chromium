@@ -925,6 +925,8 @@ declare namespace chrome {
       createPosition:
           (type: PositionType, offset: number,
            isUpstream?: boolean) => AutomationPosition;
+
+      [key: string]: any;
     }
 
     export function getDesktop(callback: (rootNode: AutomationNode) => void):

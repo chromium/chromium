@@ -15,53 +15,53 @@ import {AutomationTreeWalker} from '/common/tree_walker.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
+import {Spannable} from '../../common/spannable.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
 import {OutputFormatTree} from './output_format_tree.js';
-import {OutputInterface} from './output_interface.js';
+import {AnnotationOptions, OutputInterface} from './output_interface.js';
 import {OutputFormatLogger} from './output_logger.js';
 import {OutputRoleInfo} from './output_role_info.js';
 import * as outputTypes from './output_types.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
+type FindParams = chrome.automation.FindParams;
 const NameFromType = chrome.automation.NameFromType;
 const RoleType = chrome.automation.RoleType;
-const StateType = chrome.automation.StateType;
+import StateType = chrome.automation.StateType;
 
 // TODO(anastasi): Move formatting logic to this class.
-/** @implements {OutputFormatParserObserver} */
-export class OutputFormatter {
-  /**
-   * @param {!OutputInterface} output
-   * @param {!outputTypes.OutputFormattingData} params
-   */
-  constructor(output, params) {
-    /** @private {outputTypes.OutputSpeechProperties|undefined} */
+export class OutputFormatter implements OutputFormatParserObserver {
+  private speechProps_?: outputTypes.OutputSpeechProperties | null;
+  private output_: OutputInterface;
+  private params_: outputTypes.OutputFormattingData;
+
+  constructor(
+      output: OutputInterface, params: outputTypes.OutputFormattingData) {
     this.speechProps_ = params.opt_speechProps;
-    /** @private {!OutputInterface} */
     this.output_ = output;
-    /** @private {!outputTypes.OutputFormattingData} */
     this.params_ = params;
   }
 
   /**
    * Format the node given the format specifier.
-   * @param {!OutputInterface} output
-   * @param {!outputTypes.OutputFormattingData} params All the required and
-   *     optional parameters for formatting.
+   * @param params All the required and optional parameters for formatting.
    */
-  static format(output, params) {
+  static format(
+      output: OutputInterface, params: outputTypes.OutputFormattingData): void {
     const formatter = new OutputFormatter(output, params);
     new OutputFormatParser(formatter).parse(params.outputFormat);
   }
 
-  /** @override */
-  onTokenStart() {}
+  /** OutputFormatParserObserver implementation */
+  onTokenStart(): undefined {}
 
-  /** @override */
-  onNodeAttributeOrSpecialToken(token, tree, options) {
+  /** OutputFormatParserObserver implementation */
+  onNodeAttributeOrSpecialToken(
+      token: string, tree: OutputFormatTree, options: AnnotationOptions)
+      : boolean | undefined {
     if (this.output_.shouldSuppress(token)) {
       return true;
     }
@@ -125,17 +125,21 @@ export class OutputFormatter {
       this.formatUrlFilename_(this.params_, token, options);
     } else if (token === 'value') {
       this.formatValue_(this.params_, token, options);
-    } else if (this.params_.node[token] !== undefined) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    } else if (this.params_.node![token] !== undefined) {
       this.formatAsFieldAccessor_(this.params_, token, options);
     } else if (outputTypes.OUTPUT_STATE_INFO[token]) {
       this.formatAsStateValue_(this.params_, token, options);
     } else if (tree.firstChild) {
       this.formatCustomFunction_(this.params_, token, tree, options);
     }
+    return undefined;
   }
 
-  /** @override */
-  onMessageToken(token, tree, options) {
+  /** OutputFormatParserObserver implementation */
+  onMessageToken(
+      token: string, tree: OutputFormatTree, options: AnnotationOptions)
+      : undefined {
     this.params_.outputFormatLogger.write(' @');
     if (this.output_.useAuralStyle) {
       if (!this.speechProps_) {
@@ -146,8 +150,10 @@ export class OutputFormatter {
     this.formatMessage_(this.params_, token, tree, options);
   }
 
-  /** @override */
-  onSpeechPropertyToken(token, tree, options) {
+  /** OutputFormatParserObserver implementation */
+  onSpeechPropertyToken(
+      token: string, tree: OutputFormatTree, _options: AnnotationOptions)
+      : boolean | undefined {
     this.params_.outputFormatLogger.write(' ! ' + token + '\n');
     this.speechProps_ = new outputTypes.OutputSpeechProperties();
     this.speechProps_.properties[token] = true;
@@ -157,22 +163,24 @@ export class OutputFormatter {
         return true;
       }
 
-      let value = tree.firstChild.value;
+      let value: string | number = tree.firstChild.value;
 
       // Currently, speech params take either attributes or floats.
       let float = 0;
       if (float = parseFloat(value)) {
         value = float;
       } else {
-        value = parseFloat(this.params_.node[value]) / -10.0;
+        // TODO(b/314203187): Not null asserted, check that this is correct.
+        value = parseFloat(this.params_.node![value]) / -10.0;
       }
       this.speechProps_.properties[token] = value;
       return true;
     }
+    return undefined;
   }
 
-  /** @override */
-  onTokenEnd() {
+  /** OutputFormatParserObserver implementation */
+  onTokenEnd(): undefined {
     const buff = this.params_.outputBuffer;
 
     // Post processing.
@@ -184,13 +192,8 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!OutputFormatTree} tree
-   * @return {!Set}
-   * @private
-   */
-  createRoles_(tree) {
-    const roles = new Set();
+  private createRoles_(tree: OutputFormatTree): Set<string> {
+    const roles: Set<string> = new Set();
     for (let currentNode = tree.firstChild; currentNode;
          currentNode = currentNode.nextSibling) {
       roles.add(currentNode.value);
@@ -198,25 +201,17 @@ export class OutputFormatter {
     return roles;
   }
 
-  /**
-   * @param {!OutputFormatLogger} formatLog
-   * @param {string} errorMsg
-   * @private
-   */
-  error_(formatLog, errorMsg) {
+  private error_(formatLog: OutputFormatLogger, errorMsg: string): void {
     formatLog.writeError(errorMsg);
     console.error(errorMsg);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatAsFieldAccessor_(data, token, options) {
+  private formatAsFieldAccessor_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
@@ -228,22 +223,18 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, value);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatAsStateValue_(data, token, options) {
+  private formatAsStateValue_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     options.annotation.push('state');
     const stateInfo = outputTypes.OUTPUT_STATE_INFO[token];
-    let resolvedInfo = {};
-    resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
-                                                                  stateInfo.off;
+    const resolvedInfo =
+        node.state![token as StateType] ? stateInfo.on : stateInfo.off;
     if (!resolvedInfo) {
       return;
     }
@@ -254,32 +245,33 @@ export class OutputFormatter {
     }
     const msgId = this.output_.formatAsBraille ? resolvedInfo.msgId + '_brl' :
                                                  resolvedInfo.msgId;
-    const msg = Msgs.getMsg(msgId);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const msg = Msgs.getMsg(msgId!);
     this.output_.append(buff, msg, options);
     formatLog.writeTokenWithValue(token, msg);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatCellIndexText_(data, token, options) {
+  private formatCellIndexText_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
-    if (node.htmlAttributes['aria-coltext']) {
-      let value = node.htmlAttributes['aria-coltext'];
-      let row = node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (node.htmlAttributes!['aria-coltext']) {
+      let value = node.htmlAttributes!['aria-coltext'];
+      let row: AutomationNode | undefined = node;
       while (row && row.role !== RoleType.ROW) {
         row = row.parent;
       }
-      if (!row || !row.htmlAttributes['aria-rowtext']) {
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (!row || !row.htmlAttributes!['aria-rowtext']) {
         return;
       }
-      value += row.htmlAttributes['aria-rowtext'];
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      value += row.htmlAttributes!['aria-rowtext'];
       this.output_.append(buff, value, options);
       formatLog.writeTokenWithValue(token, value);
     } else {
@@ -296,17 +288,15 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @private
-   */
-  formatChecked_(data, token) {
+  private formatChecked_(
+      data: outputTypes.OutputFormattingData, token: string): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
-    const msg = outputTypes.OutputPropertyMap.CHECKED[node.checked];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const msg = outputTypes.OutputPropertyMap['CHECKED'][node.checked!];
     if (msg) {
       formatLog.writeToken(token);
       OutputFormatter.format(this.output_, {
@@ -318,22 +308,19 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatCustomFunction_(data, token, tree, options) {
+  private formatCustomFunction_(
+      data: outputTypes.OutputFormattingData, token: string,
+      tree: OutputFormatTree, options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     // Custom functions.
     if (token === 'if') {
       formatLog.writeToken(token);
-      const cond = tree.firstChild;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const cond = tree.firstChild!;
       const attrib = cond.value.slice(1);
       if (AutomationUtil.isTruthy(node, attrib)) {
         formatLog.write(attrib + '==true => ');
@@ -347,14 +334,15 @@ export class OutputFormatter {
         formatLog.write(attrib + '==false => ');
         OutputFormatter.format(this.output_, {
           node,
-          outputFormat: cond.nextSibling.nextSibling || '',
+          outputFormat: cond.nextSibling!.nextSibling || '',
           outputBuffer: buff,
           outputFormatLogger: formatLog,
         });
       }
     } else if (token === 'nif') {
       formatLog.writeToken(token);
-      const cond = tree.firstChild;
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      const cond = tree.firstChild!;
       const attrib = cond.value.slice(1);
       if (AutomationUtil.isFalsey(node, attrib)) {
         formatLog.write(attrib + '==false => ');
@@ -368,7 +356,7 @@ export class OutputFormatter {
         formatLog.write(attrib + '==true => ');
         OutputFormatter.format(this.output_, {
           node,
-          outputFormat: cond.nextSibling.nextSibling || '',
+          outputFormat: cond.nextSibling!.nextSibling || '',
           outputBuffer: buff,
           outputFormatLogger: formatLog,
         });
@@ -379,19 +367,17 @@ export class OutputFormatter {
         return;
       }
 
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       options.annotation.push(new outputTypes.OutputEarconAction(
-          EarconId[tree.firstChild.value], node.location || undefined));
+          EarconId.fromName(tree.firstChild!.value),
+          node.location || undefined));
       this.output_.append(buff, '', options);
-      formatLog.writeTokenWithValue(token, tree.firstChild.value);
+      formatLog.writeTokenWithValue(token, tree.firstChild!.value);
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @private
-   */
-  formatDescendants_(data, token) {
+  private formatDescendants_(
+      data: outputTypes.OutputFormattingData, token: string): void {
     const buff = data.outputBuffer;
     const node = data.node;
     const formatLog = data.outputFormatLogger;
@@ -400,8 +386,8 @@ export class OutputFormatter {
       return;
     }
 
-    let leftmost = node;
-    let rightmost = node;
+    let leftmost: AutomationNode | null | undefined = node;
+    let rightmost: AutomationNode | null | undefined = node;
     if (AutomationPredicate.leafOrStaticText(node)) {
       // Find any deeper leaves, if any, by starting from one level
       // down.
@@ -426,7 +412,7 @@ export class OutputFormatter {
     const subrange = new CursorRange(
         new Cursor(leftmost, CURSOR_NODE_INDEX),
         new Cursor(rightmost, CURSOR_NODE_INDEX));
-    let prev = null;
+    let prev = undefined;
     if (node) {
       prev = CursorRange.fromNode(node);
     }
@@ -436,15 +422,12 @@ export class OutputFormatter {
         {suppressStartEndAncestry: true});
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatDescription_(data, token, options) {
+  private formatDescription_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (node.name === node.description) {
@@ -456,22 +439,18 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, node.description);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @private
-   */
-  formatFind_(data, token, tree) {
+  private formatFind_(
+      data: outputTypes.OutputFormattingData, token: string,
+      tree: OutputFormatTree): void {
     const buff = data.outputBuffer;
     const formatLog = data.outputFormatLogger;
-    let node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    let node = data.node!;
 
     // Find takes two arguments: JSON query string and format string.
     if (tree.firstChild) {
       const jsonQuery = tree.firstChild.value;
-      node = node.find(
-          /** @type {chrome.automation.FindParams}*/ (JSON.parse(jsonQuery)));
+      node = node.find(JSON.parse(jsonQuery) as FindParams);
       const formatString = tree.firstChild.nextSibling || '';
       if (node) {
         formatLog.writeToken(token);
@@ -485,16 +464,12 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatIndexInParent_(data, token, tree, options) {
+  private formatIndexInParent_(
+      data: outputTypes.OutputFormattingData, token: string,
+      tree: OutputFormatTree, options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (node.parent) {
@@ -521,15 +496,12 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatInputType_(data, token, options) {
+  private formatInputType_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (!node.inputType) {
@@ -545,18 +517,14 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, Msgs.getMsg(msgId));
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatJoinedDescendants_(data, token, options) {
+  private formatJoinedDescendants_(
+      data: outputTypes.OutputFormattingData, _token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
     const node = data.node;
     const formatLog = data.outputFormatLogger;
 
-    const unjoined = [];
+    const unjoined: Spannable[] = [];
     formatLog.write('joinedDescendants {');
     OutputFormatter.format(this.output_, {
       node,
@@ -569,11 +537,7 @@ export class OutputFormatter {
         '}: ' + (unjoined.length ? unjoined.join(' ') : 'EMPTY') + '\n');
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @private
-   */
-  formatListNestedLevel_(data) {
+  private formatListNestedLevel_(data: outputTypes.OutputFormattingData): void {
     const buff = data.outputBuffer;
     const node = data.node;
 
@@ -588,16 +552,12 @@ export class OutputFormatter {
     this.output_.append(buff, level.toString());
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatMessage_(data, token, tree, options) {
+  private formatMessage_(
+      data: outputTypes.OutputFormattingData, token: string,
+      tree: OutputFormatTree, options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     const isPluralized = (token[0] === '@');
@@ -614,7 +574,7 @@ export class OutputFormatter {
       return prev + lookup;
     }, '');
     const msgId = token;
-    let msgArgs = [];
+    let msgArgs: string[] = [];
     formatLog.write(token + '{');
     if (!isPluralized) {
       msgArgs = this.getNonPluralizedArguments_(tree, node, formatLog, msgArgs);
@@ -642,14 +602,12 @@ export class OutputFormatter {
     formatLog.write(': ' + msg + '\n');
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatName_(data, token, options) {
+  private formatName_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const prevNode = data.opt_prevNode;
     const formatLog = data.outputFormatLogger;
 
@@ -675,15 +633,12 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, node.name);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatNameFromNode_(data, token, options) {
+  private formatNameFromNode_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (node.nameFrom === NameFromType.CONTENTS) {
@@ -695,15 +650,12 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, node.name);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatNameOrDescendants_(data, token, options) {
+  private formatNameOrDescendants_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     options.annotation.push(token);
@@ -723,16 +675,12 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!OutputFormatTree} tree
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatNode_(data, token, tree, options) {
+  private formatNode_(
+      data: outputTypes.OutputFormattingData, token: string,
+      tree: OutputFormatTree, options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
     let prevNode = data.opt_prevNode;
 
@@ -788,28 +736,22 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @private
-   */
-  formatPhoneticReading_(data) {
+  private formatPhoneticReading_(data: outputTypes.OutputFormattingData): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
 
     const text =
         PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.output_.append(buff, text);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @private
-   */
-  formatPrecedingBullet_(data) {
+  private formatPrecedingBullet_(data: outputTypes.OutputFormattingData): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
 
-    let current = node;
+    let current: AutomationNode | undefined = node;
     if (current.role === RoleType.INLINE_TEXT_BOX) {
       current = current.parent;
     }
@@ -822,17 +764,15 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @private
-   */
-  formatPressed_(data, token) {
+  private formatPressed_(
+      data: outputTypes.OutputFormattingData, token: string): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
-    const msg = outputTypes.OutputPropertyMap.PRESSED[node.checked];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const msg = outputTypes.OutputPropertyMap['PRESSED'][node.checked!];
     if (msg) {
       formatLog.writeToken(token);
       OutputFormatter.format(this.output_, {
@@ -844,17 +784,15 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @private
-   */
-  formatRestriction_(data, token) {
+  private formatRestriction_(
+      data: outputTypes.OutputFormattingData, token: string): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
-    const msg = outputTypes.OutputPropertyMap.RESTRICTION[node.restriction];
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const msg = outputTypes.OutputPropertyMap['RESTRICTION'][node.restriction!];
     if (msg) {
       formatLog.writeToken(token);
       OutputFormatter.format(this.output_, {
@@ -866,20 +804,18 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatRole_(data, token, options) {
+  private formatRole_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     options.annotation.push(token);
-    let msg = node.role;
-    const info = OutputRoleInfo[node.role];
+    let msg: string = node.role!;
+    const info = OutputRoleInfo[node.role!];
     if (node.roleDescription) {
       msg = node.roleDescription;
     } else if (info) {
@@ -897,14 +833,11 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, msg);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @private
-   */
-  formatState_(data, token) {
+  private formatState_(
+      data: outputTypes.OutputFormattingData, token: string): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (node.state) {
@@ -923,15 +856,12 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatTableCellIndex_(data, token, options) {
+  private formatTableCellIndex_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     let value = node[token];
@@ -944,15 +874,12 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, value);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatTextContent_(data, token, options) {
+  private formatTextContent_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     if (node.name && token === 'nameOrTextContent') {
@@ -980,10 +907,11 @@ export class OutputFormatter {
       },
       root: r => r === root,
     });
-    const outputStrings = [];
+    const outputStrings: string[] = [];
     while (walker.next().node) {
-      if (walker.node.name) {
-        outputStrings.push(walker.node.name.trim());
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      if (walker.node!.name) {
+        outputStrings.push(walker.node!.name.trim());
       }
     }
     const finalOutput = outputStrings.join(' ');
@@ -991,14 +919,12 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, finalOutput);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
-  formatUrlFilename_(data, token, options) {
+  private formatUrlFilename_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     options.annotation.push('name');
@@ -1016,19 +942,17 @@ export class OutputFormatter {
     formatLog.writeTokenWithValue(token, filename);
   }
 
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   * @private
-   */
-  formatValue_(data, token, options) {
+  private formatValue_(
+      data: outputTypes.OutputFormattingData, token: string,
+      options: AnnotationOptions): void {
     const buff = data.outputBuffer;
-    const node = data.node;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    const node = data.node!;
     const formatLog = data.outputFormatLogger;
 
     const text = node.value || '';
-    if (!node.state[StateType.EDITABLE] && node.name === text) {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (!node.state![StateType.EDITABLE] && node.name === text) {
       return;
     }
 
@@ -1043,8 +967,9 @@ export class OutputFormatter {
       }
     }
     options.annotation.push(token);
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (selectedText && !this.output_.formatAsBraille &&
-        node.state[StateType.FOCUSED]) {
+        node.state![StateType.FOCUSED]) {
       this.output_.append(buff, selectedText, options);
       this.output_.append(buff, Msgs.getMsg('selected'));
       formatLog.writeTokenWithValue(token, selectedText);
@@ -1055,47 +980,36 @@ export class OutputFormatter {
     }
   }
 
-  /**
-   * @param {!OutputFormatTree} tree
-   * @param {?AutomationNode} node
-   * @param {!OutputFormatLogger} formatLog
-   * @param {!Array<string>} msgArgs
-   * @return {!Array<string>}
-   * @private
-   */
-  getNonPluralizedArguments_(tree, node, formatLog, msgArgs) {
+  private getNonPluralizedArguments_(
+      tree: OutputFormatTree, node: AutomationNode | undefined,
+      formatLog: OutputFormatLogger, msgArgs: string[]): string[] {
     let curArg = tree.firstChild;
     while (curArg) {
       if (curArg.value[0] !== '$') {
         this.unexpectedValue_(formatLog, curArg.value);
         return msgArgs;
       }
-      let msgBuff = [];
+      const msgBuff: Spannable[] = [];
       OutputFormatter.format(this.output_, {
         node,
         outputFormat: curArg,
         outputBuffer: msgBuff,
         outputFormatLogger: formatLog,
       });
+      let extraArgs = msgBuff.map(spannable => spannable.toString());
       // Fill in empty string if nothing was formatted.
       if (!msgBuff.length) {
-        msgBuff = [''];
+        extraArgs = [''];
       }
-      msgArgs = msgArgs.concat(msgBuff);
+      msgArgs = msgArgs.concat(extraArgs);
       curArg = curArg.nextSibling;
     }
     return msgArgs;
   }
 
-  /**
-   * @param {!OutputFormatTree} tree
-   * @param {?AutomationNode} node
-   * @param {!OutputFormatLogger} formatLog
-   * @param {string} msg
-   * @return {string}
-   * @private
-   */
-  getPluralizedMessage_(tree, node, formatLog, msg) {
+  private getPluralizedMessage_(
+      tree: OutputFormatTree, node: AutomationNode | undefined,
+      formatLog: OutputFormatLogger, msg: string): string {
     const arg = tree.firstChild;
     if (!arg || arg.nextSibling) {
       this.error_(formatLog, 'Pluralized messages take exactly one argument');
@@ -1105,7 +1019,7 @@ export class OutputFormatter {
       this.unexpectedValue_(formatLog, arg.value);
       return msg;
     }
-    const argBuff = [];
+    const argBuff: Spannable[] = [];
     OutputFormatter.format(this.output_, {
       node,
       outputFormat: arg,
@@ -1116,12 +1030,7 @@ export class OutputFormatter {
     return new goog.i18n.MessageFormat(msg).format(namedArgs);
   }
 
-  /**
-   * @param {!OutputFormatLogger} formatLog
-   * @param {string} value
-   * @private
-   */
-  unexpectedValue_(formatLog, value) {
+  private unexpectedValue_(formatLog: OutputFormatLogger, value: string): void {
     this.error_(formatLog, 'Unexpected value: ' + value);
   }
 }
