@@ -178,6 +178,11 @@ void DigitalIdentityRequestImpl::Request(
 
   callback_ = std::move(callback);
 
+  if (!render_frame_host().HasTransientUserActivation()) {
+    CompleteRequest("", RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
   std::optional<std::string> request_json_string =
       digital_credential_provider->request;
   std::string request_to_send =
