@@ -38,6 +38,8 @@ static_library("browser") {
     "signin_header_helper.h",
     "signin_internals_util.cc",
     "signin_internals_util.h",
+    "signin_metrics_service.cc",
+    "signin_metrics_service.h",
     "signin_status_metrics_provider_helpers.cc",
     "signin_status_metrics_provider_helpers.h",
   ]

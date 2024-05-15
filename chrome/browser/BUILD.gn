@@ -1648,6 +1648,8 @@ static_library("browser") {
     "signin/reauth_tab_helper.h",
     "signin/signin_error_controller_factory.cc",
     "signin/signin_error_controller_factory.h",
+    "signin/signin_metrics_service_factory.cc",
+    "signin/signin_metrics_service_factory.h",
     "signin/signin_profile_attributes_updater.cc",
     "signin/signin_profile_attributes_updater.h",
     "signin/signin_profile_attributes_updater_factory.cc",
