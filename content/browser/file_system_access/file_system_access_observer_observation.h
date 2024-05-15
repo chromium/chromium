@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -28,7 +29,7 @@ class FileSystemAccessObserverHost;
 // TODO(crbug.com/40105284): Consider removing this class in favor of
 // giving the ObserverHost a FileSystemAccessObserver mojo::RemoteSet. See
 // https://chromium-review.googlesource.com/c/chromium/src/+/4809069/comment/8d90508d_74ae7891/.
-class FileSystemAccessObserverObservation {
+class FileSystemAccessObserverObservation : public WebContentsObserver {
  public:
   FileSystemAccessObserverObservation(
       FileSystemAccessObserverHost* host,
@@ -36,7 +37,7 @@ class FileSystemAccessObserverObservation {
       mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
       absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                     std::unique_ptr<FileSystemAccessFileHandleImpl>> handle);
-  ~FileSystemAccessObserverObservation();
+  ~FileSystemAccessObserverObservation() override;
 
   FileSystemAccessObserverObservation(
       FileSystemAccessObserverObservation const&) = delete;
@@ -44,6 +45,12 @@ class FileSystemAccessObserverObservation {
       FileSystemAccessObserverObservation const&) = delete;
 
   const storage::FileSystemURL& handle_url() const;
+
+  // WebContentsObserver override.
+  void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
 
  private:
   void OnReceiverDisconnect();
@@ -54,6 +61,8 @@ class FileSystemAccessObserverObservation {
           changes);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  bool received_changes_while_in_bf_cache_ = false;
 
   // The host which owns this instance.
   const raw_ptr<FileSystemAccessObserverHost> host_ = nullptr;

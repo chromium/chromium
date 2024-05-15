@@ -27,6 +27,11 @@ namespace content {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+constexpr int kBFCacheTestTimeoutMs = 3000;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
+
 enum class TestFileSystemType {
   kBucket,
   kLocal,
@@ -802,7 +807,6 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 );
 
-
 // Local file system access - including the open*Picker() methods used here
 // - is not supported on Android or iOS. See https://crbug.com/1011535.
 // Meanwhile, `base::FilePathWatcher` is not implemented on Fuchsia. See
@@ -827,7 +831,7 @@ class FileSystemAccessObserverWithBFCacheBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
-                       NoChangesAfterNavigatingAway) {
+                       ReceivesFileUpdatesAfterReturningFromBFCache) {
   base::FilePath file_path = CreateFileToBePicked();
 
   // Start observing the file.
@@ -837,12 +841,95 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          CREATE_PROMISE_AND_RESOLVERS
          "self.promise = promise;"
          "self.promiseResolve = promiseResolve;"
-         "self.numCbInvokes = 0;"
+         "self.numRecords = 0;"
          "async function onChange(records, observer) {"
-         "  ++self.numCbInvokes;"
+         "  numRecords += records.length;"
          "};"
          START_OBSERVING_FILE(TestFileSystemType::kLocal)
          "self.entry = file;"
+         "self.obs = observer;"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
+
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to another page and expect the previous RenderFrameHost to be
+  // in the BFCache.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(initial_rfh.get())
+                  ->IsInBackForwardCache());
+
+  // Write to the file from the new origin and validate that change
+  // notifications were sent.
+  script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+        "numRecords = 0;"
+         "async function onChange(records, observer) {"
+         "  numRecords += records.length;"
+         "};"
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
+         WRITE_TO_FILE
+         "setTimeout(() => {promiseResolve(numRecords);}, $1);"
+         "return await promise;"
+      "})()";
+  // clang-format on
+  EXPECT_GE(EvalJs(shell(),
+                   JsReplace(script, base::Int64ToValue(kBFCacheTestTimeoutMs)))
+                .ExtractInt(),
+            1);
+
+  // Navigate back and restore `initial_rfh` as the primary main frame.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
+
+  // We should have a single record from when the page was restored from
+  // BFCache.
+  script =
+      // clang-format off
+      "(async () => {"
+         "setTimeout(() => {promiseResolve(self.numRecords);}, $1);"
+         "return await self.promise;"
+      "})()";
+  // clang-format on
+  EXPECT_EQ(EvalJs(shell(),
+                   JsReplace(script, base::Int64ToValue(kBFCacheTestTimeoutMs)))
+                .ExtractInt(),
+            1);
+
+  // Write to the file again. These changes should be reported.
+  script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "const file = self.entry;"
+         WRITE_TO_FILE
+         "setTimeout(() => {promiseResolve(self.numRecords);}, $1);"
+         "return await promise;"
+      "})()";
+  // clang-format on
+  EXPECT_GT(EvalJs(shell(),
+                   JsReplace(script, base::Int64ToValue(kBFCacheTestTimeoutMs)))
+                .ExtractInt(),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
+                       NotifyOnReturnFromBFCacheWhenFileUpdates) {
+  base::FilePath file_path = CreateFileToBePicked();
+
+  // Start observing the file.
+  std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "self.promise = promise;"
+         "self.promiseResolve = promiseResolve;"
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
          "self.obs = observer;"
       "})()";
   // clang-format on
@@ -876,26 +963,61 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
   EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
 
-  // No file changes from when the page was in BFCache should be reported.
-  EXPECT_EQ(EvalJs(shell(), "self.numCbInvokes;").ExtractInt(), 0);
-
-  // Write to the file again. These changes should be reported.
+  // We should have a single record from when the page was restored from
+  // BFCache.
   script =
       // clang-format off
       "(async () => {"
-         "const file = await self.entry;"
-         WRITE_TO_FILE
-         "setTimeout(() => {promiseResolve(self.numCbInvokes);}, $1);"
-         "return await self.promise;"
+         SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  EXPECT_GE(
-      EvalJs(shell(),
-             JsReplace(script,
-                       base::Int64ToValue(
-                           TestTimeouts::action_timeout().InMilliseconds())))
-          .ExtractInt(),
-      1);
+  records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::SizeIs(1));
+  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+              testing::StrEq("unknown"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
+                       DoNotNotifyOnReturnFromBFCacheWhenNoFileUpdates) {
+  base::FilePath file_path = CreateFileToBePicked();
+
+  // Start observing the file.
+  std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "self.promise = promise;"
+         "self.promiseResolve = promiseResolve;"
+         START_OBSERVING_FILE(TestFileSystemType::kLocal)
+         "self.obs = observer;"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
+
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to another page and expect the previous RenderFrameHost to be
+  // in the BFCache.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(initial_rfh.get())
+                  ->IsInBackForwardCache());
+
+  // Navigate back and restore `initial_rfh` as the primary main frame.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
+
+  // We shouldn't have any records as no changes were made to the file while the
+  // page was in BFCache.
+  script =
+      // clang-format off
+      "(async () => {"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::IsEmpty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 
