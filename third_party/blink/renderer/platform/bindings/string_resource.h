@@ -20,25 +20,26 @@ class StringResourceBase {
   USING_FAST_MALLOC(StringResourceBase);
 
  public:
-  explicit StringResourceBase(const String& string) : plain_string_(string) {
-    DCHECK(!string.IsNull());
+  explicit StringResourceBase(String string)
+      : plain_string_(std::move(string)) {
+    DCHECK(!plain_string_.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+        plain_string_.CharactersSizeInBytes());
   }
 
-  explicit StringResourceBase(const AtomicString& string)
-      : atomic_string_(string) {
-    DCHECK(!string.IsNull());
+  explicit StringResourceBase(AtomicString string)
+      : atomic_string_(std::move(string)) {
+    DCHECK(!atomic_string_.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+        atomic_string_.CharactersSizeInBytes());
   }
 
-  explicit StringResourceBase(const ParkableString& string)
+  explicit StringResourceBase(ParkableString string)
       : parkable_string_(string) {
     // TODO(lizeb): This is only true without compression.
-    DCHECK(!string.IsNull());
+    DCHECK(!parkable_string_.IsNull());
     v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+        parkable_string_.CharactersSizeInBytes());
   }
 
   StringResourceBase(const StringResourceBase&) = delete;
@@ -89,6 +90,19 @@ class StringResourceBase {
 
   const ParkableString& GetParkableString() const { return parkable_string_; }
 
+  // Helper functions for derived constructors.
+  template <typename Str>
+  static inline Str Assert8Bit(Str&& str) {
+    DCHECK(str.Is8Bit());
+    return str;
+  }
+
+  template <typename Str>
+  static inline Str Assert16Bit(Str&& str) {
+    DCHECK(!str.Is8Bit());
+    return str;
+  }
+
  private:
   // If this StringResourceBase was initialized from a String then plain_string_
   // will be non-null. If the string becomes atomic later, the atomic version
@@ -113,20 +127,14 @@ class StringResourceBase {
 class StringResource16Base : public StringResourceBase,
                              public v8::String::ExternalStringResource {
  public:
-  explicit StringResource16Base(const String& string)
-      : StringResourceBase(string) {
-    DCHECK(!string.Is8Bit());
-  }
+  explicit StringResource16Base(String string)
+      : StringResourceBase(Assert16Bit(std::move(string))) {}
 
-  explicit StringResource16Base(const AtomicString& string)
-      : StringResourceBase(string) {
-    DCHECK(!string.Is8Bit());
-  }
+  explicit StringResource16Base(AtomicString string)
+      : StringResourceBase(Assert16Bit(std::move(string))) {}
 
-  explicit StringResource16Base(const ParkableString& parkable_string)
-      : StringResourceBase(parkable_string) {
-    DCHECK(!parkable_string.Is8Bit());
-  }
+  explicit StringResource16Base(ParkableString parkable_string)
+      : StringResourceBase(Assert16Bit(std::move(parkable_string))) {}
 
   StringResource16Base(const StringResource16Base&) = delete;
   StringResource16Base& operator=(const StringResource16Base&) = delete;
@@ -134,11 +142,11 @@ class StringResource16Base : public StringResourceBase,
 
 class StringResource16 final : public StringResource16Base {
  public:
-  explicit StringResource16(const String& string)
-      : StringResource16Base(string) {}
+  explicit StringResource16(String string)
+      : StringResource16Base(std::move(string)) {}
 
-  explicit StringResource16(const AtomicString& string)
-      : StringResource16Base(string) {}
+  explicit StringResource16(AtomicString string)
+      : StringResource16Base(std::move(string)) {}
 
   StringResource16(const StringResource16&) = delete;
   StringResource16& operator=(const StringResource16&) = delete;
@@ -151,8 +159,8 @@ class StringResource16 final : public StringResource16Base {
 
 class ParkableStringResource16 final : public StringResource16Base {
  public:
-  explicit ParkableStringResource16(const ParkableString& string)
-      : StringResource16Base(string) {}
+  explicit ParkableStringResource16(ParkableString string)
+      : StringResource16Base(std::move(string)) {}
 
   ParkableStringResource16(const ParkableStringResource16&) = delete;
   ParkableStringResource16& operator=(const ParkableStringResource16&) = delete;
@@ -176,20 +184,14 @@ class ParkableStringResource16 final : public StringResource16Base {
 class StringResource8Base : public StringResourceBase,
                             public v8::String::ExternalOneByteStringResource {
  public:
-  explicit StringResource8Base(const String& string)
-      : StringResourceBase(string) {
-    DCHECK(string.Is8Bit());
-  }
+  explicit StringResource8Base(String string)
+      : StringResourceBase(Assert8Bit(std::move(string))) {}
 
-  explicit StringResource8Base(const AtomicString& string)
-      : StringResourceBase(string) {
-    DCHECK(string.Is8Bit());
-  }
+  explicit StringResource8Base(AtomicString string)
+      : StringResourceBase(Assert8Bit(std::move(string))) {}
 
-  explicit StringResource8Base(const ParkableString& parkable_string)
-      : StringResourceBase(parkable_string) {
-    DCHECK(parkable_string.Is8Bit());
-  }
+  explicit StringResource8Base(ParkableString parkable_string)
+      : StringResourceBase(Assert8Bit(std::move(parkable_string))) {}
 
   StringResource8Base(const StringResource8Base&) = delete;
   StringResource8Base& operator=(const StringResource8Base&) = delete;
@@ -197,11 +199,11 @@ class StringResource8Base : public StringResourceBase,
 
 class StringResource8 final : public StringResource8Base {
  public:
-  explicit StringResource8(const String& string)
-      : StringResource8Base(string) {}
+  explicit StringResource8(String string)
+      : StringResource8Base(std::move(string)) {}
 
-  explicit StringResource8(const AtomicString& string)
-      : StringResource8Base(string) {}
+  explicit StringResource8(AtomicString string)
+      : StringResource8Base(std::move(string)) {}
 
   StringResource8(const StringResource8&) = delete;
   StringResource8& operator=(const StringResource8&) = delete;
@@ -214,8 +216,8 @@ class StringResource8 final : public StringResource8Base {
 
 class ParkableStringResource8 final : public StringResource8Base {
  public:
-  explicit ParkableStringResource8(const ParkableString& string)
-      : StringResource8Base(string) {}
+  explicit ParkableStringResource8(ParkableString string)
+      : StringResource8Base(std::move(string)) {}
 
   ParkableStringResource8(const ParkableStringResource8&) = delete;
   ParkableStringResource8& operator=(const ParkableStringResource8&) = delete;

@@ -108,7 +108,7 @@ TEST_F(V8ElementTest, GetAttributeOperationCallback_Existing) {
 
 #if DCHECK_IS_ON()
   EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 4u);
-  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 3u);
+  EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 2u);
 #endif
 
   // Trigger a low memory notification. This will signal V8 to clear its
