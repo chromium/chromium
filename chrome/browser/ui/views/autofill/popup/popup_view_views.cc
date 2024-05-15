@@ -578,9 +578,8 @@ bool PopupViewViews::AcceptSelectedContentOrCreditCardCell() {
     return false;
   }
 
-  const SuggestionType type = controller_->GetSuggestionAt(index->first).type;
-  if (!base::Contains(kItemsTriggeringFieldFilling, type) &&
-      type != SuggestionType::kScanCreditCard) {
+  if (!IsStandaloneSuggestionType(
+          controller_->GetSuggestionAt(index->first).type)) {
     return false;
   }
 

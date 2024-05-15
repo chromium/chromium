@@ -100,6 +100,11 @@ bool IsFooterItem(const std::vector<Suggestion>& suggestions,
              : IsFooterSuggestionType(type);
 }
 
+bool IsStandaloneSuggestionType(SuggestionType type) {
+  return !IsFooterSuggestionType(type) ||
+         (type == SuggestionType::kScanCreditCard);
+}
+
 content::RenderFrameHost* GetRenderFrameHost(
     AutofillSuggestionDelegate& delegate) {
   return absl::visit(

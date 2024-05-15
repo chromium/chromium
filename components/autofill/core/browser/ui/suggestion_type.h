@@ -7,8 +7,6 @@
 
 #include <ostream>
 
-#include "components/autofill/core/common/dense_set.h"
-
 namespace autofill {
 
 // This enum defines item identifiers for Autofill suggestion controller.
@@ -110,20 +108,6 @@ enum class SuggestionType {
 };
 
 std::ostream& operator<<(std::ostream& os, SuggestionType type);
-
-// TODO(b/340323759): Find a better name since Compose actions do not trigger
-// filling and kScanCreditCard should be included.
-// Set of `SuggestionType`s that trigger filling a value into an input element
-// when the user selects a suggestion with that id.
-inline constexpr auto kItemsTriggeringFieldFilling = DenseSet(
-    {SuggestionType::kAccountStoragePasswordEntry,
-     SuggestionType::kAddressEntry, SuggestionType::kAutocompleteEntry,
-     SuggestionType::kComposeResumeNudge,
-     SuggestionType::kComposeProactiveNudge, SuggestionType::kCreditCardEntry,
-     SuggestionType::kDatalistEntry,
-     SuggestionType::kFillEverythingFromAddressProfile,
-     SuggestionType::kMerchantPromoCodeEntry, SuggestionType::kPasswordEntry,
-     SuggestionType::kVirtualCreditCardEntry});
 
 }  // namespace autofill
 

@@ -502,12 +502,8 @@ void AutofillKeyboardAccessoryControllerImpl::PinView() {
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
-  if (suggestions_.empty()) {
-    return false;
-  }
-  SuggestionType type = suggestions_[0].type;
-  return base::Contains(kItemsTriggeringFieldFilling, type) ||
-         type == SuggestionType::kScanCreditCard;
+  return !suggestions_.empty() &&
+         IsStandaloneSuggestionType(suggestions_[0].type);
 }
 
 // AutofillKeyboardAccessoryController implementation:

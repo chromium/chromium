@@ -36,6 +36,11 @@ bool IsFooterSuggestionType(SuggestionType type);
 bool IsFooterItem(const std::vector<Suggestion>& suggestions,
                   size_t line_number);
 
+// Returns `true` if the popup should remain open with a suggestion of `type`
+// as the first suggestion (e.g. after deleting a suggestion). This is true for
+// all non-footer suggestions and false for most footer suggestions.
+bool IsStandaloneSuggestionType(SuggestionType type);
+
 // Returns the RenderFrameHost` corresponding to an
 // `AutofillSuggestionDelegate`.
 content::RenderFrameHost* GetRenderFrameHost(
