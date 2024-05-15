@@ -585,7 +585,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   container_builder_.SetInlineSize(inline_size);
 }
 
-void InlineLayoutAlgorithm::ApplyTextBoxTrim(const LineInfo& line_info) {
+void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
   const ConstraintSpace& space = GetConstraintSpace();
   const bool should_apply_start =
       space.ShouldTextBoxTrimStart() && line_info.IsFirstFormattedLine();
@@ -624,6 +624,11 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(const LineInfo& line_info) {
             ? offset_for_trimming_box +
                   container_builder_.LineBoxBfcBlockOffset().value()
             : offset_for_trimming_box);
+
+    // Cancel adjusting the block start for the Ruby annotation. The use of the
+    // `text-box-trim` accepts the risk of collisions for the finer control of
+    // the alignment of the body text in the block direction.
+    line_info.SetAnnotationBlockStartAdjustment(LayoutUnit());
   }
 
   if (should_apply_end) {
