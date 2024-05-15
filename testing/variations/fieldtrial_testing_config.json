@@ -16190,6 +16190,21 @@
             ]
         }
     ],
+    "QuickDeleteAndroidFollowup": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickDeleteAndroidFollowup"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuotaDatabaseDisableFullFSync": [
         {
             "platforms": [
