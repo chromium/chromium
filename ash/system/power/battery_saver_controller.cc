@@ -237,7 +237,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   if (active && !enable_record_) {
     // An enable_record_ means that we were already active, so skip metrics if
     // it exists.
-    enable_record_ = EnableRecord{base::Time::Now(), reason};
+    enable_record_ = EnableRecord{base::TimeTicks::Now(), reason};
     base::UmaHistogramPercentage("Ash.BatterySaver.BatteryPercent.Enabled",
                                  static_cast<int>(battery_percent));
     if (time_to_empty) {
@@ -273,7 +273,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
                                     *time_to_empty, base::Hours(0),
                                     base::Hours(10), 100);
     }
-    auto duration = base::Time::Now() - enable_record_->time;
+    auto duration = base::TimeTicks::Now() - enable_record_->time;
     base::UmaHistogramCustomTimes("Ash.BatterySaver.Duration", duration,
                                   base::Hours(0), base::Hours(10), 100);
     // Duration by enabled reason metrics
