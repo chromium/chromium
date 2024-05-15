@@ -37,27 +37,14 @@
     min-height: 42px;
   }
 
-  #extension-icon {
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
+  .panel-extensions {
+    padding-bottom: 15px;
   }
 
-  .extension-list{
-    border-top: var(--cr-separator-line);
-    padding: 0px 0px 15px 3px;
-  }
-
-  .extension-row {
-    border-top: none;
-  }
-
-  .display-name {
+  .panel-extension-info {
     flex: 1;
-    padding-inline-start: 18px;
-    margin: 15px 8px 0 8px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-top: 15px;
+    margin-bottom: 0px;
   }
 
   .bulk-action-button {
@@ -120,13 +107,14 @@
       </cr-button>
     </div>
   </cr-expand-button>
-  <cr-collapse class="extension-list"
+  <cr-collapse class="panel-extensions"
       opened="[[unsafeExtensionsReviewListExpanded_]]"
       hidden$="[[!shouldShowUnsafeExtensions_]]">
     <template is="dom-repeat" items="[[unsafeExtensions_]]">
-      <div class="extension-row cr-row">
-        <img id="extension-icon" src="[[item.iconUrl]]" role="presentation">
-        <div class="display-name text-elide">
+      <div class="panel-extension-row cr-row">
+        <img class="panel-extension-icon" src="[[item.iconUrl]]"
+            role="presentation">
+        <div class="panel-extension-info text-elide">
           <div class="extension-representation">[[item.name]]</div>
           <div class="cr-secondary-text">
             [[item.safetyCheckText.panelString]]
