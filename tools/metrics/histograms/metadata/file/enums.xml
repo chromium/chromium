@@ -582,7 +582,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="OfficeFilesSourceVolume">
   <int value="0" label="Google Drive"/>
-  <int value="1" label="My Files"/>
+  <int value="1" label="This Chromebook"/>
   <int value="2" label="Removable Disk"/>
   <int value="3" label="Archive File"/>
   <int value="4" label="FileSystemProvider API"/>

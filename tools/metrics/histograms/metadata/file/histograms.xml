@@ -398,9 +398,9 @@ chromium-metrics-reviews@google.com.
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The size of the space consumed by a users files in &quot;My Files&quot;
-    folder and it's children, calculated as a percentage of the total disk
-    space. Calculated on user login and recorded by VolumeManager.
+    The size of the space consumed by a user's files in the 'MyFiles' folder and
+    its children, calculated as a percentage of the total disk space. Calculated
+    on user login and recorded by VolumeManager.
   </summary>
 </histogram>
 
@@ -409,9 +409,8 @@ chromium-metrics-reviews@google.com.
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    The total size of all of the users files stored in the &quot;My Files&quot;
-    folder and it's children. Calculated on user login and recorded by
-    VolumeManager.
+    The total size of all of the user's files stored in the 'MyFiles' folder and
+    its children. Calculated on user login and recorded by VolumeManager.
   </summary>
 </histogram>
 
@@ -1815,8 +1814,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Drive"
         summary="The archive to mount is located under the Drive root"/>
     <variant name="MyFiles"
-        summary="The archive to mount is a local archive, located under the
-                 My files or the Downloads root"/>
+        summary="The archive to mount is a local file in 'MyFiles'"/>
     <variant name="Other"/>
   </token>
 </histogram>
