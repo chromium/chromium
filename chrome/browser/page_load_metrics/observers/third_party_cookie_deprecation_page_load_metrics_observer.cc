@@ -233,6 +233,7 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
     case ThirdPartyCookieAllowMechanism::kNone:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
     case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
       break;
   }
 

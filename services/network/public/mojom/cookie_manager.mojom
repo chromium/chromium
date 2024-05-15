@@ -111,6 +111,7 @@ enum CookieExemptionReason {
     kStorageAccess = 6,
     kTopLevelStorageAccess = 7,
     kCorsOptIn = 8,
+    kScheme = 9,
 };
 
 enum ContextType {

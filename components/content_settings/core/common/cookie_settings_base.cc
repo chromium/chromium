@@ -81,6 +81,8 @@ constexpr StorageAccessResult GetStorageAccessResult(
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
     case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
       return StorageAccessResult::ACCESS_ALLOWED_CORS_EXCEPTION;
+    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+      return StorageAccessResult::ACCESS_ALLOWED_SCHEME;
   }
 }
 
@@ -110,6 +112,7 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
     case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
       return std::nullopt;
   }
 }
@@ -192,6 +195,7 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
     case ThirdPartyCookieAllowMechanism::
         kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
       return false;
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
@@ -246,6 +250,7 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
         kAllowBy3PCDMetadataSourceCuj:
     case CookieSettingsBase::ThirdPartyCookieAllowMechanism::
         kAllowBy3PCDMetadataSourceGovEduTld:
+    case CookieSettingsBase::ThirdPartyCookieAllowMechanism::kAllowByScheme:
       return false;
   }
 }
@@ -524,7 +529,7 @@ CookieSettingsBase::DecideAccess(const GURL& url,
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
   }
   if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kNone};
+    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowByScheme};
   }
 
   // Site controlled mechanisms (ex: web APIs, deprecation trial):

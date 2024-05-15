@@ -379,6 +379,9 @@ std::string CookieInclusionStatus::GetDebugString() const {
     case ExemptionReason::kCorsOptIn:
       reason = "ExemptionCorsOptIn";
       break;
+    case ExemptionReason::kScheme:
+      reason = "ExemptionScheme";
+      break;
     case ExemptionReason::kNone:
       NOTREACHED_NORETURN();
   };

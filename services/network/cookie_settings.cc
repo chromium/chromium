@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/types/optional_util.h"
@@ -98,6 +99,8 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
       return net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
     case CookieSettings::ThirdPartyCookieAllowMechanism::kNone:
       return net::CookieInclusionStatus::ExemptionReason::kNone;
+    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByScheme:
+      return net::CookieInclusionStatus::ExemptionReason::kScheme;
   }
 }
 

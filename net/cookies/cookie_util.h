@@ -52,7 +52,8 @@ enum class StorageAccessResult {
   ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT = 7,
   ACCESS_ALLOWED_CORS_EXCEPTION = 8,
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
-  kMaxValue = ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL,
+  ACCESS_ALLOWED_SCHEME = 10,
+  kMaxValue = ACCESS_ALLOWED_SCHEME,
 };
 
 // Helper to fire telemetry indicating if a given request for storage was

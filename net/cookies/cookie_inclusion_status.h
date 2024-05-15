@@ -287,9 +287,11 @@ class NET_EXPORT CookieInclusionStatus {
     // For CorsException in the ABA contexts, which the inner iframe is
     // same-site with the top-level site but has cross-site ancestor(s).
     kCorsOptIn = 8,
+    // Allowed by the scheme.
+    kScheme = 9,
 
     // Keep last.
-    kMaxValue = kCorsOptIn
+    kMaxValue = kScheme
   };
 
   using ExclusionReasonBitset =

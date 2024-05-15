@@ -128,8 +128,10 @@ class CookieSettingsBase {
     // Same as kAllowBy3PCDMetadata but for
     // mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD rules.
     kAllowBy3PCDMetadataSourceGovEduTld = 18,
+    // Allowed by scheme.
+    kAllowByScheme = 19,
 
-    kMaxValue = kAllowBy3PCDMetadataSourceGovEduTld,
+    kMaxValue = kAllowByScheme,
   };
 
   // Returns true if the allow mechanism represents one of the multiple allow
