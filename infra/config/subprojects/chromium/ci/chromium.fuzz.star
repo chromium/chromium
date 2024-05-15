@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
-load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
@@ -284,7 +283,6 @@ ci.builder(
             "mojo_fuzzer",
         ],
     ),
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "centipede",
         short_name = "centipede",
@@ -315,7 +313,6 @@ Those fuzzers require more resources to run correctly.\
             "high_end_fuzzer_targets",
         ],
     ),
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "centipede",
         short_name = "centipede high end",
