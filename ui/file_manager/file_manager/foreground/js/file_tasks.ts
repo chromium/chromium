@@ -779,10 +779,7 @@ export class FileTasks {
       const item = new ProgressCenterItem();
       item.id = 'Cannot mount: ' + url;
       item.type = ProgressItemType.MOUNT_ARCHIVE;
-      const msgId = error === VolumeError.INVALID_PATH ?
-          'ARCHIVE_MOUNT_INVALID_PATH' :
-          'ARCHIVE_MOUNT_FAILED';
-      item.message = strf(msgId, filename);
+      item.message = strf('ARCHIVE_MOUNT_FAILED', filename);
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
