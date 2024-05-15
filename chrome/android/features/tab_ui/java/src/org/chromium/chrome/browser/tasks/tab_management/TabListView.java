@@ -89,10 +89,10 @@ public class TabListView extends SelectableItemViewBase<Integer> {
     // SelectableItemViewBase implementation.
 
     @Override
-    protected void onClick() {}
+    protected void updateView(boolean animate) {}
 
     @Override
-    protected void updateView(boolean animate) {}
+    protected void handleNonSelectionClick() {}
 
     // TODO(crbug.com/339038201): Consider capturing click events and discarding them while not in
     // selection mode.

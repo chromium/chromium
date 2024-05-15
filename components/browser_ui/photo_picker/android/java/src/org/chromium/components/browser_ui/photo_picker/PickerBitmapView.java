@@ -172,7 +172,7 @@ public class PickerBitmapView extends SelectableItemViewBase<PickerBitmap> {
     }
 
     @Override
-    public void onClick() {
+    public void handleNonSelectionClick() {
         if (mBitmapDetails == null) {
             return; // Clicks are disabled until initialize() has been called.
         }
