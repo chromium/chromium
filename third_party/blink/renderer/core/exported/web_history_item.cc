@@ -143,6 +143,37 @@ WebHistoryItem::WebHistoryItem(const WebString& url,
   }
 }
 
+
+template<class T>
+static int RecordReplayGetLen(absl::optional<std::basic_string<T>> s) {
+  if (s.has_value()) {
+    return (int)s->length();
+  }
+  return 0;
+}
+template<class T>
+static std::string RecordReplayStringifySizes(std::vector<absl::optional<std::basic_string<T>>> v) {
+  std::stringstream s;
+  s << v.size() << ":";
+  for (auto entry : v) {
+    s << RecordReplayGetLen(entry) << ",";
+  }
+  return s.str();
+}
+static void RecordReplayStringifyFrameState(std::stringstream& s, const ExplodedFrameState& frame) {
+  s << 
+    "A" << RecordReplayGetLen(frame.url_string) << ","
+    << " B" << RecordReplayGetLen(frame.referrer) << ","
+    << " C" << (frame.initiator_origin.has_value() ? frame.initiator_origin->Serialize().c_str() : "") << ","
+    << " D" << RecordReplayGetLen(frame.target) << ","
+    << " E" << RecordReplayGetLen(frame.state_object) << ","
+    << " FA" << RecordReplayGetLen(frame.http_body.http_content_type) << ","
+    << " G" << RecordReplayGetLen(frame.navigation_api_key) << ","
+    << " H" << RecordReplayGetLen(frame.navigation_api_id) << ","
+    << " I" << RecordReplayGetLen(frame.navigation_api_state) << ","
+    << " J" << frame.children.size();
+}
+
 PageState WebHistoryItem::ToPageState() {
   ExplodedPageState state;
   state.referenced_files =
@@ -209,6 +240,24 @@ PageState WebHistoryItem::ToPageState() {
     state.top.navigation_api_state = WebString::ToOptionalString16(
         private_->GetNavigationApiState()->ToWireString());
   }
+  
+  std::stringstream breakdowns;
+  RecordReplayStringifyFrameState(breakdowns, state.top);
+  if (!http_body.IsNull()) {
+    breakdowns << " http_body="
+      << RecordReplayGetLen(state.top.http_body.http_content_type) << ","
+      << " elems=" << state.top.http_body.request_body->elements()->size() << ":";
+    for (size_t i = 0; i < http_body.ElementCount(); ++i) {
+      WebHTTPBody::Element elem;
+      http_body.ElementAt(i, elem);
+      breakdowns << elem.blob_length << ",";
+    }
+  }
+  recordreplay::Assert(
+    "[TT-492-1184] WebHistoryItem::ToPageState files=%s top=%s",
+    RecordReplayStringifySizes(state.referenced_files).c_str(),
+    breakdowns.str().c_str()
+  );
 
   std::string encoded_data;
   EncodePageState(state, &encoded_data);
