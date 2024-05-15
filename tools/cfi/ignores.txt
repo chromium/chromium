@@ -160,6 +160,14 @@ fun:*GetPCIDevicesWithLibPCI*
 fun:*GetTraceCategoryEnabledFlag*
 fun:*AddTraceEvent*
 
+# dav1d, calls to dav1d shared library from crabbyavif (Rust library). cfi-icall
+# does not work when the callback is a Rust function and the parameters are
+# fixed width integer types (or pointers to fixed width integer types).
+# TODO(crbug.com/40266913): Remove this entry once Rust CFI is built with
+# -fsanitize-cfi-icall-experimental-normalize-integers and
+# -Zsanitizer-cfi-normalize-integers.
+src:*third_party/dav1d/libdav1d/src/ref.c
+
 # Dawn, calls to OpenGL and Vulkan function pointers from shared library.
 src:*third_party/dawn/src/dawn/native/*
 
