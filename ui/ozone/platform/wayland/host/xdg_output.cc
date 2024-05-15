@@ -6,6 +6,7 @@
 
 #include <xdg-output-unstable-v1-client-protocol.h>
 
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
 namespace ui {
@@ -80,7 +81,9 @@ void XDGOutput::UpdateMetrics(bool compute_scale_from_size,
         std::max(physical_size.width(), physical_size.height());
     const float max_logical_side =
         std::max(logical_size.width(), logical_size.height());
-    metrics.scale_factor = max_physical_side / max_logical_side;
+    // The scale needs to be clamped here in the same way as in other wayland
+    // code, e.g. 'WaylandSurface::GetWaylandScale()'.
+    metrics.scale_factor = wl::ClampScale(max_physical_side / max_logical_side);
   }
 }
 

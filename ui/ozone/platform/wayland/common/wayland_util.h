@@ -123,6 +123,10 @@ void TransformToWlArray(
 // Converts `milliseconds`, which is server dependent, to base::TimeTicks.
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds);
 
+// A scale less than 1 can cause borders to not be rendered properly. So this
+// ensures the scale is at least 1.
+float ClampScale(float scale);
+
 }  // namespace wl
 
 #endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_

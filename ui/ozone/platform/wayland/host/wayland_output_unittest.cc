@@ -64,9 +64,50 @@ TEST_F(WaylandOutputTest, NameAndDescriptionFallback) {
   EXPECT_EQ(wl_output->GetMetrics().description, kWlOutputDescription);
 }
 
-// Test that if using xdg output (and surface_submission_in_pixel_coordinates is
+// Test that if using xdg output (and supports_viewporter_surface_scaling is
 // enabled) the scale factor is calculated as the ratio of physical size to
-// logical size.
+// logical size as long as it is more than 1, otherwise it is set to 1.
+TEST_F(WaylandOutputTest, ScaleFactorCalculation) {
+  auto* const output_manager = connection_->wayland_output_manager();
+  ASSERT_TRUE(output_manager);
+
+  auto* wl_output = output_manager->GetPrimaryOutput();
+  ASSERT_TRUE(wl_output);
+  EXPECT_FALSE(wl_output->xdg_output_);
+
+  ASSERT_FALSE(connection_->surface_submission_in_pixel_coordinates());
+  connection_->set_supports_viewporter_surface_scaling(true);
+  ASSERT_TRUE(connection_->supports_viewporter_surface_scaling());
+
+  constexpr float kWlOutputScale = 2.f;
+  constexpr int kLogicalSideLength = 50;
+  float compositor_scale = 3.f;
+  wl_output->xdg_output_ = std::make_unique<XDGOutput>(nullptr);
+  wl_output->xdg_output_->logical_size_ =
+      gfx::Size(kLogicalSideLength, kLogicalSideLength);
+  wl_output->physical_size_ = gfx::Size(compositor_scale * kLogicalSideLength,
+                                        compositor_scale * kLogicalSideLength);
+  wl_output->scale_factor_ = kWlOutputScale;
+
+  wl_output->is_ready_ = true;
+  wl_output->xdg_output_->is_ready_ = true;
+
+  // Scale factor should be calculated from physical and logical sizes.
+  wl_output->UpdateMetrics();
+  EXPECT_EQ(compositor_scale, wl_output->scale_factor());
+
+  // As the calculated value is less than one, the scale factor should be
+  // clamped to 1.
+  compositor_scale = 0.5f;
+  wl_output->physical_size_ = gfx::Size(compositor_scale * kLogicalSideLength,
+                                        compositor_scale * kLogicalSideLength);
+  wl_output->UpdateMetrics();
+  EXPECT_EQ(1, wl_output->scale_factor());
+}
+
+// Test scale factor falls back to wl_output::scale instead of being calculated
+// as the ratio of physical size to logical size when xdg_output is not ready or
+// if supports_viewporter_surface_scaling is disabled.
 TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   auto* const output_manager = connection_->wayland_output_manager();
   ASSERT_TRUE(output_manager);
@@ -74,7 +115,7 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   auto* wl_output = output_manager->GetPrimaryOutput();
   ASSERT_TRUE(wl_output);
   EXPECT_FALSE(wl_output->xdg_output_);
-  EXPECT_FALSE(connection_->surface_submission_in_pixel_coordinates());
+  EXPECT_FALSE(connection_->supports_viewporter_surface_scaling());
 
   // We only test trivial stuff here so it is okay to create an output that is
   // not backed with a real object.
@@ -91,7 +132,7 @@ TEST_F(WaylandOutputTest, ScaleFactorFallback) {
   wl_output->UpdateMetrics();
   EXPECT_EQ(kDefaultScaleFactor, wl_output->scale_factor());
 
-  // If xdg_output is ready but surface_submission_in_pixel_coordinates is
+  // If xdg_output is ready but supports_viewporter_surface_scaling is
   // false, scale_factor should fall back to the value sent in wl_output::scale.
   wl_output->xdg_output_->is_ready_ = true;
   wl_output->UpdateMetrics();

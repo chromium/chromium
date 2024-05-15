@@ -346,4 +346,8 @@ base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
 #endif
 }
 
+float ClampScale(float scale) {
+  return std::max(1.f, scale);
+}
+
 }  // namespace wl

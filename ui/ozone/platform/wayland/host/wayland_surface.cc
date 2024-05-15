@@ -385,11 +385,9 @@ float WaylandSurface::GetWaylandScale(const State& state) {
   if (surface_submission_in_pixel_coordinates_) {
     return 1;
   }
-  return (state.buffer_scale_float < 1.f)
-             ? 1.f
-             : (use_viewporter_surface_scaling_
-                    ? state.buffer_scale_float
-                    : std::ceil(state.buffer_scale_float));
+  return wl::ClampScale(use_viewporter_surface_scaling_
+                            ? state.buffer_scale_float
+                            : std::ceil(state.buffer_scale_float));
 }
 
 bool WaylandSurface::IsViewportScaled(const State& state) {
