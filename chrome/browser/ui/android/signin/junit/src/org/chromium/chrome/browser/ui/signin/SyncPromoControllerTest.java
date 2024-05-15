@@ -517,31 +517,15 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void shouldLaunchBookmarksSigninFlowReturnsTrue_UnoFeatureEnabled() {
+    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void shouldLaunchBookmarksSigninFlowReturnsTrue() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertTrue(
-                SyncPromoController.shouldLaunchSigninFlow(
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mIdentityManager,
-                        mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
-                        mPrefService));
-    }
-
-    @Test
-    public void shouldLaunchBookmarksSigninFlowReturnsTrue_AccountStorageFeatureEnabled() {
-        doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
-        doReturn(SyncPromoController.GMAIL_DOMAIN)
-                .when(mSigninManager)
-                .extractDomainName(anyString());
-
-        Assert.assertTrue(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -551,14 +535,14 @@ public class SyncPromoControllerTest {
 
     @Test
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void shouldLaunchBookmarksSigninFlowReturnsFalse_AccountStorageFeatureDisabled() {
+    public void shouldLaunchBookmarksSigninFlowReturnsFalse_FeatureDisabled() {
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         doReturn(SyncPromoController.GMAIL_DOMAIN)
                 .when(mSigninManager)
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -575,7 +559,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.NTP_FEED_TOP_PROMO,
                         mIdentityManager,
                         mSigninManager,
@@ -592,7 +576,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -610,7 +594,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -625,7 +609,7 @@ public class SyncPromoControllerTest {
         doReturn("nongmail.com").when(mSigninManager).extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -642,7 +626,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
@@ -659,7 +643,7 @@ public class SyncPromoControllerTest {
                 .extractDomainName(anyString());
 
         Assert.assertFalse(
-                SyncPromoController.shouldLaunchSigninFlow(
+                SyncPromoController.shouldLaunchBookmarksSigninFlow(
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
