@@ -1746,7 +1746,7 @@
     "self-inline",
 
     // position-anchor
-    "implicit",
+    // auto,
     // none,
 
     // animation-[end-]delay

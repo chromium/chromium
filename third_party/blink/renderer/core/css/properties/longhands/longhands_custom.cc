@@ -174,7 +174,7 @@ const CSSValue* PositionAnchor::ParseSingleValueFromRange(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   if (CSSValue* value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kImplicit>(range)) {
+          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(range)) {
     return value;
   }
   return css_parsing_utils::ConsumeDashedIdent(range, context);
@@ -185,7 +185,7 @@ const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (!style.PositionAnchor()) {
-    return CSSIdentifierValue::Create(CSSValueID::kImplicit);
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }

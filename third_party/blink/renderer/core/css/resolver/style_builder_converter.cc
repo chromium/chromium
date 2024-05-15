@@ -1962,7 +1962,7 @@ ScopedCSSName* StyleBuilderConverter::ConvertPositionAnchor(
     const CSSValue& value) {
   DCHECK(value.IsScopedValue());
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kImplicit);
+    DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kAuto);
     return nullptr;
   }
   return ConvertCustomIdent(state, value);

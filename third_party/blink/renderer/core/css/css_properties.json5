@@ -4483,7 +4483,7 @@
       field_group: "*",
       field_template: "external",
       converter: "ConvertPositionAnchor",
-      keywords: ["implicit"],
+      keywords: ["auto"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,

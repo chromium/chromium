@@ -20,11 +20,10 @@ AnchorSpecifierValue* AnchorSpecifierValue::Default() {
 }
 
 // static
-AnchorSpecifierValue* AnchorSpecifierValue::Implicit() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<AnchorSpecifierValue>, instance,
-      {MakeGarbageCollected<AnchorSpecifierValue>(
-          base::PassKey<AnchorSpecifierValue>(), Type::kImplicit)});
+AnchorSpecifierValue* AnchorSpecifierValue::Auto() {
+  DEFINE_STATIC_LOCAL(Persistent<AnchorSpecifierValue>, instance,
+                      {MakeGarbageCollected<AnchorSpecifierValue>(
+                          base::PassKey<AnchorSpecifierValue>(), Type::kAuto)});
   return instance;
 }
 

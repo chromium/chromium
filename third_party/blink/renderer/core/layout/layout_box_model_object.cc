@@ -83,7 +83,7 @@ bool NeedsAnchorPositionScrollData(Element& element,
   if (style.PositionAnchor()) {
     return true;
   }
-  // Now we have `position-anchor: implicit`. We need `AnchorPositionScrollData`
+  // Now we have `position-anchor: auto`. We need `AnchorPositionScrollData`
   // only if there's an implicit anchor element to track.
   return element.ImplicitAnchorElement();
 }
