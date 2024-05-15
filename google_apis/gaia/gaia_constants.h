@@ -83,6 +83,10 @@ extern const char kCloudSearchQueryOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksOAuth2Scope[];
 
+// OAuth 2 scope for YouTube Music API.
+// https://developers.google.com/youtube/mediaconnect/guides/authentication#identify-access-scopes
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kYouTubeMusicOAuth2Scope[];
+
 // OAuth 2 scopes for Google Classroom API.
 // https://developers.google.com/identity/protocols/oauth2/scopes#classroom
 COMPONENT_EXPORT(GOOGLE_APIS)

@@ -45,7 +45,7 @@ class ASH_EXPORT YouTubeMusicClient {
   google_apis::RequestSender* GetRequestSender();
 
   // Callback passed in at initialization time for creating request sender.
-  const CreateRequestSenderCallback create_request_sender_callback_;
+  CreateRequestSenderCallback create_request_sender_callback_;
 
   // Helper class that sends requests, handles retries and authentication.
   std::unique_ptr<google_apis::RequestSender> request_sender_;

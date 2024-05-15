@@ -190,6 +190,9 @@ const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";
 const char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
 
+// OAuth 2 scope for YouTube Music API.
+const char kYouTubeMusicOAuth2Scope[] = "https://www.googleapis.com/auth/music";
+
 // OAuth 2 scopes for Google Classroom API.
 const char kClassroomReadOnlyCoursesOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.courses.readonly";
