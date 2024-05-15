@@ -350,7 +350,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
         base::BindRepeating(&TabGroupEditorBubbleView::DeleteGroupPressed,
                             base::Unretained(this)),
-        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon)));
+        ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,
+                                       kDefaultIconSize)));
     menu_items_.push_back(std::move(delete_group_menu_item));
 
     PrefService* pref_service = browser_->profile()->GetPrefs();
