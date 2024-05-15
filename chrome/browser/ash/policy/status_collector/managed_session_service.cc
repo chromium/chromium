@@ -21,10 +21,6 @@ namespace {
 
 constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
 
-ash::KioskLaunchController* GetKioskLaunchController() {
-  return ash::KioskController::Get().GetLaunchController();
-}
-
 }  // namespace
 
 ManagedSessionService::ManagedSessionService(base::Clock* clock)
@@ -169,12 +165,13 @@ void ManagedSessionService::OnAuthAttemptStarted() {
         this);
   }
 
-  if (GetKioskLaunchController()) {
+  ash::KioskController& kiosk_controller = ash::KioskController::Get();
+  if (kiosk_controller.IsSessionStarting()) {
     // Remove observer first in case the auth attempt is because of a retry, and
     // the observation was added, if it was not added removing the observer will
     // be a no-op.
-    GetKioskLaunchController()->RemoveKioskProfileLoadFailedObserver(this);
-    GetKioskLaunchController()->AddKioskProfileLoadFailedObserver(this);
+    kiosk_controller.RemoveProfileLoadFailedObserver(this);
+    kiosk_controller.AddProfileLoadFailedObserver(this);
   }
 }
 

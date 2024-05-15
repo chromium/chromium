@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

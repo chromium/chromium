@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/common/chrome_switches.h"
@@ -169,12 +170,25 @@ void KioskControllerImpl::StartSession(const KioskAppId& app,
   launch_controller_->Start(app, is_auto_launch);
 }
 
+bool KioskControllerImpl::IsSessionStarting() const {
+  return launch_controller_ != nullptr;
+}
+
 void KioskControllerImpl::CancelSessionStart() {
   DeleteLaunchControllerAsync();
 }
 
-KioskLaunchController* KioskControllerImpl::GetLaunchController() {
-  return launch_controller_.get();
+void KioskControllerImpl::AddProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  CHECK_NE(launch_controller_, nullptr);
+  launch_controller_->AddKioskProfileLoadFailedObserver(observer);
+}
+
+void KioskControllerImpl::RemoveProfileLoadFailedObserver(
+    KioskProfileLoadFailedObserver* observer) {
+  if (launch_controller_) {
+    launch_controller_->RemoveKioskProfileLoadFailedObserver(observer);
+  }
 }
 
 bool KioskControllerImpl::HandleAccelerator(LoginAcceleratorAction action) {

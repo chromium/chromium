@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   login_display_host->StartKiosk(test_kiosk_app().id(), true);
 
   // Check that no launch has started.
-  EXPECT_FALSE(KioskController::Get().GetLaunchController());
+  EXPECT_FALSE(KioskController::Get().IsSessionStarting());
 }
 
 // This test verifies that accessibility extensions do not preserve any local

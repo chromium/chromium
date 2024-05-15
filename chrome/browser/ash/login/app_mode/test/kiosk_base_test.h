@@ -13,6 +13,8 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -81,8 +83,6 @@ class KioskBaseTest : public OobeBaseTest {
   // return the new width.
   static int WaitForWidthChange(content::DOMMessageQueue* message_queue,
                                 int current_width);
-
-  static KioskLaunchController* GetKioskLaunchController();
 
   void SetUp() override;
 

@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
@@ -134,8 +135,7 @@ class PublicSessionUserCreationWaiter
   std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
 };
 
-class KioskProfileLoadFailedWaiter
-    : public KioskLaunchController::KioskProfileLoadFailedObserver {
+class KioskProfileLoadFailedWaiter : public KioskProfileLoadFailedObserver {
  public:
   KioskProfileLoadFailedWaiter() = default;
 
@@ -151,13 +151,11 @@ class KioskProfileLoadFailedWaiter
       // failure already took place.
       return;
     }
-    KioskController::Get()
-        .GetLaunchController()
-        ->AddKioskProfileLoadFailedObserver(this);
+    KioskController::Get().AddProfileLoadFailedObserver(this);
     run_loop_.Run();
   }
 
-  // KioskLaunchController::KioskProfileLoadFailedObserver:
+  // KioskProfileLoadFailedObserver:
   void OnKioskProfileLoadFailed() override { run_loop_.Quit(); }
 
  private:

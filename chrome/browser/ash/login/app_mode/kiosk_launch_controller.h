@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
@@ -35,6 +36,8 @@ class LacrosLauncher;
 }  // namespace app_mode
 
 namespace ash {
+
+class KioskProfileLoadFailedObserver;
 class LoginDisplayHost;
 class OobeUI;
 
@@ -95,11 +98,6 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state);
 class KioskLaunchController : public KioskAppLauncher::Observer,
                               public NetworkUiController::Observer {
  public:
-  class KioskProfileLoadFailedObserver : public base::CheckedObserver {
-   public:
-    ~KioskProfileLoadFailedObserver() override = default;
-    virtual void OnKioskProfileLoadFailed() = 0;
-  };
   class AcceleratorController {
    public:
     virtual ~AcceleratorController() = default;

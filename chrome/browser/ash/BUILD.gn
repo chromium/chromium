@@ -173,6 +173,7 @@ source_set("ash") {
     "app_mode/kiosk_external_updater.h",
     "app_mode/kiosk_mode_idle_app_name_notification.cc",
     "app_mode/kiosk_mode_idle_app_name_notification.h",
+    "app_mode/kiosk_profile_load_failed_observer.h",
     "app_mode/kiosk_profile_loader.cc",
     "app_mode/kiosk_profile_loader.h",
     "app_mode/kiosk_system_session.cc",

@@ -20,11 +20,12 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
+
+class KioskLaunchController;
 
 class KioskControllerImpl : public KioskController,
                             public user_manager::UserManager::Observer {
@@ -44,7 +45,13 @@ class KioskControllerImpl : public KioskController,
                     bool is_auto_launch,
                     LoginDisplayHost* host) override;
 
+  bool IsSessionStarting() const override;
   void CancelSessionStart() override;
+
+  void AddProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer) override;
+  void RemoveProfileLoadFailedObserver(
+      KioskProfileLoadFailedObserver* observer) override;
 
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
@@ -54,9 +61,6 @@ class KioskControllerImpl : public KioskController,
       const std::optional<std::string>& app_name) override;
 
   KioskSystemSession* GetKioskSystemSession() override;
-
-  KioskLaunchController* GetLaunchController() override;
-
  private:
   // `user_manager::UserManager::Observer` implementation:
   void OnUserLoggedIn(const user_manager::User& user) override;

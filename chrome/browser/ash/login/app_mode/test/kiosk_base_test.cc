@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -122,11 +121,6 @@ int KioskBaseTest::WaitForWidthChange(content::DOMMessageQueue* message_queue,
 
   ADD_FAILURE() << "Message wait failed " << kSizeChangedMessage;
   return current_width;
-}
-
-// static
-KioskLaunchController* KioskBaseTest::GetKioskLaunchController() {
-  return KioskController::Get().GetLaunchController();
 }
 
 void KioskBaseTest::SetUp() {
