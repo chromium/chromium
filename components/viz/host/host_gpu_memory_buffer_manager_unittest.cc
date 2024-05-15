@@ -98,7 +98,12 @@ class TestGpuService : public mojom::GpuService {
 
     gfx::GpuMemoryBufferHandle handle;
     handle.id = req.id;
-    handle.type = gfx::SHARED_MEMORY_BUFFER;
+
+    // These tests are testing production flows that operate on native GMBs. To
+    // ensure that these tests are faithful, give the GMB a type that signals
+    // that it's a native buffer. The concrete type doesn't matter, as these
+    // tests don't actually cause the GMB to be used in any way.
+    handle.type = gfx::NATIVE_PIXMAP;
     constexpr size_t kBufferSizeBytes = 100;
     handle.region = base::UnsafeSharedMemoryRegion::Create(kBufferSizeBytes);
 
