@@ -1861,9 +1861,6 @@ config("default_warnings") {
 
           # TODO(https://crbug.com/324953188): fix and reenable
           "-Wno-extra-qualification",
-
-          # TODO(https://crbug.com/332931387): fix and reenable
-          "-Wno-unused-but-set-variable",
         ]
       }
 
