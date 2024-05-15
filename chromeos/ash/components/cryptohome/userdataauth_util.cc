@@ -115,9 +115,6 @@ template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     ReplyToCryptohomeError(const std::optional<TerminateAuthFactorReply>&);
 template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     cryptohome::ErrorWrapper
-    ReplyToCryptohomeError(const std::optional<GetRecoveryRequestReply>&);
-template COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
-    cryptohome::ErrorWrapper
     ReplyToCryptohomeError(const std::optional<StartMigrateToDircryptoReply>&);
 
 int64_t AccountDiskUsageReplyToUsageSize(
