@@ -310,7 +310,7 @@
   {
     "name": "arc-ignore-hover-event-anr",
     "owners": [ "lingyufeng@chromium.org", "arc-user-focus@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   { "name": "arc-instant-response-window-open",
     "owners": [ "sstan@chromium.org", "mduggan@chromium.org" ],
