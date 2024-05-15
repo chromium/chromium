@@ -75,6 +75,8 @@ class MediaPreviewsTestingProfile : public TestingProfile {
     return delegate_;
   }
 
+  void NullifyDelegate() { delegate_ = nullptr; }
+
  protected:
   raw_ptr<MockOriginTrialsDelegate> delegate_;
 };
@@ -128,6 +130,14 @@ TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledInvalidUrls) {
   EXPECT_CALL(mock_delegate_, IsFeaturePersistedForOrigin(_, _, _, _)).Times(0);
   EXPECT_TRUE(media_preview_feature::ShouldShowMediaPreview(
       *profile_, invalid_url_, invalid_url_, UiLocation::kPageInfo));
+}
+
+TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledNullDelegate) {
+  scoped_feature_list_.InitAndEnableFeature(blink::features::kCameraMicPreview);
+  auto url_in_ot_origin = url::Origin::Create(url_in_ot_);
+  profile_->NullifyDelegate();
+  EXPECT_TRUE(media_preview_feature::ShouldShowMediaPreview(
+      *profile_, url_in_ot_, embedder_url_, UiLocation::kPageInfo));
 }
 
 TEST_F(MediaPreviewFeatureTest, TestFeatureEnabledRequestedInOriginTrial) {
