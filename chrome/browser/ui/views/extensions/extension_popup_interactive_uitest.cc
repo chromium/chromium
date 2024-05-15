@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -23,6 +25,7 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -66,12 +69,20 @@ class DevToolsAttachWaiter : public content::DevToolsAgentHostObserver {
   raw_ptr<content::WebContents> web_contents_;
 };
 
-views::UniqueWidgetPtr CreateTestWidget() {
+views::UniqueWidgetPtr CreateTestTopLevelWidget() {
   views::UniqueWidgetPtr widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
   widget->widget_delegate()->SetCanActivate(true);
   return widget;
+}
+
+// Create a dialog widget as a child of `parent` widget.
+views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
+  auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
+  return std::unique_ptr<views::Widget>(
+      views::DialogDelegate::CreateDialogWidget(
+          dialog_delegate.release(), nullptr, parent->GetNativeView()));
 }
 
 void ExpectWidgetDestroy(base::WeakPtr<views::Widget> widget) {
@@ -465,11 +476,124 @@ IN_PROC_BROWSER_TEST_F(
   base::WeakPtr<views::Widget> extension_popup_widget =
       OpenExtensionPopup(browser(), extension);
 
-  // Activate the different widget should not close the extension popup.
-  views::UniqueWidgetPtr widget = CreateTestWidget();
+  // Activate a different top-level widget should not close the extension popup.
+  views::UniqueWidgetPtr widget = CreateTestTopLevelWidget();
   widget->Show();
   views::test::WaitForWidgetActive(widget.get(), true);
 
   ASSERT_NE(extension_popup_widget, nullptr);
   EXPECT_FALSE(extension_popup_widget->IsClosed());
+}
+
+// Tests that an API-triggered extenion popup does not show if a security dialog
+// is visible. This extension loads a slow image that completes loading only
+// after a security dialog is shown.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       APITriggeredPopupIsBlockedBySecurityDialog) {
+  // Start an embedded test server that serves a slow responding image.
+  static constexpr char kSlowImgURL[] = "/slow-img";
+  net::test_server::ControllableHttpResponse slow_img_response(
+      embedded_test_server(), kSlowImgURL);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const GURL slow_image_url = embedded_test_server()->GetURL(kSlowImgURL);
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+  const std::string html =
+      base::StrCat({"<html><img src='", slow_image_url.spec(), "'></html>"});
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), html);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Try to open an extension by API.
+  extensions::ExtensionHostTestHelper popup_waiter(browser()->profile(),
+                                                   extension->id());
+  popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
+  ExtensionActionTestHelper::Create(browser())->TriggerPopupForAPI(
+      extension->id());
+
+  // The extension should load the image.
+  slow_img_response.WaitForRequest();
+
+  // While the extension is loading, open a security UI.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::UniqueWidgetPtr security_widget =
+      CreateTestDialogWidget(browser_view->GetWidget());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      security_widget.get());
+  security_widget->Show();
+  views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
+
+  // Respond to the image loading.
+  slow_img_response.Send(net::HTTP_OK, "image/png");
+  slow_img_response.Send("image_body");
+  slow_img_response.Done();
+
+  // The extension should be destroyed without showing.
+  popup_waiter.WaitForHostDestroyed();
+}
+
+// Tests that a user-triggered extenion popup can show regardless if a security
+// dialog is present.
+IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
+                       UserTriggeredPopupIsNotBlockedBySecurityUI) {
+  // Start an embedded test server that serves a slow responding image.
+  static constexpr char kSlowImgURL[] = "/slow-img";
+  net::test_server::ControllableHttpResponse slow_img_response(
+      embedded_test_server(), kSlowImgURL);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const GURL slow_image_url = embedded_test_server()->GetURL(kSlowImgURL);
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test Extension",
+           "manifest_version": 3,
+           "action": { "default_popup": "popup.html" },
+           "version": "0.1"
+         })";
+  const std::string html =
+      base::StrCat({"<html><img src='", slow_image_url.spec(), "'></html>"});
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), html);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Try to open an extension.
+  extensions::ExtensionHostTestHelper popup_waiter(browser()->profile(),
+                                                   extension->id());
+  popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
+
+  // The extension should load the image.
+  slow_img_response.WaitForRequest();
+
+  // While the extension is loading, open a security UI.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::UniqueWidgetPtr security_widget =
+      CreateTestDialogWidget(browser_view->GetWidget());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      security_widget.get());
+  security_widget->Show();
+  views::test::WidgetVisibleWaiter(security_widget.get()).Wait();
+
+  // Respond to the image loading.
+  slow_img_response.Send(net::HTTP_OK, "image/png");
+  slow_img_response.Send("image_body");
+  slow_img_response.Done();
+
+  // The extension popup should be shown.
+  popup_waiter.WaitForHostCompletedFirstLoad();
+  WaitForLastExtensionPopupVisible();
 }

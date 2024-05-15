@@ -77,10 +77,6 @@ class ExtensionsContainer {
   // Whether there are any Extensions registered with the ExtensionsContainer.
   virtual bool HasAnyExtensions() const = 0;
 
-  // Whether there is any security UI in the browser window that would
-  // overlap with the extensions popup.
-  virtual bool HasBlockingSecurityUI() const = 0;
-
   // Updates the hover card for `action_view` based on `update_type`.
   virtual void UpdateToolbarActionHoverCard(
       ToolbarActionView* action_view,

@@ -475,9 +475,13 @@ void ExtensionActionViewController::UnregisterCommand() {
 void ExtensionActionViewController::InspectPopup() {
   // This method is only triggered through user action (clicking on the context
   // menu entry).
-  constexpr bool kByUser = true;
   GetPreferredPopupViewController()->TriggerPopup(
-      PopupShowAction::kShowAndInspect, kByUser, ShowPopupCallback());
+      PopupShowAction::kShowAndInspect, /*by_user*/ true, ShowPopupCallback());
+}
+
+void ExtensionActionViewController::TriggerPopupForAPI() {
+  GetPreferredPopupViewController()->TriggerPopup(
+      PopupShowAction::kShowAndInspect, /*by_user*/ false, ShowPopupCallback());
 }
 
 void ExtensionActionViewController::OnIconUpdated() {
@@ -587,12 +591,6 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
 
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
 
-  // Skip popup if there is an open security UI that would be covered by it,
-  // mitigation occlusion/spoofing risks.
-  if (extensions_container_->HasBlockingSecurityUI()) {
-    return;
-  }
-
   std::unique_ptr<extensions::ExtensionViewHost> host =
       extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
                                                             browser_);
@@ -618,7 +616,7 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
 
 void ExtensionActionViewController::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> popup_host,
-    bool grant_tab_permissions,
+    bool by_user,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
   // It's possible that the popup should be closed before it finishes opening
@@ -634,9 +632,9 @@ void ExtensionActionViewController::ShowPopup(
   // ExtensionViewHost). This doesn't necessarily mean that the popup has
   // completed rendering on the screen.
   has_opened_popup_ = true;
-  platform_delegate_->ShowPopup(std::move(popup_host), show_action,
+  platform_delegate_->ShowPopup(std::move(popup_host), by_user, show_action,
                                 std::move(callback));
-  view_delegate_->OnPopupShown(grant_tab_permissions);
+  view_delegate_->OnPopupShown(by_user);
 }
 
 void ExtensionActionViewController::OnPopupClosed() {

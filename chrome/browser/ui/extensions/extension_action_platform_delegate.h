@@ -31,6 +31,7 @@ class ExtensionActionPlatformDelegate {
 
   // Shows the given |host| in an extension popup.
   virtual void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                         bool by_user,
                          PopupShowAction show_action,
                          ShowPopupCallback callback) = 0;
 };

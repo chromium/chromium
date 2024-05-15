@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
@@ -48,7 +47,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -664,28 +662,6 @@ void ExtensionsToolbarContainer::ToggleExtensionsMenu() {
 
 bool ExtensionsToolbarContainer::HasAnyExtensions() const {
   return !actions_.empty();
-}
-
-bool ExtensionsToolbarContainer::HasBlockingSecurityUI() const {
-  // Check if there's any security UI that might be spoofable because of
-  // overlapping with the extension popup. The media picker dialog has been
-  // identified to be susceptible. See crbug.com/40058873.
-  // Not all security UIs are blocking. Non-blocking security UIs can avoid
-  // being occluded by setting a higher z-order (sub)level. In contrast,
-  // blocking security UIs cannot leverage z-ordering because they share the
-  // same rendering layer with the browser window.
-  // TODO(crbug.com/326681253): block on other possibly overlapping security
-  // UIs.
-  views::ElementTrackerViews::ViewList media_picker_dialogs =
-      views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
-          DesktopMediaPickerDialogView::kDesktopMediaPickerDialogViewIdentifier,
-          browser_->window()->GetElementContext());
-
-  return std::any_of(media_picker_dialogs.begin(), media_picker_dialogs.end(),
-                     [](views::View* dialog_view) {
-                       views::Widget* dialog_widget = dialog_view->GetWidget();
-                       return dialog_widget && dialog_widget->IsVisible();
-                     });
 }
 
 void ExtensionsToolbarContainer::ReorderAllChildViews() {

@@ -101,6 +101,9 @@ class ExtensionActionViewController
   // ExtensionContextMenuModel::PopupDelegate:
   void InspectPopup() override;
 
+  // Trigger an extension popup as a result of API call.
+  void TriggerPopupForAPI();
+
   // Populates |command| with the command associated with |extension|, if one
   // exists. Returns true if |command| was populated.
   bool GetExtensionCommand(extensions::Command* command) const;
@@ -161,7 +164,7 @@ class ExtensionActionViewController
 
   // Shows the popup with the given |host|.
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
-                 bool grant_tab_permissions,
+                 bool by_user,
                  PopupShowAction show_action,
                  ShowPopupCallback callback);
 

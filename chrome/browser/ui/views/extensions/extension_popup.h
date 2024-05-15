@@ -63,6 +63,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   static void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::View* anchor_view,
                         views::BubbleBorder::Arrow arrow,
+                        bool by_user,
                         PopupShowAction show_action,
                         ShowPopupCallback callback);
 
@@ -121,6 +122,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
+                 bool by_user,
                  PopupShowAction show_action,
                  ShowPopupCallback callback);
 
@@ -143,6 +145,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  // True if this popup is triggered by user.
+  const bool by_user_;
 
   PopupShowAction show_action_;
 

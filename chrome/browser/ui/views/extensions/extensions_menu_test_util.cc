@@ -149,6 +149,14 @@ void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
   view_controller->InspectPopup();
 }
 
+void ExtensionsMenuTestUtil::TriggerPopupForAPI(
+    const extensions::ExtensionId& id) {
+  auto* view_controller = static_cast<ExtensionActionViewController*>(
+      extensions_container_->GetActionForId(id));
+  DCHECK(view_controller);
+  view_controller->TriggerPopupForAPI();
+}
+
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
   ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);

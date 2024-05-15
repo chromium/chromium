@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
@@ -319,8 +320,10 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
 
 void AuthenticatorRequestDialogView::Show() {
   if (!first_shown_) {
-    constrained_window::ShowWebModalDialogViews(this, web_contents());
-    DCHECK(GetWidget());
+    views::Widget* widget =
+        constrained_window::ShowWebModalDialogViews(this, web_contents());
+    DCHECK(widget);
+    extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
     first_shown_ = true;
     return;
   }

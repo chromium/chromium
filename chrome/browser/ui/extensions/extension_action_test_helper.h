@@ -45,14 +45,17 @@ class ExtensionActionTestHelper {
   // Returns true if there is an action for the given `id`.
   virtual bool HasAction(const extensions::ExtensionId& id) = 0;
 
+  // Simulates a user click on the action button for the given `id`.
+  virtual void Press(const extensions::ExtensionId& id) = 0;
+
   // Inspects the extension popup for the action with the given `id`.
   virtual void InspectPopup(const extensions::ExtensionId& id) = 0;
 
+  // Trigger an extension popup as a result of API.
+  virtual void TriggerPopupForAPI(const extensions::ExtensionId& id) = 0;
+
   // Returns icon for the action for the given `id`.
   virtual gfx::Image GetIcon(const extensions::ExtensionId& id) = 0;
-
-  // Simulates a user click on the action button for the given `id`.
-  virtual void Press(const extensions::ExtensionId& id) = 0;
 
   virtual gfx::NativeView GetPopupNativeView() = 0;
 

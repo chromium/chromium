@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,7 +60,6 @@
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -297,9 +297,6 @@ BASE_FEATURE(kShareThisTabDialog,
              "ShareThisTabDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
-                                      kDesktopMediaPickerDialogViewIdentifier);
-
 bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
@@ -361,8 +358,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   DCHECK(!params.force_audio_checkboxes_to_default_checked ||
          !params.exclude_system_audio);
   RecordAction(base::UserMetricsAction("GetDisplayMedia.ShowDialog"));
-  SetProperty(views::kElementIdentifierKey,
-              kDesktopMediaPickerDialogViewIdentifier);
   SetModalType(params.modality);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
@@ -609,6 +604,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     widget = CreateDialogWidget(this, params.context, nullptr);
     widget->Show();
   }
+
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 
 #if BUILDFLAG(IS_MAC)
   // On Mac, even modals are shown using separate native windows.
