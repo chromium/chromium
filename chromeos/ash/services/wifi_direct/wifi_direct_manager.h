@@ -28,7 +28,8 @@ class WifiDirectConnection;
 // 5. TODO: disconnect Wifi direct group.
 // 6. TODO: observe on WifiP2PController to handle Wifi direct group
 // disconnections notified by Shill.
-class WifiDirectManager : public mojom::WifiDirectManager {
+class WifiDirectManager : public mojom::WifiDirectManager,
+                          public WifiP2PController::Observer {
  public:
   WifiDirectManager();
 
@@ -51,6 +52,9 @@ class WifiDirectManager : public mojom::WifiDirectManager {
       ConnectToWifiDirectGroupCallback callback) override;
 
   void GetWifiP2PCapabilities(GetWifiP2PCapabilitiesCallback callback) override;
+
+  void OnWifiDirectConnectionDisconnected(const int shill_id,
+                                          bool is_owner) override;
 
   size_t GetConnectionsCountForTesting() const;
   void FlushForTesting();

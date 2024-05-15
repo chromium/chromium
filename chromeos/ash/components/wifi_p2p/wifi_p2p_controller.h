@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
@@ -29,6 +30,14 @@ class WifiP2PGroup;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     : public ShillPropertyChangedObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void OnWifiDirectConnectionDisconnected(const int shill_id,
+                                                    bool is_owner) = 0;
+  };
+
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize();
 
@@ -131,6 +140,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
                  base::ScopedFD socket_fd,
                  base::OnceCallback<void(bool success)> callback);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  private:
   WifiP2PController();
   WifiP2PController(const WifiP2PController&) = delete;
@@ -173,6 +185,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void OnGetManagerProperties(std::optional<base::Value::Dict> properties);
 
   void UpdateP2PCapabilities(const base::Value::Dict& capabilities);
+
+  void CheckAndNotifyDisconnection(bool is_owner,
+                                   const base::Value& property_list,
+                                   const std::string& interface_state_property,
+                                   const std::string& shill_id_property,
+                                   const std::string& idle_state_property);
+
+  base::ObserverList<Observer> observer_list_;
 
   WifiP2PCapabilities wifi_p2p_capabilities_{false, false};
 

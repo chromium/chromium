@@ -56,9 +56,12 @@ WifiDirectOperationResult GetMojoOperationResult(
 
 WifiDirectManager::WifiDirectManager() {
   DCHECK(WifiP2PController::IsInitialized());
+  WifiP2PController::Get()->AddObserver(this);
 }
 
-WifiDirectManager::~WifiDirectManager() = default;
+WifiDirectManager::~WifiDirectManager() {
+  WifiP2PController::Get()->RemoveObserver(this);
+}
 
 void WifiDirectManager::BindPendingReceiver(
     mojo::PendingReceiver<mojom::WifiDirectManager> pending_receiver) {
@@ -96,6 +99,20 @@ void WifiDirectManager::GetWifiP2PCapabilities(
       WifiP2PController::Get()->GetP2PCapabilities().is_client_ready;
 
   std::move(callback).Run(std::move(result));
+}
+
+void WifiDirectManager::OnWifiDirectConnectionDisconnected(const int shill_id,
+                                                           bool is_owner) {
+  const auto it = shill_id_to_wifi_direct_connection_.find(shill_id);
+  if (it == shill_id_to_wifi_direct_connection_.end()) {
+    NET_LOG(ERROR) << "Couldn't find the Wifi direct connection with shill id: "
+                   << shill_id << " in map";
+    return;
+  }
+  CHECK(shill_id_to_wifi_direct_connection_[shill_id]->IsOwner() == is_owner);
+
+  shill_id_to_wifi_direct_connection_[shill_id].reset();
+  shill_id_to_wifi_direct_connection_.erase(it);
 }
 
 void WifiDirectManager::OnCreateOrConnectWifiDirectGroup(

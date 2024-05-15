@@ -252,6 +252,38 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
                               ->GetRecentlyDisconnectedP2PGroupId());
 }
 
+TEST_F(WifiDirectManagerTest, GroupClientEvents) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateConnectToP2PGroupResult(
+          FakeShillSimulatedResult::kSuccess,
+          shill::kConnectToP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
+  WifiP2POperationTestResult result_arguments =
+      ConnectToWifiDirectGroup(std::move(credentials), 5200u);
+  EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
+  ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
+
+  mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
+      std::move(result_arguments.wifi_direct_connection));
+  ExpectConnectionsCount(1);
+
+  auto p2pclient_dict =
+      base::Value::Dict().Set(shill::kP2PClientInfoShillIDProperty, 0);
+  p2pclient_dict.Set(shill::kP2PClientInfoStateProperty,
+                     shill::kP2PClientInfoStateIdle);
+
+  base::Value::List p2pclient_list;
+  p2pclient_list.Append(std::move(p2pclient_dict));
+
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PClientInfosProperty, base::Value(p2pclient_list.Clone()));
+
+  ExpectConnectionsCount(0);
+}
+
 TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {
   ShillManagerClient::Get()
       ->GetTestInterface()
@@ -263,6 +295,37 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupFailure_InvalidResult) {
   EXPECT_EQ(result_arguments.result,
             WifiDirectOperationResult::kInvalidResultCode);
   EXPECT_FALSE(result_arguments.wifi_direct_connection.is_valid());
+}
+
+TEST_F(WifiDirectManagerTest, GroupOwnerEvents) {
+  ShillManagerClient::Get()
+      ->GetTestInterface()
+      ->SetSimulateCreateP2PGroupResult(FakeShillSimulatedResult::kSuccess,
+                                        shill::kCreateP2PGroupResultSuccess);
+  auto credentials = mojom::WifiCredentials::New();
+  credentials->ssid = kAssignedSSID;
+  credentials->passphrase = kAssignedPassphrase;
+  WifiP2POperationTestResult result_arguments =
+      CreateWifiDirectGroup(std::move(credentials));
+  EXPECT_EQ(result_arguments.result, WifiDirectOperationResult::kSuccess);
+  ASSERT_TRUE(result_arguments.wifi_direct_connection.is_valid());
+
+  mojo::Remote<mojom::WifiDirectConnection> wifi_direct_connection(
+      std::move(result_arguments.wifi_direct_connection));
+  ExpectConnectionsCount(1);
+
+  auto p2pgroup_dict =
+      base::Value::Dict().Set(shill::kP2PGroupInfoShillIDProperty, 0);
+  p2pgroup_dict.Set(shill::kP2PGroupInfoStateProperty,
+                    shill::kP2PGroupInfoStateIdle);
+
+  base::Value::List p2pgroup_list;
+  p2pgroup_list.Append(std::move(p2pgroup_dict));
+
+  ShillManagerClient::Get()->GetTestInterface()->SetManagerProperty(
+      shill::kP2PGroupInfosProperty, base::Value(p2pgroup_list.Clone()));
+
+  ExpectConnectionsCount(0);
 }
 
 TEST_F(WifiDirectManagerTest, GetWifiP2PCapabilities) {

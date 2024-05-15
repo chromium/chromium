@@ -435,6 +435,38 @@ void WifiP2PController::OnPropertyChanged(const std::string& key,
                       "on kP2PCapabilitiesProperty";
     UpdateP2PCapabilities(value.GetDict());
   }
+
+  if (key == shill::kP2PGroupInfosProperty) {
+    CheckAndNotifyDisconnection(
+        /*is_owner=*/true, value, shill::kP2PGroupInfoStateProperty,
+        shill::kP2PGroupInfoShillIDProperty, shill::kP2PGroupInfoStateIdle);
+  }
+
+  if (key == shill::kP2PClientInfosProperty) {
+    CheckAndNotifyDisconnection(
+        /*is_owner=*/false, value, shill::kP2PClientInfoStateProperty,
+        shill::kP2PClientInfoShillIDProperty, shill::kP2PClientInfoStateIdle);
+  }
+}
+
+void WifiP2PController::CheckAndNotifyDisconnection(
+    bool is_owner,
+    const base::Value& property_list,
+    const std::string& interface_state_property,
+    const std::string& shill_id_property,
+    const std::string& idle_state_property) {
+  for (const base::Value& group_info : property_list.GetList()) {
+    const base::Value::Dict& properties = group_info.GetDict();
+    const std::string* interface_state =
+        properties.FindString(interface_state_property);
+    std::optional<int> shill_id = properties.FindInt(shill_id_property);
+    if (shill_id.has_value() && interface_state &&
+        (*interface_state == idle_state_property)) {
+      for (auto& observer : observer_list_) {
+        observer.OnWifiDirectConnectionDisconnected(shill_id.value(), is_owner);
+      }
+    }
+  }
 }
 
 void WifiP2PController::OnGetManagerProperties(
@@ -471,6 +503,14 @@ void WifiP2PController::UpdateP2PCapabilities(
     wifi_p2p_capabilities_.is_client_ready =
         (*client_readiness == shill::kP2PCapabilitiesClientReadinessReady);
   }
+}
+
+void WifiP2PController::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void WifiP2PController::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace ash
