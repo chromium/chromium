@@ -1216,6 +1216,32 @@ bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
   return false;
 }
 
+bool ComputedStyle::DiffCompositingReasonsChanged(const ComputedStyle& other,
+                                                  uint32_t field_diff) const {
+  if (field_diff & kCompositing) {
+    return true;
+  }
+
+  if (UsedTransformStyle3D() != other.UsedTransformStyle3D()) {
+    return true;
+  }
+
+  if (ContainsPaint() != other.ContainsPaint()) {
+    return true;
+  }
+
+  if (IsOverflowVisibleAlongBothAxes() !=
+      other.IsOverflowVisibleAlongBothAxes()) {
+    return true;
+  }
+
+  if (PotentialCompositingReasonsFor3DTransformChanged(other)) {
+    return true;
+  }
+
+  return false;
+}
+
 void ComputedStyle::UpdatePropertySpecificDifferences(
     const ComputedStyle& other,
     uint32_t field_diff,
@@ -1267,24 +1293,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetBlendModeChanged();
   }
 
-  if (HasCurrentTransformAnimation() != other.HasCurrentTransformAnimation() ||
-      HasCurrentScaleAnimation() != other.HasCurrentScaleAnimation() ||
-      HasCurrentRotateAnimation() != other.HasCurrentRotateAnimation() ||
-      HasCurrentTranslateAnimation() != other.HasCurrentTranslateAnimation() ||
-      HasCurrentOpacityAnimation() != other.HasCurrentOpacityAnimation() ||
-      HasCurrentFilterAnimation() != other.HasCurrentFilterAnimation() ||
-      HasCurrentBackdropFilterAnimation() !=
-          other.HasCurrentBackdropFilterAnimation() ||
-      SubtreeWillChangeContents() != other.SubtreeWillChangeContents() ||
-      WillChangeScrollPosition() != other.WillChangeScrollPosition() ||
-      WillChangeProperties() != other.WillChangeProperties() ||
-      BackfaceVisibility() != other.BackfaceVisibility() ||
-      UsedTransformStyle3D() != other.UsedTransformStyle3D() ||
-      ContainsPaint() != other.ContainsPaint() ||
-      IsOverflowVisibleAlongBothAxes() !=
-          other.IsOverflowVisibleAlongBothAxes() ||
-      BackdropFilter() != other.BackdropFilter() ||
-      PotentialCompositingReasonsFor3DTransformChanged(other)) {
+  if (DiffCompositingReasonsChanged(other, field_diff)) {
     diff.SetCompositingReasonsChanged();
   }
 }

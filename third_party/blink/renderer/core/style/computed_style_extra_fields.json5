@@ -428,6 +428,7 @@
       type_name: "bool",
       default_value: "false",
       field_group: "*",
+      invalidate: ["compositing"],
     },
     // Though position: sticky is not itself an inherited property, being a
     // descendent of a sticky element changes some document lifecycle logic.
@@ -634,6 +635,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentTranslateAnimation",
@@ -641,6 +643,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentRotateAnimation",
@@ -648,6 +651,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentScaleAnimation",
@@ -655,6 +659,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentTransformAnimation",
@@ -662,6 +667,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentFilterAnimation",
@@ -669,6 +675,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentBackdropFilterAnimation",
@@ -676,6 +683,7 @@
       type_name: "bool",
       field_group: "*",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasCurrentBackgroundColorAnimation",
@@ -848,6 +856,7 @@
       default_value: "Vector<CSSPropertyID>()",
       include_paths: ["third_party/blink/renderer/platform/wtf/vector.h",
                       "third_party/blink/renderer/core/css/css_property_names.h"],
+      invalidate: ["compositing"],
     },
     {
       name: "WillChangeContents",
@@ -862,6 +871,7 @@
       type_name: "bool",
       field_group: "*->will-change",
       default_value: "false",
+      invalidate: ["compositing"],
     },
     {
       name: "HasAutoColumnWidth",

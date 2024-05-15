@@ -2516,6 +2516,8 @@ class ComputedStyle final : public ComputedStyleBase {
                                                const Document&) const;
   bool DiffNeedsRecomputeVisualOverflow(const ComputedStyle& other,
                                         uint32_t field_diff) const;
+  bool DiffCompositingReasonsChanged(const ComputedStyle& other,
+                                     uint32_t field_diff) const;
   void UpdatePropertySpecificDifferences(const ComputedStyle& other,
                                          uint32_t field_diff,
                                          StyleDifference&) const;

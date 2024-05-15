@@ -320,6 +320,7 @@
         "border-radius",
         "clip-path",
         "color",
+        "compositing",
         "filter-data",
         "inset",
         "layout",
@@ -1851,6 +1852,7 @@
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["compositing"],
     },
     {
       name: "backface-visibility",
@@ -1860,6 +1862,7 @@
       keywords: ["visible", "hidden"],
       typedom_types: ["Keyword"],
       default_value: "visible",
+      invalidate: ["compositing"],
     },
     {
       name: "background-attachment",
