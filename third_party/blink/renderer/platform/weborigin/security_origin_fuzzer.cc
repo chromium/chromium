@@ -8,7 +8,7 @@
 //   is_asan = true
 //   is_ubsan_security = true
 //   is_debug = false
-//   use_goma = true
+//   use_remoteexec = true
 // Build:     # autoninja -C out/Fuzz blink_security_origin_fuzzer
 // Run:       # ./out/Fuzz/blink_security_origin_fuzzer
 //

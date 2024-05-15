@@ -6,7 +6,7 @@
 # IMPORTANT! Before running this script you have to perform these steps:
 # 1. Run `mkdir ~/scratch`
 # 2. Run `gn args out/{your_out_dir}` and set the following options:
-#   use_goma = false
+#   use_remoteexec = false
 #   # this can be skipped if you do this in build/config/clang/clang.gni
 #   clang_use_chrome_plugins = false
 #
