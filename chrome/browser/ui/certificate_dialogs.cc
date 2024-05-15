@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -78,8 +79,8 @@ void ShowCertSelectFileDialogFullExport(
     gfx::NativeWindow parent,
     void* params) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(1);
-  file_type_info.extensions[0].push_back({"pem", "crt"});
+  file_type_info.extensions = {
+      {FILE_PATH_LITERAL("pem"), FILE_PATH_LITERAL("crt")}};
   file_type_info.extension_description_overrides.push_back(
       l10n_util::GetStringUTF16(IDS_CERT_EXPORT_TYPE_BASE64_ALL));
   file_type_info.include_all_files = true;
