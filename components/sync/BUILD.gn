@@ -250,6 +250,7 @@ source_set("unit_tests") {
     "protocol/model_type_state_helper_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
+    "service/account_pref_utils_unittest.cc",
     "service/backend_migrator_unittest.cc",
     "service/data_type_manager_impl_unittest.cc",
     "service/glue/sync_engine_impl_unittest.cc",

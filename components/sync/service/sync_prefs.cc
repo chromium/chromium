@@ -27,6 +27,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/account_pref_utils.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 
 namespace syncer {
@@ -284,15 +285,11 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
     if (IsTypeManagedByPolicy(type) || IsTypeManagedByCustodian(type)) {
       type_enabled = pref_service_->GetBoolean(pref_name);
     } else {
-      const base::Value::Dict* account_settings =
-          pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)
-              .FindDict(gaia_id_hash.ToBase64());
-      std::optional<bool> pref_value;
-      if (account_settings) {
-        pref_value = account_settings->FindBool(pref_name);
-      }
-      if (pref_value.has_value()) {
-        type_enabled = *pref_value;
+      const base::Value* pref_value = GetAccountKeyedPrefDictEntry(
+          pref_service_, prefs::internal::kSelectedTypesPerAccount,
+          gaia_id_hash, pref_name);
+      if (pref_value && pref_value->is_bool()) {
+        type_enabled = pref_value->GetBool();
       } else if (type == UserSelectableType::kHistory ||
                  type == UserSelectableType::kTabs ||
                  type == UserSelectableType::kSharedTabGroupData) {
@@ -383,16 +380,12 @@ bool SyncPrefs::IsTypeDisabledByUserForAccount(
   const char* pref_name = GetPrefNameForType(type);
   DCHECK(pref_name);
 
-  const base::Value::Dict* account_settings =
-      pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)
-          .FindDict(gaia_id_hash.ToBase64());
-  std::optional<bool> pref_value;
-  if (account_settings) {
-    pref_value = account_settings->FindBool(pref_name);
-  }
+  const base::Value* value = GetAccountKeyedPrefDictEntry(
+      pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
+      pref_name);
 
-  if (pref_value.has_value()) {
-    return !*pref_value;
+  if (value && value->is_bool()) {
+    return !value->GetBool();
   }
   return false;
 }
@@ -447,20 +440,19 @@ void SyncPrefs::SetSelectedTypeForAccount(
     const signin::GaiaIdHash& gaia_id_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ScopedDictPrefUpdate update_selected_types_dict(
-      pref_service_, prefs::internal::kSelectedTypesPerAccount);
-  base::Value::Dict* account_settings =
-      update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
-  account_settings->Set(GetPrefNameForType(type), is_type_on);
+  SetAccountKeyedPrefDictEntry(
+      pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
+      GetPrefNameForType(type), base::Value(is_type_on));
 }
 
 void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
-  KeepAccountSettingsPrefsOnlyForUsers(
-      available_gaia_ids, prefs::internal::kSelectedTypesPerAccount);
-  KeepAccountSettingsPrefsOnlyForUsers(
-      available_gaia_ids,
-      prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+  KeepAccountKeyedPrefValuesOnlyForUsers(
+      pref_service_, prefs::internal::kSelectedTypesPerAccount,
+      available_gaia_ids);
+  KeepAccountKeyedPrefValuesOnlyForUsers(
+      pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
+      available_gaia_ids);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -627,8 +619,9 @@ void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
     // the right account, since the user is already signed out. For simplicity,
     // just clear all existing bootstrap tokens (in practice, there will almost
     // always be at most one anyway).
-    KeepAccountSettingsPrefsOnlyForUsers(
-        {}, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    KeepAccountKeyedPrefValuesOnlyForUsers(
+        pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
+        {});
   }
 }
 
@@ -646,25 +639,17 @@ void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
     const std::string& token,
     const signin::GaiaIdHash& gaia_id_hash) {
   CHECK(gaia_id_hash.IsValid());
-  {
-    ScopedDictPrefUpdate update_account_passphrase_dict(
-        pref_service_,
-        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
-    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
-    all_accounts.Set(gaia_id_hash.ToBase64(), token);
-  }
+  SetAccountKeyedPrefValue(
+      pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
+      gaia_id_hash, base::Value(token));
 }
 
 void SyncPrefs::ClearEncryptionBootstrapTokenForAccount(
     const signin::GaiaIdHash& gaia_id_hash) {
   CHECK(gaia_id_hash.IsValid());
-  {
-    ScopedDictPrefUpdate update_account_passphrase_dict(
-        pref_service_,
-        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
-    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
-    all_accounts.Remove(gaia_id_hash.ToBase64());
-  }
+  ClearAccountKeyedPrefValue(
+      pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
+      gaia_id_hash);
 }
 
 // static
@@ -814,29 +799,6 @@ void SyncPrefs::OnFirstSetupCompletePrefChange() {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
-    const std::vector<signin::GaiaIdHash>& available_gaia_ids,
-    const char* pref_path) {
-  std::vector<std::string> removed_identities;
-  for (std::pair<const std::string&, const base::Value&> account_settings :
-       pref_service_->GetDict(pref_path)) {
-    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
-                                                account_settings.first))) {
-      removed_identities.push_back(account_settings.first);
-    }
-  }
-  if (!removed_identities.empty()) {
-    {
-      ScopedDictPrefUpdate update_account_settings_dict(pref_service_,
-                                                        pref_path);
-      base::Value::Dict& all_accounts = update_account_settings_dict.Get();
-      for (const auto& account_id : removed_identities) {
-        all_accounts.Remove(account_id);
-      }
-    }
-  }
-}
-
 // static
 void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,
                                          UserSelectableType type) {
@@ -889,18 +851,16 @@ void SyncPrefs::MaybeMigratePasswordsToPerAccountPref(
       break;
     case SyncAccountState::kSignedInNotSyncing:
       CHECK(gaia_id_hash.IsValid());
-      ScopedDictPrefUpdate update_selected_types_dict(
-          pref_service_, prefs::internal::kSelectedTypesPerAccount);
-      base::Value::Dict* account_settings =
-          update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
       // Read from the user pref store, and not from PrefService::GetBoolean(),
       // the latter might be affected by enterprise policies.
       // An unset pref (!old_pref_value) is considered as enabled here, like in
       // GetSelectedTypes().
       const base::Value* old_pref_value = pref_service_->GetUserPrefValue(
           GetPrefNameForType(UserSelectableType::kPasswords));
-      account_settings->Set(GetPrefNameForType(UserSelectableType::kPasswords),
-                            !old_pref_value || old_pref_value->GetBool());
+      SetAccountKeyedPrefDictEntry(
+          pref_service_, prefs::internal::kSelectedTypesPerAccount,
+          gaia_id_hash, GetPrefNameForType(UserSelectableType::kPasswords),
+          base::Value(!old_pref_value || old_pref_value->GetBool()));
       break;
   }
 }
@@ -999,12 +959,9 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
   // disabled by default.
   if (is_using_explicit_passphrase && !IsLocalSyncEnabled()) {
     CHECK(gaia_id_hash.IsValid());
-    ScopedDictPrefUpdate update_selected_types_dict(
-        pref_service_, prefs::internal::kSelectedTypesPerAccount);
-    base::Value::Dict* account_settings =
-        update_selected_types_dict->EnsureDict(gaia_id_hash.ToBase64());
-    account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),
-                          false);
+    SetAccountKeyedPrefDictEntry(
+        pref_service_, prefs::internal::kSelectedTypesPerAccount, gaia_id_hash,
+        GetPrefNameForType(UserSelectableType::kAutofill), base::Value(false));
     return true;
   }
   return false;
@@ -1032,13 +989,9 @@ void SyncPrefs::MaybeMigrateCustomPassphrasePref(
     // No custom passphrase is used, or it is not set.
     return;
   }
-  {
-    ScopedDictPrefUpdate update_account_passphrase_dict(
-        pref_service_,
-        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
-    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
-    all_accounts.Set(gaia_id_hash.ToBase64(), token);
-  }
+  SetAccountKeyedPrefValue(
+      pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
+      gaia_id_hash, base::Value(token));
   return;
 }
 
