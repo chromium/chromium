@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_east_asian_parser.h"
 #include "third_party/blink/renderer/core/css/parser/font_variant_ligatures_parser.h"
@@ -1306,9 +1307,8 @@ bool ConsumeFont(bool important,
       continue;
     }
     if (!font_variant_caps && id == CSSValueID::kSmallCaps) {
-      // Font variant in the shorthand is particular, it only accepts normal or
-      // small-caps.
-      // See https://drafts.csswg.org/css-fonts/#propdef-font
+      // Font variant in the shorthand is particular, it only accepts normal
+      // or small-caps. See https://drafts.csswg.org/css-fonts/#propdef-font
       font_variant_caps = css_parsing_utils::ConsumeFontVariantCSS21(range);
       if (font_variant_caps) {
         continue;
@@ -1323,9 +1323,9 @@ bool ConsumeFont(bool important,
     // Stretch in the font shorthand can only take the CSS Fonts Level 3
     // keywords, not arbitrary values, compare
     // https://drafts.csswg.org/css-fonts-4/#font-prop
-    // Bail out if the last possible property of the set in this loop could not
-    // be parsed, this closes the first block of optional values of the font
-    // shorthand, compare: [ [ <‘font-style’> || <font-variant-css21> ||
+    // Bail out if the last possible property of the set in this loop could
+    // not be parsed, this closes the first block of optional values of the
+    // font shorthand, compare: [ [ <‘font-style’> || <font-variant-css21> ||
     // <‘font-weight’> || <font-stretch-css3> ]?
     if (font_stretch ||
         !(font_stretch = css_parsing_utils::ConsumeFontStretchKeywordOnly(
@@ -1985,9 +1985,9 @@ bool Grid::ParseShorthand(bool important,
         *template_areas, important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
-    // It can only be specified the explicit or the implicit grid properties in
-    // a single grid declaration. The sub-properties not specified are set to
-    // their initial value, as normal for shorthands.
+    // It can only be specified the explicit or the implicit grid properties
+    // in a single grid declaration. The sub-properties not specified are set
+    // to their initial value, as normal for shorthands.
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid,
         *GetCSSPropertyGridAutoFlow().InitialValue(), important,
@@ -2065,9 +2065,9 @@ bool Grid::ParseShorthand(bool important,
     auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
   }
 
-  // It can only be specified the explicit or the implicit grid properties in a
-  // single grid declaration. The sub-properties not specified are set to their
-  // initial value, as normal for shorthands.
+  // It can only be specified the explicit or the implicit grid properties in
+  // a single grid declaration. The sub-properties not specified are set to
+  // their initial value, as normal for shorthands.
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridTemplateColumns, CSSPropertyID::kGrid,
       *template_columns, important,
@@ -2499,29 +2499,35 @@ bool Offset::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   // TODO(meade): The propertyID parameter isn't used - it can be removed
-  // once all of the ParseSingleValueFromRange implementations have been moved
-  // to the CSSPropertys, and the base CSSProperty::ParseSingleValueFromRange
-  // contains no functionality.
+  // once all of the ParseSingleValue implementations have been moved to the
+  // CSSPropertys, and the base CSSProperty::ParseSingleValue contains
+  // no functionality.
+
+  // See comment in ParseLonghand().
+  String str = range.Serialize();
+  CSSTokenizer tokenizer(str);
+  CSSParserTokenStream stream(tokenizer);
+
   const CSSValue* offset_position =
-      GetCSSPropertyOffsetPosition().ParseSingleValueFromRange(
-          range, context, CSSParserLocalContext());
+      GetCSSPropertyOffsetPosition().ParseSingleValue(stream, context,
+                                                      CSSParserLocalContext());
   const CSSValue* offset_path =
-      css_parsing_utils::ConsumeOffsetPath(range, context);
+      css_parsing_utils::ConsumeOffsetPath(stream, context);
   const CSSValue* offset_distance = nullptr;
   const CSSValue* offset_rotate = nullptr;
   if (offset_path) {
     offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
-        range, context, CSSPrimitiveValue::ValueRange::kAll);
-    offset_rotate = css_parsing_utils::ConsumeOffsetRotate(range, context);
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    offset_rotate = css_parsing_utils::ConsumeOffsetRotate(stream, context);
     if (offset_rotate && !offset_distance) {
       offset_distance = css_parsing_utils::ConsumeLengthOrPercent(
-          range, context, CSSPrimitiveValue::ValueRange::kAll);
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
     }
   }
   const CSSValue* offset_anchor = nullptr;
-  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    offset_anchor = GetCSSPropertyOffsetAnchor().ParseSingleValueFromRange(
-        range, context, CSSParserLocalContext());
+  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(stream)) {
+    offset_anchor = GetCSSPropertyOffsetAnchor().ParseSingleValue(
+        stream, context, CSSParserLocalContext());
     if (!offset_anchor) {
       return false;
     }
@@ -2570,6 +2576,12 @@ bool Offset::ParseShorthand(
       CSSPropertyID::kOffsetAnchor, CSSPropertyID::kOffset, *offset_anchor,
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+
+  if (stream.AtEnd()) {
+    while (!range.AtEnd()) {
+      range.ConsumeIncludingWhitespace();
+    }
+  }
 
   return true;
 }
@@ -2807,27 +2819,33 @@ bool PlaceContent::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceContent).length(), 2u);
 
-  CSSParserTokenRange range_copy = range;
-  bool is_baseline = css_parsing_utils::IsBaselineKeyword(range.Peek().Id());
+  // See comment in ParseLonghand().
+  String str = range.Serialize();
+  CSSTokenizer tokenizer(str);
+  CSSParserTokenStream stream(tokenizer);
+  stream.EnsureLookAhead();
+
+  CSSParserTokenStream::State savepoint = stream.Save();
+  bool is_baseline = css_parsing_utils::IsBaselineKeyword(stream.Peek().Id());
   const CSSValue* align_content_value =
-      GetCSSPropertyAlignContent().ParseSingleValueFromRange(range, context,
-                                                             local_context);
+      GetCSSPropertyAlignContent().ParseSingleValue(stream, context,
+                                                    local_context);
   if (!align_content_value) {
     return false;
   }
 
   const CSSValue* justify_content_value =
-      GetCSSPropertyJustifyContent().ParseSingleValueFromRange(range, context,
-                                                               local_context);
+      GetCSSPropertyJustifyContent().ParseSingleValue(stream, context,
+                                                      local_context);
   if (!justify_content_value) {
     if (is_baseline) {
       justify_content_value =
           MakeGarbageCollected<cssvalue::CSSContentDistributionValue>(
               CSSValueID::kInvalid, CSSValueID::kStart, CSSValueID::kInvalid);
     } else {
-      // Rewind the parser and use the value we just parsed as align-content, as
-      // justify-content, too.
-      range = range_copy;
+      // Rewind the parser and use the value we just parsed as align-content,
+      // as justify-content, too.
+      stream.Restore(savepoint);
       justify_content_value =
           GetCSSPropertyJustifyContent().ParseSingleValueFromRange(
               range, context, local_context);
@@ -2848,6 +2866,12 @@ bool PlaceContent::ParseShorthand(
       CSSPropertyID::kJustifyContent, CSSPropertyID::kPlaceContent,
       *justify_content_value, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  if (stream.AtEnd()) {
+    while (!range.AtEnd()) {
+      range.ConsumeIncludingWhitespace();
+    }
+  }
 
   return true;
 }
@@ -2870,27 +2894,33 @@ bool PlaceItems::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceItems).length(), 2u);
 
-  CSSParserTokenRange range_copy = range;
+  // See comment in ParseLonghand().
+  String str = range.Serialize();
+  CSSTokenizer tokenizer(str);
+  CSSParserTokenStream stream(tokenizer);
+
+  stream.EnsureLookAhead();
+  CSSParserTokenStream::State savepoint = stream.Save();
   const CSSValue* align_items_value =
-      GetCSSPropertyAlignItems().ParseSingleValueFromRange(range, context,
-                                                           local_context);
+      GetCSSPropertyAlignItems().ParseSingleValue(stream, context,
+                                                  local_context);
   if (!align_items_value) {
     return false;
   }
 
   const CSSValue* justify_items_value =
-      GetCSSPropertyJustifyItems().ParseSingleValueFromRange(range, context,
-                                                             local_context);
+      GetCSSPropertyJustifyItems().ParseSingleValue(stream, context,
+                                                    local_context);
   if (!justify_items_value) {
     // End-of-stream or parse error. If it's the former,
     // we try to to parse what we already parsed as align-items again,
     // just as justify-items. If it's the latter, the caller will
     // clean up for us (as we won't end on end-of-stream).
-    justify_items_value =
-        GetCSSPropertyJustifyItems().ParseSingleValueFromRange(
-            range_copy, context, local_context);
-    if (!justify_items_value ||
-        range.RemainingSpan() != range_copy.RemainingSpan()) {
+    wtf_size_t align_items_end = stream.Offset();
+    stream.Restore(savepoint);
+    justify_items_value = GetCSSPropertyJustifyItems().ParseSingleValue(
+        stream, context, local_context);
+    if (!justify_items_value || stream.Offset() != align_items_end) {
       return false;
     }
   }
@@ -2906,6 +2936,12 @@ bool PlaceItems::ParseShorthand(
       CSSPropertyID::kJustifyItems, CSSPropertyID::kPlaceItems,
       *justify_items_value, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  if (stream.AtEnd()) {
+    while (!range.AtEnd()) {
+      range.ConsumeIncludingWhitespace();
+    }
+  }
 
   return true;
 }
@@ -2928,26 +2964,32 @@ bool PlaceSelf::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(shorthandForProperty(CSSPropertyID::kPlaceSelf).length(), 2u);
 
-  CSSParserTokenRange range_copy = range;
-  const CSSValue* align_self_value =
-      GetCSSPropertyAlignSelf().ParseSingleValueFromRange(range, context,
-                                                          local_context);
+  // See comment in ParseLonghand().
+  String str = range.Serialize();
+  CSSTokenizer tokenizer(str);
+  CSSParserTokenStream stream(tokenizer);
+  stream.EnsureLookAhead();
+  CSSParserTokenStream::State savepoint = stream.Save();
+
+  const CSSValue* align_self_value = GetCSSPropertyAlignSelf().ParseSingleValue(
+      stream, context, local_context);
   if (!align_self_value) {
     return false;
   }
 
   const CSSValue* justify_self_value =
-      GetCSSPropertyJustifySelf().ParseSingleValueFromRange(range, context,
-                                                            local_context);
+      GetCSSPropertyJustifySelf().ParseSingleValue(stream, context,
+                                                   local_context);
   if (!justify_self_value) {
     // End-of-stream or parse error. If it's the former,
     // we try to to parse what we already parsed as align-items again,
     // just as justify-items. If it's the latter, the caller will
     // clean up for us (as we won't end on end-of-stream).
-    justify_self_value = GetCSSPropertyJustifySelf().ParseSingleValueFromRange(
-        range_copy, context, local_context);
-    if (!justify_self_value ||
-        range.RemainingSpan() != range_copy.RemainingSpan()) {
+    wtf_size_t align_items_end = stream.Offset();
+    stream.Restore(savepoint);
+    justify_self_value = GetCSSPropertyJustifySelf().ParseSingleValue(
+        stream, context, local_context);
+    if (!justify_self_value || stream.Offset() != align_items_end) {
       return false;
     }
   }
@@ -2963,6 +3005,12 @@ bool PlaceSelf::ParseShorthand(
       CSSPropertyID::kJustifySelf, CSSPropertyID::kPlaceSelf,
       *justify_self_value, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  if (stream.AtEnd()) {
+    while (!range.AtEnd()) {
+      range.ConsumeIncludingWhitespace();
+    }
+  }
 
   return true;
 }
@@ -3141,8 +3189,8 @@ const CSSValue* ScrollPaddingInline::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-// Consume a single name, axis, and optionally inset, then append the result to
-// `name_list`, `axis_list`, and `inset_list` respectively.
+// Consume a single name, axis, and optionally inset, then append the result
+// to `name_list`, `axis_list`, and `inset_list` respectively.
 //
 // Insets are only relevant for the view-timeline shorthand, and not for
 // the scroll-timeline shorthand, hence `inset_list` may be nullptr.
@@ -3937,7 +3985,8 @@ bool WhiteSpace::ParseShorthand(
       return true;
     }
 
-    // If `range` is not at end, the keyword is for longhands. Restore `range`.
+    // If `range` is not at end, the keyword is for longhands. Restore
+    // `range`.
     range = original_range;
   }
 

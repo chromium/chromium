@@ -1905,20 +1905,17 @@ StringView ConsumeStringAsStringView(CSSParserTokenStream& stream) {
 
 namespace {
 
-StringView ApplyFetchRestrictions(StringView url,
-                                  const CSSParserContext& context) {
-  // Invalidate the URL if only data URLs are allowed and the protocol is not
-  // data.
-  if (!url.IsNull() &&
-      context.ResourceFetchRestriction() ==
-          ResourceFetchRestriction::kOnlyDataUrls &&
-      !ProtocolIs(url.ToString(), "data")) {
-    // The StringView must be instantiated with an empty string otherwise the
-    // URL will incorrectly be identified as null. The resource should behave as
-    // if it failed to load.
-    return StringView("");
-  }
-  return url;
+// Invalidate the URL if only data URLs are allowed and the protocol is not
+// data.
+//
+// NOTE: The StringView must be instantiated with an empty string; otherwise the
+// URL will incorrectly be identified as null. The resource should behave as
+// if it failed to load.
+bool IsFetchRestricted(StringView url, const CSSParserContext& context) {
+  return !url.IsNull() &&
+         context.ResourceFetchRestriction() ==
+             ResourceFetchRestriction::kOnlyDataUrls &&
+         !ProtocolIs(url.ToString(), "data");
 }
 
 CSSUrlData CollectUrlData(const StringView& url,
@@ -1933,36 +1930,44 @@ CSSUrlData CollectUrlData(const StringView& url,
 
 }  // namespace
 
-// NOTE: Keep in sync with the other ConsumeUrlAsStringView.
-StringView ConsumeUrlAsStringView(CSSParserTokenRange& range,
-                                  const CSSParserContext& context) {
-  StringView url;
-  const CSSParserToken& token = range.Peek();
-  if (token.GetType() == kUrlToken) {
+// Returns a token whose token.Value() will contain the URL,
+// or the empty string if there are fetch restrictions,
+// or an EOF token if we failed to parse.
+//
+// NOTE: We are careful not to return a reference, since for
+// the streaming parser, the token will be overwritten on once we
+// move to the next one.
+//
+// NOTE: Keep in sync with the other ConsumeUrlAsToken.
+CSSParserToken ConsumeUrlAsToken(CSSParserTokenRange& range,
+                                 const CSSParserContext& context) {
+  const CSSParserToken* token = &range.Peek();
+  if (token->GetType() == kUrlToken) {
     range.ConsumeIncludingWhitespace();
-    url = token.Value();
-  } else if (token.FunctionId() == CSSValueID::kUrl) {
+  } else if (token->FunctionId() == CSSValueID::kUrl) {
     CSSParserTokenRange url_range = range;
     CSSParserTokenRange url_args = url_range.ConsumeBlock();
     const CSSParserToken& next = url_args.ConsumeIncludingWhitespace();
     if (next.GetType() == kBadStringToken || !url_args.AtEnd()) {
-      return StringView();
+      return CSSParserToken(kEOFToken);
     }
     DCHECK_EQ(next.GetType(), kStringToken);
     range = url_range;
     range.ConsumeWhitespace();
-    url = next.Value();
+    token = &next;
+  } else {
+    return CSSParserToken(kEOFToken);
   }
-  return ApplyFetchRestrictions(url, context);
+  return IsFetchRestricted(token->Value(), context)
+             ? CSSParserToken(kUrlToken, StringView(""))
+             : *token;
 }
 
-StringView ConsumeUrlAsStringView(CSSParserTokenStream& stream,
-                                  const CSSParserContext& context) {
-  StringView url;
-  const CSSParserToken token = stream.Peek();
+CSSParserToken ConsumeUrlAsToken(CSSParserTokenStream& stream,
+                                 const CSSParserContext& context) {
+  CSSParserToken token = stream.Peek();
   if (token.GetType() == kUrlToken) {
     stream.ConsumeIncludingWhitespace();
-    url = token.Value();
   } else if (token.FunctionId() == CSSValueID::kUrl) {
     CSSParserSavePoint savepoint(stream);
     CSSParserTokenRange url_args{{}};
@@ -1970,16 +1975,19 @@ StringView ConsumeUrlAsStringView(CSSParserTokenStream& stream,
       CSSParserTokenStream::BlockGuard guard(stream);
       url_args = stream.ConsumeUntilPeekedTypeIs<>();
     }
-    const CSSParserToken& next = url_args.ConsumeIncludingWhitespace();
-    if (next.GetType() == kBadStringToken || !url_args.AtEnd()) {
-      return StringView();
+    token = url_args.ConsumeIncludingWhitespace();
+    if (token.GetType() == kBadStringToken || !url_args.AtEnd()) {
+      return CSSParserToken(kEOFToken);
     }
     savepoint.Release();
-    DCHECK_EQ(next.GetType(), kStringToken);
+    DCHECK_EQ(token.GetType(), kStringToken);
     stream.ConsumeWhitespace();
-    url = next.Value();
+  } else {
+    return CSSParserToken(kEOFToken);
   }
-  return ApplyFetchRestrictions(url, context);
+  return IsFetchRestricted(token.Value(), context)
+             ? CSSParserToken(kUrlToken, StringView(""))
+             : token;
 }
 
 template <class T>
@@ -1987,12 +1995,12 @@ template <class T>
            std::is_same_v<T, CSSParserTokenRange>
 cssvalue::CSSURIValue* ConsumeUrlInternal(T& range,
                                           const CSSParserContext& context) {
-  StringView url = ConsumeUrlAsStringView(range, context);
-  if (url.IsNull()) {
+  CSSParserToken url = ConsumeUrlAsToken(range, context);
+  if (url.GetType() == kEOFToken) {
     return nullptr;
   }
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
-      CollectUrlData(url, context));
+      CollectUrlData(url.Value(), context));
 }
 
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange& range,
@@ -3946,14 +3954,16 @@ CSSValue* ConsumeImage(
     const ConsumeGeneratedImagePolicy generated_image_policy,
     const ConsumeStringUrlImagePolicy string_url_image_policy,
     const ConsumeImageSetImagePolicy image_set_image_policy) {
-  StringView uri = ConsumeUrlAsStringView(range, context);
-  if (!uri.IsNull()) {
-    return CreateCSSImageValueWithReferrer(uri, context);
+  CSSParserToken uri = ConsumeUrlAsToken(range, context);
+  if (uri.GetType() != kEOFToken) {
+    return CreateCSSImageValueWithReferrer(uri.Value(), context);
   }
   if (string_url_image_policy == ConsumeStringUrlImagePolicy::kAllow) {
     StringView uri_string = ConsumeStringAsStringView(range);
     if (!uri_string.IsNull()) {
-      uri_string = ApplyFetchRestrictions(uri_string, context);
+      if (IsFetchRestricted(uri_string, context)) {
+        uri_string = "";
+      }
       return CreateCSSImageValueWithReferrer(uri_string, context);
     }
   }
@@ -4246,15 +4256,15 @@ void WarnInvalidKeywordPropertyUsage(CSSPropertyID property,
 const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
                               CSSPropertyID current_shorthand,
                               const CSSParserContext& context,
-                              CSSParserTokenRange& range) {
+                              CSSParserTokenStream& stream) {
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
-  CSSValueID value_id = range.Peek().Id();
+  CSSValueID value_id = stream.Peek().Id();
   DCHECK(!CSSProperty::Get(property_id).IsShorthand());
   if (CSSParserFastPaths::IsHandledByKeywordFastPath(property_id)) {
     if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(
-            property_id, range.Peek().Id(), context.Mode())) {
+            property_id, stream.Peek().Id(), context.Mode())) {
       CountKeywordOnlyPropertyUsage(property_id, context, value_id);
-      return ConsumeIdent(range);
+      return ConsumeIdent(stream);
     }
     WarnInvalidKeywordPropertyUsage(property_id, context, value_id);
     return nullptr;
@@ -4267,7 +4277,48 @@ const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
 
   const CSSValue* result =
       To<Longhand>(CSSProperty::Get(property_id))
-          .ParseSingleValueFromRange(range, context, local_context);
+          .ParseSingleValue(stream, context, local_context);
+  return result;
+}
+
+const CSSValue* ParseLonghand(CSSPropertyID unresolved_property,
+                              CSSPropertyID current_shorthand,
+                              const CSSParserContext& context,
+                              CSSParserTokenRange& range) {
+  // ParseLonghand() nominally wants to work with the streaming parser
+  // (i.e., a CSSParserTokenStream instead of a CSSParserTokenRange).
+  // We are in the process of moving everything towards the streaming parser,
+  // but this path isn't converted yet, so we need to convert back to
+  // a string and then re-tokenize to get the right interface. Note that
+  // this assumes the tokenizer is actually roundtrippable, which isn't
+  // always the case when it comes to invalid tokens; however, all valid
+  // CSS should be fine (and most of the invalid one as well).
+  String str = range.Serialize();
+  CSSTokenizer tokenizer(str);
+  CSSParserTokenStream stream(tokenizer);
+  const CSSValue* result =
+      ParseLonghand(unresolved_property, current_shorthand, context, stream);
+
+  // The caller may expect us to have advanced the start of the range,
+  // so do that. The easy part is if we're at EOF; we can just move the
+  // range to the end then. But if not, we'll need to tokenize yet again
+  // to see how many tokens it took to get to this string offset, and then
+  // advance the range the correct number of tokens.
+  //
+  // This is obviously bad for performance, but it's a temporary measure.
+  if (stream.AtEnd()) {
+    while (!range.AtEnd()) {
+      range.Consume();
+    }
+  } else {
+    CSSTokenizer tokenizer2(str);
+    CSSParserTokenStream stream2(tokenizer2);
+    while (stream2.Offset() != stream.Offset()) {
+      range.Consume();
+      stream2.ConsumeRaw();
+    }
+  }
+
   return result;
 }
 
@@ -5796,21 +5847,21 @@ CSSValue* ConsumeGapLength(CSSParserTokenRange& range,
                                 CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
-CSSValue* ConsumeCounter(CSSParserTokenRange& range,
+CSSValue* ConsumeCounter(CSSParserTokenStream& stream,
                          const CSSParserContext& context,
                          int default_value) {
-  if (range.Peek().Id() == CSSValueID::kNone) {
-    return ConsumeIdent(range);
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return ConsumeIdent(stream);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   do {
-    CSSCustomIdentValue* counter_name = ConsumeCustomIdent(range, context);
+    CSSCustomIdentValue* counter_name = ConsumeCustomIdent(stream, context);
     if (!counter_name) {
       return nullptr;
     }
     int value = default_value;
-    if (CSSPrimitiveValue* counter_value = ConsumeInteger(range, context)) {
+    if (CSSPrimitiveValue* counter_value = ConsumeInteger(stream, context)) {
       value = ClampTo<int>(counter_value->GetDoubleValue());
     }
     list->Append(*MakeGarbageCollected<CSSValuePair>(
@@ -5818,7 +5869,7 @@ CSSValue* ConsumeCounter(CSSParserTokenRange& range,
         CSSNumericLiteralValue::Create(value,
                                        CSSPrimitiveValue::UnitType::kInteger),
         CSSValuePair::kDropIdenticalValues));
-  } while (!range.AtEnd());
+  } while (!stream.AtEnd());
   return list;
 }
 
@@ -7308,15 +7359,15 @@ cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenRange& args) {
                                                       wind_rule);
 }
 
-CSSValue* ConsumePathFunction(CSSParserTokenRange& range,
+CSSValue* ConsumePathFunction(CSSParserTokenStream& stream,
                               EmptyPathStringHandling empty_handling) {
   // FIXME: Add support for <url>, <basic-shape>, <geometry-box>.
-  if (range.Peek().FunctionId() != CSSValueID::kPath) {
+  if (stream.Peek().FunctionId() != CSSValueID::kPath) {
     return nullptr;
   }
 
-  CSSParserTokenRange function_range = range;
-  CSSParserTokenRange function_args = ConsumeFunction(function_range);
+  CSSParserSavePoint savepoint(stream);
+  CSSParserTokenRange function_args = ConsumeFunction(stream);
 
   auto byte_stream = ConsumePathStringArg(function_args);
   if (!byte_stream || !function_args.AtEnd()) {
@@ -7329,24 +7380,24 @@ CSSValue* ConsumePathFunction(CSSParserTokenRange& range,
   // an empty path, is invalid and causes the entire path() to be invalid.
   if (byte_stream->IsEmpty()) {
     if (empty_handling == EmptyPathStringHandling::kTreatAsNone) {
-      range = function_range;
+      savepoint.Release();
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     }
     return nullptr;
   }
-  range = function_range;
 
+  savepoint.Release();
   return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream));
 }
 
-CSSValue* ConsumeRay(CSSParserTokenRange& range,
+CSSValue* ConsumeRay(CSSParserTokenStream& stream,
                      const CSSParserContext& context) {
-  if (range.Peek().FunctionId() != CSSValueID::kRay) {
+  if (stream.Peek().FunctionId() != CSSValueID::kRay) {
     return nullptr;
   }
 
-  CSSParserTokenRange function_range = range;
-  CSSParserTokenRange function_args = ConsumeFunction(function_range);
+  CSSParserSavePoint savepoint(stream);
+  CSSParserTokenRange function_args = ConsumeFunction(stream);
 
   CSSPrimitiveValue* angle = nullptr;
   CSSIdentifierValue* size = nullptr;
@@ -7388,10 +7439,10 @@ CSSValue* ConsumeRay(CSSParserTokenRange& range,
   if (!angle) {
     return nullptr;
   }
+  savepoint.Release();
   if (!size) {
     size = CSSIdentifierValue::Create(CSSValueID::kClosestSide);
   }
-  range = function_range;
   return MakeGarbageCollected<cssvalue::CSSRayValue>(*angle, *size, contain, x,
                                                      y);
 }
@@ -7462,26 +7513,27 @@ CSSValue* ConsumeScrollStartTarget(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(range);
 }
 
-CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
+CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
                             const CSSParserContext& context) {
-  if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(range)) {
+  if (CSSValue* none = ConsumeIdent<CSSValueID::kNone>(stream)) {
     return none;
   }
-  CSSValue* coord_box = ConsumeCoordBox(range);
+  CSSValue* coord_box = ConsumeCoordBox(stream);
 
-  CSSValue* offset_path = ConsumeRay(range, context);
+  CSSValue* offset_path = ConsumeRay(stream, context);
   if (!offset_path) {
-    offset_path = ConsumeBasicShape(range, context, AllowPathValue::kForbid);
+    offset_path = ConsumeBasicShape(stream, context, AllowPathValue::kForbid);
   }
   if (!offset_path) {
-    offset_path = ConsumeUrl(range, context);
+    offset_path = ConsumeUrl(stream, context);
   }
   if (!offset_path) {
-    offset_path = ConsumePathFunction(range, EmptyPathStringHandling::kFailure);
+    offset_path =
+        ConsumePathFunction(stream, EmptyPathStringHandling::kFailure);
   }
 
   if (!coord_box) {
-    coord_box = ConsumeCoordBox(range);
+    coord_box = ConsumeCoordBox(stream);
   }
 
   if (!offset_path && !coord_box) {
@@ -7504,26 +7556,26 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
   return list;
 }
 
-CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
-  CSSValueID id = range.Peek().Id();
+CSSValue* ConsumePathOrNone(CSSParserTokenStream& stream) {
+  CSSValueID id = stream.Peek().Id();
   if (id == CSSValueID::kNone) {
-    return ConsumeIdent(range);
+    return ConsumeIdent(stream);
   }
 
-  return ConsumePathFunction(range, EmptyPathStringHandling::kTreatAsNone);
+  return ConsumePathFunction(stream, EmptyPathStringHandling::kTreatAsNone);
 }
 
-CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
+CSSValue* ConsumeOffsetRotate(CSSParserTokenStream& stream,
                               const CSSParserContext& context) {
-  CSSValue* angle = ConsumeAngle(range, context, std::optional<WebFeature>());
+  CSSValue* angle = ConsumeAngle(stream, context, std::optional<WebFeature>());
   CSSValue* keyword =
-      ConsumeIdent<CSSValueID::kAuto, CSSValueID::kReverse>(range);
+      ConsumeIdent<CSSValueID::kAuto, CSSValueID::kReverse>(stream);
   if (!angle && !keyword) {
     return nullptr;
   }
 
   if (!angle) {
-    angle = ConsumeAngle(range, context, std::optional<WebFeature>());
+    angle = ConsumeAngle(stream, context, std::optional<WebFeature>());
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

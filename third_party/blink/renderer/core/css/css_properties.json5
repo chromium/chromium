@@ -50,6 +50,9 @@
       default: [],
       valid_type: "list",
       valid_values: [
+        "ParseSingleValue",
+        // For legacy use only. Do not use if possible; prefer ParseSingleValue
+        // (which uses the streaming parser).
         "ParseSingleValueFromRange",
         "ParseShorthand",
         "CSSValueFromComputedStyleInternal",
@@ -2680,7 +2683,7 @@
     },
     {
       name: "clip-path",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       compositable: true,
       field_group: "*",
@@ -2861,7 +2864,7 @@
     },
     {
       name: "counter-increment",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "counter",
       style_builder_template_args: {
         action: "Increment",
@@ -2874,7 +2877,7 @@
     },
     {
       name: "counter-reset",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "counter",
       style_builder_template_args: {
         action: "Reset",
@@ -2887,7 +2890,7 @@
     },
     {
       name: "counter-set",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_template: "counter",
       style_builder_template_args: {
         action: "Set",
@@ -2943,7 +2946,7 @@
     },
     {
       name: "d",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       field_group: "svg->geometry",
       field_template: "pointer",
@@ -3953,7 +3956,7 @@
     },
     {
       name: "offset-path",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       field_group: "*",
       field_template: "pointer",
@@ -3980,7 +3983,7 @@
     },
     {
       name: "offset-rotate",
-      property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       field_group: "*",
       field_template: "external",
@@ -8266,7 +8269,7 @@
     {
       name: "-internal-visited-caret-color",
       visited_property_for: "caret-color",
-      property_methods: ["ParseSingleValueFromRange", "ColorIncludingFallback"],
+      property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       inherited: true,
       field_group: "*->inherited_visited",
       field_template: "external",
@@ -8453,7 +8456,7 @@
     {
       name: "-internal-visited-outline-color",
       visited_property_for: "outline-color",
-      property_methods: ["ParseSingleValueFromRange", "ColorIncludingFallback"],
+      property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       field_group: "*->visited",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],

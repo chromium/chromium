@@ -30,12 +30,15 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
 class CSSPropertyValue;
+class CSSParserTokenStream;
 class CSSValue;
 class ExecutionContext;
 
@@ -63,7 +66,7 @@ class CORE_EXPORT CSSPropertyParser {
 
   // Parses a non-shorthand CSS property
   static const CSSValue* ParseSingleValue(CSSPropertyID,
-                                          CSSParserTokenRange,
+                                          CSSParserTokenStream&,
                                           const CSSParserContext*);
 
  private:
@@ -84,6 +87,9 @@ class CORE_EXPORT CSSPropertyParser {
   // Inputs:
   CSSTokenizedValue value_;
   const CSSParserContext* context_;
+  // State:
+  CSSTokenizer tokenizer_;
+  CSSParserTokenStream stream_;
   // Outputs:
   HeapVector<CSSPropertyValue, 64>* parsed_properties_;
 };

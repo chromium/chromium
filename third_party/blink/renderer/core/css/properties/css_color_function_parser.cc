@@ -641,8 +641,7 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   }
 
   // "None" is not a part of the legacy syntax.
-  if (!args.AtEnd() ||
-      (is_legacy_syntax_ && has_none_)) {
+  if (!args.AtEnd() || (is_legacy_syntax_ && has_none_)) {
     return false;
   }
 

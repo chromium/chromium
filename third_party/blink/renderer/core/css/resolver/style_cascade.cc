@@ -76,9 +76,9 @@ bool ConsumeComma(CSSParserTokenStream& stream) {
 }
 
 const CSSValue* Parse(const CSSProperty& property,
-                      CSSParserTokenRange range,
+                      CSSParserTokenStream& stream,
                       const CSSParserContext* context) {
-  return CSSPropertyParser::ParseSingleValue(property.PropertyID(), range,
+  return CSSPropertyParser::ParseSingleValue(property.PropertyID(), stream,
                                              context);
 }
 
@@ -1105,8 +1105,13 @@ const CSSValue* StyleCascade::ResolveVariableReference(
   CSSParserTokenStream stream(tokenizer);
   if (ResolveTokensInto(stream, resolver, &tokenizer, *context,
                         FunctionContext{}, sequence)) {
-    sequence.StripCommentTokens();
-    if (const auto* parsed = Parse(property, sequence.TokenRange(), context)) {
+    // TODO(sesse): It would be nice if we had some way of combining
+    // ResolveTokensInto() and the re-tokenization. This is basically
+    // what we pay by using the streaming parser everywhere; we tokenize
+    // everything involving variable references twice.
+    CSSTokenizer tokenizer2(sequence.OriginalText());
+    CSSParserTokenStream stream2(tokenizer2);
+    if (const auto* parsed = Parse(property, stream2, context)) {
       return parsed;
     }
   }
@@ -1150,11 +1155,11 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
 
     HeapVector<CSSPropertyValue, 64> parsed_properties;
 
-    // NOTE: We don't actually need any original text here, since we're
-    // not storing it in a custom property anywhere.
+    // NOTE: We don't actually need the original text to be comment-stripped,
+    // since we're not storing it in a custom property anywhere.
     if (!CSSPropertyParser::ParseValue(
             shorthand_property_id, /*allow_important_annotation=*/false,
-            {sequence.TokenRange(), StringView()},
+            {sequence.TokenRange(), sequence.OriginalText()},
             shorthand_value->ParserContext(), parsed_properties,
             StyleRule::RuleType::kStyle)) {
       return cssvalue::CSSUnsetValue::Create();

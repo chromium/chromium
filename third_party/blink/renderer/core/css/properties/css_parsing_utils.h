@@ -198,8 +198,6 @@ CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenRange&,
                                         const CSSParserContext&);
 CSSStringValue* ConsumeString(CSSParserTokenRange&);
 StringView ConsumeStringAsStringView(CSSParserTokenRange&);
-StringView ConsumeUrlAsStringView(CSSParserTokenRange&,
-                                  const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenRange&,
                                   const CSSParserContext&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
@@ -508,7 +506,7 @@ bool ConsumeColumnWidthOrCount(CSSParserTokenRange&,
                                CSSValue*&);
 CSSValue* ConsumeGapLength(CSSParserTokenRange&, const CSSParserContext&);
 
-CSSValue* ConsumeCounter(CSSParserTokenRange&, const CSSParserContext&, int);
+CSSValue* ConsumeCounter(CSSParserTokenStream&, const CSSParserContext&, int);
 
 CSSValue* ConsumeFontSize(CSSParserTokenRange&,
                           const CSSParserContext&,
@@ -628,9 +626,9 @@ CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange&,
 CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeScrollStart(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeScrollStartTarget(CSSParserTokenRange&);
-CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
-CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeOffsetPath(CSSParserTokenStream&, const CSSParserContext&);
+CSSValue* ConsumePathOrNone(CSSParserTokenStream&);
+CSSValue* ConsumeOffsetRotate(CSSParserTokenStream&, const CSSParserContext&);
 CSSValue* ConsumeInitialLetter(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeBasicShape(

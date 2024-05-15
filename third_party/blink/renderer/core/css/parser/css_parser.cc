@@ -179,9 +179,9 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
       !property.IsShorthand()) {
     CSSTokenizer tokenizer(string);
-    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenStream stream(tokenizer);
     value =
-        CSSPropertyParser::ParseSingleValue(resolved_property, tokens, context);
+        CSSPropertyParser::ParseSingleValue(resolved_property, stream, context);
     if (value != nullptr) {
       return declaration->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(resolved_property), *value, important));
@@ -244,9 +244,8 @@ const CSSValue* CSSParser::ParseSingleValue(CSSPropertyID property_id,
     return value;
   }
   CSSTokenizer tokenizer(string);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  return CSSPropertyParser::ParseSingleValue(
-      property_id, CSSParserTokenRange(tokens), context);
+  CSSParserTokenStream stream(tokenizer);
+  return CSSPropertyParser::ParseSingleValue(property_id, stream, context);
 }
 
 ImmutableCSSPropertyValueSet* CSSParser::ParseInlineStyleDeclaration(
