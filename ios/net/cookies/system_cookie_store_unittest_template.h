@@ -5,77 +5,24 @@
 #ifndef IOS_NET_COOKIES_SYSTEM_COOKIE_STORE_UNITTEST_TEMPLATE_H_
 #define IOS_NET_COOKIES_SYSTEM_COOKIE_STORE_UNITTEST_TEMPLATE_H_
 
-#import "ios/net/cookies/system_cookie_store.h"
-
 #import <Foundation/Foundation.h>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #include "ios/net/cookies/cookie_store_ios_test_util.h"
+#import "ios/net/cookies/system_cookie_store.h"
 #import "net/base/apple/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForCookiesTimeout;
-
 namespace net {
 
 namespace {
-
-// Helper callbacks to be passed to SetCookieAsync/GetCookiesAsync.
-class SystemCookieCallbackRunVerifier {
- public:
-  SystemCookieCallbackRunVerifier()
-      : did_run_with_cookies_(false),
-        did_run_with_no_cookies_(false),
-        cookies_(nil) {}
-
-  void Reset() {
-    did_run_with_cookies_ = false;
-    did_run_with_no_cookies_ = false;
-    cookies_ = nil;
-  }
-
-  // Waits for |RunWithCookies| to run, and returns false if it doesn't run.
-  bool WaitForCallbackWithCookies() {
-    return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      base::RunLoop().RunUntilIdle();
-      return did_run_with_cookies_;
-    });
-  }
-
-  // Waits for |RunWithNoCookies| to run, and returns false if it doesn't run.
-  bool WaitForCallbackWithNoCookies() {
-    return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      base::RunLoop().RunUntilIdle();
-      return did_run_with_no_cookies_;
-    });
-  }
-
-  // Returns the paremeter of the callback.
-  NSArray<NSHTTPCookie*>* cookies() { return cookies_; }
-
-  void RunWithCookies(NSArray<NSHTTPCookie*>* cookies) {
-    ASSERT_FALSE(did_run_with_cookies_);
-    cookies_ = cookies;
-    did_run_with_cookies_ = true;
-  }
-
-  void RunWithNoCookies() {
-    ASSERT_FALSE(did_run_with_no_cookies_);
-    did_run_with_no_cookies_ = true;
-  }
-
- private:
-  bool did_run_with_cookies_;
-  bool did_run_with_no_cookies_;
-  NSArray<NSHTTPCookie*>* cookies_;
-};
 
 NSHTTPCookie* CreateCookie(NSString* name, NSString* value, NSURL* url) {
   return [NSHTTPCookie cookieWithProperties:@{
@@ -90,12 +37,10 @@ NSHTTPCookie* CreateCookie(NSString* name, NSString* value, NSURL* url) {
 // and doesn't set creation time.
 void SetCookieInStoreWithNoCallback(NSHTTPCookie* cookie,
                                     SystemCookieStore* store) {
-  SystemCookieCallbackRunVerifier completion_verifier;
-  store->SetCookieAsync(
-      cookie, /*optional_creation_time=*/nullptr,
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithNoCookies,
-                     base::Unretained(&completion_verifier)));
-  EXPECT_TRUE(completion_verifier.WaitForCallbackWithNoCookies());
+  base::RunLoop run_loop;
+  store->SetCookieAsync(cookie, /*optional_creation_time=*/nullptr,
+                        run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace
@@ -151,14 +96,28 @@ TYPED_TEST_SUITE_P(SystemCookieStoreTest);
 TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsync) {
   NSHTTPCookie* system_cookie =
       CreateCookie(@"a", @"b", this->test_cookie_url1_);
-  SystemCookieCallbackRunVerifier callback_verifier;
-  SystemCookieStore* cookie_store = this->GetCookieStore();
-  cookie_store->SetCookieAsync(
-      system_cookie, /*optional_creation_time=*/nullptr,
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithNoCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithNoCookies());
+  SetCookieInStoreWithNoCallback(system_cookie, this->GetCookieStore());
   EXPECT_TRUE(this->IsCookieSet(system_cookie, this->test_cookie_url1_));
+}
+
+// Tests that inserting multiple cookies with identical creation times works.
+TYPED_TEST_P(SystemCookieStoreTest, SetCookieAsyncWithIdenticalCreationTime) {
+  NSHTTPCookie* system_cookie_1 =
+      CreateCookie(@"a", @"b", this->test_cookie_url1_);
+  NSHTTPCookie* system_cookie_2 =
+      CreateCookie(@"c", @"d", this->test_cookie_url2_);
+  SystemCookieStore* cookie_store = this->GetCookieStore();
+  const base::Time creation_time = base::Time::Now();
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure closure =
+      base::BarrierClosure(2, run_loop.QuitClosure());
+  cookie_store->SetCookieAsync(system_cookie_1, &creation_time, closure);
+  cookie_store->SetCookieAsync(system_cookie_2, &creation_time, closure);
+  run_loop.Run();
+
+  EXPECT_TRUE(this->IsCookieSet(system_cookie_1, this->test_cookie_url1_));
+  EXPECT_TRUE(this->IsCookieSet(system_cookie_2, this->test_cookie_url2_));
 }
 
 // Tests cases of GetAllCookiesAsync and GetCookiesForURLAsync.
@@ -179,31 +138,41 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookiesAsync) {
 
   // Test GetCookieForURLAsync.
   NSHTTPCookie* input_cookie = [input_cookies valueForKey:@"a"];
-  SystemCookieCallbackRunVerifier callback_verifier;
-  cookie_store->GetCookiesForURLAsync(
-      GURLWithNSURL(this->test_cookie_url1_),
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithCookies());
-  EXPECT_EQ(1u, callback_verifier.cookies().count);
-  NSHTTPCookie* result_cookie = callback_verifier.cookies()[0];
-  EXPECT_TRUE([input_cookie.name isEqualToString:result_cookie.name]);
-  EXPECT_TRUE([input_cookie.value isEqualToString:result_cookie.value]);
+
+  {
+    base::RunLoop run_loop;
+    __block NSArray<NSHTTPCookie*>* result_cookies = nil;
+    cookie_store->GetCookiesForURLAsync(
+        GURLWithNSURL(this->test_cookie_url1_),
+        base::BindOnce(^(NSArray<NSHTTPCookie*>* result) {
+          result_cookies = result;
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+
+    EXPECT_EQ(1u, result_cookies.count);
+    NSHTTPCookie* result_cookie = result_cookies[0];
+    EXPECT_TRUE([input_cookie.name isEqualToString:result_cookie.name]);
+    EXPECT_TRUE([input_cookie.value isEqualToString:result_cookie.value]);
+  }
 
   // Test GetAllCookies
-  callback_verifier.Reset();
-  cookie_store->GetAllCookiesAsync(
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithCookies());
-  NSArray<NSHTTPCookie*>* result_cookies = callback_verifier.cookies();
-  EXPECT_EQ(3u, result_cookies.count);
-  for (NSHTTPCookie* cookie in result_cookies) {
-    NSHTTPCookie* existing_cookie = [input_cookies valueForKey:cookie.name];
-    EXPECT_TRUE(existing_cookie);
-    EXPECT_TRUE([existing_cookie.name isEqualToString:cookie.name]);
-    EXPECT_TRUE([existing_cookie.value isEqualToString:cookie.value]);
-    EXPECT_TRUE([existing_cookie.domain isEqualToString:cookie.domain]);
+  {
+    base::RunLoop run_loop;
+    __block NSArray<NSHTTPCookie*>* result_cookies = nil;
+    cookie_store->GetAllCookiesAsync(
+        base::BindOnce(^(NSArray<NSHTTPCookie*>* result) {
+          result_cookies = result;
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+
+    EXPECT_EQ(3u, result_cookies.count);
+    for (NSHTTPCookie* cookie in result_cookies) {
+      NSHTTPCookie* existing_cookie = [input_cookies valueForKey:cookie.name];
+      EXPECT_TRUE(existing_cookie);
+      EXPECT_TRUE([existing_cookie.name isEqualToString:cookie.name]);
+      EXPECT_TRUE([existing_cookie.value isEqualToString:cookie.value]);
+      EXPECT_TRUE([existing_cookie.domain isEqualToString:cookie.domain]);
+    }
   }
 }
 
@@ -221,25 +190,25 @@ TYPED_TEST_P(SystemCookieStoreTest, DeleteCookiesAsync) {
                                SystemCookieStore::SystemCookieCallback());
   SetCookieInStoreWithNoCallback(system_cookie2, cookie_store);
   EXPECT_EQ(2, this->CookiesCount());
-  SystemCookieCallbackRunVerifier callback_verifier;
-
   EXPECT_TRUE(this->IsCookieSet(system_cookie2, this->test_cookie_url2_));
-  cookie_store->DeleteCookieAsync(
-      system_cookie2,
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithNoCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithNoCookies());
-  EXPECT_FALSE(this->IsCookieSet(system_cookie2, this->test_cookie_url2_));
-  EXPECT_EQ(1, this->CookiesCount());
 
-  callback_verifier.Reset();
-  cookie_store->DeleteCookieAsync(
-      system_cookie1,
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithNoCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithNoCookies());
-  EXPECT_FALSE(this->IsCookieSet(system_cookie1, this->test_cookie_url1_));
-  EXPECT_EQ(0, this->CookiesCount());
+  {
+    base::RunLoop run_loop;
+    cookie_store->DeleteCookieAsync(system_cookie2, run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_FALSE(this->IsCookieSet(system_cookie2, this->test_cookie_url2_));
+    EXPECT_EQ(1, this->CookiesCount());
+  }
+
+  {
+    base::RunLoop run_loop;
+    cookie_store->DeleteCookieAsync(system_cookie1, run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_FALSE(this->IsCookieSet(system_cookie1, this->test_cookie_url1_));
+    EXPECT_EQ(0, this->CookiesCount());
+  }
 }
 
 TYPED_TEST_P(SystemCookieStoreTest, ClearCookiesAsync) {
@@ -250,11 +219,10 @@ TYPED_TEST_P(SystemCookieStoreTest, ClearCookiesAsync) {
       CreateCookie(@"x", @"d", this->test_cookie_url2_), cookie_store);
   EXPECT_EQ(2, this->CookiesCount());
 
-  SystemCookieCallbackRunVerifier callback_verifier;
-  cookie_store->ClearStoreAsync(
-      base::BindOnce(&SystemCookieCallbackRunVerifier::RunWithNoCookies,
-                     base::Unretained(&callback_verifier)));
-  EXPECT_TRUE(callback_verifier.WaitForCallbackWithNoCookies());
+  base::RunLoop run_loop;
+  cookie_store->ClearStoreAsync(run_loop.QuitClosure());
+  run_loop.Run();
+
   EXPECT_EQ(0, this->CookiesCount());
 }
 
@@ -274,6 +242,7 @@ TYPED_TEST_P(SystemCookieStoreTest, GetCookieAcceptPolicy) {
 
 REGISTER_TYPED_TEST_SUITE_P(SystemCookieStoreTest,
                             SetCookieAsync,
+                            SetCookieAsyncWithIdenticalCreationTime,
                             GetCookiesAsync,
                             DeleteCookiesAsync,
                             ClearCookiesAsync,
