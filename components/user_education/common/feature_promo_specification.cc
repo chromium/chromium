@@ -55,7 +55,6 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted keyed notices here:
   static const char* const kAllowedPromoNames[] = {
       "IPH_DesktopPWAsLinkCapturingLaunch",
-      "IPH_ExplicitBrowserSigninPreferenceRemembered",
       "IPH_SignoutWebIntercept",
   };
   for (const auto* promo_name : kAllowedPromoNames) {
