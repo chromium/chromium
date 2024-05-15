@@ -337,6 +337,10 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
     return nullptr;
   }
 
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override {}
+
   v8::Isolate* Isolate() override {
     return isolate_;
   }

@@ -95,6 +95,9 @@ class DummyMainThreadScheduler : public MainThreadScheduler {
   void AddTaskObserver(base::TaskObserver*) override {}
   void RemoveTaskObserver(base::TaskObserver*) override {}
   void SetV8Isolate(v8::Isolate*) override {}
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override {}
   void StartIdlePeriodForTesting() override {}
   void SetRendererBackgroundedForTesting(bool) override {}
 };

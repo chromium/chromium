@@ -26,6 +26,14 @@ class TaskEnvironment;
 
 class RAILModeObserver;
 
+class ExecuteAfterCurrentTaskRestricted {
+ private:
+  // Permitted users of `ThreadScheduler::ExecuteAfterCurrentTaskForTesting()`.
+  friend class DOMScheduler;
+
+  ExecuteAfterCurrentTaskRestricted() = default;
+};
+
 // This class is used to submit tasks and pass other information from Blink to
 // the platform's main thread scheduler.
 class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
@@ -80,6 +88,11 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   }
 
   // Test helpers
+
+  // Runs `on_completion_task` after the current task has finished.
+  virtual void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) = 0;
 
   // Starts an idle period, allowing pending idle tasks to run. Idle tasks can
   // only run within an idle period, which is determined based on compositor

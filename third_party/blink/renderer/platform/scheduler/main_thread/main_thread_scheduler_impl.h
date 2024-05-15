@@ -192,6 +192,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       base::RepeatingCallback<void(v8::Isolate* isolate)> callback) override;
   Vector<WebInputEventAttribution> GetPendingUserInputInfo(
       bool include_continuous) const override;
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override;
   void StartIdlePeriodForTesting() override;
   void SetRendererBackgroundedForTesting(bool backgrounded) override;
 

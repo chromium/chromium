@@ -82,6 +82,11 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   v8::Isolate* Isolate() override;
   std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
 
+  // After-task callbacks are dropped, so this is a no-op.
+  void ExecuteAfterCurrentTaskForTesting(
+      base::OnceClosure on_completion_task,
+      ExecuteAfterCurrentTaskRestricted) override;
+
   // Idle tasks are dropped in `PostIdleTask()` and friends, so this is a no-op.
   void StartIdlePeriodForTesting() override;
 

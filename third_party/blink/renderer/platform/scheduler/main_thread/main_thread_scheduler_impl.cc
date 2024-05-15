@@ -2817,6 +2817,12 @@ MainThreadSchedulerImpl::GetOnTaskCompletionCallbacks() {
   return main_thread_only().on_task_completion_callbacks;
 }
 
+void MainThreadSchedulerImpl::ExecuteAfterCurrentTaskForTesting(
+    base::OnceClosure on_completion_task,
+    ExecuteAfterCurrentTaskRestricted) {
+  ThreadSchedulerBase::ExecuteAfterCurrentTask(std::move(on_completion_task));
+}
+
 void MainThreadSchedulerImpl::OnUrgentMessageReceived() {
   CHECK(base::FeatureList::IsEnabled(
       features::kBlinkSchedulerPrioritizeNavigationIPCs));

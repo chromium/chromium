@@ -102,16 +102,9 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     DOMTaskSignal* priority_source) {
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
+
   ScriptWrappableTaskState* previous_task_state =
       ScriptWrappableTaskState::GetCurrent(isolate_);
-
-  // Always propagate the current `task_state` when given. Otherwise create new
-  // state to begin propagating.
-  if (!task_state) {
-    next_task_id_ = next_task_id_.NextId();
-    task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
-        next_task_id_, /*soft_navigation_contxt=*/nullptr);
-  }
 
   ScriptWrappableTaskState* running_task_state = nullptr;
   if (abort_source || priority_source) {
@@ -123,9 +116,13 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     running_task_state = To<TaskAttributionInfoImpl>(task_state);
   }
 
-  ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
+  if (running_task_state != previous_task_state) {
+    ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
+  }
 
-  TaskAttributionInfo* current = running_task_state->GetTaskAttributionInfo();
+  TaskAttributionInfo* current =
+      running_task_state ? running_task_state->GetTaskAttributionInfo()
+                         : nullptr;
   TaskAttributionInfo* previous =
       previous_task_state ? previous_task_state->GetTaskAttributionInfo()
                           : nullptr;
@@ -137,7 +134,8 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   // soft navigation layer can learn if an event ran while the scope is active,
   // which is why we filter out soft navigation task scopes. It might be better
   // to move event observation into event handling itself.
-  if (observer_ && type != TaskScopeType::kSoftNavigation) {
+  if (observer_ && type != TaskScopeType::kSoftNavigation &&
+      running_task_state) {
     observer_->OnCreateTaskScope(*current);
   }
 
@@ -160,11 +158,8 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
     TaskAttributionInfo* task_state) {
   CHECK(script_state);
 
-  TaskAttributionInfo* current_task_state = RunningTask();
-  // Always create a `TaskScope` if there's `task_state` to propagate. Always
-  // create a `TaskScope` if there's no `current_task_state` to ensure there's a
-  // `TaskScope` for top-level JS execution.
-  if (task_state || !current_task_state) {
+  // Always create a `TaskScope` if there's `task_state` to propagate.
+  if (task_state) {
     return CreateTaskScope(script_state, task_state, TaskScopeType::kCallback);
   }
 
@@ -172,7 +167,8 @@ TaskAttributionTrackerImpl::MaybeCreateTaskScopeForCallback(
   // the `observer_` since it relies on the callback to set up internal state.
   // And the `observer_` might not have been notified previously, e.g. if
   // the outermost `TaskScope` is for propagating soft navigation state.
-  if (observer_) {
+  TaskAttributionInfo* current_task_state = RunningTask();
+  if (observer_ && current_task_state) {
     observer_->OnCreateTaskScope(*current_task_state);
   }
 
