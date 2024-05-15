@@ -586,6 +586,89 @@ def execute_telemetry_benchmark(
     return return_code
   return 0
 
+
+class CrossbenchTest(object):
+  """This class is for running Crossbench tests.
+
+  To run Crossbench tests, pass the relative path to `cb.py` as the
+  `executable` argument, followed by `--benchmarks` to specify the
+  target benchmark. The remaining Crossbench arguments are optional,
+  and any passed arguments are sent to the `cb.py` for executing the test.
+
+  Example:
+    ./run_performance_tests.py ../../third_party/crossbench/cb.py \
+    --isolated-script-test-output=/tmp/crossbench/ \
+    --benchmarks=speedometer \
+    --browser=../../out/linux/chrome \
+    --repeat=1 --probe='profiling' --story='jQuery.*'
+  """
+
+  EXECUTABLE = 'cb.py'
+  OUTDIR = '--out-dir=%s/output'
+  CHROME_BROWSER = '--browser=./chrome'
+
+  def __init__(self, options, isolated_out_dir):
+    self.options = options
+    self.isolated_out_dir = isolated_out_dir
+
+  def _generate_command_list(self, benchmark, output_paths):
+    # In Swarming bot, use the Chrome build in the running path.
+    browser = [self.CHROME_BROWSER] if 'SWARMING_TASK_ID' in os.environ else []
+    return ([sys.executable] +
+            [self.options.executable] +
+            [benchmark] +
+            [self.OUTDIR % output_paths.benchmark_path] +
+            browser +
+            self.options.passthrough_args)
+
+  def _execute_benchmark(self, benchmark):
+    start = time.time()
+
+    env = os.environ.copy()
+    env['CHROME_HEADLESS'] = '1'
+
+    return_code = 1
+    output_paths = OutputFilePaths(self.isolated_out_dir, benchmark).SetUp()
+    infra_failure = False
+    try:
+      command = self._generate_command_list(benchmark, output_paths)
+      if self.options.xvfb:
+        # When running with xvfb, we currently output both to stdout and to the
+        # file. It would be better to only output to the file to keep the logs
+        # clean.
+        return_code = xvfb.run_executable(
+            command, env=env, stdoutfile=output_paths.logs)
+      else:
+        with open(output_paths.logs, 'w') as handle:
+          return_code = test_env.run_command_output_to_handle(
+              command, handle, env=env)
+    except Exception:
+      print('The following exception may have prevented the code from '
+            'outputing structured test results and perf results output:')
+      print(traceback.format_exc())
+      infra_failure = True
+
+    print_duration(f'Executing benchmark: {benchmark}', start)
+
+    if infra_failure:
+      print('There was an infrastructure error encountered during the run. '
+            'Please check the logs above for details')
+      return 1
+
+    if return_code and self.options.ignore_benchmark_exit_code:
+      print(f'crossbench returned exit code {return_code}'
+            ' which indicates there were test failures in the run.')
+      return 0
+    return return_code
+
+  def execute(self):
+    if not self.options.benchmarks:
+      raise Exception('Please use the --benchmarks to specify the benchmark.')
+    if ',' in self.options.benchmarks:
+      raise Exception('No support to run multiple benchmarks at this time.')
+    return self._execute_benchmark(self.options.benchmarks)
+
+
 def parse_arguments(args):
   parser = argparse.ArgumentParser()
   parser.add_argument('executable', help='The name of the executable to run.')
@@ -689,6 +772,8 @@ def main(sys_args):
         'isolated output directory. Inside the hash marks in the following\n'
         'lines is the name of the subfolder to find results in.\n')
 
+  if options.executable.endswith(CrossbenchTest.EXECUTABLE):
+    return CrossbenchTest(options, isolated_out_dir).execute()
   if options.non_telemetry:
     benchmark_name = options.gtest_benchmark_name
     passthrough_args = options.passthrough_args
