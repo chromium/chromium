@@ -11,7 +11,6 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -56,10 +55,6 @@ class AshNotificationViewPixelTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_features_.InitWithFeatures({::features::kChromeRefresh2023,
-                                       ::features::kChromeRefreshSecondary2023},
-                                      {});
-
     AshTestBase::SetUp();
     test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
@@ -68,8 +63,6 @@ class AshNotificationViewPixelTest : public AshTestBase {
 
  private:
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests that a notification's close button is visible when it is focused.

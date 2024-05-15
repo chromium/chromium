@@ -24,7 +24,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
@@ -82,13 +81,7 @@ class DownloadBubbleSecurityViewInfoTestGM3
     if (IsSkipped()) {
       return;
     }
-    features.InitWithFeatures(
-        {features::kChromeRefresh2023, features::kChromeRefreshSecondary2023},
-        {});
   }
-
- private:
-  base::test::ScopedFeatureList features;
 };
 
 TEST_F(DownloadBubbleSecurityViewInfoTest, DangerousWarningInfo) {
