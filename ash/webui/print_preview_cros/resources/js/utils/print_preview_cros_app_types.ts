@@ -241,6 +241,92 @@ export interface PrintTicket {
   shouldPrintBackgrounds: boolean;
 }
 
+export interface PageRange {
+  from: number;
+  to: number;
+}
+
+export interface PreviewTicket {
+  // ID used to map a CrOS preview session to the responsible PrintViewManager
+  // and related web contents.
+  printPreviewId: UnguessableToken;
+
+  // Unique ID for this preview request. During a preview session, this
+  // increments for each preview request.
+  requestId: number;
+
+  // Id of destination.
+  deviceName: string;
+
+  // Whether source document is PDF or HTML.
+  previewModifiable: boolean;
+
+  // Whether to print full document or selected section.
+  shouldPrintSelectionOnly: boolean;
+
+  // Used when printing multiple copies. When true, prints a full set of the
+  // document before printing the next copy. When false, prints N-copies of page
+  // one, then page two until all pages are printed.
+  collate: boolean;
+
+  // Print job color mode value.
+  color: ColorModel;
+
+  // Number of prints to make of source document.
+  copies: number;
+
+  // Horizontal DPI used for setting print job resolution.
+  dpiHorizontal: number;
+
+  // Vertical DPI used for setting print job resolution.
+  dpiVertical: number;
+
+  // Determine if printing should be done on both sides and along which edge
+  // of the media.
+  duplex: DuplexMode;
+
+  // Whether the header and footer content will be added to generated PDF.
+  headerFooterEnabled: boolean;
+
+  // Whether orientation should be in landscape or portrait mode.
+  landscape: boolean;
+
+  // Whether to use predefined margins or custom.
+  marginsType: MarginType;
+
+  // Margins defined by users when marginsType is MarginType.CUSTOM_MARGINS.
+  marginsCustom?: MarginsSetting;
+
+  // Used to set requested media and printable area size.
+  // See: printing/print_settings_conversion.cc
+  mediaSize: MediaSize;
+
+  // For n-up, number of pages to print on a single sheet.
+  pagesPerSheet: PagesPerSheetValue;
+
+  // Printer type used determine correct logic and handler for print job
+  // destination.
+  printerType: PrinterType;
+
+  // Whether to treat source as an image when generating PDF.
+  rasterizePDF: boolean;
+
+  // Percent to scale source as integer.
+  scaleFactor: number;
+
+  // Whether to use custom scale or presets.
+  scalingType: ScalingType;
+
+  // Whether to generate PDF with CSS backgrounds included.
+  shouldPrintBackgrounds: boolean;
+
+  // Page ranges to print.
+  pageRange: PageRange[];
+
+  // Is this the first preview request.
+  isFirstRequest: boolean;
+}
+
 // Immutable session configuration details for the current CrOS preview request.
 export interface SessionContext {
   // ID used to map a CrOS preview session to the responsible PrintViewManager
@@ -269,6 +355,9 @@ export interface PrintPreviewPageHandler {
 
   // Cancel the print preview and close the window.
   cancel(): void;
+
+  // Send a request to generate a PDF with the desired settings.
+  generatePreview(previewTicket: PreviewTicket): Promise<void>;
 }
 
 export interface FakeDestinationObserverInterface {

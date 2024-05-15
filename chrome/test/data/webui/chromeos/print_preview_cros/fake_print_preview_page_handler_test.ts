@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 
+import {getFakePreviewTicket} from 'chrome://os-print/js/fakes/fake_data.js';
 import {FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR, FAKE_PRINT_REQUEST_SUCCESSFUL, FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -87,5 +88,14 @@ suite('FakePrintPreviewPageHandler', () => {
   test('start session returns SessionContext', async () => {
     const result = await printPreviewPageHandler.startSession();
     assertEquals(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, result);
+  });
+
+  // Verify the fake PrintPreviewPageHandler correctly sets the preview ticket
+  // when generatePreview() is called.
+  test('call generate preview', async () => {
+    const expectedPreviewTicket = getFakePreviewTicket();
+    await printPreviewPageHandler.generatePreview(expectedPreviewTicket);
+    assertEquals(
+        expectedPreviewTicket, printPreviewPageHandler.getPreviewTicket());
   });
 });

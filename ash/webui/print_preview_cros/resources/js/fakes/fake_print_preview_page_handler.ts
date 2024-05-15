@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {assert} from 'chrome://resources/js/assert.js';
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {type PrintPreviewPageHandler, type PrintRequestOutcome, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {PreviewTicket, type PrintPreviewPageHandler, type PrintRequestOutcome, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -33,11 +33,14 @@ export const FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL: SessionContext = {
   hasSelection: true,
 };
 
+const GENERATE_PREVIEW_METHOD = 'generatePreview';
+
 // Fake implementation of the PrintPreviewPageHandler for tests and UI.
 export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private callCount: Map<string, number> = new Map<string, number>();
   private testDelayMs = 0;
+  private previewTicket: PreviewTicket|null = null;
 
   constructor() {
     this.registerMethods();
@@ -53,6 +56,8 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.methods.setResult(
         START_SESSION_METHOD, FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     this.callCount.set(START_SESSION_METHOD, 0);
+    this.methods.register(GENERATE_PREVIEW_METHOD);
+    this.callCount.set(GENERATE_PREVIEW_METHOD, 0);
   }
 
   // Handles restoring state of fake to initial state.
@@ -61,6 +66,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.methods = new FakeMethodResolver();
     this.registerMethods();
     this.testDelayMs = 0;
+    this.previewTicket = null;
   }
 
   setPrintResult(result: PrintRequestOutcome) {
@@ -93,6 +99,17 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   // Mock implementation of cancel.
   cancel(): void {
     this.incrementCallCount(CANCEL_METHOD);
+  }
+
+  generatePreview(previewTicket: PreviewTicket): Promise<void> {
+    this.incrementCallCount(GENERATE_PREVIEW_METHOD);
+    this.previewTicket = previewTicket;
+    return this.methods.resolveMethodWithDelay(
+        GENERATE_PREVIEW_METHOD, this.testDelayMs);
+  }
+
+  getPreviewTicket(): PreviewTicket|null {
+    return this.previewTicket;
   }
 
   setTestDelay(delay: number): void {
