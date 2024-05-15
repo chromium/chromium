@@ -5143,10 +5143,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Call disable untrusted network on the first fenced frame. Make sure it
   // doesn't resolve.
   EXPECT_EQ(EvalJs(first_fenced_frame, R"(
+    var ff1_promise_resolved = false;
     (async () => {
       let timeout_promise = new Promise(
           resolve => setTimeout(() => {resolve('timeout')}, 1000));
-      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      let disable_network_promise = window.fence.disableUntrustedNetwork().then(
+          () => {ff1_promise_resolved = true;});
       return Promise.race([disable_network_promise, timeout_promise]);
     })();
   )"),
@@ -5157,6 +5159,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
       DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
   VerifyFencedFrameNetworkStatus(second_fenced_frame,
                                  DisableUntrustedNetworkStatus::kNotStarted);
+  EXPECT_FALSE(
+      EvalJs(first_fenced_frame, "ff1_promise_resolved").ExtractBool());
 
   // Call disable untrusted network on the second fenced frame. This one should
   // resolve and cause the first fenced frame to have full network cutoff.
@@ -5172,6 +5176,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   VerifyFencedFrameNetworkStatus(
       second_fenced_frame,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  EXPECT_TRUE(EvalJs(first_fenced_frame, "ff1_promise_resolved").ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -5204,10 +5209,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Call disable untrusted network on the first fenced frame. Make sure it
   // doesn't resolve.
   EXPECT_EQ(EvalJs(ff1, R"(
+    var ff1_promise_resolved = false;
     (async () => {
       let timeout_promise = new Promise(
           resolve => setTimeout(() => {resolve('timeout')}, 1000));
-      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      let disable_network_promise = window.fence.disableUntrustedNetwork().then(
+          () => {ff1_promise_resolved = true;});
       return Promise.race([disable_network_promise, timeout_promise]);
     })();
   )"),
@@ -5242,6 +5249,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   VerifyFencedFrameNetworkStatus(
       ff4,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  EXPECT_FALSE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
 
   // Call disable untrusted network on the 3rd fenced frame. It should resolve.
   EXPECT_TRUE(ExecJs(ff3, R"(
@@ -5262,6 +5270,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   VerifyFencedFrameNetworkStatus(
       ff4,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  EXPECT_FALSE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
 
   // Call disable untrusted network on the 2nd fenced frame. It should resolve.
   EXPECT_TRUE(ExecJs(ff2, R"(
@@ -5285,6 +5294,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   VerifyFencedFrameNetworkStatus(
       ff4,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  EXPECT_TRUE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
@@ -5376,18 +5386,22 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   // Call disable untrusted network on the first fenced frame. Make sure it
   // doesn't resolve.
   EXPECT_EQ(EvalJs(ff1, R"(
+    var ff1_promise_resolved = false;
     (async () => {
       let timeout_promise = new Promise(
           resolve => setTimeout(() => {resolve('timeout')}, 1000));
-      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      let disable_network_promise = window.fence.disableUntrustedNetwork().then(
+          () => {ff1_promise_resolved = true;});
       return Promise.race([disable_network_promise, timeout_promise]);
     })();
   )"),
             "timeout");
+
   VerifyFencedFrameNetworkStatus(
       ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
   VerifyFencedFrameNetworkStatus(ff2,
                                  DisableUntrustedNetworkStatus::kNotStarted);
+  EXPECT_FALSE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
 
   // Create and attempt to navigate a child fenced frame after network cutoff.
   // The creation should succeed, but the navigation should fail.
@@ -5409,6 +5423,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   VerifyFencedFrameNetworkStatus(
       ff2,
       DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  EXPECT_TRUE(EvalJs(ff1, "ff1_promise_resolved").ExtractBool());
 
   // The addition of a nested fenced frame that doesn't navigate shouldn't
   // change the network revocation status of its ancestor.
