@@ -327,7 +327,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
       conversion_buffer_, result.data, &config_changed, &converted_output_size);
 
   if (!status.is_ok())
-    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
+    return EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError)
         .AddCause(std::move(status));
 
   result.size = converted_output_size;
@@ -337,7 +337,7 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
     const auto& config = h264_converter_->GetCurrentConfig();
     desc = CodecDescription();
     if (!config.Serialize(desc.value())) {
-      return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+      return EncoderStatus(EncoderStatus::Codes::kBitstreamConversionError,
                            "Failed to serialize AVC decoder config");
     }
   }
@@ -358,7 +358,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   if (!frame) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+        EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
                       "No frame provided for encoding."));
     return;
   }
@@ -371,9 +371,10 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
       !supported_format) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+        EncoderStatus(EncoderStatus::Codes::kUnsupportedFrameFormat,
                       "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
+            .WithData("storage type", frame->storage_type())
             .WithData("format", frame->format()));
     return;
   }
@@ -382,7 +383,7 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kSystemAPICallError,
                         "Convert GMB frame to MemoryMappedFrame failed."));
       return;
     }
@@ -396,15 +397,13 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         options_.frame_size, frame->timestamp());
     if (!i420_frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError,
                         "Can't allocate an I420 frame."));
       return;
     }
     auto status = frame_converter_.ConvertAndScale(*frame, *i420_frame);
     if (!status.is_ok()) {
-      std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
-              .AddCause(std::move(status)));
+      std::move(done_cb).Run(status);
       return;
     }
     frame = std::move(i420_frame);
