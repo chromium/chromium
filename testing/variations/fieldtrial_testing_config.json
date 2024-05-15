@@ -2257,6 +2257,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "AvoidEntryCreationForNoStoreCacheSize": "10000"
+                    },
                     "enable_features": [
                         "AvoidEntryCreationForNoStore"
                     ]
