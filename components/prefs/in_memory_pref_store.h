@@ -49,7 +49,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
   PersistentPrefStore::PrefReadError ReadPrefs() override;
-  void ReadPrefsAsync(ReadErrorDelegate* error_delegate) override {}
+  void ReadPrefsAsync(ReadErrorDelegate* error_delegate) override;
   void SchedulePendingLossyWrites() override {}
   void OnStoreDeletionFromDisk() override {}
   bool IsInMemoryPrefStore() const override;

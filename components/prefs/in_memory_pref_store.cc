@@ -81,6 +81,10 @@ PersistentPrefStore::PrefReadError InMemoryPrefStore::ReadPrefs() {
   return PersistentPrefStore::PREF_READ_ERROR_NONE;
 }
 
+void InMemoryPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
+  delete error_delegate;
+}
+
 void InMemoryPrefStore::ReportValueChanged(const std::string& key,
                                            uint32_t flags) {
   for (Observer& observer : observers_)
