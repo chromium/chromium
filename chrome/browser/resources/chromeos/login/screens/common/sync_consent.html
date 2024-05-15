@@ -60,8 +60,10 @@ found in the LICENSE file.
     }
   }
 
-  :host-context([orientation=vertical]) #syncConsentOverviewDialog {
-    --oobe-adaptive-dialog-content-top-padding: 20px;
+  @media (orientation: portrait) {
+    #syncConsentOverviewDialog {
+      --oobe-adaptive-dialog-content-top-padding: 20px;
+    }
   }
 
   cr-toggle {

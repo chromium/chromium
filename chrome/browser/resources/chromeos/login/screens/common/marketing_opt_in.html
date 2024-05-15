@@ -9,8 +9,10 @@ found in the LICENSE file.
     margin-top: 20px;
   }
 
-  :host-context([orientation=vertical ]) #contentArea {
-    justify-content: center;
+  @media (orientation: portrait) {
+    #contentArea {
+      justify-content: center;
+    }
   }
 
   :host {
