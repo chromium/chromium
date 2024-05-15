@@ -7,6 +7,7 @@
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
@@ -125,6 +126,9 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
 
   if (base::WeakPtr<content::NavigationHandle> navigation_handle =
           Navigate(&params)) {
+    if (flow_type_ == FlowType::kVcn3ds) {
+      vcn_3ds_popup_shown_timestamp_ = base::TimeTicks::Now();
+    }
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
   } else {
     autofill_metrics::LogVcn3dsFlowEvent(
@@ -155,13 +159,18 @@ void DesktopPaymentsWindowManager::OnDidFinishNavigationForVcn3ds() {
 }
 
 void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
+  CHECK(vcn_3ds_popup_shown_timestamp_.has_value());
   base::expected<RedirectCompletionProof,
                  Vcn3dsAuthenticationPopupNonSuccessResult>
       result = ParseUrlForVcn3ds(web_contents()->GetVisibleURL());
+
   // If the result implies that the authentication inside of the pop-up was
   // successful, continue the flow without resetting.
   if (result.has_value()) {
     CHECK(!result.value()->empty());
+    autofill_metrics::LogVcn3dsAuthLatency(
+        base::TimeTicks::Now() - vcn_3ds_popup_shown_timestamp_.value(),
+        /*success=*/true);
     client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
         AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog,
         base::BindOnce(&DesktopPaymentsWindowManager::
@@ -186,6 +195,9 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
         Vcn3dsFlowEvent::kAuthenticationInsidePopupFailed,
         /*user_consent_already_given=*/vcn_3ds_context_
             ->user_consent_already_given);
+    autofill_metrics::LogVcn3dsAuthLatency(
+        base::TimeTicks::Now() - vcn_3ds_popup_shown_timestamp_.value(),
+        /*success=*/false);
     client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
@@ -300,6 +312,7 @@ void DesktopPaymentsWindowManager::OnVcn3dsConsentDialogCancelled() {
 void DesktopPaymentsWindowManager::Reset() {
   vcn_3ds_context_.reset();
   flow_type_ = FlowType::kNoFlow;
+  vcn_3ds_popup_shown_timestamp_.reset();
 }
 
 }  // namespace autofill::payments

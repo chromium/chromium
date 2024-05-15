@@ -5684,6 +5684,22 @@ chromium-metrics-reviews@google.com.
   <token key="ConsentAlreadyGiven" variants="Vcn3ds.ConsentAlreadyGiven"/>
 </histogram>
 
+<histogram name="Autofill.Vcn3ds.Latency.{Result}" units="ms"
+    expires_after="2024-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the latency of the VCN 3DS authentication, from the time the pop-up was
+    shown to the time the pop-up was closed. Logged when the pop-up closes due
+    to the user completing the authentication successfully or unsuccessfully.
+    Not logged when the user manually closes the pop-up.
+  </summary>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Vcn3ds.PaymentsWindowUserConsentDialogResult"
     enum="PaymentsWindowUserConsentDialogResult" expires_after="2024-07-01">
   <owner>vinnypersky@google.com</owner>

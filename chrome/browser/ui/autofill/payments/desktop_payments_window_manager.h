@@ -121,6 +121,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // Only present if `flow_type_` is `kVcn3ds`.
   std::optional<Vcn3dsContext> vcn_3ds_context_;
 
+  // The timestamp for when the VCN 3DS pop-up was shown to the user. Used for
+  // logging purposes.
+  std::optional<base::TimeTicks> vcn_3ds_popup_shown_timestamp_;
+
   // The type of flow that is currently ongoing. Set when a flow is initiated.
   FlowType flow_type_ = FlowType::kNoFlow;
 

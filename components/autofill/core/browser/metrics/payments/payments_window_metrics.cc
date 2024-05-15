@@ -30,4 +30,13 @@ void LogPaymentsWindowUserConsentDialogShown() {
       "Autofill.Vcn3ds.PaymentsWindowUserConsentDialogShown", /*sample=*/true);
 }
 
+// Logs the duration that a VCN 3DS auth flow took. `duration` is the time
+// between when the pop-up was displayed to the user, and when the pop-up
+// closed. `success` is whether the auth was a success or failure.
+void LogVcn3dsAuthLatency(base::TimeDelta duration, bool success) {
+  base::UmaHistogramLongTimes(base::StrCat({"Autofill.Vcn3ds.Latency.",
+                                            success ? "Success" : "Failure"}),
+                              duration);
+}
+
 }  // namespace autofill::autofill_metrics

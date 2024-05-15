@@ -62,6 +62,10 @@ constexpr std::string_view kVcn3dsFlowEventsConsentAlreadyGivenHistogramName =
     "Autofill.Vcn3ds.FlowEvents.ConsentAlreadyGiven";
 constexpr std::string_view kVcn3dsFlowEventsConsentNotGivenYetHistogramName =
     "Autofill.Vcn3ds.FlowEvents.ConsentNotGivenYet";
+constexpr std::string_view kVcn3dsSuccessLatencyHistogramName =
+    "Autofill.Vcn3ds.Latency.Success";
+constexpr std::string_view kVcn3dsFailureLatencyHistogramName =
+    "Autofill.Vcn3ds.Latency.Failure";
 
 class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
  public:
@@ -311,6 +315,53 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectBucketCount(
       kVcn3dsFlowEventsConsentAlreadyGivenHistogramName,
       autofill_metrics::Vcn3dsFlowEvent::kFlowSucceeded, 1);
+}
+
+// Tests that the VCN 3DS flow succeeded latency histogram bucket is logged to
+// when a successful flow is completed for VCN 3DS.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_QueryParamsPresent_SuccessLatencyHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there are shouldProceed and token query params.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(
+          GURL("https://site.example/?shouldProceed=true&token=sometesttoken"),
+          content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kVcn3dsSuccessLatencyHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kVcn3dsFailureLatencyHistogramName, 0);
+}
+
+// Tests that the VCN 3DS flow failure latency histogram bucket is logged to
+// when a failed flow is completed for VCN 3DS.
+IN_PROC_BROWSER_TEST_F(
+    DesktopPaymentsWindowManagerInteractiveUiTest,
+    InvokeUi_Vcn3ds_QueryParamsPresent_FailureLatencyHistogramBucketLogs) {
+  ShowUi("Vcn3ds_ConsentAlreadyGiven");
+  EXPECT_TRUE(VerifyUi());
+
+  // Navigate to a page where there is a shouldProceed query param that denotes
+  // failure.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL("https://site.example/?shouldProceed=false"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester_.ExpectTotalCount(kVcn3dsSuccessLatencyHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kVcn3dsFailureLatencyHistogramName, 1);
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an

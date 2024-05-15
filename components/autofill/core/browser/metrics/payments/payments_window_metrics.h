@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PAYMENTS_WINDOW_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_PAYMENTS_WINDOW_METRICS_H_
 
+#include "base/time/time.h"
+
 namespace autofill::autofill_metrics {
 
 // Metrics to track the flow events for a VCN 3DS authentication flow.
@@ -78,6 +80,11 @@ void LogPaymentsWindowUserConsentDialogResult(
 
 // Logs when a PaymentsWindowUserConsentDialog is shown.
 void LogPaymentsWindowUserConsentDialogShown();
+
+// Logs the duration that a VCN 3DS auth flow took. `duration` is the time
+// between when the pop-up was displayed to the user, and when the pop-up
+// closed. `success` is whether the auth was a success or failure.
+void LogVcn3dsAuthLatency(base::TimeDelta duration, bool success);
 
 }  // namespace autofill::autofill_metrics
 
