@@ -7504,7 +7504,7 @@
       "xinghuilu@chromium.org",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 125
+    "expiry_milestone": 129
   },
   {
     "name": "safe-browsing-hash-prefix",
@@ -7513,7 +7513,7 @@
       "thefrog@chromium.org",
       "chrome-counter-abuse-alerts@google.com"
     ],
-    "expiry_milestone": 127
+    "expiry_milestone": 129
   },
   {
     "name": "safe-browsing-new-gms-core-api-for-browse-url-database-check",
