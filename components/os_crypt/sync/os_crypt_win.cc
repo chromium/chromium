@@ -333,6 +333,9 @@ std::string OSCryptImpl::GetRawEncryptionKey() {
 }
 
 bool OSCryptImpl::IsEncryptionAvailable() {
+  if (use_mock_key_) {
+    return !GetRawEncryptionKey().empty();
+  }
   return !encryption_key_.empty();
 }
 

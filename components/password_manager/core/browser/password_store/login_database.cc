@@ -996,6 +996,12 @@ LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
   return encryption_result;
 }
 
+bool ShouldDeleteUndecryptablePasswords() {
+  // TODO: crbug/40286735 - Check if password switches are disabled.
+  return OSCrypt::IsEncryptionAvailable() &&
+         base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
+}
+
 }  // namespace
 
 struct LoginDatabase::PrimaryKeyAndPassword {
@@ -2246,18 +2252,17 @@ FormRetrievalResult LoginDatabase::StatementToForms(
     std::vector<PasswordForm>* forms) {
   DCHECK(forms);
   forms->clear();
-  bool has_service_failure = false;
+  bool failed = false;
   while (statement->Step()) {
     std::u16string plaintext_password;
     EncryptionResult result =
         DecryptPasswordFromStatement(*statement, &plaintext_password);
-    if (result == ENCRYPTION_RESULT_SERVICE_FAILURE) {
-      has_service_failure = true;
+    if (result == ENCRYPTION_RESULT_SERVICE_FAILURE ||
+        result == ENCRYPTION_RESULT_ITEM_FAILURE) {
+      failed = true;
       continue;
     }
-    if (result == ENCRYPTION_RESULT_ITEM_FAILURE) {
-      continue;
-    }
+
     DCHECK_EQ(ENCRYPTION_RESULT_SUCCESS, result);
 
     PasswordForm form = GetFormWithoutPasswordFromStatement(*statement);
@@ -2275,12 +2280,18 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   if (!statement->Succeeded()) {
     return FormRetrievalResult::kDbError;
   }
-  if (has_service_failure &&
-      (forms->empty() || !ShouldReturnPartialPasswords())) {
+  if (failed) {
+    if (ShouldDeleteUndecryptablePasswords()) {
+      DatabaseCleanupResult result = DeleteUndecryptableLogins();
+      return result == DatabaseCleanupResult::kSuccess
+                 ? FormRetrievalResult::kSuccess
+                 : FormRetrievalResult::kEncryptionServiceFailure;
+    }
+    if (ShouldReturnPartialPasswords()) {
+      return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
+    }
+
     return FormRetrievalResult::kEncryptionServiceFailure;
-  }
-  if (has_service_failure) {
-    return FormRetrievalResult::kEncryptionServiceFailureWithPartialData;
   }
   return FormRetrievalResult::kSuccess;
 }
