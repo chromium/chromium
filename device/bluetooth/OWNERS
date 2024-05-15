@@ -5,4 +5,3 @@ reillyg@chromium.org
 per-file BUILD.gn=*
 
 # For adding or removing languages.
-per-file *.grd=claudiomagni@chromium.org
