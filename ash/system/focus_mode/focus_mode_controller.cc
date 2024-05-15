@@ -440,7 +440,8 @@ void FocusModeController::StartFocusSession(
   // TODO: Check that there is a selected playlist. Eventually we also want to
   // call CreateMediaWidget/CloseMediaWidget when a playlist is toggled during
   // a session.
-  if (focus_mode_sounds_controller_->selected_playlist() && !media_widget_) {
+  if (!focus_mode_sounds_controller_->selected_playlist().empty() &&
+      !media_widget_) {
     CreateMediaWidget();
   }
 

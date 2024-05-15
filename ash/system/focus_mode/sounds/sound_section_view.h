@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_SOUND_SECTION_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -16,11 +17,8 @@ class BoxLayoutView;
 
 namespace ash {
 
-namespace {
-class PlaylistView;
-}  // namespace
-
 class PillButton;
+class PlaylistView;
 
 // These are views that represent a list of playlists and we toggle between
 // `Focus Sounds` or `YouTube Music` sound sections using the slider button in
@@ -30,12 +28,12 @@ class ASH_EXPORT SoundSectionView : public views::FlexLayoutView {
   METADATA_HEADER(SoundSectionView, views::FlexLayoutView)
 
  public:
-  SoundSectionView();
+  explicit SoundSectionView(focus_mode_util::SoundType type);
   SoundSectionView(const SoundSectionView&) = delete;
   SoundSectionView& operator=(const SoundSectionView&) = delete;
   ~SoundSectionView() override;
 
-  // Update the contents in `playlist_view_list_`, e.g. the image view, title,
+  // Updates the contents in `playlist_view_list_`, e.g. the image view, title,
   // id of a playlist.
   void UpdateContents(
       const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
@@ -46,9 +44,13 @@ class ASH_EXPORT SoundSectionView : public views::FlexLayoutView {
   void ShowAlternateView(bool show_alternate_view);
   void SetAlternateView(std::unique_ptr<views::BoxLayoutView> alternate_view);
 
- protected:
-  void CreatePlaylistViewsContainer();
+  void UpdateStateForSelectedPlaylist(
+      const FocusModeSoundsController::SelectedPlaylist& selected_playlist);
 
+ private:
+  void CreatePlaylistViewsContainer(focus_mode_util::SoundType type);
+
+  const focus_mode_util::SoundType type_;
   std::vector<PlaylistView*> playlist_view_list_;
   raw_ptr<views::BoxLayoutView> playlist_views_container_ = nullptr;
 
@@ -56,8 +58,9 @@ class ASH_EXPORT SoundSectionView : public views::FlexLayoutView {
   // will not be populated. For this case, we will set an alternate view (e.g. a
   // non-premium view defined in `FocusModeSoundsView`) and show it instead.
   raw_ptr<views::BoxLayoutView> alternate_view_ = nullptr;
-
   raw_ptr<PillButton> learn_more_button_ = nullptr;
+
+  base::WeakPtrFactory<SoundSectionView> weak_factory_{this};
 };
 
 }  // namespace ash

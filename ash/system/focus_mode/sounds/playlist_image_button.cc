@@ -33,11 +33,6 @@ std::unique_ptr<lottie::Animation> GetEqualizerAnimation() {
 }  // namespace
 
 PlaylistImageButton::PlaylistImageButton() {
-  // We want to show the stop icon or the equalizer animation for the mouse
-  // moving inside of or outside of this view when the playlist is playing.
-  // Thus, to let `OnMouseEntered` and `OnMouseExited` be triggered for the
-  // mouse event, we call the function here.
-  SetNotifyEnterExitOnChild(true);
   gfx::Size preferred_size(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth);
   SetPreferredSize(preferred_size);
 
@@ -47,8 +42,6 @@ PlaylistImageButton::PlaylistImageButton() {
 
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_->SetImageSize(preferred_size);
-
-  media_action_icon_ = AddChildView(std::make_unique<views::ImageView>());
 
   selected_curvycutout_icon_ =
       AddChildView(std::make_unique<views::ImageView>());
@@ -60,21 +53,12 @@ PlaylistImageButton::PlaylistImageButton() {
   lottie_animation_view_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   lottie_animation_view_->SetAnimatedImage(GetEqualizerAnimation());
 
+  SetIsSelected(false);
   SetIsPlaying(false);
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 }
 
 PlaylistImageButton::~PlaylistImageButton() = default;
-
-void PlaylistImageButton::OnMouseEntered(const ui::MouseEvent& event) {
-  Button::OnMouseEntered(event);
-  UpdateVisibility();
-}
-
-void PlaylistImageButton::OnMouseExited(const ui::MouseEvent& event) {
-  Button::OnMouseExited(event);
-  UpdateVisibility();
-}
 
 views::ProposedLayout PlaylistImageButton::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
@@ -87,16 +71,11 @@ views::ProposedLayout PlaylistImageButton::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(image_view_.get(),
                                      image_view_->GetVisible(), bounds);
 
-  auto media_action_bounds =
+  layouts.child_layouts.emplace_back(
+      lottie_animation_view_.get(), lottie_animation_view_->GetVisible(),
       gfx::Rect(bounds.right() - kIconSize - kMediaActionIconSpacing,
                 bounds.bottom() - kIconSize - kMediaActionIconSpacing,
-                kIconSize, kIconSize);
-  layouts.child_layouts.emplace_back(media_action_icon_.get(),
-                                     media_action_icon_->GetVisible(),
-                                     media_action_bounds);
-  layouts.child_layouts.emplace_back(lottie_animation_view_.get(),
-                                     lottie_animation_view_->GetVisible(),
-                                     media_action_bounds);
+                kIconSize, kIconSize));
 
   layouts.child_layouts.emplace_back(
       selected_curvycutout_icon_.get(),
@@ -111,31 +90,22 @@ views::ProposedLayout PlaylistImageButton::CalculateProposedLayout(
 void PlaylistImageButton::SetIsPlaying(bool is_playing) {
   is_playing_ = is_playing;
   is_playing_ ? lottie_animation_view_->Play() : lottie_animation_view_->Stop();
-  media_action_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      is_playing_ ? kFocusModeStopCircleIcon : kFocusModePlayCircleIcon,
-      SK_ColorWHITE, kIconSize));
-  UpdateVisibility();
+  lottie_animation_view_->SetVisible(is_playing_);
 }
 
-void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image,
-                                         PressedCallback callback) {
+void PlaylistImageButton::SetIsSelected(bool is_selected) {
+  selected_curvycutout_icon_->SetVisible(is_selected);
+}
+
+void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {
   SetEnabled(true);
   image_view_->SetImage(image);
-  SetCallback(std::move(callback));
 }
 
 void PlaylistImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
   // Set the tooltip text for `image_view_` to show the tooltip when hovering on
   // it.
   image_view_->SetTooltipText(tooltip_text);
-}
-
-void PlaylistImageButton::UpdateVisibility() {
-  selected_curvycutout_icon_->SetVisible(is_playing_);
-
-  const bool is_animation_visible = is_playing_ && !IsMouseHovered();
-  lottie_animation_view_->SetVisible(is_animation_visible);
-  media_action_icon_->SetVisible(!is_animation_visible);
 }
 
 BEGIN_METADATA(PlaylistImageButton)

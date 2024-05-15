@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/rounded_container.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -19,7 +20,9 @@ class TabSliderButton;
 // display two different types of music. Each playlist view will show a
 // thumbnail of the playlist cover, a title of the playlist and some media
 // control icons.
-class ASH_EXPORT FocusModeSoundsView : public RoundedContainer {
+class ASH_EXPORT FocusModeSoundsView
+    : public RoundedContainer,
+      public FocusModeSoundsController::Observer {
   METADATA_HEADER(FocusModeSoundsView, RoundedContainer)
 
  public:
@@ -28,8 +31,11 @@ class ASH_EXPORT FocusModeSoundsView : public RoundedContainer {
   FocusModeSoundsView& operator=(const FocusModeSoundsView&) = delete;
   ~FocusModeSoundsView() override;
 
+  // FocusModeSoundsController::Observer:
+  void OnSelectedPlaylistChanged() override;
+
  private:
-  // Update this view based on `is_soundscape_type`.
+  // Updates this view based on `is_soundscape_type`.
   void UpdateSoundsView(bool is_soundscape_type);
 
   // Creates `soundscape_button_` and `youtube_music_button_`.

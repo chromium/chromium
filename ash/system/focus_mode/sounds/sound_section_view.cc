@@ -5,12 +5,15 @@
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/typography.h"
-#include "ash/system/focus_mode/sounds/playlist_image_button.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
+#include "ash/system/focus_mode/sounds/playlist_view.h"
+#include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/views/controls/label.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_utils.h"
@@ -21,9 +24,6 @@ namespace {
 
 constexpr int kPlaylistViewsNum = 4;
 constexpr auto kPlaylistsContainerViewInsets = gfx::Insets::VH(0, 24);
-constexpr int kSinglePlaylistViewWidth = 72;
-constexpr int kSinglePlaylistViewSpacingBetweenChild = 10;
-constexpr int kPlaylistTitleLineHeight = 10;
 
 std::unique_ptr<views::View> CreateSpacerView() {
   auto spacer_view = std::make_unique<views::View>();
@@ -34,59 +34,13 @@ std::unique_ptr<views::View> CreateSpacerView() {
   return spacer_view;
 }
 
-//---------------------------------------------------------------------
-// PlaylistView:
-
-class PlaylistView : public views::BoxLayoutView {
-  METADATA_HEADER(PlaylistView, views::BoxLayoutView)
-
- public:
-  PlaylistView() {
-    SetOrientation(views::BoxLayout::Orientation::kVertical);
-    SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
-    SetBetweenChildSpacing(kSinglePlaylistViewSpacingBetweenChild);
-
-    thumbnail_view_ = AddChildView(std::make_unique<PlaylistImageButton>());
-
-    title_label_ = AddChildView(std::make_unique<views::Label>());
-    title_label_->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_CENTER);
-    title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
-    title_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-        TypographyToken::kCrosLabel1));
-    title_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-    title_label_->SetLineHeight(kPlaylistTitleLineHeight);
-  }
-
-  const std::string& playlist_id() const { return playlist_id_; }
-
-  void UpdateContents(
-      const FocusModeSoundsController::Playlist* playlist_data) {
-    playlist_id_ = playlist_data->playlist_id;
-    const auto text = base::UTF8ToUTF16(playlist_data->title);
-    title_label_->SetText(text);
-    title_label_->SetTooltipText(text);
-    thumbnail_view_->SetTooltipText(text);
-    // TODO: Use a non-empty callback for the `PlaylistImageButton`.
-    thumbnail_view_->UpdateContents(playlist_data->thumbnail,
-                                    views::Button::PressedCallback());
-  }
-
- private:
-  std::string playlist_id_;
-  raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<PlaylistImageButton> thumbnail_view_ = nullptr;
-};
-
-BEGIN_METADATA(PlaylistView)
-END_METADATA
-
 }  // namespace
 
 //---------------------------------------------------------------------
 // SoundSectionView:
 
-SoundSectionView::SoundSectionView() {
+SoundSectionView::SoundSectionView(focus_mode_util::SoundType type)
+    : type_(type) {
   SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -95,7 +49,7 @@ SoundSectionView::SoundSectionView() {
                  views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
                  views::MaximumFlexSizeRule::kUnbounded));
 
-  CreatePlaylistViewsContainer();
+  CreatePlaylistViewsContainer(type);
 }
 
 SoundSectionView::~SoundSectionView() = default;
@@ -108,10 +62,13 @@ void SoundSectionView::UpdateContents(
 
   for (size_t i = 0; i < kPlaylistViewsNum; ++i) {
     const auto& playlist_data = data.at(i);
-    auto* playlist_view =
-        views::AsViewClass<PlaylistView>(playlist_view_list_.at(i));
-    playlist_view->UpdateContents(playlist_data.get());
+    auto* playlist_view = playlist_view_list_.at(i);
+    playlist_view->UpdateContents(*playlist_data);
   }
+
+  UpdateStateForSelectedPlaylist(FocusModeController::Get()
+                                     ->focus_mode_sounds_controller()
+                                     ->selected_playlist());
 }
 
 void SoundSectionView::ShowAlternateView(bool show_alternate_view) {
@@ -127,7 +84,20 @@ void SoundSectionView::SetAlternateView(
   alternate_view_ = AddChildView(std::move(alternate_view));
 }
 
-void SoundSectionView::CreatePlaylistViewsContainer() {
+void SoundSectionView::UpdateStateForSelectedPlaylist(
+    const FocusModeSoundsController::SelectedPlaylist& selected_playlist) {
+  for (auto* playlist_view : playlist_view_list_) {
+    if (!selected_playlist.empty() && selected_playlist.type == type_ &&
+        selected_playlist.id == playlist_view->playlist_data().id) {
+      playlist_view->SetState(selected_playlist.state);
+    } else {
+      playlist_view->SetState(focus_mode_util::SoundState::kNone);
+    }
+  }
+}
+
+void SoundSectionView::CreatePlaylistViewsContainer(
+    focus_mode_util::SoundType type) {
   playlist_views_container_ =
       AddChildView(std::make_unique<views::BoxLayoutView>());
   playlist_views_container_->SetOrientation(
@@ -143,8 +113,17 @@ void SoundSectionView::CreatePlaylistViewsContainer() {
           playlist_views_container_->AddChildView(CreateSpacerView());
       playlist_views_container_->SetFlexForView(spacer_view, 1);
     }
-    playlist_view_list_.push_back(playlist_views_container_->AddChildView(
-        std::make_unique<PlaylistView>()));
+
+    // `FocusModeSoundsController` is owned by `FocusModeController` which
+    // outlives `PlaylistView`, because `FocusModeController` is destroyed after
+    // the call of `CloseAllRootWindowChildWindows` in the dtor of `Shell`.
+    playlist_view_list_.push_back(
+        playlist_views_container_->AddChildView(std::make_unique<PlaylistView>(
+            type,
+            base::BindRepeating(
+                &FocusModeSoundsController::TogglePlaylist,
+                base::Unretained(FocusModeController::Get()
+                                     ->focus_mode_sounds_controller())))));
   }
 }
 

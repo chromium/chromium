@@ -16,9 +16,11 @@
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
-#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/playlist_view.h"
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -102,8 +104,10 @@ FocusModeSoundsView::FocusModeSoundsView() {
 
   CreateTabSliderButtons();
 
-  soundscape_container_ = AddChildView(std::make_unique<SoundSectionView>());
-  youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>());
+  soundscape_container_ = AddChildView(std::make_unique<SoundSectionView>(
+      focus_mode_util::SoundType::kSoundscape));
+  youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
+      focus_mode_util::SoundType::kYouTubeMusic));
 
   // TODO: Assume that the user doesn't have a premium account currently. Will
   // add a condition here when we finish the API implementation.
@@ -121,9 +125,22 @@ FocusModeSoundsView::FocusModeSoundsView() {
       /*is_soundscape_type=*/true,
       base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
                      weak_factory_.GetWeakPtr()));
+
+  sounds_controller->AddObserver(this);
 }
 
-FocusModeSoundsView::~FocusModeSoundsView() = default;
+FocusModeSoundsView::~FocusModeSoundsView() {
+  FocusModeController::Get()->focus_mode_sounds_controller()->RemoveObserver(
+      this);
+}
+
+void FocusModeSoundsView::OnSelectedPlaylistChanged() {
+  const auto& selected_playlist = FocusModeController::Get()
+                                      ->focus_mode_sounds_controller()
+                                      ->selected_playlist();
+  soundscape_container_->UpdateStateForSelectedPlaylist(selected_playlist);
+  youtube_music_container_->UpdateStateForSelectedPlaylist(selected_playlist);
+}
 
 void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
   auto* sounds_controller =

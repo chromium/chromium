@@ -9,6 +9,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -38,6 +39,27 @@ class ASH_EXPORT FocusModeSoundsController {
     gfx::ImageSkia thumbnail;
   };
 
+  struct SelectedPlaylist {
+    SelectedPlaylist();
+    SelectedPlaylist(const SelectedPlaylist& other);
+    SelectedPlaylist& operator=(const SelectedPlaylist& other);
+    ~SelectedPlaylist();
+
+    bool empty() const { return id.empty(); }
+
+    std::string id;
+    std::string title;
+    gfx::ImageSkia thumbnail;
+    focus_mode_util::SoundType type = focus_mode_util::SoundType::kNone;
+    focus_mode_util::SoundState state = focus_mode_util::SoundState::kNone;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a playlist is toggled by the user on the focus panel.
+    virtual void OnSelectedPlaylistChanged() = 0;
+  };
+
   FocusModeSoundsController();
   FocusModeSoundsController(const FocusModeSoundsController&) = delete;
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
@@ -52,7 +74,16 @@ class ASH_EXPORT FocusModeSoundsController {
     return youtube_music_playlists_;
   }
 
-  bool selected_playlist() const { return selected_playlist_; }
+  const SelectedPlaylist& selected_playlist() const {
+    return selected_playlist_;
+  }
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  // Toggles a playlist with the same id as the `playlist_data` to select or
+  // deselect based on its previous state.
+  void TogglePlaylist(const SelectedPlaylist& playlist_data);
 
   // Download images by providing urls. `update_sounds_view_callback` will be
   // called only when finishing downloading all non-empty thumbnails for the
@@ -64,6 +95,9 @@ class ASH_EXPORT FocusModeSoundsController {
       UpdateSoundsViewCallback update_sounds_view_callback);
 
  private:
+  void ResetSelectedPlaylist();
+  void SelectPlaylist(const SelectedPlaylist& playlist_data);
+
   // Invoked upon completion of the `thumbnail` download, `thumbnail` can be a
   // null image if the download attempt from the url failed.
   void OnOneThumbnailDownloaded(
@@ -79,8 +113,9 @@ class ASH_EXPORT FocusModeSoundsController {
   std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
 
-  // TODO: Replace this with actual selected playlist information.
-  bool selected_playlist_ = false;
+  SelectedPlaylist selected_playlist_;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<FocusModeSoundsController> weak_factory_{this};
 };

@@ -16,6 +16,19 @@ class SystemTextfield;
 
 namespace focus_mode_util {
 
+enum class SoundState {
+  kNone,      // The playlist is not selected and not playing.
+  kSelected,  // The playlist is selected but hasn't started playing.
+  kPaused,    // The playlist is selected but is paused during a focus session.
+  kPlaying,   // The playlist is selected and playing during a focus session.
+};
+
+enum class SoundType {
+  kNone,
+  kSoundscape,
+  kYouTubeMusic,
+};
+
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
 constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);

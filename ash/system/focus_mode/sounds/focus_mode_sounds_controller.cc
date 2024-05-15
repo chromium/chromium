@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+
 #include <memory>
 
 #include "ash/public/cpp/image_downloader.h"
@@ -10,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/playlist_view.h"
 #include "base/barrier_callback.h"
 #include "base/functional/bind.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -124,12 +126,41 @@ void DownloadImageFromUrl(const std::string& url,
 
 }  // namespace
 
+FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist() = default;
+
+FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist(
+    const SelectedPlaylist&) = default;
+
+FocusModeSoundsController::SelectedPlaylist&
+FocusModeSoundsController::SelectedPlaylist::operator=(
+    const SelectedPlaylist& other) = default;
+
+FocusModeSoundsController::SelectedPlaylist::~SelectedPlaylist() = default;
+
 FocusModeSoundsController::FocusModeSoundsController() {
   soundscape_playlists_.reserve(kPlaylistNum);
   youtube_music_playlists_.reserve(kPlaylistNum);
 }
 
 FocusModeSoundsController::~FocusModeSoundsController() = default;
+
+void FocusModeSoundsController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FocusModeSoundsController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void FocusModeSoundsController::TogglePlaylist(
+    const SelectedPlaylist& playlist_data) {
+  if (playlist_data.state != focus_mode_util::SoundState::kNone) {
+    // When the user toggles a selected playlist, we will deselect it.
+    ResetSelectedPlaylist();
+  } else {
+    SelectPlaylist(playlist_data);
+  }
+}
 
 void FocusModeSoundsController::DownloadPlaylistsForType(
     const bool is_soundscape_type,
@@ -156,6 +187,28 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
         base::BindOnce(&FocusModeSoundsController::OnOneThumbnailDownloaded,
                        weak_factory_.GetWeakPtr(), barrier_callback, item.id,
                        item.title));
+  }
+}
+
+void FocusModeSoundsController::ResetSelectedPlaylist() {
+  // TODO: Stop the music for current selected playlist.
+  selected_playlist_ = {};
+  for (auto& observer : observers_) {
+    observer.OnSelectedPlaylistChanged();
+  }
+}
+
+void FocusModeSoundsController::SelectPlaylist(
+    const SelectedPlaylist& playlist_data) {
+  selected_playlist_ = playlist_data;
+
+  // TODO: If in an active focus session and toggling on a playlist, we should
+  // trigger the player to start playing and set the state as `kPlaying`
+  // instead.
+  selected_playlist_.state = focus_mode_util::SoundState::kSelected;
+
+  for (auto& observer : observers_) {
+    observer.OnSelectedPlaylistChanged();
   }
 }
 

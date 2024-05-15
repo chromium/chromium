@@ -130,8 +130,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "filter.icon",
     "five_files.icon",
     "focus_mode_lamp.icon",
-    "focus_mode_play_circle.icon",
-    "focus_mode_stop_circle.icon",
     "folder.icon",
     "forbid.icon",
     "four_files.icon",

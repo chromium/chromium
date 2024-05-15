@@ -1675,6 +1675,8 @@ component("ash") {
     "system/focus_mode/sounds/focus_mode_sounds_view.h",
     "system/focus_mode/sounds/playlist_image_button.cc",
     "system/focus_mode/sounds/playlist_image_button.h",
+    "system/focus_mode/sounds/playlist_view.cc",
+    "system/focus_mode/sounds/playlist_view.h",
     "system/focus_mode/sounds/sound_section_view.cc",
     "system/focus_mode/sounds/sound_section_view.h",
     "system/focus_mode/youtube_music/youtube_music_client.cc",

@@ -31,10 +31,6 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   PlaylistImageButton& operator=(const PlaylistImageButton&) = delete;
   ~PlaylistImageButton() override;
 
-  // views::Button:
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
-
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
@@ -43,19 +39,18 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   // state.
   void SetIsPlaying(bool is_playing);
 
-  // Replaces the `image_view_` with a new image and the press callback for a
-  // new playlist.
-  void UpdateContents(const gfx::ImageSkia& image, PressedCallback callback);
+  // Called when this view is pressed to show/hide `selected_curvycutout_icon_`.
+  void SetIsSelected(bool is_selected);
+
+  // Replaces the `image_view_` with a new image.
+  void UpdateContents(const gfx::ImageSkia& image);
 
  private:
   // views::Button:
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
-  void UpdateVisibility();
-
   bool is_playing_ = false;
   raw_ptr<views::ImageView> image_view_ = nullptr;
-  raw_ptr<views::ImageView> media_action_icon_ = nullptr;
   raw_ptr<views::ImageView> selected_curvycutout_icon_ = nullptr;
   raw_ptr<views::AnimatedImageView> lottie_animation_view_ = nullptr;
 };
