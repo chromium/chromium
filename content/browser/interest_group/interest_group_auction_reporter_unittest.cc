@@ -81,6 +81,7 @@ InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
   // they don't have default initializers, so have to set them to placate memory
   // tools.
   out.bid = 1;
+  out.rounded_bid = 1;
   out.bid_in_seller_currency = 10;
   out.score = 1;
   out.highest_scoring_other_bid = 0;
