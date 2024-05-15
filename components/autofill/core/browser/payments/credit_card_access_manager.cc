@@ -634,7 +634,8 @@ void CreditCardAccessManager::Authenticate(
               card_.get(), *selected_challenge_option_,
               weak_ptr_factory_.GetWeakPtr(),
               virtual_card_unmask_response_details_.context_token,
-              payments::GetBillingCustomerId(personal_data_manager_));
+              payments::GetBillingCustomerId(
+                  &personal_data_manager_->payments_data_manager()));
       break;
     }
     case UnmaskAuthFlowType::kThreeDomainSecure:

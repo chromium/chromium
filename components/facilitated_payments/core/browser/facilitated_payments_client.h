@@ -15,7 +15,7 @@
 
 namespace autofill {
 class BankAccount;
-class PersonalDataManager;
+class PaymentsDataManager;
 }  // namespace autofill
 
 namespace payments::facilitated {
@@ -27,9 +27,9 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
  public:
   ~FacilitatedPaymentsClient() override;
 
-  // Gets the `PersonalDataManager` instance associated with the Chrome profile.
+  // Gets the `PaymentsDataManager` instance associated with the Chrome profile.
   // It is used to get user's account info.
-  virtual autofill::PersonalDataManager* GetPersonalDataManager() = 0;
+  virtual autofill::PaymentsDataManager* GetPaymentsDataManager() = 0;
 
   // Gets the `FacilitatedPaymentsNetworkInterface` instance owned by the client
   // used for making payment requests. It can be null if the browser context

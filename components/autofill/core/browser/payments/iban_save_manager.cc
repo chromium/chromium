@@ -197,7 +197,8 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
           personal_data_manager_->app_locale(),
-          payments::GetBillingCustomerId(personal_data_manager_),
+          payments::GetBillingCustomerId(
+              &personal_data_manager_->payments_data_manager()),
           payments::kUploadPaymentMethodBillableServiceNumber,
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
@@ -343,8 +344,8 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
   details.app_locale = personal_data_manager_->app_locale();
   details.billable_service_number =
       payments::kUploadPaymentMethodBillableServiceNumber;
-  details.billing_customer_number =
-      payments::GetBillingCustomerId(personal_data_manager_);
+  details.billing_customer_number = payments::GetBillingCustomerId(
+      &personal_data_manager_->payments_data_manager());
   details.context_token = context_token_;
   details.value = import_candidate.value();
   details.nickname = import_candidate.nickname();

@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -31,14 +32,16 @@ void ChromeFacilitatedPaymentsClient::LoadRiskData(
                                     std::move(on_risk_data_loaded_callback));
 }
 
-autofill::PersonalDataManager*
-ChromeFacilitatedPaymentsClient::GetPersonalDataManager() {
+autofill::PaymentsDataManager*
+ChromeFacilitatedPaymentsClient::GetPaymentsDataManager() {
   Profile* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  if (profile) {
-    return autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  if (!profile) {
+    return nullptr;
   }
-  return nullptr;
+  autofill::PersonalDataManager* pdm =
+      autofill::PersonalDataManagerFactory::GetForProfile(profile);
+  return pdm ? &pdm->payments_data_manager() : nullptr;
 }
 
 payments::facilitated::FacilitatedPaymentsNetworkInterface*
@@ -53,8 +56,7 @@ ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsNetworkInterface() {
         payments::facilitated::FacilitatedPaymentsNetworkInterface>(
         profile->GetURLLoaderFactory(),
         IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
-        &GetPersonalDataManager()->payments_data_manager(),
-        profile->IsOffTheRecord());
+        GetPaymentsDataManager(), profile->IsOffTheRecord());
   }
   return facilitated_payments_network_interface_.get();
 }

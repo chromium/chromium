@@ -11,7 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
@@ -144,13 +144,13 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
   // payment prompt.
   // TODO(b/339477906): The check for bank accounts should move to
   // OnPixCodeValidated.
-  auto* personal_data_manager = client_->GetPersonalDataManager();
-  if (!personal_data_manager) {
+  auto* payments_data_manager = client_->GetPaymentsDataManager();
+  if (!payments_data_manager) {
     Reset();
     return;
   }
   if (result != mojom::PixCodeDetectionResult::kValidPixCodeFound ||
-      !personal_data_manager->payments_data_manager().HasMaskedBankAccounts() ||
+      !payments_data_manager->HasMaskedBankAccounts() ||
       !base::FeatureList::IsEnabled(kEnablePixPayments)) {
     Reset();
     return;
@@ -205,12 +205,12 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     return;
   }
 
-  // If the personal data manager isn't available, then the flow should have
+  // If the payments data manager isn't available, then the flow should have
   // been abandoned already in `ProcessPixCodeDetectionResult`.
-  CHECK(client_->GetPersonalDataManager());
+  CHECK(client_->GetPaymentsDataManager());
   initiate_payment_request_details_->billing_customer_number_ =
       autofill::payments::GetBillingCustomerId(
-          client_->GetPersonalDataManager());
+          client_->GetPaymentsDataManager());
   // Before showing the payment prompt, load the risk data required for
   // initiating payment request. The risk data is collected once per page load
   // if a PIX code was detected.
@@ -221,9 +221,7 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
   }
 
   client_->ShowPixPaymentPrompt(
-      client_->GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetMaskedBankAccounts(),
+      client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -283,7 +281,7 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
         base::BindOnce(
             &FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived,
             weak_ptr_factory_.GetWeakPtr()),
-        client_->GetPersonalDataManager()->app_locale());
+        client_->GetPaymentsDataManager()->app_locale());
   }
 }
 

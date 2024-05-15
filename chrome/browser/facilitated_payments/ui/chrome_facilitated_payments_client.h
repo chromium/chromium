@@ -43,13 +43,13 @@ class ChromeFacilitatedPaymentsClient
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
   FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           GetPersonalDataManager);
+                           GetPaymentsDataManager);
   FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
                            GetFacilitatedPaymentsNetworkInterface);
 
   // FacilitatedPaymentsClient:
   // This returns nullptr if the `Profile` associated is null.
-  autofill::PersonalDataManager* GetPersonalDataManager() override;
+  autofill::PaymentsDataManager* GetPaymentsDataManager() override;
   // This returns nullptr if the `Profile` associated is null.
   payments::facilitated::FacilitatedPaymentsNetworkInterface*
   GetFacilitatedPaymentsNetworkInterface() override;

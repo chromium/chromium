@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -64,8 +65,8 @@ CreateUnmaskRequestDetailsForVcn3ds(
     PaymentsWindowManager::RedirectCompletionProof redirect_completion_proof) {
   payments::PaymentsNetworkInterface::UnmaskRequestDetails request_details;
   request_details.card = context.card;
-  request_details.billing_customer_number =
-      GetBillingCustomerId(client.GetPersonalDataManager());
+  request_details.billing_customer_number = GetBillingCustomerId(
+      &client.GetPersonalDataManager()->payments_data_manager());
   request_details.context_token = context.context_token;
 
   if (const url::Origin& origin =

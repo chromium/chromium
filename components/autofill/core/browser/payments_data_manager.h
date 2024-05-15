@@ -440,6 +440,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // when Chrome is restarted.
   const std::string& GetCountryCodeForExperimentGroup() const;
 
+  const std::string& app_locale() const { return app_locale_; }
+
   // Returns if there are any pending queries to the web database.
   bool HasPendingPaymentQueries() const;
 

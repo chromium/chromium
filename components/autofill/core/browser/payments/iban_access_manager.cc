@@ -96,8 +96,8 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
   payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
   request_details.billable_service_number =
       payments::kUnmaskPaymentMethodBillableServiceNumber;
-  request_details.billing_customer_number =
-      payments::GetBillingCustomerId(client_->GetPersonalDataManager());
+  request_details.billing_customer_number = payments::GetBillingCustomerId(
+      &client_->GetPersonalDataManager()->payments_data_manager());
   request_details.instrument_id = instrument_id;
   base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
   client_->GetPaymentsAutofillClient()
