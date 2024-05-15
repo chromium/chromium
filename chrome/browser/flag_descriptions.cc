@@ -8016,11 +8016,6 @@ const char kElementCaptureDescription[] =
 const char kUIDebugToolsName[] = "Debugging tools for UI";
 const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";
-
-const char kSyncPollImmediatelyOnEveryStartupName[] =
-    "Sync Poll Immediately On Every Startup";
-const char kSyncPollImmediatelyOnEveryStartupDescription[] =
-    "Sends a poll GetUpdates request on every browser startup.";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

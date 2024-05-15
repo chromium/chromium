@@ -4676,9 +4676,6 @@ extern const char kElementCaptureDescription[];
     BUILDFLAG(IS_MAC)
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
-
-extern const char kSyncPollImmediatelyOnEveryStartupName[];
-extern const char kSyncPollImmediatelyOnEveryStartupDescription[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

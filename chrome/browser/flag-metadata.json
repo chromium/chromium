@@ -7990,11 +7990,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sync-poll-immediately-on-every-startup",
-    "owners": [ "treib@chromium.org", "rushans@google.com", "//components/search/OWNERS" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "sync-segments-data",
     "owners": [ "bwwilliams@google.com", "sky@chromium.org", "treib@chromium.org" ],
     "expiry_milestone": 130

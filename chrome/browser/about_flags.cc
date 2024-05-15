@@ -8901,11 +8901,6 @@ const FeatureEntry kFeatureEntries[] = {
         FEATURE_VALUE_TYPE(features::kUIDebugTools),
     },
 
-    {"sync-poll-immediately-on-every-startup",
-     flag_descriptions::kSyncPollImmediatelyOnEveryStartupName,
-     flag_descriptions::kSyncPollImmediatelyOnEveryStartupDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(syncer::kSyncPollImmediatelyOnEveryStartup)},
 #endif
     {"http-cache-partitioning",
      flag_descriptions::kSplitCacheByNetworkIsolationKeyName,
