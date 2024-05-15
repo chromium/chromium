@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
-#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "v8/include/v8-forward.h"
 
 namespace auction_worklet {
