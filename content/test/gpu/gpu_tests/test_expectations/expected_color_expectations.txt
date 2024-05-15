@@ -126,10 +126,9 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 # Gardener 2024-04-29 - page reported failure
-crbug.com/40877266 [ win angle-d3d11 graphite-enabled passthrough release ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/40877266 [ amd-0x7340 angle-d3d11 graphite-enabled passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/40877266 [ angle-d3d11 graphite-enabled intel-0x4680 passthrough release-x64 win10 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-# Gardener 2024-05-03 - Linux KVM causing incorrect screenshots
-crbug.com/338232679 [ linux angle-vulkan intel-0x4680 passthrough ] ExpectedColor_maps [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
