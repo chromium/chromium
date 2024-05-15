@@ -75,8 +75,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // Represents a listening socket.
   struct FlossListeningSocket {
     SocketId id = FlossSocketManager::kInvalidSocketId;
-    SocketType type;
-    int flags;
+    SocketType type = SocketType::kUnknown;
+    int flags = 0;
     std::optional<int> psm;
     std::optional<int> channel;
     std::optional<std::string> name;
@@ -93,13 +93,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   struct FlossSocket {
     SocketId id = FlossSocketManager::kInvalidSocketId;
     FlossDeviceId remote_device;
-    SocketType type;
-    int flags;
+    SocketType type = SocketType::kUnknown;
+    int flags = 0;
     std::optional<base::ScopedFD> fd;
-    int port;
+    int port = 0;
     std::optional<device::BluetoothUUID> uuid;
-    int max_rx_size;
-    int max_tx_size;
+    int max_rx_size = 0;
+    int max_tx_size = 0;
 
     FlossSocket();
     ~FlossSocket();
