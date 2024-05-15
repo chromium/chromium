@@ -202,11 +202,16 @@ class EventRewriterAsh : public EventRewriter {
     GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
 
     // Used to send a notification when a income event is a shortcut with
-    // search key but could not find a matched remapped event, and the
-    // ModifierSplit flag is on.
+    // arrow key and search key but could not find a matched remapped event,
+    // and it's a split modifier keyboard.
     virtual void NotifySixPackRewriteBlockedByFnKey(
         ui::KeyboardCode key_code,
         ui::mojom::SixPackShortcutModifier modifier) = 0;
+
+    // Used to send a notification when a income event is a shortcut with
+    // top row key and search key but could not find a matched remapped event,
+    // and it's a split modifier keyboard.
+    virtual void NotifyTopRowRewriteBlockedByFnKey() = 0;
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be

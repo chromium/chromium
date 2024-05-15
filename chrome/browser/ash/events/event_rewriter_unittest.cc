@@ -95,6 +95,7 @@ constexpr char kKbdSysPath[] = "/devices/platform/i8042/serio2/input/input1";
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayoutAttributeName[] = "function_row_physmap";
 constexpr char kSixPackKeyNoMatchNudgeId[] = "six-patch-key-no-match-nudge-id";
+constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
 
 constexpr char kKbdTopRowLayoutUnspecified[] = "";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
@@ -4804,7 +4805,7 @@ TEST_P(EventRewriterTest, SixPackRemappingsFnBased) {
   }
 }
 
-TEST_P(EventRewriterTest, NotifySixPackRewriteBlockedByFnKey) {
+TEST_P(EventRewriterTest, NotifyShortcutEventRewriteBlockedByFnKey) {
   if (!features::IsModifierSplitEnabled()) {
     GTEST_SKIP() << "Test is only valid with the modifier split flag enabled";
   }
@@ -4818,6 +4819,23 @@ TEST_P(EventRewriterTest, NotifySixPackRewriteBlockedByFnKey) {
 
   EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
   nudge_manager->Cancel(kSixPackKeyNoMatchNudgeId);
+
+  // Set the scan code so the key event is recognized as top row key.
+  std::vector<TestKeyEvent> key_events;
+  for (auto event : KeyF1::Typed()) {
+    event.scan_code = 1;
+    key_events.push_back(std::move(event));
+  }
+
+  std::vector<TestKeyEvent> expected_events;
+  for (auto event : KeyF1::Typed(ui::EF_COMMAND_DOWN)) {
+    event.scan_code = 1;
+    expected_events.push_back(std::move(event));
+  }
+
+  EXPECT_EQ(expected_events, RunRewriter(key_events, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kTopRowKeyNoMatchNudgeId));
+  nudge_manager->Cancel(kTopRowKeyNoMatchNudgeId);
 }
 
 TEST_P(EventRewriterTest, CapsLockRemappingFnBased) {

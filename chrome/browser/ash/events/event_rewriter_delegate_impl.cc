@@ -360,4 +360,8 @@ void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedByFnKey(
       key_code, modifier);
 }
 
+void EventRewriterDelegateImpl::NotifyTopRowRewriteBlockedByFnKey() {
+  input_device_settings_notification_controller_->ShowTopRowRewritingNudge();
+}
+
 }  // namespace ash

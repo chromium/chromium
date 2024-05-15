@@ -81,10 +81,15 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
       int device_id,
       ui::KeyboardCode key_code) override;
 
-  // Push a notification when the device does not have an Fn key.
+  // Push a notification when the device has an Fn key and six pack shortcut
+  // with search key is pressed.
   void NotifySixPackRewriteBlockedByFnKey(
       ui::KeyboardCode key_code,
       ui::mojom::SixPackShortcutModifier modifier) override;
+
+  // Push a notification when the device has an Fn key and search plus top
+  // row key is pressed.
+  void NotifyTopRowRewriteBlockedByFnKey() override;
 
   // Workaround for test behavior injection.
   // Currently, there's no easier way to inject
