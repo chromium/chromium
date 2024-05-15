@@ -62,8 +62,7 @@ constexpr char kExtensionsWebStoreUrl[] =
     "https://chromewebstore.google.com/category/extensions";
 constexpr char kGoogleChromeAiUrl[] =
     "https://www.google.com/chrome/ai-innovations";
-constexpr char kGoogleChromePrivacyUrl[] =
-    "https://www.google.com/chrome/privacy-on-the-web/";
+constexpr char kGoogleChromeSafetyUrl[] = "https://www.google.com/chrome/#safe";
 constexpr char kGooglePasswordsUrl[] = "https://passwords.google";
 constexpr char kThemesWebStoreUrl[] =
     "https://chromewebstore.google.com/category/themes";
@@ -260,7 +259,7 @@ FeaturePromoSpecification CreateLowUsagePromoSpecification(Profile* profile) {
       // 9.
       CreateNavigatePromo(IDS_REENGAGEMENT_PROMO_SAFETY,
                           IDS_REENGAGEMENT_PROMO_VIEW_SAFETY_FEATURES_ACTION,
-                          GURL(kGoogleChromePrivacyUrl)),
+                          GURL(kGoogleChromeSafetyUrl)),
 
       // 2.
       CreateSidePanelPromo(IDS_REENGAGEMENT_PROMO_CUSTOMIZE_COLOR,
