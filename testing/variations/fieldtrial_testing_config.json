@@ -21010,6 +21010,27 @@
             ]
         }
     ],
+    "UseRecordedBoundsForTiling": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseRecordedBoundsForTiling"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSimplifiedMessagePumpKqueueLoop": [
         {
             "platforms": [

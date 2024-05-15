@@ -170,7 +170,7 @@ BASE_FEATURE(kEvictionThrottlesDraw,
 
 BASE_FEATURE(kUseRecordedBoundsForTiling,
              "UseRecordedBoundsForTiling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAdjustFastMainThreadThreshold,
              "AdjustFastMainThreadThreshold",
