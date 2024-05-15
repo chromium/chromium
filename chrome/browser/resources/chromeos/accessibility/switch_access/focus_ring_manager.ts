@@ -32,9 +32,20 @@ export class FocusRingManager {
     this.rings_ = this.createRings_();
   }
 
+  static init(): void {
+    if (FocusRingManager.instance_) {
+      throw SwitchAccess.error(
+          ErrorType.DUPLICATE_INITIALIZATION,
+          'Cannot initialize focus ring manager twice.');
+    }
+    FocusRingManager.instance_ = new FocusRingManager();
+  }
+
   static get instance(): FocusRingManager {
     if (!FocusRingManager.instance_) {
-      FocusRingManager.instance_ = new FocusRingManager();
+      throw SwitchAccess.error(
+          ErrorType.UNINITIALIZED,
+          'FocusRingManager cannot be accessed before being initialized');
     }
     return FocusRingManager.instance_;
   }
