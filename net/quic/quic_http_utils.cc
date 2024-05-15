@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/spdy/spdy_log_util.h"
 
 namespace net {
@@ -41,22 +42,15 @@ base::Value::Dict QuicRequestNetLogParams(quic::QuicStreamId stream_id,
     case quic::QuicPriorityType::kWebTransport: {
       auto web_transport_priority = priority.web_transport();
       dict.Set("quic_priority_type", "web_transport");
-      const char* stream_type = "invalid";
-      switch (web_transport_priority.stream_type) {
-        case quic::WebTransportStreamPriority::StreamType::kData:
-          stream_type = "data";
-          break;
-        case quic::WebTransportStreamPriority::StreamType::kHttp:
-          stream_type = "http";
-          break;
-        case quic::WebTransportStreamPriority::StreamType::kStatic:
-          stream_type = "static";
-          break;
-      }
-      dict.Set("web_transport_stream_type", stream_type);
-      // send_order is an int64_t, but base::Value doesn't support that type.
+      dict.Set("web_transport_session_id",
+               static_cast<int>(web_transport_priority.session_id));
+
+      // `send_group_number` is an uint64_t, `send_order` is an int64_t. But
+      // base::Value doesn't support these types.
       // Case to a double instead. As this is just for diagnostics, some loss of
       // precision is acceptable.
+      dict.Set("web_transport_send_group_number",
+               static_cast<double>(web_transport_priority.send_group_number));
       dict.Set("web_transport_send_order",
                static_cast<double>(web_transport_priority.send_order));
       break;
