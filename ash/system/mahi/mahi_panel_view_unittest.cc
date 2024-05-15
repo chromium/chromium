@@ -20,6 +20,7 @@
 #include "ash/system/mahi/mahi_content_source_button.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "ash/system/mahi/test/mahi_test_util.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "base/rand_util.h"
@@ -57,15 +58,6 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
-
-// Constants -------------------------------------------------------------------
-
-const std::vector<chromeos::MahiOutline> kFakeOutlines(
-    {chromeos::MahiOutline(/*id=*/1, u"Outline 1"),
-     chromeos::MahiOutline(/*id=*/2, u"Outline 2"),
-     chromeos::MahiOutline(/*id=*/3, u"Outline 3"),
-     chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
-     chromeos::MahiOutline(/*id=*/5, u"Outline 5")});
 
 // MockNewWindowDelegate -------------------------------------------------------
 
@@ -120,13 +112,6 @@ void ReturnDefaultAnswerAsyncly(
       delay);
 }
 
-// Returns `kFakeOutlines` syncly.
-void ReturnDefaultOutlines(
-    chromeos::MahiManager::MahiOutlinesCallback callback) {
-  std::move(callback).Run(/*outlines=*/kFakeOutlines,
-                          MahiResponseStatus::kSuccess);
-}
-
 // Returns `kFakeOutlines` asyncly with the specified `status`. Use `waiter` to
 // wait for the response.
 void ReturnDefaultOutlinesAsyncly(
@@ -138,7 +123,8 @@ void ReturnDefaultOutlinesAsyncly(
       base::BindOnce(
           [](base::OnceClosure unblock_closure, MahiResponseStatus status,
              chromeos::MahiManager::MahiOutlinesCallback callback) {
-            std::move(callback).Run(kFakeOutlines, status);
+            std::move(callback).Run(mahi_test_util::GetDefaultFakeOutlines(),
+                                    status);
             std::move(unblock_closure).Run();
           },
           waiter.GetCallback(), status, std::move(callback)));
@@ -449,7 +435,7 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithShortSummary) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(Return(u"fake content title"));
   ON_CALL(mock_mahi_manager(), GetOutlines)
-      .WillByDefault(ReturnDefaultOutlines);
+      .WillByDefault(mahi_test_util::ReturnDefaultOutlines);
 
   // Configure the mock manager to return a short summary.
   ON_CALL(mock_mahi_manager(), GetSummary)
@@ -486,7 +472,7 @@ TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithLongSummary) {
   ON_CALL(mock_mahi_manager(), GetContentTitle)
       .WillByDefault(Return(u"fake content title"));
   ON_CALL(mock_mahi_manager(), GetOutlines)
-      .WillByDefault(ReturnDefaultOutlines);
+      .WillByDefault(mahi_test_util::ReturnDefaultOutlines);
 
   // Configure the mock manager to return a long summary.
   ON_CALL(mock_mahi_manager(), GetSummary).WillByDefault(ReturnLongSummary);

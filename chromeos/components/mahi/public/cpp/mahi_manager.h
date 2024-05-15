@@ -20,9 +20,11 @@ class GURL;
 
 namespace chromeos {
 
-struct MahiOutline {
+struct COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiOutline {
   int id;
   std::u16string outline_content;
+
+  bool operator==(const MahiOutline&) const;
 };
 
 // List os possible response statuses for a Mahi request.

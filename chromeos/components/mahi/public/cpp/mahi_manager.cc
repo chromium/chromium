@@ -30,6 +30,12 @@ MahiManager* g_instance = nullptr;
 
 }  // namespace
 
+// MahiOutline ----------------------------------------------------------------
+
+bool MahiOutline::operator==(const MahiOutline&) const = default;
+
+// MahiManager -----------------------------------------------------------------
+
 // static
 MahiManager* MahiManager::Get() {
   return g_instance;

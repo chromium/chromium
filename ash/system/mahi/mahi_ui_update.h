@@ -11,6 +11,8 @@
 #include <variant>
 #include <vector>
 
+#include "ash/ash_export.h"
+
 namespace chromeos {
 struct MahiOutline;
 enum class MahiResponseStatus;
@@ -98,7 +100,7 @@ struct MahiUiError {
 };
 
 // Indicates a change that triggers a visible update on the Mahi UI.
-class MahiUiUpdate {
+class ASH_EXPORT MahiUiUpdate {
  public:
   explicit MahiUiUpdate(MahiUiUpdateType type);
   MahiUiUpdate(MahiUiUpdateType type, bool payload);
