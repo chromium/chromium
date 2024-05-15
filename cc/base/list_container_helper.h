@@ -39,13 +39,15 @@ class CC_BASE_EXPORT ListContainerHelper final {
   struct CC_BASE_EXPORT PositionInCharAllocator {
     // `ptr_to_container` is not a raw_ptr<...> for performance reasons (based
     // on analysis of sampling profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION CharAllocator* ptr_to_container;
+    RAW_PTR_EXCLUSION CharAllocator* ptr_to_container = nullptr;
 
-    size_t vector_index;
+    size_t vector_index = 0;
 
     // `item_iterator` is not a raw_ptr<...> for performance reasons (based on
     // analysis of sampling profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION char* item_iterator;
+    RAW_PTR_EXCLUSION char* item_iterator = nullptr;
+
+    PositionInCharAllocator() = default;
 
     PositionInCharAllocator(const PositionInCharAllocator& other);
     PositionInCharAllocator& operator=(const PositionInCharAllocator& other);
@@ -67,6 +69,8 @@ class CC_BASE_EXPORT ListContainerHelper final {
     // This class is only defined to forward iterate through
     // CharAllocator.
    public:
+    Iterator() = default;
+
     Iterator(CharAllocator* container,
              size_t vector_ind,
              char* item_iter,
@@ -80,13 +84,15 @@ class CC_BASE_EXPORT ListContainerHelper final {
     // is used to avoid double increment at places an index reference is
     // needed. For iterator this means begin() corresponds to index 0 and end()
     // corresponds to index |size|.
-    size_t index_;
+    size_t index_ = 0;
   };
 
   class CC_BASE_EXPORT ConstIterator : public PositionInCharAllocator {
     // This class is only defined to forward iterate through
     // CharAllocator.
    public:
+    ConstIterator() = default;
+
     ConstIterator(CharAllocator* container,
                   size_t vector_ind,
                   char* item_iter,
@@ -101,13 +107,15 @@ class CC_BASE_EXPORT ListContainerHelper final {
     // is used to avoid double increment at places an index reference is
     // needed. For iterator this means begin() corresponds to index 0 and end()
     // corresponds to index |size|.
-    size_t index_;
+    size_t index_ = 0;
   };
 
   class CC_BASE_EXPORT ReverseIterator : public PositionInCharAllocator {
     // This class is only defined to reverse iterate through
     // CharAllocator.
    public:
+    ReverseIterator() = default;
+
     ReverseIterator(CharAllocator* container,
                     size_t vector_ind,
                     char* item_iter,
@@ -121,13 +129,15 @@ class CC_BASE_EXPORT ListContainerHelper final {
     // is used to avoid double increment at places an index reference is
     // needed. For reverse iterator this means rbegin() corresponds to index 0
     // and rend() corresponds to index |size|.
-    size_t index_;
+    size_t index_ = 0;
   };
 
   class CC_BASE_EXPORT ConstReverseIterator : public PositionInCharAllocator {
     // This class is only defined to reverse iterate through
     // CharAllocator.
    public:
+    ConstReverseIterator() = default;
+
     ConstReverseIterator(CharAllocator* container,
                          size_t vector_ind,
                          char* item_iter,
@@ -142,7 +152,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
     // is used to avoid double increment at places an index reference is
     // needed. For reverse iterator this means rbegin() corresponds to index 0
     // and rend() corresponds to index |size|.
-    size_t index_;
+    size_t index_ = 0;
   };
 
   // Unlike the ListContainer methods, these do not invoke element destructors.

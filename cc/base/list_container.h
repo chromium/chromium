@@ -193,6 +193,8 @@ class ListContainer {
     // This class is only defined to forward iterate through
     // CharAllocator.
    public:
+    constexpr Iterator() = default;
+
     Iterator(ListContainerHelper::CharAllocator* container,
              size_t vector_ind,
              char* item_iter,
@@ -238,6 +240,8 @@ class ListContainer {
     // This class is only defined to forward iterate through
     // CharAllocator.
    public:
+    constexpr ConstIterator() = default;
+
     ConstIterator(ListContainerHelper::CharAllocator* container,
                   size_t vector_ind,
                   char* item_iter,
@@ -286,6 +290,8 @@ class ListContainer {
     // This class is only defined to reverse iterate through
     // CharAllocator.
    public:
+    constexpr ReverseIterator() = default;
+
     ReverseIterator(ListContainerHelper::CharAllocator* container,
                     size_t vector_ind,
                     char* item_iter,
@@ -330,6 +336,8 @@ class ListContainer {
     // This class is only defined to reverse iterate through
     // CharAllocator.
    public:
+    constexpr ConstReverseIterator() = default;
+
     ConstReverseIterator(ListContainerHelper::CharAllocator* container,
                          size_t vector_ind,
                          char* item_iter,

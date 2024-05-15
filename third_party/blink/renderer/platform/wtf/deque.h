@@ -217,7 +217,7 @@ class DequeIteratorBase {
   DISALLOW_NEW();
 
  protected:
-  DequeIteratorBase();
+  constexpr DequeIteratorBase() = default;
   DequeIteratorBase(const Deque<T, inlineCapacity, Allocator>*, wtf_size_t);
   DequeIteratorBase(const DequeIteratorBase&);
   DequeIteratorBase& operator=(const DequeIteratorBase<T, 0, Allocator>&);
@@ -234,8 +234,8 @@ class DequeIteratorBase {
   bool IsEqual(const DequeIteratorBase&) const;
 
  private:
-  Deque<T, inlineCapacity, Allocator>* deque_;
-  unsigned index_;
+  Deque<T, inlineCapacity, Allocator>* deque_ = nullptr;
+  unsigned index_ = 0;
 
   friend class Deque<T, inlineCapacity, Allocator>;
 };
@@ -255,7 +255,7 @@ class DequeIterator : public DequeIteratorBase<T, inlineCapacity, Allocator> {
   typedef T& reference;
   typedef std::bidirectional_iterator_tag iterator_category;
 
-  DequeIterator() = default;
+  constexpr DequeIterator() = default;
   DequeIterator(Deque<T, inlineCapacity, Allocator>* deque, wtf_size_t index)
       : Base(deque, index) {}
 
@@ -311,6 +311,7 @@ class DequeConstIterator
   typedef const T& reference;
   typedef std::bidirectional_iterator_tag iterator_category;
 
+  constexpr DequeConstIterator() = default;
   DequeConstIterator(const Deque<T, inlineCapacity, Allocator>* deque,
                      wtf_size_t index)
       : Base(deque, index) {}
@@ -666,10 +667,6 @@ inline void Deque<T, inlineCapacity, Allocator>::erase(wtf_size_t position) {
     end_ = (end_ - 1 + buffer_.capacity()) % buffer_.capacity();
   }
 }
-
-template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-inline DequeIteratorBase<T, inlineCapacity, Allocator>::DequeIteratorBase()
-    : deque_(nullptr) {}
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 inline DequeIteratorBase<T, inlineCapacity, Allocator>::DequeIteratorBase(

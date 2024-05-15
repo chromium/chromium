@@ -113,6 +113,12 @@ class EnumSet {
     Iterator() : enums_(nullptr), i_(kValueCount) {}
     ~Iterator() = default;
 
+    Iterator(const Iterator&) = default;
+    Iterator& operator=(const Iterator&) = default;
+
+    Iterator(Iterator&&) = default;
+    Iterator& operator=(Iterator&&) = default;
+
     friend bool operator==(const Iterator& lhs, const Iterator& rhs) {
       return lhs.i_ == rhs.i_;
     }
@@ -159,7 +165,7 @@ class EnumSet {
       return i;
     }
 
-    const raw_ptr<const EnumBitSet> enums_;
+    raw_ptr<const EnumBitSet> enums_;
     size_t i_;
   };
 

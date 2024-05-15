@@ -85,6 +85,8 @@ class TestVector {
     using reference = T&;
     using value_type = T;
 
+    constexpr Iterator() = default;
+
     Iterator(T* p, int stride) : p_(p), stride_(stride) {}
 
     Iterator& operator++() {
@@ -110,8 +112,8 @@ class TestVector {
     T& operator*() const { return *p_; }
 
    private:
-    T* p_;
-    size_t stride_;
+    T* p_ = nullptr;
+    size_t stride_ = 0;
   };
 
  public:

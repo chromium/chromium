@@ -232,6 +232,7 @@ class CC_EXPORT LayerTreeImpl {
     using pointer = LayerImpl**;
     using reference = LayerImpl*&;
 
+    constexpr IteratorAdapter() = default;
     explicit IteratorAdapter(Iterator it) : it_(it) {}
     bool operator==(IteratorAdapter o) const { return it_ == o.it_; }
     bool operator!=(IteratorAdapter o) const { return !(*this == o); }

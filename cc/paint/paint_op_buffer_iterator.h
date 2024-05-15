@@ -29,6 +29,8 @@ class PaintOpBufferIteratorBase {
 class CC_PAINT_EXPORT PaintOpBuffer::Iterator
     : public PaintOpBufferIteratorBase {
  public:
+  constexpr Iterator() = default;
+
   explicit Iterator(const PaintOpBuffer& buffer)
       : Iterator(buffer, buffer.data_.get(), 0u) {}
 

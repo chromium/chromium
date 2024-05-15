@@ -708,6 +708,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       using pointer = PhysicalBoxFragment*;
       using reference = PhysicalBoxFragment&;
 
+      constexpr Iterator() = default;
       explicit Iterator(const LayoutResultList::const_iterator& iterator)
           : iterator_(iterator) {}
 

@@ -564,6 +564,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       using pointer = value_type*;
       using reference = value_type&;
 
+      constexpr ConstIterator() = default;
+
       ConstIterator(const PhysicalFragmentLink* current, wtf_size_t size)
           : current_(current), end_(current + size) {
         SkipInvalidAndSetPostLayout();
@@ -603,8 +605,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
         }
       }
 
-      const PhysicalFragmentLink* current_;
-      const PhysicalFragmentLink* end_;
+      const PhysicalFragmentLink* current_ = nullptr;
+      const PhysicalFragmentLink* end_ = nullptr;
       PhysicalFragmentLink post_layout_;
     };
     using const_iterator = ConstIterator;
