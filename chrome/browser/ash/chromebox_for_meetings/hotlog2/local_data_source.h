@@ -42,6 +42,8 @@ class LocalDataSource : public mojom::DataSource {
 
  protected:
   void FillDataBuffer();
+  bool IsCurrentlyWaitingForUpload();
+
   // Make this virtual so unittests can override it
   virtual void SerializeDataBuffer(std::vector<std::string>& buffer);
 

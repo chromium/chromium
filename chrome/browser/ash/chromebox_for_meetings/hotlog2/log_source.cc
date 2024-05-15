@@ -22,9 +22,10 @@ LogSource::LogSource(const std::string& filepath,
                       /*is_incremental=*/true),
       log_file_(filepath),
       batch_size_(batch_size) {
+  recovery_offset_ = GetLastKnownOffsetFromStorage();
+
   // No point in proceeding here if the file can't be opened
-  // TODO(b/322505142): load offset from persistent cache
-  if (!log_file_.OpenAtOffset(0)) {
+  if (!log_file_.OpenAtOffset(recovery_offset_)) {
     LOG(ERROR) << "Unable to open file at " << filepath;
     return;
   }
@@ -33,7 +34,29 @@ LogSource::LogSource(const std::string& filepath,
   last_known_inode_ = GetCurrentFileInode();
 }
 
-LogSource::~LogSource() {}
+LogSource::~LogSource() = default;
+
+void LogSource::Fetch(FetchCallback callback) {
+  // Cache the current offset to use as a recovery offset in the
+  // event of a crash. Note that this will NOT be flushed to disk
+  // until we get a call to Flush(), so if we crash before then,
+  // the last flushed offset will be used.
+  //
+  // Since the data buffer will continue filling up between this
+  // call to Fetch() and the next call to Flush(), we MUST cache
+  // this value here, or we risk dropping those logs. The only
+  // exception is during a pending upload.
+  if (!IsCurrentlyWaitingForUpload()) {
+    recovery_offset_ = log_file_.GetCurrentOffset();
+  }
+  LocalDataSource::Fetch(std::move(callback));
+}
+
+void LogSource::Flush() {
+  // The upload succeeded, so update our recovery offset.
+  PersistCurrentOffsetToStorage();
+  LocalDataSource::Flush();
+}
 
 const std::string& LogSource::GetDisplayName() {
   return log_file_.GetFilePath();
@@ -84,11 +107,34 @@ bool LogSource::DidFileRotate() {
   int curr_inode = GetCurrentFileInode();
 
   if (curr_inode != kInvalidFileInode && last_known_inode_ != curr_inode) {
+    if (PersistentDb::IsInitialized()) {
+      PersistentDb::Get()->DeleteKeyIfExists(last_known_inode_);
+    }
     last_known_inode_ = curr_inode;
     return true;
   }
 
   return false;
+}
+
+std::streampos LogSource::GetLastKnownOffsetFromStorage() {
+  int default_value = 0;
+
+  if (!PersistentDb::IsInitialized()) {
+    return default_value;
+  }
+
+  int inode = GetCurrentFileInode();
+  return PersistentDb::Get()->GetValueFromKey(inode, default_value);
+}
+
+void LogSource::PersistCurrentOffsetToStorage() {
+  if (!PersistentDb::IsInitialized()) {
+    LOG(WARNING) << "PersistentDb is inactive; recovery feature is disabled";
+    return;
+  }
+  int inode = GetCurrentFileInode();
+  PersistentDb::Get()->SaveValueToKey(inode, recovery_offset_);
 }
 
 }  // namespace ash::cfm
