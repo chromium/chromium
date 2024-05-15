@@ -144,7 +144,9 @@ ClusterManager::ClusterManager(
   obs_.Observe(product_specification_service);
 }
 
-ClusterManager::~ClusterManager() = default;
+ClusterManager::~ClusterManager() {
+  observers_.Clear();
+}
 
 void ClusterManager::OnProductSpecificationsSetAdded(
     const ProductSpecificationsSet& product_specifications_set) {

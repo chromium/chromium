@@ -142,6 +142,10 @@ class MockShoppingService : public commerce::ShoppingService {
               GetEntryPointInfoForSelection,
               (GURL old_url, GURL new_url),
               (override));
+  MOCK_METHOD(std::optional<EntryPointInfo>,
+              GetEntryPointInfoForNavigation,
+              (GURL url),
+              (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.
@@ -181,6 +185,8 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetResponseForGetProductSpecificationsForUrls(
       ProductSpecifications specs);
   void SetResponseForGetEntryPointInfoForSelection(
+      std::optional<EntryPointInfo> entry_point_info);
+  void SetResponseForGetEntryPointInfoForNavigation(
       std::optional<EntryPointInfo> entry_point_info);
 
  private:

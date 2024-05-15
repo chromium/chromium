@@ -1771,6 +1771,14 @@ base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForNavigation(
+    GURL url) {
+  if (!cluster_manager_) {
+    return std::nullopt;
+  }
+  return cluster_manager_->GetEntryPointInfoForNavigation(url);
+}
+
 std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForSelection(
     GURL old_url,
     GURL new_url) {
@@ -1778,6 +1786,20 @@ std::optional<EntryPointInfo> ShoppingService::GetEntryPointInfoForSelection(
     return std::nullopt;
   }
   return cluster_manager_->GetEntryPointInfoForSelection(old_url, new_url);
+}
+
+void ShoppingService::AddClusterManagerObserver(
+    ClusterManager::Observer* observer) {
+  if (cluster_manager_) {
+    cluster_manager_->AddObserver(observer);
+  }
+}
+
+void ShoppingService::RemoveClusterManagerObserver(
+    ClusterManager::Observer* observer) {
+  if (cluster_manager_) {
+    cluster_manager_->RemoveObserver(observer);
+  }
 }
 
 void ShoppingService::Shutdown() {

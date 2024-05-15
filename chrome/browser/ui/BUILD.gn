@@ -6455,6 +6455,7 @@ static_library("ui") {
       "//components/commerce/core:public",
       "//components/commerce/core:shopping_service",
       "//components/commerce/core:utils",
+      "//components/commerce/core/compare:compare",
       "//components/constrained_window",
       "//components/content_settings/browser/ui",
       "//components/fullscreen_control",

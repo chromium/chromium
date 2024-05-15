@@ -22,6 +22,9 @@ namespace {
 const char kTitle[] = "test_tile";
 const char kTestUrl1[] = "chrome://new-tab-page/";
 const char kTestUrl2[] = "chrome://version/";
+const char kTestUrl3[] = "chrome://flags/";
+const char kTestUrl4[] = "chrome://management/";
+
 }  // namespace
 
 class MockObserver
@@ -122,6 +125,37 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kMouse));
   base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TriggerEntryPointWithNavigation) {
+  // Mock EntryPointInfo returned by ShoppingService.
+  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
+  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  mock_shopping_service_->SetResponseForGetEntryPointInfoForNavigation(info);
+
+  // Set up observer.
+  MockObserver observer;
+  controller_->AddObserver(&observer);
+  EXPECT_CALL(observer, ShowEntryPointWithTitle(kTitle)).Times(1);
+
+  // Current window has to have more than three unique tabs that are similar in
+  // order to trigger the entry point for navigation.
+  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl3,
+                                           kTestUrl1};
+  for (auto& url : urls_to_open) {
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
+                                       ui::PAGE_TRANSITION_LINK, true));
+    base::RunLoop().RunUntilIdle();
+    controller_->OnClusterFinishedForNavigation(GURL(url));
+    ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  }
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl4),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 

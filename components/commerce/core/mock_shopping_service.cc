@@ -293,4 +293,9 @@ void MockShoppingService::SetResponseForGetEntryPointInfoForSelection(
       .WillByDefault(testing::Return(entry_point_info));
 }
 
+void MockShoppingService::SetResponseForGetEntryPointInfoForNavigation(
+    std::optional<EntryPointInfo> entry_point_info) {
+  ON_CALL(*this, GetEntryPointInfoForNavigation)
+      .WillByDefault(testing::Return(entry_point_info));
+}
 }  // namespace commerce
