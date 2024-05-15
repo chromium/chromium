@@ -17,11 +17,8 @@ struct ApplicationsSize {
 };
 
 // Next method ID: 5
-// Deprecated method ID: 1
+// Deprecated method ID: 1, 2
 interface StorageManagerInstance {
-  // Opens private volume details settings.
-  OpenPrivateVolumeSettings@2();
-
   // Gets storage usage of all applications' code, data, and cache size.
   // So far an external storage of ARC is an emulated sdcard, this RPC returns
   // the sum of the internal storage and the external storage usages in order

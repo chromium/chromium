@@ -9,10 +9,6 @@ namespace arc {
 FakeStorageManagerInstance::FakeStorageManagerInstance() = default;
 FakeStorageManagerInstance::~FakeStorageManagerInstance() = default;
 
-void FakeStorageManagerInstance::OpenPrivateVolumeSettings() {
-  ++num_open_private_volume_settings_called_;
-}
-
 void FakeStorageManagerInstance::GetApplicationsSize(
     GetApplicationsSizeCallback callback) {
   ++num_get_applications_size_called_;

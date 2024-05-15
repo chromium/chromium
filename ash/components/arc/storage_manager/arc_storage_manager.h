@@ -36,10 +36,6 @@ class ArcStorageManager : public KeyedService {
 
   ~ArcStorageManager() override;
 
-  // Opens detailed preference screen of private volume on ARC.
-  // Returns false when an instance of ARC-side isn't ready yet.
-  bool OpenPrivateVolumeSettings();
-
   // Gets storage usage of all application's APK, data, and cache size.
   using GetApplicationsSizeCallback =
       base::OnceCallback<void(bool succeeded, mojom::ApplicationsSizePtr)>;

@@ -53,15 +53,6 @@ ArcStorageManager::ArcStorageManager(content::BrowserContext* context,
 
 ArcStorageManager::~ArcStorageManager() = default;
 
-bool ArcStorageManager::OpenPrivateVolumeSettings() {
-  auto* storage_manager_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->storage_manager(), OpenPrivateVolumeSettings);
-  if (!storage_manager_instance)
-    return false;
-  storage_manager_instance->OpenPrivateVolumeSettings();
-  return true;
-}
-
 bool ArcStorageManager::GetApplicationsSize(
     GetApplicationsSizeCallback callback) {
   auto* storage_manager_instance = ARC_GET_INSTANCE_FOR_METHOD(

@@ -104,10 +104,6 @@ void StorageHandler::RegisterMessages() {
       "openMyFiles", base::BindRepeating(&StorageHandler::HandleOpenMyFiles,
                                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openArcStorage",
-      base::BindRepeating(&StorageHandler::HandleOpenArcStorage,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "updateExternalStorages",
       base::BindRepeating(&StorageHandler::HandleUpdateExternalStorages,
                           base::Unretained(this)));
@@ -215,15 +211,6 @@ void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {
       file_manager::util::GetMyFilesFolderForProfile(profile_);
   platform_util::OpenItem(profile_, my_files_path, platform_util::OPEN_FOLDER,
                           platform_util::OpenOperationCallback());
-}
-
-void StorageHandler::HandleOpenArcStorage(
-    const base::Value::List& unused_args) {
-  auto* arc_storage_manager =
-      arc::ArcStorageManager::GetForBrowserContext(profile_);
-  if (arc_storage_manager) {
-    arc_storage_manager->OpenPrivateVolumeSettings();
-  }
 }
 
 void StorageHandler::HandleOpenBrowsingDataSettings(

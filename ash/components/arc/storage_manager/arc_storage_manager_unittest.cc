@@ -47,16 +47,6 @@ class ArcStorageManagerTest : public testing::Test {
 
 TEST_F(ArcStorageManagerTest, ConstructDestruct) {}
 
-// Tests that calling OpenPrivateVolumeSettings() ends up calling the mojo
-// instance.
-TEST_F(ArcStorageManagerTest, OpenPrivateVolumeSettings) {
-  ASSERT_NE(nullptr, bridge());
-  EXPECT_TRUE(bridge()->OpenPrivateVolumeSettings());
-  EXPECT_EQ(
-      1u,
-      storage_manager_instance()->num_open_private_volume_settings_called());
-}
-
 // Tests that calling GetApplicationsSize() ends up calling the mojo instance.
 // Also verifies that the bridge passes the callback to the instance.
 TEST_F(ArcStorageManagerTest, GetApplicationsSize) {

@@ -80,7 +80,6 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   void HandleUpdateAndroidEnabled(const base::Value::List& unused_args);
   void HandleUpdateStorageInfo(const base::Value::List& unused_args);
   void HandleOpenMyFiles(const base::Value::List& unused_args);
-  void HandleOpenArcStorage(const base::Value::List& unused_args);
   void HandleUpdateExternalStorages(const base::Value::List& unused_args);
   void HandleOpenBrowsingDataSettings(const base::Value::List& unused_args);
   void HandleGetStorageEncryption(const base::Value::List& args);
