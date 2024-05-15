@@ -350,7 +350,7 @@ class SavedDeskTest : public OverviewTestBase,
     // Clicking the save desk as template button selects the newly created saved
     // desk's name field. We can press enter or escape or click to select out of
     // it.
-    SendKey(ui::VKEY_RETURN);
+    PressAndReleaseKey(ui::VKEY_RETURN);
     for (auto& overview_grid : GetOverviewGridList())
       ASSERT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
   }
@@ -376,7 +376,7 @@ class SavedDeskTest : public OverviewTestBase,
 
     // Clicking the save desk button selects the newly saved desk's name
     // field. We can press enter or escape or click to select out of it.
-    SendKey(ui::VKEY_RETURN);
+    PressAndReleaseKey(ui::VKEY_RETURN);
     for (auto& overview_grid : GetOverviewGridList())
       ASSERT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
   }
@@ -819,7 +819,7 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   ASSERT_TRUE(GetOverviewSession());
 
   // Checks that pressing tab does not trigger overview keyboard traversal.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   if (!features::IsOverviewNewFocusEnabled()) {
     EXPECT_FALSE(GetOverviewSession()->focus_cycler_old()->IsFocusVisible());
   }
@@ -836,8 +836,8 @@ TEST_F(SavedDeskTest, DialogSystemModal) {
   // windows open, and that we are still in overview because the dialog takes
   // the escape event, not the overview session.
   // TOOD(b/292156927): Use esc key to dismiss the dialog when this is fixed.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
   EXPECT_TRUE(GetOverviewSession());
 }
@@ -998,17 +998,17 @@ TEST_F(SavedDeskTest, SaveDeskButtonFocusRing) {
   ASSERT_FALSE(save_for_later_button->is_focused());
 
   // Reverse tab, then save desk for later button is focused.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_FALSE(save_as_template_button->is_focused());
   ASSERT_TRUE(save_for_later_button->is_focused());
 
   // Reverse tab, then save desk as template button is focused.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_as_template_button->is_focused());
   ASSERT_FALSE(save_for_later_button->is_focused());
 
   // Reverse tab, then both buttons are not focused.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_FALSE(save_as_template_button->is_focused());
   ASSERT_FALSE(save_for_later_button->is_focused());
 }
@@ -1136,20 +1136,20 @@ TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
   ASSERT_FALSE(save_for_later_button->GetEnabled());
 
   // Press `Enter` when `Save desk for later` button is focused.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_for_later_button->is_focused());
   ASSERT_FALSE(save_for_later_button->GetEnabled());
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   SavedDeskPresenterTestApi(
       GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
       .MaybeWaitForModel();
   ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 
   // Press `Enter` when save desk as template button is focused.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   ASSERT_TRUE(save_as_template_button->is_focused());
   ASSERT_FALSE(save_as_template_button->GetEnabled());
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   SavedDeskPresenterTestApi(
       GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
       .MaybeWaitForModel();
@@ -1983,15 +1983,15 @@ TEST_F(SavedDeskTest, OverviewTabbing) {
   EXPECT_EQ(first_item, GetFocusedView());
 
   // Testing that we traverse to the `name_view` of the first item.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(first_item->name_view(), GetFocusedView());
 
   // When we're done with the first item, we'll go on to the second.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(second_item, GetFocusedView());
 
   // Testing that we traverse to the `name_view` of the second item.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(second_item->name_view(), GetFocusedView());
 }
 
@@ -2006,7 +2006,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_FALSE(button->GetVisible());
 
   // Test that we do not focus the templates button.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_NE(button, GetFocusedView());
 
   // Test the case where it was visible at one point, but became invisible (last
@@ -2032,7 +2032,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ASSERT_EQ(library_button->state(), DeskIconButton::State::kActive);
 
   // Test that we do not focus the templates button.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_NE(button, GetFocusedView());
 }
 
@@ -2353,13 +2353,13 @@ TEST_F(SavedDeskTest, DesksTemplatesButtonFocusColor) {
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 
   // Tests that when focused, the library button border has a focused color.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(focused_color_id, *button->GetFocusColorIdForTesting());
 
   // Shift focus away from the library button. The button border should be
   // active.
-  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(DeskIconButton::State::kActive, button->state());
   EXPECT_EQ(active_color_id, *button->GetFocusColorIdForTesting());
 }
@@ -2453,8 +2453,8 @@ TEST_F(SavedDeskTest, TemplateNameBounds) {
   // that the distance from `item_view` is the same on both sides.
   LeftClickOn(name_view);
   for (int i = 0; i < 200; ++i)
-    SendKey(ui::VKEY_A);
-  SendKey(ui::VKEY_RETURN);
+    PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
   EXPECT_EQ(
       name_view->GetBoundsInScreen().x() - item_view->GetBoundsInScreen().x(),
@@ -2476,20 +2476,20 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
 
   // Test that we can add characters to the name and press enter to save it.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_A);
-  SendKey(ui::VKEY_B);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
   name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u"ab", name_view->GetText());
 
   // Deleting characters and pressing enter saves the name.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_BACK);
-  SendKey(ui::VKEY_BACK);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_BACK);
+  PressAndReleaseKey(ui::VKEY_BACK);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
   name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
@@ -2498,7 +2498,7 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   // selected replaces the text. Also, clicking anywhere outside of the text
   // field will try to save it.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_A);
   auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(gfx::Point(0, 0));
   event_generator->ClickLeftButton();
@@ -2510,8 +2510,8 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
   // Test that clicking on the grid item (outside of the textfield) will save
   // it.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_B);
   LeftClickOn(GetItemViewFromSavedDeskGrid(0));
   WaitForSavedDeskUI();
   name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
@@ -2519,9 +2519,9 @@ TEST_F(SavedDeskTest, EditSavedDeskName) {
 
   // Pressing TAB also saves the name.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_C);
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_TAB);
   WaitForSavedDeskUI();
   name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
   EXPECT_EQ(u"abc", name_view->GetText());
@@ -2551,24 +2551,24 @@ TEST_F(SavedDeskTest, SavedDeskNameChangeAborted) {
   EXPECT_TRUE(overview_grid->IsSavedDeskNameBeingModified());
   EXPECT_TRUE(name_view->HasFocus());
   EXPECT_TRUE(name_view->HasSelection());
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_FALSE(name_view->HasFocus());
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // Pressing the escape key will revert the changes made to the name in the
   // textfield.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_A);
-  SendKey(ui::VKEY_B);
-  SendKey(ui::VKEY_C);
-  SendKey(ui::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // Empty text fields will also revert back to the original name.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  SendKey(ui::VKEY_BACK);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_BACK);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 }
 
@@ -2587,18 +2587,18 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
 
   // Pressing spacebar does not cause `name_view` to lose focus.
   LeftClickOn(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_SPACE);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_SPACE);
   EXPECT_TRUE(name_view->HasFocus());
   EXPECT_EQ(base::UTF8ToUTF16(template_name) + u" ", name_view->GetText());
 
   // Extra whitespace should be trimmed.
-  SendKey(ui::VKEY_HOME);
-  SendKey(ui::VKEY_SPACE);
-  SendKey(ui::VKEY_SPACE);
+  PressAndReleaseKey(ui::VKEY_HOME);
+  PressAndReleaseKey(ui::VKEY_SPACE);
+  PressAndReleaseKey(ui::VKEY_SPACE);
   EXPECT_EQ(u"  " + base::UTF8ToUTF16(template_name) + u" ",
             name_view->GetText());
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 
   // A string consisting of just spaces is considered an empty string, and the
@@ -2606,10 +2606,10 @@ TEST_F(SavedDeskTest, TemplateNameTestSpaces) {
   EXPECT_FALSE(name_view->HasFocus());
   LeftClickOn(name_view);
   EXPECT_TRUE(name_view->HasFocus());
-  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  SendKey(ui::VKEY_SPACE);
+  PressAndReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_SPACE);
   EXPECT_EQ(u" ", name_view->GetText());
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 }
 
@@ -2625,17 +2625,17 @@ TEST_F(SavedDeskTest, EditTemplateNameWithKeyboardNoCrash) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Tab until we focus the name view of the first saved desk item.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "d".
-  SendKey(ui::VKEY_RETURN);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
 
   // Verify that there is no crash after we tab again.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
 }
 
 // Tests that there is no crash when leaving the saved desk name view focused
@@ -2656,14 +2656,14 @@ TEST_F(SavedDeskTest, EditSavedDeskNameShutdownNoCrash) {
   SavedDeskNameView* name_view = GetItemViewFromSavedDeskGrid(0)->name_view();
 
   // Tab until we focus the name view of the first saved desk item.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   ASSERT_EQ(name_view, GetFocusedView());
 
   // Rename template "a" to template "ddd".
-  SendKey(ui::VKEY_RETURN);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_D);
+  PressAndReleaseKey(ui::VKEY_D);
 
   // Verify that there is no crash while the test tears down.
 }
@@ -3228,10 +3228,10 @@ TEST_F(SavedDeskTest, ReplaceTemplateAndExitOverview) {
 
   // Change the name of "template_2" to "template_1", which will trigger the
   // replace dialog to be shown.
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_BACK);
-  SendKey(ui::VKEY_1);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RIGHT);
+  PressAndReleaseKey(ui::VKEY_BACK);
+  PressAndReleaseKey(ui::VKEY_1);
+  PressAndReleaseKey(ui::VKEY_RETURN);
 
   // Immediately exit overview. It is important that this is done with a
   // non-zero duration. This will cause saved desk UI items to live on for
@@ -3951,9 +3951,9 @@ TEST_F(SavedDeskTest, NoSortBeforeNameConfirmed) {
   EXPECT_EQ(u"Desk 1", name_view->GetText());
 
   // Change the saved template name and save it.
-  SendKey(ui::VKEY_Z);
-  SendKey(ui::VKEY_Z);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_Z);
+  PressAndReleaseKey(ui::VKEY_Z);
+  PressAndReleaseKey(ui::VKEY_RETURN);
   WaitForSavedDeskUI();
 
   // Check that the name is saved and it's moved to its proper alphabetical
@@ -4039,7 +4039,7 @@ TEST_F(SavedDeskTest, AdminTemplate) {
   // Tests that the name view cannot be tabbed into for admin templates, as they
   // aren't editable anyhow.
   EXPECT_EQ(item_view, GetFocusedView());
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_NE(name_view, GetFocusedView());
 }
 
@@ -4132,7 +4132,7 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     }
     EXPECT_EQ(item_view->GetPreferredSize(),
               item_view->GetVisibleBounds().size());
-    SendKey(ui::VKEY_TAB);
+    PressAndReleaseKey(ui::VKEY_TAB);
 
     // Verify name view is focused and fully visible.
     if (features::IsOverviewNewFocusEnabled()) {
@@ -4142,7 +4142,7 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     }
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
-    SendKey(ui::VKEY_TAB);
+    PressAndReleaseKey(ui::VKEY_TAB);
   }
 }
 
@@ -4170,7 +4170,7 @@ TEST_F(SavedDeskTest, ScrollWithKeyboard) {
   int scroll_position =
       test_api.scroll_view()->vertical_scroll_bar()->GetPosition();
   for (ui::KeyboardCode key : keys) {
-    SendKey(key);
+    PressAndReleaseKey(key);
     int new_scroll_position =
         test_api.scroll_view()->vertical_scroll_bar()->GetPosition();
     EXPECT_NE(scroll_position, new_scroll_position);
@@ -4577,13 +4577,13 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   ASSERT_FALSE(Shell::IsSystemModalWindowOpen());
 
   // Press "Ctrl + w" to show and focus on the delete dialog.
-  SendKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
   ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Exit the dialog and wait for it to close.
   // TOOD(b/292156927): Use esc key to dismiss the dialog when this is fixed.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RETURN);
 
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(Shell::IsSystemModalWindowOpen());
@@ -4624,7 +4624,7 @@ TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
   ASSERT_TRUE(GetNewDeskButtonEnabledState(Shell::GetPrimaryRootWindow()));
 
   // Press return so that we can open the saved desk next.
-  SendKey(ui::VKEY_RETURN);
+  PressAndReleaseKey(ui::VKEY_RETURN);
 
   // Recall the desk. This should disable the new desk button again.
   SavedDeskItemView* template_item =
@@ -4747,9 +4747,9 @@ TEST_F(SavedDeskTest, TabbingDuringExitAnimation) {
 
   // Try tab focus traversal while the animation is in progress. There should be
   // no crash.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
 }
 
 TEST_F(SavedDeskTest, SaveDeskFilterByProfileID) {

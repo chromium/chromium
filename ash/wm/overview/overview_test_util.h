@@ -21,14 +21,11 @@ namespace ash {
 class OverviewGrid;
 class OverviewItemBase;
 
-// TODO(sammiequon): Remove this and replace uses with
-// `AshTestBase::PressAndReleaseKey()`.
-void SendKey(ui::KeyboardCode key, int flags = ui::EF_NONE);
-
 // Focuses `window` in the active overview session by cycling through all
 // windows in overview until it is found. Returns true if `window` was found,
 // false otherwise.
-bool FocusOverviewWindow(const aura::Window* window);
+bool FocusOverviewWindow(const aura::Window* window,
+                         ui::test::EventGenerator* event_generator);
 
 // Gets the current focused window. Returns nullptr if no window is focused.
 const aura::Window* GetOverviewFocusedWindow();
@@ -69,7 +66,9 @@ void DragItemToPoint(OverviewItemBase* item,
 
 // Press the key repeatedly until a window is focused, i.e. ignoring any
 // desk items.
-void SendKeyUntilOverviewItemIsFocused(ui::KeyboardCode key);
+void SendKeyUntilOverviewItemIsFocused(
+    ui::KeyboardCode key,
+    ui::test::EventGenerator* event_generator);
 
 // Waits until the occlusion state for window is equal to `target_state`.
 void WaitForOcclusionStateChange(aura::Window* window,

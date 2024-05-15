@@ -1505,7 +1505,7 @@ TEST_F(FasterSplitScreenTest, BasicTabKeyNavigation) {
   ASSERT_TRUE(IsInOverviewSession());
 
   // Tab until we get to the first overview item.
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
       GetOverviewItemsForRoot(0);
   EXPECT_EQ(overview_windows[0]->GetWindow(), GetOverviewFocusedWindow());
@@ -1558,7 +1558,7 @@ TEST_F(FasterSplitScreenTest, NoCrashOnToastDestroying) {
   ASSERT_TRUE(faster_splitview_widget);
 
   // Tab to the dismiss button.
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   PressAndReleaseKey(ui::VKEY_TAB);
   OverviewFocusCyclerOld* focus_cycler_old =
       GetOverviewSession()->focus_cycler_old();
@@ -3468,7 +3468,7 @@ TEST_F(SnapGroupOverviewTest, DividerExitOverviewAnimation) {
   EXPECT_TRUE(divider_widget);
   EXPECT_FALSE(divider_widget->IsVisible());
 
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   SendKey(ui::VKEY_RETURN, GetEventGenerator(), 0);
 
   // Verify that `divider_widget` remains invisible until overview exit
@@ -3773,7 +3773,7 @@ TEST_F(SnapGroupOverviewTest, DISABLED_CtrlPlusWToCloseFocusedGroupInOverview) {
   OverviewSession* overview_session = overview_controller->overview_session();
   ASSERT_TRUE(GetOverviewItemForWindow(w0.get()));
 
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   EXPECT_TRUE(overview_session->focus_cycler_old()->GetFocusedItem());
 
   // Since the window will be deleted in overview, release the ownership to
@@ -4347,8 +4347,8 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemForNonPrimaryScreenOrientation) {
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(IsInOverviewSession());
 
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
   auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
   event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
   ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window0.get(),
                                                                 window1.get()));
@@ -4386,7 +4386,7 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemForNonPrimaryScreenOrientation) {
 
   // Overview item list:
   // window3, [window0, window1], window2
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
   event_generator->PressKey(ui::VKEY_TAB, /*flags=*/0);
   event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
@@ -4710,7 +4710,7 @@ TEST_F(SnapGroupDesksTest, DeskSwitchingInOverview) {
   ASSERT_TRUE(overview_group_item);
 
   // Activate the group item and verify the union bounds.
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   PressAndReleaseKey(ui::VKEY_RETURN);
   UnionBoundsEqualToWorkAreaBounds(w0.get(), w1.get(), snap_group_divider());
 }
@@ -5425,7 +5425,7 @@ TEST_F(SnapGroupWindowCycleTest,
                     WindowSnapActionSource::kDragWindowToEdgeToSnap);
   ASSERT_TRUE(IsInOverviewSession());
 
-  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
   GetEventGenerator()->PressKey(ui::VKEY_RETURN, /*flags=*/0);
   ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window0.get(),
                                                                 window1.get()));
@@ -6553,7 +6553,7 @@ TEST_F(SnapGroupMultiDisplayTest, MoveSnapGroupBetweenDisplaysInOverview) {
     EXPECT_EQ(displays[test_case.display_index].id(),
               screen->GetDisplayNearestWindow(w2.get()).id());
 
-    SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB);
+    SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, GetEventGenerator());
     event_generator->PressKey(ui::VKEY_RETURN, /*flags=*/0);
 
     EXPECT_TRUE(divider_widget->IsVisible());

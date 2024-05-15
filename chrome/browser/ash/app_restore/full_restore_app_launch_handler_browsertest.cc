@@ -14,6 +14,7 @@
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -256,7 +257,8 @@ void ClickSaveDeskAsTemplateButton() {
   WaitForSavedDeskUI();
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
-  SendKey(ui::VKEY_RETURN);
+  ui::test::EventGenerator event_generator(Shell::GetPrimaryRootWindow());
+  SendKey(ui::VKEY_RETURN, &event_generator);
 }
 
 void ClickTemplateItem(int index) {

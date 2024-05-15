@@ -528,7 +528,7 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
 
   // Tab once. The viewport should be centered on the beginning of the overview
   // item's title.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   auto* item = GetOverviewItemForWindow(window.get());
   ASSERT_TRUE(item);
   TestMagnifierLayerTransform(item->GetMagnifierFocusPointInScreen(),
@@ -536,13 +536,13 @@ TEST_F(DockedMagnifierTest, OverviewTabbing) {
 
   // Tab one more time. The viewport should be centered on the center of the
   // default desk button in the zero state desks bar.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   TestMagnifierLayerTransform(
       default_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
 
   // Tab one more time. The viewport should be centered on the center of the
   // new desk button in the zero state desks bar.
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   TestMagnifierLayerTransform(
       new_desk_button->GetBoundsInScreen().CenterPoint(), root_window);
 }

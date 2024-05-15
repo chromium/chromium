@@ -611,8 +611,8 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionRecorded) {
   // pressing the return key.
   wm::ActivateWindow(window1.get());
   ToggleOverview();
-  ASSERT_TRUE(FocusOverviewWindow(window2.get()));
-  SendKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(FocusOverviewWindow(window2.get(), GetEventGenerator()));
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       3, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
 }
@@ -644,8 +644,8 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionNotRecorded) {
   // |window1| remains active. Select using the keyboard.
   ASSERT_EQ(window1.get(), window_util::GetFocusedWindow());
   ToggleOverview();
-  ASSERT_TRUE(FocusOverviewWindow(window1.get()));
-  SendKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(FocusOverviewWindow(window1.get(), GetEventGenerator()));
+  PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       0, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
 
@@ -1528,7 +1528,7 @@ TEST_P(OverviewSessionTest, NoCrashOnTabAfterExit) {
   EXPECT_TRUE(InOverviewSession());
 
   ToggleOverview();
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -1546,7 +1546,7 @@ TEST_P(OverviewSessionTest,
   EXPECT_TRUE(InOverviewSession());
 
   ToggleOverview();
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -1557,7 +1557,7 @@ TEST_P(OverviewSessionTest, NoCrashOnTabAfterExitWithNoWindows) {
   EXPECT_TRUE(InOverviewSession());
 
   ToggleOverview();
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -1755,12 +1755,12 @@ TEST_P(OverviewSessionTest, ExitOverviewWithKey) {
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-  SendKey(ui::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-  SendKey(ui::VKEY_BROWSER_BACK);
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
 
   // Tests that in tablet mode, if we snap the only overview window, we cannot
@@ -1770,9 +1770,9 @@ TEST_P(OverviewSessionTest, ExitOverviewWithKey) {
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
   GetSplitViewController()->SnapWindow(window.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-  SendKey(ui::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
-  SendKey(ui::VKEY_BROWSER_BACK);
+  PressAndReleaseKey(ui::VKEY_BROWSER_BACK);
   EXPECT_TRUE(GetOverviewController()->InOverviewSession());
 }
 
@@ -1782,14 +1782,14 @@ TEST_P(OverviewSessionTest, TypeThenPressEscapeTwice) {
   ToggleOverview();
 
   // Type some characters.
-  SendKey(ui::VKEY_A);
-  SendKey(ui::VKEY_B);
-  SendKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_C);
   EXPECT_TRUE(GetOverviewSession()->GetOverviewFocusWindow());
 
   // Pressing escape twice should not crash.
-  SendKey(ui::VKEY_ESCAPE);
-  SendKey(ui::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
 }
 
 TEST_P(OverviewSessionTest, CancelOverviewOnMouseClick) {
@@ -2982,7 +2982,7 @@ TEST_P(OverviewSessionTest, PipWindowShownButExcludedFromOverview) {
 
   // PIP window should be visible but not in the overview.
   EXPECT_TRUE(pip_window->IsVisible());
-  EXPECT_FALSE(FocusOverviewWindow(pip_window.get()));
+  EXPECT_FALSE(FocusOverviewWindow(pip_window.get(), GetEventGenerator()));
 }
 
 // Tests the PositionWindows function works as expected.
@@ -3119,7 +3119,7 @@ TEST_P(OverviewSessionTest, EatKeysDuringStartAnimation) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Keys shouldn't be eaten by overview session normally.
-  SendKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_A);
   ASSERT_TRUE(test_window->HasFocus());
   EXPECT_TRUE(test_event_handler.HasSeenEvent());
   test_event_handler.Reset();
@@ -3128,7 +3128,7 @@ TEST_P(OverviewSessionTest, EatKeysDuringStartAnimation) {
   ToggleOverview();
   ASSERT_TRUE(OverviewController::Get()->IsInStartAnimation());
   ASSERT_TRUE(test_window->HasFocus());
-  SendKey(ui::VKEY_B);
+  PressAndReleaseKey(ui::VKEY_B);
   EXPECT_FALSE(test_event_handler.HasSeenEvent());
   EXPECT_TRUE(InOverviewSession());
 
@@ -3137,7 +3137,7 @@ TEST_P(OverviewSessionTest, EatKeysDuringStartAnimation) {
   EXPECT_FALSE(test_window->HasFocus());
 
   ToggleOverview();
-  SendKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_C);
   EXPECT_FALSE(InOverviewSession());
   EXPECT_TRUE(test_event_handler.HasSeenEvent());
 }
@@ -3639,9 +3639,9 @@ TEST_P(OverviewSessionTest, TabbingDuringExitAnimation) {
 
   // Try tab focus traversal while the animation is in progress. There should be
   // no crash.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
 }
 
 TEST_P(OverviewSessionTest,
@@ -6408,7 +6408,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
   auto* leftmost_window = GetOverviewItemForWindow(windows[0].get());
   const gfx::RectF left_bounds = leftmost_window->target_bounds();
 
-  SendKey(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
+  PressAndReleaseKey(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN);
   EXPECT_LT(leftmost_window->target_bounds(), left_bounds);
 }
 
@@ -8863,7 +8863,7 @@ TEST_F(SplitViewOverviewSessionTest, NoCrashWhenPressTabKey) {
   // In overview, there should be no crash when pressing tab key.
   ToggleOverview();
   EXPECT_TRUE(InOverviewSession());
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(InOverviewSession());
 
   // When splitview and overview are both active, there should be no crash when
@@ -8872,7 +8872,7 @@ TEST_F(SplitViewOverviewSessionTest, NoCrashWhenPressTabKey) {
   EXPECT_TRUE(InOverviewSession());
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
-  SendKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(InOverviewSession());
 }
 

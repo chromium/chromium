@@ -23,6 +23,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -332,6 +333,11 @@ webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
   return CreateSystemWebApp(profile, std::move(params));
 }
 
+void SendKey(ui::KeyboardCode key_code) {
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+  ash::SendKey(key_code, &generator);
+}
+
 void ClickButton(const views::Button* button) {
   DCHECK(button);
   DCHECK(button->GetVisible());
@@ -354,7 +360,7 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
   }
   // Clicking the save template button selects the newly created template's name
   // field. We can press enter or escape or click to select out of it.
-  ash::SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_RETURN);
 }
 
 void ClickSaveDeskAsTemplateButton() {
@@ -3289,7 +3295,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 
   // Send a key to OK the close dialog.
   BrowsersRemovedObserver browsers_removed(/*browser_removes_expected=*/1);
-  ash::SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_RETURN);
   browsers_removed.Wait();
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
@@ -3318,7 +3324,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Send escape to cancel the dialog (keep the browser running).
-  ash::SendKey(ui::VKEY_ESCAPE);
+  SendKey(ui::VKEY_ESCAPE);
   content::RunAllTasksUntilIdle();
 
   ash::SavedDeskPresenterTestApi::FireWindowWatcherTimer();

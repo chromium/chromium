@@ -5,6 +5,7 @@
 #include "ash/wm/overview/overview_focus_cycler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -36,7 +37,7 @@ TEST_F(OverviewFocusCyclerTest, NoCrashOnTab) {
   std::unique_ptr<aura::Window> window2 = CreateAppWindow();
   ToggleOverview();
   for (int i = 0; i < 15; ++i) {
-    SendKey(ui::VKEY_TAB);
+    PressAndReleaseKey(ui::VKEY_TAB);
   }
 }
 
