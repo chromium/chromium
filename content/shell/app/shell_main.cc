@@ -49,8 +49,9 @@ int main() {
 
 #elif BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_IOS_APP_EXTENSION)
-extern "C" int ContentProcessMain(int argc, const char** argv) {
+#define IOS_INIT_EXPORT __attribute__((visibility("default")))
+
+extern "C" IOS_INIT_EXPORT int ChildProcessMain(int argc, const char** argv) {
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
   base::CommandLine::Init(argc, argv);
@@ -60,9 +61,8 @@ extern "C" int ContentProcessMain(int argc, const char** argv) {
   params.argv = argv;
   return content::ContentMain(std::move(params));
 }
-#else
 
-int main(int argc, const char** argv) {
+extern "C" IOS_INIT_EXPORT int ContentAppMain(int argc, const char** argv) {
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
 
@@ -89,7 +89,6 @@ int main(int argc, const char** argv) {
     return content::ContentMain(std::move(params));
   }
 }
-#endif
 
 #else
 

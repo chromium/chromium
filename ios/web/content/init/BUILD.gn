@@ -12,23 +12,18 @@ source_set("init") {
     "ios_content_renderer_client.h",
   ]
 
-  if (ios_is_app_extension) {
-    sources += [
-      "ios_renderer_main_delegate.cc",
-      "ios_renderer_main_delegate.h",
-    ]
-  } else {
-    sources += [
-      "ios_browser_main_parts.h",
-      "ios_browser_main_parts.mm",
-      "ios_content_browser_client.cc",
-      "ios_content_browser_client.h",
-      "ios_content_main_runner.cc",
-      "ios_content_main_runner.h",
-      "ios_main_delegate.cc",
-      "ios_main_delegate.h",
-    ]
-  }
+  sources += [
+    "ios_browser_main_parts.h",
+    "ios_browser_main_parts.mm",
+    "ios_content_browser_client.cc",
+    "ios_content_browser_client.h",
+    "ios_content_main_runner.cc",
+    "ios_content_main_runner.h",
+    "ios_main_delegate.cc",
+    "ios_main_delegate.h",
+    "ios_renderer_main_delegate.cc",
+    "ios_renderer_main_delegate.h",
+  ]
 
   deps = [
     "//build:blink_buildflags",

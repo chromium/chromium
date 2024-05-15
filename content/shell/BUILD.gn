@@ -35,7 +35,7 @@ if (is_android) {
 } else if (is_ios) {
   import("//build/config/ios/config.gni")
   import("//build/config/ios/swift_source_set.gni")
-  import("//build/ios/extension_bundle_data.gni")
+  import("//content/shell/app/ios/extensions.gni")
 }
 
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
@@ -660,17 +660,13 @@ if (is_android) {
     info_plist = "app/ios/ios-app.plist"
     testonly = true
 
-    sources = [ "app/shell_main.cc" ]
+    sources = [ "app/ios/shell_main_trampoline.cc" ]
 
     deps = [
       ":content_process_bundle",
-      ":content_shell_app",
-      ":content_shell_lib",
+      ":content_shell_framework+link",
       ":gpu_process_bundle",
       ":network_process_bundle",
-      "//base",
-      "//build:ios_buildflags",
-      "//content/public/app",
     ]
     bundle_deps = [
       ":content_shell_framework_resources",
@@ -680,29 +676,37 @@ if (is_android) {
     bundle_identifier = ios_content_shell_bundle_identifier
   }
 
-  if (current_toolchain == default_toolchain) {
-    _extension_toolchain = "${current_toolchain}_blink_app_ext"
-    extension_bundle_data("content_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "content_process.appex"
-      extension_target =
-          "//content/shell/app/ios:content_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("network_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "network_process.appex"
-      extension_target =
-          "//content/shell/app/ios:network_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("gpu_process_bundle") {
-      testonly = true
-      extension_dir = "Extensions"
-      extension_name = "gpu_process.appex"
-      extension_target =
-          "//content/shell/app/ios:gpu_process(${_extension_toolchain})"
-    }
+  ios_framework_bundle("content_shell_framework") {
+    testonly = true
+    transparent = true
+
+    output_name = "content_shell_framework"
+    sources = [ "app/shell_main.cc" ]
+
+    deps = [
+      ":content_shell_app",
+      ":content_shell_lib",
+      "//content/app/ios/appex:child_process_bridge",
+      "//content/public/app",
+      "//content/public/common",
+      "//third_party/icu:icudata",
+    ]
+    info_plist = "app/ios/ios-app.plist"
+  }
+
+  browserkit_extension("gpu_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcess"
+  }
+
+  browserkit_extension("network_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
+  }
+
+  browserkit_extension("content_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
   }
 } else {
   executable("content_shell") {

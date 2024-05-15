@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_APP_IOS_APPEX_CONTENT_MAIN_THUNK_H_
-#define CONTENT_APP_IOS_APPEX_CONTENT_MAIN_THUNK_H_
+#ifndef CONTENT_APP_IOS_APPEX_CHILD_PROCESS_BRIDGE_H_
+#define CONTENT_APP_IOS_APPEX_CHILD_PROCESS_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 #import <xpc/xpc.h>
@@ -12,11 +12,11 @@
 extern "C" {
 #endif
 
-void ContentProcessInit();
-void ContentProcessHandleNewConnection(xpc_connection_t);
+void ChildProcessInit();
+void ChildProcessHandleNewConnection(xpc_connection_t);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // CONTENT_APP_IOS_APPEX_CONTENT_MAIN_THUNK_H_
+#endif  // CONTENT_APP_IOS_APPEX_CHILD_PROCESS_BRIDGE_H_

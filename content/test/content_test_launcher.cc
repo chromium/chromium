@@ -80,7 +80,7 @@ class ContentTestLauncherDelegate : public TestLauncherDelegate {
 }  // namespace content
 
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(IS_IOS_APP_EXTENSION)
-extern "C" int ContentProcessMain(int argc, const char** argv)
+extern "C" int ChildProcessMain(int argc, const char** argv)
 #else
 int main(int argc, char** argv)
 #endif

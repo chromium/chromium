@@ -64,6 +64,10 @@ source_set("app") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("app_trampoline") {
+  sources = [ "chrome_exe_trampoline.mm" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -814,13 +818,6 @@ chrome_app("chrome") {
     if (ios_enable_push_notification_service_extension) {
       deps += [ ":push_notification_service_extension_bundle" ]
     }
-    if (use_blink) {
-      deps += [
-        ":chrome_content_process_bundle",
-        ":chrome_gpu_process_bundle",
-        ":chrome_network_process_bundle",
-      ]
-    }
   }
 
   extra_substitutions = [
@@ -927,25 +924,6 @@ if (current_toolchain == default_toolchain && !ios_chrome_generate_order_file) {
     extension_bundle_data("push_notification_service_extension_bundle") {
       extension_name = "push_notification_service_extension.appex"
       extension_target = "//ios/chrome/push_notification_service_extension/appex(${_extension_toolchain})"
-    }
-  }
-
-  if (use_blink) {
-    _extension_toolchain = "${current_toolchain}_blink_app_ext"
-    extension_bundle_data("chrome_content_process_bundle") {
-      extension_dir = "Extensions"
-      extension_name = "chrome_content_process.appex"
-      extension_target = "//ios/chrome/app/content/appex:chrome_content_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("chrome_network_process_bundle") {
-      extension_dir = "Extensions"
-      extension_name = "chrome_network_process.appex"
-      extension_target = "//ios/chrome/app/content/appex:chrome_network_process(${_extension_toolchain})"
-    }
-    extension_bundle_data("chrome_gpu_process_bundle") {
-      extension_dir = "Extensions"
-      extension_name = "chrome_gpu_process.appex"
-      extension_target = "//ios/chrome/app/content/appex:chrome_gpu_process(${_extension_toolchain})"
     }
   }
 }

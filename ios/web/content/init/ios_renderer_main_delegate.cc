@@ -14,7 +14,9 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
 
-extern "C" int ContentProcessMain(int argc, const char** argv) {
+#define IOS_INIT_EXPORT __attribute__((visibility("default")))
+
+extern "C" IOS_INIT_EXPORT int ChildProcessMain(int argc, const char** argv) {
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
   base::CommandLine::Init(argc, argv);

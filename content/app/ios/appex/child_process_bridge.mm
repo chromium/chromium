@@ -2,28 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <pthread.h>
-#include <xpc/xpc.h>
+#import <pthread.h>
+#import <xpc/xpc.h>
 
-#include "base/check_op.h"
-#include "base/mac/mach_port_rendezvous.h"
+#import "base/check_op.h"
+#import "base/logging.h"
+#import "base/mac/mach_port_rendezvous.h"
+#import "base/apple/bundle_locations.h"
 
 // Leaked variables for now.
 static size_t g_argc = 0;
 static const char** g_argv = nullptr;
 static pthread_t g_main_thread;
 
-// The embedder must implement this.
-extern "C" int ContentProcessMain(int argc, const char** argv);
+#define IOS_INIT_EXPORT __attribute__((visibility("default")))
 
-extern "C" void ContentProcessInit() {}
+// The embedder must implement this.
+extern "C" int ChildProcessMain(int argc, const char** argv);
+
+extern "C" IOS_INIT_EXPORT void ChildProcessInit() {
+  // Up two levels: chrome.app/Extensions/chrome_content_process.appex
+  NSBundle* bundle = [NSBundle bundleWithURL:[[[NSBundle mainBundle].bundleURL
+                                               URLByDeletingLastPathComponent]
+                                              URLByDeletingLastPathComponent]];
+  base::apple::SetOverrideFrameworkBundle(bundle);
+}
 
 void* RunMain(void* data) {
-  ContentProcessMain((int)g_argc, g_argv);
+  ChildProcessMain((int)g_argc, g_argv);
   return nullptr;
 }
 
-extern "C" void ContentProcessHandleNewConnection(xpc_connection_t connection) {
+extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
+                                 xpc_connection_t connection) {
   xpc_connection_set_event_handler(connection, ^(xpc_object_t msg) {
     xpc_type_t msg_type = xpc_get_type(msg);
     CHECK_EQ(msg_type, XPC_TYPE_DICTIONARY);

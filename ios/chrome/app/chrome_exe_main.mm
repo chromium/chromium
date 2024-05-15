@@ -20,6 +20,15 @@
 #import "ios/chrome/app/startup/sandbox_dump.h"  // nogncheck
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
+#if BUILDFLAG(USE_BLINK)
+extern "C" {
+// This function must be marked with NO_STACK_PROTECTOR or it may crash on
+// return, see the --change-stack-guard-on-fork command line flag.
+__attribute__((visibility("default"))) int NO_STACK_PROTECTOR
+ChromeMain(int argc, char* argv[]);
+}
+#endif
+
 namespace {
 
 NSString* const kUIApplicationDelegateInfoKey = @"UIApplicationDelegate";
@@ -68,7 +77,7 @@ void RegisterPathProviders() {
 
 }  // namespace
 
-int main(int argc, char* argv[]) {
+int ChromeMain(int argc, char* argv[]) {
   IOSChromeMain::InitStartTime();
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -107,3 +116,9 @@ int main(int argc, char* argv[]) {
 
   return RunUIApplicationMain(argc, argv);
 }
+
+#if !BUILDFLAG(USE_BLINK)
+int main(int argc, char* argv[]) {
+  return ChromeMain(argc, argv);
+}
+#endif

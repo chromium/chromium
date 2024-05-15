@@ -9,10 +9,10 @@ import Foundation
 @main
 class NetworkProcess: NetworkingExtension {
   required init() {
-    ContentProcessInit()
+    ChildProcessInit()
   }
 
   public func handle(xpcConnection: xpc_connection_t) {
-    ContentProcessHandleNewConnection(xpcConnection)
+    ChildProcessHandleNewConnection(xpcConnection)
   }
 }
