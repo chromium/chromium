@@ -29,10 +29,6 @@ class ASH_EXPORT PineScreenshotIconRowView : public views::BoxLayoutView {
   PineScreenshotIconRowView& operator=(const PineScreenshotIconRowView&) =
       delete;
   ~PineScreenshotIconRowView() override;
-
- private:
-  // views::View:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 };
 
 }  // namespace ash

@@ -349,20 +349,23 @@ void PineContentsView::CreateChildViews() {
                     .SetLayoutManager(std::make_unique<views::FillLayout>())
                     .SetPreferredSize(screenshot_size)
                     .AddChildren(
-                        views::Builder<views::ImageView>()
-                            .CopyAddressTo(&image_view_)
-                            .SetImage(pine_image)
-                            .SetImageSize(screenshot_size),
                         views::Builder<views::BoxLayoutView>()
                             .CopyAddressTo(&icon_row_container)
                             .SetPaintToLayer()
                             .SetOrientation(
                                 views::BoxLayout::Orientation::kVertical)
                             .AddChildren(views::Builder<views::View>()
-                                             .CopyAddressTo(&icon_row_spacer))))
+                                             .CopyAddressTo(&icon_row_spacer)),
+                        views::Builder<views::ImageView>()
+                            .CopyAddressTo(&image_view_)
+                            .SetPaintToLayer()
+                            .SetImage(pine_image)
+                            .SetImageSize(screenshot_size)))
             .Build());
 
     icon_row_container->layer()->SetFillsBoundsOpaquely(false);
+    icon_row_container->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(pine::kPreviewContainerRadius));
     screenshot_icon_row_view_ = icon_row_container->AddChildView(
         std::make_unique<PineScreenshotIconRowView>(
             pine_contents_data->apps_infos));
