@@ -11,7 +11,6 @@ import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -245,7 +244,7 @@ declare_args() {
 
 # Use relative paths for debug info. This is important to make the build
 # results independent of the checkout and build directory names, which
-# in turn is important for goma compile hit rate.
+# in turn is important for reclient compile hit rate.
 # Setting this to true may make it harder to debug binaries on Linux, see
 # https://chromium.googlesource.com/chromium/src/+/main/docs/linux/debugging.md#Source-level-debug-with-fdebug_compilation_dir
 # It's not clear if the crash server will correctly handle dSYMs with relative

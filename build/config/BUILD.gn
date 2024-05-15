@@ -19,7 +19,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
-import("//build/toolchain/goma.gni")
 if (is_android) {
   import("//build/config/android/abi.gni")
 }
