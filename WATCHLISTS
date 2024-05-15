@@ -538,6 +538,9 @@
                   '|third_party/blink/renderer/platform/geometry' \
                   '|third_party/blink/renderer/platform/graphics'
     },
+    'blink_platform_peerconnection_video': {
+      'filepath': 'third_party/blink/renderer/platform/peerconnection/.*video.*'
+    },
     'blink_preloadScanner': {
       'filepath': 'third_party/blink/renderer/core/html/parser/html_preload_scanner',
     },
@@ -2658,6 +2661,7 @@
                                 'fmalita+watch@chromium.org',
                                 'fserb+watch@chromium.org',
                                 'schenney@chromium.org'],
+    'blink_platform_peerconnection_video': ['hiroh@chromium.org'],
     'blink_preloadScanner': ['yoavweiss@chromium.org'],
     'blink_prerender': ['gavinp+prerender@chromium.org',
                         'prerendering-reviews@chromium.org',
