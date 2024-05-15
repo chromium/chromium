@@ -9,6 +9,14 @@
 # Chromium code. They MUST be scoped appropriately to avoid side effects on app
 # code that we do not own.
 
+# Use assumevalues block instead of assumenosideeffects block because Google3
+# proguard cannot parse assumenosideeffects blocks which overwrite return
+# value. Keep this in shared_with_cronet.flags rather than remove_logging.flags
+# so that it's included in cronet.
+-assumevalues class org.chromium.base.Log {
+  static boolean isDebug() return false;
+}
+
 # Keep all CREATOR fields within Parcelable that are kept.
 -keepclassmembers class !cr_allowunused,org.chromium.** implements android.os.Parcelable {
   public static *** CREATOR;
