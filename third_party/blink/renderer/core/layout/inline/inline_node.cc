@@ -941,7 +941,9 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   InlineNode node(editor.GetLayoutBlockFlow());
   InlineNodeData* data = node.MutableData();
   data->items.reserve(previous_data->items.size());
-  InlineItemsBuilder builder(editor.GetLayoutBlockFlow(), &data->items);
+  InlineItemsBuilder builder(
+      editor.GetLayoutBlockFlow(), &data->items,
+      previous_data ? previous_data->text_content : String());
   // TODO(yosin): We should reuse before/after |layout_text| during collecting
   // inline items.
   layout_text->ClearInlineItems();
@@ -996,7 +998,7 @@ void InlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   ClearCollectionScope<HeapVector<InlineItem>> clear_scope(&items);
   items.reserve(EstimateInlineItemsCount(*layout_block_flow));
   InlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items,
-                                             chunk_offsets);
+                                             data->text_content, chunk_offsets);
   builder.GetOffsetMappingBuilder().ReserveCapacity(
       EstimateOffsetMappingItemsCount(*layout_block_flow));
   CollectInlinesInternal(&builder, nullptr);
@@ -1065,7 +1067,9 @@ void InlineNode::CollectInlines(InlineNodeData* data,
   }
 
   data->items.reserve(EstimateInlineItemsCount(*block));
-  InlineItemsBuilder builder(block, &data->items, chunk_offsets);
+  InlineItemsBuilder builder(
+      block, &data->items,
+      previous_data ? previous_data->text_content : String(), chunk_offsets);
   CollectInlinesInternal(&builder, previous_data);
   if (block->IsSVGText() && !data->svg_node_data_) {
     SvgTextLayoutAttributesBuilder svg_attr_builder(*this);

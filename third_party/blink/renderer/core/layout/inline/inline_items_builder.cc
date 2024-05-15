@@ -24,6 +24,32 @@
 namespace blink {
 class HTMLAreaElement;
 
+template <typename MappingBuilder>
+InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
+    LayoutBlockFlow* block_flow,
+    HeapVector<InlineItem>* items,
+    const String& previous_text_content,
+    const SvgTextChunkOffsets* chunk_offsets)
+    : block_flow_(block_flow),
+      items_(items),
+      text_chunk_offsets_(chunk_offsets),
+      is_text_combine_(block_flow_->IsLayoutTextCombine()) {
+  if (!RuntimeEnabledFeatures::RecollectInlinesReserveCapacityEnabled()) {
+    return;
+  }
+  const LayoutObject* child = block_flow->FirstChild();
+  if (!previous_text_content.IsNull() && child && child->NextSibling()) {
+    // 10 avoids reallocations in many cases of Speedometer3.
+    constexpr wtf_size_t kAdditionalSize = 10;
+    wtf_size_t capacity = previous_text_content.length() + kAdditionalSize;
+    if (previous_text_content.Is8Bit()) {
+      text_.ReserveCapacity(capacity);
+    } else {
+      text_.Reserve16BitCapacity(capacity);
+    }
+  }
+}
+
 // Returns true if items builder is used for other than offset mapping.
 template <typename MappingBuilder>
 bool InlineItemsBuilderTemplate<MappingBuilder>::NeedsBoxInfo() {

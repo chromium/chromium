@@ -47,13 +47,11 @@ class InlineItemsBuilderTemplate {
 
  public:
   // Create a builder that appends items to |items|.
-  InlineItemsBuilderTemplate(LayoutBlockFlow* block_flow,
-                             HeapVector<InlineItem>* items,
-                             const SvgTextChunkOffsets* chunk_offsets = nullptr)
-      : block_flow_(block_flow),
-        items_(items),
-        text_chunk_offsets_(chunk_offsets),
-        is_text_combine_(block_flow_->IsLayoutTextCombine()) {}
+  InlineItemsBuilderTemplate(
+      LayoutBlockFlow* block_flow,
+      HeapVector<InlineItem>* items,
+      const String& previous_text_content = String(),
+      const SvgTextChunkOffsets* chunk_offsets = nullptr);
   ~InlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }
