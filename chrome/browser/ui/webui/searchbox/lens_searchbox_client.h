@@ -31,6 +31,10 @@ class LensSearchboxClient {
   virtual const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const = 0;
 
+  // Called when the user modifies the text in any way (add, delete, paste,
+  // cut, etc.).
+  virtual void OnTextModified() = 0;
+
   // Called when the user removes the thumbnail.
   virtual void OnThumbnailRemoved() = 0;
 

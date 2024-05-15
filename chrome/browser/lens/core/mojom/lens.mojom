@@ -89,8 +89,14 @@ interface LensPage {
   // Sets text to be rendered as selected on the page.
   SetTextSelection(int32 selection_start_index, int32 selection_end_index);
 
-  // Clears any text or post region selection that is selected on the page.
-  // No-op if none selected.
+  // Clears any post region selection on the page. No-op if none selected.
+  ClearRegionSelection();
+
+  // Clears any text selection on the page. No-op if none selected.
+  ClearTextSelection();
+
+  // Clears any text or post region selection on the page. No-op if none
+  // selected.
   ClearAllSelections();
 };
 

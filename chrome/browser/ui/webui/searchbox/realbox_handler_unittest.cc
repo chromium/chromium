@@ -100,6 +100,7 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               GetLensResponse,
               (),
               (override, const));
+  MOCK_METHOD(void, OnTextModified, (), (override));
   MOCK_METHOD(void, OnThumbnailRemoved, (), (override));
   MOCK_METHOD(void,
               OnSuggestionAccepted,

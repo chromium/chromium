@@ -347,13 +347,38 @@ class LensOverlayController : public LensSearchboxClient,
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
+  // Returns the current page URL for testing.
+  const GURL& GetPageURLForTesting() { return GetPageURL(); }
+
+  // Returns the current searchbox page classification for testing.
+  metrics::OmniboxEventProto::PageClassification
+  GetPageClassificationForTesting() {
+    return GetPageClassification();
+  }
+
+  // Returns the current thumbnail URI for testing.
+  const std::string& GetThumbnailForTesting() { return GetThumbnail(); }
+
+  // Handles the event where text was modified in the searchbox for testing.
+  void OnTextModifiedForTesting() { OnTextModified(); }
+
+  // Handles the event where the thumbnail was removed from the searchbox for
+  // testing.
+  void OnThumbnailRemovedForTesting() { OnThumbnailRemoved(); }
+
   // Returns the lens response stored in this controller for testing.
   const lens::proto::LensOverlayInteractionResponse&
   GetLensResponseForTesting() {
     return GetLensResponse();
   }
-  // Returns the current page URL for testing.
-  const GURL& GetPageURLForTesting() { return GetPageURL(); }
+
+  const lens::mojom::CenterRotatedBoxPtr& GetSelectedRegionForTesting() {
+    return initialization_data_->selected_region_;
+  }
+
+  const std::optional<std::pair<int, int>> GetSelectedTextForTesting() {
+    return initialization_data_->selected_text_;
+  }
 
   const std::vector<SearchQuery>& GetSearchQueryHistoryForTesting() {
     return initialization_data_->search_query_history_stack_;
@@ -511,6 +536,7 @@ class LensOverlayController : public LensSearchboxClient,
   std::string& GetThumbnail() override;
   const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
       const override;
+  void OnTextModified() override;
   void OnThumbnailRemoved() override;
   void OnSuggestionAccepted(const GURL& destination_url,
                             AutocompleteMatchType::Type match_type,

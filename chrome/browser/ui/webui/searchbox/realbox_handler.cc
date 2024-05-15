@@ -366,6 +366,10 @@ void RealboxHandler::OnFocusChanged(bool focused) {
 
 void RealboxHandler::QueryAutocomplete(const std::u16string& input,
                                        bool prevent_inline_autocomplete) {
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnTextModified();
+  }
+
   // TODO(tommycli): We use the input being empty as a signal we are requesting
   // on-focus suggestions. It would be nice if we had a more explicit signal.
   bool is_on_focus = input.empty();

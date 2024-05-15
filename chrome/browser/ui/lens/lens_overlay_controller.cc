@@ -949,11 +949,10 @@ const GURL& LensOverlayController::GetPageURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 LensOverlayController::GetPageClassification() const {
-  // TODO(b/332787629): Return the approrpaite classification:
-  // CONTEXTUAL_SEARCHBOX
-  // SEARCH_SIDE_PANEL_SEARCHBOX
-  // LENS_SIDE_PANEL_SEARCHBOX
-  return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
+  // TODO(b/332787629): Return CONTEXTUAL_SEARCHBOX when appropriate.
+  return thumbnail_uri_.empty()
+             ? metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX
+             : metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 
 std::string& LensOverlayController::GetThumbnail() {
@@ -967,8 +966,17 @@ LensOverlayController::GetLensResponse() const {
              : lens::proto::LensOverlayInteractionResponse().default_instance();
 }
 
+void LensOverlayController::OnTextModified() {
+  if (initialization_data_->selected_text_.has_value()) {
+    initialization_data_->selected_text_.reset();
+    page_->ClearTextSelection();
+  }
+}
+
 void LensOverlayController::OnThumbnailRemoved() {
   thumbnail_uri_.clear();
+  initialization_data_->selected_region_.reset();
+  page_->ClearRegionSelection();
 }
 
 void LensOverlayController::OnSuggestionAccepted(

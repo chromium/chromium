@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 
+#include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -179,7 +180,14 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
         std::make_pair(selection_start_index, selection_end_index);
   }
 
-  void ClearAllSelections() override { did_clear_selections_ = true; }
+  void ClearRegionSelection() override { did_clear_region_selection_ = true; }
+
+  void ClearTextSelection() override { did_clear_text_selection_ = true; }
+
+  void ClearAllSelections() override {
+    did_clear_region_selection_ = true;
+    did_clear_text_selection_ = true;
+  }
 
   // The real side panel page that was opened by the lens overlay. Needed to
   // call real functions on the WebUI.
@@ -191,7 +199,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   bool did_notify_results_opened_ = false;
   lens::mojom::CenterRotatedBoxPtr post_region_selection_;
   std::pair<int, int> text_selection_indexes_;
-  bool did_clear_selections_ = false;
+  bool did_clear_region_selection_ = false;
+  bool did_clear_text_selection_ = false;
 };
 
 // TODO(b/334147680): Since both our interactive UI tests and our browser tests
@@ -831,14 +840,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
 // TODO(b/335801964): Test flaky on Mac.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowSidePanelAfterManualRegionSelection \
-  DISABLED_ShowSidePanelAfterManualRegionSelection
+#define MAYBE_SidePanelInteractionsAfterRegionSelection \
+  DISABLED_SidePanelInteractionsAfterRegionSelection
 #else
-#define MAYBE_ShowSidePanelAfterManualRegionSelection \
-  ShowSidePanelAfterManualRegionSelection
+#define MAYBE_SidePanelInteractionsAfterRegionSelection \
+  SidePanelInteractionsAfterRegionSelection
 #endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_ShowSidePanelAfterManualRegionSelection) {
+                       MAYBE_SidePanelInteractionsAfterRegionSelection) {
   WaitForPaint();
 
   std::string text_query = "Apples";
@@ -853,6 +862,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Showing UI should change the state to screenshot and eventually to overlay.
   controller->ShowUI(InvocationSource::kAppMenu);
   ASSERT_EQ(controller->state(), State::kScreenshot);
+  EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
   // We need to flush the mojo receiver calls to make sure the screenshot was
@@ -878,25 +890,45 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(coordinator->GetCurrentEntryId(),
             SidePanelEntry::Id::kLensOverlayResults);
 
-  // Verify that the side panel searchbox displays a thumbnail.
+  // Verify that the side panel searchbox displays a thumbnail and that the
+  // controller has a copy.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return true ==
            content::EvalJs(
                controller->GetSidePanelWebContentsForTesting(),
                content::JsReplace(kCheckSidePanelThumbnailShownScript));
   }));
+  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
+  EXPECT_FALSE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_TRUE(base::StartsWith(controller->GetThumbnailForTesting(), "data:"));
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
 
-  // Verify that after text selection, the thumbnail is no longer shown.
+  // Verify that after text selection, the controller has a copy of the text,
+  // the thumbnail is no longer shown and the controller's copy of the
+  // thumbnail is empty.
   controller->IssueTextSelectionRequestForTesting(text_query,
-                                                  /*selection_start_index=*/0,
-                                                  /*selection_end_index=*/0);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return false ==
-           content::EvalJs(
-               controller->GetSidePanelWebContentsForTesting(),
-               content::JsReplace(kCheckSidePanelThumbnailShownScript));
-  }));
+                                                  /*selection_start_index=*/10,
+                                                  /*selection_end_index=*/16);
+  EXPECT_TRUE(content::EvalJs(
+                  controller->GetSidePanelWebContentsForTesting()
+                      ->GetPrimaryMainFrame(),
+                  content::JsReplace(kCheckSearchboxInput, text_query),
+                  content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES)
+                  .ExtractBool());
+  EXPECT_TRUE(controller->GetSelectedTextForTesting().has_value());
+  EXPECT_TRUE(controller->GetSelectedRegionForTesting().is_null());
+  EXPECT_TRUE(controller->GetThumbnailForTesting().empty());
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX);
 
+  // Verify that after a signal from the searchbox that the text was modified,
+  // no text selection is present.
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
+  controller->OnTextModifiedForTesting();
+  EXPECT_FALSE(controller->GetSelectedTextForTesting().has_value());
+  fake_controller->FlushForTesting();
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
 }
 
 // TODO(b/335028577): Test flaky on Mac.
@@ -1643,7 +1675,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // cleared.
   auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
   ASSERT_TRUE(fake_controller);
-  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_selections_);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_text_selection_);
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_clear_region_selection_);
   EXPECT_EQ(fake_controller->fake_overlay_page_.text_selection_indexes_,
             loaded_search_query->selected_text_);
 }

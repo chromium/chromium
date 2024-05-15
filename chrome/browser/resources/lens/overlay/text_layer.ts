@@ -144,6 +144,9 @@ export class TextLayerElement extends PolymerElement {
       BrowserProxyImpl.getInstance().callbackRouter.textReceived.addListener(
           this.onTextReceived.bind(this)),
       BrowserProxyImpl.getInstance()
+          .callbackRouter.clearTextSelection.addListener(
+              this.unselectWords.bind(this)),
+      BrowserProxyImpl.getInstance()
           .callbackRouter.clearAllSelections.addListener(
               this.unselectWords.bind(this)),
       BrowserProxyImpl.getInstance()
