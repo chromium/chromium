@@ -91,6 +91,7 @@ vs-chromium-project.txt
 /_out
 /android_emulator_sdk
 /ash/ash_unittests_run.xml
+/ash/webui/boca_ui/resources/prod
 /ash/webui/eche_app_ui/resources/app
 /ash/webui/eche_app_ui/resources/prod
 /ash/webui/file_manager/resources/tsconfig.json
