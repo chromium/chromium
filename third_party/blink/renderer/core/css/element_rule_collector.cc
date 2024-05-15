@@ -256,8 +256,9 @@ class CascadeLayerSeeker {
       return nullptr;
     }
     if (scope) {
-      DCHECK(scope->ContainingTreeScope().GetScopedStyleResolver());
-      return scope->ContainingTreeScope()
+      DCHECK(scope->IsInTreeScope());
+      DCHECK(scope->GetTreeScope().GetScopedStyleResolver());
+      return scope->GetTreeScope()
           .GetScopedStyleResolver()
           ->GetCascadeLayerMap();
     }
@@ -437,8 +438,9 @@ static bool RulesApplicableInCurrentTreeScope(
     const Element* element,
     const ContainerNode* scoping_node) {
   // Check if the rules come from a shadow style sheet in the same tree scope.
+  DCHECK(element->IsInTreeScope());
   return !scoping_node ||
-         element->ContainingTreeScope() == scoping_node->ContainingTreeScope();
+         element->GetTreeScope() == scoping_node->GetTreeScope();
 }
 
 bool SlowMatchWithNoResultFlags(

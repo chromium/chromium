@@ -347,7 +347,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
       owner = owner_slot_or_reading_order_container;
     } else if (IsA<HTMLSlotElement>(node.parentNode())) {
       owner = node.ParentOrShadowHostElement();
-    } else if (&node == node.ContainingTreeScope().RootNode()) {
+    } else if (&node == node.GetTreeScope().RootNode()) {
       owner = TreeOwner(&node);
     } else if (IsOpenPopoverWithInvoker(&node)) {
       owner = DynamicTo<HTMLElement>(node)->GetPopoverData()->invoker();
@@ -514,8 +514,9 @@ ScopedFocusNavigation ScopedFocusNavigation::CreateFor(
     return ScopedFocusNavigation(const_cast<Element&>(*popover), &current,
                                  owner_map);
   }
-  return ScopedFocusNavigation(current.ContainingTreeScope().RootNode(),
-                               &current, owner_map);
+  DCHECK(current.IsInTreeScope());
+  return ScopedFocusNavigation(current.GetTreeScope().RootNode(), &current,
+                               owner_map);
 }
 
 ScopedFocusNavigation ScopedFocusNavigation::CreateForDocument(

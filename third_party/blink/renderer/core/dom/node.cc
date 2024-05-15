@@ -589,8 +589,9 @@ Node* Node::PseudoAwareLastChild() const {
 }
 
 Node& Node::TreeRoot() const {
-  if (IsInTreeScope())
-    return ContainingTreeScope().RootNode();
+  if (IsInTreeScope()) {
+    return GetTreeScope().RootNode();
+  }
   const Node* node = this;
   while (node->parentNode())
     node = node->parentNode();
@@ -2249,8 +2250,9 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
   }
-  if (IsInShadowTree() && !ContainingTreeScope().RootNode().IsShadowRoot())
+  if (IsInShadowTree() && !GetTreeScope().RootNode().IsShadowRoot()) {
     ClearFlag(kIsInShadowTreeFlag);
+  }
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->Remove(this);
   }

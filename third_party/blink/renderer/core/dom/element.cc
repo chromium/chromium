@@ -4970,7 +4970,8 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
   // effective zoom (‘zoom’ × page zoom × device scale factor) did not change.
   // In that case, we only need to calculate highlight styles once, because our
   // UA styles only use type selectors and we never change them dynamically.
-  if (parentNode() == ContainingTreeScope().RootNode()) {
+  DCHECK(IsInTreeScope());
+  if (parentNode() == GetTreeScope().RootNode()) {
     if (new_style.HasNonUaHighlightPseudoStyles()) {
       return HighlightRecalc::kFull;
     }
@@ -6855,8 +6856,7 @@ bool Element::IsFocusedElementInDocument() const {
 }
 
 Element* Element::AdjustedFocusedElementInTreeScope() const {
-  return IsInTreeScope() ? ContainingTreeScope().AdjustedFocusedElement()
-                         : nullptr;
+  return IsInTreeScope() ? GetTreeScope().AdjustedFocusedElement() : nullptr;
 }
 
 bool Element::DispatchFocusEvent(Element* old_focused_element,
@@ -8498,7 +8498,8 @@ inline void Element::UpdateId(const AtomicString& old_id,
     return;
   }
 
-  UpdateId(ContainingTreeScope(), old_id, new_id);
+  DCHECK(IsInTreeScope());
+  UpdateId(GetTreeScope(), old_id, new_id);
 }
 
 inline void Element::UpdateId(TreeScope& scope,

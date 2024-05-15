@@ -283,7 +283,7 @@ document-fragment
 Further Info:
 
 - [`tree_scope.h`](./tree_scope.h), [`tree_scope.cc`](./tree_scope.cc)
-- `Node#GetTreeScope()`, `Node#ContainingTreeScope()`, `Node#IsInTreeScope()`
+- `Node#GetTreeScope()`, `Node#IsInTreeScope()`
 
 # Composed Tree (a tree of node trees)
 
@@ -770,7 +770,7 @@ Slot Assignments:
 | slot-R | [slot-S]              |
 | slot-S | [T]                   |
 
-Given that, suppose that an event is fired on `U`. Then an event path would be 
+Given that, suppose that an event is fired on `U`. Then an event path would be
 (in reverse order):
 
 ```text

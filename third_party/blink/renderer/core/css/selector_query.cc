@@ -465,7 +465,8 @@ void SelectorQuery::ExecuteWithId(
   DCHECK(!root_node.GetDocument().InQuirksMode());
 
   const CSSSelector& first_selector = *selectors_[0];
-  const TreeScope& scope = root_node.ContainingTreeScope();
+  DCHECK(root_node.IsInTreeScope());
+  const TreeScope& scope = root_node.GetTreeScope();
   SelectorChecker checker(SelectorChecker::kQueryingRules);
 
   if (scope.ContainsMultipleElementsWithId(selector_id_)) {

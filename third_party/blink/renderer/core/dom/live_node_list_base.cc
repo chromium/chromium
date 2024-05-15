@@ -38,7 +38,7 @@ void LiveNodeListBase::InvalidateCacheForAttribute(
 
 ContainerNode& LiveNodeListBase::RootNode() const {
   if (IsRootedAtTreeScope() && owner_node_->IsInTreeScope())
-    return owner_node_->ContainingTreeScope().RootNode();
+    return owner_node_->GetTreeScope().RootNode();
   return *owner_node_;
 }
 
