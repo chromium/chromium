@@ -25,8 +25,8 @@ class FontVariantLigaturesParser {
 
   enum class ParseResult { kConsumedValue, kDisallowedValue, kUnknownValue };
 
-  ParseResult ConsumeLigature(CSSParserTokenRange& range) {
-    CSSValueID value_id = range.Peek().Id();
+  ParseResult ConsumeLigature(CSSParserTokenStream& stream) {
+    CSSValueID value_id = stream.Peek().Id();
     switch (value_id) {
       case CSSValueID::kNoCommonLigatures:
       case CSSValueID::kCommonLigatures:
@@ -59,7 +59,7 @@ class FontVariantLigaturesParser {
       default:
         return ParseResult::kUnknownValue;
     }
-    result_->Append(*css_parsing_utils::ConsumeIdent(range));
+    result_->Append(*css_parsing_utils::ConsumeIdent(stream));
     return ParseResult::kConsumedValue;
   }
 

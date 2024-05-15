@@ -1382,8 +1382,7 @@ static String RoundTripProperty(Document& document, String property_text) {
   return style_rule->Properties().AsText();
 }
 
-// Temporarily broken this patch; will be reenabled on next.
-TEST(CSSParserImplTest, DISABLED_AllPropertiesCanParseImportant) {
+TEST(CSSParserImplTest, AllPropertiesCanParseImportant) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
   Document* document =

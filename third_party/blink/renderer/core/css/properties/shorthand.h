@@ -13,7 +13,7 @@ namespace blink {
 
 class CSSParserContext;
 class CSSParserLocalContext;
-class CSSParserTokenRange;
+class CSSParserTokenStream;
 class CSSPropertyValue;
 
 class Shorthand : public CSSProperty {
@@ -35,7 +35,7 @@ class Shorthand : public CSSProperty {
   // resistant against “!important”, at the very least.)
   virtual bool ParseShorthand(
       bool important,
-      CSSParserTokenRange&,
+      CSSParserTokenStream&,
       const CSSParserContext&,
       const CSSParserLocalContext&,
       HeapVector<CSSPropertyValue, 64>& properties) const {

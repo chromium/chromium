@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 namespace blink {
@@ -20,10 +21,20 @@ class CORE_EXPORT ColorFunctionParser {
   bool ConsumeFunctionalSyntaxColor(CSSParserTokenRange& input_range,
                                     const CSSParserContext& context,
                                     Color& result);
+  bool ConsumeFunctionalSyntaxColor(CSSParserTokenStream& input_stream,
+                                    const CSSParserContext& context,
+                                    Color& result);
 
   struct FunctionMetadata;
 
  private:
+  template <class T>
+    requires std::is_same_v<T, CSSParserTokenStream> ||
+             std::is_same_v<T, CSSParserTokenRange>
+  bool ConsumeFunctionalSyntaxColorInternal(T& input_range,
+                                            const CSSParserContext& context,
+                                            Color& result);
+
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
   bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& args,
                                        CSSValueID function_id,

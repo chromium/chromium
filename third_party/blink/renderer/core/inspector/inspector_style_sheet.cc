@@ -1349,8 +1349,8 @@ InspectorStyle::LonghandProperties(
         0, property_value.length() - 10 /* length of "!important" */);
   }
   CSSTokenizer tokenizer(property_value);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(tokenizer);
+  stream.EnsureLookAhead();  // Several parsers expect this.
   CSSPropertyID property_id =
       CssPropertyID(style_->GetExecutionContext(), property_entry.name);
   if (property_id == CSSPropertyID::kInvalid ||
@@ -1364,7 +1364,7 @@ InspectorStyle::LonghandProperties(
       CSSParserLocalContext().WithCurrentShorthand(property_id);
   HeapVector<CSSPropertyValue, 64> longhand_properties;
   if (To<Shorthand>(property).ParseShorthand(
-          property_entry.important, range,
+          property_entry.important, stream,
           *ParserContextForDocument(parent_style_sheet_->GetDocument()),
           local_context, longhand_properties)) {
     auto result =

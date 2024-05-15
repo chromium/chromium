@@ -19,8 +19,8 @@ class FontVariantNumericParser {
 
   enum class ParseResult { kConsumedValue, kDisallowedValue, kUnknownValue };
 
-  ParseResult ConsumeNumeric(CSSParserTokenRange& range) {
-    CSSValueID value_id = range.Peek().Id();
+  ParseResult ConsumeNumeric(CSSParserTokenStream& stream) {
+    CSSValueID value_id = stream.Peek().Id();
     switch (value_id) {
       case CSSValueID::kLiningNums:
       case CSSValueID::kOldstyleNums:
@@ -59,7 +59,7 @@ class FontVariantNumericParser {
         return ParseResult::kUnknownValue;
     }
 
-    result_->Append(*css_parsing_utils::ConsumeIdent(range));
+    result_->Append(*css_parsing_utils::ConsumeIdent(stream));
     return ParseResult::kConsumedValue;
   }
 

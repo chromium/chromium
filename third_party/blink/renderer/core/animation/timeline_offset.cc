@@ -92,15 +92,14 @@ std::optional<TimelineOffset> TimelineOffset::Create(
   Document& document = element->GetDocument();
 
   CSSTokenizer tokenizer(css_text);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  range.ConsumeWhitespace();
+  CSSParserTokenStream stream(tokenizer);
+  stream.ConsumeWhitespace();
 
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
-      range, *document.ElementSheet().Contents()->ParserContext(),
+      stream, *document.ElementSheet().Contents()->ParserContext(),
       /* default_offset_percent */ default_percent);
 
-  if (!value || !range.AtEnd()) {
+  if (!value || !stream.AtEnd()) {
     ThrowExceptionForInvalidTimelineOffset(exception_state);
     return std::nullopt;
   }

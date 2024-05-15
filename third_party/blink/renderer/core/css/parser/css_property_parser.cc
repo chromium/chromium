@@ -168,11 +168,11 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     // added properties below (ParseShorthand() makes its own calls to
     // AddProperty(), since there may be more than one of them).
     if (To<Shorthand>(property).ParseShorthand(
-            /*important=*/false, value_.range, *context_, local_context,
+            /*important=*/false, stream_, *context_, local_context,
             *parsed_properties_)) {
       bool important = css_parsing_utils::MaybeConsumeImportant(
-          value_.range, allow_important_annotation);
-      if (value_.range.AtEnd()) {
+          stream_, allow_important_annotation);
+      if (stream_.AtEnd()) {
         if (important) {
           for (wtf_size_t property_idx = parsed_properties_size;
                property_idx < parsed_properties_->size(); ++property_idx) {
