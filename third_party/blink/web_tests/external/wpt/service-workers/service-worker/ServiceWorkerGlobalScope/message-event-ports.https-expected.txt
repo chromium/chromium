@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify MessageEvent.ports getter returns the same object
+  assert_equals: empty array expected "same ports array" but got "different ports array"
+Harness: the test ran to completion.
+

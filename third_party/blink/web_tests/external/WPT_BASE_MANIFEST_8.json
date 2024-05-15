@@ -21174,6 +21174,19 @@
        {}
       ]
      ],
+     "page-box-007-print.html": [
+      "2ed198b32ef540c37af6f965da9db33afff526b1",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-007-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-left-right-001-print.html": [
       "044696fcca27ec7ebe18edab3053dfbb65af6bbc",
       [
@@ -143473,7 +143486,7 @@
      },
      "text-box-trim": {
       "text-box-trim-half-leading-block-box-001.html": [
-       "14429b10022448c155c3723f9798e3e66d4022bc",
+       "2bfdc4e31b55c237a21068fb8bf931b6e2f91fd4",
        [
         null,
         [
@@ -143486,12 +143499,55 @@
        ]
       ],
       "text-box-trim-half-leading-block-box-002.html": [
-       "fdf5b71d4345f8254d8542b9f66d1f43d1b5710f",
+       "e095a2d49c20bf89f719038d8048eb06ab3c028f",
        [
         null,
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-start-001.html": [
+       "17d4acdea054c76804dd05ad83b301015f7a8e32",
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=cap",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=cap",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=ex",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=ex",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=leading",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=leading",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-inline/text-box-trim/text-box-trim-start-001.html?class=text",
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-start-001-ref.html?class=text",
           "=="
          ]
         ],
@@ -308659,7 +308715,7 @@
      },
      "content-visibility": {
       "WEB_FEATURES.yml": [
-       "345619e8b7108b9f528497559886aca0eeacca12",
+       "bf7ea3fd50d60d298034656065ad7e1d17b1d7fe",
        []
       ],
       "container-focus-ref.html": [
@@ -310661,7 +310717,7 @@
      ],
      "accessibility": {
       "display-contents-role-and-label-expected.txt": [
-       "92c5dc5fdd03da8fd9859a54adb35bed6b3d11c0",
+       "e5cf362cea837318e2237851c288a692f037ee48",
        []
       ]
      },
@@ -324002,12 +324058,30 @@
        "e9a2fc218b369825c991e3109986481a922e671f",
        []
       ],
+      "resources": {
+       "README.md": [
+        "e00b13c17dcab532a2075b87a97a3573d4d9c55e",
+        []
+       ],
+       "cap-x-height.ttf": [
+        "d1fc9e42850c9f482c80a9b84280fcbee130ca52",
+        []
+       ],
+       "variant-class.js": [
+        "d1ca547cfd79bfa1dc1a8f64f62e63099b9c6cce",
+        []
+       ]
+      },
       "text-box-trim-half-leading-block-box-001-ref.html": [
        "2dfe344ce35f59888337a34f1ae864925f9a35e4",
        []
       ],
       "text-box-trim-half-leading-block-box-002-ref.html": [
        "8c10a8037064a09d8a0c04357315ad8498e3a31d",
+       []
+      ],
+      "text-box-trim-start-001-ref.html": [
+       "ac5f7d776302c61923f0edcb281c6f72dbd52b0c",
        []
       ]
      }
@@ -327551,6 +327625,10 @@
      ],
      "page-box-006-print-ref.html": [
       "c5081a41c4803a204a30233850d7516f1851a79b",
+      []
+     ],
+     "page-box-007-print-ref.html": [
+      "9f5550f8f585a04ab48bc26ef834ef09ed85ce00",
       []
      ],
      "page-left-right-001-print-ref.html": [
@@ -345384,7 +345462,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "6cb8f2007b14b98a9f0fbe524459c0cde475b24b",
+      "069da5197a025fb719aee0fbbc6137404f38980a",
       []
      ],
      "insertRule-from-script-ref.html": [
@@ -363324,7 +363402,7 @@
         []
        ],
        "path-objects.yaml": [
-        "b1754b9495dc77084b7cd20182d87451822a4ab2",
+        "874f7a25c3d8d386a006e3cded7874975ac6a60d",
         []
        ],
        "pixel-manipulation.yaml": [
@@ -363344,7 +363422,7 @@
         []
        ],
        "text.yaml": [
-        "8af162e87902ba8feb17bb36023af69b13f0c1ef",
+        "53680704f0e4bff2049f15fd43c9a0268692bcb7",
         []
        ],
        "the-canvas-state.yaml": [
@@ -367936,6 +368014,10 @@
       }
      },
      "the-hidden-attribute": {
+      "WEB_FEATURES.yml": [
+       "73836a3bc66b79397258b73a94d577386f0ab81e",
+       []
+      ],
       "hidden-1-ref.html": [
        "7346ce919d210a740104ca5e82264bed8377c2d0",
        []
@@ -369525,7 +369607,7 @@
        []
       ],
       "WEB_FEATURES.yml": [
-       "769e741180af1e93f5ad453afc40c22adbaa281c",
+       "b2a03da5103ec6c1b18064b2e979bf9e7d563ee1",
        []
       ],
       "details-display-property-is-ignored-ref.html": [
@@ -379154,7 +379236,7 @@
     ]
    },
    "lint.ignore": [
-    "14e02983f753d491299396b65f2b43dc55119ac5",
+    "fdcd6be19dd7281d4ae5d32a38cc48d6ef43b3db",
     []
    ],
    "loading": {
@@ -387363,7 +387445,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "0b260aaaecc52767745a7580525a3fc9b390342f",
+     "c63c4901422ac852d99e54ea3342e68012c77875",
      []
     ],
     "client-redirect.html": [
@@ -388700,6 +388782,14 @@
       ],
       "isSecureContext.serviceworker.js": [
        "5033594e34ba75fa2d69b8d44c0cc69e333d3569",
+       []
+      ],
+      "message-event-ports-worker.js": [
+       "78cd0d86c0107bc28ecf61bf0476ef741a3f44bd",
+       []
+      ],
+      "message-event-ports.https-expected.txt": [
+       "7dbcdfb7f2cca035c652eba75e8f8565e014253c",
        []
       ],
       "resources": {
@@ -457551,6 +457641,13 @@
       ]
      },
      "text-box-trim": {
+      "inheritance.html": [
+       "a37a40e976da17c1fb7f7326d91141db434bcf59",
+       [
+        null,
+        {}
+       ]
+      ],
       "text-box-edge-computed.html": [
        "50a963297ce430fd0b6c81db1f76e73a3c8aa36e",
        [
@@ -459608,6 +459705,27 @@
       ],
       "overflow-valid.html": [
        "02ddd9385930ff001add6888d58589f4eccd344d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-markers-computed.tentative.html": [
+       "61067e71ee7d26fe822e3e2531a990d1148de4a5",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-markers-invalid.tentative.html": [
+       "8e0835662df1b3c29298f7c93049465af82cdb8e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "scroll-markers-valid.tentative.html": [
+       "04de1bf0c3ecd7a3bf8265c19ac3f28f5b6b3630",
        [
         null,
         {}
@@ -506279,7 +506397,7 @@
      ]
     ],
     "feature-policy-frame-policy-timing.https.sub.html": [
-     "c78d16132bc6ab1dc787fef4901f215d1377272d",
+     "665f24f96df84306a949cf3f2cec69b086b1e079",
      [
       null,
       {}
@@ -549125,8 +549243,8 @@
          {}
         ]
        ],
-       "2d.path.roundrect.1.radius.dompoint.single argument.html": [
-        "96e933870babaff3f080e04084a9220f58ffc495",
+       "2d.path.roundrect.1.radius.dompoint.single.argument.html": [
+        "d5ab502c9edfcbd3a701805f789de9e46a11de98",
         [
          null,
          {}
@@ -551265,6 +551383,27 @@
        ],
        "2d.text.measure.fontBoundingBox.html": [
         "9e7e190754d1bcaeb6f3398eedf9ff19e189240d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-baselines.tentative.html": [
+        "d66e23d8b490f798c03205167d049eef3b2257f3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-exceptions.tentative.html": [
+        "f5b4cd75aedfdcb2686ad96ab166f51244711957",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects.tentative.html": [
+        "7d31b59bb62dcfec8cf03459d6d6286e3fc579f7",
         [
          null,
          {}
@@ -560688,17 +560827,17 @@
          {}
         ]
        ],
-       "2d.path.roundrect.1.radius.dompoint.single argument.html": [
-        "4ea78c32d12bec16a76b08666b6fdf742f9253c7",
+       "2d.path.roundrect.1.radius.dompoint.single.argument.html": [
+        "ba137c9194845b1827042f1aae71a5cd5e38f57c",
         [
          null,
          {}
         ]
        ],
-       "2d.path.roundrect.1.radius.dompoint.single argument.worker.js": [
-        "b93d88e89cdc16751d4afab322e383c22b2b83ca",
+       "2d.path.roundrect.1.radius.dompoint.single.argument.worker.js": [
+        "35e9259fd6604e3c58c1970704d601782853abed",
         [
-         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompoint.single argument.worker.html",
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompoint.single.argument.worker.html",
          {}
         ]
        ],
@@ -564676,6 +564815,41 @@
         "5c28b8f68890ba619d1bccec16b275ffb2e4e810",
         [
          "html/canvas/offscreen/text/2d.text.measure.fontBoundingBox.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-baselines.tentative.html": [
+        "9460d32bccee0f3204b79aee6073fde060e2a3ae",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-baselines.tentative.worker.js": [
+        "c1e8c9c303561ce675d4074e847a0a093debff2e",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.selection-rects-baselines.tentative.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-exceptions.tentative.html": [
+        "ef2d2aa7bc5892944d6c38a6edb00cf7e41dda26",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects-exceptions.tentative.worker.js": [
+        "4102c4a6ebe2e3fe02e6e4b373eab73c1f7ba6c7",
+        [
+         "html/canvas/offscreen/text/2d.text.measure.selection-rects-exceptions.tentative.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.measure.selection-rects.tentative.html": [
+        "32a758e991e9ed215c53a155770e9cae7c7a3e81",
+        [
+         null,
          {}
         ]
        ],
@@ -597548,6 +597722,13 @@
       {}
      ]
     ],
+    "transform-animation.html": [
+     "f27fac40940807b6566ea44de751a455ab794ae5",
+     [
+      null,
+      {}
+     ]
+    ],
     "unclipped-root.html": [
      "a59105e33e76bd37f55c9f2e00333881b7583f6c",
      [
@@ -612852,7 +613033,7 @@
      ]
     ],
     "permissions-policy-frame-policy-timing.https.sub.html": [
-     "5b2a4888631b62ccbea2843383debca911ef2dab",
+     "bea9673d620ba5f346b76f2881472607d3101984",
      [
       null,
       {}
@@ -614378,6 +614559,15 @@
     ],
     "pointerevent_pointerId_scope.html": [
      "e3651b9d3477d264bba6a56b4de00c566ef32f82",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointerevent_pointer_boundary_events_after_reappending_last_over_target.html": [
+     "644bbb3229f57a136df03b3e91f12fc8a889b6c9",
      [
       null,
       {
@@ -635581,6 +635771,13 @@
         {}
        ]
       ],
+      "message-event-ports.https.html": [
+       "a0eac39e9b35886bc378a7c25b2ae8d33b23fce1",
+       [
+        null,
+        {}
+       ]
+      ],
       "postmessage.https.html": [
        "99dedebf2e56c744528fd168c05b4fe734563c57",
        [
@@ -654672,7 +654869,7 @@
       ]
      ],
      "mouse_boundary_events_after_reappending_last_over_target.tentative.html": [
-      "f75404ad782b60380ff19391b55c0b5b48fb64c0",
+      "62eef0f03e13cc9b549d829f755564cfd97b267d",
       [
        null,
        {
@@ -672313,7 +672510,42 @@
      ]
     ],
     "video-encoder-flush.https.any.js": [
-     "c1ebafc4a3c9c356e6f2c6aa361bb881a0f944dc",
+     "291f4df3bc00528f3b2f2b6063d7775fc22237cc",
+     [
+      "webcodecs/video-encoder-flush.https.any.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ]
+       ]
+      }
+     ],
      [
       "webcodecs/video-encoder-flush.https.any.html?h264_avc",
       {
@@ -672333,6 +672565,10 @@
         [
          "script",
          "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
         ],
         [
          "variant",
@@ -672367,6 +672603,45 @@
         ],
         [
          "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-flush.https.any.worker.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/common/media.js"
+        ],
+        [
+         "script",
+         "/webcodecs/utils.js"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
          "?vp8"
         ],
         [
@@ -672398,6 +672673,10 @@
         ],
         [
          "variant",
+         "?av1"
+        ],
+        [
+         "variant",
          "?vp8"
         ],
         [
@@ -672426,6 +672705,10 @@
         [
          "script",
          "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?av1"
         ],
         [
          "variant",

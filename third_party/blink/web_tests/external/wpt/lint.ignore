@@ -808,6 +808,7 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: html/rendering/non-replaced-elements/the-fieldse
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist-ref.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-custom-button-no-datalist.tentative.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-dark-mode.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-no-button-custom-datalist.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-no-button-no-datalist.tentative.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/semantics/forms/the-select-element/stylable-select/select-appearance-writing-mode-vertical-lr.tentative.html
