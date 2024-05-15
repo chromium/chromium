@@ -227,38 +227,26 @@ void PasteIfAllowedByContentAnalysis(
   }
 }
 
-bool DataControlsAppliedToMachineScope(
-    content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
-  return Profile::FromBrowserContext(browser_context)
-             ->GetPrefs()
-             ->GetInteger(data_controls::kDataControlsRulesScopePref) ==
-         policy::PolicyScope::POLICY_SCOPE_MACHINE;
-}
-
 void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
                                   const content::ClipboardEndpoint& destination,
                                   const content::ClipboardMetadata& metadata,
                                   const data_controls::Verdict& verdict,
                                   bool bypassed = false) {
-  // If the "DataControlsRules" is applied to the entire browser, the verdict
-  // only needs to be reported once for the keyed service of `destination`. If
-  // `destination` is incognito, that means no reporting will be done.
-  if (DataControlsAppliedToMachineScope(destination.browser_context())) {
-    auto* reporting_service =
-        data_controls::ReportingServiceFactory::GetForBrowserContext(
-            destination.browser_context());
-    if (reporting_service) {
-      if (bypassed) {
-        reporting_service->ReportPasteWarningBypassed(source, destination,
-                                                      metadata, verdict);
-      } else {
-        reporting_service->ReportPaste(source, destination, metadata, verdict);
-      }
-    }
+  auto* reporting_service =
+      data_controls::ReportingServiceFactory::GetForBrowserContext(
+          destination.browser_context());
+
+  // `reporting_service` can be null for incognito browser contexts, so since
+  // there's no reporting in that case we just return early.
+  if (!reporting_service) {
     return;
+  }
+
+  if (bypassed) {
+    reporting_service->ReportPasteWarningBypassed(source, destination, metadata,
+                                                  verdict);
   } else {
-    // TODO(b/303640183): Handle per-profile rule trigger reporting.
+    reporting_service->ReportPaste(source, destination, metadata, verdict);
   }
 }
 
