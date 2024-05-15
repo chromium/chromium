@@ -85,11 +85,6 @@ BASE_FEATURE(kShowWebauthnSuggestionsOnAutofocus,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the Password generation bottom sheet.
-BASE_FEATURE(kPasswordGenerationBottomSheet,
-             "PasswordGenerationBottomSheet",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the refactored Password Suggestion bottom sheet (Touch-To-Fill).
 // The goal of the refactoring is to transfer the knowledge about the
 // Touch-To-Fill feature to the browser code completely and so to simplify the

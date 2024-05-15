@@ -83,9 +83,6 @@ found in the LICENSE file.
     <dimen name="password_generation_horizontal_margin">10dp</dimen>
     <dimen name="password_generation_text_vertical_margin">12dp</dimen>
 
-    <!-- Password generation dialog dimensions -->
-    <dimen name="password_generation_dialog_padding">24dp</dimen>
-
     <!-- Password manager illustration dialogs -->
     <dimen name="password_manager_dialog_padding">8dp</dimen>
     <dimen name="password_manager_dialog_illustration_height">156dp</dimen>

@@ -310,7 +310,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableIncognitoModeIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageUnitTest.java",
-  "javatests/src/org/chromium/chrome/browser/password_manager/PasswordGenerationDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/PasswordManagerDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningExportFlowTest.java",
   "javatests/src/org/chromium/chrome/browser/password_manager/PasswordSavingIntegrationTest.java",

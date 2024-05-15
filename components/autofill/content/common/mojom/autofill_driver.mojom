@@ -203,7 +203,8 @@ interface PasswordGenerationDriver {
   // Instructs the browser to show the popup for editing a generated password.
   // The location should be specified in the renderers coordinate system. Form
   // is the form associated with the password field. `field_renderer_id` is the
-  // ID of the password field triggering generation.
+  // ID of the password field triggering generation. This method does nothing on
+  // Android platform because showing popups there obscures the view too much.
   ShowPasswordEditingPopup(
     gfx.mojom.RectF bounds,
     FormData form_data,

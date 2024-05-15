@@ -922,8 +922,6 @@ static_library("ui") {
       "android/passwords/credential_leak_dialog_view_android.h",
       "android/passwords/manual_filling_view_android.cc",
       "android/passwords/manual_filling_view_android.h",
-      "android/passwords/password_generation_dialog_view_android.cc",
-      "android/passwords/password_generation_dialog_view_android.h",
       "android/passwords/password_generation_editing_popup_view_android.cc",
       "android/passwords/password_generation_editing_popup_view_android.h",
       "android/plus_addresses/plus_address_creation_controller_android.cc",

@@ -1226,14 +1226,10 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
     autofill::FieldRendererId field_renderer_id,
     const std::u16string& password_value) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet)) {
-    // The popup obscures part of the page and the bottom sheet already displays
-    // the same information before generation.
-    return;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
+  // The popup obscures part of the page and the bottom sheet already displays
+  // the same information before generation.
+  return;
+#else
   content::RenderFrameHost* rfh =
       password_generation_driver_receivers_.GetCurrentTargetFrame();
   auto* driver = GetDriverFactory()->GetDriverForFrame(rfh);
@@ -1262,6 +1258,7 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
   popup_controller_->UpdateGeneratedPassword(password_value);
   popup_controller_->Show(
       PasswordGenerationPopupController::kEditGeneratedPassword);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromePasswordManagerClient::PasswordGenerationRejectedByTyping() {

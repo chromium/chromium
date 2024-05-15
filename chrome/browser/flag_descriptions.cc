@@ -4322,11 +4322,6 @@ const char kOmniboxShortcutsAndroidDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "on Android";
 
-const char kPasswordGenerationBottomSheetName[] =
-    "Password generation bottom sheet";
-const char kPasswordGenerationBottomSheetDescription[] =
-    "Enabled showing the password generation bottom sheet.";
-
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";

@@ -16,7 +16,6 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/password_manager/password_generation/android/touch_to_fill_password_generation_bridge_impl.h"
@@ -110,12 +109,7 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
     return;
   generation_element_data_ =
       std::make_unique<PasswordGenerationElementData>(ui_data);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet)) {
-    ShowDialog(PasswordGenerationType::kManual);
-  } else {
-    ShowBottomSheet(PasswordGenerationType::kManual);
-  }
+  ShowBottomSheet(PasswordGenerationType::kManual);
 }
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
@@ -139,12 +133,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
     manual_generation_requested_ = true;
     client_->GeneratePassword(type);
   } else {
-    if (!base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordGenerationBottomSheet)) {
-      ShowDialog(PasswordGenerationType::kAutomatic);
-    } else {
-      ShowBottomSheet(PasswordGenerationType::kAutomatic);
-    }
+    ShowBottomSheet(PasswordGenerationType::kAutomatic);
   }
   ResetPasswordGenerationDismissBottomSheetCount();
 }
@@ -194,7 +183,6 @@ void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
     base::WeakPtr<ManualFillingController> manual_filling_controller,
-    CreateDialogFactory create_dialog_factory,
     CreateTouchToFillGenerationControllerFactory
         create_touch_to_fill_generation_controller) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
@@ -205,7 +193,7 @@ void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
       UserDataKey(),
       base::WrapUnique(new PasswordGenerationControllerImpl(
           web_contents, client, std::move(manual_filling_controller),
-          create_dialog_factory, create_touch_to_fill_generation_controller)));
+          create_touch_to_fill_generation_controller)));
 }
 
 PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
@@ -214,7 +202,6 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
           web_contents,
           ChromePasswordManagerClient::FromWebContents(web_contents),
           /*manual_filling_controller=*/nullptr,
-          base::BindRepeating(&PasswordGenerationDialogViewInterface::Create),
           base::BindRepeating(&PasswordGenerationControllerImpl::
                                   CreateTouchToFillGenerationController,
                               base::Unretained(this))) {}
@@ -223,7 +210,6 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
     base::WeakPtr<ManualFillingController> manual_filling_controller,
-    CreateDialogFactory create_dialog_factory,
     CreateTouchToFillGenerationControllerFactory
         create_touch_to_fill_generation_controller)
     : content::WebContentsObserver(web_contents),
@@ -231,7 +217,6 @@ PasswordGenerationControllerImpl::PasswordGenerationControllerImpl(
           *web_contents),
       client_(client),
       manual_filling_controller_(std::move(manual_filling_controller)),
-      create_dialog_factory_(create_dialog_factory),
       create_touch_to_fill_generation_controller_(
           create_touch_to_fill_generation_controller) {}
 
@@ -260,37 +245,9 @@ PasswordGenerationControllerImpl::
       manual_filling_controller);
 }
 
-void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
-  if (!active_frame_driver_ || dialog_view_) {
-    return;
-  }
-
-  // TODO(crbug.com/40597876): Add a test helper that sets this up correctly.
-  if (!generation_element_data_) {
-    /* This can currently happen in integration tests that are iniated from
-    the java side. */
-    return;
-  }
-
-  dialog_view_ = create_dialog_factory_.Run(this);
-
-  std::u16string password =
-      active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          GetWebContents().GetLastCommittedURL().DeprecatedGetOriginAsURL(),
-          generation_element_data_->form_signature,
-          generation_element_data_->field_signature,
-          generation_element_data_->max_password_length);
-  dialog_view_->Show(password, active_frame_driver_, type);
-}
-
 bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
     bool has_saved_credentials) {
   CHECK(touch_to_fill_generation_state_ != TouchToFillState::kIsShowing);
-
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet)) {
-    return false;
-  }
 
   if (has_saved_credentials) {
     password_manager::metrics_util::
@@ -365,9 +322,7 @@ void PasswordGenerationControllerImpl::ResetFocusState() {
         autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
   active_frame_driver_.reset();
   generation_element_data_.reset();
-  dialog_view_.reset();
   manual_generation_requested_ = false;
-  // TODO (crbug.com/1421753): Do we need to hide the bottom sheet here?
 }
 
 void PasswordGenerationControllerImpl::HideBottomSheetIfNeeded() {

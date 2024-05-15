@@ -10084,14 +10084,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(ash::switches::kEolResetDismissedPrefs)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"password-generation-bottom-sheet",
-     flag_descriptions::kPasswordGenerationBottomSheetName,
-     flag_descriptions::kPasswordGenerationBottomSheetDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordGenerationBottomSheet)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"enable-preferences-account-storage",
      flag_descriptions::kEnablePreferencesAccountStorageName,
      flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsAll,

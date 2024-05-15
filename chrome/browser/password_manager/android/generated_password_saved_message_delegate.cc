@@ -22,7 +22,7 @@ GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate()
           []() { return std::make_unique<AddUsernameDialogBridge>(); })) {}
 
 GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate(
-    base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
+    base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
     CreateAddUsernameDialogBridge add_username_dialog_factory)
     : add_username_dialog_factory_(std::move(add_username_dialog_factory)) {}
 
@@ -57,9 +57,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
   saved_form_ = std::move(saved_form);
   const std::u16string& username =
       saved_form_->GetPendingCredentials().username_value;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet) &&
-      username.empty()) {
+  if (username.empty()) {
     ShowAddUsernameDialog(web_contents);
   } else {
     ShowPasswordSavedMessage(web_contents);

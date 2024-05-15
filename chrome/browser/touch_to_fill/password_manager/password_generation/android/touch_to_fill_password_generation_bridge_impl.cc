@@ -14,10 +14,7 @@
 #include "ui/android/window_android.h"
 
 TouchToFillPasswordGenerationBridgeImpl::
-    TouchToFillPasswordGenerationBridgeImpl() {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordGenerationBottomSheet));
-}
+    TouchToFillPasswordGenerationBridgeImpl() = default;
 
 TouchToFillPasswordGenerationBridgeImpl::
     ~TouchToFillPasswordGenerationBridgeImpl() = default;

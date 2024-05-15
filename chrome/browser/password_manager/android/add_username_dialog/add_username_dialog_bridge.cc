@@ -66,7 +66,7 @@ AddUsernameDialogBridge::~AddUsernameDialogBridge() {
 }
 
 AddUsernameDialogBridge::AddUsernameDialogBridge(
-    base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
+    base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 

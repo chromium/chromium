@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -18,7 +17,6 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.os.Build.VERSION_CODES;
 import android.view.View;
-import android.view.Window;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,7 +41,6 @@ import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
@@ -57,20 +54,17 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Integration tests for password generation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -151,13 +145,13 @@ public class PasswordGenerationIntegrationTest {
     public void testAutomaticGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
-        dismissBottomSheetIfNeeded();
+        dismissBottomSheet();
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
         whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
-        waitForGenerationDialog();
-        rejectPasswordInGenerationDialog();
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        rejectPasswordInGenerationBottomSheet();
         assertPasswordTextEmpty(PASSWORD_NODE_ID);
         assertNoInfobarsAreShown();
         CriteriaHelper.pollUiThread(
@@ -178,8 +172,8 @@ public class PasswordGenerationIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
         toggleAccessorySheet();
         pressManualGenerationSuggestion();
-        waitForGenerationDialog();
-        rejectPasswordInGenerationDialog();
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        rejectPasswordInGenerationBottomSheet();
         assertPasswordTextEmpty(PASSWORD_NODE_ID_MANUAL);
         assertNoInfobarsAreShown();
         CriteriaHelper.pollUiThread(
@@ -197,13 +191,13 @@ public class PasswordGenerationIntegrationTest {
     public void testAutomaticGenerationUsePassword() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
-        dismissBottomSheetIfNeeded();
+        dismissBottomSheet();
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
         whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
-        waitForGenerationDialog();
-        String generatedPassword = acceptPasswordInGenerationDialog();
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        String generatedPassword = acceptPasswordInGenerationBottomSheet();
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
@@ -230,8 +224,8 @@ public class PasswordGenerationIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
         toggleAccessorySheet();
         pressManualGenerationSuggestion();
-        waitForGenerationDialog();
-        String generatedPassword = acceptPasswordInGenerationDialog();
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        String generatedPassword = acceptPasswordInGenerationBottomSheet();
         CriteriaHelper.pollInstrumentationThread(
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID_MANUAL).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
@@ -331,37 +325,6 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
-    private void waitForGenerationDialog() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_GENERATION_BOTTOM_SHEET)) {
-            BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-            return;
-        }
-        waitForModalDialogPresenter();
-        ModalDialogManager manager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        mSyncTestRule.getActivity()::getModalDialogManager);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Window window =
-                            ((AppModalPresenter) manager.getCurrentPresenterForTest()).getWindow();
-                    mGeneratedPasswordTextView =
-                            window.getDecorView()
-                                    .getRootView()
-                                    .findViewById(R.id.generated_password);
-                    return mGeneratedPasswordTextView != null;
-                });
-    }
-
-    private void waitForModalDialogPresenter() {
-        CriteriaHelper.pollUiThread(
-                () ->
-                        mSyncTestRule
-                                        .getActivity()
-                                        .getModalDialogManager()
-                                        .getCurrentPresenterForTest()
-                                != null);
-    }
-
     private void assertNoInfobarsAreShown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -369,13 +332,6 @@ public class PasswordGenerationIntegrationTest {
                             InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
                                     .hasInfoBars());
                 });
-    }
-
-    private static String getTextFromTextView(int id) {
-        AtomicReference<String> textRef = new AtomicReference<>();
-        onView(withId(id))
-                .check((view, error) -> textRef.set(((TextView) view).getText().toString()));
-        return textRef.get();
     }
 
     private void waitForMessageShown() {
@@ -389,28 +345,7 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
-    private void rejectPasswordInGenerationDialog() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_GENERATION_BOTTOM_SHEET)) {
-            rejectPasswordInGenerationBottomSheet();
-        } else {
-            onView(withId(R.id.negative_button)).perform(click());
-        }
-    }
-
-    private String acceptPasswordInGenerationDialog() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_GENERATION_BOTTOM_SHEET)) {
-            return acceptPasswordInGenerationBottomSheet();
-        } else {
-            String generatedPassword = getTextFromTextView(R.id.generated_password);
-            onView(withId(R.id.positive_button)).perform(click());
-            return generatedPassword;
-        }
-    }
-
-    private void dismissBottomSheetIfNeeded() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_GENERATION_BOTTOM_SHEET)) {
-            return;
-        }
+    private void dismissBottomSheet() {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

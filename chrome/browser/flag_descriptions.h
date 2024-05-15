@@ -2558,9 +2558,6 @@ extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
 extern const char kOmniboxShortcutsAndroidName[];
 extern const char kOmniboxShortcutsAndroidDescription[];
 
-extern const char kPasswordGenerationBottomSheetName[];
-extern const char kPasswordGenerationBottomSheetDescription[];
-
 extern const char kPasswordSuggestionBottomSheetV2Name[];
 extern const char kPasswordSuggestionBottomSheetV2Description[];
 
