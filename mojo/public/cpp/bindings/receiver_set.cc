@@ -104,11 +104,10 @@ ReportBadMessageCallback ReceiverSetState::GetBadMessageCallback() {
 
 ReceiverId ReceiverSetState::Add(std::unique_ptr<ReceiverState> receiver,
                                  std::unique_ptr<MessageFilter> filter) {
-  ReceiverId id = next_receiver_id_++;
-  auto result = entries_.emplace(
-      id, std::make_unique<Entry>(*this, id, std::move(receiver),
-                                  std::move(filter)));
-  CHECK(result.second) << "ReceiverId overflow with collision";
+  ReceiverId id = ++next_receiver_id_;
+  CHECK_NE(0u, id) << "ReceiverId overflow";
+  entries_.insert({id, std::make_unique<Entry>(*this, id, std::move(receiver),
+                                               std::move(filter))});
   return id;
 }
 
