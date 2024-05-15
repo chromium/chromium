@@ -8,14 +8,9 @@
 #include "base/files/file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
-
-namespace {
-// Number for threads to use for TFLite execution. -1 lets TFLite use the
-// default number of threads.
-constexpr int kNumThreads = -1;
-}  // namespace
 
 namespace passage_embeddings {
 
@@ -104,7 +99,8 @@ bool PassageEmbedder::LoadEmbeddingsModelFile(
     return false;
   }
 
-  absl::Status interpreter_status = tflite_engine->InitInterpreter(kNumThreads);
+  absl::Status interpreter_status = tflite_engine->InitInterpreter(
+      history_embeddings::kEmbedderNumThreads.Get());
   if (!interpreter_status.ok()) {
     return false;
   }

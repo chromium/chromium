@@ -55,4 +55,8 @@ const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
                                                false);
 
+const base::FeatureParam<int> kEmbedderNumThreads(&kHistoryEmbeddings,
+                                                  "EmbeddingsNumThreads",
+                                                  4);
+
 }  // namespace history_embeddings

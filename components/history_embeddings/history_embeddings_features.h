@@ -48,6 +48,10 @@ extern const base::FeatureParam<int> kScheduledEmbeddingsMax;
 // Whether quality logging data should be sent.
 extern const base::FeatureParam<bool> kSendQualityLog;
 
+// The number of threads to use for embeddings generation. A value of -1 means
+// to use the default number of threads.
+extern const base::FeatureParam<int> kEmbedderNumThreads;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_
