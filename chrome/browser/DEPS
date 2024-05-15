@@ -407,7 +407,6 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public/common",
   "+content/public/browser",
   "+content/public/common",
-  "+courgette",
   "+device/base",
   "+device/bluetooth",
   "+device/fido/features.h",

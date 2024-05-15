@@ -11,7 +11,6 @@ include_rules = [
   "+components/update_client",
   "+components/version_info",
   "+components/winhttp",
-  "+courgette",
   "+crypto",
   "+mojo",
   "+third_party/boringssl",

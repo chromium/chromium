@@ -11,7 +11,6 @@ source_set("lib") {
   deps = [
     "//base",
     "//components/services/filesystem/public/mojom",
-    "//courgette:courgette_lib",
     "//mojo/public/cpp/bindings",
     "//third_party/puffin:libpuffpatch",
   ]

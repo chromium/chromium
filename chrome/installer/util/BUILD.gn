@@ -179,7 +179,6 @@ static_library("with_no_strings") {
       "//components/base32",
       "//components/metrics:client_info",
       "//components/version_info:channel",
-      "//courgette:courgette_lib",
       "//crypto",
       "//rlz/buildflags",
       "//third_party/icu",
