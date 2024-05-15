@@ -4,6 +4,7 @@
 
 #include "base/power_monitor/cpu_frequency_utils.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -112,5 +113,43 @@ unsigned long GetCpuMhzLimit() {
   return 0;
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+void GenerateCpuInfoForTracingMetadata(base::Value::Dict* metadata) {
+  size_t num_cpu = static_cast<size_t>(base::SysInfo::NumberOfProcessors());
+  std::vector<PROCESSOR_POWER_INFORMATION> info(num_cpu);
+  if (!NT_SUCCESS(CallNtPowerInformation(
+          ProcessorInformation, nullptr, 0, &info[0],
+          static_cast<ULONG>(sizeof(PROCESSOR_POWER_INFORMATION) * num_cpu)))) {
+    return;
+  }
+
+  // Output information for each cores. The cores frequencies may differ due to
+  // little/big cores.
+  for (const auto& i : info) {
+    const ULONG cpu_number = i.Number;
+
+    // The maximum CPU frequency for a given core.
+    metadata->Set(base::StringPrintf("cpu-max-frequency-core%lu", cpu_number),
+                  static_cast<int>(i.MaxMhz));
+
+    // The maximum CPU frequency that the power settings will allow. This
+    // setting can be changed by the users or by changing the power plan.
+    if (i.MhzLimit != i.MaxMhz) {
+      metadata->Set(
+          base::StringPrintf("cpu-limit-frequency-core%lu", cpu_number),
+          static_cast<int>(i.MhzLimit));
+    }
+
+    // The MaxIdleState field contains the maximum supported C-state. The value
+    // is zero when the C-State is not supported.
+    if (i.MaxIdleState != 0) {
+      metadata->Set(
+          base::StringPrintf("cpu-max-idle-state-core%lu", cpu_number),
+          static_cast<int>(i.MaxIdleState));
+    }
+  }
+}
+#endif
 
 }  // namespace base

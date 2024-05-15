@@ -6,6 +6,7 @@
 #define BASE_POWER_MONITOR_CPU_FREQUENCY_UTILS_H_
 
 #include "base/base_export.h"
+#include "base/values.h"
 
 namespace base {
 
@@ -27,6 +28,9 @@ BASE_EXPORT double EstimateCpuFrequency();
 BASE_EXPORT unsigned long GetCpuMaxMhz();
 BASE_EXPORT unsigned long GetCpuMhzLimit();
 
+#if BUILDFLAG(IS_WIN)
+BASE_EXPORT void GenerateCpuInfoForTracingMetadata(base::Value::Dict* metadata);
+#endif
 }  // namespace base
 
 #endif  // BASE_POWER_MONITOR_CPU_FREQUENCY_UTILS_H_

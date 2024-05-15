@@ -74,6 +74,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -343,6 +344,10 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
                     base::SysInfo::AmountOfPhysicalMemoryMB());
 
   metadata_dict.Set("cpu-brand", cpu.cpu_brand());
+
+#if BUILDFLAG(IS_WIN)
+  base::GenerateCpuInfoForTracingMetadata(&metadata_dict);
+#endif
 
   // GPU
   const gpu::GPUInfo gpu_info =
