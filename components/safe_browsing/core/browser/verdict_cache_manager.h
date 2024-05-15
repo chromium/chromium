@@ -134,7 +134,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class ::SafeBrowsingServiceTest;
-  friend class SafeBrowsingBlockingPageAsyncChecksTest;
+  friend class SafeBrowsingBlockingPageAsyncChecksTestBase;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;

@@ -3250,21 +3250,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBlockingPageEnhancedProtectionMessageTest,
                         browser(), "enhanced-protection-message"));
 }
 
-class SafeBrowsingBlockingPageAsyncChecksTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+class SafeBrowsingBlockingPageAsyncChecksTestBase
+    : public InProcessBrowserTest {
  public:
-  SafeBrowsingBlockingPageAsyncChecksTest() = default;
-
-  void SetUp() override {
-    bool is_async_check_enabled = GetParam();
-    if (is_async_check_enabled) {
-      feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
-    } else {
-      feature_list_.InitAndDisableFeature(kSafeBrowsingAsyncRealTimeCheck);
-    }
-    InProcessBrowserTest::SetUp();
-  }
+  SafeBrowsingBlockingPageAsyncChecksTestBase() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -3309,6 +3298,23 @@ class SafeBrowsingBlockingPageAsyncChecksTest
   }
 
   TestSafeBrowsingServiceFactory factory_;
+};
+
+class SafeBrowsingBlockingPageAsyncChecksTest
+    : public SafeBrowsingBlockingPageAsyncChecksTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  SafeBrowsingBlockingPageAsyncChecksTest() = default;
+
+  void SetUp() override {
+    bool is_async_check_enabled = GetParam();
+    if (is_async_check_enabled) {
+      feature_list_.InitAndEnableFeature(kSafeBrowsingAsyncRealTimeCheck);
+    } else {
+      feature_list_.InitAndDisableFeature(kSafeBrowsingAsyncRealTimeCheck);
+    }
+    SafeBrowsingBlockingPageAsyncChecksTestBase::SetUp();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -3371,29 +3377,29 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTest,
   }
 }
 
-class SafeBrowsingBlockingPageAsyncChecksTimingTest
-    : public SafeBrowsingBlockingPageAsyncChecksTest {
+class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
+    : public SafeBrowsingBlockingPageAsyncChecksTestBase {
  public:
-  SafeBrowsingBlockingPageAsyncChecksTimingTest() = default;
+  SafeBrowsingBlockingPageAsyncChecksTimingTestBase() = default;
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {kSafeBrowsingAsyncRealTimeCheck,
          kCreateWarningShownClientSafeBrowsingReports},
         {kRedWarningSurvey});
-    InProcessBrowserTest::SetUp();
+    SafeBrowsingBlockingPageAsyncChecksTestBase::SetUp();
   }
 
   void TearDown() override {
     RealTimeUrlLookupServiceFactory::GetInstance()
         ->SetURLLoaderFactoryForTesting(nullptr);
-    InProcessBrowserTest::TearDown();
+    SafeBrowsingBlockingPageAsyncChecksTestBase::TearDown();
     ThreatDetails::RegisterFactory(nullptr);
   }
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
-    SafeBrowsingBlockingPageAsyncChecksTest::CreatedBrowserMainParts(
+    SafeBrowsingBlockingPageAsyncChecksTestBase::CreatedBrowserMainParts(
         browser_main_parts);
     ThreatDetails::RegisterFactory(&details_factory_);
   }
@@ -3514,22 +3520,23 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     return final_url;
   }
 
-  // The following events happen in sequence:
-  //   1. Navigation finished.
-  //   2. Safe Browsing checks complete.
-  GURL SetupWarningShownAfterFinishNavigationAndNavigate(
-      std::vector<UrlAndIsUnsafe> url_and_server_redirects) {
-    CHECK(!url_and_server_redirects.empty());
-    GURL original_url = embedded_test_server()->GetURL(
-        url_and_server_redirects.front().relative_url);
-    GURL final_url = embedded_test_server()->GetURL(
-        url_and_server_redirects.back().relative_url);
+  void NavigateAndAwaitNavigationFinished(std::string relative_url) {
+    GURL original_url = embedded_test_server()->GetURL(relative_url);
     content::TestNavigationManager navigation_manager(
         browser()->tab_strip_model()->GetActiveWebContents(), original_url);
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), original_url, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
+  }
+
+  // This is expected to be used after NavigateAndAwaitNavigationFinished has
+  // completed navigating to the same URLs. This method expects that at least
+  // one of the URLs is unsafe.
+  GURL ReturnUrlRealTimeVerdictsForUnsafeChain(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects) {
+    GURL final_url = embedded_test_server()->GetURL(
+        url_and_server_redirects.back().relative_url);
 
     // At this point, the navigation has finished but the async check has not
     // yet completed.
@@ -3559,23 +3566,15 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     return final_url;
   }
 
-  GURL SetupPostCommitInterstitialAndNavigate(
-      std::vector<UrlAndIsUnsafe> url_and_server_redirects,
-      base::OnceClosure report_sent_callback) {
-    // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
-    // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
-    // check is performed.
-    SetupUrlRealTimeVerdictInCacheManager(
-        GURL("https://random.url"), browser()->profile(), /*is_unsafe=*/false);
-    SetReportSentCallback(std::move(report_sent_callback));
-    bool check_complete_after_navigation_finish = GetParam();
-    if (check_complete_after_navigation_finish) {
-      return SetupWarningShownAfterFinishNavigationAndNavigate(
-          url_and_server_redirects);
-    } else {
-      return SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate(
-          url_and_server_redirects);
-    }
+  // The following events happen in sequence:
+  //   1. Navigation finished.
+  //   2. Safe Browsing checks complete.
+  GURL SetupWarningShownAfterFinishNavigationAndNavigate(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects) {
+    CHECK(!url_and_server_redirects.empty());
+    NavigateAndAwaitNavigationFinished(
+        url_and_server_redirects.front().relative_url);
+    return ReturnUrlRealTimeVerdictsForUnsafeChain(url_and_server_redirects);
   }
 
   void SetReportSentCallback(base::OnceClosure callback) {
@@ -3597,13 +3596,138 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
   }
 
   base::HistogramTester histogram_tester_;
-
   TestThreatDetailsFactory details_factory_;
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::ScopedFeatureList feature_list_;
 };
+
+class SafeBrowsingBlockingPageAsyncChecksTimingTest
+    : public SafeBrowsingBlockingPageAsyncChecksTimingTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  SafeBrowsingBlockingPageAsyncChecksTimingTest() = default;
+
+  GURL SetupPostCommitInterstitialAndNavigate(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects,
+      base::OnceClosure report_sent_callback) {
+    // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
+    // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
+    // check is performed.
+    SetupUrlRealTimeVerdictInCacheManager(
+        GURL("https://random.url"), browser()->profile(), /*is_unsafe=*/false);
+    SetReportSentCallback(std::move(report_sent_callback));
+    bool check_complete_after_navigation_finish = GetParam();
+    if (check_complete_after_navigation_finish) {
+      return SetupWarningShownAfterFinishNavigationAndNavigate(
+          url_and_server_redirects);
+    } else {
+      return SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate(
+          url_and_server_redirects);
+    }
+  }
+};
+
+class SafeBrowsingBlockingPageAsyncChecksPrerenderingTest
+    : public SafeBrowsingBlockingPageAsyncChecksTimingTestBase {
+ public:
+  SafeBrowsingBlockingPageAsyncChecksPrerenderingTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SafeBrowsingBlockingPageAsyncChecksTimingTestBase::SetUpCommandLine(
+        command_line);
+    // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+    // creation until now because
+    // SafeBrowsingBlockingPageAsyncChecksTimingTestBase also uses a
+    // ScopedFeatureList and initialization order matters.
+    prerender_helper_ = std::make_unique<
+        content::test::PrerenderTestHelper>(base::BindRepeating(
+        &SafeBrowsingBlockingPageAsyncChecksPrerenderingTest::GetWebContents,
+        base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->RegisterServerRequestMonitor(embedded_test_server());
+    SafeBrowsingBlockingPageAsyncChecksTimingTestBase::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return *prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+// Test that prerendering doesn't affect the primary frame's threat report.
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBlockingPageAsyncChecksPrerenderingTest,
+    PostCommitInterstitialReportThreatDetails_DontContainPrerenderingInfo) {
+  EnableAsyncCheck();
+
+  // Navigate to unsafe page, but don't yet return unsafe for the Safe Browsing
+  // lookup.
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  SetReportSentCallback(threat_report_sent_runner->QuitClosure());
+  // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
+  // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
+  // check is performed.
+  SetupUrlRealTimeVerdictInCacheManager(
+      GURL("https://random.url"), browser()->profile(), /*is_unsafe=*/false);
+  std::vector<UrlAndIsUnsafe> url_and_server_redirects = {
+      {kMaliciousPage, /* is_unsafe */ true}};
+  NavigateAndAwaitNavigationFinished(
+      url_and_server_redirects.front().relative_url);
+
+  // Set up prerendering.
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  SetupUrlRealTimeVerdictInCacheManager(prerender_url, browser()->profile(),
+                                        /*is_unsafe=*/false);
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_render_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_render_frame_host, nullptr);
+  EXPECT_EQ(prerender_url, prerender_render_frame_host->GetLastCommittedURL());
+
+  // Return unsafe for the Safe Browsing lookup, which displays a post-commit
+  // interstitial.
+  GURL url = ReturnUrlRealTimeVerdictsForUnsafeChain(url_and_server_redirects);
+
+  ThreatDetails* threat_details = details_factory_.get_details();
+  EXPECT_TRUE(threat_details != nullptr);
+
+  // Proceed through the warning.
+  EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
+  AssertNoInterstitial(browser());  // Assert the interstitial is gone
+
+  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
+  EXPECT_EQ(url, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL());
+
+  threat_report_sent_runner->Run();
+  std::string serialized = GetReportSent();
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(serialized));
+  // Verify the report is complete.
+  EXPECT_TRUE(report.complete());
+  // The threat report should not contain the prerender information.
+  EXPECT_NE(prerender_url.spec(), report.page_url());
+  EXPECT_NE(prerender_url.spec(), report.url());
+  for (const auto& resource : report.resources()) {
+    EXPECT_NE(prerender_url.spec(), resource.url());
+  }
+  // We don't check the specific size of resources here. The size can be either
+  // 1 or 2 depending on whether DOM details have been collected when we
+  // proceed.
+  ASSERT_NE(0, report.resources_size());
+}
 
 INSTANTIATE_TEST_SUITE_P(CheckCompleteAfterNavigationFinish,
                          SafeBrowsingBlockingPageAsyncChecksTimingTest,
@@ -4313,80 +4437,6 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest, UnsafePrerender) {
   histograms.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       /*PrerenderFinalStatus::kBlockedByClient=*/28, 1);
-}
-
-class SafeBrowsingThreatDetailsPrerenderBrowserTest
-    : public SafeBrowsingPrerenderBrowserTest {};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeBrowsingThreatDetailsPrerenderBrowserTest,
-    // We simulate a SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING to
-    // trigger DOM detail collection.
-    testing::Combine(
-        testing::Values(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
-        testing::Bool()));  // If isolate all sites for testing.
-
-// Test that the prerendering doesn't affect on the primary's threat report.
-IN_PROC_BROWSER_TEST_P(SafeBrowsingThreatDetailsPrerenderBrowserTest,
-                       DontContainPrerenderingInfoInThreatReport) {
-  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
-  const bool expect_threat_details =
-      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
-
-  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
-  if (expect_threat_details) {
-    SetReportSentCallback(threat_report_sent_runner->QuitClosure());
-  }
-
-  // Navigate to a safe page which contains multiple potential DOM details
-  // on the primary page. (Despite the name, kMaliciousPage is not the page
-  // flagged as bad in this test.)
-  GURL primary_url = embedded_test_server()->GetURL(kMaliciousPage);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
-  EXPECT_EQ(nullptr, details_factory_.get_details());
-
-  // Navigate to a different page on the prerendering page.
-  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  content::RenderFrameHost* prerender_render_frame_host =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  EXPECT_NE(prerender_render_frame_host, nullptr);
-  EXPECT_EQ(prerender_url, prerender_render_frame_host->GetLastCommittedURL());
-
-  // Start navigation to bad page (kEmptyPage), which will be blocked before it
-  // is committed.
-  SetupWarningAndNavigate(browser());
-
-  ThreatDetails* threat_details = details_factory_.get_details();
-  EXPECT_EQ(expect_threat_details, threat_details != nullptr);
-
-  // Proceed through the warning.
-  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
-  AssertNoInterstitial();  // Assert the interstitial is gone
-
-  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
-  EXPECT_EQ(primary_url, browser()
-                             ->tab_strip_model()
-                             ->GetActiveWebContents()
-                             ->GetLastCommittedURL());
-
-  if (expect_threat_details) {
-    threat_report_sent_runner->Run();
-    std::string serialized = GetReportSent();
-    ClientSafeBrowsingReportRequest report;
-    ASSERT_TRUE(report.ParseFromString(serialized));
-    // Verify the report is complete.
-    EXPECT_TRUE(report.complete());
-
-    // The threat report should not contain the prerender information.
-    EXPECT_NE(prerender_url.spec(), report.page_url());
-    EXPECT_NE(prerender_url.spec(), report.url());
-    ASSERT_EQ(3, report.resources_size());
-    for (const auto& resource : report.resources()) {
-      EXPECT_NE(prerender_url.spec(), resource.url());
-    }
-  }
 }
 
 class SafeBrowsingBlockingPageDelayedWarningPrerenderingBrowserTest
