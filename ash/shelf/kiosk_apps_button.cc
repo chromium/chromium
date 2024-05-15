@@ -178,8 +178,8 @@ void KioskAppsButton::DisplayMenu() {
       menu_model_.get(), views::MenuRunner::HAS_MNEMONICS);
   menu_runner_->RunMenuAt(
       GetWidget()->GetTopLevelWidget(), menu_button_controller_,
-      gfx::Rect(origin, gfx::Size()), views::MenuAnchorPosition::kTopLeft,
-      ui::MENU_SOURCE_NONE);
+      gfx::Rect(origin, gfx::Size()),
+      views::MenuAnchorPosition::kBubbleBottomLeft, ui::MENU_SOURCE_NONE);
 }
 
 bool KioskAppsButton::IsMenuOpened() const {
