@@ -40,7 +40,10 @@ GpuChannelSharedImageInterface::GpuChannelSharedImageInterface(
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
 }
 
-GpuChannelSharedImageInterface::~GpuChannelSharedImageInterface() = default;
+GpuChannelSharedImageInterface::~GpuChannelSharedImageInterface() {
+  scheduler_->DestroySequence(sequence_);
+  sync_point_client_state_->Destroy();
+}
 
 const SharedImageCapabilities&
 GpuChannelSharedImageInterface::GetCapabilities() {

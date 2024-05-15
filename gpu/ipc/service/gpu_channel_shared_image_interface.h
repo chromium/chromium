@@ -99,6 +99,12 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 
   const SharedImageCapabilities& GetCapabilities() override;
 
+  // Public functions specific to GpuChannelSharedImageInterface:
+  SequenceId sequence() { return sequence_; }
+  scoped_refptr<gpu::SyncPointClientState> sync_point_client_state() {
+    return sync_point_client_state_;
+  }
+
  protected:
   ~GpuChannelSharedImageInterface() override;
 

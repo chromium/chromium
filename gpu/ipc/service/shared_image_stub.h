@@ -28,6 +28,7 @@ namespace gpu {
 class SharedContextState;
 struct Mailbox;
 class GpuChannel;
+class GpuChannelSharedImageInterface;
 class SharedImageFactory;
 
 class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
@@ -57,7 +58,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   int ClientId() const override;
   uint64_t ContextGroupTracingId() const override;
 
-  SequenceId sequence() const { return sequence_; }
+  SequenceId sequence() const;
   SharedImageFactory* factory() const { return factory_.get(); }
   GpuChannel* channel() const { return channel_; }
   SharedContextState* shared_context_state() { return context_state_.get(); }
@@ -146,7 +147,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
                              gfx::DXGIHandleToken dxgi_token);
 #endif  // BUILDFLAG(IS_WIN)
 
-  ContextResult MakeContextCurrentAndCreateFactory();
+  ContextResult Initialize();
   void OnError();
 
   // Wait on the sync token if any and destroy the shared image.
@@ -161,7 +162,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   // TODO(jonross): Look into a rename of CommandBufferId to reflect that it can
   // be a unique identifier for numerous gpu constructs.
   CommandBufferId command_buffer_id_;
-  const SequenceId sequence_;
+  scoped_refptr<GpuChannelSharedImageInterface>
+      gpu_channel_shared_image_interface_;
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;

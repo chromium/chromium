@@ -21,6 +21,7 @@
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
+#include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -62,18 +63,9 @@ namespace gpu {
 SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
     : channel_(channel),
       command_buffer_id_(
-          CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)),
-      sequence_(channel->scheduler()->CreateSequence(SchedulingPriority::kLow,
-                                                     channel_->task_runner())),
-      sync_point_client_state_(
-          channel->sync_point_manager()->CreateSyncPointClientState(
-              CommandBufferNamespace::GPU_IO,
-              command_buffer_id_,
-              sequence_)) {}
+          CommandBufferIdFromChannelAndRoute(channel->client_id(), route_id)) {}
 
 SharedImageStub::~SharedImageStub() {
-  channel_->scheduler()->DestroySequence(sequence_);
-  sync_point_client_state_->Destroy();
   if (factory_ && factory_->HasImages()) {
     // Some of the backings might require a current GL context to be destroyed.
     bool have_context = MakeContextCurrent(/*needs_gl=*/true);
@@ -81,10 +73,14 @@ SharedImageStub::~SharedImageStub() {
   }
 }
 
+SequenceId SharedImageStub::sequence() const {
+  return gpu_channel_shared_image_interface_->sequence();
+}
+
 std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
                                                          int32_t route_id) {
   auto stub = base::WrapUnique(new SharedImageStub(channel, route_id));
-  ContextResult result = stub->MakeContextCurrentAndCreateFactory();
+  ContextResult result = stub->Initialize();
   if (result == ContextResult::kSuccess)
     return stub;
 
@@ -94,8 +90,9 @@ std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
 
   // For transient failure, retry once to create a shared context state and
   // hence factory again.
-  if (stub->MakeContextCurrentAndCreateFactory() != ContextResult::kSuccess)
+  if (stub->Initialize() != ContextResult::kSuccess) {
     return nullptr;
+  }
   return stub;
 }
 
@@ -665,7 +662,7 @@ bool SharedImageStub::MakeContextCurrent(bool needs_gl) {
   return context_state_->MakeCurrent(/*surface=*/nullptr, needs_gl);
 }
 
-ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
+ContextResult SharedImageStub::Initialize() {
   auto* channel_manager = channel_->gpu_channel_manager();
   DCHECK(!context_state_);
 
@@ -693,6 +690,11 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
       channel_manager->gpu_feature_info(), context_state_.get(),
       channel_manager->shared_image_manager(), this,
       /*is_for_display_compositor=*/false);
+  gpu_channel_shared_image_interface_ =
+      base::MakeRefCounted<GpuChannelSharedImageInterface>(
+          weak_factory_.GetWeakPtr(), command_buffer_id_);
+  sync_point_client_state_ =
+      gpu_channel_shared_image_interface_->sync_point_client_state();
   return ContextResult::kSuccess;
 }
 
@@ -744,7 +746,7 @@ void SharedImageStub::DestroySharedImage(const Mailbox& mailbox,
   auto done_cb = base::BindOnce(&SharedImageStub::OnDestroySharedImage,
                                 weak_factory_.GetWeakPtr(), mailbox);
   channel_->scheduler()->ScheduleTask(
-      gpu::Scheduler::Task(sequence_, std::move(done_cb),
+      gpu::Scheduler::Task(sequence(), std::move(done_cb),
                            std::vector<gpu::SyncToken>({sync_token})));
 }
 
