@@ -840,11 +840,6 @@
       status: "stable",
     },
     {
-      // crbug.com/1447058
-      name: "CssFieldSizing",
-      status: "stable",
-    },
-    {
       name: "CSSFirstLetterTextRewrite",
       status: "stable",
     },

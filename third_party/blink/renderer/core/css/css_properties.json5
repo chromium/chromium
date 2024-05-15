@@ -1650,7 +1650,6 @@
       default_value: "fixed",
       typedom_types: ["Keyword"],
       invalidate: ["layout"],
-      runtime_flag: "CssFieldSizing",
     },
     {
       name: "-webkit-locale",
