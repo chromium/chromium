@@ -37,7 +37,7 @@ enum class CreditCardFetchResult;
 class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                                  public AddressDataManager::Observer {
  public:
-  class ScopedAutofillPopupShortcutForTesting;
+  class ScopedSuggestionSelectionShortcut;
 
   // Creates an AutofillExternalDelegate for the specified
   // BrowserAutofillManager and AutofillDriver.
@@ -245,9 +245,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // delete address profile dialog is closed.
   AutofillSuggestionTriggerSource GetReopenTriggerSource() const;
 
-  // If true, OnSuggestionsReturned() passes one of the suggestions directly to
-  // DidAcceptSuggestion(). See ScopedAutofillPopupShortcutForTesting for
-  // details.
+  // If non-negative, OnSuggestionsReturned() passes one of the suggestions
+  // directly to DidAcceptSuggestion(). See ScopedSuggestionSelectionShortcut
+  // for details.
   static int shortcut_test_suggestion_index_;
 
   const raw_ref<BrowserAutofillManager> manager_;
@@ -255,8 +255,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // The current form and field selected by Autofill.
   FormData query_form_;
   FormFieldData query_field_;
-  // The bounds of the form field that the user is interacting with.
-  gfx::RectF element_bounds_;
   // The method how suggestions were triggered on the current form.
   AutofillSuggestionTriggerSource trigger_source_;
 
@@ -296,20 +294,20 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 // narrower scope around, for example, AutofillDriver::AskForValuesToFill(),
 // but beware of potential asynchronicity (e.g., due to asynchronous parsing or
 // asynchronous fetching of suggestions).
-class AutofillExternalDelegate::ScopedAutofillPopupShortcutForTesting {
+class AutofillExternalDelegate::ScopedSuggestionSelectionShortcut {
  public:
-  explicit ScopedAutofillPopupShortcutForTesting(int index = 0) {
+  explicit ScopedSuggestionSelectionShortcut(int index = 0) {
     DCHECK(index >= 0);
     DCHECK(shortcut_test_suggestion_index_ < 0);
     shortcut_test_suggestion_index_ = index;
   }
 
-  ScopedAutofillPopupShortcutForTesting(
-      const ScopedAutofillPopupShortcutForTesting&) = delete;
-  ScopedAutofillPopupShortcutForTesting& operator=(
-      const ScopedAutofillPopupShortcutForTesting&) = delete;
+  ScopedSuggestionSelectionShortcut(const ScopedSuggestionSelectionShortcut&) =
+      delete;
+  ScopedSuggestionSelectionShortcut& operator=(
+      const ScopedSuggestionSelectionShortcut&) = delete;
 
-  ~ScopedAutofillPopupShortcutForTesting() {
+  ~ScopedSuggestionSelectionShortcut() {
     DCHECK(shortcut_test_suggestion_index_ >= 0);
     shortcut_test_suggestion_index_ = -1;
   }
