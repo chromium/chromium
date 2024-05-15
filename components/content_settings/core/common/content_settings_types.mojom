@@ -7,8 +7,13 @@ module content_settings.mojom;
 
 // A particular type of content to care about. We give the user various types
 // of controls over each of these.
-// When adding/removing values from this enum, be sure to update the
-// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc as well.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// When adding values to this enum, be sure to update the
+// kHistogramValue array in c/c/c/browser/content_settings_uma_util.cc and
+// SafetyHubPermissionType in t/m/h/m/settings/enums.xml as well.
+// Add "NO_IFTTT=<reason>" in the commit message if it's not applicable.
+// LINT.IfChange(ContentSettingsType)
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum ContentSettingsType {
@@ -425,3 +430,4 @@ enum ContentSettingsType {
   // ALLOW: Protections disabled.
   TRACKING_PROTECTION,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SafetyHubPermissionType)

@@ -635,6 +635,10 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
             browser_context_.get(), entry.source.primary_pattern,
             entry.source.secondary_pattern, entry.type,
             permissions::PermissionSourceUI::SAFETY_HUB_AUTO_REVOCATION);
+        // Record the number of permissions auto-revoked per permission type.
+        base::UmaHistogramEnumeration(
+            "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked",
+            entry.type);
         revoked_permissions.insert(entry.type);
         if (IsContentSetting(entry.type)) {
           hcsm()->SetContentSettingCustomScope(

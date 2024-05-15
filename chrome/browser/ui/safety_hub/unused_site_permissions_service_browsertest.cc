@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -11,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
-#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -159,34 +161,81 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   map->SetClockForTesting(&clock);
   service->SetClockForTesting(&clock);
 
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  const std::string histogram_name =
+      "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked";
+  base::HistogramTester histogram_tester;
+
+  // TODO(b/338365161): Remove the skip list, once the bug is fixed. Currently,
+  // when CAMERA_PAN_TILT_ZOOM is allowed, MEDIASTREAM_CAMERA is also allowed
+  // under the hood without passing predefined constraints. Since the
+  // auto-revokation relies on the constraint, the MEDIASTREAM_CAMERA ends up
+  // not being revoked - although it is should be.
+  const std::vector<ContentSettingsType> skip_list = {
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM};
+
   // Allow all content settings in the content setting registry.
+  std::vector<ContentSettingsType> allowed_permission_types;
   auto* content_settings_registry =
       content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info :
        *content_settings_registry) {
     ContentSettingsType type = info->website_settings_info()->type();
 
-    // Add last visited timestamp if the setting can be tracked.
+    // Skip if the setting's last visit can not be tracked.
     content_settings::ContentSettingConstraints constraint;
-    if (content_settings::CanTrackLastVisit(type)) {
-      constraint.set_track_last_visit_for_autoexpiration(true);
+    if (!content_settings::CanTrackLastVisit(type)) {
+      continue;
     }
+    // Add last visited timestamp if the setting can be tracked.
+    constraint.set_track_last_visit_for_autoexpiration(true);
 
+    // Skip if the setting can not be set to ALLOW.
     if (!content_settings_registry->Get(type)->IsSettingValid(
             ContentSetting::CONTENT_SETTING_ALLOW)) {
       continue;
     }
 
-    const GURL url("https://example1.com");
+    // Skip if the setting produces patterns that do not get revoked.
+    content_settings::PatternPair patterns =
+        map->GetPatternsForContentSettingsType(url, url, type);
+    if (!patterns.first.MatchesSingleOrigin() ||
+        patterns.second != ContentSettingsPattern::Wildcard()) {
+      continue;
+    }
+
+    // Skip if the setting in the skip list.
+    if (base::Contains(skip_list, type)) {
+      continue;
+    }
+
     map->SetContentSettingDefaultScope(GURL(url), GURL(url), type,
                                        ContentSetting::CONTENT_SETTING_ALLOW,
                                        constraint);
+    allowed_permission_types.push_back(type);
   }
 
   // Travel through time for 70 days to make permissions be revoked.
   clock.Advance(base::Days(70));
   safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
+
+  // Assert all the allowed permissions are revoked.
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
+  const auto revoked_permission_types_size = GetRevokedUnusedPermissions(map)[0]
+                                                 .setting_value.GetDict()
+                                                 .Find("revoked")
+                                                 ->GetList()
+                                                 .size();
+  ASSERT_EQ(allowed_permission_types.size(), revoked_permission_types_size);
+  // TODO(b/40267370): Add an assertion that contents of
+  // allowed_permission_types and revoked permissions list are the same.
+
+  // Assert all auto-revocations are recorded in UMA metrics.
+  EXPECT_EQ(allowed_permission_types.size(),
+            histogram_tester.GetAllSamples(histogram_name).size());
+  for (const ContentSettingsType type : allowed_permission_types) {
+    histogram_tester.ExpectBucketCount(histogram_name, type, 1);
+  }
 
   // Navigate to content settings page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

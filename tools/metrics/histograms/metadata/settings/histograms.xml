@@ -761,6 +761,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked"
+    enum="SafetyHubPermissionType" expires_after="2024-11-14">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    The type of permission auto-revoked by the unused site permissions module of
+    Safety Hub. Recorded during the auto-revocation run.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2024-10-06">
