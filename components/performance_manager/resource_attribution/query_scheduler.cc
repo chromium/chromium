@@ -23,6 +23,7 @@
 #include "base/types/pass_key.h"
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/context_collection.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
@@ -88,14 +89,22 @@ SchedulerTaskRunner* SchedulerTaskRunner::GetInstance() {
 void SchedulerTaskRunner::OnSchedulerPassedToGraph(Graph* graph) {
   base::AutoLock lock(task_runner_lock_);
   CHECK(!task_runner_);
-  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  // Use the PM task runner if QueryScheduler is installed on the PM. (In tests
+  // it might not be.) This is used instead of GetCurrentDefault() because the
+  // PM task runner might be a wrapper for the default.
+  if (PerformanceManager::GetTaskRunner()->RunsTasksInCurrentSequence()) {
+    task_runner_ = PerformanceManager::GetTaskRunner();
+  } else {
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
+  CHECK(task_runner_);
   CHECK(!graph_);
   graph_ = graph;
 }
 
 void SchedulerTaskRunner::OnSchedulerTakenFromGraph(Graph* graph) {
   base::AutoLock lock(task_runner_lock_);
-  CHECK_EQ(task_runner_, base::SequencedTaskRunner::GetCurrentDefault());
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
   task_runner_.reset();
   CHECK_EQ(graph_.get(), graph);
   graph_ = nullptr;

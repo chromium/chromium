@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
@@ -52,10 +53,14 @@ namespace resource_attribution::internal {
 namespace {
 
 using performance_manager::features::kResourceAttributionIncludeOrigins;
+using performance_manager::features::kRunOnMainThread;
+using performance_manager::features::kRunOnMainThreadSync;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 std::unique_ptr<QueryParams> CreateQueryParams(
     ResourceTypeSet resource_types = {},
@@ -86,13 +91,18 @@ void ExpectQueryResult(
 }  // namespace
 
 class ResourceAttrQuerySchedulerTest
-    : public performance_manager::GraphTestHarness {
+    : public performance_manager::GraphTestHarness,
+      public WithParamInterface<const base::Feature*> {
  protected:
   using Super = performance_manager::GraphTestHarness;
 
   ResourceAttrQuerySchedulerTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kResourceAttributionIncludeOrigins);
+    std::vector<base::test::FeatureRef> enabled_features{
+        kResourceAttributionIncludeOrigins};
+    if (GetParam()) {
+      enabled_features.push_back(*GetParam());
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   void SetUp() override {
@@ -112,10 +122,34 @@ class ResourceAttrQuerySchedulerTest
   FakeMemoryMeasurementDelegateFactory memory_delegate_factory_;
 };
 
-using ResourceAttrQuerySchedulerPMTest =
-    performance_manager::PerformanceManagerTestHarness;
+INSTANTIATE_TEST_SUITE_P(All,
+                         ResourceAttrQuerySchedulerTest,
+                         Values(nullptr,
+                                &kRunOnMainThread,
+                                &kRunOnMainThreadSync));
 
-TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
+class ResourceAttrQuerySchedulerPMTest
+    : public performance_manager::PerformanceManagerTestHarness,
+      public WithParamInterface<const base::Feature*> {
+ protected:
+  ResourceAttrQuerySchedulerPMTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(*GetParam());
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ResourceAttrQuerySchedulerPMTest,
+                         Values(nullptr,
+                                &kRunOnMainThread,
+                                &kRunOnMainThreadSync));
+
+TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   performance_manager::MockMultiplePagesWithMultipleProcessesGraph mock_graph(
       graph());
 
@@ -214,7 +248,7 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveQueries) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
+TEST_P(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   auto* scheduler = QueryScheduler::GetFromGraph(graph());
   ASSERT_TRUE(scheduler);
 
@@ -509,7 +543,7 @@ TEST_F(ResourceAttrQuerySchedulerTest, AddRemoveNodes) {
   EXPECT_FALSE(scheduler->GetCPUMonitorForTesting().IsMonitoring());
 }
 
-TEST_F(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
+TEST_P(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
   // Tests that CallWithScheduler works from PerformanceManagerTestHarness,
   // where the scheduler runs on the PM sequence as in production.
   EXPECT_TRUE(PerformanceManager::IsAvailable());
@@ -534,7 +568,7 @@ TEST_F(ResourceAttrQuerySchedulerPMTest, CallWithScheduler) {
   run_loop.Run();
 }
 
-TEST_F(ResourceAttrQuerySchedulerTest, CallWithScheduler) {
+TEST_P(ResourceAttrQuerySchedulerTest, CallWithScheduler) {
   // Tests that CallWithScheduler works from GraphTestHarness which doesn't set
   // up the PerformanceManager sequence. It's convenient to use GraphTestHarness
   // with mock graphs to test resource attribution queries.
