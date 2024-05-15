@@ -1193,6 +1193,29 @@ bool ComputedStyle::PotentialCompositingReasonsFor3DTransformChanged(
              other);
 }
 
+bool ComputedStyle::DiffNeedsRecomputeVisualOverflow(
+    const ComputedStyle& other,
+    uint32_t field_diff) const {
+  if (field_diff & kVisualOverflow) {
+    return true;
+  }
+
+  if ((field_diff & kBorderImage) && !BorderVisualOverflowEqual(other)) {
+    return true;
+  }
+
+  if ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) {
+    return true;
+  }
+
+  if ((field_diff & kTextDecoration) &&
+      TextDecorationVisualOverflowChanged(other)) {
+    return true;
+  }
+
+  return false;
+}
+
 void ComputedStyle::UpdatePropertySpecificDifferences(
     const ComputedStyle& other,
     uint32_t field_diff,
@@ -1219,12 +1242,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetFilterChanged();
   }
 
-  if (ComputedStyleBase::
-          UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow(
-              *this, other) ||
-      ((field_diff & kOutline) && !OutlineVisuallyEqual(other)) ||
-      ((field_diff & kTextDecoration) &&
-       TextDecorationVisualOverflowChanged(other))) {
+  if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
     diff.SetNeedsRecomputeVisualOverflow();
   }
 

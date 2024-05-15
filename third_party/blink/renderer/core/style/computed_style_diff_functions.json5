@@ -272,18 +272,5 @@
           },
         ]
     },
-    {
-        name: "UpdatePropertySpecificDifferencesNeedsRecomputeVisualOverflow",
-        predicates_to_test: [
-          {
-            predicate: "a.BoxShadowDataEquivalent(b)",
-            field_dependencies: ["box-shadow"]
-          },
-          {
-            predicate: "a.BorderVisualOverflowEqual(b)",
-            field_dependencies: ["border-image"]
-          },
-        ]
-    },
   ],
 }

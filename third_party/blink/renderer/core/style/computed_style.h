@@ -2514,6 +2514,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool DiffNeedsPaintInvalidationForPaintImage(const StyleImage&,
                                                const ComputedStyle& other,
                                                const Document&) const;
+  bool DiffNeedsRecomputeVisualOverflow(const ComputedStyle& other,
+                                        uint32_t field_diff) const;
   void UpdatePropertySpecificDifferences(const ComputedStyle& other,
                                          uint32_t field_diff,
                                          StyleDifference&) const;

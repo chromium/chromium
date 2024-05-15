@@ -329,6 +329,7 @@
       type_name: "NinePieceImage",
       field_group: "surround",
       default_value: "NinePieceImage()",
+      invalidate: ["border-image"],
     },
     {
       name: "Background",

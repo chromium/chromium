@@ -316,6 +316,7 @@
         "background",
         "background-color",
         "blend-mode",
+        "border-image",
         "border-radius",
         "clip-path",
         "color",
@@ -333,6 +334,7 @@
         "table",
         "text-decoration",
         "transform-property",
+        "visual-overflow",
         "z-index",
       ],
     },
@@ -2542,6 +2544,7 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      invalidate: ["visual-overflow"],
     },
     {
       name: "box-sizing",
