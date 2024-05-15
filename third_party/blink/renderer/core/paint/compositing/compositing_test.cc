@@ -3343,7 +3343,9 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
   InitializeWithHTML(R"HTML(
     <!DOCTYPE html>
     <style>
-      div div { width: 2000px; height: 2000px; margin-top: 2000px; }
+      div div {
+        width: 2000px; height: 2000px; margin-top: 2000px; background: white;
+      }
     </style>
     <div id="scroller" style="overflow: scroll; will-change: scroll-position;
                               width: 200px; height: 200px">
@@ -3362,12 +3364,13 @@ TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
                                                     ->GetScrollableArea()
                                                     ->GetScrollElementId()));
   ASSERT_TRUE(layer);
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() ||
-      // This will make a difference when UseRecordedBoundsForTiling is enabled
-      // by default.
-      RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
+  if (RuntimeEnabledFeatures::FillScrollingContentsLayerEnabled()) {
     EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
     EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
+              layer->GetRecordingSourceForTesting()->recorded_bounds());
+  } else if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
+    EXPECT_EQ(gfx::Rect(0, 2000, 2000, 2000),
               layer->GetRecordingSourceForTesting()->recorded_bounds());
   } else {
     EXPECT_EQ(gfx::Size(2000, 2000), layer->bounds());
