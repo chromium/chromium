@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
@@ -433,6 +434,7 @@ void OnShouldInterceptRequestAsyncResult(
 }  // namespace
 
 void InterceptedRequest::Restart(std::optional<bool> xrw_enabled) {
+  TRACE_EVENT0("android_webview", "InterceptedRequest::Restart");
   std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
       GetIoThreadClient();
 
@@ -719,6 +721,7 @@ void InterceptedRequest::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
+  TRACE_EVENT0("android_webview", "InterceptedRequest::OnReceiveResponse");
   // intercept response headers here
   // pause/resume |proxied_client_receiver_| if necessary
 
@@ -1018,6 +1021,8 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  TRACE_EVENT0("android_webview",
+               "AwProxyingURLLoaderFactory::CreateLoaderAndStart");
   // TODO(timvolodine): handle interception, modification (headers for
   // webview), blocking, callbacks etc..
 

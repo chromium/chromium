@@ -62,6 +62,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
@@ -1025,6 +1026,8 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
     bool* disable_secure_dns,
     network::mojom::URLLoaderFactoryOverridePtr* factory_override,
     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+  TRACE_EVENT0("android_webview",
+               "AwContentBrowserClient::WillCreateURLLoaderFactory");
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> proxied_receiver;

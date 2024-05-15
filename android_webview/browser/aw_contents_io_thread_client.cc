@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/features.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/web_resource_response.h"
@@ -392,6 +393,7 @@ AwContentsIoThreadClient::InterceptResponseData NoInterceptRequest() {
 AwContentsIoThreadClient::InterceptResponseData RunShouldInterceptRequest(
     AwWebResourceRequest request,
     JavaObjectWeakGlobalRef ref) {
+  TRACE_EVENT0("android_webview", "RunShouldInterceptRequest");
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 

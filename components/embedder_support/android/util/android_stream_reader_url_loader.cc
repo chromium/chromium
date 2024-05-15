@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
+#include "base/trace_event/base_tracing.h"
 #include "components/embedder_support/android/util/features.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/input_stream_reader.h"
@@ -188,6 +189,7 @@ void AndroidStreamReaderURLLoader::ResumeReadingBodyFromNet() {}
 
 void AndroidStreamReaderURLLoader::Start(
     std::unique_ptr<InputStream> input_stream) {
+  TRACE_EVENT0("android_webview", "AndroidStreamReaderURLLoader::Start");
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (reject_cors_request_ && response_head_->response_type ==
@@ -225,6 +227,8 @@ void AndroidStreamReaderURLLoader::OnInputStreamOpened(
     std::unique_ptr<AndroidStreamReaderURLLoader::ResponseDelegate>
         returned_delegate,
     std::unique_ptr<InputStream> input_stream) {
+  TRACE_EVENT0("android_webview",
+               "AndroidStreamReaderURLLoader::OnInputStreamOpened");
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(returned_delegate);
   response_delegate_ = std::move(returned_delegate);
@@ -292,6 +296,8 @@ void AndroidStreamReaderURLLoader::OnReaderSeekCompleted(int result) {
 void AndroidStreamReaderURLLoader::HeadersComplete(
     int status_code,
     const std::string& status_text) {
+  TRACE_EVENT0("android_webview",
+               "AndroidStreamReaderURLLoader::HeadersComplete");
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::string status("HTTP/1.1 ");
@@ -379,6 +385,7 @@ void AndroidStreamReaderURLLoader::SendResponseToClient() {
 }
 
 void AndroidStreamReaderURLLoader::ReadMore() {
+  TRACE_EVENT0("android_webview", "AndroidStreamReaderURLLoader::ReadMore");
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!pending_buffer_.get());
 
@@ -423,6 +430,8 @@ void AndroidStreamReaderURLLoader::ReadMore() {
 }
 
 void AndroidStreamReaderURLLoader::DidRead(int result) {
+  TRACE_EVENT1("android_webview", "AndroidStreamReaderURLLoader::DidRead",
+               "bytes_read", result);
   DCHECK(thread_checker_.CalledOnValidThread());
 
   DCHECK(pending_buffer_);
@@ -489,6 +498,8 @@ void AndroidStreamReaderURLLoader::OnDataPipeWritable(MojoResult result) {
 
 void AndroidStreamReaderURLLoader::RequestCompleteWithStatus(
     const network::URLLoaderCompletionStatus& status) {
+  TRACE_EVENT0("android_webview",
+               "AndroidStreamReaderURLLoader::RequestCompleteWithStatus");
   DCHECK(thread_checker_.CalledOnValidThread());
   if (consumer_handle_.is_valid()) {
     // We can hit this before reading any buffers under error conditions.
