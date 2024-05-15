@@ -1498,6 +1498,31 @@
       "features": [
         "skia_graphite"
       ]
+    },
+    {
+      "id": 184,
+      "cr_bugs": [340005431],
+      "description": "Accelerated video decoding fails with SkiaGraphite + NVIDIA GTX 960",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "device_id": ["0x1401"],
+      "features": [
+        "skia_graphite"
+      ]
+    },
+    {
+      "id": 185,
+      "cr_bugs": [340005431],
+      "description": "Accelerated video decoding fails with SkiaGraphite + Moore Threads GPUs",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1ed5",
+      "features": [
+        "skia_graphite"
+      ]
     }
   ]
 }
