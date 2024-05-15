@@ -69,34 +69,50 @@ DOCUMENT_USER_DATA_KEY_IMPL(JsToBrowserMessagingDocumentUserData);
 
 class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
  public:
-  ReplyProxyImpl(content::RenderFrameHost* render_frame_host,
-                 mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
-                     java_to_js_messaging)
+  ReplyProxyImpl(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
+          java_to_js_messaging,
+      mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory> factory)
       : render_frame_host_(render_frame_host),
-        java_to_js_messaging_(std::move(java_to_js_messaging)) {}
+        java_to_js_messaging_(std::move(java_to_js_messaging)),
+        factory_(std::move(factory)) {}
   ReplyProxyImpl(const ReplyProxyImpl&) = delete;
   ReplyProxyImpl& operator=(const ReplyProxyImpl&) = delete;
   ~ReplyProxyImpl() override = default;
 
   // WebMessageReplyProxy:
   void PostWebMessage(blink::WebMessagePayload message) override {
+    EnsureBrowserToJsMessaging();
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
+
+  void EnsureBrowserToJsMessaging() {
+    if (!java_to_js_messaging_ && factory_) {
+      factory_->SendBrowserToJsMessaging(
+          java_to_js_messaging_.BindNewEndpointAndPassReceiver());
+    }
+  }
+
   content::Page& GetPage() override { return render_frame_host_->GetPage(); }
 
  private:
   raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::AssociatedRemote<mojom::BrowserToJsMessaging> java_to_js_messaging_;
+  mojo::SharedAssociatedRemote<mojom::BrowserToJsMessagingFactory> factory_;
 };
 
 JsToBrowserMessaging::JsToBrowserMessaging(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingAssociatedReceiver<mojom::JsToBrowserMessaging> receiver,
+    mojo::PendingAssociatedRemote<mojom::BrowserToJsMessagingFactory>
+        browser_to_js_factory,
     WebMessageHostFactory* factory,
     const OriginMatcher& origin_matcher)
     : render_frame_host_(render_frame_host),
       connection_factory_(factory),
-      origin_matcher_(origin_matcher) {
+      origin_matcher_(origin_matcher),
+      browser_to_js_factory_(std::move(browser_to_js_factory)) {
   receiver_.Bind(std::move(receiver));
 }
 
@@ -152,6 +168,7 @@ void JsToBrowserMessaging::PostMessage(
 
   // SetBrowserToJsMessaging must be called before this.
   DCHECK(reply_proxy_);
+  reply_proxy_->EnsureBrowserToJsMessaging();
 
   if (!host_) {
     const std::string top_level_origin_string =
@@ -207,7 +224,8 @@ void JsToBrowserMessaging::SetBrowserToJsMessaging(
   // more than once because of reusing of RenderFrame.
   host_.reset();
   reply_proxy_ = std::make_unique<ReplyProxyImpl>(
-      render_frame_host_, std::move(java_to_js_messaging));
+      render_frame_host_, std::move(java_to_js_messaging),
+      browser_to_js_factory_);
 }
 
 }  // namespace js_injection

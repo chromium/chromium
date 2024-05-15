@@ -86,6 +86,37 @@ JsCommunicationHost::AddScriptResult::operator=(
     const JsCommunicationHost::AddScriptResult&) = default;
 JsCommunicationHost::AddScriptResult::~AddScriptResult() = default;
 
+// Holds a set of JsToBrowserMessaging objects for a frame and allows notifying
+// the objects of renderer side messages.
+class JsCommunicationHost::JsToBrowserMessagingList
+    : public mojom::JsObjectsClient {
+ public:
+  JsToBrowserMessagingList(
+      std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
+          js_to_browser_messagings,
+      mojo::PendingAssociatedReceiver<mojom::JsObjectsClient> receiver)
+      : js_to_browser_messagings_(std::move(js_to_browser_messagings)),
+        receiver_(this, std::move(receiver)) {}
+
+  // mojom::JsObjectsClient:
+  void OnWindowObjectCleared() override {
+    for (auto& kv : js_to_browser_messagings_) {
+      // Send an empty remote here. The remote will be bound lazily when needed.
+      kv.second->SetBrowserToJsMessaging({});
+    }
+  }
+
+  const std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>&
+  js_to_browser_messagings() const {
+    return js_to_browser_messagings_;
+  }
+
+ private:
+  const std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
+      js_to_browser_messagings_;
+  mojo::AssociatedReceiver<mojom::JsObjectsClient> receiver_;
+};
+
 JsCommunicationHost::JsCommunicationHost(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {}
 
@@ -239,8 +270,8 @@ void JsCommunicationHost::RenderFrameHostStateChanged(
   using LifecycleState = content::RenderFrameHost::LifecycleState;
   if (old_state == LifecycleState::kPrerendering &&
       new_state == LifecycleState::kActive) {
-    for (auto& js_to_browser_messaging_ptr : iter->second) {
-      js_to_browser_messaging_ptr->OnRenderFrameHostActivated();
+    for (auto& kv : iter->second->js_to_browser_messagings()) {
+      kv.second->OnRenderFrameHostActivated();
     }
   }
 }
@@ -266,6 +297,8 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
       &configurator_remote);
   std::vector<mojom::JsObjectPtr> js_objects;
   js_objects.reserve(js_objects_.size());
+  std::map<std::u16string, std::unique_ptr<JsToBrowserMessaging>>
+      js_to_browser_messagings;
   for (const auto& js_object : js_objects_) {
     if (NavigationWebMessageSender::IsNavigationListener(js_object->name)) {
       // This is the special navigationListener object that is registered to
@@ -281,16 +314,23 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
       continue;
     }
     mojo::PendingAssociatedRemote<mojom::JsToBrowserMessaging> pending_remote;
-    js_to_browser_messagings_[render_frame_host->GetGlobalId()].emplace_back(
+    mojo::PendingAssociatedReceiver<mojom::BrowserToJsMessagingFactory> factory;
+    js_to_browser_messagings[js_object->name] =
         std::make_unique<JsToBrowserMessaging>(
             render_frame_host,
             pending_remote.InitWithNewEndpointAndPassReceiver(),
-            js_object->factory.get(), js_object->allowed_origin_rules));
-    js_objects.push_back(mojom::JsObject::New(js_object->name,
-                                              std::move(pending_remote),
-                                              js_object->allowed_origin_rules));
+            factory.InitWithNewEndpointAndPassRemote(),
+            js_object->factory.get(), js_object->allowed_origin_rules);
+    js_objects.push_back(mojom::JsObject::New(
+        js_object->name, std::move(pending_remote), std::move(factory),
+        js_object->allowed_origin_rules));
   }
-  configurator_remote->SetJsObjects(std::move(js_objects));
+  mojo::PendingAssociatedRemote<mojom::JsObjectsClient> client;
+  js_to_browser_messagings_[render_frame_host->GetGlobalId()] =
+      std::make_unique<JsToBrowserMessagingList>(
+          std::move(js_to_browser_messagings),
+          client.InitWithNewEndpointAndPassReceiver());
+  configurator_remote->SetJsObjects(std::move(js_objects), std::move(client));
 }
 
 void JsCommunicationHost::PrimaryPageChanged(content::Page& page) {
