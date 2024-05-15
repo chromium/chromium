@@ -113,6 +113,8 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
   });
 
   function testSetup(): Promise<void> {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();

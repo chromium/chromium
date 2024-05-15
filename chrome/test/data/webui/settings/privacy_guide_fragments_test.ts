@@ -34,6 +34,7 @@ suite('WelcomeFragment', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     fragment = document.createElement('privacy-guide-welcome-fragment');
     document.body.appendChild(fragment);
     return flushTasks();
@@ -64,10 +65,11 @@ suite('MsbbFragment', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-msbb-fragment');
     fragment.prefs = settingsPrefs.prefs!;
     document.body.appendChild(fragment);
@@ -154,13 +156,14 @@ suite('HistorySyncFragment', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
     syncBrowserProxy.testSyncStatus = null;
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-history-sync-fragment');
     document.body.appendChild(fragment);
 
@@ -400,10 +403,11 @@ suite('SafeBrowsingFragment', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-safe-browsing-fragment');
     fragment.prefs = settingsPrefs.prefs!;
     document.body.appendChild(fragment);
@@ -573,6 +577,7 @@ suite('SafeBrowsingFragment', function() {
       assertEquals(spSubLabel, standardProtection.subLabel);
     });
   });
+
   // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
   // standard protection is launched.
   suite('HashPrefixRealTimeEnabled_FriendlierSettingsDisabled', function() {
@@ -691,10 +696,11 @@ suite('CookiesFragment', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-cookies-fragment');
     fragment.prefs = settingsPrefs.prefs!;
     document.body.appendChild(fragment);
@@ -815,12 +821,13 @@ suite('CompletionFragment', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
 
@@ -933,6 +940,7 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
 
@@ -980,6 +988,7 @@ suite(
 
       setup(function() {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
         fragment = document.createElement('privacy-guide-completion-fragment');
         document.body.appendChild(fragment);
 
@@ -1013,6 +1022,7 @@ suite('CompletionFragmentWithoutTrackingProtection', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
 
