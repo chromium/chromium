@@ -11,26 +11,17 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/cross_device/timer_factory/timer_factory_impl.h"
 
 namespace ash::tether {
 
-namespace {
-
-const char kTetherFeature[] = "magic_tether";
-
-}  // namespace
-
 MessageTransferOperation::MessageTransferOperation(
     const TetherHost& tether_host,
-    secure_channel::ConnectionPriority connection_priority,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client)
+    HostConnection::Factory::ConnectionPriority connection_priority,
+    raw_ptr<HostConnection::Factory> host_connection_factory)
     : tether_host_(tether_host),
-      device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
       connection_priority_(connection_priority),
+      host_connection_factory_(host_connection_factory),
       timer_factory_(cross_device::TimerFactoryImpl::Factory::Create()) {}
 
 MessageTransferOperation::~MessageTransferOperation() {
@@ -51,14 +42,6 @@ void MessageTransferOperation::Initialize() {
     return;
   }
 
-  std::optional<multidevice::RemoteDeviceRef> local_device =
-      device_sync_client_->GetLocalDeviceMetadata();
-  if (!local_device) {
-    PA_LOG(ERROR) << "MessageTransferOperation::" << __func__
-                  << ": Local device unexpectedly null.";
-    return;
-  }
-
   initialized_ = true;
 
   // Store the message type for this connection as a private field. This is
@@ -71,20 +54,12 @@ void MessageTransferOperation::Initialize() {
   OnOperationStarted();
 
   StartConnectionTimerForDevice();
-  connection_attempt_ = secure_channel_client_->ListenForConnectionFromDevice(
-      tether_host_.remote_device_ref().value(), *local_device, kTetherFeature,
-      secure_channel::ConnectionMedium::kBluetoothLowEnergy,
-      connection_priority_);
-
-  connection_attempt_->SetDelegate(this);
-}
-
-void MessageTransferOperation::OnMessageReceived(const std::string& payload) {
-  std::unique_ptr<MessageWrapper> message_wrapper =
-      MessageWrapper::FromRawMessage(payload);
-  if (message_wrapper) {
-    OnMessageReceived(std::move(message_wrapper));
-  }
+  host_connection_factory_->Create(
+      tether_host_, connection_priority_, /*payload_listener=*/this,
+      base::BindOnce(&MessageTransferOperation::OnDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&MessageTransferOperation::OnConnectionAttemptComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MessageTransferOperation::StopOperation() {
@@ -93,52 +68,45 @@ void MessageTransferOperation::StopOperation() {
 
   StopTimerForDeviceIfRunning();
 
-  connection_attempt_.reset();
-  if (client_channel_ != nullptr) {
-    client_channel_.reset();
-  }
+  host_connection_.reset();
 
   if (!shutting_down_) {
     OnOperationFinished();
   }
 }
 
-int MessageTransferOperation::SendMessageToDevice(
-    std::unique_ptr<MessageWrapper> message_wrapper) {
-  DCHECK(client_channel_ != nullptr);
-  int sequence_number = next_message_sequence_number_++;
-  bool success = client_channel_->SendMessage(
-      message_wrapper->ToRawMessage(),
-      base::BindOnce(&MessageTransferOperation::OnMessageSent,
-                     weak_ptr_factory_.GetWeakPtr(), sequence_number));
-  return success ? sequence_number : -1;
+void MessageTransferOperation::SendMessage(
+    std::unique_ptr<MessageWrapper> message_wrapper,
+    HostConnection::OnMessageSentCallback on_message_sent) {
+  CHECK(host_connection_);
+  host_connection_->SendMessage(std::move(message_wrapper),
+                                std::move(on_message_sent));
 }
 
 uint32_t MessageTransferOperation::GetMessageTimeoutSeconds() {
   return MessageTransferOperation::kDefaultMessageTimeoutSeconds;
 }
 
-void MessageTransferOperation::OnConnectionAttemptFailure(
-    secure_channel::mojom::ConnectionAttemptFailureReason reason) {
-  PA_LOG(WARNING) << "Failed to connect to device "
-                  << GetDeviceId(/*truncate_for_logs=*/true)
-                  << ", error: " << reason;
-  StopOperation();
-}
+void MessageTransferOperation::OnConnectionAttemptComplete(
+    std::unique_ptr<HostConnection> host_connection) {
+  if (!host_connection) {
+    PA_LOG(WARNING) << "Failed to connect to device ["
+                    << GetDeviceId(/*truncate_for_logs=*/true) << "].";
+    StopOperation();
+  } else {
+    host_connection_ = std::move(host_connection);
 
-void MessageTransferOperation::OnConnection(
-    std::unique_ptr<secure_channel::ClientChannel> channel) {
-  client_channel_ = std::move(channel);
-  client_channel_->AddObserver(this);
+    // Stop the timer which was started from StartConnectionTimerForDevice()
+    // since the connection has now been established. Start another timer now
+    // via StartMessageTimerForDevice() while waiting for messages to be sent to
+    // and received by |remote_device|.
+    StopTimerForDeviceIfRunning();
+    StartMessageTimerForDevice();
 
-  // Stop the timer which was started from StartConnectionTimerForDevice() since
-  // the connection has now been established. Start another timer now via
-  // StartMessageTimerForDevice() while waiting for messages to be sent to and
-  // received by |remote_device|.
-  StopTimerForDeviceIfRunning();
-  StartMessageTimerForDevice();
-
-  OnDeviceAuthenticated();
+    PA_LOG(INFO) << "Successfully opened connection to ["
+                 << GetDeviceId(/*truncate_for_logs=*/true) << "].";
+    OnDeviceAuthenticated();
+  }
 }
 
 void MessageTransferOperation::OnDisconnected() {

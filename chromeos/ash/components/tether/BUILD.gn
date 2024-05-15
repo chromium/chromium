@@ -166,6 +166,8 @@ static_library("test_support") {
     "fake_disconnect_tethering_request_sender.h",
     "fake_gms_core_notifications_state_tracker.cc",
     "fake_gms_core_notifications_state_tracker.h",
+    "fake_host_connection.cc",
+    "fake_host_connection.h",
     "fake_host_scan_cache.cc",
     "fake_host_scan_cache.h",
     "fake_host_scan_scheduler.cc",

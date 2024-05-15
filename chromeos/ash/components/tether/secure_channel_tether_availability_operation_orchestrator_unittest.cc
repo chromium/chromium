@@ -79,6 +79,8 @@ TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
       TetherHost(multidevice::CreateRemoteDeviceRefForTest());
   FakeTetherHostFetcher fake_tether_host_fetcher(
       *test_device.remote_device_ref());
+  fake_tether_host_fetcher.SetTetherHost(
+      test_device.remote_device_ref().value());
   FakeTetherAvailabilityOperation::Initializer*
       fake_tether_availability_operation_initializer =
           new FakeTetherAvailabilityOperation::Initializer();

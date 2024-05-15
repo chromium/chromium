@@ -12,7 +12,6 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash::tether {
 
@@ -24,15 +23,14 @@ DisconnectTetheringOperation::Factory*
 std::unique_ptr<DisconnectTetheringOperation>
 DisconnectTetheringOperation::Factory::Create(
     const TetherHost& tether_host,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client) {
+    raw_ptr<HostConnection::Factory> host_connection_factory) {
   if (factory_instance_) {
-    return factory_instance_->CreateInstance(tether_host, device_sync_client,
-                                             secure_channel_client);
+    return factory_instance_->CreateInstance(tether_host,
+                                             host_connection_factory);
   }
 
-  return base::WrapUnique(new DisconnectTetheringOperation(
-      tether_host, device_sync_client, secure_channel_client));
+  return base::WrapUnique(
+      new DisconnectTetheringOperation(tether_host, host_connection_factory));
 }
 
 // static
@@ -45,12 +43,11 @@ DisconnectTetheringOperation::Factory::~Factory() = default;
 
 DisconnectTetheringOperation::DisconnectTetheringOperation(
     const TetherHost& tether_host,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client)
-    : MessageTransferOperation(tether_host,
-                               secure_channel::ConnectionPriority::kHigh,
-                               device_sync_client,
-                               secure_channel_client),
+    raw_ptr<HostConnection::Factory> host_connection_factory)
+    : MessageTransferOperation(
+          tether_host,
+          HostConnection::Factory::ConnectionPriority::kHigh,
+          host_connection_factory),
       has_sent_message_(false),
       clock_(base::DefaultClock::GetInstance()) {}
 
@@ -73,8 +70,9 @@ void DisconnectTetheringOperation::NotifyObserversOperationFinished(
 }
 
 void DisconnectTetheringOperation::OnDeviceAuthenticated() {
-  disconnect_message_sequence_number_ = SendMessageToDevice(
-      std::make_unique<MessageWrapper>(DisconnectTetheringRequest()));
+  SendMessage(std::make_unique<MessageWrapper>(DisconnectTetheringRequest()),
+              base::BindOnce(&DisconnectTetheringOperation::OnMessageSent,
+                             weak_ptr_factory_.GetWeakPtr()));
   disconnect_start_time_ = clock_->Now();
 }
 
@@ -86,11 +84,7 @@ MessageType DisconnectTetheringOperation::GetMessageTypeForConnection() {
   return MessageType::DISCONNECT_TETHERING_REQUEST;
 }
 
-void DisconnectTetheringOperation::OnMessageSent(int sequence_number) {
-  if (sequence_number != disconnect_message_sequence_number_) {
-    return;
-  }
-
+void DisconnectTetheringOperation::OnMessageSent() {
   has_sent_message_ = true;
 
   DCHECK(!disconnect_start_time_.is_null());

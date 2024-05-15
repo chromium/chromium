@@ -12,18 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/tether/host_connection.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
 #include "chromeos/ash/components/tether/tether_host.h"
-#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
 
 namespace cross_device {
 class TimerFactory;
@@ -33,15 +25,12 @@ namespace ash::tether {
 
 // Abstract base class used for operations which send and/or receive messages
 // from remote devices.
-class MessageTransferOperation
-    : public secure_channel::ClientChannel::Observer,
-      public secure_channel::ConnectionAttempt::Delegate {
+class MessageTransferOperation : public HostConnection::PayloadListener {
  public:
   MessageTransferOperation(
       const TetherHost& tether_host,
-      secure_channel::ConnectionPriority connection_priority,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+      HostConnection::Factory::ConnectionPriority connection_priority,
+      raw_ptr<HostConnection::Factory> host_connection_factory);
 
   MessageTransferOperation(const MessageTransferOperation&) = delete;
   MessageTransferOperation& operator=(const MessageTransferOperation&) = delete;
@@ -56,25 +45,22 @@ class MessageTransferOperation
   // Manually ends the operation.
   void StopOperation();
 
-  // Sends |message_wrapper|'s message to |remote_device_| and returns the
-  // associated message's sequence number.
-  int SendMessageToDevice(std::unique_ptr<MessageWrapper> message_wrapper);
-
-  // Callback executed when a device is authenticated (i.e., it is in a state
+  // Callback executed when a host is authenticated (i.e., it is in a state
   // which allows messages to be sent/received). Should be overridden by derived
-  // classes which intend to send a message to |remote_device_| as soon as an
-  // authenticated channel has been established to that device.
+  // classes which intend to send a message to |tether_host_| as soon as an
+  // authenticated channel has been established to that host.
   virtual void OnDeviceAuthenticated() {}
 
-  // Callback executed when a tether protocol message is received. Should be
-  // overridden by derived classes which intend to handle messages received from
-  // |remote_device_|.
-  virtual void OnMessageReceived(
-      std::unique_ptr<MessageWrapper> message_wrapper) {}
+  void SendMessage(std::unique_ptr<MessageWrapper> message_wrapper,
+                   HostConnection::OnMessageSentCallback on_message_sent);
 
-  // Callback executed a tether protocol message is sent. |sequence_number| is
-  // the value returned by SendMessageToDevice().
-  virtual void OnMessageSent(int sequence_number) {}
+  // HostConnection::PayloadListener:
+  void OnMessageReceived(
+      std::unique_ptr<MessageWrapper> message_wrapper) override {}
+
+  void OnConnectionAttemptComplete(
+      std::unique_ptr<HostConnection> host_connection);
+  void OnDisconnected();
 
   // Callback executed when the operation has started (i.e., in Initialize()).
   virtual void OnOperationStarted() {}
@@ -94,25 +80,12 @@ class MessageTransferOperation
 
   const std::string GetDeviceId(bool truncate_for_logs) const;
 
-  std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
-  std::unique_ptr<secure_channel::ClientChannel> client_channel_;
-
  private:
   friend class ConnectTetheringOperationTest;
   friend class DisconnectTetheringOperationTest;
   friend class TetherAvailabilityOperationTest;
   friend class KeepAliveOperationTest;
   friend class MessageTransferOperationTest;
-
-  // secure_channel::ConnectionAttempt::Delegate:
-  void OnConnectionAttemptFailure(
-      secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(
-      std::unique_ptr<secure_channel::ClientChannel> channel) override;
-
-  // secure_channel::ClientChannel::Observer:
-  void OnDisconnected() override;
-  void OnMessageReceived(const std::string& payload) override;
 
   // The maximum expected time to connect to a remote device, if it can be
   // connected to. This number has been determined by examining metrics.
@@ -141,9 +114,9 @@ class MessageTransferOperation
       std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
 
   TetherHost tether_host_;
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
-  const secure_channel::ConnectionPriority connection_priority_;
+  const HostConnection::Factory::ConnectionPriority connection_priority_;
+  std::unique_ptr<HostConnection> host_connection_;
+  raw_ptr<HostConnection::Factory> host_connection_factory_;
 
   std::unique_ptr<cross_device::TimerFactory> timer_factory_;
 
@@ -151,10 +124,7 @@ class MessageTransferOperation
   bool shutting_down_ = false;
   MessageType message_type_for_connection_;
 
-  int next_message_sequence_number_ = 0;
-
   std::unique_ptr<base::OneShotTimer> remote_device_timer_;
-
   base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_{this};
 };
 

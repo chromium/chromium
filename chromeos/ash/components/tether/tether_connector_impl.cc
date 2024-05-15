@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_connector.h"
 #include "chromeos/ash/components/tether/wifi_hotspot_disconnector.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace ash::tether {
 
@@ -83,8 +82,7 @@ GetConnectionToHostResponseAndInternalErrorFromWifiHotspotConnectionError(
 }  // namespace
 
 TetherConnectorImpl::TetherConnectorImpl(
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
+    raw_ptr<HostConnection::Factory> host_connection_factory,
     NetworkStateHandler* network_state_handler,
     WifiHotspotConnector* wifi_hotspot_connector,
     ActiveHost* active_host,
@@ -96,8 +94,7 @@ TetherConnectorImpl::TetherConnectorImpl(
     HostConnectionMetricsLogger* host_connection_metrics_logger,
     DisconnectTetheringRequestSender* disconnect_tethering_request_sender,
     WifiHotspotDisconnector* wifi_hotspot_disconnector)
-    : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
+    : host_connection_factory_(host_connection_factory),
       network_state_handler_(network_state_handler),
       wifi_hotspot_connector_(wifi_hotspot_connector),
       active_host_(active_host),
@@ -170,8 +167,7 @@ void TetherConnectorImpl::ConnectToNetwork(
   }
 
   connect_tethering_operation_ = ConnectTetheringOperation::Factory::Create(
-      TetherHost(*tether_host_to_connect), device_sync_client_,
-      secure_channel_client_,
+      TetherHost(*tether_host_to_connect), host_connection_factory_,
       host_scan_cache_->DoesHostRequireSetup(tether_network_guid));
   connect_tethering_operation_->AddObserver(this);
   connect_tethering_operation_->Initialize();

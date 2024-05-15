@@ -11,14 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_request_sender.h"
-
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
+#include "chromeos/ash/components/tether/host_connection.h"
 
 namespace ash::tether {
 
@@ -31,8 +24,7 @@ class DisconnectTetheringRequestSenderImpl
   class Factory {
    public:
     static std::unique_ptr<DisconnectTetheringRequestSender> Create(
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client,
+        raw_ptr<HostConnection::Factory> host_connection_factory,
         TetherHostFetcher* tether_host_fetcher);
 
     static void SetFactoryForTesting(Factory* factory);
@@ -40,8 +32,7 @@ class DisconnectTetheringRequestSenderImpl
    protected:
     virtual ~Factory();
     virtual std::unique_ptr<DisconnectTetheringRequestSender> CreateInstance(
-        device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client,
+        raw_ptr<HostConnection::Factory> host_connection_factory,
         TetherHostFetcher* tether_host_fetcher) = 0;
 
    private:
@@ -64,13 +55,11 @@ class DisconnectTetheringRequestSenderImpl
 
  protected:
   DisconnectTetheringRequestSenderImpl(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      raw_ptr<HostConnection::Factory> host_connection_factory,
       TetherHostFetcher* tether_host_fetcher);
 
  private:
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<HostConnection::Factory> host_connection_factory_;
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
 
   std::map<std::string, std::unique_ptr<DisconnectTetheringOperation>>
