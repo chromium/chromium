@@ -10862,6 +10862,12 @@
                     "enable_features": [
                         "KeyboardFocusableScrollers"
                     ]
+                },
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "KeyboardFocusableScrollers"
+                    ]
                 }
             ]
         }

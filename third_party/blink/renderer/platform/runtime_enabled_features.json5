@@ -2189,6 +2189,7 @@
       // keyboard focusable by default.
       name: "KeyboardFocusableScrollers",
       status: "experimental",
+      public: true,
     },
     {
       // TODO(crbug.com/40113891): Disables KeyboardFocusableScrollers.
@@ -2203,7 +2204,6 @@
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
-      public: true,
     },
     {
       // This feature makes HTMLLabelElement::DefaultEventHandler always call

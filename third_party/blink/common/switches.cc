@@ -121,6 +121,14 @@ extern const char kIntensiveWakeUpThrottlingPolicy[] =
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceDisable[] = "0";
 extern const char kIntensiveWakeUpThrottlingPolicy_ForceEnable[] = "1";
 
+// Used to communicate managed policy for KeyboardFocusableScrollers feature.
+// This feature is typically controlled by a RuntimeEnabledFeature, but requires
+// an enterprise policy override.
+extern const char kKeyboardFocusableScrollersEnabled[] =
+    "keyboard-focusable-scrollers-enabled";
+extern const char kKeyboardFocusableScrollersOptOut[] =
+    "keyboard-focusable-scrollers-opt-out";
+
 // A command line to indicate if there ia any legacy tech report urls being set.
 // If so, we will send report from blink to browser process.
 extern const char kLegacyTechReportPolicyEnabled[] =

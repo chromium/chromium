@@ -1593,6 +1593,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       true);
 
   registry->RegisterBooleanPref(
+      policy::policy_prefs::kKeyboardFocusableScrollersEnabled, true);
+
+  registry->RegisterBooleanPref(
       policy::policy_prefs::
           kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
       true);
@@ -2642,6 +2645,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 
       if (prefs->GetBoolean(policy::policy_prefs::kMutationEventsEnabled)) {
         command_line->AppendSwitch(blink::switches::kMutationEventsEnabled);
+      }
+
+      if (!prefs->GetBoolean(
+              policy::policy_prefs::kKeyboardFocusableScrollersEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kKeyboardFocusableScrollersOptOut);
       }
 
       if (prefs->GetBoolean(policy::policy_prefs::
