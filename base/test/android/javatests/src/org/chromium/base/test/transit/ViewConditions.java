@@ -26,6 +26,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.RawFailureHandler;
 
 import java.util.ArrayList;
@@ -99,6 +100,10 @@ public class ViewConditions {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
+            if (!ApplicationStatus.hasVisibleActivities()) {
+                return awaiting("No visible activities");
+            }
+
             ViewInteraction viewInteraction =
                     onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
             String[] message = new String[1];
@@ -193,6 +198,10 @@ public class ViewConditions {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
+            if (!ApplicationStatus.hasVisibleActivities()) {
+                return fulfilled("No visible activities");
+            }
+
             try {
                 onView(mMatcher)
                         .withFailureHandler(RawFailureHandler.getInstance())
