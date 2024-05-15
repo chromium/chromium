@@ -32,7 +32,8 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
   std::vector<uint8_t> client_token_;
   std::optional<int64_t> billing_customer_number_;
   std::optional<GURL> merchant_payment_page_url_;
-  // The payment instrument identifier.
+  // The identifier for the payment method selected by the user. This is a
+  // required field. Its type is optional to avoid its default value being 0.
   std::optional<int64_t> instrument_id_;
   std::optional<std::string> pix_code_;
 };

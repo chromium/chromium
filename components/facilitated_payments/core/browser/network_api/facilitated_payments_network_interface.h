@@ -24,6 +24,10 @@ namespace payments::facilitated {
 class FacilitatedPaymentsInitiatePaymentRequestDetails;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
 
+// Billable service number is defined in Payments server to distinguish
+// different requests.
+inline constexpr int kFacilitatedPaymentsBillableServiceNumber = 70154;
+
 // Issues Payments RPCs and manages responses and failure conditions for
 // Facilitated Payments. Only one request may be active at a time. Initiating a
 // new request will cancel a pending request.

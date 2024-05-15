@@ -4,7 +4,16 @@
 
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
 
+#include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+
 namespace payments::facilitated {
+
+namespace {
+const char kInitiatePaymentRequestPath[] =
+    "payments/apis/chromepaymentsservice/initiatepayment";
+}  // namespace
 
 FacilitatedPaymentsInitiatePaymentRequest::
     FacilitatedPaymentsInitiatePaymentRequest(
@@ -23,15 +32,69 @@ FacilitatedPaymentsInitiatePaymentRequest::
     ~FacilitatedPaymentsInitiatePaymentRequest() = default;
 
 std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestUrlPath() {
-  return "";
+  return kInitiatePaymentRequestPath;
 }
 
 std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContentType() {
-  return "";
+  return "application/json";
 }
 
 std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
-  return "";
+  base::Value::Dict request_dict;
+
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
+
+  base::Value::Dict risk_data;
+  risk_data.Set("message_type", "BROWSER_NATIVE_FINGERPRINTING");
+  risk_data.Set("encoding_type", "BASE_64");
+  risk_data.Set("value", request_details_->risk_data_);
+  request_dict.Set("risk_data_encoded", std::move(risk_data));
+
+  request_dict.Set("client_token", base::Value(std::string(
+                                       request_details_->client_token_.begin(),
+                                       request_details_->client_token_.end())));
+
+  base::Value::Dict context;
+  context.Set("language_code", app_locale_);
+  context.Set("billable_service", kFacilitatedPaymentsBillableServiceNumber);
+  if (request_details_->billing_customer_number_.has_value()) {
+    base::Value::Dict customer_context;
+    customer_context.Set(
+        "external_customer_id",
+        base::NumberToString(
+            request_details_->billing_customer_number_.value()));
+    context.Set("customer_context", std::move(customer_context));
+  }
+  request_dict.Set("context", std::move(context));
+
+  if (request_details_->merchant_payment_page_url_.has_value()) {
+    base::Value::Dict merchant_info;
+    merchant_info.Set(
+        "merchant_checkout_page_url",
+        request_details_->merchant_payment_page_url_.value().spec());
+    request_dict.Set("merchant_info", std::move(merchant_info));
+  }
+
+  request_dict.Set(
+      "sender_instrument_id",
+      base::NumberToString(request_details_->instrument_id_.value()));
+
+  base::Value::Dict payment_details;
+  if (request_details_->pix_code_.has_value()) {
+    // TODO(b/332602034): Pass the payment rail to be used for payment as an
+    // enum. In future, some other payment rail could also support PIX codes.
+    payment_details.Set("payment_rail", "PIX");
+    payment_details.Set("qr_code", request_details_->pix_code_.value());
+  }
+  // The request should have a payment rail.
+  DCHECK(payment_details.FindString("payment_rail"));
+  request_dict.Set("payment_details", std::move(payment_details));
+
+  std::string request_content;
+  base::JSONWriter::Write(request_dict, &request_content);
+  return request_content;
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(

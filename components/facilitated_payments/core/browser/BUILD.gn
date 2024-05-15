@@ -42,6 +42,7 @@ source_set("unit_tests") {
   sources = [
     "facilitated_payments_manager_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
+    "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
   ]
 
   deps = [
