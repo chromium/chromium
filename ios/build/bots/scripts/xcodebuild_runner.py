@@ -201,6 +201,13 @@ class LaunchCommand(object):
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
                                           clones)
+
+      # TODO(crbug.com/340857498): temporarily turning this off on all
+      # device testing due to Xcode hang on iOS17.4+. In the future
+      # we should have a testing config flag to toggle this on/off
+      if not iossim_util.is_device_with_udid_simulator(self.udid):
+        cmd_list.extend(['-collect-test-diagnostics', 'never'])
+
       # TODO(crbug.com/40606422): add heartbeat logging to xcodebuild_runner.
       LOGGER.info('Start test attempt #%d for command [%s]' %
                   (attempt, ' '.join(cmd_list)))
