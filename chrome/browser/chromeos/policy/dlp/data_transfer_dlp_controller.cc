@@ -339,10 +339,11 @@ void DataTransferDlpController::PasteIfAllowed(
     return;
   }
 
-  if (absl::holds_alternative<size_t>(pasted_content)) {
-    size_t size = absl::get<size_t>(pasted_content);
-    ContinuePasteIfClipboardRestrictionsAllow(source, destination, size, rfh,
-                                              std::move(paste_cb));
+  if (absl::holds_alternative<size_t>(pasted_content) &&
+      absl::get<size_t>(pasted_content) > 0) {
+    ContinuePasteIfClipboardRestrictionsAllow(source, destination,
+                                              absl::get<size_t>(pasted_content),
+                                              rfh, std::move(paste_cb));
     return;
   }
 
