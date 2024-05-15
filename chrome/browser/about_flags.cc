@@ -7635,6 +7635,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAvifGainmapHdrImagesDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kAvifGainmapHdrImages)},
 
+    {"crabbyavif", flag_descriptions::kCrabbyAvifName,
+     flag_descriptions::kCrabbyAvifDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kCrabbyAvif)},
+
     {"file-handling-icons", flag_descriptions::kFileHandlingIconsName,
      flag_descriptions::kFileHandlingIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kFileHandlingIcons)},
