@@ -200,11 +200,16 @@ id<GREYMatcher> PasswordDetailUsername() {
   return TextFieldForCellWithLabelId(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
 }
 
-// Matcher for the note in Password Details view.
+// Matcher for the text view of the note in Password Details view.
 id<GREYMatcher> PasswordDetailNote() {
   return grey_allOf(
       grey_accessibilityID(GetTextFieldForID(IDS_IOS_SHOW_PASSWORD_VIEW_NOTE)),
       grey_kindOfClassName(@"UITextView"), nil);
+}
+
+// Returns matcher for the label of the note in Password Details view.
+id<GREYMatcher> PasswordDetailNoteLabel() {
+  return grey_allOf(grey_kindOfClass([UILabel class]), grey_text(@"Note"), nil);
 }
 
 // Matcher for the federation details in Password Details view.
@@ -3707,6 +3712,41 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // option anymore.
   [[EarlGrey selectElementWithMatcher:PasswordDetailsMoveToAccountButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+- (void)testAddPasswordTappingAnywhereInNoteFieldFocusesTextView {
+  SavePasswordFormToProfileStore();
+  OpenPasswordManager();
+
+  // Tap "Add Password"
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Tap the "Note" label of the note cell.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNoteLabel()]
+      performAction:grey_tap()];
+
+  // Check that the text view is the first responder.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      assertWithMatcher:grey_firstResponder()];
+}
+
+- (void)testEditPasswordTappingAnywhereInNoteFieldFocusesTextView {
+  SaveExamplePasswordFormToProfileStoreWithNote();
+  OpenPasswordManager();
+
+  // Open password details and tap "Edit".
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+  TapNavigationBarEditButton();
+
+  // Tap the "Note" label of the note cell.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNoteLabel()]
+      performAction:grey_tap()];
+
+  // Check that the text view is the first responder.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailNote()]
+      assertWithMatcher:grey_firstResponder()];
 }
 
 @end
