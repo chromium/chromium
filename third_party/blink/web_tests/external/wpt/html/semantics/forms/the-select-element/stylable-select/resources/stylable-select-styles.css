@@ -32,8 +32,10 @@
   padding-inline: 2px;
   padding-block-start: 0;
   padding-block-end: 1px;
-  min-block-size: 1.2em;
   white-space: nowrap;
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
+  align-content: center;
 }
 
 .stylable-select-button {

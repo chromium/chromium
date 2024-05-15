@@ -188,3 +188,15 @@ select:not(:-internal-list-box) option:not(:disabled):hover {
   background-color: SelectedItem;
   color: SelectedItemText;
 }
+
+select:not(:-internal-list-box) option {
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  /* TODO(crbug.com/1511354): This might be able to be combined with the
+   * default select option rules at some point. This should be re-evaluted
+   * before StylableSelect is shipped. */
+  min-inline-size: 24px;
+  min-block-size: max(24px, 1.2em);
+  align-content: center;
+}
