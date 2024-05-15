@@ -38,9 +38,9 @@ This is a testharness.js-based test.
 [FAIL] argMin float32 4D tensor all options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMin float32 0D scalar options.axes=[]
-  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'argMin' on 'MLGraphBuilder': The rank of input must be larger than or equal to 1."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMin float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
-  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'argMin' on 'MLGraphBuilder': The rank of input must be larger than or equal to 1."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMax float32 1D constant tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMax float32 1D tensor default options
@@ -80,8 +80,8 @@ This is a testharness.js-based test.
 [FAIL] argMax float32 4D tensor all options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMax float32 0D scalar options.axes=[]
-  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'argMax' on 'MLGraphBuilder': The rank of input must be larger than or equal to 1."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 [FAIL] argMax float32 0D scalar options.axes=[] no effect by both keepDimensions and selectLastIndex being true
-  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'argMax' on 'MLGraphBuilder': The rank of input must be larger than or equal to 1."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operand data type (int64) is not supported."
 Harness: the test ran to completion.
 

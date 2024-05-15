@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 155 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reduceL1 float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL1) is not supported."
 [FAIL] reduceL1 float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL1) is not supported."
 [FAIL] reduceL1 float32 1D tensor all positive default options
@@ -34,6 +36,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL1) is not supported."
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL1) is not supported."
+[FAIL] reduceL2 float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL2) is not supported."
 [FAIL] reduceL2 float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL2) is not supported."
 [FAIL] reduceL2 float32 1D tensor all positive default options
@@ -68,6 +72,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL2) is not supported."
 [FAIL] reduceL2 float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceL2) is not supported."
+[FAIL] reduceLogSum float32 0D constant tensor all non-negative default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported."
 [FAIL] reduceLogSum float32 1D constant tensor all non-negative default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported."
 [FAIL] reduceLogSum float32 1D tensor all non-negative default options
@@ -98,6 +104,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported."
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSum) is not supported."
+[FAIL] reduceLogSumExp float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported."
 [FAIL] reduceLogSumExp float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported."
 [FAIL] reduceLogSumExp float32 1D tensor all positive default options
@@ -132,6 +140,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported."
 [FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceLogSumExp) is not supported."
+[FAIL] reduceMax float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMax) is not supported."
 [FAIL] reduceMax float32 1D constant tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMax) is not supported."
 [FAIL] reduceMax float32 1D tensor default options
@@ -160,12 +170,16 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMax) is not supported."
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMax) is not supported."
+[FAIL] reduceMean float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'build' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter."
 [FAIL] reduceMean float32 4D tensor options.axes
   promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'build' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter."
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=false
   promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'build' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter."
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'build' on 'MLGraphBuilder': Failed to call xnn_define_static_mean( subgraph, reduction_axes.size(), reduction_axes.data(), input_id, output_id, flags): xnn_status_invalid_parameter."
+[FAIL] reduceMin float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMin) is not supported."
 [FAIL] reduceMin float32 1D constant tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMin) is not supported."
 [FAIL] reduceMin float32 1D tensor default options
@@ -194,6 +208,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMin) is not supported."
 [FAIL] reduceMin float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceMin) is not supported."
+[FAIL] reduceProduct float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceProduct) is not supported."
 [FAIL] reduceProduct float32 1D constant tensor default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceProduct) is not supported."
 [FAIL] reduceProduct float32 1D tensor default options
@@ -222,6 +238,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceProduct) is not supported."
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceProduct) is not supported."
+[FAIL] reduceSum float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSum) is not supported."
 [FAIL] reduceSum float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSum) is not supported."
 [FAIL] reduceSum float32 1D tensor all positive default options
@@ -256,6 +274,8 @@ Found 145 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSum) is not supported."
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSum) is not supported."
+[FAIL] reduceSumSquare float32 0D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported."
 [FAIL] reduceSumSquare float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (reduceSumSquare) is not supported."
 [FAIL] reduceSumSquare float32 1D tensor all positive default options

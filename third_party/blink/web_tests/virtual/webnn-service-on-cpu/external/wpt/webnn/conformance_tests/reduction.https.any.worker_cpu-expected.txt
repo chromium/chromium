@@ -1,5 +1,9 @@
 This is a testharness.js-based test.
-Found 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 93 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reduceL1 float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL1 is not implemented."
+[FAIL] reduceL1 float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL1 is not implemented."
 [FAIL] reduceL1 float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL1 is not implemented."
 [FAIL] reduceL1 float32 1D tensor all positive default options
@@ -34,6 +38,10 @@ Found 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL1 is not implemented."
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL1 is not implemented."
+[FAIL] reduceL2 float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL2 is not implemented."
+[FAIL] reduceL2 float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL2 is not implemented."
 [FAIL] reduceL2 float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL2 is not implemented."
 [FAIL] reduceL2 float32 1D tensor all positive default options
@@ -68,6 +76,10 @@ Found 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL2 is not implemented."
 [FAIL] reduceL2 float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceL2 is not implemented."
+[FAIL] reduceLogSum float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSum is not implemented."
+[FAIL] reduceLogSum float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSum is not implemented."
 [FAIL] reduceLogSum float32 1D constant tensor all non-negative default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSum is not implemented."
 [FAIL] reduceLogSum float32 1D tensor all non-negative default options
@@ -98,6 +110,10 @@ Found 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSum is not implemented."
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSum is not implemented."
+[FAIL] reduceLogSumExp float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSumExp is not implemented."
+[FAIL] reduceLogSumExp float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSumExp is not implemented."
 [FAIL] reduceLogSumExp float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSumExp is not implemented."
 [FAIL] reduceLogSumExp float32 1D tensor all positive default options
@@ -132,6 +148,10 @@ Found 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSumExp is not implemented."
 [FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceLogSumExp is not implemented."
+[FAIL] reduceSumSquare float32 0D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceSumSquare is not implemented."
+[FAIL] reduceSumSquare float32 0D constant tensor empty axes
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceSumSquare is not implemented."
 [FAIL] reduceSumSquare float32 1D constant tensor all positive default options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': reduceSumSquare is not implemented."
 [FAIL] reduceSumSquare float32 1D tensor all positive default options
