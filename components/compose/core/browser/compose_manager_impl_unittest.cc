@@ -21,6 +21,7 @@
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -92,6 +93,9 @@ class ComposeManagerImplTest : public testing::Test {
     mock_autofill_driver_.set_autofill_manager(
         std::move(mock_autofill_manager));
 
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
+
     // Allow the manager to obtain the PageUkmTracker instance.
     ON_CALL(mock_compose_client(), getPageUkmTracker)
         .WillByDefault(testing::Return(page_ukm_tracker_.get()));
@@ -105,6 +109,11 @@ class ComposeManagerImplTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     compose_manager_impl_ =
         std::make_unique<compose::ComposeManagerImpl>(&mock_compose_client());
+  }
+
+  void TearDown() override {
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
   }
 
   // Helper method to retrieve compose suggestions, if it exists.
@@ -236,7 +245,7 @@ TEST_F(
 }
 
 TEST_F(ComposeManagerImplTest,
-       SuggestionGeneration_DoesNotHaveSession_ApplyExpectedTextAndLabel) {
+       SuggestionGeneration_NoSession_ExpectedTextAndLabel) {
   std::optional<autofill::Suggestion> suggestion = GetSuggestion(
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*has_session=*/false);
@@ -246,6 +255,22 @@ TEST_F(ComposeManagerImplTest,
                 l10n_util::GetStringUTF8(IDS_COMPOSE_SUGGESTION_MAIN_TEXT),
                 {{autofill::Suggestion::Text(
                     l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL))}},
+                autofill::Suggestion::Icon::kPenSpark,
+                autofill::SuggestionType::kComposeProactiveNudge));
+}
+
+TEST_F(ComposeManagerImplTest,
+       SuggestionGeneration_NoSession_CompactUI_ExpectedTextAndLabel) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_compact_ui = true;
+
+  std::optional<autofill::Suggestion> suggestion = GetSuggestion(
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*has_session=*/false);
+  ASSERT_TRUE(suggestion.has_value());
+  EXPECT_EQ(*suggestion,
+            autofill::Suggestion(
+                l10n_util::GetStringUTF8(IDS_COMPOSE_SUGGESTION_MAIN_TEXT), "",
                 autofill::Suggestion::Icon::kPenSpark,
                 autofill::SuggestionType::kComposeProactiveNudge));
 }

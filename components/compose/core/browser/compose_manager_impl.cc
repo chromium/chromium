@@ -191,9 +191,12 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
     type = SuggestionType::kComposeProactiveNudge;
   }
   Suggestion suggestion(std::move(suggestion_text));
-  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   suggestion.type = type;
   suggestion.icon = Suggestion::Icon::kPenSpark;
+  // Add footer label if not using compact ui.
+  if (!compose::GetComposeConfig().proactive_nudge_compact_ui) {
+    suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
+  }
 
   if (!has_session &&
       base::FeatureList::IsEnabled(features::kEnableComposeProactiveNudge)) {

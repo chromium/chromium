@@ -3808,6 +3808,35 @@ const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
       kDefaultBrowserPromptRefreshAppMenuItem,
       std::size(kDefaultBrowserPromptRefreshAppMenuItem), nullptr}};
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+// The variations of ComposeProactiveNudge
+const FeatureEntry::FeatureParam kComposeProactiveNudge_CompactUI_50[] = {
+    {"proactive_nudge_compact_ui", "true"},
+    {"proactive_nudge_show_probability", "0.5"}};
+
+const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeUI_50[] = {
+    {"proactive_nudge_compact_ui", "false"},
+    {"proactive_nudge_show_probability", "0.5"}};
+
+const FeatureEntry::FeatureParam kComposeProactiveNudge_CompactUI_100[] = {
+    {"proactive_nudge_compact_ui", "true"},
+    {"proactive_nudge_show_probability", "1"}};
+
+const FeatureEntry::FeatureParam kComposeProactiveNudge_LargeUI_100[] = {
+    {"proactive_nudge_compact_ui", "false"},
+    {"proactive_nudge_show_probability", "1"}};
+
+const FeatureEntry::FeatureVariation kComposeProactiveNudgeVariations[] = {
+    {"Compact UI - show 50%", kComposeProactiveNudge_CompactUI_50,
+     std::size(kComposeProactiveNudge_CompactUI_50), nullptr},
+    {"Large UI - show 50%", kComposeProactiveNudge_LargeUI_50,
+     std::size(kComposeProactiveNudge_LargeUI_50), nullptr},
+    {"Compact UI - show 100%", kComposeProactiveNudge_CompactUI_100,
+     std::size(kComposeProactiveNudge_CompactUI_100), nullptr},
+    {"Large UI - show 100%", kComposeProactiveNudge_LargeUI_100,
+     std::size(kComposeProactiveNudge_LargeUI_100), nullptr}};
+#endif  // ENABLE_COMPOSE
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10709,7 +10738,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"compose-proactive-nudge", flag_descriptions::kComposeProactiveNudgeName,
      flag_descriptions::kComposeProactiveNudgeDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
-     FEATURE_VALUE_TYPE(compose::features::kEnableComposeProactiveNudge)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         compose::features::kEnableComposeProactiveNudge,
+         kComposeProactiveNudgeVariations,
+         "ComposeProactiveNudge")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
