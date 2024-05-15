@@ -17095,21 +17095,6 @@
             ]
         }
     ],
-    "SafeBrowsingDelayedWarnings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingDelayedWarnings"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDownloadReportWithoutUserDecision": [
         {
             "platforms": [
