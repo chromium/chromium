@@ -50,6 +50,10 @@ class VirtualCardEnrollBubbleControllerImpl
   // Shows the bubble again if the users clicks the omnibox icon.
   void ReshowBubble();
 
+  // Shows the confirmation bubble view after the virtual card enrollment
+  // process has completed.
+  virtual void ShowConfirmationBubbleView(bool is_vcn_enrolled);
+
   // VirtualCardEnrollBubbleController:
   const VirtualCardEnrollUiModel& GetUiModel() const override;
   VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource()
@@ -60,7 +64,6 @@ class VirtualCardEnrollBubbleControllerImpl
   void HideIconAndBubble() override;
   bool IsEnrollmentInProgress() const override;
   bool IsEnrollmentComplete() const override;
-  virtual void ShowConfirmationBubbleView(bool is_vcn_enrolled);
 #endif
 
   void OnAcceptButton(bool did_switch_to_loading_state = false) override;

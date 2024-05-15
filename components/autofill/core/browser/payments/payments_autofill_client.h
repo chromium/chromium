@@ -107,11 +107,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback);
-
-  // Called after virtual card enrollment is finished. Shows enrollment
-  // result to users. `is_vcn_enrolled` indicates if the card was successfully
-  // enrolled as a virtual card.
-  virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Called after credit card upload is finished. Will show upload result to
@@ -126,6 +121,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Hides save card offer or confirmation prompt.
   virtual void HideSaveCardPromptPrompt();
+
+  // Called after virtual card enrollment is finished. Shows enrollment
+  // result to users. `is_vcn_enrolled` indicates if the card was successfully
+  // enrolled as a virtual card.
+  virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if

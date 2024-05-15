@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -28,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -58,7 +64,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.setTestValues(testValues);
+        FeatureList.mergeTestValues(testValues, false);
 
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
 
@@ -134,12 +140,30 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testClickAcceptDismissesTheBottomSheet() {
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_enablesLoadingStateAndDoesNotDismissTheBottomSheet() {
         mCoordinator.requestShowContent(mWindow);
-
         mCoordinator.getAutofillVcnEnrollBottomSheetViewForTesting().mAcceptButton.performClick();
 
         assertTrue(mAcceptClicked);
+        assertTrue(
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
+        verify(mBottomSheetController, times(0)).hideContent(any(), anyBoolean(), anyInt());
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION})
+    public void testClickAccept_dismissesTheBottomSheet() {
+        mCoordinator.requestShowContent(mWindow);
+        mCoordinator.getAutofillVcnEnrollBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        assertTrue(mAcceptClicked);
+        assertFalse(
+                mCoordinator
+                        .getPropertyModelForTesting()
+                        .get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE));
         verify(mBottomSheetController)
                 .hideContent(
                         any(AutofillVcnEnrollBottomSheetContent.class),

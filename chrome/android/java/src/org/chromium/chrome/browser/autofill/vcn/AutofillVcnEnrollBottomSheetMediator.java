@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** The mediator controller for the virtual card number (VCN) enrollment bottom sheet. */
 /*package*/ class AutofillVcnEnrollBottomSheetMediator {
     private final AutofillVcnEnrollBottomSheetContent mContent;
     private final AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
     private BottomSheetController mBottomSheetController;
+    private final PropertyModel mModel;
 
     /**
      * Constructs the mediator controller for the virtual card enrollment bottom sheet.
@@ -22,16 +25,17 @@ import org.chromium.ui.base.WindowAndroid;
      */
     AutofillVcnEnrollBottomSheetMediator(
             AutofillVcnEnrollBottomSheetContent content,
-            AutofillVcnEnrollBottomSheetLifecycle lifecycle) {
+            AutofillVcnEnrollBottomSheetLifecycle lifecycle,
+            PropertyModel model) {
         mContent = content;
         mLifecycle = lifecycle;
+        mModel = model;
     }
 
     /**
      * Requests to show the bottom sheet.
      *
      * @param window The window where the bottom sheet should be shown.
-     *
      * @return True if shown.
      */
     boolean requestShowContent(WindowAndroid window) {
@@ -49,7 +53,12 @@ import org.chromium.ui.base.WindowAndroid;
 
     /** Callback for when the user hits the [accept] button. */
     void onAccept() {
-        hide();
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_VCN_ENROLL_LOADING_AND_CONFIRMATION)) {
+            mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true);
+        } else {
+            hide();
+        }
     }
 
     /** Callback for when the user hits the [cancel] button. */

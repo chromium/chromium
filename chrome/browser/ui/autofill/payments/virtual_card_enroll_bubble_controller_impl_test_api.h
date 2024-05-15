@@ -31,15 +31,20 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  void SetAutofillVCNEnrollBottomSheetBridge(
+      std::unique_ptr<AutofillVCNEnrollBottomSheetBridge> bridge) {
+    controller_->autofill_vcn_enroll_bottom_sheet_bridge_ = std::move(bridge);
+  }
+
   bool DidShowBottomSheet() {
     return !!controller_->autofill_vcn_enroll_bottom_sheet_bridge_;
   }
-#else
+#else   // !BUILDFLAG(IS_ANDROID)
   VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus
   GetEnrollmentStatus() {
     return controller_->enrollment_status_;
   }
-#endif  // IS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   raw_ref<VirtualCardEnrollBubbleControllerImpl> controller_;

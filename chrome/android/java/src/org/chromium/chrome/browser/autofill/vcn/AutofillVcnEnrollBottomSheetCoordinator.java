@@ -57,7 +57,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                         new AutofillVcnEnrollBottomSheetContent(
                                 mView.mContentView, mView.mScrollView, delegate::onDismiss),
                         new AutofillVcnEnrollBottomSheetLifecycle(
-                                layoutStateProvider, tabModelSelectorSupplier));
+                                layoutStateProvider, tabModelSelectorSupplier),
+                        mModel);
 
         mView.mAcceptButton.setOnClickListener(
                 (View button) -> {

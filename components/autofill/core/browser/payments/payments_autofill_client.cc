@@ -37,8 +37,6 @@ void PaymentsAutofillClient::ShowLocalCardMigrationResults(
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {}
-
-void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
@@ -48,6 +46,8 @@ bool PaymentsAutofillClient::IsSaveCardPromptVisible() const {
 }
 
 void PaymentsAutofillClient::HideSaveCardPromptPrompt() {}
+
+void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 
 void PaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,

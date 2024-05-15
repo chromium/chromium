@@ -65,6 +65,11 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
       delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
 }
 
+void AutofillVCNEnrollBottomSheetBridge::Hide() {
+  Java_AutofillVcnEnrollBottomSheetBridge_hide(
+      base::android::AttachCurrentThread(), java_bridge_);
+}
+
 void AutofillVCNEnrollBottomSheetBridge::OnAccept(JNIEnv* env) {
   delegate_->Accept();
 }
@@ -76,6 +81,7 @@ void AutofillVCNEnrollBottomSheetBridge::OnCancel(JNIEnv* env) {
 void AutofillVCNEnrollBottomSheetBridge::OnDismiss(JNIEnv* env) {
   delegate_->InfoBarDismissed();
 }
+
 void AutofillVCNEnrollBottomSheetBridge::RecordLinkClickMetric(JNIEnv* env,
                                                                int link_type) {
   LogVirtualCardEnrollmentLinkClickedMetric(

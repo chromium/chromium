@@ -29,7 +29,7 @@ class AutofillVCNEnrollBottomSheetBridge {
   AutofillVCNEnrollBottomSheetBridge& operator=(
       const AutofillVCNEnrollBottomSheetBridge&) = delete;
 
-  ~AutofillVCNEnrollBottomSheetBridge();
+  virtual ~AutofillVCNEnrollBottomSheetBridge();
 
   // Requests to show the virtual card enrollment bottom sheet.
   // Returns true if the bottom sheet was shown.
@@ -37,6 +37,9 @@ class AutofillVCNEnrollBottomSheetBridge {
       content::WebContents* web_contents,
       std::unique_ptr<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>
           delegate);
+
+  // Hides the virtual card enrollment bottom sheet.
+  virtual void Hide();
 
   void OnAccept(JNIEnv* env);
   void OnCancel(JNIEnv* env);

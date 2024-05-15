@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -119,19 +119,6 @@ void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
                                    migratable_credit_cards,
                                    delete_local_card_callback);
 }
-
-void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
-    bool is_vcn_enrolled) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
-    VirtualCardEnrollBubbleControllerImpl* controller =
-        VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
-    if (controller && controller->IsIconVisible()) {
-      controller->ShowConfirmationBubbleView(is_vcn_enrolled);
-    }
-  }
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
@@ -165,6 +152,19 @@ void ChromePaymentsAutofillClient::HideSaveCardPromptPrompt() {
     controller->HideSaveCardBubble();
   }
 #endif
+}
+
+void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
+    bool is_vcn_enrolled) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
+    if (VirtualCardEnrollBubbleControllerImpl* controller =
+            VirtualCardEnrollBubbleControllerImpl::FromWebContents(
+                web_contents())) {
+      controller->ShowConfirmationBubbleView(is_vcn_enrolled);
+    }
+  }
 }
 
 void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(

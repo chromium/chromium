@@ -52,10 +52,7 @@ class MockVirtualCardEnrollBubbleController
       : VirtualCardEnrollBubbleControllerImpl(web_contents) {}
   ~MockVirtualCardEnrollBubbleController() override = default;
 
-#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ShowConfirmationBubbleView, (bool), (override));
-#endif
-  MOCK_METHOD(bool, IsIconVisible, (), (const override));
 };
 
 class ChromePaymentsAutofillClientTest
@@ -142,17 +139,6 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->CreditCardUploadCompleted(true);
 }
 #else   // !BUILDFLAG(IS_ANDROID)
-// Verify that confirmation bubble view is shown after virtual card enrollment
-// is completed.
-TEST_F(ChromePaymentsAutofillClientTest,
-       VirtualCardEnrollCompleted_ShowsConfirmation) {
-  ON_CALL(virtual_card_bubble_controller(), IsIconVisible())
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(virtual_card_bubble_controller(),
-              ShowConfirmationBubbleView(true));
-  chrome_payments_client()->VirtualCardEnrollCompleted(true);
-}
-
 // Test that calling CreditCardUploadCompleted calls
 // SaveCardBubbleControllerImpl::ShowConfirmationBubbleView.
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -161,6 +147,15 @@ TEST_F(ChromePaymentsAutofillClientTest,
   chrome_payments_client()->CreditCardUploadCompleted(true);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Verify that the confirmation bubble view is shown after virtual card
+// enrollment is completed.
+TEST_F(ChromePaymentsAutofillClientTest,
+       VirtualCardEnrollCompleted_ShowsConfirmation) {
+  EXPECT_CALL(virtual_card_bubble_controller(),
+              ShowConfirmationBubbleView(true));
+  chrome_payments_client()->VirtualCardEnrollCompleted(true);
+}
 
 // Test that there is always an PaymentsWindowManager present if attempted
 // to be retrieved.

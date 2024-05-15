@@ -81,6 +81,27 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
   Show();
 }
 
+void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
+    bool is_vcn_enrolled) {
+#if BUILDFLAG(IS_ANDROID)
+  if (autofill_vcn_enroll_bottom_sheet_bridge_) {
+    autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
+  }
+#else  // !BUILDFLAG(IS_ANDROID)
+  HideIconAndBubble();
+  enrollment_status_ = EnrollmentStatus::kCompleted;
+  confirmation_ui_params_ =
+      is_vcn_enrolled ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                            CreateForVirtualCardSuccess()
+                      : SaveCardAndVirtualCardEnrollConfirmationUiParams::
+                            CreateForVirtualCardFailure(
+                                /*card_label=*/ui_model_.enrollment_fields
+                                    .credit_card.NetworkAndLastFourDigits());
+  // Show enrollment confirmation bubble.
+  Show();
+#endif
+}
+
 const VirtualCardEnrollUiModel&
 VirtualCardEnrollBubbleControllerImpl::GetUiModel() const {
   return ui_model_;
@@ -111,21 +132,6 @@ bool VirtualCardEnrollBubbleControllerImpl::IsEnrollmentInProgress() const {
 
 bool VirtualCardEnrollBubbleControllerImpl::IsEnrollmentComplete() const {
   return enrollment_status_ == EnrollmentStatus::kCompleted;
-}
-
-void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
-    bool is_vcn_enrolled) {
-  HideIconAndBubble();
-  enrollment_status_ = EnrollmentStatus::kCompleted;
-  confirmation_ui_params_ =
-      is_vcn_enrolled ? SaveCardAndVirtualCardEnrollConfirmationUiParams::
-                            CreateForVirtualCardSuccess()
-                      : SaveCardAndVirtualCardEnrollConfirmationUiParams::
-                            CreateForVirtualCardFailure(
-                                /*card_label=*/ui_model_.enrollment_fields
-                                    .credit_card.NetworkAndLastFourDigits());
-  // Show enrollment confirmation bubble.
-  Show();
 }
 #endif
 
