@@ -10,12 +10,12 @@ import sys
 import zipfile
 
 if sys.version_info.major == 2:
-    from ConfigParser import ConfigParser
+  from ConfigParser import ConfigParser
 else:
-    from configparser import ConfigParser
+  from configparser import ConfigParser
 
 seed_corpus_archive_path = os.path.join(os.path.dirname(sys.argv[0]),
-                                                        sys.argv[1])
+                                        sys.argv[1])
 
 if not os.path.exists(seed_corpus_archive_path):
   sys.exit(-1)

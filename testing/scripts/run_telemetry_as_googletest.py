@@ -2,7 +2,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs isolate bundled Telemetry unittests.
 
 If optional argument --isolated-script-test-output=[FILENAME] is passed
@@ -41,8 +40,10 @@ class TelemetryUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
     return ['--test-filter', test_filter_str]
 
   def generate_sharding_args(self, total_shards, shard_index):
-    return ['--total-shards=%d' % total_shards,
-            '--shard-index=%d' % shard_index]
+    return [
+        '--total-shards=%d' % total_shards,
+        '--shard-index=%d' % shard_index
+    ]
 
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     return ['--retry-limit=%d' % retry_limit]
@@ -66,8 +67,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

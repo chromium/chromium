@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs telemetry benchmarks and gtest perf tests.
 
 If optional argument --isolated-script-test-output=[FILENAME] is passed
@@ -51,8 +50,7 @@ import six
 from collections import OrderedDict
 
 CHROMIUM_SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__),
-                 os.path.pardir, os.path.pardir))
+    os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir))
 
 PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
 sys.path.append(PERF_DIR)
@@ -80,27 +78,27 @@ SHARD_MAPS_DIRECTORY = os.path.abspath(
 # problems. So, only perform the conversion on tests that are whitelisted and
 # are okay with potentially encountering issues.
 GTEST_CONVERSION_WHITELIST = [
-  'angle_perftests',
-  'base_perftests',
-  'blink_heap_perftests',
-  'blink_platform_perftests',
-  'cc_perftests',
-  'components_perftests',
-  'command_buffer_perftests',
-  'dawn_perf_tests',
-  'gpu_perftests',
-  'load_library_perf_tests',
-  'net_perftests',
-  'browser_tests',
-  'services_perftests',
-  # TODO(jmadill): Remove once migrated. http://anglebug.com/5124
-  'standalone_angle_perftests',
-  'sync_performance_tests',
-  'tracing_perftests',
-  'views_perftests',
-  'viz_perftests',
-  'wayland_client_perftests',
-  'xr.vr.common_perftests',
+    'angle_perftests',
+    'base_perftests',
+    'blink_heap_perftests',
+    'blink_platform_perftests',
+    'cc_perftests',
+    'components_perftests',
+    'command_buffer_perftests',
+    'dawn_perf_tests',
+    'gpu_perftests',
+    'load_library_perf_tests',
+    'net_perftests',
+    'browser_tests',
+    'services_perftests',
+    # TODO(jmadill): Remove once migrated. http://anglebug.com/5124
+    'standalone_angle_perftests',
+    'sync_performance_tests',
+    'tracing_perftests',
+    'views_perftests',
+    'viz_perftests',
+    'wayland_client_perftests',
+    'xr.vr.common_perftests',
 ]
 
 # pylint: disable=useless-object-inheritance
@@ -156,7 +154,11 @@ def IsWindows():
 
 
 class GtestCommandGenerator(object):
-  def __init__(self, options, override_executable=None, additional_flags=None,
+
+  def __init__(self,
+               options,
+               override_executable=None,
+               additional_flags=None,
                ignore_shard_env_vars=False):
     self._options = options
     self._override_executable = override_executable
@@ -169,14 +171,11 @@ class GtestCommandGenerator(object):
     Returns:
       list of strings, the executable and its arguments.
     """
-    return ([self._get_executable()] +
-            self._generate_filter_args() +
+    return ([self._get_executable()] + self._generate_filter_args() +
             self._generate_repeat_args() +
             self._generate_also_run_disabled_tests_args() +
             self._generate_output_args(output_dir) +
-            self._generate_shard_args() +
-            self._get_additional_flags()
-           )
+            self._generate_shard_args() + self._get_additional_flags())
 
   @property
   def executable_name(self):
@@ -206,7 +205,7 @@ class GtestCommandGenerator(object):
   def _generate_filter_args(self):
     if self._options.isolated_script_test_filter:
       filter_list = common.extract_filter_list(
-        self._options.isolated_script_test_filter)
+          self._options.isolated_script_test_filter)
       return ['--gtest_filter=' + ':'.join(filter_list)]
     return []
 
@@ -276,11 +275,14 @@ def upload_simple_test_results(return_code, benchmark_name):
 
   result_json = {
       'testResults': [{
-        'testId': benchmark_name,
-        'expected': not return_code,
-        'status': 'FAIL' if return_code else 'PASS',
-        'summaryHtml': summary,
-        'tags': [{'key': 'exit_code', 'value': str(return_code)}],
+          'testId': benchmark_name,
+          'expected': not return_code,
+          'status': 'FAIL' if return_code else 'PASS',
+          'summaryHtml': summary,
+          'tags': [{
+              'key': 'exit_code',
+              'value': str(return_code)
+          }],
       }]
   }
 
@@ -296,8 +298,11 @@ def upload_simple_test_results(return_code, benchmark_name):
   res.raise_for_status()
 
 
-def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
-                            is_unittest=False, results_label=None):
+def execute_gtest_perf_test(command_generator,
+                            output_paths,
+                            use_xvfb=False,
+                            is_unittest=False,
+                            results_label=None):
   start = time.time()
 
   env = os.environ.copy()
@@ -320,19 +325,21 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
       # When running with xvfb, we currently output both to stdout and to the
       # file. It would be better to only output to the file to keep the logs
       # clean.
-      return_code = xvfb.run_executable(
-          command, env, stdoutfile=output_paths.logs)
+      return_code = xvfb.run_executable(command,
+                                        env,
+                                        stdoutfile=output_paths.logs)
     else:
       with open(output_paths.logs, 'w') as handle:
         try:
-          return_code = test_env.run_command_output_to_handle(
-              command, handle, env=env)
+          return_code = test_env.run_command_output_to_handle(command,
+                                                              handle,
+                                                              env=env)
         except OSError as e:
           print('Command to run gtest perf test %s failed with an OSError: %s' %
                 (output_paths.name, e))
           return_code = 1
-    if (not os.path.exists(output_paths.perf_results) and
-        os.path.exists(output_paths.logs)):
+    if (not os.path.exists(output_paths.perf_results)
+        and os.path.exists(output_paths.logs)):
       # Get the correct json format from the stdout to write to the perf
       # results file if gtest does not generate one.
       results_processor = generate_legacy_perf_dashboard_json.\
@@ -366,20 +373,25 @@ def execute_gtest_perf_test(command_generator, output_paths, use_xvfb=False,
   if not is_unittest:
     upload_simple_test_results(return_code, output_paths.name)
 
-  print_duration(
-      'executing gtest %s' % command_generator.executable_name, start)
+  print_duration('executing gtest %s' % command_generator.executable_name,
+                 start)
 
   return return_code
 
 
 class _TelemetryFilterArgument(object):
+
   def __init__(self, filter_string):
     self.benchmark, self.story = filter_string.split('/')
 
 
 class TelemetryCommandGenerator(object):
-  def __init__(self, benchmark, options,
-               story_selection_config=None, is_reference=False):
+
+  def __init__(self,
+               benchmark,
+               options,
+               story_selection_config=None,
+               is_reference=False):
     self.benchmark = benchmark
     self._options = options
     self._story_selection_config = story_selection_config
@@ -395,20 +407,17 @@ class TelemetryCommandGenerator(object):
     Returns:
       list of strings, the executable and its arguments.
     """
-    return ([sys.executable] + self._options.executable.split(' ') +
-            [self.benchmark] +
-            self._generate_filter_args() +
-            self._generate_also_run_disabled_tests_args() +
-            self._generate_output_args(output_dir) +
-            self._generate_story_selection_args() +
-            # passthrough args must be before reference args and repeat args:
-            # crbug.com/928928, crbug.com/894254#c78
-            self._get_passthrough_args() +
-            self._generate_syslog_args() +
-            self._generate_repeat_args() +
-            self._generate_reference_build_args() +
-            self._generate_results_label_args()
-           )
+    return (
+        [sys.executable] + self._options.executable.split(' ') +
+        [self.benchmark] + self._generate_filter_args() +
+        self._generate_also_run_disabled_tests_args() +
+        self._generate_output_args(output_dir) +
+        self._generate_story_selection_args() +
+        # passthrough args must be before reference args and repeat args:
+        # crbug.com/928928, crbug.com/894254#c78
+        self._get_passthrough_args() + self._generate_syslog_args() +
+        self._generate_repeat_args() + self._generate_reference_build_args() +
+        self._generate_results_label_args())
 
   def _get_passthrough_args(self):
     return self._options.passthrough_args
@@ -419,7 +428,8 @@ class TelemetryCommandGenerator(object):
           self._options.isolated_script_test_filter)
       filter_arguments = [_TelemetryFilterArgument(f) for f in filter_list]
       applicable_stories = [
-          f.story for f in filter_arguments if f.benchmark == self.benchmark]
+          f.story for f in filter_arguments if f.benchmark == self.benchmark
+      ]
       # Need to convert this to a valid regex.
       filter_regex = '(' + '|'.join(applicable_stories) + ')'
       return ['--story-filter=' + filter_regex]
@@ -427,8 +437,9 @@ class TelemetryCommandGenerator(object):
 
   def _generate_repeat_args(self):
     if self._options.isolated_script_test_repeat:
-      return ['--pageset-repeat=' + str(
-          self._options.isolated_script_test_repeat)]
+      return [
+          '--pageset-repeat=' + str(self._options.isolated_script_test_repeat)
+      ]
     return []
 
   def _generate_also_run_disabled_tests_args(self):
@@ -438,11 +449,11 @@ class TelemetryCommandGenerator(object):
 
   def _generate_output_args(self, output_dir):
     if self._options.no_output_conversion:
-      return ['--output-format=none',
-              '--output-dir=' + output_dir]
-    return ['--output-format=json-test-results',
-            '--output-format=histograms',
-            '--output-dir=' + output_dir]
+      return ['--output-format=none', '--output-dir=' + output_dir]
+    return [
+        '--output-format=json-test-results', '--output-format=histograms',
+        '--output-dir=' + output_dir
+    ]
 
   def _generate_story_selection_args(self):
     """Returns arguments that limit the stories to be run inside the benchmark.
@@ -450,11 +461,11 @@ class TelemetryCommandGenerator(object):
     selection_args = []
     if self._story_selection_config:
       if 'begin' in self._story_selection_config:
-        selection_args.append('--story-shard-begin-index=%d' % (
-            self._story_selection_config['begin']))
+        selection_args.append('--story-shard-begin-index=%d' %
+                              (self._story_selection_config['begin']))
       if 'end' in self._story_selection_config:
-        selection_args.append('--story-shard-end-index=%d' % (
-            self._story_selection_config['end']))
+        selection_args.append('--story-shard-end-index=%d' %
+                              (self._story_selection_config['end']))
       if 'sections' in self._story_selection_config:
         range_string = self._generate_story_index_ranges(
             self._story_selection_config['sections'])
@@ -468,11 +479,8 @@ class TelemetryCommandGenerator(object):
     if self._options.per_test_logs_dir:
       isolated_out_dir = os.path.dirname(
           self._options.isolated_script_test_output)
-      return ['--logs-dir', os.path.join(
-          isolated_out_dir,
-          self.benchmark)]
+      return ['--logs-dir', os.path.join(isolated_out_dir, self.benchmark)]
     return []
-
 
   def _generate_story_index_ranges(self, sections):
     range_string = ''
@@ -494,7 +502,6 @@ class TelemetryCommandGenerator(object):
         range_string = new_range
     return range_string
 
-
   def _generate_reference_build_args(self):
     if self._is_reference:
       reference_browser_flag = '--browser=reference'
@@ -502,8 +509,7 @@ class TelemetryCommandGenerator(object):
       # settings are added
       if '--browser=android-chrome-bundle' in self._get_passthrough_args():
         reference_browser_flag = '--browser=reference-android-chrome-bundle'
-      return [reference_browser_flag,
-              '--max-failures=5']
+      return [reference_browser_flag, '--max-failures=5']
     return []
 
   def _generate_results_label_args(self):
@@ -511,9 +517,12 @@ class TelemetryCommandGenerator(object):
       return ['--results-label=' + self._options.results_label]
     return []
 
-def execute_telemetry_benchmark(
-    command_generator, output_paths, use_xvfb=False,
-    return_exit_code_zero=False, no_output_conversion=False):
+
+def execute_telemetry_benchmark(command_generator,
+                                output_paths,
+                                use_xvfb=False,
+                                return_exit_code_zero=False,
+                                no_output_conversion=False):
   start = time.time()
 
   env = os.environ.copy()
@@ -528,12 +537,14 @@ def execute_telemetry_benchmark(
       # When running with xvfb, we currently output both to stdout and to the
       # file. It would be better to only output to the file to keep the logs
       # clean.
-      return_code = xvfb.run_executable(
-          command, env=env, stdoutfile=output_paths.logs)
+      return_code = xvfb.run_executable(command,
+                                        env=env,
+                                        stdoutfile=output_paths.logs)
     else:
       with open(output_paths.logs, 'w') as handle:
-        return_code = test_env.run_command_output_to_handle(
-            command, handle, env=env)
+        return_code = test_env.run_command_output_to_handle(command,
+                                                            handle,
+                                                            env=env)
     expected_results_filename = os.path.join(temp_dir, 'test-results.json')
     if os.path.exists(expected_results_filename):
       shutil.move(expected_results_filename, output_paths.test_results)
@@ -580,8 +591,8 @@ def execute_telemetry_benchmark(
     return 0
   if return_code:
     if return_exit_code_zero:
-      print ('run_benchmark returned exit code ' + str(return_code)
-             + ' which indicates there were test failures in the run.')
+      print('run_benchmark returned exit code ' + str(return_code) +
+            ' which indicates there were test failures in the run.')
       return 0
     return return_code
   return 0
@@ -614,11 +625,8 @@ class CrossbenchTest(object):
   def _generate_command_list(self, benchmark, output_paths):
     # In Swarming bot, use the Chrome build in the running path.
     browser = [self.CHROME_BROWSER] if 'SWARMING_TASK_ID' in os.environ else []
-    return ([sys.executable] +
-            [self.options.executable] +
-            [benchmark] +
-            [self.OUTDIR % output_paths.benchmark_path] +
-            browser +
+    return ([sys.executable] + [self.options.executable] + [benchmark] +
+            [self.OUTDIR % output_paths.benchmark_path] + browser +
             self.options.passthrough_args)
 
   def _execute_benchmark(self, benchmark):
@@ -636,12 +644,14 @@ class CrossbenchTest(object):
         # When running with xvfb, we currently output both to stdout and to the
         # file. It would be better to only output to the file to keep the logs
         # clean.
-        return_code = xvfb.run_executable(
-            command, env=env, stdoutfile=output_paths.logs)
+        return_code = xvfb.run_executable(command,
+                                          env=env,
+                                          stdoutfile=output_paths.logs)
       else:
         with open(output_paths.logs, 'w') as handle:
-          return_code = test_env.run_command_output_to_handle(
-              command, handle, env=env)
+          return_code = test_env.run_command_output_to_handle(command,
+                                                              handle,
+                                                              env=env)
     except Exception:
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
@@ -672,37 +682,39 @@ class CrossbenchTest(object):
 def parse_arguments(args):
   parser = argparse.ArgumentParser()
   parser.add_argument('executable', help='The name of the executable to run.')
-  parser.add_argument(
-      '--isolated-script-test-output', required=True)
+  parser.add_argument('--isolated-script-test-output', required=True)
   # The following two flags may be passed in sometimes by Pinpoint
   # or by the recipe, but they don't do anything. crbug.com/927482.
-  parser.add_argument(
-      '--isolated-script-test-chartjson-output', required=False)
-  parser.add_argument(
-      '--isolated-script-test-perf-output', required=False)
+  parser.add_argument('--isolated-script-test-chartjson-output', required=False)
+  parser.add_argument('--isolated-script-test-perf-output', required=False)
 
-  parser.add_argument(
-      '--isolated-script-test-filter', type=str, required=False)
+  parser.add_argument('--isolated-script-test-filter', type=str, required=False)
 
   # Note that the following three arguments are only supported by Telemetry
   # tests right now. See crbug.com/920002.
+  parser.add_argument('--isolated-script-test-repeat', type=int, required=False)
   parser.add_argument(
-      '--isolated-script-test-repeat', type=int, required=False)
-  parser.add_argument(
-      '--isolated-script-test-launcher-retry-limit', type=int, required=False,
+      '--isolated-script-test-launcher-retry-limit',
+      type=int,
+      required=False,
       choices=[0])  # Telemetry does not support retries. crbug.com/894254#c21
-  parser.add_argument(
-      '--isolated-script-test-also-run-disabled-tests',
-      default=False, action='store_true', required=False)
+  parser.add_argument('--isolated-script-test-also-run-disabled-tests',
+                      default=False,
+                      action='store_true',
+                      required=False)
   parser.add_argument('--xvfb', help='Start xvfb.', action='store_true')
   parser.add_argument('--non-telemetry',
-                      help='Type of perf test', type=bool, default=False)
+                      help='Type of perf test',
+                      type=bool,
+                      default=False)
   parser.add_argument('--gtest-benchmark-name',
-                      help='Name of the gtest benchmark', type=str,
+                      help='Name of the gtest benchmark',
+                      type=str,
                       required=False)
   parser.add_argument('--use-gtest-benchmark-script',
                       help='Whether gtest is invoked via benchmark script.',
-                      default=False, action='store_true')
+                      default=False,
+                      action='store_true')
 
   parser.add_argument('--benchmarks',
                       help='Comma separated list of benchmark names'
@@ -710,46 +722,46 @@ def parse_arguments(args):
                       required=False)
   # crbug.com/1236245: This allows for per-benchmark device logs.
   parser.add_argument('--per-test-logs-dir',
-                      help='Require --logs-dir args for test', required=False,
-                      default=False, action='store_true')
+                      help='Require --logs-dir args for test',
+                      required=False,
+                      default=False,
+                      action='store_true')
   # Some executions may have a different sharding scheme and/or set of tests.
   # These files must live in src/tools/perf/core/shard_maps
   parser.add_argument('--test-shard-map-filename', type=str, required=False)
   parser.add_argument('--run-ref-build',
-                      help='Run test on reference browser', action='store_true')
+                      help='Run test on reference browser',
+                      action='store_true')
   parser.add_argument('--passthrough-arg',
                       help='Arguments to pass directly through to the test '
-                      'executable.', action='append',
+                      'executable.',
+                      action='append',
                       dest='passthrough_args',
                       default=[])
   parser.add_argument('--use-dynamic-shards',
                       help='If set, use dynamic shardmap instead of the file.',
                       action='store_true',
-                      required=False
-                      )
+                      required=False)
   parser.add_argument('--dynamic-shardmap',
                       help='The dynamically generated shardmap string used to '
                       'replace the static shardmap file.',
                       type=str,
                       required=False)
   parser.add_argument('--ignore-benchmark-exit-code',
-                      help='If set, return an exit code 0 even if there'
-                            + ' are benchmark failures',
+                      help='If set, return an exit code 0 even if there' +
+                      ' are benchmark failures',
                       action='store_true',
-                      required=False
-                      )
+                      required=False)
   parser.add_argument('--results-label',
-                      help='If set for a non-telemetry test, adds label to'
-                            + ' the result histograms.',
+                      help='If set for a non-telemetry test, adds label to' +
+                      ' the result histograms.',
                       type=str,
-                      required=False
-                      )
+                      required=False)
   parser.add_argument('--no-output-conversion',
                       help='If supplied, trace conversion is not done.',
                       action='store_true',
                       required=False,
-                      default=False
-                      )
+                      default=False)
   options, leftover_args = parser.parse_known_args(args)
   options.passthrough_args.extend(leftover_args)
   return options
@@ -785,8 +797,9 @@ def main(sys_args):
     # With --non-telemetry, the gtest executable file path will be passed in as
     # options.executable, which is different from running on shard map. Thus,
     # we don't override executable as we do in running on shard map.
-    command_generator = GtestCommandGenerator(
-        options, additional_flags=passthrough_args, ignore_shard_env_vars=True)
+    command_generator = GtestCommandGenerator(options,
+                                              additional_flags=passthrough_args,
+                                              ignore_shard_env_vars=True)
     # Fallback to use the name of the executable if flag isn't set.
     # TODO(crbug.com/40588014): remove fallback logic and raise parser error if
     # --non-telemetry is set but --gtest-benchmark-name is not set once pinpoint
@@ -796,7 +809,9 @@ def main(sys_args):
     output_paths = OutputFilePaths(isolated_out_dir, benchmark_name).SetUp()
     print('\n### {folder} ###'.format(folder=benchmark_name))
     overall_return_code = execute_gtest_perf_test(
-        command_generator, output_paths, options.xvfb,
+        command_generator,
+        output_paths,
+        options.xvfb,
         results_label=options.results_label)
     test_results_files.append(output_paths.test_results)
   else:
@@ -810,20 +825,21 @@ def main(sys_args):
       shutil.copyfile(
           shard_map_path,
           os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
-      overall_return_code = _run_benchmarks_on_shardmap(
-          shard_map, options, isolated_out_dir, test_results_files
-      )
+      overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
+                                                        isolated_out_dir,
+                                                        test_results_files)
     # If the user has supplied a list of benchmark names, execute those instead
     # of using the shard map.
     elif options.benchmarks:
       benchmarks = options.benchmarks.split(',')
       for benchmark in benchmarks:
         output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
-        command_generator = TelemetryCommandGenerator(
-            benchmark, options)
+        command_generator = TelemetryCommandGenerator(benchmark, options)
         print('\n### {folder} ###'.format(folder=benchmark))
         return_code = execute_telemetry_benchmark(
-            command_generator, output_paths, options.xvfb,
+            command_generator,
+            output_paths,
+            options.xvfb,
             options.ignore_benchmark_exit_code,
             no_output_conversion=options.no_output_conversion)
         overall_return_code = return_code or overall_return_code
@@ -844,9 +860,9 @@ def main(sys_args):
           os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
       with open(shard_map_path) as f:
         shard_map = json.load(f)
-      overall_return_code = _run_benchmarks_on_shardmap(
-          shard_map, options, isolated_out_dir, test_results_files
-      )
+      overall_return_code = _run_benchmarks_on_shardmap(shard_map, options,
+                                                        isolated_out_dir,
+                                                        test_results_files)
     else:
       raise Exception('Telemetry tests must provide either a shard map or a '
                       '--benchmarks list so that we know which stories to run.')
@@ -862,8 +878,9 @@ def main(sys_args):
 
   return overall_return_code
 
-def _run_benchmarks_on_shardmap(
-    shard_map, options, isolated_out_dir, test_results_files):
+
+def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
+                                test_results_files):
   overall_return_code = 0
   shard_index = None
   env = os.environ.copy()
@@ -880,10 +897,10 @@ def _run_benchmarks_on_shardmap(
         'Sharded Telemetry perf tests must either specify --benchmarks '
         'list or have GTEST_SHARD_INDEX environment variable present.')
   shard_configuration = shard_map[shard_index]
-  assert ('benchmarks' in shard_configuration or
-          'executables' in shard_configuration), (
-      'Every shard must have benchmarks or executables associated '
-      'with it.')
+  assert ('benchmarks' in shard_configuration
+          or 'executables' in shard_configuration), (
+              'Every shard must have benchmarks or executables associated '
+              'with it.')
   if 'benchmarks' in shard_configuration:
     benchmarks_and_configs = shard_configuration['benchmarks']
     for (benchmark, story_selection_config) in benchmarks_and_configs.items():
@@ -891,11 +908,12 @@ def _run_benchmarks_on_shardmap(
       # build.
       output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
       command_generator = TelemetryCommandGenerator(
-          benchmark, options,
-          story_selection_config=story_selection_config)
+          benchmark, options, story_selection_config=story_selection_config)
       print('\n### {folder} ###'.format(folder=benchmark))
       return_code = execute_telemetry_benchmark(
-          command_generator, output_paths, options.xvfb,
+          command_generator,
+          output_paths,
+          options.xvfb,
           options.ignore_benchmark_exit_code,
           no_output_conversion=options.no_output_conversion)
       overall_return_code = return_code or overall_return_code
@@ -905,17 +923,19 @@ def _run_benchmarks_on_shardmap(
         reference_output_paths = OutputFilePaths(
             isolated_out_dir, reference_benchmark_foldername).SetUp()
         reference_command_generator = TelemetryCommandGenerator(
-            benchmark, options,
+            benchmark,
+            options,
             story_selection_config=story_selection_config,
             is_reference=True)
-        print('\n### {folder} ###'.format(
-            folder=reference_benchmark_foldername))
+        print(
+            '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
         # We intentionally ignore the return code and test results of the
         # reference build.
-        execute_telemetry_benchmark(
-            reference_command_generator, reference_output_paths,
-            options.xvfb, options.ignore_benchmark_exit_code,
-            no_output_conversion=no_output_conversion)
+        execute_telemetry_benchmark(reference_command_generator,
+                                    reference_output_paths,
+                                    options.xvfb,
+                                    options.ignore_benchmark_exit_code,
+                                    no_output_conversion=no_output_conversion)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
     for (name, configuration) in names_and_configs.items():
@@ -923,16 +943,19 @@ def _run_benchmarks_on_shardmap(
       if 'arguments' in configuration:
         additional_flags = configuration['arguments']
       command_generator = GtestCommandGenerator(
-          options, override_executable=configuration['path'],
-          additional_flags=additional_flags, ignore_shard_env_vars=True)
+          options,
+          override_executable=configuration['path'],
+          additional_flags=additional_flags,
+          ignore_shard_env_vars=True)
       output_paths = OutputFilePaths(isolated_out_dir, name).SetUp()
       print('\n### {folder} ###'.format(folder=name))
-      return_code = execute_gtest_perf_test(
-          command_generator, output_paths, options.xvfb)
+      return_code = execute_gtest_perf_test(command_generator, output_paths,
+                                            options.xvfb)
       overall_return_code = return_code or overall_return_code
       test_results_files.append(output_paths.test_results)
 
   return overall_return_code
+
 
 # This is not really a "script test" so does not need to manually add
 # any additional compile targets.
@@ -944,8 +967,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
 

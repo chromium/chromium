@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """//testing/scripts wrapper for the network traffic annotations checks.
 This script is used to run check_annotations.py on the trybots to ensure that
 all network traffic annotations have correct syntax and semantics, and all
@@ -44,8 +43,8 @@ def main_run(args):
   if rc:
     with open(errors_filename, encoding='utf-8') as f:
       failures = json.load(f) or ['Please refer to stdout for errors.']
-  common.record_local_script_results(
-      'check_network_annotations', args.output, failures, True)
+  common.record_local_script_results('check_network_annotations', args.output,
+                                     failures, True)
 
   return rc
 
@@ -56,7 +55,7 @@ def main_compile_targets(args):
 
 if __name__ == '__main__':
   funcs = {
-    'run': main_run,
-    'compile_targets': main_compile_targets,
+      'run': main_run,
+      'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

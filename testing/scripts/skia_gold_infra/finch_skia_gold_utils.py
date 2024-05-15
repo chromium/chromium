@@ -15,6 +15,7 @@ CORPUS = 'finch-smoke-tests'
 
 
 class FinchSkiaGoldUtil:
+
   def __init__(self, temp_dir, args):
     self._skia_gold_properties = SkiaGoldProperties(args)
     self._skia_gold_session_manager = SkiaGoldSessionManager(
@@ -52,8 +53,7 @@ class FinchSkiaGoldUtil:
     """
     key_input = {}
     key_input['platform'] = _get_platform()
-    return self._skia_gold_session_manager.GetSkiaGoldSession(
-        key_input, CORPUS)
+    return self._skia_gold_session_manager.GetSkiaGoldSession(key_input, CORPUS)
 
 
 def _get_platform():
@@ -70,8 +70,8 @@ def _get_platform():
     return 'mac'
 
   raise RuntimeError(
-    'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
-    'Windows (win32 or cygwin) are supported' % sys.platform)
+      'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
+      'Windows (win32 or cygwin) are supported' % sys.platform)
 
 
 def _output_local_diff_files(skia_gold_session, image_name):
@@ -131,7 +131,6 @@ def log_skia_gold_status_code(skia_gold_session, image_name, status, error):
     logging.error('Local diff files:')
     _output_local_diff_files(skia_gold_session, image_name)
   else:
-    logging.error(
-        'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
-        error)
+    logging.error('Given unhandled SkiaGoldSession StatusCode %s with error %s',
+                  status, error)
   return triage_link

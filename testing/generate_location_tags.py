@@ -23,9 +23,12 @@ BUILD_DIR = os.path.join(SRC_DIR, 'build')
 sys.path.insert(0, BUILD_DIR)
 import find_depot_tools
 
+
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('-o', '--out', required=True,
+  parser.add_argument('-o',
+                      '--out',
+                      required=True,
                       help='path to write location tag metadata to')
   args = parser.parse_args()
 
@@ -42,12 +45,16 @@ def main():
     exe = exe + '.bat'
 
   return subprocess.call([
-    exe,
-    'location-tags',
-    '-out', args.out,
-    '-root', SRC_DIR,
-    '-repo', 'https://chromium.googlesource.com/chromium/src',
-    ])
+      exe,
+      'location-tags',
+      '-out',
+      args.out,
+      '-root',
+      SRC_DIR,
+      '-repo',
+      'https://chromium.googlesource.com/chromium/src',
+  ])
+
 
 if __name__ == '__main__':
   sys.exit(main())

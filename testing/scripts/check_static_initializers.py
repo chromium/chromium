@@ -42,10 +42,11 @@ _LINUX_SI_ALLOWLIST = {
 # Mac can use this list when a dsym is available, otherwise it will fall back
 # to checking the count.
 _MAC_SI_FILE_ALLOWLIST = [
-    'InstrProfilingRuntime\\.cpp', # Only in coverage builds, not in production.
-    'sysinfo\\.cc', # Only in coverage builds, not in production.
-    'iostream\\.cpp', # Used to setup std::cin/cout/cerr.
-    '000100', # Used to setup std::cin/cout/cerr
+    # Only in coverage builds, not in production.
+    'InstrProfilingRuntime\\.cpp',
+    'sysinfo\\.cc',  # Only in coverage builds, not in production.
+    'iostream\\.cpp',  # Used to setup std::cin/cout/cerr.
+    '000100',  # Used to setup std::cin/cout/cerr
 ]
 
 # Two static initializers are needed on Mac for libc++ to set up
@@ -69,9 +70,10 @@ def check_if_chromeos(args):
   return 'buildername' in args.properties and \
       'chromeos' in args.properties['buildername']
 
+
 def get_mod_init_count(src_dir, executable, hermetic_xcode_path):
   show_mod_init_func = os.path.join(src_dir, 'tools', 'mac',
-      'show_mod_init_func.py')
+                                    'show_mod_init_func.py')
   args = [show_mod_init_func]
   args.append(executable)
   if os.path.exists(hermetic_xcode_path):
@@ -80,13 +82,15 @@ def get_mod_init_count(src_dir, executable, hermetic_xcode_path):
   si_count = len(stdout.splitlines()) - 1  # -1 for executable name
   return (stdout, si_count)
 
+
 def run_process(command):
   p = subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True)
   stdout = p.communicate()[0]
   if p.returncode != 0:
-    raise Exception(
-        'ERROR from command "%s": %d' % (' '.join(command), p.returncode))
+    raise Exception('ERROR from command "%s": %d' %
+                    (' '.join(command), p.returncode))
   return stdout
+
 
 def main_ios(src_dir, hermetic_xcode_path):
   base_names = ('Chromium', 'Chrome')
@@ -100,13 +104,13 @@ def main_ios(src_dir, hermetic_xcode_path):
       expected_si_count = FALLBACK_EXPECTED_IOS_SI_COUNT
       if si_count != expected_si_count:
         print('Expected %d static initializers in %s, but found %d' %
-            (expected_si_count, chromium_executable, si_count))
+              (expected_si_count, chromium_executable, si_count))
         print(stdout)
         ret = 1
   return ret
 
 
-def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer = False):
+def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer=False):
   base_names = ('Chromium', 'Google Chrome')
   ret = 0
   for base_name in base_names:
@@ -127,8 +131,7 @@ def main_mac(src_dir, hermetic_xcode_path, allow_coverage_initializer = False):
         allowed_si_count = COVERAGE_BUILD_FALLBACK_EXPECTED_MAC_SI_COUNT
       if si_count > allowed_si_count or si_count < min_si_count:
         print('Expected %d static initializers in %s, but found %d' %
-              (allowed_si_count, chromium_framework_executable,
-              si_count))
+              (allowed_si_count, chromium_framework_executable, si_count))
         print(stdout)
         ret = 1
   return ret
@@ -154,8 +157,8 @@ def main_linux(src_dir):
       if not any(re.match(p, descriptor) for p in allowlist[binary_name]):
         ret = 1
         print(('Error: file "%s" is not expected to have static initializers in'
-               ' binary "%s", but found "%s"') % (e['filename'], binary_name,
-                                                  e['symbol_name']))
+               ' binary "%s", but found "%s"') %
+              (e['filename'], binary_name, e['symbol_name']))
 
     print('\n# Static initializers in %s:' % binary_name)
     for e in entries:
@@ -179,7 +182,7 @@ def main_run(args):
     # directly invoked. The indirection via /usr/bin/otool won't work unless
     # there's an actual system install of Xcode.
     hermetic_xcode_path = os.path.join(src_dir, 'build', 'mac_files',
-        'xcode_binaries')
+                                       'xcode_binaries')
 
     is_ios = 'target_platform' in args.properties and \
       'ios' in args.properties['target_platform']
@@ -199,8 +202,8 @@ def main_run(args):
     sys.stderr.write('Unsupported platform %s.\n' % repr(sys.platform))
     return 2
 
-  common.record_local_script_results(
-      'check_static_initializers', args.output, [], rc == 0)
+  common.record_local_script_results('check_static_initializers', args.output,
+                                     [], rc == 0)
 
   return rc
 

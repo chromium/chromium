@@ -2,7 +2,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Sets environment variables needed to run a chromium unit test."""
 
 from __future__ import print_function
@@ -13,7 +12,6 @@ import subprocess
 import sys
 import time
 
-
 # This is hardcoded to be src/ relative to this script.
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -21,10 +19,11 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def trim_cmd(cmd):
   """Removes internal flags from cmd since they're just used to communicate from
   the host machine to this script running on the swarm slaves."""
-  sanitizers = ['asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
-                'skip-set-lpac-acls']
-  internal_flags = frozenset('--%s=%d' % (name, value)
-                             for name in sanitizers
+  sanitizers = [
+      'asan', 'lsan', 'msan', 'tsan', 'coverage-continuous-mode',
+      'skip-set-lpac-acls'
+  ]
+  internal_flags = frozenset('--%s=%d' % (name, value) for name in sanitizers
                              for value in [0, 1])
   return [i for i in cmd if i not in internal_flags]
 
@@ -52,14 +51,16 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
 
   # TODO(glider): remove the symbolizer path once
   # https://code.google.com/p/address-sanitizer/issues/detail?id=134 is fixed.
-  symbolizer_path = os.path.join(ROOT_DIR,
-      'third_party', 'llvm-build', 'Release+Asserts', 'bin', 'llvm-symbolizer')
+  symbolizer_path = os.path.join(ROOT_DIR, 'third_party', 'llvm-build',
+                                 'Release+Asserts', 'bin', 'llvm-symbolizer')
 
   if lsan or tsan:
     # LSan is not sandbox-compatible, so we can use online symbolization. In
     # fact, it needs symbolization to be able to apply suppressions.
-    symbolization_options = ['symbolize=1',
-                             'external_symbolizer_path=%s' % symbolizer_path]
+    symbolization_options = [
+        'symbolize=1',
+        'external_symbolizer_path=%s' % symbolizer_path
+    ]
   elif (asan or msan or cfi_diag) and sys.platform not in ['win32', 'cygwin']:
     # ASan uses a script for offline symbolization, except on Windows.
     # Important note: when running ASan with leak detection enabled, we must use
@@ -116,6 +117,7 @@ def get_sanitizer_env(asan, lsan, msan, tsan, cfi_diag):
 
   return extra_env
 
+
 def get_coverage_continuous_mode_env(env):
   """Append %c (clang code coverage continuous mode) flag to LLVM_PROFILE_FILE
   pattern string."""
@@ -127,21 +129,18 @@ def get_coverage_continuous_mode_env(env):
   # cause the coverage instrumentation to write coverage data to default.profraw
   # instead of LLVM_PROFILE_FILE.
   if "%c" in llvm_profile_file:
-    return {
-      'LLVM_PROFILE_FILE': llvm_profile_file
-    }
+    return {'LLVM_PROFILE_FILE': llvm_profile_file}
 
   dirname, basename = os.path.split(llvm_profile_file)
   root, ext = os.path.splitext(basename)
 
-  return {
-    'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)
-  }
+  return {'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)}
+
 
 def get_sanitizer_symbolize_command(json_path=None, executable_path=None):
   """Construct the command to invoke offline symbolization script."""
-  script_path = os.path.join(
-      ROOT_DIR, 'tools', 'valgrind', 'asan', 'asan_symbolize.py')
+  script_path = os.path.join(ROOT_DIR, 'tools', 'valgrind', 'asan',
+                             'asan_symbolize.py')
   cmd = [sys.executable, script_path]
   if json_path is not None:
     cmd.append('--test-summary-json-file=%s' % json_path)
@@ -166,8 +165,8 @@ def symbolize_snippets_in_json(cmd, env):
     return
 
   try:
-    symbolize_command = get_sanitizer_symbolize_command(
-        json_path=json_path, executable_path=cmd[0])
+    symbolize_command = get_sanitizer_symbolize_command(json_path=json_path,
+                                                        executable_path=cmd[0])
     p = subprocess.Popen(symbolize_command, stderr=subprocess.PIPE, env=env)
     (_, stderr) = p.communicate()
   except OSError as e:
@@ -182,9 +181,8 @@ def symbolize_snippets_in_json(cmd, env):
 
 def get_escalate_sanitizer_warnings_command(json_path):
   """Construct the command to invoke sanitizer warnings script."""
-  script_path = os.path.join(
-      ROOT_DIR, 'tools', 'memory', 'sanitizer',
-      'escalate_sanitizer_warnings.py')
+  script_path = os.path.join(ROOT_DIR, 'tools', 'memory', 'sanitizer',
+                             'escalate_sanitizer_warnings.py')
   cmd = [sys.executable, script_path]
   cmd.append('--test-summary-json-file=%s' % json_path)
   return cmd
@@ -194,8 +192,10 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
   """Escalate sanitizer warnings inside the JSON test summary."""
   json_path = get_json_path(cmd)
   if json_path is None:
-    print("Warning: Cannot escalate sanitizer warnings without a json summary "
-          "file:\n", file=sys.stderr)
+    print(
+        "Warning: Cannot escalate sanitizer warnings without a json summary "
+        "file:\n",
+        file=sys.stderr)
     return 0
 
   try:
@@ -214,7 +214,6 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
   return p.returncode
 
 
-
 def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   """Run command and stream its stdout/stderr to the console & |stdoutfile|.
 
@@ -228,7 +227,10 @@ def run_command_with_output(argv, stdoutfile, env=None, cwd=None):
   assert stdoutfile
   with io.open(stdoutfile, 'wb') as writer, \
       io.open(stdoutfile, 'rb', 1) as reader:
-    process = _popen(argv, env=env, cwd=cwd, stdout=writer,
+    process = _popen(argv,
+                     env=env,
+                     cwd=cwd,
+                     stdout=writer,
                      stderr=subprocess.STDOUT)
     forward_signals([process])
     while process.poll() is None:
@@ -272,8 +274,11 @@ def run_command_output_to_handle(argv, file_handle, env=None, cwd=None):
     integer returncode of the subprocess.
   """
   print('Running %r in %r (env: %r)' % (argv, cwd, env))
-  process = _popen(
-      argv, env=env, cwd=cwd, stderr=file_handle, stdout=file_handle)
+  process = _popen(argv,
+                   env=env,
+                   cwd=cwd,
+                   stderr=file_handle,
+                   stdout=file_handle)
   forward_signals([process])
   exit_code = wait_with_signals(process)
   print('Command returned exit code %d' % exit_code)
@@ -312,6 +317,7 @@ def forward_signals(procs):
       procs: A list of subprocess.Popen objects representing child processes.
   """
   assert all(isinstance(p, subprocess.Popen) for p in procs)
+
   def _sig_handler(sig, _):
     for p in procs:
       if p.poll() is not None:
@@ -324,8 +330,9 @@ def forward_signals(procs):
         print("Forwarding signal(%d) to process %d" % (sig, p.pid))
         p.send_signal(sig)
       # pylint: enable=no-member
+
   if sys.platform == 'win32':
-    signal.signal(signal.SIGBREAK, _sig_handler) # pylint: disable=no-member
+    signal.signal(signal.SIGBREAK, _sig_handler)  # pylint: disable=no-member
   else:
     signal.signal(signal.SIGTERM, _sig_handler)
     signal.signal(signal.SIGINT, _sig_handler)
@@ -345,7 +352,7 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
       # a bot.
       'CHROME_HEADLESS': '1',
 
-       # Many tests assume a English interface...
+      # Many tests assume a English interface...
       'LANG': 'en_US.UTF-8',
   }
 
@@ -382,8 +389,8 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
 
   # pylint: disable=import-outside-toplevel
   if '--skip-set-lpac-acls=1' not in cmd and sys.platform == 'win32':
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-        'scripts'))
+    sys.path.insert(
+        0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts'))
     from scripts import common
     common.set_lpac_acls(ROOT_DIR, is_test_script=True)
   # pylint: enable=import-outside-toplevel
@@ -402,10 +409,9 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
       env_to_print[env_var_name] = env[env_var_name]
 
   print('Additional test environment:\n%s\n'
-        'Command: %s\n' % (
-        '\n'.join('    %s=%s' % (k, v)
-                  for k, v in sorted(env_to_print.items())),
-        ' '.join(cmd)))
+        'Command: %s\n' %
+        ('\n'.join('    %s=%s' % (k, v)
+                   for k, v in sorted(env_to_print.items())), ' '.join(cmd)))
   sys.stdout.flush()
   env.update(extra_env or {})
   try:
@@ -418,11 +424,14 @@ def run_executable(cmd, env, stdoutfile=None, cwd=None):
     if use_symbolization_script:
       # See above comment regarding offline symbolization.
       # Need to pipe to the symbolizer script.
-      p1 = _popen(cmd, env=env, stdout=subprocess.PIPE,
-                  cwd=cwd, stderr=sys.stdout)
-      p2 = _popen(
-          get_sanitizer_symbolize_command(executable_path=cmd[0]),
-          env=env, stdin=p1.stdout)
+      p1 = _popen(cmd,
+                  env=env,
+                  stdout=subprocess.PIPE,
+                  cwd=cwd,
+                  stderr=sys.stdout)
+      p2 = _popen(get_sanitizer_symbolize_command(executable_path=cmd[0]),
+                  env=env,
+                  stdin=p1.stdout)
       p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
       forward_signals([p1, p2])
       wait_with_signals(p1)

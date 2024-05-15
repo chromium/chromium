@@ -8,9 +8,9 @@ import re
 import shutil
 import sys
 
-
 load_regexp = re.compile(r'^\s*utils\.load\([\'"]([^\'"]+)[\'"]\);\s*$')
 load_root = None
+
 
 def resolve_loads(output_file, input_lines, loaded_files):
   for line in input_lines:
@@ -54,8 +54,8 @@ utils = new Proxy(utils, {
 def main():
   if len(sys.argv) != 3:
     print(
-      'Usage: {} <path to input directory> <path to output directory>'.format(
-        sys.argv[0]))
+        'Usage: {} <path to input directory> <path to output directory>'.format(
+            sys.argv[0]))
     sys.exit(1)
 
   input_root = sys.argv[1]

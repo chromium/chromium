@@ -3,13 +3,13 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """
 Script for generating .proto and a conversion .cc file for a templated library
 based JavaScript parser fuzzer.
 """
 
 import sys
+
 
 def ParseWord(word_string):
   # Every part of the word is either a string surrounded by "" or a placeholder
@@ -31,15 +31,17 @@ def ParseWord(word_string):
       parts.append(int(word_string[1:end_ix]))
       word_string = word_string[end_ix:]
     else:
-      assert(False)
+      assert (False)
     word_string = word_string.lstrip()
   return parts
+
 
 def GenerateProtoContents(words):
   contents = ''
   for ix in range(len(words)):
     contents += '    token_value_' + str(ix) + ' = ' + str(ix) + ';\n'
   return contents
+
 
 def GenerateConversionContents(words):
   contents = ''
@@ -61,11 +63,12 @@ def GenerateConversionContents(words):
                             '), depth)')
       first = False
     if max_part >= 0:
-        contents += ('      if (token.inner_tokens().size() < ' +
-                     str(max_part + 1) + ') return std::string("");\n')
+      contents += ('      if (token.inner_tokens().size() < ' +
+                   str(max_part + 1) + ') return std::string("");\n')
     contents += '      return ' + building_string + ';\n'
     ix += 1
   return contents
+
 
 def ReadDictionary(filename):
   with open(filename) as input_file:
@@ -77,6 +80,7 @@ def ReadDictionary(filename):
       if len(word) > 0:
         words.append(word)
   return words
+
 
 def main(argv):
   output_proto_file = argv[1]
@@ -92,7 +96,6 @@ def main(argv):
                   '\n'
                   'message Token {\n'
                   '  enum Value {\n')
-
 
   proto_footer = ('  }\n'
                   '  required Value value = 1;\n'
@@ -130,11 +133,12 @@ def main(argv):
                        '  return std::string("");\n'
                        '}\n')
 
-  conversion_contents = (conversion_header + GenerateConversionContents(words)
-                         + conversion_footer)
+  conversion_contents = (conversion_header + GenerateConversionContents(words) +
+                         conversion_footer)
 
   with open(output_cc_file, 'w') as f:
     f.write(conversion_contents)
+
 
 if __name__ == "__main__":
   main(sys.argv)

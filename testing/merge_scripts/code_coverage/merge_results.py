@@ -20,55 +20,56 @@ import sys
 
 import merge_lib as profile_merger
 
+
 def _MergeAPIArgumentParser(*args, **kwargs):
   """Parameters passed to this merge script, as per:
   https://chromium.googlesource.com/chromium/tools/build/+/main/scripts/slave/recipe_modules/swarming/resources/merge_api.py
   """
   parser = argparse.ArgumentParser(*args, **kwargs)
-  parser.add_argument('--build-properties', help=argparse.SUPPRESS,
+  parser.add_argument('--build-properties',
+                      help=argparse.SUPPRESS,
                       default='{}')
   parser.add_argument('--summary-json', help=argparse.SUPPRESS)
   parser.add_argument('--task-output-dir', help=argparse.SUPPRESS)
-  parser.add_argument(
-      '-o', '--output-json', required=True, help=argparse.SUPPRESS)
+  parser.add_argument('-o',
+                      '--output-json',
+                      required=True,
+                      help=argparse.SUPPRESS)
   parser.add_argument('jsons_to_merge', nargs='*', help=argparse.SUPPRESS)
 
   # Custom arguments for this merge script.
-  parser.add_argument(
-      '--additional-merge-script', help='additional merge script to run')
+  parser.add_argument('--additional-merge-script',
+                      help='additional merge script to run')
   parser.add_argument(
       '--additional-merge-script-args',
       help='JSON serialized string of args for the additional merge script')
-  parser.add_argument(
-      '--profdata-dir', required=True, help='where to store the merged data')
-  parser.add_argument(
-      '--llvm-profdata', required=True, help='path to llvm-profdata executable')
+  parser.add_argument('--profdata-dir',
+                      required=True,
+                      help='where to store the merged data')
+  parser.add_argument('--llvm-profdata',
+                      required=True,
+                      help='path to llvm-profdata executable')
   parser.add_argument('--test-target-name', help='test target name')
-  parser.add_argument(
-      '--java-coverage-dir', help='directory for Java coverage data')
-  parser.add_argument(
-      '--jacococli-path', help='path to jacococli.jar.')
+  parser.add_argument('--java-coverage-dir',
+                      help='directory for Java coverage data')
+  parser.add_argument('--jacococli-path', help='path to jacococli.jar.')
   parser.add_argument(
       '--merged-jacoco-filename',
       help='filename used to uniquely name the merged exec file.')
-  parser.add_argument(
-      '--javascript-coverage-dir',
-      help='directory for JavaScript coverage data')
-  parser.add_argument(
-      '--chromium-src-dir',
-      help='directory for chromium/src checkout')
-  parser.add_argument(
-      '--build-dir',
-      help='directory for the build directory in chromium/src')
+  parser.add_argument('--javascript-coverage-dir',
+                      help='directory for JavaScript coverage data')
+  parser.add_argument('--chromium-src-dir',
+                      help='directory for chromium/src checkout')
+  parser.add_argument('--build-dir',
+                      help='directory for the build directory in chromium/src')
   parser.add_argument(
       '--per-cl-coverage',
       action='store_true',
       help='set to indicate that this is a per-CL coverage build')
-  parser.add_argument(
-      '--sparse',
-      action='store_true',
-      dest='sparse',
-      help='run llvm-profdata with the sparse flag.')
+  parser.add_argument('--sparse',
+                      action='store_true',
+                      dest='sparse',
+                      help='run llvm-profdata with the sparse flag.')
   # (crbug.com/1091310) - IR PGO is incompatible with the initial conversion
   # of .profraw -> .profdata that's run to detect validation errors.
   # Introducing a bypass flag that'll merge all .profraw directly to .profdata
@@ -76,8 +77,8 @@ def _MergeAPIArgumentParser(*args, **kwargs):
       '--skip-validation',
       action='store_true',
       help='skip validation for good raw profile data. this will pass all '
-           'raw profiles found to llvm-profdata to be merged. only applicable '
-           'when input extension is .profraw.')
+      'raw profiles found to llvm-profdata to be merged. only applicable '
+      'when input extension is .profraw.')
   return parser
 
 
@@ -93,11 +94,11 @@ def main():
       parser.error(
           '--merged-jacoco-filename required when merging Java coverage')
 
-    output_path = os.path.join(
-        params.java_coverage_dir, '%s.exec' % params.merged_jacoco_filename)
+    output_path = os.path.join(params.java_coverage_dir,
+                               '%s.exec' % params.merged_jacoco_filename)
     logging.info('Merging JaCoCo .exec files to %s', output_path)
-    profile_merger.merge_java_exec_files(
-        params.task_output_dir, output_path, params.jacococli_path)
+    profile_merger.merge_java_exec_files(params.task_output_dir, output_path,
+                                         params.jacococli_path)
 
   failed = False
 
@@ -106,23 +107,22 @@ def main():
     current_dir = os.path.dirname(__file__)
     merge_js_results_script = os.path.join(current_dir, 'merge_js_results.py')
     args = [
-      sys.executable,
-      merge_js_results_script,
-      '--task-output-dir',
-      params.task_output_dir,
-      '--javascript-coverage-dir',
-      params.javascript_coverage_dir,
-      '--chromium-src-dir',
-      params.chromium_src_dir,
-      '--build-dir',
-      params.build_dir,
+        sys.executable,
+        merge_js_results_script,
+        '--task-output-dir',
+        params.task_output_dir,
+        '--javascript-coverage-dir',
+        params.javascript_coverage_dir,
+        '--chromium-src-dir',
+        params.chromium_src_dir,
+        '--build-dir',
+        params.build_dir,
     ]
 
     rc = subprocess.call(args)
     if rc != 0:
       failed = True
-      logging.warning('%s exited with %s' %
-                      (merge_js_results_script, rc))
+      logging.warning('%s exited with %s' % (merge_js_results_script, rc))
 
   # Name the output profdata file name as {test_target}.profdata or
   # default.profdata.
@@ -134,7 +134,8 @@ def main():
   # results files and result in errors.
   invalid_profiles, counter_overflows = profile_merger.merge_profiles(
       params.task_output_dir,
-      os.path.join(params.profdata_dir, output_prodata_filename), '.profraw',
+      os.path.join(params.profdata_dir, output_prodata_filename),
+      '.profraw',
       params.llvm_profdata,
       sparse=params.sparse,
       skip_validation=params.skip_validation)
@@ -143,9 +144,8 @@ def main():
   # not guaranteed to remain the case indefinitely. To avoid future conflicts
   # treat these separately.
   if counter_overflows:
-    with open(
-        os.path.join(params.profdata_dir, 'profiles_with_overflows.json'),
-        'w') as f:
+    with open(os.path.join(params.profdata_dir, 'profiles_with_overflows.json'),
+              'w') as f:
       json.dump(counter_overflows, f)
 
   if invalid_profiles:
@@ -194,6 +194,6 @@ def main():
 
 
 if __name__ == '__main__':
-  logging.basicConfig(
-      format='[%(asctime)s %(levelname)s] %(message)s', level=logging.INFO)
+  logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',
+                      level=logging.INFO)
   sys.exit(main())

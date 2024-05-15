@@ -17,8 +17,8 @@ _DIR_SOURCE_ROOT = os.path.normpath(
 _JAVA_PATH = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current',
                           'bin', 'java')
 
-logging.basicConfig(
-    format='[%(asctime)s %(levelname)s] %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',
+                    level=logging.DEBUG)
 
 
 def _call_profdata_tool(profile_input_file_paths,
@@ -54,10 +54,15 @@ def _call_profdata_tool(profile_input_file_paths,
       fd.write('%s\n' % file_path)
   try:
     subprocess_cmd = [
-        profdata_tool_path, 'merge', '-o', profile_output_file_path,
+        profdata_tool_path,
+        'merge',
+        '-o',
+        profile_output_file_path,
     ]
     if sparse:
-      subprocess_cmd += ['-sparse=true',]
+      subprocess_cmd += [
+          '-sparse=true',
+      ]
     subprocess_cmd.extend(['-f', input_file])
     logging.info('profdata command: %r', subprocess_cmd)
 
@@ -66,10 +71,10 @@ def _call_profdata_tool(profile_input_file_paths,
     # that output. stdout=None should print to console.
     # Timeout in seconds, set to 1 hr (60*60)
     p = subprocess.run(subprocess_cmd,
-                        capture_output=True,
-                        text=True,
-                        timeout=timeout,
-                        check=True)
+                       capture_output=True,
+                       text=True,
+                       timeout=timeout,
+                       check=True)
     logging.info(p.stdout)
   except subprocess.CalledProcessError as error:
     logging.info('stdout: %s' % error.output)
@@ -83,17 +88,14 @@ def _call_profdata_tool(profile_input_file_paths,
   logging.info('Profile data is created as: "%r".', profile_output_file_path)
 
 
-def _get_profile_paths(input_dir,
-                       input_extension,
-                       input_filename_pattern='.*'):
+def _get_profile_paths(input_dir, input_extension, input_filename_pattern='.*'):
   """Finds all the profiles in the given directory (recursively)."""
   paths = []
   for dir_path, _sub_dirs, file_names in os.walk(input_dir):
     paths.extend([
         # Normalize to POSIX style paths for consistent results.
-        os.path.join(dir_path, fn).replace('\\', '/')
-        for fn in file_names
-        if fn.endswith(input_extension) and re.search(input_filename_pattern,fn)
+        os.path.join(dir_path, fn).replace('\\', '/') for fn in file_names if
+        fn.endswith(input_extension) and re.search(input_filename_pattern, fn)
     ])
   return paths
 
@@ -139,10 +141,11 @@ def _validate_and_convert_profraws(profraw_files,
 
   results = []
   for profraw_file in profraw_files:
-    results.append(pool.apply_async(
-      _validate_and_convert_profraw,
-      (profraw_file, output_profdata_files, invalid_profraw_files,
-        counter_overflows, profdata_tool_path, sparse)))
+    results.append(
+        pool.apply_async(
+            _validate_and_convert_profraw,
+            (profraw_file, output_profdata_files, invalid_profraw_files,
+             counter_overflows, profdata_tool_path, sparse)))
 
   pool.close()
   pool.join()
@@ -158,9 +161,12 @@ def _validate_and_convert_profraws(profraw_files,
       counter_overflows)
 
 
-def _validate_and_convert_profraw(profraw_file, output_profdata_files,
-                                  invalid_profraw_files, counter_overflows,
-                                  profdata_tool_path, sparse=False):
+def _validate_and_convert_profraw(profraw_file,
+                                  output_profdata_files,
+                                  invalid_profraw_files,
+                                  counter_overflows,
+                                  profdata_tool_path,
+                                  sparse=False):
   output_profdata_file = profraw_file.replace('.profraw', '.profdata')
   subprocess_cmd = [
       profdata_tool_path,
@@ -183,8 +189,9 @@ def _validate_and_convert_profraw(profraw_file, output_profdata_files,
     # Redirecting stderr is required because when error happens, llvm-profdata
     # writes the error output to stderr and our error handling logic relies on
     # that output.
-    validation_output = subprocess.check_output(
-        subprocess_cmd, stderr=subprocess.STDOUT, encoding = 'UTF-8')
+    validation_output = subprocess.check_output(subprocess_cmd,
+                                                stderr=subprocess.STDOUT,
+                                                encoding='UTF-8')
     if 'Counter overflow' in validation_output:
       counter_overflow = True
     else:
@@ -215,6 +222,7 @@ def _validate_and_convert_profraw(profraw_file, output_profdata_files,
       # input is invalid. Delete it so that it does not leak and affect other
       # merge scripts.
       os.remove(output_profdata_file)
+
 
 def merge_java_exec_files(input_dir, output_path, jacococli_path):
   """Merges generated .exec files to output_path.
@@ -267,8 +275,7 @@ def merge_profiles(input_dir,
     The list of profiles that had to be excluded to get the merge to
     succeed and a list of profiles that had a counter overflow.
   """
-  profile_input_file_paths = _get_profile_paths(input_dir,
-                                                input_extension,
+  profile_input_file_paths = _get_profile_paths(input_dir, input_extension,
                                                 input_filename_pattern)
   invalid_profraw_files = []
   counter_overflows = []
@@ -300,12 +307,11 @@ def merge_profiles(input_dir,
                  'invoking profdata tools.')
     return invalid_profraw_files, counter_overflows
 
-  _call_profdata_tool(
-      profile_input_file_paths=profile_input_file_paths,
-      profile_output_file_path=output_file,
-      profdata_tool_path=profdata_tool_path,
-      sparse=sparse,
-      timeout=merge_timeout)
+  _call_profdata_tool(profile_input_file_paths=profile_input_file_paths,
+                      profile_output_file_path=output_file,
+                      profdata_tool_path=profdata_tool_path,
+                      sparse=sparse,
+                      timeout=merge_timeout)
 
   # Remove inputs when merging profraws as they won't be needed and they can be
   # pretty large. If the inputs are profdata files, do not remove them as they
@@ -315,6 +321,7 @@ def merge_profiles(input_dir,
       os.remove(input_file)
 
   return invalid_profraw_files, counter_overflows
+
 
 # We want to retry shards that contain one or more profiles that cannot be
 # merged (typically due to corruption described in crbug.com/937521).

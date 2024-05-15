@@ -25,8 +25,10 @@ class GpuIntegrationTestAdapater(common.BaseIsolatedScriptArgsAdapter):
     return ['--test-filter=%s' % test_filter_str]
 
   def generate_sharding_args(self, total_shards, shard_index):
-    return ['--total-shards=%d' % total_shards,
-            '--shard-index=%d' % shard_index]
+    return [
+        '--total-shards=%d' % total_shards,
+        '--shard-index=%d' % shard_index
+    ]
 
   def generate_test_launcher_retry_limit_args(self, retry_limit):
     return ['--retry-limit=%d' % retry_limit]

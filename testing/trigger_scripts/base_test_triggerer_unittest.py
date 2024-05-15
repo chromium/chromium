@@ -17,6 +17,7 @@ import base_test_triggerer
 
 
 class UnitTest(fake_filesystem_unittest.TestCase):
+
     def setUp(self):
         self.setUpPyfakefs()
 

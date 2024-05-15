@@ -3,7 +3,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generate a dictionary for libFuzzer or AFL-based fuzzer.
 
 Invoked manually using a fuzzer binary and target format/protocol specification.
@@ -21,7 +20,6 @@ import string
 import subprocess
 import sys
 import tempfile
-
 
 ENCODING_TYPES = ['ascii', 'utf_16_be', 'utf_16_le', 'utf_32_be', 'utf_32_le']
 MIN_STRING_LENGTH = 4
@@ -95,10 +93,10 @@ def FindIndentedText(text):
 
     if n > previous_number_of_spaces:
       # Beginning of a space-indented text block, start concatenation.
-      current_block = lines[i][n : ]
+      current_block = lines[i][n:]
     elif n == previous_number_of_spaces and current_block:
       # Or continuation of a space-indented text block, concatenate lines.
-      current_block += '\n' + lines[i][n : ]
+      current_block += '\n' + lines[i][n:]
 
     if n < previous_number_of_spaces and current_block:
       # Current line is not indented, save previously concatenated lines.
@@ -210,24 +208,31 @@ def WriteDictionary(dictionary_path, dictionary):
 
 def main():
   parser = argparse.ArgumentParser(description="Generate fuzzer dictionary.")
-  parser.add_argument('--fuzzer', required=True,
+  parser.add_argument('--fuzzer',
+                      required=True,
                       help='Path to a fuzzer binary executable. It is '
                       'recommended to use a binary built with '
                       '"use_libfuzzer=false is_asan=false" to get a better '
                       'dictionary with fewer number of redundant elements.')
-  parser.add_argument('--spec', required=True,
+  parser.add_argument('--spec',
+                      required=True,
                       help='Path to a target specification (in textual form).')
-  parser.add_argument('--html', default=0,
+  parser.add_argument('--html',
+                      default=0,
                       help='Decode HTML [01] (0 is default value): '
                       '1 - if specification has HTML entities to be decoded.')
-  parser.add_argument('--out', required=True,
+  parser.add_argument('--out',
+                      required=True,
                       help='Path to a file to write a dictionary into.')
-  parser.add_argument('--strategy', default='iu',
+  parser.add_argument('--strategy',
+                      default='iu',
                       help='Generation strategy [iqu] ("iu" is default value): '
                       'i - intersection, q - quoted, u - uppercase.')
   args = parser.parse_args()
 
-  dictionary = GenerateDictionary(args.fuzzer, args.spec, args.strategy,
+  dictionary = GenerateDictionary(args.fuzzer,
+                                  args.spec,
+                                  args.strategy,
                                   is_html=bool(args.html))
   WriteDictionary(args.out, dictionary)
 

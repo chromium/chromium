@@ -19,6 +19,7 @@ class MergeLibTest(unittest.TestCase):
   def __init__(self, *args, **kwargs):
     super(MergeLibTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
+
   # pylint: enable=super-with-arguments
 
   @mock.patch.object(subprocess, 'check_output')
@@ -36,9 +37,11 @@ class MergeLibTest(unittest.TestCase):
       output_profdata_files = []
       invalid_profraw_files = []
       counter_overflows = []
-      merger._validate_and_convert_profraw(
-          'mock.profraw', output_profdata_files, invalid_profraw_files,
-          counter_overflows, '/usr/bin/llvm-cov')
+      merger._validate_and_convert_profraw('mock.profraw',
+                                           output_profdata_files,
+                                           invalid_profraw_files,
+                                           counter_overflows,
+                                           '/usr/bin/llvm-cov')
       self.assertEqual(
           expected_results,
           [output_profdata_files, invalid_profraw_files, counter_overflows])

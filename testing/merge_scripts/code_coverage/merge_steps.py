@@ -15,20 +15,21 @@ import merge_lib as merger
 def _merge_steps_argument_parser(*args, **kwargs):
   parser = argparse.ArgumentParser(*args, **kwargs)
   parser.add_argument('--input-dir', required=True, help=argparse.SUPPRESS)
-  parser.add_argument(
-      '--output-file', required=True, help='where to store the merged data')
-  parser.add_argument(
-      '--llvm-profdata', required=True, help='path to llvm-profdata executable')
+  parser.add_argument('--output-file',
+                      required=True,
+                      help='where to store the merged data')
+  parser.add_argument('--llvm-profdata',
+                      required=True,
+                      help='path to llvm-profdata executable')
   parser.add_argument(
       '--profdata-filename-pattern',
       default='.*',
       help='regex pattern of profdata filename to merge for current test type. '
-          'If not present, all profdata files will be merged.')
-  parser.add_argument(
-      '--sparse',
-      action='store_true',
-      dest='sparse',
-      help='run llvm-profdata with the sparse flag.')
+      'If not present, all profdata files will be merged.')
+  parser.add_argument('--sparse',
+                      action='store_true',
+                      dest='sparse',
+                      help='run llvm-profdata with the sparse flag.')
   parser.add_argument(
       '--profile-merge-timeout',
       default=3600,
@@ -43,13 +44,14 @@ def main():
 
   # counter overflow profiles should be logged as warnings as part of the
   # merger.merge_profiles call.
-  invalid_profiles, _  =  merger.merge_profiles(params.input_dir,
-                          params.output_file,
-                          '.profdata',
-                          params.llvm_profdata,
-                          params.profdata_filename_pattern,
-                          sparse=params.sparse,
-                          merge_timeout=params.profile_merge_timeout)
+  invalid_profiles, _ = merger.merge_profiles(
+      params.input_dir,
+      params.output_file,
+      '.profdata',
+      params.llvm_profdata,
+      params.profdata_filename_pattern,
+      sparse=params.sparse,
+      merge_timeout=params.profile_merge_timeout)
   if invalid_profiles:
     logging.error('Invalid profiles were generated:\n%r' % invalid_profiles)
     return 1
@@ -58,6 +60,6 @@ def main():
 
 
 if __name__ == '__main__':
-  logging.basicConfig(
-      format='[%(asctime)s %(levelname)s] %(message)s', level=logging.INFO)
+  logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',
+                      level=logging.INFO)
   sys.exit(main())

@@ -2,7 +2,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs a script that can run as an isolate (or not).
 
 If optional argument --isolated-script-test-output=[FILENAME] is passed
@@ -25,17 +24,14 @@ import pprint
 import sys
 import tempfile
 
-
 # Add src/testing/ into sys.path for importing common.
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from scripts import common
 
-
 # Some harnesses understand the --isolated-script-test arguments
 # directly and prefer that they be passed through.
 KNOWN_ISOLATED_SCRIPT_TEST_RUNNERS = {'run_web_tests.py', 'run_webgpu_cts.py'}
-
 
 # Known typ test runners this script wraps. They need a different argument name
 # when selecting which tests to run.
@@ -57,19 +53,22 @@ KNOWN_TYP_VPYTHON3_TEST_RUNNERS = {
 
 # pylint: disable=super-with-arguments
 
+
 class BareScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
+
   def __init__(self):
     super().__init__()
     # Arguments that are ignored, but added here because it's easier to ignore
     # them than to update bot configs to not pass them.
     common.add_emulator_args(self._parser)
-    self._parser.add_argument(
-        '--coverage-dir', type=str, help='Unused')
-    self._parser.add_argument(
-        '--use-persistent-shell', action='store_true', help='Unused')
+    self._parser.add_argument('--coverage-dir', type=str, help='Unused')
+    self._parser.add_argument('--use-persistent-shell',
+                              action='store_true',
+                              help='Unused')
 
 
 class IsolatedScriptTestAdapter(common.BaseIsolatedScriptArgsAdapter):
+
   def generate_sharding_args(self, total_shards, shard_index):
     # This script only uses environment variable for sharding.
     del total_shards, shard_index  # unused
@@ -104,8 +103,7 @@ class TypUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
   def generate_test_filter_args(self, test_filter_str):
     filter_list = common.extract_filter_list(test_filter_str)
-    self._temp_filter_file = tempfile.NamedTemporaryFile(
-        mode='w', delete=False)
+    self._temp_filter_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
     self._temp_filter_file.write('\n'.join(filter_list))
     self._temp_filter_file.close()
     arg_name = 'test-list'
@@ -153,6 +151,7 @@ def main():
     adapter = BareScriptTestAdapter()
   return adapter.run_test()
 
+
 # This is not really a "script test" so does not need to manually add
 # any additional compile targets.
 def main_compile_targets(args):
@@ -163,8 +162,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

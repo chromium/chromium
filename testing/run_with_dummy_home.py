@@ -2,7 +2,6 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Usage: run_with_dummy_home.py <command>
 
 Helper for running a test with a dummy $HOME, populated with just enough for

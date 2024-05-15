@@ -14,7 +14,8 @@ import pathlib
 import re
 
 BASE_FEATURE_PATTERN = br"BASE_FEATURE\((.*?),(.*?),(.*?)\);"
-BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN, flags=re.MULTILINE+re.DOTALL)
+BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
+                             flags=re.MULTILINE + re.DOTALL)
 
 # Only search these directories for flags. If your flag is outside these root
 # directories, then add the directory here.
@@ -68,6 +69,7 @@ DIRECTORIES_TO_SEARCH = [
     "weblayer",
 ]
 
+
 def _FindFeaturesInFile(filepath):
   # Work on bytes to avoid utf-8 decode errors outside feature declarations
   file_contents = pathlib.Path(filepath).read_bytes()
@@ -91,8 +93,10 @@ def FindDeclaredFeatures(input_api):
   # Features are supposed to be defined in .cc files.
   # Iterate over the search folders in the root.
   root = pathlib.Path(input_api.change.RepositoryRoot())
-  glob_patterns = [str(p / pathlib.Path("**/*.cc")) for p in root.iterdir() if
-        p.is_dir() and p.name in DIRECTORIES_TO_SEARCH]
+  glob_patterns = [
+      str(p / pathlib.Path("**/*.cc")) for p in root.iterdir()
+      if p.is_dir() and p.name in DIRECTORIES_TO_SEARCH
+  ]
 
   # blink is the only directory in third_party that should be searched.
   blink_glob = str(root / pathlib.Path("third_party/blink/**/*.cc"))
@@ -103,8 +107,9 @@ def FindDeclaredFeatures(input_api):
   glob_patterns.append(mm_glob)
 
   # Create glob iterators that lazily go over the files to search
-  glob_iterators = [glob.iglob(pattern, recursive=True) for pattern in
-        glob_patterns]
+  glob_iterators = [
+      glob.iglob(pattern, recursive=True) for pattern in glob_patterns
+  ]
 
   # Limit to 4 processes - the disk accesses becomes a bottleneck with just a
   # few processes, but splitting the searching across multiple CPUs does yield
@@ -112,7 +117,7 @@ def FindDeclaredFeatures(input_api):
   # The exact batch size does not seem to matter much, as long as it is >> 1.
   pool = multiprocessing.Pool(4)
   found_features = pool.imap_unordered(_FindFeaturesInFile,
-                       itertools.chain(*glob_iterators), 1000)
+                                       itertools.chain(*glob_iterators), 1000)
   pool.close()
   pool.join()
 

@@ -8,7 +8,6 @@ import json
 import os
 import sys
 
-
 # Add src/testing/ into sys.path for importing xvfb and common.
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
@@ -18,20 +17,18 @@ from scripts import common
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--isolated-script-test-output', type=str,
-      required=False)
-  parser.add_argument(
-      '--isolated-script-test-chartjson-output', type=str,
-      required=False)
-  parser.add_argument(
-      '--isolated-script-test-perf-output', type=str,
-      required=False)
-  parser.add_argument(
-      '--isolated-script-test-filter', type=str,
-      required=False)
-  parser.add_argument(
-      '--platform', type=str, default=sys.platform, required=False)
+  parser.add_argument('--isolated-script-test-output', type=str, required=False)
+  parser.add_argument('--isolated-script-test-chartjson-output',
+                      type=str,
+                      required=False)
+  parser.add_argument('--isolated-script-test-perf-output',
+                      type=str,
+                      required=False)
+  parser.add_argument('--isolated-script-test-filter', type=str, required=False)
+  parser.add_argument('--platform',
+                      type=str,
+                      default=sys.platform,
+                      required=False)
 
   args = parser.parse_args(argv)
 
@@ -49,8 +46,8 @@ def main(argv):
     additional_args = [
         '--additional-binary',
         os.path.join('.', 'Content Shell.app', 'Contents', 'Frameworks',
-                     'Content Shell Framework.framework', 'Versions',
-                     'Current', 'Content Shell Framework')
+                     'Content Shell Framework.framework', 'Versions', 'Current',
+                     'Content Shell Framework')
     ]
   elif args.platform == 'android':
     exe = os.path.join('.', 'lib.unstripped',
@@ -65,10 +62,14 @@ def main(argv):
         os.path.join(common.SRC_DIR, 'content', 'shell', 'tools',
                      'breakpad_integration_test.py'),
         '--verbose',
-        '--build-dir', '.',
-        '--binary', exe,
-        '--json', tempfile_path,
-        '--platform', args.platform,
+        '--build-dir',
+        '.',
+        '--binary',
+        exe,
+        '--json',
+        tempfile_path,
+        '--platform',
+        args.platform,
     ] + additional_args, env)
 
     with open(tempfile_path) as f:
@@ -76,8 +77,8 @@ def main(argv):
 
   if args.isolated_script_test_output:
     with open(args.isolated_script_test_output, 'w') as fp:
-      common.record_local_script_results(
-          'content_shell_crash_test', fp, failures, True)
+      common.record_local_script_results('content_shell_crash_test', fp,
+                                         failures, True)
 
   return rc
 
@@ -90,8 +91,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main(sys.argv[1:]))

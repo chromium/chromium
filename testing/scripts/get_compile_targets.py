@@ -30,25 +30,18 @@ def main(argv):
   for filename in os.listdir(common.SCRIPT_DIR):
     if not filename.endswith('.py'):
       continue
-    if filename in ('common.py',
-                    'get_compile_targets.py',
-                    'gpu_integration_test_adapter.py',
-                    'PRESUBMIT.py',
-                    'sizes_common.py',
-                    'variations_seed_access_helper.py',
+    if filename in ('common.py', 'get_compile_targets.py',
+                    'gpu_integration_test_adapter.py', 'PRESUBMIT.py',
+                    'sizes_common.py', 'variations_seed_access_helper.py',
                     'run_variations_smoke_tests.py',
                     'run_performance_tests_unittest.py'):
       continue
 
     with common.temporary_file() as tempfile_path:
       rc = common.run_command(
-          [sys.executable, os.path.join(common.SCRIPT_DIR, filename)] +
-          passthrough_args +
-          [
-              'compile_targets',
-              '--output', tempfile_path
-          ]
-      )
+          [sys.executable,
+           os.path.join(common.SCRIPT_DIR, filename)] + passthrough_args +
+          ['compile_targets', '--output', tempfile_path])
       if rc != 0:
         return rc
 

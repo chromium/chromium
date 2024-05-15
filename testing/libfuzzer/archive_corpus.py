@@ -3,7 +3,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Archive corpus file into zip and generate .d depfile.
 
 Invoked by GN from fuzzer_test.gni.
@@ -21,9 +20,12 @@ SEED_CORPUS_LIMIT_MB = 100
 
 def main():
   parser = argparse.ArgumentParser(description="Generate fuzzer config.")
-  parser.add_argument('corpus_directories', metavar='corpus_dir', type=str,
+  parser.add_argument('corpus_directories',
+                      metavar='corpus_dir',
+                      type=str,
                       nargs='+')
-  parser.add_argument('--output', metavar='output_archive_name.zip',
+  parser.add_argument('--output',
+                      metavar='output_archive_name.zip',
                       required=True)
 
   args = parser.parse_args()
@@ -52,6 +54,7 @@ def main():
     print('Seed corpus %s exceeds maximum allowed size (%d MB).' %
           (seed_corpus_path, SEED_CORPUS_LIMIT_MB))
     sys.exit(-1)
+
 
 if __name__ == '__main__':
   main()

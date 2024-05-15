@@ -9,7 +9,8 @@ import unittest
 import perf_device_trigger
 
 
-class Args(object): # pylint: disable=useless-object-inheritance
+class Args(object):  # pylint: disable=useless-object-inheritance
+
     def __init__(self):
         self.shards = 1
         self.shard_index = None
@@ -20,6 +21,7 @@ class Args(object): # pylint: disable=useless-object-inheritance
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
+
     def __init__(self, args, swarming_args, files, list_bots_result,
                  list_tasks_results):
         self._bot_statuses = []
@@ -53,13 +55,10 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     def write_json_to_file(self, merged_json, output_file):
         self._files[output_file] = merged_json
 
-    def list_bots(self,
-                  dimensions,
-                  server='chromium-swarm.appspot.com'):
+    def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         return self._list_bots_result
 
-    def list_tasks(self, tags, limit=None,
-                   server='chromium-swarm.appspot.com'):
+    def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         res, self._list_tasks_results = self._list_tasks_results[
             0], self._list_tasks_results[1:]
         return res
@@ -78,6 +77,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
 
 
 class UnitTest(unittest.TestCase):
+
     def setup_and_trigger(self,
                           previous_task_assignment_map,
                           alive_bots,

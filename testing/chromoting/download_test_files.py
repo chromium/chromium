@@ -1,7 +1,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """A script to download files required for Remoting integration tests from GCS.
 
   The script expects 2 parameters:
@@ -25,10 +24,12 @@ import sys
 def main():
 
   parser = argparse.ArgumentParser()
-  parser.add_argument('-f', '--files',
+  parser.add_argument('-f',
+                      '--files',
                       help='File specifying files to be downloaded .')
   parser.add_argument(
-      '-o', '--output_folder',
+      '-o',
+      '--output_folder',
       help='Folder where specified files should be downloaded .')
 
   if len(sys.argv) < 3:
@@ -52,6 +53,7 @@ def main():
       except subprocess.CalledProcessError as e:
         print(e.output)
         sys.exit(1)
+
 
 if __name__ == '__main__':
   main()

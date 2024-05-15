@@ -1,7 +1,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Top-level presubmit script for testing.
 
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
@@ -18,12 +17,13 @@ def _GetTestingEnv(input_api):
   # TODO(crbug.com/40237086): This is temporary till gpu code in
   # flake_suppressor_commonis moved to gpu dir.
   # Only common code will reside under /testing.
-  gpu_test_path = input_api.os_path.join(
-      input_api.PresubmitLocalPath(), '..', 'content', 'test', 'gpu')
+  gpu_test_path = input_api.os_path.join(input_api.PresubmitLocalPath(), '..',
+                                         'content', 'test', 'gpu')
   testing_env.update({
-      'PYTHONPATH': input_api.os_path.pathsep.join(
-        [testing_path, gpu_test_path]),
-      'PYTHONDONTWRITEBYTECODE': '1',
+      'PYTHONPATH':
+      input_api.os_path.pathsep.join([testing_path, gpu_test_path]),
+      'PYTHONDONTWRITEBYTECODE':
+      '1',
   })
   return testing_env
 
@@ -34,8 +34,7 @@ def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
       input_api,
       output_api,
       input_api.os_path.join(input_api.PresubmitLocalPath(),
-                             'flake_suppressor_common'),
-      [r'^.+_unittest\.py$'],
+                             'flake_suppressor_common'), [r'^.+_unittest\.py$'],
       env=_GetTestingEnv(input_api))
 
 
@@ -57,9 +56,16 @@ def CheckPylint(input_api, output_api):
     # These scripts don't run on Windows and should not be linted on Windows -
     # trying to do so will lead to spurious errors.
     files_to_skip += ('xvfb.py', '.*host_info.py')
-  pylint_checks = input_api.canned_checks.GetPylint(
+  pylint_checks = input_api.canned_checks.GetPylint(input_api,
+                                                    output_api,
+                                                    files_to_skip=files_to_skip,
+                                                    version='2.7')
+  return input_api.RunTests(pylint_checks)
+
+
+def CheckPatchFormatted(input_api, output_api):
+  return input_api.canned_checks.CheckPatchFormatted(
       input_api,
       output_api,
-      files_to_skip=files_to_skip,
-      version='2.7')
-  return input_api.RunTests(pylint_checks)
+      result_factory=output_api.PresubmitError,
+  )

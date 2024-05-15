@@ -23,7 +23,7 @@ def UniformExpoInteger(low, high, base=2):
   return int(math.floor(math.pow(base, random.uniform(low, high))))
 
 
-def WeightedChoice(choices): # pylint: disable=inconsistent-return-statements
+def WeightedChoice(choices):  # pylint: disable=inconsistent-return-statements
   """Chooses an item given a sequence of (choice, weight) tuples"""
   total = sum(w for c, w in choices)
   r = random.uniform(0, total)
@@ -46,9 +46,11 @@ def Pipeline(*funcs):
 def DeepMemoize(obj):
   """A memoizing decorator that returns deep copies of the function results."""
   cache = obj.cache = {}
+
   @functools.wraps(obj)
   def Memoize(*args):
     if args not in cache:
       cache[args] = copy.deepcopy(obj(*args))
     return copy.deepcopy(cache[args])
+
   return Memoize

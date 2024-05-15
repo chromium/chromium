@@ -2,7 +2,6 @@
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """//testing/scripts wrapper for the network traffic annotation auditor checks.
 This script is used to run traffic_annotation_auditor_tests.py on an FYI bot to
 check that traffic_annotation_auditor has the same results when heuristics that
@@ -21,24 +20,25 @@ sys.path.append(
 from scripts import common
 
 WINDOWS_SHEET_CONFIG = {
-  "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
-  "annotations_sheet_name": "Annotations",
-  "chrome_version_sheet_name": "Chrome Version",
-  "silent_change_columns": [],
-  "last_update_column_name": "Last Update",
+    "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
+    "annotations_sheet_name": "Annotations",
+    "chrome_version_sheet_name": "Chrome Version",
+    "silent_change_columns": [],
+    "last_update_column_name": "Last Update",
 }
-
 
 CHROMEOS_SHEET_CONFIG = {
-  "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
-  "annotations_sheet_name": "Annotations",
-  "chrome_version_sheet_name": "Chrome Version",
-  "silent_change_columns": [],
-  "last_update_column_name": "Last Update",
+    "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
+    "annotations_sheet_name": "Annotations",
+    "chrome_version_sheet_name": "Chrome Version",
+    "silent_change_columns": [],
+    "last_update_column_name": "Last Update",
 }
+
 
 def is_windows():
   return os.name == 'nt'
+
 
 def is_chromeos(build_path):
   current_platform = get_current_platform_from_gn_args(build_path)
@@ -66,10 +66,11 @@ def get_current_platform_from_gn_args(build_path):
       if pattern.search(gn_args):
         return "chromeos"
 
-    except(ValueError, OSError) as e:
+    except (ValueError, OSError) as e:
       logger.info(e)
 
   return None
+
 
 def main_run(args):
   annotations_file = tempfile.NamedTemporaryFile()
@@ -102,14 +103,14 @@ def main_run(args):
       vpython_path = 'vpython3.bat' if is_windows() else 'vpython3'
 
       command_line = [
-        vpython_path,
-        os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
-                   'update_annotations_sheet.py'),
-        '--yes',
-        '--config-file',
-        config_filename,
-        '--annotations-file',
-        annotations_filename,
+          vpython_path,
+          os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
+                       'update_annotations_sheet.py'),
+          '--yes',
+          '--config-file',
+          config_filename,
+          '--annotations-file',
+          annotations_filename,
       ]
       rc = common.run_command(command_line)
       cleanup_file(config_filename)
@@ -121,10 +122,11 @@ def main_run(args):
   finally:
     cleanup_file(annotations_filename)
     failures = ['Please refer to stdout for errors.'] if rc else []
-    common.record_local_script_results(
-       'test_traffic_annotation_auditor', args.output, failures, True)
+    common.record_local_script_results('test_traffic_annotation_auditor',
+                                       args.output, failures, True)
 
   return rc
+
 
 def cleanup_file(filename):
   try:
@@ -132,13 +134,14 @@ def cleanup_file(filename):
   except OSError:
     print("Could not remove file: ", filename)
 
+
 def main_compile_targets(args):
   json.dump(['traffic_annotation_proto'], args.output)
 
 
 if __name__ == '__main__':
   funcs = {
-    'run': main_run,
-    'compile_targets': main_compile_targets,
+      'run': main_run,
+      'compile_targets': main_compile_targets,
   }
   sys.exit(common.run_script(sys.argv[1:], funcs))

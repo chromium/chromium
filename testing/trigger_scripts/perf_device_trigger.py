@@ -82,6 +82,7 @@ class Bot(object):  # pylint: disable=useless-object-inheritance
 
 
 class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
+
     def __init__(self, args, swarming_args):
         # pylint: disable=super-with-arguments
         super(PerfDeviceTriggerer, self).__init__()
@@ -102,8 +103,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
             # Note: this assumes perf bot dimensions are unique between
             # configurations.
             self._eligible_bots_by_ids = (
-                self._query_swarming_for_eligible_bot_configs(
-                    self._dimensions))
+                self._query_swarming_for_eligible_bot_configs(self._dimensions))
 
         if args.multiple_dimension_script_verbose:
             logging.basicConfig(level=logging.DEBUG)
@@ -184,8 +184,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         # First make sure the number of shards doesn't exceed the
         # number of eligible bots. This means there is a config error somewhere.
         if trigger_count > len(self._eligible_bots_by_ids):
-            self._print_device_affinity_info({}, {},
-                                             self._eligible_bots_by_ids,
+            self._print_device_affinity_info({}, {}, self._eligible_bots_by_ids,
                                              trigger_count)
             raise ValueError(
                 'Not enough available machines exist in swarming '
@@ -217,8 +216,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         }
 
         # Try assigning healthy bots for new shards first.
-        for shard_index, bot in sorted(
-                shard_to_bot_assignment_map.items()):
+        for shard_index, bot in sorted(shard_to_bot_assignment_map.items()):
             if not bot and unallocated_healthy_bots:
                 shard_to_bot_assignment_map[shard_index] = \
                     unallocated_healthy_bots.pop()
@@ -229,8 +227,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
                     shard_index] = unallocated_bad_bots.pop()
 
         # Handle the rest of shards that were assigned dead bots:
-        for shard_index, bot in sorted(
-                shard_to_bot_assignment_map.items()):
+        for shard_index, bot in sorted(shard_to_bot_assignment_map.items()):
             if not bot.is_alive() and unallocated_healthy_bots:
                 dead_bot = bot
                 healthy_bot = unallocated_healthy_bots.pop()
@@ -290,8 +287,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         of the bots.
         """
 
-        query_result = self.list_bots(dimensions,
-                                      server=self._swarming_server)
+        query_result = self.list_bots(dimensions, server=self._swarming_server)
         perf_bots = {}
         for bot in query_result:
             # Device maintenance is usually quick, and we can wait for it to
@@ -374,6 +370,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
                 slashes_index = server.index('//') + 2
                 # Strip out the protocol
                 return server[slashes_index:]
+
     # pylint: enable=inconsistent-return-statements
 
 
@@ -384,13 +381,12 @@ def main():
     # Setup args for common contract of base class
     parser = base_test_triggerer.BaseTestTriggerer.setup_parser_contract(
         argparse.ArgumentParser(description=__doc__))
-    parser.add_argument(
-        '--use-dynamic-shards',
-        action='store_true',
-        required=False,
-        help='Ignore --shards and the existing shard map. Will '
-        'generate a shard map at run time and use as much '
-        'device as possible.')
+    parser.add_argument('--use-dynamic-shards',
+                        action='store_true',
+                        required=False,
+                        help='Ignore --shards and the existing shard map. Will '
+                        'generate a shard map at run time and use as much '
+                        'device as possible.')
     args, remaining = parser.parse_known_args()
 
     triggerer = PerfDeviceTriggerer(args, remaining)

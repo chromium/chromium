@@ -66,7 +66,8 @@ def strip_unicode(obj):
     return obj
 
 
-class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
+class BaseTestTriggerer(object):  # pylint: disable=useless-object-inheritance
+
     def __init__(self):
         self._bot_configs = None
         self._bot_statuses = []
@@ -136,9 +137,10 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
             self._bot_configs = strip_unicode(
                 json.loads(args.multiple_trigger_configs))
         except Exception as e:
-            six.raise_from(ValueError(
-                'Error while parsing JSON from bot config string %s: %s' %
-                (args.multiple_trigger_configs, str(e))), e)
+            six.raise_from(
+                ValueError(
+                    'Error while parsing JSON from bot config string %s: %s' %
+                    (args.multiple_trigger_configs, str(e))), e)
         # Validate the input.
         if not isinstance(self._bot_configs, list):
             raise ValueError('Bot configurations must be a list, were: %s' %
@@ -149,9 +151,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
         if not all(isinstance(entry, dict) for entry in self._bot_configs):
             raise ValueError('Bot configurations must all be dictionaries')
 
-    def list_bots(self,
-                  dimensions,
-                  server='chromium-swarm.appspot.com'):
+    def list_bots(self, dimensions, server='chromium-swarm.appspot.com'):
         """List bots having specified bot dimensions.
 
         Type of returned value is list of
@@ -172,8 +172,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
             with open(result_json.name) as f:
                 return json.load(f)
 
-    def list_tasks(self, tags, limit=None,
-                   server='chromium-swarm.appspot.com'):
+    def list_tasks(self, tags, limit=None, server='chromium-swarm.appspot.com'):
         """List bots having specified task tags.
 
         Type of returned value is list of
@@ -285,7 +284,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
 
     def generate_shard_map(self, args, buildername, selected_config):
         """Returns shard map generated on runtime if needed."""
-        pass # pylint: disable=unnecessary-pass
+        pass  # pylint: disable=unnecessary-pass
 
     def trigger_tasks(self, args, remaining):
         """Triggers tasks for each bot.
@@ -347,11 +346,9 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
                                                 args.shards, json_temp,
                                                 shard_map)
                 # crbug/1140389: debug print outs
-                logging.info('DEBUG: Before calling swarming: %s',
-                             args_to_pass)
-                ret = self.run_swarming_go(args_to_pass, json_temp,
-                                           shard_index, args.shards,
-                                           merged_json)
+                logging.info('DEBUG: Before calling swarming: %s', args_to_pass)
+                ret = self.run_swarming_go(args_to_pass, json_temp, shard_index,
+                                           args.shards, merged_json)
                 if ret:
                     sys.stderr.write('Failed to trigger a task, aborting\n')
                     return ret
@@ -367,6 +364,7 @@ class BaseTestTriggerer(object): # pylint: disable=useless-object-inheritance
             if (args[i] == '--tag' and i < args_length - 1
                     and args[i + 1].startswith('buildername:')):
                 return args[i + 1].split(':', 1)[1]
+
     # pylint: enable=inconsistent-return-statements
 
     @staticmethod

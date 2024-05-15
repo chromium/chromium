@@ -14,8 +14,7 @@ import common_merge_script_tests
 
 THIS_DIR = os.path.dirname(__file__)
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(THIS_DIR, '..', 'resources')))
+sys.path.insert(0, os.path.abspath(os.path.join(THIS_DIR, '..', 'resources')))
 import noop_merge
 
 
@@ -25,12 +24,14 @@ class NoopMergeTest(unittest.TestCase):
   def setUp(self):
     super(NoopMergeTest, self).setUp()
     self.temp_dir = tempfile.mkdtemp()
+
   # pylint: enable=super-with-arguments
 
   # pylint: disable=super-with-arguments
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
     super(NoopMergeTest, self).tearDown()
+
   # pylint: enable=super-with-arguments
 
   def test_copies_first_json(self):
@@ -67,7 +68,9 @@ class CommandLineTest(common_merge_script_tests.CommandLineTest):
   # pylint: disable=super-with-arguments
   def __init__(self, methodName='runTest'):
     super(CommandLineTest, self).__init__(methodName, noop_merge)
+
   # pylint: enable=super-with-arguments
+
 
 if __name__ == '__main__':
   unittest.main()

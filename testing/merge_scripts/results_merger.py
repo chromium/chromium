@@ -15,25 +15,15 @@ REQUIRED = {
     'num_failures_by_type',
     'seconds_since_epoch',
     'tests',
-    }
+}
 
 # These fields are optional, but must have the same value on all shards
-OPTIONAL_MATCHING = (
-    'builder_name',
-    'build_number',
-    'chromium_revision',
-    'has_pretty_patch',
-    'has_wdiff',
-    'path_delimiter',
-    'pixel_tests_enabled',
-    'random_order_seed'
-    )
+OPTIONAL_MATCHING = ('builder_name', 'build_number', 'chromium_revision',
+                     'has_pretty_patch', 'has_wdiff', 'path_delimiter',
+                     'pixel_tests_enabled', 'random_order_seed')
 
 # The last shard's value for these fields will show up in the merged results
-OPTIONAL_IGNORED = (
-    'layout_tests_dir',
-    'metadata'
-    )
+OPTIONAL_IGNORED = ('layout_tests_dir', 'metadata')
 
 # These fields are optional and will be summed together
 OPTIONAL_COUNTS = (
@@ -43,7 +33,7 @@ OPTIONAL_COUNTS = (
     'num_regressions',
     'skipped',
     'skips',
-    )
+)
 
 
 class MergeException(Exception):
@@ -79,9 +69,9 @@ def _merge_simplified_json_format(shard_results_list):
 
   # These are the only keys we pay attention to in the output JSON.
   merged_results = {
-    'successes': [],
-    'failures': [],
-    'valid': True,
+      'successes': [],
+      'failures': [],
+      'valid': True,
   }
 
   for result_json in shard_results_list:
@@ -89,10 +79,10 @@ def _merge_simplified_json_format(shard_results_list):
     failures = result_json.get('failures', [])
     valid = result_json.get('valid', True)
 
-    if (not isinstance(successes, list) or not isinstance(failures, list) or
-        not isinstance(valid, bool)):
-      raise MergeException(
-        'Unexpected value type in %s' % result_json)  # pragma: no cover
+    if (not isinstance(successes, list) or not isinstance(failures, list)
+        or not isinstance(valid, bool)):
+      raise MergeException('Unexpected value type in %s' %
+                           result_json)  # pragma: no cover
 
     merged_results['successes'].extend(successes)
     merged_results['failures'].extend(failures)
@@ -106,12 +96,11 @@ def _merge_json_test_result_format(shard_results_list):
 
   # These are required fields for the JSON test result format version 3.
   merged_results = {
-    'tests': {},
-    'interrupted': False,
-    'version': 3,
-    'seconds_since_epoch': float('inf'),
-    'num_failures_by_type': {
-    }
+      'tests': {},
+      'interrupted': False,
+      'version': 3,
+      'seconds_since_epoch': float('inf'),
+      'num_failures_by_type': {}
   }
 
   # To make sure that we don't mutate existing shard_results_list.
@@ -124,26 +113,26 @@ def _merge_json_test_result_format(shard_results_list):
     version = result_json.pop('version', -1)
     if version != 3:
       raise MergeException(  # pragma: no cover (covered by
-                             # results_merger_unittest).
+          # results_merger_unittest).
           'Unsupported version %s. Only version 3 is supported' % version)
 
     # Check the results for each shard have the required keys
     missing = REQUIRED - set(result_json)
     if missing:
       raise MergeException(  # pragma: no cover (covered by
-                             # results_merger_unittest).
+          # results_merger_unittest).
           'Invalid json test results (missing %s)' % missing)
 
     # Curry merge_values for this result_json.
-    merge = lambda key, merge_func: merge_value(
-        result_json, merged_results, key, merge_func)
+    merge = lambda key, merge_func: merge_value(result_json, merged_results,
+                                                key, merge_func)
 
     # Traverse the result_json's test trie & merged_results's test tries in
     # DFS order & add the n to merged['tests'].
     merge('tests', merge_tries)
 
     # If any were interrupted, we are interrupted.
-    merge('interrupted', lambda x,y: x|y)
+    merge('interrupted', lambda x, y: x | y)
 
     # Use the earliest seconds_since_epoch value
     merge('seconds_since_epoch', min)
@@ -176,11 +165,11 @@ def _merge_json_test_result_format(shard_results_list):
       if count_key in result_json:  # pragma: no cover
         # TODO(mcgreevy): add coverage.
         merged_results.setdefault(count_key, 0)
-        merge(count_key, lambda a, b: a+b)
+        merge(count_key, lambda a, b: a + b)
 
     if result_json:
       raise MergeException(  # pragma: no cover (covered by
-                             # results_merger_unittest).
+          # results_merger_unittest).
           'Unmergable values %s' % list(result_json.keys()))
 
   return merged_results
@@ -208,8 +197,8 @@ def merge_tries(source, dest):
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
-              "%s:%s: %r not mergable, curr_node: %r\ndest_node: %r" % (
-                  prefix, k, v, curr_node, dest_node))
+              "%s:%s: %r not mergable, curr_node: %r\ndest_node: %r" %
+              (prefix, k, v, curr_node, dest_node))
         pending_nodes.append(("%s:%s" % (prefix, k), dest_node[k], v))
       else:
         dest_node[k] = v
@@ -226,7 +215,7 @@ def ensure_match(source, dest):
   """
   if source != dest:
     raise MergeException(  # pragma: no cover (covered by
-                           # results_merger_unittest).
+        # results_merger_unittest).
         "Values don't match: %s, %s" % (source, dest))
   return source
 
@@ -262,7 +251,7 @@ def merge_value(source, dest, key, merge_func):
     dest[key] = merge_func(source[key], dest[key])
   except MergeException as e:
     message = "MergeFailure for %s\n%s" % (key, e.args[0])
-    e.args = (message,) + e.args[1:]
+    e.args = (message, ) + e.args[1:]
     raise
   del source[key]
 

@@ -2,7 +2,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs tests with Xvfb or Xorg and Openbox or Weston on Linux and normally on
 other platforms."""
 
@@ -33,6 +32,7 @@ DEFAULT_XVFB_WHD = '1280x800x24'
 class _X11ProcessError(Exception):
   """Exception raised when Xvfb or Xorg cannot start."""
 
+
 class _WestonProcessError(Exception):
   """Exception raised when Weston cannot start."""
 
@@ -50,7 +50,7 @@ def kill(proc, name, timeout_in_seconds=10):
     thread.join(timeout_in_seconds)
     if thread.is_alive():
       print('%s running after SIGTERM, trying SIGKILL.\n' % name,
-        file=sys.stderr)
+            file=sys.stderr)
       proc.kill()
   except OSError as e:
     # proc.terminate()/kill() can raise, not sure if only ProcessLookupError
@@ -63,7 +63,7 @@ def kill(proc, name, timeout_in_seconds=10):
           file=sys.stderr)
 
 
-def launch_dbus(env): # pylint: disable=inconsistent-return-statements
+def launch_dbus(env):  # pylint: disable=inconsistent-return-statements
   """Starts a DBus session.
 
   Works around a bug in GLib where it performs operations which aren't
@@ -86,8 +86,8 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
   if 'DBUS_SESSION_BUS_ADDRESS' in os.environ:
     return
   try:
-    dbus_output = subprocess.check_output(
-        ['dbus-launch'], env=env).decode('utf-8').split('\n')
+    dbus_output = subprocess.check_output(['dbus-launch'],
+                                          env=env).decode('utf-8').split('\n')
     for line in dbus_output:
       m = re.match(r'([^=]+)\=(.+)', line)
       if m:
@@ -98,9 +98,13 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
 
 
 # TODO(crbug.com/40621504): Encourage setting flags to False.
-def run_executable(
-    cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True,
-    xvfb_whd=None, cwd=None):
+def run_executable(cmd,
+                   env,
+                   stdoutfile=None,
+                   use_openbox=True,
+                   use_xcompmgr=True,
+                   xvfb_whd=None,
+                   cwd=None):
   """Runs an executable within Weston, Xvfb or Xorg on Linux or normally on
      other platforms.
 
@@ -158,7 +162,7 @@ def run_executable(
 
   if sys.platform.startswith('linux') and (use_xvfb or use_xorg):
     return _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr,
-      use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
+                         use_xorg, xvfb_whd or DEFAULT_XVFB_WHD, cwd)
   if use_weston:
     return _run_with_weston(cmd, env, stdoutfile, cwd)
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
@@ -169,10 +173,11 @@ def _make_xorg_config(whd):
   returns the file path. See:
   https://www.x.org/releases/current/doc/man/man5/xorg.conf.5.xhtml"""
   (width, height, depth) = whd.split('x')
-  modeline = subprocess.check_output(
-    ['cvt', width, height, '60'], stderr=subprocess.STDOUT, text=True)
-  modeline_label = re.search(
-    'Modeline "(.*)"', modeline, re.IGNORECASE).group(1)
+  modeline = subprocess.check_output(['cvt', width, height, '60'],
+                                     stderr=subprocess.STDOUT,
+                                     text=True)
+  modeline_label = re.search('Modeline "(.*)"', modeline,
+                             re.IGNORECASE).group(1)
   config = f"""
 Section "Monitor"
   Identifier "Monitor0"
@@ -200,18 +205,21 @@ EndSection
     f.write(config)
   return config_file
 
-def _run_with_x11(cmd, env, stdoutfile, use_openbox,
-                   use_xcompmgr, use_xorg, xvfb_whd, cwd):
+
+def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
+                  xvfb_whd, cwd):
   """Runs with an X11 server. Uses Xvfb by default and Xorg when use_xorg is
   True."""
   openbox_proc = None
   openbox_ready = MutableBoolean()
+
   def set_openbox_ready(*_):
     openbox_ready.setvalue(True)
 
   xcompmgr_proc = None
   x11_proc = None
   x11_ready = MutableBoolean()
+
   def set_x11_ready(*_):
     x11_ready.setvalue(True)
 
@@ -236,7 +244,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox,
       # [2] https://crbug.com/1187948
       # [3] https://crbug.com/1120107
       xvfb_help = subprocess.check_output(
-        ['Xvfb', '-help'], stderr=subprocess.STDOUT).decode('utf8')
+          ['Xvfb', '-help'], stderr=subprocess.STDOUT).decode('utf8')
 
     # Due to race condition for display number, Xvfb/Xorg might fail to run.
     # If it does fail, try again up to 10 times, similarly to xvfb-run.
@@ -248,8 +256,10 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox,
       if use_xorg:
         x11_cmd = ['Xorg', display, '-config', xorg_config_file]
       else:
-        x11_cmd = ['Xvfb', display, '-screen', '0', xvfb_whd, '-ac',
-                    '-nolisten', 'tcp', '-dpi', '96', '+extension', 'RANDR']
+        x11_cmd = [
+            'Xvfb', display, '-screen', '0', xvfb_whd, '-ac', '-nolisten',
+            'tcp', '-dpi', '96', '+extension', 'RANDR'
+        ]
         if '-maxclients' in xvfb_help:
           x11_cmd += ['-maxclients', '512']
 
@@ -290,8 +300,9 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox,
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
       signal.signal(signal.SIGUSR1, set_openbox_ready)
       openbox_proc = subprocess.Popen(
-          ['openbox', '--sm-disable', '--startup',
-           openbox_startup_cmd], stderr=subprocess.STDOUT, env=env)
+          ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
+          stderr=subprocess.STDOUT,
+          env=env)
 
       for _ in range(30):
         time.sleep(.1)  # gives Openbox time to start or fail.
@@ -302,8 +313,9 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox,
         raise _X11ProcessError('Failed to start OpenBox.')
 
     if use_xcompmgr:
-      xcompmgr_proc = subprocess.Popen(
-          'xcompmgr', stderr=subprocess.STDOUT, env=env)
+      xcompmgr_proc = subprocess.Popen('xcompmgr',
+                                       stderr=subprocess.STDOUT,
+                                       env=env)
 
     return test_env.run_executable(cmd, env, stdoutfile, cwd)
   except OSError as e:
@@ -377,9 +389,11 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # an adequate size so that tests can have more room for managing size
     # of windows.
     # 5) --config=... - tells Weston to use our custom config.
-    weston_cmd = ['./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--modules=ui-controls.so,systemd-notify.so', '--width=1280',
-          '--height=800', '--config=' + _weston_config_file_path()]
+    weston_cmd = [
+        './weston', '--backend=headless-backend.so', '--idle-time=0',
+        '--modules=ui-controls.so,systemd-notify.so', '--width=1280',
+        '--height=800', '--config=' + _weston_config_file_path()
+    ]
 
     if '--weston-use-gl' in cmd:
       # Runs Weston using hardware acceleration instead of SwiftShader.
@@ -405,9 +419,9 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
 
       weston_proc_display = None
       for _ in range(10):
-        weston_proc = subprocess.Popen(
-          weston_cmd,
-          stderr=subprocess.STDOUT, env=env)
+        weston_proc = subprocess.Popen(weston_cmd,
+                                       stderr=subprocess.STDOUT,
+                                       env=env)
 
         for _ in range(25):
           time.sleep(0.1)  # Gives weston some time to start.
@@ -430,7 +444,7 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
           # separately.
           weston_proc_display = _get_display_from_weston(weston_proc.pid)
           if weston_proc_display is not None:
-            break # Weston could launch and we found the display.
+            break  # Weston could launch and we found the display.
 
         # Also break from the outer loop.
         if weston_proc_display is not None:
@@ -471,11 +485,14 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     if dbus_pid:
       os.kill(dbus_pid, signal.SIGKILL)
 
+
 def _weston_notify_socket_address():
   return os.path.join(tempfile.gettempdir(), '.xvfb.py-weston-notify.sock')
 
+
 def _weston_config_file_path():
   return os.path.join(tempfile.gettempdir(), '.xvfb.py-weston.ini')
+
 
 def _get_display_from_weston(weston_proc_pid):
   """Retrieves $WAYLAND_DISPLAY set by Weston.
@@ -498,7 +515,7 @@ def _get_display_from_weston(weston_proc_pid):
   # Take the parent process.
   parent = psutil.Process(weston_proc_pid)
   if parent is None:
-    return None # The process is not found. Give up.
+    return None  # The process is not found. Give up.
 
   # Traverse through all the children processes and find one that has
   # $WAYLAND_DISPLAY set.

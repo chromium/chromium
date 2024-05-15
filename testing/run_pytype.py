@@ -33,10 +33,10 @@ TEST_LOCATION = "//testing/run_pytype.py"
 
 
 def main() -> int:
-    return pytype_runner.run_pytype(TEST_NAME, TEST_LOCATION,
-                                    FILES_AND_DIRECTORIES_TO_CHECK,
-                                    EXTRA_PATHS, TESTING_DIR)
+  return pytype_runner.run_pytype(TEST_NAME, TEST_LOCATION,
+                                  FILES_AND_DIRECTORIES_TO_CHECK, EXTRA_PATHS,
+                                  TESTING_DIR)
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+  sys.exit(main())

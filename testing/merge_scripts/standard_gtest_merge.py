@@ -11,7 +11,6 @@ import sys
 
 import merge_api
 
-
 MISSING_SHARDS_MSG = r"""Missing results from the following shard(s): %s
 
 This can happen in following cases:
@@ -53,13 +52,13 @@ def merge_shard_results(summary_json, jsons_to_merge):
 
   # Merge all JSON files together. Keep track of missing shards.
   merged = {
-    'all_tests': set(),
-    'disabled_tests': set(),
-    'global_tags': set(),
-    'missing_shards': [],
-    'per_iteration_data': [],
-    'swarming_summary': summary,
-    'test_locations': {},
+      'all_tests': set(),
+      'disabled_tests': set(),
+      'global_tags': set(),
+      'missing_shards': [],
+      'per_iteration_data': [],
+      'swarming_summary': summary,
+      'test_locations': {},
   }
   for index, result in enumerate(summary['shards']):
     if result is None:
@@ -90,14 +89,13 @@ def merge_shard_results(summary_json, jsons_to_merge):
         merged[key].update(json_data.get(key), [])
 
       # Dict-like fields.
-      for key in ('test_locations',):
+      for key in ('test_locations', ):
         merged[key].update(json_data.get(key, {}))
 
       # 'per_iteration_data' is a list of dicts. Dicts should be merged
       # together, not the 'per_iteration_data' list itself.
       merged['per_iteration_data'] = merge_list_of_dicts(
-          merged['per_iteration_data'],
-          json_data.get('per_iteration_data', []))
+          merged['per_iteration_data'], json_data.get('per_iteration_data', []))
     else:
       merged['missing_shards'].append(index)
       emit_warning('No result was found: %s' % err_msg)
@@ -107,9 +105,8 @@ def merge_shard_results(summary_json, jsons_to_merge):
   # case.
   if merged['missing_shards']:
     as_str = ', '.join(map(str, merged['missing_shards']))
-    emit_warning(
-        'some shards did not complete: %s' % as_str,
-        MISSING_SHARDS_MSG % as_str)
+    emit_warning('some shards did not complete: %s' % as_str,
+                 MISSING_SHARDS_MSG % as_str)
     # Not all tests run, combined JSON summary can not be trusted.
     merged['global_tags'].add('UNRELIABLE_RESULTS')
 
@@ -137,10 +134,10 @@ def load_shard_json(index, task_id, jsons_to_merge):
   """
   # 'output.json' is set in swarming/api.py, gtest_task method.
   matching_json_files = [
-      j for j in jsons_to_merge
-      if (os.path.basename(j) == 'output.json' and
-          (os.path.basename(os.path.dirname(j)) == str(index) or
-           os.path.basename(os.path.dirname(j)) == task_id))]
+      j for j in jsons_to_merge if (os.path.basename(j) == 'output.json' and (
+          os.path.basename(os.path.dirname(j)) == str(index)
+          or os.path.basename(os.path.dirname(j)) == task_id))
+  ]
 
   if not matching_json_files:
     print('shard %s test output missing' % index, file=sys.stderr)
@@ -154,8 +151,9 @@ def load_shard_json(index, task_id, jsons_to_merge):
   try:
     filesize = os.stat(path).st_size
     if filesize > OUTPUT_JSON_SIZE_LIMIT:
-      print('output.json is %d bytes. Max size is %d' % (
-           filesize, OUTPUT_JSON_SIZE_LIMIT), file=sys.stderr)
+      print('output.json is %d bytes. Max size is %d' %
+            (filesize, OUTPUT_JSON_SIZE_LIMIT),
+            file=sys.stderr)
       return (None, 'shard %s test output exceeded the size limit' % index)
 
     with open(path) as f:
@@ -179,8 +177,7 @@ def merge_list_of_dicts(left, right):
   return output
 
 
-def standard_gtest_merge(
-    output_json, summary_json, jsons_to_merge):
+def standard_gtest_merge(output_json, summary_json, jsons_to_merge):
 
   output = merge_shard_results(summary_json, jsons_to_merge)
   with open(output_json, 'w') as f:
@@ -194,8 +191,8 @@ def main(raw_args):
   parser = merge_api.ArgumentParser()
   args = parser.parse_args(raw_args)
 
-  return standard_gtest_merge(
-      args.output_json, args.summary_json, args.jsons_to_merge)
+  return standard_gtest_merge(args.output_json, args.summary_json,
+                              args.jsons_to_merge)
 
 
 if __name__ == '__main__':

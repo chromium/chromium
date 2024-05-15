@@ -16,9 +16,10 @@ sys.path.append(
 from scripts import common
 
 # Add src/content/test/gpu into sys.path for importing common.
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                os.path.pardir, os.path.pardir, 'content',
-                                'test', 'gpu')))
+sys.path.append(
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir,
+                     'content', 'test', 'gpu')))
 
 import gather_power_measurement_results
 import gather_swarming_json_results
@@ -49,7 +50,7 @@ class BuildBucketApiGpuUseCaseTests:
         build_json['steps'], step, 'stdout')
     if not stdout_url:
       return 'Unable to find stdout from step %s' % step
-    results = { 'number': build_id, 'tests': [] }
+    results = {'number': build_id, 'tests': []}
     gather_power_measurement_results.ProcessStepStdout(stdout_url, results)
     if 'bot' not in results or not results['bot'].startswith('BUILD'):
       return 'Failed to find bot name as BUILD*'
@@ -63,7 +64,7 @@ class BuildBucketApiGpuUseCaseTests:
     # latest successful build.
     extracted_times, _ = gather_swarming_json_results.GatherResults(
         bot='Linux FYI Release (NVIDIA)',
-        build=None, # Use the latest green build
+        build=None,  # Use the latest green build
         step='webgl2_conformance_validating_tests')
 
     if 'times' not in extracted_times:
@@ -78,17 +79,14 @@ class BuildBucketApiGpuUseCaseTests:
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      '--isolated-script-test-output', type=str)
-  parser.add_argument(
-      '--isolated-script-test-chartjson-output', type=str,
-      required=False)
-  parser.add_argument(
-      '--isolated-script-test-perf-output', type=str,
-      required=False)
-  parser.add_argument(
-      '--isolated-script-test-filter', type=str,
-      required=False)
+  parser.add_argument('--isolated-script-test-output', type=str)
+  parser.add_argument('--isolated-script-test-chartjson-output',
+                      type=str,
+                      required=False)
+  parser.add_argument('--isolated-script-test-perf-output',
+                      type=str,
+                      required=False)
+  parser.add_argument('--isolated-script-test-filter', type=str, required=False)
 
   args = parser.parse_args(argv)
 
@@ -127,8 +125,8 @@ if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main(sys.argv[1:]))

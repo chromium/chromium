@@ -3,7 +3,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Archive all source files that are references in binary debug info.
 
 Invoked by libfuzzer buildbots. Executes dwarfdump to parse debug info.
@@ -23,21 +22,23 @@ at_name_re = re.compile('.*DW_AT_name.*"(.*)".*')
 
 def main():
   parser = argparse.ArgumentParser(description="Zip binary sources.")
-  parser.add_argument('--binary', required=True,
-          help='binary file to read')
-  parser.add_argument('--workdir', required=True,
-          help='working directory to use to resolve relative paths')
-  parser.add_argument('--srcdir', required=True,
-          help='sources root directory to calculate zip entry names')
-  parser.add_argument('--output', required=True,
-          help='output zip file name')
-  parser.add_argument('--dwarfdump', required=False,
-          default='dwarfdump', help='path to dwarfdump utility')
+  parser.add_argument('--binary', required=True, help='binary file to read')
+  parser.add_argument('--workdir',
+                      required=True,
+                      help='working directory to use to resolve relative paths')
+  parser.add_argument(
+      '--srcdir',
+      required=True,
+      help='sources root directory to calculate zip entry names')
+  parser.add_argument('--output', required=True, help='output zip file name')
+  parser.add_argument('--dwarfdump',
+                      required=False,
+                      default='dwarfdump',
+                      help='path to dwarfdump utility')
   args = parser.parse_args()
 
   # Dump .debug_info section.
-  out = subprocess.check_output(
-          [args.dwarfdump, '-i', args.binary])
+  out = subprocess.check_output([args.dwarfdump, '-i', args.binary])
 
   looking_for_unit = True
   compile_units = set()
