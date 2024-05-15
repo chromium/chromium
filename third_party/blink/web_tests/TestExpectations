@@ -7399,3 +7399,4 @@ crbug.com/339835801 [ Win ] fast/forms/select-popup/popup-menu-appearance-tall.h
 
 # Gardener 2024-05-15
 crbug.com/340774350 [ Win ] external/wpt/uievents/mouse/mouse_boundary_events_after_reappending_last_over_target.tentative.html [ Failure Pass ]
+crbug.com/335895982 [ Linux ] virtual/gethtml-disabled/external/wpt/shadow-dom/declarative/gethtml.html [ Crash Failure Pass ]
