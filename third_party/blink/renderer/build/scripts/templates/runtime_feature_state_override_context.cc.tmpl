@@ -67,16 +67,18 @@ bool RuntimeFeatureStateOverrideContext::
 {% endif %}
   // Origin Trial feature values should not override any sent from
   // the browser, so we only add a value if has not already been set
-  // in the override_values_ map. Return whether the override was
-  // successful.
+  // in the override_values_ map with an identical token set. Return
+  // whether the override was successful.
+  auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
   if(!override_values_.contains(
-      mojom::RuntimeFeature::k{{feature.name}})) {
+      mojom::RuntimeFeature::k{{feature.name}}) ||
+     origin_trial_overrides_[
+      mojom::RuntimeFeature::k{{feature.name}}] != value) {
     // Update the state of all feature overrides in this class.
     override_values_
       [mojom::RuntimeFeature::k{{feature.name}}] = true;
     // Add successful overrides to the list of features we sent back
     // to the browser process.
-    auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
     origin_trial_overrides_[
       mojom::RuntimeFeature::k{{feature.name}}] = std::move(value);
     return true;

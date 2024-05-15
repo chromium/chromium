@@ -30,7 +30,7 @@ async_test(t => {
             document.body.appendChild(iframe);
         } else if (e.data.type == "HadData") {
             // Step 8
-            assert_equals(e.data.message, "Cookie,", "Unpartitioned data should be accessable, but SPDT doesn't support header tokens");
+            assert_equals(e.data.message, "Cookie,LocalStorage,", "Unpartitioned data should be accessable");
             t.done();
         }
     }));
