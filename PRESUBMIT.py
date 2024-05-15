@@ -80,7 +80,11 @@ _NON_BASE_DEPENDENT_PATHS = (
 # (best effort).
 _TEST_CODE_EXCLUDED_PATHS = (
     r'.*/(fake_|test_|mock_).+%s' % _IMPLEMENTATION_EXTENSIONS,
-    r'.+_test_(base|support|util)%s' % _IMPLEMENTATION_EXTENSIONS,
+    # Test support files, like:
+    # foo_test_support.cc
+    # bar_test_util_linux.cc (suffix)
+    # baz_test_base.cc
+    r'.+_test_(base|support|util)(_[a-z]+)?%s' % _IMPLEMENTATION_EXTENSIONS,
     # Test suite files, like:
     # foo_browsertest.cc
     # bar_unittest_mac.cc (suffix)
