@@ -437,7 +437,6 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   // Returns the menu item view at `index` in the category filter menu. This
   // should only be called when the menu is opened.
   views::MenuItemView* GetFilterMenuItemByIdx(int index) {
-    CHECK(IsFilterMenuOpen());
     return filter_menu_root_->GetSubmenu()->GetMenuItemAt(index);
   }
 
