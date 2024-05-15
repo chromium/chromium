@@ -3769,9 +3769,6 @@ extern const char kEnableNotificationImageDragDescription[];
 extern const char kEnableNotifierCollisionName[];
 extern const char kEnableNotifierCollisionDescription[];
 
-extern const char kEnableSystemNudgeMigrationName[];
-extern const char kEnableSystemNudgeMigrationDescription[];
-
 extern const char kEnableOAuthIppName[];
 extern const char kEnableOAuthIppDescription[];
 

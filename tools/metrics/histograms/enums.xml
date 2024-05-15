@@ -21233,7 +21233,6 @@ from previous Chrome versions.
   <int value="-16824589" label="ash-shelf-color"/>
   <int value="-16732224"
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:enabled"/>
-  <int value="-16592826" label="SystemNudgeMigration:disabled"/>
   <int value="-16413037" label="ReduceUserAgent:enabled"/>
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"

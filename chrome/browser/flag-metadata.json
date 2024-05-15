@@ -3895,11 +3895,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-system-nudge-migration",
-    "owners": ["kradtke@chromium.org"],
-    "expiry_milestone": 126
-  },
-  {
     "name": "enable-system-proxy-for-system-services",
     "owners": [ "acostinas@chromium.org"],
     "expiry_milestone": 94
