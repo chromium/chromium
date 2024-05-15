@@ -1,0 +1,5 @@
+team_email: "cros-oobe@google.com"
+os: CHROME_OS
+buganizer: {
+  component_id: 1263090
+}
