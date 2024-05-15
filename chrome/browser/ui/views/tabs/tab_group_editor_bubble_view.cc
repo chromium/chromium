@@ -355,13 +355,15 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
     menu_items_.push_back(std::move(delete_group_menu_item));
 
     PrefService* pref_service = browser_->profile()->GetPrefs();
-    CHECK(pref_service);
-    if (pref_service && saved_tab_group_prefs::GetLearnMoreFooterShownCount(
-                            pref_service) < kFooterDisplayLimit) {
+    tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
+        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+            browser_->profile());
+    if (saved_tab_group_service && pref_service &&
+        saved_tab_group_prefs::GetLearnMoreFooterShownCount(pref_service) <
+            kFooterDisplayLimit) {
       // Add additional padding before the footer if it is visible.
       delete_group_menu_item->SetProperty(
           views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
-
       footer_ = AddChildView(std::make_unique<Footer>(browser_));
       saved_tab_group_prefs::IncrementLearnMoreFooterShownCountPref(
           pref_service);
