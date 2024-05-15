@@ -1597,7 +1597,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.regularGridHandler selectItemWithID:itemID
                                      pinned:YES
-                     isFirstActionOnTabGrid:_idleTabGrid];
+                     isFirstActionOnTabGrid:[self status]];
 
   self.activePage = self.currentPage;
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
@@ -1709,7 +1709,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [tabsDelegate selectItemWithID:itemID
                           pinned:NO
-          isFirstActionOnTabGrid:_idleTabGrid];
+          isFirstActionOnTabGrid:[self status]];
 
   if (!alreadySelected) {
     [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
