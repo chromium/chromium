@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Anfitrião SOCKS</translation>
 <translation id="3104793765551262433">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, Bloqueada pelo administrador, Detalhes</translation>
-<translation id="3113153474486991170">Não foi possível abrir "<ph name="PATH" />" a partir desta localização. Copie para "Os meus ficheiros" para abrir.</translation>
 <translation id="3113592018909187986">Tem 1 tentativa restante. Não poderá utilizar esta rede até que configure um novo PIN.</translation>
 <translation id="3124404833828281817">Pessoa a sonhar acordada</translation>
 <translation id="3126026824346185272">Ctrl</translation>

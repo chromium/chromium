@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{У вас <ph name="TABS_COUNT_ONE" /> заархівована вкладка}one{У вас <ph name="TABS_COUNT_MANY" /> заархівована вкладка}few{У вас <ph name="TABS_COUNT_MANY" /> заархівовані вкладки}many{У вас <ph name="TABS_COUNT_MANY" /> заархівованих вкладок}other{У вас <ph name="TABS_COUNT_MANY" /> заархівованої вкладки}}</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3291470810748040983">Коли на відкритій вкладці знизиться ціна, ви отримаєте сповіщення</translation>
+<translation id="3322827343001922122">Відкрити меню дій для групи вкладок "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>
 <translation id="3547352561153509682">Групу буде видалено з усіх пристроїв, на яких ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

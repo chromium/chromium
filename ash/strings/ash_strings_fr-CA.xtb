@@ -1195,6 +1195,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5587506661873751671">Téléchargement en cours… <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Faites glisser le curseur pour sélectionner une région à capturer</translation>
 <translation id="5590609058453685222">Le coup de coude de détection de la voix en sourdine est activé. Vous serez averti si vous parlez en sourdine.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5599242528220103262">Le raccourci-clavier est désactivé</translation>
 <translation id="5600837773213129531">Appuyez sur Ctrl + Alt + Z pour désactiver la rétroaction vocale.</translation>
@@ -1371,6 +1372,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Pile faible. L'Économiseur de pile est activé.</translation>
+<translation id="6240603910551255087">Le bouton du haut</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
 <translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
 <translation id="6254629735336163724">Verrouillée à l'horizontale</translation>

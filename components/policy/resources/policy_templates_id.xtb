@@ -1524,9 +1524,6 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 <translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
       Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada kebijakan yang akan diganti.</translation>
-<translation id="2158741059065130266">Jika kebijakan disetel ke Benar (True), pengguna aplikasi File <ph name="PRODUCT_OS_NAME" /> akan melihat Sampah dan file di bagian File saya dan Download (termasuk turunan yang dibuat oleh pengguna) akan dikirim ke sana saat dihapus.
-
-      Jika kebijakan disetel ke Salah (False), file yang sebelumnya berada di sampah akan tetap tersedia dengan menampilkan file tersembunyi dan menemukan direktori .Trash di bagian File saya atau Download.</translation>
 <translation id="2159486052528894673">Izinkan kebijakan cloud pengguna mengabaikan kebijakan cloud perangkat.</translation>
 <translation id="2160170953213468208">Jika disetel ke aktif, kebijakan ini akan memaksa navigasi ke dokumen Office apa pun dengan jenis MIME yang biasanya ditangani oleh <ph name="BASIC_EDITOR_NAME" /> untuk mendownload file tersebut.
 
@@ -5588,6 +5585,15 @@ Jika kebijakan disetel ke Nonaktif, histori browser dan histori download tidak d
 <translation id="5323200200131319468">Mengaktifkan respons lisan di layar login</translation>
 <translation id="5323271643727095577">Jangan tampilkan dialog pembatalan saat event.preventDefault() dipanggil untuk peristiwa beforeunload. Tampilkan dialog pembatalan jika event.returnValue berisi string kosong untuk peristiwa beforeunload.</translation>
 <translation id="5324430722441910403">Setelan penelusuran situs</translation>
+<translation id="5326431956495937408">Jika kebijakan disetel ke Aktif, pengguna akan dapat mengirim sandi kepada dan menerima sandi dari anggota keluarga (sesuai dengan Layanan Keluarga).
+Jika kebijakan disetel ke Aktif atau tidak disetel, akan ada tombol di Pengelola Sandi yang memungkinkan pengiriman sandi.
+Sandi yang diterima disimpan ke akun pengguna dan tersedia di Pengelola Sandi.
+
+Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengirim sandi dari Pengelola Sandi kepada pengguna lain, dan tidak dapat menerima sandi dari pengguna lain.
+
+Fitur ini tidak tersedia jika sinkronisasi Sandi dinonaktifkan (melalui setelan pengguna ataupun dengan menyetel kebijakan <ph name="SYNC_DISABLED" /> ke Aktif).
+
+Akun terkelola tidak memenuhi syarat untuk bergabung atau membuat grup keluarga, sehingga tidak dapat berbagi sandi.</translation>
 <translation id="532848608876725157">Aktifkan DNS-over-HTTPS dengan fallback yang tidak aman</translation>
 <translation id="5328965694451556034">Melaporkan login/logout</translation>
 <translation id="5329018127554115226">Mode Efisiensi Tinggi akan dinonaktifkan.</translation>

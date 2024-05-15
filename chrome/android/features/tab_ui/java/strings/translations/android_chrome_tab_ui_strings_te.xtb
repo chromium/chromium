@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{మీరు <ph name="TABS_COUNT_ONE" /> ఆర్కైవ్ చేసిన ట్యాబ్‌ని కలిగి ఉన్నారు}other{మీరు <ph name="TABS_COUNT_MANY" /> ఆర్కైవ్ చేసిన ట్యాబ్‌లను కలిగి ఉన్నారు}}</translation>
 <translation id="3194464645767632461">రేటింగ్</translation>
 <translation id="3291470810748040983">తెరిచి ఉన్న ట్యాబ్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌ను పొందుతారు</translation>
+<translation id="3322827343001922122">ట్యాబ్ గ్రూప్ <ph name="TITLE_OF_GROUP" /> కోసం ట్యాబ్ గ్రూప్ చర్యల మెనూను తెరవండి</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="3547352561153509682">ఇది <ph name="USER_EMAIL" />‌కు సైన్ ఇన్ చేసిన అన్ని పరికరాల నుండి గ్రూప్‌ను తొలగిస్తుంది</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

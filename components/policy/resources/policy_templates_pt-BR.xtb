@@ -1521,9 +1521,6 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
       Definir a política como falsa ou deixá-la sem definição não substituirá nenhuma política.</translation>
-<translation id="2158741059065130266">Se a política for definida como verdadeira, os usuários do app Arquivos do <ph name="PRODUCT_OS_NAME" /> vão poder ver uma lixeira, e os arquivos em "Meus arquivos" e "Downloads", incluindo os descendentes criados pelo usuário, vão ser enviados para lá após a exclusão.
-
-      Se a política for definida como falsa, os arquivos que estavam na lixeira ainda vão estar disponíveis, mostrando os arquivos ocultos e encontrando o diretório .Trash em "Meus arquivos" ou "Downloads".</translation>
 <translation id="2159486052528894673">Permitir que as políticas da nuvem de usuários substituam as políticas da nuvem da máquina.</translation>
 <translation id="2160170953213468208">Quando ativada, essa política força o download de qualquer documento do Office com um Tipo MIME normalmente processado por <ph name="BASIC_EDITOR_NAME" />.
 
@@ -5574,6 +5571,15 @@ Se a política for desativada, o histórico de navegação e o de downloads não
 <translation id="5323200200131319468">Ativar a resposta falada na tela de login.</translation>
 <translation id="5323271643727095577">Não mostrar a caixa de diálogo de cancelamento quando event.preventDefault() for chamado para o evento beforeunload. Mostrar a caixa de diálogo de cancelamento quando beforeunload event.returnValue for a string vazia para o evento beforeunload.</translation>
 <translation id="5324430722441910403">Configurações da pesquisa no site</translation>
+<translation id="5326431956495937408">Se a política for ativada, os usuários poderão enviar e receber senhas de membros da família (de acordo com os serviços para a família).
+Quando a política é ativada ou deixada sem definição, há um botão no Gerenciador de senhas que permite o envio de uma senha.
+As senhas recebidas são armazenadas na conta do usuário e ficam disponíveis no Gerenciador de senhas.
+
+Se a política for desativada, os usuários não poderão enviar senhas do Gerenciador para outros usuários nem receber senhas de outras pessoas.
+
+O recurso não ficará disponível se a sincronização de senhas estiver desativada, seja pelas configurações do usuário ou pela ativação da política <ph name="SYNC_DISABLED" />.
+
+As contas gerenciadas não podem participar nem criar um grupo familiar. Por isso, elas não podem compartilhar senhas.</translation>
 <translation id="532848608876725157">Ativar DNS sobre HTTPS com substituto inseguro</translation>
 <translation id="5328965694451556034">Informar login/logout</translation>
 <translation id="5329018127554115226">O modo de alta eficiência vai ser desativado.</translation>

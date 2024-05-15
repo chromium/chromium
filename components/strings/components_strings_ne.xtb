@@ -145,7 +145,6 @@
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफूले तय गरेका सेटिङ मिलाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1264309058268477500">वैकल्पिक</translation>
 <translation id="1264974993859112054">खेलकुद</translation>
-<translation id="1266469291454105242">डिभाइस अनलक</translation>
 <translation id="126728463333482584">तपाईं ट्र्याकिङ सुरक्षा सुविधा प्राप्त गर्ने पहिलो व्यक्ति हुनुहुन्छ। यसले तपाईंले ब्राउज गर्दा साइटहरूलाई तपाईंलाई ट्र्याक गर्न तेस्रो पक्षीय कुकीहरू मात्र प्रयोग गर्न दिन्छ।</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
 <translation id="1269516672602708785">Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउनुहोस्</translation>
@@ -1381,7 +1380,6 @@
       सूचीबाट हटाएर फेरि थप्ने प्रयास गर्नुहोस्।</translation>
 <translation id="3630426379756188722">डिभाइस पत्ता लगाउने बटन, Google खातामा रहेको डिभाइस पत्ता लगाउने पेजमा जान यो बटन थिच्नुहोस्</translation>
 <translation id="3630699740441428070">यो डिभाइसका एड्मिनहरूले तपाईंले हेर्ने वेबसाइटलगायत तपाईंको नेटवर्क ट्राफिक हेर्न पाउने गरी तपाईंको नेटवर्क कनेक्सन कन्फिगर गर्नुभएको छ।</translation>
-<translation id="3631244953324577188">बायोमेट्रिक्स</translation>
 <translation id="3632503704576938756">स्क्रिन सेयर गर्ने कार्य सुचारु गरिएको छ</translation>
 <translation id="3632892046558972264">स्क्रिन सेयर गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
 <translation id="3634530185120165534">ट्रे ५</translation>
@@ -1595,7 +1593,6 @@
 <translation id="4060880210388108757">इन्डी तथा अल्टर्नेटिभ सङ्गीत</translation>
 <translation id="4063063121357725926">Google लाई तपाईंका कार्टहरूका हकमा छुट खोज्ने अनुमति दिनुहोस्</translation>
 <translation id="406358100705415968">काम गर्दा सुरक्षाका लागि प्रोटेक्टिभ गियर</translation>
-<translation id="4063924980214801036">आफ्ना कार्डहरू अझ चाँडो पुष्टि गर्न डिभाइस अनलक प्रयोग गर्नुहोस्</translation>
 <translation id="4065659219963895623">रेस्टुरेन्टहरू</translation>
 <translation id="4067774859633143413">फुल स्क्रिनबाट बाहिरिन र डाउनलोड गरिएका सामग्री हेर्न |<ph name="ACCELERATOR" />| थिचिराख्नुहोस्</translation>
 <translation id="4067947977115446013">मान्य ठेगाना थप्नुहोस्</translation>
@@ -1922,7 +1919,6 @@
 <translation id="4703342001883078444">परिवार तथा सम्बन्धहरू</translation>
 <translation id="4708268264240856090">तपाईंको जडानमा अवरोध भयो</translation>
 <translation id="4708276642004148190">पानी आपूर्ति तथा शुद्ध पार्ने काम</translation>
-<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">तपाईंसँग यो साइटमा जाने अनुमति छैन</translation>
 <translation id="4718897478554657123">६०० x ९०० मिलिमिटर</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Windows नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -3104,7 +3100,6 @@
 <translation id="7003278537452757231">रग तथा कार्पेटहरू</translation>
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
-<translation id="7004583254764674281">कार्डहरू अझ छिटो पुष्टि गर्न Windows Hello प्रयोग गर्नुहोस्</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7010658264061801199">खाना तथा पेय पदार्थ</translation>
 <translation id="7012363358306927923">चीन UnionPay</translation>
@@ -3141,7 +3136,6 @@
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079138647457502205">थप गोपनीयता प्रदान गरी ब्राउज गर्नुहोस्</translation>
 <translation id="7079718277001814089">यस साइटमा मालवेयर छ</translation>
-<translation id="7081308185095828845">तपाईंको डिभाइसमा यो सुविधा उपलब्ध छैन</translation>
 <translation id="7081311540357715807">खाद्य तथा किराना सामग्रीका खुद्रा विक्रेताहरू</translation>
 <translation id="7083258188081898530">ट्रे ९</translation>
 <translation id="7086090958708083563">प्रयोगकर्ताले अनुरोध गरेको अपलोड</translation>

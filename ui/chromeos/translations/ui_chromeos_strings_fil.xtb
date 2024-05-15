@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Mga Chromebit</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
-<translation id="3113153474486991170">Hindi mabuksan ang "<ph name="PATH" />" mula sa lokasyong ito. Pakikopya sa "Aking mga file" para buksan.</translation>
 <translation id="3113592018909187986">Mayroon ka na lang 1 natitirang pagsubok. Hindi mo magagamit ang network na ito hanggang sa mag-set up ka ng bagong PIN.</translation>
 <translation id="3124404833828281817">Taong nangangarap</translation>
 <translation id="3126026824346185272">Ctrl</translation>

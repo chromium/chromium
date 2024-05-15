@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
 <translation id="3104793765551262433">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
-<translation id="3113153474486991170">Не вдалося відкрити файл "<ph name="PATH" />" з цієї папки. Скопіюйте його в папку "Мої файли".</translation>
 <translation id="3113592018909187986">Залишилась 1 спроба. Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код.</translation>
 <translation id="3124404833828281817">Замріяна людина</translation>
 <translation id="3126026824346185272">Ctrl</translation>

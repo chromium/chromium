@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
 <translation id="3104793765551262433">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
-<translation id="3113153474486991170">"<ph name="PATH" />" kunne ikke åbnes på denne placering. Kopiér filen til "Mine filer" for at åbne den.</translation>
 <translation id="3113592018909187986">Du har 1 forsøg tilbage. Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode.</translation>
 <translation id="3124404833828281817">Person dagdrømmer</translation>
 <translation id="3126026824346185272">Ctrl</translation>

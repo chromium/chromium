@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് ഈ സൈറ്റിനുള്ള ആക്‌സസ് നിയന്ത്രിക്കുക</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> നിങ്ങൾ അവസാനം തുറന്ന ടാബ്</translation>
 <translation id="6064125863973209585">പൂർത്തിയാക്കിയ ഡൗൺലോഡുകൾ</translation>
 <translation id="6071501408666570960">നിങ്ങൾ ഈ സൈറ്റിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്‌തിരിക്കാം</translation>
 <translation id="6120483543004435978">ഓണായിരിക്കുമ്പോൾ, നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് സൈറ്റുകൾക്ക് അറിയാനാകില്ല.</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">ഒരു കോൺടാക്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7990211076305263060">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാനാകില്ല.</translation>
 <translation id="8007176423574883786">ഈ ഉപകരണത്തിനായി ഓഫാക്കി</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="8042586301629853791">ഇപ്രകാരം അടുക്കുക:</translation>
 <translation id="8067883171444229417">വീഡിയോ പ്ലേ ചെയ്യുക</translation>

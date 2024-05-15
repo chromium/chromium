@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS 호스트</translation>
 <translation id="3104793765551262433">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 차단함, 세부정보</translation>
-<translation id="3113153474486991170">이 위치에서 "<ph name="PATH" />" 경로를 열 수 없습니다. 열려면 '내 파일'로 복사하세요.</translation>
 <translation id="3113592018909187986">기회가 1번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>
 <translation id="3124404833828281817">공상에 빠진 사람</translation>
 <translation id="3126026824346185272">Ctrl</translation>

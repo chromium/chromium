@@ -145,7 +145,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage your Chrome settings</translation>
 <translation id="1264309058268477500">Alternative</translation>
 <translation id="1264974993859112054">Sports</translation>
-<translation id="1266469291454105242">Device unlock</translation>
 <translation id="126728463333482584">You’re one of the first to experience Tracking Protection, which limits sites from using third-party cookies to track you as you browse.</translation>
 <translation id="1268480293435976622">Envelope Chinese no.7</translation>
 <translation id="1269516672602708785">Create a new site in Google Sites quickly</translation>
@@ -1379,7 +1378,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       removing it from the list and adding it again.</translation>
 <translation id="3630426379756188722">Find My Device button, activate to visit Find My Device in the Google Account</translation>
 <translation id="3630699740441428070">Administrators of this device have configured your network connection, which may allow them to see your network traffic, including which websites that you visit.</translation>
-<translation id="3631244953324577188">Biometrics</translation>
 <translation id="3632503704576938756">Screen share resumed</translation>
 <translation id="3632892046558972264">Screen share paused</translation>
 <translation id="3634530185120165534">Tray 5</translation>
@@ -1592,7 +1590,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4060880210388108757">Indie and alternative music</translation>
 <translation id="4063063121357725926">Let Google help you find discounts for your baskets</translation>
 <translation id="406358100705415968">Work Safety Protective Gear</translation>
-<translation id="4063924980214801036">Use device unlock to confirm cards faster</translation>
 <translation id="4065659219963895623">Restaurants</translation>
 <translation id="4067774859633143413">To exit full screen and see download, press and hold |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Add Valid Address</translation>
@@ -1919,7 +1916,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4703342001883078444">Family and relationships</translation>
 <translation id="4708268264240856090">Your connection was interrupted</translation>
 <translation id="4708276642004148190">Water supply and treatment</translation>
-<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">You don't have permission to visit this site</translation>
 <translation id="4718897478554657123">600 mm x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Running Windows Network Diagnostics<ph name="END_LINK" /></translation>
@@ -3101,7 +3097,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7003278537452757231">Rugs and Carpets</translation>
 <translation id="7003322000677139268">Vehicle parts and accessories</translation>
 <translation id="7004499039102548441">Recent tabs</translation>
-<translation id="7004583254764674281">Use Windows Hello to confirm cards faster</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7010658264061801199">Food and drink</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3138,7 +3133,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079138647457502205">Browse with more privacy</translation>
 <translation id="7079718277001814089">This site contains malware</translation>
-<translation id="7081308185095828845">This feature is not available on your device</translation>
 <translation id="7081311540357715807">Food and grocery retailers</translation>
 <translation id="7083258188081898530">Tray 9</translation>
 <translation id="7086090958708083563">Upload requested by user</translation>

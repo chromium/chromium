@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{आपके पास संग्रहित किया गया <ph name="TABS_COUNT_ONE" /> टैब है}one{आपके पास संग्रहित किया गया <ph name="TABS_COUNT_MANY" /> टैब है}other{आपके पास संग्रहित किए गए <ph name="TABS_COUNT_MANY" /> टैब हैं}}</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3291470810748040983">खोले गए टैब में मौजूद किसी आइटम की कीमत में कमी होने पर आपको सूचना मिलेगी</translation>
+<translation id="3322827343001922122">टैब ग्रुप <ph name="TITLE_OF_GROUP" /> के लिए, टैब ग्रुप का ऐक्शन मेन्यू खोलें</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3547352561153509682">ऐसा करने से यह ग्रुप, <ph name="USER_EMAIL" /> से साइन इन किए गए सभी डिवाइसों से मिट जाएगा</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

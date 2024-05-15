@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit-modeller</translation>
 <translation id="3085752524577180175">SOCKS-värd</translation>
 <translation id="3104793765551262433">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
-<translation id="3113153474486991170">Det gick inte att öppna <ph name="PATH" /> från den här platsen. Kopiera den till Mina filer innan du öppnar.</translation>
 <translation id="3113592018909187986">Du har 1 försök kvar Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>
 <translation id="3124404833828281817">Någon som dagdrömmer</translation>
 <translation id="3126026824346185272">Ctrl</translation>

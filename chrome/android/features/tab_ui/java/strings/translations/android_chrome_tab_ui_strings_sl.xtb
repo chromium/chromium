@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> arhiviran zavihek}one{Imate <ph name="TABS_COUNT_MANY" /> arhiviran zavihek}two{Imate <ph name="TABS_COUNT_MANY" /> arhivirana zavihka}few{Imate <ph name="TABS_COUNT_MANY" /> arhivirane zavihke}other{Imate <ph name="TABS_COUNT_MANY" /> arhiviranih zavihkov}}</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Ko bo na odprtem zavihku nižja cena, boste prejeli opozorilo.</translation>
+<translation id="3322827343001922122">Odpiranje menija z dejanji za skupino zavihkov <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3547352561153509682">S tem boste skupino izbrisali iz vseh naprav, v katerih ste prijavljeni v račun <ph name="USER_EMAIL" />.</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

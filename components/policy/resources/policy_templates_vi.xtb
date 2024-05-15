@@ -1497,9 +1497,6 @@ cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.</translation>
 <translation id="2157842368188031417">Chính sách này chỉ áp dụng cho các phiên khách được quản lý. Cần phải bật chính sách này thì chế độ máy trạm chia sẻ của Imprivata mới được phép chuyển đổi người dùng trong phiên.
       Nếu bạn bật chính sách này thì hệ thống sẽ bắt buộc ghi đè một số chính sách nhất định của các tính năng. Điều này sẽ dẫn đến việc dữ liệu nhạy cảm của người dùng vẫn tồn tại và không được xử lý bởi cơ chế dọn dẹp được dùng cho các chuyển đổi người dùng trong phiên với chế độ máy trạm chia sẻ của Imprivata.
       Nếu bạn tắt hoặc không đặt chính sách này, thì hệ thống sẽ không ghi đè bất kỳ chính sách nào.</translation>
-<translation id="2158741059065130266">Nếu bạn đặt chính sách này thành Đúng, người dùng ứng dụng Files <ph name="PRODUCT_OS_NAME" /> sẽ nhìn thấy Thùng rác. Các tệp trong mục Tệp của tôi và Tệp đã tải xuống (bao gồm cả các tệp con tương ứng do người dùng tạo) sẽ được gửi đến đó khi bị xoá.
-
-      Nếu bạn đặt chính sách này thành Sai, các tệp từng nằm trong thùng rác vẫn sẽ hiển thị khi người dùng cho hiện các tệp bị ẩn và tìm thư mục .Trash trong mục Tệp của tôi hoặc Tệp đã tải xuống.</translation>
 <translation id="2159486052528894673">Cho phép các chính sách đám mây ở cấp người dùng ghi đè các chính sách đám mây ở cấp thiết bị.</translation>
 <translation id="2160170953213468208">Khi bật, chính sách này sẽ buộc tải tệp xuống đối với mọi thao tác truy cập vào các tài liệu Office thuộc loại MIME mà <ph name="BASIC_EDITOR_NAME" /> thường xử lý.
 
@@ -4451,6 +4448,15 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="4483738129334574255">Tắt trò chơi khủng long (trò chơi ẩn) trên các thiết bị <ph name="PRODUCT_OS_NAME" /> đã đăng ký và bật trò chơi này trong các trường hợp khác</translation>
 <translation id="4484515651939984695">Chỉ định thời gian (tính bằng giây) mà một thiết bị truyền được chọn có mã truy cập hoặc mã QR xuất hiện trong danh sách thiết bị truyền của trình đơn <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Định cấu hình URL trang Thẻ mới</translation>
+<translation id="4488959486611931919">Lưu ý: Chưa có báo cáo về sự cố trang web nào từ khi Chrome bắt đầu chặn những cookie này theo mặc định kể từ M118. Vì vậy, bạn sẽ không thể định cấu hình chức năng này (và chính sách này sẽ không có hiệu lực) kể từ M127.
+
+Chính sách này cung cấp tuỳ chọn tạm thời không áp dụng những thay đổi về cách Chrome xử lý cookie được đặt qua JavaScript có chứa một số ký tự điều khiển nhất định (NULL (Rỗng), trả lại vị trí đầu dòng và chuyển dòng).
+Trước đây, chuỗi cookie vẫn được đặt nhưng sẽ bị cắt bớt nếu một trong các ký tự này xuất hiện trong chuỗi.
+Giờ đây, toàn bộ chuỗi cookie sẽ bị bỏ qua nếu các ký tự này xuất hiện.
+
+Khi bạn đặt chính sách này thành True (Đúng) (mặc định), hành vi mới sẽ được kích hoạt.
+
+Khi bạn đặt chính sách này thành False (Sai), hành vi cũ sẽ được kích hoạt.</translation>
 <translation id="4490420545181481759">Chứng chỉ X.509 có thể mã hoá các quy tắc ràng buộc, chẳng hạn như Quy tắc ràng buộc tên,
 trong tiện ích của chứng chỉ. RFC 5280 quy định việc thực thi các quy tắc ràng buộc
 đó trong chứng chỉ neo tin cậy (trust anchor) là không bắt buộc. Kể từ
@@ -5501,6 +5507,15 @@ Khi bạn đặt chính sách này thành Disabled (Tắt), người dùng sẽ 
 <translation id="5323200200131319468">Bật tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
 <translation id="5323271643727095577">Không hiện hộp thoại huỷ khi có lệnh gọi event.preventDefault() cho sự kiện beforeunload. Hiện hộp thoại huỷ khi event.returnValue cho sự kiện beforeunload là chuỗi trống.</translation>
 <translation id="5324430722441910403">Cài đặt tìm kiếm trên trang web</translation>
+<translation id="5326431956495937408">Nếu bạn Bật chính sách này, thì người dùng có thể gửi và nhận mật khẩu từ các thành viên gia đình (theo Dịch vụ dành cho gia đình).
+Khi bạn Bật hoặc không đặt chính sách này, Trình quản lý mật khẩu sẽ có một nút cho phép gửi mật khẩu.
+Mật khẩu đã nhận sẽ được lưu trữ vào tài khoản của người dùng và có trong Trình quản lý mật khẩu.
+
+Nếu bạn Tắt chính sách này, thì người dùng sẽ không thể gửi mật khẩu từ Trình quản lý mật khẩu cho người dùng khác và không thể nhận mật khẩu từ người dùng khác.
+
+Tính năng này không hoạt động nếu tính năng đồng bộ hoá Mật khẩu bị tắt (thông qua chế độ cài đặt của người dùng hoặc do chính sách <ph name="SYNC_DISABLED" /> đang Bật).
+
+Các tài khoản được quản lý không đủ điều kiện tham gia hoặc tạo nhóm gia đình nên không thể chia sẻ mật khẩu.</translation>
 <translation id="532848608876725157">Bật chế độ DNS qua HTTPS có phương án dự phòng cho truy vấn không an toàn</translation>
 <translation id="5328965694451556034">Báo cáo các lần đăng nhập/đăng xuất</translation>
 <translation id="5329018127554115226">Chế độ hiệu quả cao sẽ bị tắt.</translation>

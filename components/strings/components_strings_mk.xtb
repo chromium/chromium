@@ -145,7 +145,6 @@
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да управувате со поставките за Chrome</translation>
 <translation id="1264309058268477500">Наизменична</translation>
 <translation id="1264974993859112054">Спорт</translation>
-<translation id="1266469291454105242">Отклучување уред</translation>
 <translation id="126728463333482584">Вие сте меѓу првите што ќе ја доживеат „Заштитата од следење“ што ограничува сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
 <translation id="1268480293435976622">Плик Chinese #7</translation>
 <translation id="1269516672602708785">Набрзина создајте нов сајт во Google Sites</translation>
@@ -1379,7 +1378,6 @@
         да го отстраните од списокот и да го додадете повторно.</translation>
 <translation id="3630426379756188722">Копче „Најди го мојот уред“, активирајте го за да појдете на „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="3630699740441428070">Администраторите на уредов ја конфигурирале мрежната врска, што може да им дозволи да го гледаат мрежниот сообраќај, вклучително и кои веб-сајтови ги посетувате.</translation>
-<translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделувањето екран продолжи</translation>
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
@@ -1592,7 +1590,6 @@
 <translation id="4060880210388108757">Независна и алтернативна музика</translation>
 <translation id="4063063121357725926">Дозволете Google да ви помогне да најдете попусти за вашите кошнички</translation>
 <translation id="406358100705415968">Заштитна опрема за безбедност на работа</translation>
-<translation id="4063924980214801036">Користете отклучување уред за побрзо потврдување на картичките</translation>
 <translation id="4065659219963895623">Ресторани</translation>
 <translation id="4067774859633143413">За да излезете од цел екран и да го видите преземањето, притиснете и задржете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важечка адреса</translation>
@@ -1919,7 +1916,6 @@
 <translation id="4703342001883078444">Семејство и врски</translation>
 <translation id="4708268264240856090">Врската беше прекината</translation>
 <translation id="4708276642004148190">Снабдување и прочистување на вода</translation>
-<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Немате дозвола за посета на сајтов</translation>
 <translation id="4718897478554657123">600 x 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />да извршите дијагностика на мрежата на Windows<ph name="END_LINK" /></translation>
@@ -3100,7 +3096,6 @@
 <translation id="7003278537452757231">Килими и теписи</translation>
 <translation id="7003322000677139268">Делови и додатоци за возила</translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
-<translation id="7004583254764674281">Користете Windows Hello за побрзо потврдување на картичките</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7010658264061801199">Храна и пијалаци</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3137,7 +3132,6 @@
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079138647457502205">Прелистувајте со поголема приватност</translation>
 <translation id="7079718277001814089">Сајтов содржи злонамерен софтвер</translation>
-<translation id="7081308185095828845">Функцијава не е достапна на вашиот уред</translation>
 <translation id="7081311540357715807">Малопродажба на храна и намирници</translation>
 <translation id="7083258188081898530">Фиока 9</translation>
 <translation id="7086090958708083563">Побарано е прикачување од корисникот</translation>

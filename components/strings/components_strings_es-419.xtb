@@ -145,7 +145,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu configuración de Chrome</translation>
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
-<translation id="1266469291454105242">Desbloqueo del dispositivo</translation>
 <translation id="126728463333482584">Eres una de las primeras personas en experimentar la Protección contra seguimiento, que impide que los sitios usen cookies de terceros para rastrearte mientras navegas.</translation>
 <translation id="1268480293435976622">Sobre chino n.º 7</translation>
 <translation id="1269516672602708785">Crea un sitio nuevo en Google Sites rápidamente</translation>
@@ -1380,7 +1379,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
       quitarlo de la lista y agregarlo de nuevo.</translation>
 <translation id="3630426379756188722">Botón Encontrar mi dispositivo: actívalo para acceder al servicio Encontrar mi dispositivo en la Cuenta de Google</translation>
 <translation id="3630699740441428070">Los administradores de este dispositivo configuraron tu conexión de red, lo cual puede permitirles ver tu tráfico de red, incluido los sitios web que visitas.</translation>
-<translation id="3631244953324577188">Biométricos</translation>
 <translation id="3632503704576938756">Se reanudó compartir pantalla</translation>
 <translation id="3632892046558972264">Se pausó compartir pantalla</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
@@ -1593,7 +1591,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4060880210388108757">Música independiente y alternativa</translation>
 <translation id="4063063121357725926">Permite que Google te ayude a encontrar descuentos para tus carritos</translation>
 <translation id="406358100705415968">Equipo de protección personal</translation>
-<translation id="4063924980214801036">Usa el desbloqueo del dispositivo para confirmar las tarjetas más rápido.</translation>
 <translation id="4065659219963895623">Restaurantes</translation>
 <translation id="4067774859633143413">Para salir de la pantalla completa y ver la descarga, mantén presionado |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
@@ -1920,7 +1917,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4703342001883078444">Familia y relaciones</translation>
 <translation id="4708268264240856090">Se interrumpió la conexión</translation>
 <translation id="4708276642004148190">Tratamiento y suministro del agua</translation>
-<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">No tienes permiso para visitar este sitio</translation>
 <translation id="4718897478554657123">600 × 900 mm</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de red de Windows<ph name="END_LINK" /></translation>
@@ -3102,7 +3098,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7003278537452757231">Cubrepisos y alfombras</translation>
 <translation id="7003322000677139268">Piezas y accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
-<translation id="7004583254764674281">Usa Windows Hello para verificar las tarjetas más rápido</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7010658264061801199">Comidas y bebidas</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3139,7 +3134,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079138647457502205">Navega con más privacidad</translation>
 <translation id="7079718277001814089">Este sitio contiene software malicioso</translation>
-<translation id="7081308185095828845">Esta función no está disponible en el dispositivo</translation>
 <translation id="7081311540357715807">Comercios minoristas de alimentos</translation>
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="7086090958708083563">Carga solicitada por el usuario</translation>

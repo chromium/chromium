@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">โฮสต์ SOCKS</translation>
 <translation id="3104793765551262433">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
-<translation id="3113153474486991170">เปิด "<ph name="PATH" />" จากตำแหน่งนี้ไม่ได้ โปรดคัดลอกไปที่ "ไฟล์ของฉัน" เพื่อเปิด</translation>
 <translation id="3113592018909187986">คุณลองได้อีก 1 ครั้ง คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
 <translation id="3124404833828281817">คนฝันกลางวัน</translation>
 <translation id="3126026824346185272">Ctrl</translation>

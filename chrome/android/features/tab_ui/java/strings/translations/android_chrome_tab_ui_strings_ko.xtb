@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{보관처리된 탭이 <ph name="TABS_COUNT_ONE" />개 있습니다}other{보관처리된 탭이 <ph name="TABS_COUNT_MANY" />개 있습니다}}</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
+<translation id="3322827343001922122">탭 그룹 <ph name="TITLE_OF_GROUP" />의 탭 그룹 작업 메뉴 열기</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3547352561153509682"><ph name="USER_EMAIL" />에 로그인된 모든 기기에서 그룹이 삭제됩니다.</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

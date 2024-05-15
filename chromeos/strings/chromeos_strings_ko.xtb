@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">서버 호스트 이름</translation>
 <translation id="5089810972385038852">시/도</translation>
 <translation id="5090362543162270857">IPsec(IKEv2)</translation>
+<translation id="5095761549884461003">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 USB 케이블을 분리했다가 다시 연결하세요.</translation>
 <translation id="5099354524039520280">위</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 키가 없는 단축키가 일부 앱의 단축키와 충돌할 수 있습니다. 이 단축키를 계속 사용하려면 다시 누르거나, <ph name="KEY" /> 키를 사용하여 새 단축키를 누르세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">유의어:</translation>

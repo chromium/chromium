@@ -145,7 +145,6 @@
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате настройките си за Chrome</translation>
 <translation id="1264309058268477500">Алтернативна</translation>
 <translation id="1264974993859112054">Спорт</translation>
-<translation id="1266469291454105242">Отключване на устройството</translation>
 <translation id="126728463333482584">Вие сте сред първите потребители, изпробвали функцията за защита от проследяване, която ограничава използването на „бисквитки“ на трети страни от сайтовете с цел проследяването ви, докато сърфирате.</translation>
 <translation id="1268480293435976622">Плик, китайски №7</translation>
 <translation id="1269516672602708785">Бързо създаване на сайт в Google Сайтове</translation>
@@ -1379,7 +1378,6 @@
 да го премахнете оттам и да го добавите отново.</translation>
 <translation id="3630426379756188722">Бутон „Намиране на устройството ми“. Активирайте, за да преминете към „Намиране на устройството ми“ в профила си в Google</translation>
 <translation id="3630699740441428070">Мрежовата ви връзка е конфигурирана от администраторите на това устройство, което може да им даде възможност да виждат мрежовия ви трафик, включително кои уебсайтове посещавате.</translation>
-<translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделянето на екрана е възобновено</translation>
 <translation id="3632892046558972264">Споделянето на екрана е на пауза</translation>
 <translation id="3634530185120165534">Тава 5</translation>
@@ -1592,7 +1590,6 @@
 <translation id="4060880210388108757">Независима и алтернативна музика</translation>
 <translation id="4063063121357725926">Позволете на Google да ви помага да намирате отстъпки за кошниците си</translation>
 <translation id="406358100705415968">Защитна екипировка за безопасност на труда</translation>
-<translation id="4063924980214801036">Използвайте функцията за отключване на устройството, за да потвърждавате карти по-бързо</translation>
 <translation id="4065659219963895623">Ресторанти</translation>
 <translation id="4067774859633143413">За да излезете от режима на цял екран и да видите изтеглянето, натиснете и задръжте |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Добавяне на валиден адрес</translation>
@@ -1919,7 +1916,6 @@
 <translation id="4703342001883078444">Семейство и връзки</translation>
 <translation id="4708268264240856090">Връзката ви бе прекъсната</translation>
 <translation id="4708276642004148190">Водоснабдяване и почистване на отпадни води</translation>
-<translation id="4712404868219726379">Windows Hello</translation>
 <translation id="471880041731876836">Нямате разрешение да посетите този сайт</translation>
 <translation id="4718897478554657123">600 x 900 мм</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Стартирайте мрежова диагностика в Windows<ph name="END_LINK" /></translation>
@@ -3101,7 +3097,6 @@
 <translation id="7003278537452757231">Килими и мокети</translation>
 <translation id="7003322000677139268">Части и аксесоари за превозни средства</translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
-<translation id="7004583254764674281">Използвайте Windows Hello, за да потвърждавате картите по-бързо</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
 <translation id="7010658264061801199">Храна и напитки</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
@@ -3138,7 +3133,6 @@
 <translation id="7078665357168027058">RA3</translation>
 <translation id="7079138647457502205">Сърфиране с по-голяма поверителност</translation>
 <translation id="7079718277001814089">Този сайт съдържа злонамерен софтуер</translation>
-<translation id="7081308185095828845">Тази функция не е налице на устройството ви</translation>
 <translation id="7081311540357715807">Гастрономи и магазини за хранителни стоки</translation>
 <translation id="7083258188081898530">Тава 9</translation>
 <translation id="7086090958708083563">Качване, заявено от потребител</translation>

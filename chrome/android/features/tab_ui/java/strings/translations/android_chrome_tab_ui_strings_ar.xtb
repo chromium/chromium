@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{لديك علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) مؤرشفة.}zero{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}two{لديك علامتا تبويب (<ph name="TABS_COUNT_MANY" />) مؤرشفتان.}few{لديك <ph name="TABS_COUNT_MANY" /> علامات تبويب مؤرشفة.}many{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}other{لديك <ph name="TABS_COUNT_MANY" /> علامة تبويب مؤرشفة.}}</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
+<translation id="3322827343001922122">فتح قائمة الإجراءات لمجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3547352561153509682">سيؤدي هذا الإجراء إلى حذف المجموعة من جميع الأجهزة التي تم تسجيل الدخول إلى حساب <ph name="USER_EMAIL" />عليها</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

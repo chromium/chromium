@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebitek</translation>
 <translation id="3085752524577180175">SOCKS-szerver</translation>
 <translation id="3104793765551262433">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, biztonsági állapot: <ph name="SECURITY_STATUS" />, csatlakozási állapot: <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, rendszergazda tiltja, részletek</translation>
-<translation id="3113153474486991170">Nem sikerült megnyitni a(z) „<ph name="PATH" />” fájlt erről a helyről. A megnyitáshoz másolja át a „Saját fájlok” részhez.</translation>
 <translation id="3113592018909187986">1 próbálkozási lehetősége maradt. Addig nem tudja használni ezt a hálózatot, amíg új PIN-kódot nem állít be.</translation>
 <translation id="3124404833828281817">Álmodozó ember</translation>
 <translation id="3126026824346185272">Ctrl</translation>

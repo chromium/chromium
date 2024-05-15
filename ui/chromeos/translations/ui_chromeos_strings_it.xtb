@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">I Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
-<translation id="3113153474486991170">Impossibile aprire "<ph name="PATH" />" da questa posizione. Copia l'elemento in "I miei file" per aprirlo.</translation>
 <translation id="3113592018909187986">Hai ancora 1 tentativo a disposizione. Non potrai utilizzare questa rete finché non configuri un nuovo PIN.</translation>
 <translation id="3124404833828281817">Persona che sogna a occhi aperti</translation>
 <translation id="3126026824346185272">Ctrl</translation>

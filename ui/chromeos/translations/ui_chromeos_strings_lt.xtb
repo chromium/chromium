@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS priegloba</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., užblokavo administratorius, išsami informacija</translation>
-<translation id="3113153474486991170">Nepavyko atidaryti „<ph name="PATH" />“ iš šios vietos. Nukopijuokite į skiltį „Mano failai“, kad galėtumėte atidaryti.</translation>
 <translation id="3113592018909187986">Liko vienas bandymas. Negalėsite naudoti šio tinklo, kol nustatysite naują PIN kodą.</translation>
 <translation id="3124404833828281817">Svajojantis žmogus</translation>
 <translation id="3126026824346185272">Ctrl</translation>

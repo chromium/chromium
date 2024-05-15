@@ -1466,9 +1466,6 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucune règle n'est ignorée.</translation>
-<translation id="2158741059065130266">Si cette règle est définie sur "True", les utilisateurs de l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /> voient une corbeille et les fichiers sous "Mes fichiers" et "Téléchargements" (y compris leurs descendants créés par l'utilisateur) y sont envoyés lors de la suppression.
-
-      Si cette règle est définie sur "False", les fichiers qui se trouvaient dans la corbeille sont disponibles en affichant les fichiers masqués et en trouvant le répertoire ".Corbeille" sous "Mes fichiers" ou "Téléchargements".</translation>
 <translation id="2159486052528894673">Autoriser les règles cloud utilisateur à ignorer les règles cloud machine.</translation>
 <translation id="2160170953213468208">Lorsque cette règle est activée, tous les documents Office ayant un type MIME normalement géré par <ph name="BASIC_EDITOR_NAME" /> sont téléchargés de force quand l'utilisateur y accède.
 

@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Hôte SOCKS</translation>
 <translation id="3104793765551262433">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Force du signal : <ph name="SIGNAL_STRENGTH" /> %, Bloqué par votre administrateur, Détails</translation>
-<translation id="3113153474486991170">Impossible d'ouvrir "<ph name="PATH" />" depuis cet emplacement. Veuillez le copier dans "Mes fichiers" pour l'ouvrir.</translation>
 <translation id="3113592018909187986">Il vous reste 1 tentative. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas défini un nouveau code PIN.</translation>
 <translation id="3124404833828281817">Personne en train de rêver</translation>
 <translation id="3126026824346185272">Ctrl</translation>
