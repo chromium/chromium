@@ -167,6 +167,10 @@ tast_disabled_tests_from_lacros_all = [
   # b/339482904
   "videoconferencing.TrayTriggersExtension.lacros",
 
+  # b/269177409: This is flaky on the Chromium builders, but works on the
+  # ChromeOS builders.
+  "nacl.Pnacl.lacros",
+
   # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
 ]
 
