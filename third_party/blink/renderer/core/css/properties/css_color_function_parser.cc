@@ -660,7 +660,7 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   // TODO(b/40949047): Counters for out-of-gamut are disabled because of
   // repeated merge-conflict creating reverts. Remove this parameter.
-  const bool kEnableCounters = false;
+  const bool kEnableCounters = true;
   if (is_relative_color_) {
     context.Count(WebFeature::kCSSRelativeColor);
   } else {
