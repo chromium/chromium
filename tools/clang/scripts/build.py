@@ -1513,7 +1513,7 @@ def main():
     VerifyZStdSupport()
 
   # Run tests.
-  if (not args.build_mac_arm and
+  if (chrome_tools and not args.build_mac_arm and
       (args.run_tests or args.llvm_force_head_revision)):
     RunCommand(['ninja', '-C', LLVM_BUILD_DIR, 'cr-check-all'], setenv=True)
 
