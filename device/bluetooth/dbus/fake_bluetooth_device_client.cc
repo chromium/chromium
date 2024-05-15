@@ -876,7 +876,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
     properties->name.ReplaceValue(kConnectedTrustedNotPairedDeviceName);
     properties->name.set_valid(true);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   properties_map_.insert(std::make_pair(device_path, std::move(properties)));
@@ -1974,7 +1974,7 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
       properties->type.ReplaceValue(BluetoothDeviceClient::kTypeDual);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   properties->type.set_valid(true);
 

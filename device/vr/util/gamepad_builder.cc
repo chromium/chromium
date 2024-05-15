@@ -22,7 +22,7 @@ GamepadHand MojoToGamepadHandedness(device::mojom::XRHandedness handedness) {
       return GamepadHand::kNone;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // anonymous namespace
@@ -53,7 +53,7 @@ bool GamepadBuilder::IsValid() const {
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::optional<Gamepad> GamepadBuilder::GetGamepad() {

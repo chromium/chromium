@@ -492,19 +492,19 @@ void FakeCentral::Initialize(base::OnceClosure callback) {
 }
 
 std::string FakeCentral::GetAddress() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
 std::string FakeCentral::GetName() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
 void FakeCentral::SetName(const std::string& name,
                           base::OnceClosure callback,
                           ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeCentral::IsInitialized() const {
@@ -519,7 +519,7 @@ bool FakeCentral::IsPresent() const {
     case mojom::CentralState::POWERED_ON:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -533,41 +533,41 @@ bool FakeCentral::IsPowered() const {
     case mojom::CentralState::POWERED_ON:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void FakeCentral::SetPowered(bool powered,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool FakeCentral::IsDiscoverable() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void FakeCentral::SetDiscoverable(bool discoverable,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 base::TimeDelta FakeCentral::GetDiscoverableTimeout() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::Microseconds(0);
 }
 #endif
 
 bool FakeCentral::IsDiscovering() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 FakeCentral::UUIDList FakeCentral::GetUUIDs() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return UUIDList();
 }
 
@@ -576,7 +576,7 @@ void FakeCentral::CreateRfcommService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCentral::CreateL2capService(
@@ -584,19 +584,19 @@ void FakeCentral::CreateL2capService(
     const ServiceOptions& options,
     CreateServiceCallback callback,
     CreateServiceErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeCentral::RegisterAdvertisement(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
     CreateAdvertisementCallback callback,
     AdvertisementErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool FakeCentral::IsExtendedAdvertisementsAvailable() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 #endif
@@ -607,24 +607,24 @@ void FakeCentral::SetAdvertisingInterval(
     const base::TimeDelta& max,
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void FakeCentral::ResetAdvertising(base::OnceClosure callback,
                                    AdvertisementErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 void FakeCentral::ConnectDevice(
     const std::string& address,
     const std::optional<device::BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
     ConnectDeviceErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 
 device::BluetoothLocalGattService* FakeCentral::GetGattService(
     const std::string& identifier) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -632,14 +632,14 @@ device::BluetoothLocalGattService* FakeCentral::GetGattService(
 void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
                                       base::OnceClosure callback,
                                       ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<device::BluetoothLowEnergyScanSession>
 FakeCentral::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -650,14 +650,14 @@ FakeCentral::GetLowEnergyScanSessionHardwareOffloadingStatus() {
 
 std::vector<device::BluetoothAdapter::BluetoothRole>
 FakeCentral::GetSupportedRoles() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<device::BluetoothAdapter::BluetoothRole>{};
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FakeCentral::SetStandardChromeOSAdapterName() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -666,7 +666,7 @@ base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
 }
 
 bool FakeCentral::SetPoweredImpl(bool powered) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -725,7 +725,7 @@ void FakeCentral::StopScan(DiscoverySessionResultCallback callback) {
 
 void FakeCentral::RemovePairingDelegateInternal(
     device::BluetoothDevice::PairingDelegate* pairing_delegate) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 FakeCentral::~FakeCentral() = default;

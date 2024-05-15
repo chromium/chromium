@@ -146,7 +146,7 @@ void BluetoothSocketBlueZ::Listen(
           service_options.psm ? *service_options.psm : 0);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (service_options.require_authentication) {

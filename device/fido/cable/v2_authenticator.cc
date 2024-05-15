@@ -589,7 +589,7 @@ class TunnelTransport : public Transport {
       }
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

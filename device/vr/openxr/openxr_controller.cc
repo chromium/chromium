@@ -30,7 +30,7 @@ const char* GetStringFromType(OpenXrHandednessType type) {
     case OpenXrHandednessType::kRight:
       return "right";
     case OpenXrHandednessType::kCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -275,7 +275,7 @@ XrResult OpenXrController::SuggestBindings(
             interaction_profile_path, binding_prefix));
         break;
       case OpenXrHandednessType::kCount:
-        NOTREACHED() << "Controller can only be left or right";
+        NOTREACHED_IN_MIGRATION() << "Controller can only be left or right";
         return XR_ERROR_VALIDATION_FAILURE;
     }
 
@@ -309,7 +309,7 @@ device::mojom::XRHandedness OpenXrController::GetHandness() const {
       // LEFT controller and RIGHT controller are currently the only supported
       // controllers. In the future, other controllers such as sound (which
       // does not have a handedness) will be added here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return device::mojom::XRHandedness::NONE;
   }
 }

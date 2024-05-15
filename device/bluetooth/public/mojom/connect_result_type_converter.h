@@ -53,10 +53,10 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
       case device::BluetoothDevice::ConnectErrorCode::ERROR_NON_AUTH_TIMEOUT:
         return bluetooth::mojom::ConnectResult::NON_AUTH_TIMEOUT;
       case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return bluetooth::mojom::ConnectResult::FAILED;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return bluetooth::mojom::ConnectResult::FAILED;
   }
 };

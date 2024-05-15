@@ -49,7 +49,7 @@ constexpr const char* ToString(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -73,7 +73,7 @@ constexpr const char* ToString(BluetoothGattService::GattErrorCode error_code) {
     case BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -89,7 +89,7 @@ std::ostream& operator<<(std::ostream& os,
       return os << "FIDO2";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 

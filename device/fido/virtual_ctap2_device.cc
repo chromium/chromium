@@ -801,7 +801,7 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
       // and return SW_COMMAND_NOT_ALLOWED if the alwaysUv option is true and
       // the device is not protected by a built-in user verification method.
       // Have the authenticator will just fail all u2f requests for simplicity.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       std::move(cb).Run(
           apdu::ApduResponse({},
                              apdu::ApduResponse::Status::SW_COMMAND_NOT_ALLOWED)
@@ -951,7 +951,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::CheckUserVerification(
           kSupportedButPinNotSet:
         return CtapDeviceResponseCode::kCtap2ErrPinNotSet;
       case AuthenticatorSupportedOptions::ClientPinAvailability::kNotSupported:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   const std::optional<base::flat_set<PINUVAuthProtocol>>&
@@ -1060,7 +1060,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::CheckUserVerification(
                               : pin::Permissions::kMakeCredential;
         if (!(mutable_state()->pin_uv_token_permissions &
               static_cast<uint8_t>(permission))) {
-          NOTREACHED() << "PIN missing mc / ga permission";
+          NOTREACHED_IN_MIGRATION() << "PIN missing mc / ga permission";
           return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
         }
 
@@ -1588,7 +1588,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     }
     if (!mutable_state()->ecdh_key) {
       // Platform did not fetch the authenticator ECDH key first.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
     }
     if (!request.pin_protocol) {
@@ -1616,7 +1616,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     bssl::UniquePtr<EC_POINT> platform_point(EC_POINT_new(p256.get()));
     if (!EC_POINT_oct2point(p256.get(), platform_point.get(), x962.data(),
                             x962.size(), /*ctx=*/nullptr)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
@@ -1627,13 +1627,13 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     std::vector<uint8_t> salts =
         pin_protocol.Decrypt(shared_key, encrypted_salts);
     if (salts.size() != 32 && salts.size() != 64) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
     if (pin_protocol.Authenticate(shared_key, encrypted_salts) !=
         request.hmac_secret->salts_auth) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CtapDeviceResponseCode::kCtap1ErrInvalidParameter;
     }
 
@@ -1927,7 +1927,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
       std::vector<uint8_t> shared_key =
@@ -1966,7 +1966,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
       std::vector<uint8_t> shared_key =
@@ -2036,7 +2036,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
       std::vector<uint8_t> shared_key =
@@ -2095,7 +2095,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnPINCommand(
 
       if (!mutable_state()->ecdh_key) {
         // kGetKeyAgreement should have been called first.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return CtapDeviceResponseCode::kCtap2ErrPinTokenExpired;
       }
       std::vector<uint8_t> shared_key =
@@ -2392,7 +2392,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
       return CtapDeviceResponseCode::kSuccess;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CtapDeviceResponseCode::kCtap2ErrInvalidOption;
 }
 
@@ -2444,7 +2444,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
       cbor::Value(static_cast<int>(BioEnrollmentRequestKey::kSubCommand)));
   if (it == request_map.end()) {
     // Could not find a valid command, so return an error.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return CtapDeviceResponseCode::kCtap2ErrInvalidOption;
   }
 
@@ -2463,7 +2463,8 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
         static_cast<int>(BioEnrollmentSubCommandParam::kTemplateId)));
     if (template_it != params.end()) {
       if (!template_it->second.is_bytestring()) {
-        NOTREACHED() << "Template ID parameter must be a CBOR bytestring.";
+        NOTREACHED_IN_MIGRATION()
+            << "Template ID parameter must be a CBOR bytestring.";
         return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
       }
       // Simplification: for unit tests, enforce one byte template IDs
@@ -2474,7 +2475,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
         static_cast<int>(BioEnrollmentSubCommandParam::kTemplateFriendlyName)));
     if (name_it != params.end()) {
       if (!name_it->second.is_string()) {
-        NOTREACHED() << "Name parameter must be a CBOR string.";
+        NOTREACHED_IN_MIGRATION() << "Name parameter must be a CBOR string.";
         return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
       }
       name = name_it->second.GetString();
@@ -2531,7 +2532,8 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
     case SubCmd::kEnrollCaptureNextSample:
       if (!mutable_state()->bio_current_template_id ||
           mutable_state()->bio_current_template_id != *template_id) {
-        NOTREACHED() << "Invalid current enrollment or template id parameter.";
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid current enrollment or template id parameter.";
         return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
       }
       if (mutable_state()->bio_enrollment_next_sample_error) {
@@ -2594,7 +2596,8 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
     }
     case SubCmd::kSetFriendlyName:
       if (!template_id || !name) {
-        NOTREACHED() << "Could not parse template_id or name from parameters.";
+        NOTREACHED_IN_MIGRATION()
+            << "Could not parse template_id or name from parameters.";
         return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
       }
 
@@ -2608,7 +2611,8 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
       return CtapDeviceResponseCode::kSuccess;
     case SubCmd::kRemoveEnrollment:
       if (!template_id) {
-        NOTREACHED() << "Could not parse template_id or name from parameters.";
+        NOTREACHED_IN_MIGRATION()
+            << "Could not parse template_id or name from parameters.";
         return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
       }
 

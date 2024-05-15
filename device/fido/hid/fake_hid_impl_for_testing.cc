@@ -49,14 +49,14 @@ void MockFidoHidConnection::Write(uint8_t report_id,
 void MockFidoHidConnection::GetFeatureReport(
     uint8_t report_id,
     GetFeatureReportCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockFidoHidConnection::SendFeatureReport(
     uint8_t report_id,
     const std::vector<uint8_t>& buffer,
     SendFeatureReportCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MockFidoHidConnection::SetNonce(base::span<uint8_t const> nonce) {
@@ -140,14 +140,14 @@ void FakeFidoHidConnection::Write(uint8_t report_id,
 void FakeFidoHidConnection::GetFeatureReport(
     uint8_t report_id,
     GetFeatureReportCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeFidoHidConnection::SendFeatureReport(
     uint8_t report_id,
     const std::vector<uint8_t>& buffer,
     SendFeatureReportCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 FakeFidoHidManager::FakeFidoHidManager() = default;

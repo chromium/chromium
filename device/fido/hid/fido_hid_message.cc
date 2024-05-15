@@ -25,7 +25,7 @@ std::optional<FidoHidMessage> FidoHidMessage::Create(
 
   if (max_report_size <= kHidInitPacketHeaderSize ||
       max_report_size > kHidMaxPacketSize) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::nullopt;
   }
 

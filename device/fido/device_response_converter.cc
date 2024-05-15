@@ -842,7 +842,7 @@ static std::optional<std::string> FixInvalidUTF8String(
     case base::StreamingUtf8Validator::INVALID:
       // This shouldn't happen because we should return immediately if
       // |INVALID| occurs.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
 
     case base::StreamingUtf8Validator::VALID_MIDPOINT: {

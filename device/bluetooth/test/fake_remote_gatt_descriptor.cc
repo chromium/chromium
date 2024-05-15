@@ -48,12 +48,12 @@ device::BluetoothUUID FakeRemoteGattDescriptor::GetUUID() const {
 
 device::BluetoothRemoteGattCharacteristic::Permissions
 FakeRemoteGattDescriptor::GetPermissions() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::BluetoothRemoteGattCharacteristic::PERMISSION_NONE;
 }
 
 const std::vector<uint8_t>& FakeRemoteGattDescriptor::GetValue() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return value_;
 }
 
@@ -99,7 +99,7 @@ void FakeRemoteGattDescriptor::DispatchReadResponse(ValueCallback callback) {
           /*value=*/std::vector<uint8_t>());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -121,7 +121,7 @@ void FakeRemoteGattDescriptor::DispatchWriteResponse(
           .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

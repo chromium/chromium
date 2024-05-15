@@ -126,7 +126,7 @@ constexpr const char* ToCString(RadioAccessStatus access_status) {
       return "RadioAccessStatus::DeniedBySystem";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

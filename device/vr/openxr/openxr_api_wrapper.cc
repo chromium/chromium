@@ -115,7 +115,7 @@ const char* GetXrSessionStateName(XrSessionState state) {
       return "Max_Enum";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 
@@ -310,7 +310,7 @@ bool OpenXrApiWrapper::HasSpace(XrReferenceSpaceType type) const {
     case XR_REFERENCE_SPACE_TYPE_STAGE:
       return stage_space_ != XR_NULL_HANDLE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -391,7 +391,7 @@ device::mojom::XREnvironmentBlendMode OpenXrApiWrapper::GetMojoBlendMode(
     case XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND:
       return device::mojom::XREnvironmentBlendMode::kAlphaBlend;
     case XR_ENVIRONMENT_BLEND_MODE_MAX_ENUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   };
   return device::mojom::XREnvironmentBlendMode::kOpaque;
 }
@@ -426,7 +426,7 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
       }
       break;
     case device::mojom::XRSessionMode::kInline:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return GetMojoBlendMode(blend_mode_);
@@ -949,7 +949,7 @@ XrResult OpenXrApiWrapper::LocateViews(
     case XR_REFERENCE_SPACE_TYPE_COMBINED_EYE_VARJO:
     case XR_REFERENCE_SPACE_TYPE_MAX_ENUM:
     case XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR_EXT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Initialize the XrView objects' type field to XR_TYPE_VIEW. xrLocateViews

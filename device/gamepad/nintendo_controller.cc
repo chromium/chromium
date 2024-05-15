@@ -614,7 +614,7 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
       case BUTTON_INDEX_LEFT_THUMBSTICK:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -670,7 +670,7 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
       case BUTTON_INDEX_RIGHT_TRIGGER:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -703,7 +703,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -736,7 +736,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -985,7 +985,7 @@ GamepadHand NintendoController::GetGamepadHand() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GamepadHand::kNone;
 }
 
@@ -1006,7 +1006,7 @@ bool NintendoController::IsUsable() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1104,7 +1104,7 @@ void NintendoController::UpdateGamepadState(Gamepad& pad) const {
         UpdateRightGamepadState(pad, false);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     pad.connected = pad_.connected;
@@ -1227,7 +1227,7 @@ void NintendoController::StartInitSequence() {
       MakeInitSequenceRequests(kPendingSetPlayerLights);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -1468,7 +1468,7 @@ void NintendoController::ContinueInitSequence(
       break;
     case kInitialized:
     case kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     default:
       break;
@@ -1527,7 +1527,7 @@ void NintendoController::MakeInitSequenceRequests(InitializationState state) {
     case kInitialized:
     case kUninitialized:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -581,7 +581,7 @@ bool BluetoothDevice::supports_service_specific_discovery() const {
 void BluetoothDevice::UpgradeToFullDiscovery() {
   // Must be overridden by any subclass that sets
   // |supports_service_specific_discovery_|.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<BluetoothGattConnection>
@@ -651,7 +651,7 @@ void BluetoothDevice::SetAsExpiredForTesting() {
 
 void BluetoothDevice::Pair(PairingDelegate* pairing_delegate,
                            ConnectCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothDevice::UpdateTimestamp() {

@@ -663,7 +663,7 @@ BluetoothTestBase::GetLowEnergyDeviceData(int device_ordinal) const {
           BluetoothUUID(kTestUuidFormattedClientEid)};
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return device_data;

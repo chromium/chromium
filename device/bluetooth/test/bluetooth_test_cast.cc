@@ -108,7 +108,7 @@ BluetoothDevice* BluetoothTestCast::SimulateLowEnergyDevice(
       device_name = std::nullopt;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   UpdateAdapter(device_address, device_name, service_uuids, service_data,
                 manufacturer_data);

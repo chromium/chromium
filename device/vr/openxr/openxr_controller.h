@@ -108,7 +108,7 @@ class OpenXrController {
   XrResult QueryState(XrAction action, T* action_state) const {
     // this function should never be called because each valid XrActionState
     // has its own template function defined below.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return XR_ERROR_ACTION_TYPE_MISMATCH;
   }
 

@@ -149,7 +149,7 @@ const AuthenticatorSupportedOptions& TouchIdAuthenticator::Options() const {
 }
 
 void TouchIdAuthenticator::GetTouch(base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run();
 }
 

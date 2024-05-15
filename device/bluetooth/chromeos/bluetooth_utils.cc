@@ -196,7 +196,7 @@ void EmitFilteredFailureReason(ConnectionFailureReason failure_reason,
                                     failure_reason);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

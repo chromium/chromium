@@ -290,87 +290,87 @@ std::optional<BluetoothUUID> BluetoothTestWin::GetTargetGattService(
 }
 
 void BluetoothTestWin::SimulateGattConnection(BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateStatusChangeToDisconnect(
     BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattServicesDiscovered(
     BluetoothDevice* device,
     const std::vector<std::string>& uuids,
     const std::vector<std::string>& blocked_uuids) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattServiceRemoved(
     BluetoothRemoteGattService* service) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristic(
     BluetoothRemoteGattService* service,
     const std::string& uuid,
     int properties) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRemoved(
     BluetoothRemoteGattService* service,
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicRead(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWrite(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::DeleteDevice(BluetoothDevice* device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattDescriptor(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::string& uuid) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStarted(
     BluetoothRemoteGattCharacteristic* characteristic) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
     BluetoothGattService::GattErrorCode error_code) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::SimulateGattCharacteristicChanged(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BluetoothTestWin::FinishPendingTasks() {

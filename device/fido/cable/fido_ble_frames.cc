@@ -41,7 +41,7 @@ bool FidoBleFrame::IsValid() const {
     case FidoBleDeviceCommand::kError:
       return data_.size() == 1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

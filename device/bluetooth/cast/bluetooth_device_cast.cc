@@ -125,7 +125,7 @@ bool BluetoothDeviceCast::IsGattConnected() const {
 }
 
 bool BluetoothDeviceCast::IsConnectable() const {
-  NOTREACHED() << "This is only called on ChromeOS";
+  NOTREACHED_IN_MIGRATION() << "This is only called on ChromeOS";
   return true;
 }
 
@@ -188,24 +188,24 @@ void BluetoothDeviceCast::Pair(PairingDelegate* pairing_delegate,
 }
 
 void BluetoothDeviceCast::SetPinCode(const std::string& pincode) {
-  NOTREACHED() << "Pairing not supported.";
+  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::SetPasskey(uint32_t passkey) {
-  NOTREACHED() << "Pairing not supported.";
+  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::ConfirmPairing() {
-  NOTREACHED() << "Pairing not supported.";
+  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
 }
 
 // Rejects a pairing or connection request from a remote device.
 void BluetoothDeviceCast::RejectPairing() {
-  NOTREACHED() << "Pairing not supported.";
+  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::CancelPairing() {
-  NOTREACHED() << "Pairing not supported.";
+  NOTREACHED_IN_MIGRATION() << "Pairing not supported.";
 }
 
 void BluetoothDeviceCast::Disconnect(base::OnceClosure callback,

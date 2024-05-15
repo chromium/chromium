@@ -230,7 +230,7 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
       };
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::flat_set<FidoTransportProtocol>();
 }
 
@@ -566,7 +566,7 @@ void MakeCredentialRequestHandler::DispatchRequestAfterAppIdExclude(
       return;
     case PINUVDisposition::kUnsatisfiable:
       // |IsCandidateAuthenticatorPostTouch| should have handled this case.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

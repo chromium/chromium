@@ -240,7 +240,7 @@ device::BluetoothTransport BluetoothDeviceBlueZ::GetType() const {
     return device::BLUETOOTH_TRANSPORT_DUAL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::BLUETOOTH_TRANSPORT_INVALID;
 }
 
@@ -568,7 +568,7 @@ void BluetoothDeviceBlueZ::SetConnectionLatency(
       max_connection_interval = MAX_CONNECTION_INTERVAL_HIGH;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

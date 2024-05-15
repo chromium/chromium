@@ -113,7 +113,7 @@ void DeviceMonitorLinux::Enumerate(const EnumerateCallback& callback) {
 
 DeviceMonitorLinux::~DeviceMonitorLinux() {
   // A leaky LazyInstance is never destroyed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DeviceMonitorLinux::OnMonitorCanReadWithoutBlocking() {

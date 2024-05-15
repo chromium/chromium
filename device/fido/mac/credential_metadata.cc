@@ -123,7 +123,7 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
     case Algorithm::kAes256GcmSiv:
       return crypto::Aead::AES_256_GCM_SIV;
     case Algorithm::kHmacSha256:
-      NOTREACHED() << "invalid AEAD";
+      NOTREACHED_IN_MIGRATION() << "invalid AEAD";
       return std::nullopt;
   }
 }

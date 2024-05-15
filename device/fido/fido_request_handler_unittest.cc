@@ -120,7 +120,7 @@ class TestObserver : public FidoRequestHandlerBase::Observer {
   void CollectPIN(
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnRetryUserVerification(int attempts) override {}

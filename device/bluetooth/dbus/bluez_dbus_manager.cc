@@ -319,7 +319,7 @@ void BluezDBusManager::Initialize(dbus::Bus* system_bus) {
   CreateGlobalInstance(BluezDBusThreadManager::Get()->GetSystemBus(), nullptr,
                        false /* use_dbus_stubs */);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

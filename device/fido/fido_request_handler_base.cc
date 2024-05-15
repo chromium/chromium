@@ -423,7 +423,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   std::tie(std::ignore, was_inserted) =
       active_authenticators_.insert({authenticator->GetId(), authenticator});
   if (!was_inserted) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     FIDO_LOG(ERROR) << "Authenticator with duplicate ID "
                     << authenticator->GetId();
     return;

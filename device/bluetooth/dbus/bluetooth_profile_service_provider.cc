@@ -211,7 +211,8 @@ class BluetoothProfileServiceProviderImpl
         break;
       }
       default:
-        NOTREACHED() << "Unexpected status code from delegate: " << status;
+        NOTREACHED_IN_MIGRATION()
+            << "Unexpected status code from delegate: " << status;
     }
   }
 

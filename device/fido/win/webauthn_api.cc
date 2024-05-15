@@ -391,7 +391,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     // MakeCredentialRequestHandler rejects a request with credProtect
     // enforced=true if webauthn.dll does not support credProtect.
     if (request.cred_protect_enforce && api_version < WEBAUTHN_API_VERSION_2) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {CtapDeviceResponseCode::kCtap2ErrNotAllowed, std::nullopt};
     }
     // Windows doesn't support the concept of

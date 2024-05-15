@@ -119,19 +119,19 @@ bool FakePeripheral::RemoveFakeService(const std::string& identifier) {
 }
 
 uint32_t FakePeripheral::GetBluetoothClass() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 device::BluetoothTransport FakePeripheral::GetType() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::BLUETOOTH_TRANSPORT_INVALID;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 std::string FakePeripheral::GetIdentifier() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -140,33 +140,33 @@ std::string FakePeripheral::GetAddress() const {
 }
 
 device::BluetoothDevice::AddressType FakePeripheral::GetAddressType() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ADDR_TYPE_UNKNOWN;
 }
 
 device::BluetoothDevice::VendorIDSource FakePeripheral::GetVendorIDSource()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VENDOR_ID_UNKNOWN;
 }
 
 uint16_t FakePeripheral::GetVendorID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 uint16_t FakePeripheral::GetProductID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 uint16_t FakePeripheral::GetDeviceID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 uint16_t FakePeripheral::GetAppearance() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -179,19 +179,19 @@ std::u16string FakePeripheral::GetNameForDisplay() const {
 }
 
 bool FakePeripheral::IsPaired() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool FakePeripheral::IsBonded() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool FakePeripheral::IsConnected() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -203,94 +203,94 @@ bool FakePeripheral::IsGattConnected() const {
 }
 
 bool FakePeripheral::IsConnectable() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool FakePeripheral::IsConnecting() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool FakePeripheral::ExpectingPinCode() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool FakePeripheral::ExpectingPasskey() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool FakePeripheral::ExpectingConfirmation() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void FakePeripheral::GetConnectionInfo(ConnectionInfoCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::SetConnectionLatency(ConnectionLatency connection_latency,
                                           base::OnceClosure callback,
                                           ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::Connect(PairingDelegate* pairing_delegate,
                              ConnectCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void FakePeripheral::ConnectClassic(PairingDelegate* pairing_delegate,
                                     ConnectCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void FakePeripheral::SetPinCode(const std::string& pincode) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::SetPasskey(uint32_t passkey) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::ConfirmPairing() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::RejectPairing() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::CancelPairing() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::Disconnect(base::OnceClosure callback,
                                 ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::Forget(base::OnceClosure callback,
                             ErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::ConnectToService(
     const device::BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::ConnectToServiceInsecurely(
     const device::BluetoothUUID& uuid,
     ConnectToServiceCallback callback,
     ConnectToServiceErrorCallback error_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePeripheral::CreateGattConnection(

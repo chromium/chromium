@@ -218,7 +218,7 @@ uint32_t ToWinUserVerificationRequirement(
     case UserVerificationRequirement::kDiscouraged:
       return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_REQUIRED;
 }
 
@@ -232,7 +232,7 @@ uint32_t ToWinAuthenticatorAttachment(
     case AuthenticatorAttachment::kCrossPlatform:
       return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
 }
 
@@ -323,8 +323,9 @@ MakeCredentialStatus WinCtapDeviceResponseCodeToMakeCredentialStatus(
     case CtapDeviceResponseCode::kCtap2ErrOperationDenied:
       return MakeCredentialStatus::kWinNotAllowedError;
     default:
-      NOTREACHED() << "Must only be called with a status returned from "
-                      "WinErrorNameToCtapDeviceResponseCode().";
+      NOTREACHED_IN_MIGRATION()
+          << "Must only be called with a status returned from "
+             "WinErrorNameToCtapDeviceResponseCode().";
       FIDO_LOG(ERROR) << "Unexpected CtapDeviceResponseCode: "
                       << static_cast<int>(status);
       return MakeCredentialStatus::kWinNotAllowedError;
@@ -345,8 +346,9 @@ GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
                       << static_cast<int>(status);
       return GetAssertionStatus::kWinNotAllowedError;
     default:
-      NOTREACHED() << "Must only be called with a status returned from "
-                      "WinErrorNameToCtapDeviceResponseCode().";
+      NOTREACHED_IN_MIGRATION()
+          << "Must only be called with a status returned from "
+             "WinErrorNameToCtapDeviceResponseCode().";
       FIDO_LOG(ERROR) << "Unexpected CtapDeviceResponseCode: "
                       << static_cast<int>(status);
       return GetAssertionStatus::kWinNotAllowedError;
@@ -370,7 +372,7 @@ uint32_t ToWinAttestationConveyancePreference(
                  ? WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
                  : WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
 }
 

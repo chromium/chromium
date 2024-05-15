@@ -396,7 +396,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
       result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_3;
       break;
     default:
-      NOTREACHED() << "Unknown webauthn version " << version_;
+      NOTREACHED_IN_MIGRATION() << "Unknown webauthn version " << version_;
   }
   result->assertion.cbAuthenticatorData = result->authenticator_data.size();
   result->assertion.pbAuthenticatorData = reinterpret_cast<PBYTE>(
@@ -451,8 +451,8 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
         break;
       }
       default:
-        NOTREACHED() << "Unknown operation "
-                     << options->dwCredLargeBlobOperation;
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown operation " << options->dwCredLargeBlobOperation;
     }
   }
 
@@ -467,7 +467,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
 
 HRESULT FakeWinWebAuthnApi::CancelCurrentOperation(GUID* cancellation_id) {
   DCHECK(is_available_);
-  NOTREACHED() << "not implemented";
+  NOTREACHED_IN_MIGRATION() << "not implemented";
   return E_NOTIMPL;
 }
 
@@ -582,7 +582,7 @@ void FakeWinWebAuthnApi::FreeCredentialAttestation(
     returned_attestations_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
@@ -594,7 +594,7 @@ void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
     returned_assertions_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeWinWebAuthnApi::FreePlatformCredentialList(
@@ -607,7 +607,7 @@ void FakeWinWebAuthnApi::FreePlatformCredentialList(
     returned_credential_lists_.erase(it);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 int FakeWinWebAuthnApi::Version() {

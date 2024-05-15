@@ -36,7 +36,7 @@ FidoDevice::CancelToken AndroidAccessoryDevice::DeviceTransact(
     DeviceCallback callback) {
   if (static_cast<uint64_t>(command.size()) >
       std::numeric_limits<uint32_t>::max()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(std::nullopt);
     return 0;
   }
