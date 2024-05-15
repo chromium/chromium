@@ -366,13 +366,15 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void PhishingDetectionDone(std::optional<mojo_base::ProtoWrapper> verdict) {
     csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
+                                     /*is_sample_ping=*/false,
                                      mojom::PhishingDetectorResult::SUCCESS,
                                      std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(ClientSideDetectionType::TRIGGER_MODELS,
-                                     error, std::nullopt);
+                                     /*is_sample_ping=*/false, error,
+                                     std::nullopt);
   }
 
   void ExpectPreClassificationChecks(const GURL& url,
@@ -1359,13 +1361,14 @@ class ClientSideDetectionHostNotificationTest
   void PhishingDetectionDone(mojo_base::ProtoWrapper verdict) {
     csd_host_->PhishingDetectionDone(
         ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
-        mojom::PhishingDetectorResult::SUCCESS, std::move(verdict));
+        /*is_sample_ping=*/false, mojom::PhishingDetectorResult::SUCCESS,
+        std::move(verdict));
   }
 
   void PhishingDetectionError(mojom::PhishingDetectorResult error) {
     csd_host_->PhishingDetectionDone(
-        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT, error,
-        std::nullopt);
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
+        /*is_sample_ping=*/false, error, std::nullopt);
   }
 
   void WaitForBubbleToBeShown() {

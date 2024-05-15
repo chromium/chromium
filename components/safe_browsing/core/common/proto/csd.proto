@@ -255,7 +255,19 @@ message ClientPhishingRequest {
   // Image embedding from model output tensor
   optional ImageFeatureEmbedding image_feature_embedding = 29;
 
-  // next available tag number: 30.
+  enum ReportType {
+    UNKNOWN = 0;
+    // Normal/full ping to Safe Browsing containing all the fields in the
+    // ClientPhishingRequest.
+    FULL_REPORT = 1;
+    // Sample ping to Safe Browsing. This will override the local model result
+    // when deciding to send the ping.
+    SAMPLE_REPORT = 2;
+  }
+
+  optional ReportType report_type = 30;
+
+  // next available tag number: 31.
 }
 
 message ClientPhishingResponse {

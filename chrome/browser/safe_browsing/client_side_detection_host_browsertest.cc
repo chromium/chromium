@@ -389,7 +389,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
-      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
+      /*is_sample_ping=*/false);
 
   // A prerendered navigation committing should not cancel classification.
   // We simulate the commit of a prerendered navigation to avoid races
@@ -448,7 +449,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
-      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
+      /*is_sample_ping=*/false);
 
   run_loop.Run();
 
@@ -500,7 +502,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
-      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
+      /*is_sample_ping=*/false);
 
   run_loop.Run();
 
@@ -572,7 +575,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
-      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true);
+      ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
+      /*is_sample_ping=*/false);
 
   run_loop.Run();
 
@@ -742,7 +746,7 @@ IN_PROC_BROWSER_TEST_F(
   // "NO_CLASSIFY_PRIVATE_IP".
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
-      /*should_classify=*/true);
+      /*should_classify=*/true, /*is_sample_ping=*/false);
 
   run_loop.Run();
 
@@ -814,7 +818,7 @@ IN_PROC_BROWSER_TEST_F(
   // "NO_CLASSIFY_PRIVATE_IP".
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::POINTER_LOCK_REQUESTED,
-      /*should_classify=*/true);
+      /*should_classify=*/true, /*is_sample_ping=*/false);
 
   run_loop.Run();
 

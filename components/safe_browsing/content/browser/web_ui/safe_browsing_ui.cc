@@ -819,6 +819,18 @@ base::Value::Dict SerializeImageFeatureEmbedding(
   return dict;
 }
 
+std::string SerializeReportType(ClientPhishingRequest::ReportType report_type) {
+  switch (report_type) {
+    case ClientPhishingRequest::UNKNOWN:
+      return "UNKNOWN";
+    case ClientPhishingRequest::FULL_REPORT:
+      return "FULL_REPORT";
+    case ClientPhishingRequest::SAMPLE_REPORT:
+      return "SAMPE_REPORT";
+  }
+  return "UNKNOWN_ENUM_SPECIFIED";
+}
+
 base::Value::Dict SerializeChromeUserPopulation(
     const ChromeUserPopulation& population) {
   base::Value::Dict population_dict;
@@ -1238,6 +1250,9 @@ std::string SerializeClientPhishingRequest(
     dict.Set(
         "client_side_detection_type",
         SerializeClientSideDetectionType(cpr.client_side_detection_type()));
+  }
+  if (cpr.has_report_type()) {
+    dict.Set("report_type", SerializeReportType(cpr.report_type()));
   }
 
   if (cpr.has_image_feature_embedding()) {
