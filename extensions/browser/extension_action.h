@@ -36,10 +36,10 @@ class IconImage;
 class ExtensionAction {
  public:
   // The action that the UI should take after the ExtensionAction is clicked.
-  enum ShowAction {
-    ACTION_NONE,
-    ACTION_SHOW_POPUP,
-    ACTION_TOGGLE_SIDE_PANEL,
+  enum class ShowAction {
+    kNone,
+    kShowPopup,
+    kToggleSidePanel,
     // We don't need a SHOW_CONTEXT_MENU because that's handled separately in
     // the UI.
   };

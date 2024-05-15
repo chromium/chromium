@@ -425,11 +425,12 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   extensions::ExtensionAction::ShowAction action =
       action_runner->RunAction(extension(), kGrantTabPermissions);
 
-  if (action == extensions::ExtensionAction::ACTION_SHOW_POPUP) {
+  if (action == extensions::ExtensionAction::ShowAction::kShowPopup) {
     constexpr bool kByUser = true;
     GetPreferredPopupViewController()->TriggerPopup(
         PopupShowAction::kShow, kByUser, ShowPopupCallback());
-  } else if (action == extensions::ExtensionAction::ACTION_TOGGLE_SIDE_PANEL) {
+  } else if (action ==
+             extensions::ExtensionAction::ShowAction::kToggleSidePanel) {
     extensions::side_panel_util::ToggleExtensionSidePanel(browser_,
                                                           extension()->id());
   }
