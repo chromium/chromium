@@ -15,7 +15,6 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 #include "build/branding_buildflags.h"
-#include "chrome/installer/setup/buildflags.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // English (U.S.) resources
@@ -143,7 +142,4 @@ IDR_GOOGLE_UPDATE_APP_COMMANDS_MARKUP GOOGLEUPDATEAPPLICATIONCOMMANDS { 1L }
 #define IDR_PATCHER_TYPE_ZUCCHINI 2
 
 IDR_PATCHER_TYPE_COURGETTE PATCHERTYPE { 0L }
-#if BUILDFLAG(ZUCCHINI)
 IDR_PATCHER_TYPE_ZUCCHINI PATCHERTYPE { 0L }
-#endif  // BUILDFLAG(ZUCCHINI)
-

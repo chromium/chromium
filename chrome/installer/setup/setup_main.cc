@@ -69,7 +69,6 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/archive_patch_helper.h"
 #include "chrome/installer/setup/brand_behaviors.h"
-#include "chrome/installer/setup/buildflags.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install.h"
 #include "chrome/installer/setup/install_params.h"
@@ -1033,17 +1032,15 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     const base::FilePath output_file(
         cmd_line.GetSwitchValuePath(installer::switches::kOutputFile));
 
-    if (patch_type_str == installer::kCourgette) {
+    if (patch_type_str == installer::kZucchini) {
+      *exit_code =
+          installer::ZucchiniPatchFiles(input_file, patch_file, output_file);
+    } else if (patch_type_str == installer::kCourgette) {
       *exit_code =
           installer::CourgettePatchFiles(input_file, patch_file, output_file);
     } else if (patch_type_str == installer::kBsdiff) {
       *exit_code =
           installer::BsdiffPatchFiles(input_file, patch_file, output_file);
-#if BUILDFLAG(ZUCCHINI)
-    } else if (patch_type_str == installer::kZucchini) {
-      *exit_code =
-          installer::ZucchiniPatchFiles(input_file, patch_file, output_file);
-#endif  // BUILDFLAG(ZUCCHINI)
     } else {
       *exit_code = installer::PATCH_INVALID_ARGUMENTS;
     }

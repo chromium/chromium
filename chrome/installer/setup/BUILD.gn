@@ -4,14 +4,8 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//chrome/installer/setup/buildflags.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//testing/test.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ZUCCHINI=$use_zucchini" ]
-}
 
 if (is_win) {
   executable("setup") {
@@ -31,7 +25,6 @@ if (is_win) {
     configs += [ "//build/config/win:windowed" ]
 
     deps = [
-      ":buildflags",
       ":lib",
       ":setup_exe_version",
       "//base",
@@ -98,7 +91,6 @@ if (is_win) {
     ]
 
     public_deps = [
-      ":buildflags",
       "//base",
       "//chrome/installer/util:with_rc_strings",
     ]

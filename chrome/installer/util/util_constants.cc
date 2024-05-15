@@ -120,7 +120,7 @@ const char kOnOsUpgrade[] = "on-os-upgrade";
 
 // Applies a binary patch to a file. The input, patch, and the output file are
 // specified as command line arguments following the --patch switch.
-// Ex: --patch=courgette --input_file='input' --patch_file='patch'
+// Ex: --patch=zucchini --input_file='input' --patch_file='patch'
 //        --output_file='output'
 const char kOutputFile[] = "output-file";
 const char kPatch[] = "patch";

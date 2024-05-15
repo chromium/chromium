@@ -21,9 +21,7 @@ const wchar_t kMediaPlayerRegPath[] =
 
 const char kCourgette[] = "courgette";
 const char kBsdiff[] = "bsdiff";
-#if BUILDFLAG(ZUCCHINI)
 const char kZucchini[] = "zucchini";
-#endif  // BUILDFLAG(ZUCCHINI)
 
 namespace switches {
 

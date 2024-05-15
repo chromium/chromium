@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "chrome/installer/setup/buildflags.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "components/zucchini/zucchini.h"
 #include "components/zucchini/zucchini_integration.h"
@@ -63,13 +62,8 @@ bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
 }
 
 bool ArchivePatchHelper::ApplyAndDeletePatch() {
-  bool succeeded = false;
-#if BUILDFLAG(ZUCCHINI)
-  succeeded = ZucchiniEnsemblePatch();
-#endif  // BUILDFLAG(ZUCCHINI)
-  if (!succeeded) {
-    succeeded = CourgetteEnsemblePatch() || BinaryPatch();
-  }
+  const bool succeeded =
+      ZucchiniEnsemblePatch() || CourgetteEnsemblePatch() || BinaryPatch();
   if (!last_uncompressed_file_.empty()) {
     base::DeleteFile(last_uncompressed_file_);
   }

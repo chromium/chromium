@@ -1,9 +1,0 @@
-# Copyright 2018 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-declare_args() {
-  # Specify if the Zucchini patcher features should be included in setup.exe.
-  # See //components/zucchini for more information.
-  use_zucchini = true
-}
