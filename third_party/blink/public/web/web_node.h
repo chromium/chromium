@@ -72,6 +72,7 @@ class BLINK_EXPORT WebNode {
   bool LessThan(const WebNode&) const;
 
   bool IsNull() const;
+  explicit operator bool() const { return !IsNull(); }
 
   bool IsConnected() const;
 
