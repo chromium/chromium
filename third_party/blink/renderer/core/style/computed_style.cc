@@ -1014,6 +1014,15 @@ bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
     return true;
   }
 
+  if (field_diff & kStroke) {
+    if (HasStroke() != other.HasStroke()) {
+      return true;
+    }
+    if (HasDashArray() != other.HasDashArray()) {
+      return true;
+    }
+  }
+
   if (IsDisplayLayoutCustomBox() &&
       DiffNeedsFullLayoutForLayoutCustom(document, other)) {
     return true;
@@ -2581,11 +2590,6 @@ blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,
   blink::Color current_color =
       visited_link ? GetInternalVisitedCurrentColor() : GetCurrentColor();
   return color.Resolve(current_color, UsedColorScheme(), is_current_color);
-}
-
-bool ComputedStyle::StrokeDashArrayDataEquivalent(
-    const ComputedStyle& other) const {
-  return StrokeDashArray()->data == other.StrokeDashArray()->data;
 }
 
 bool ComputedStyle::ColumnRuleEquivalent(

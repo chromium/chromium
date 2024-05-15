@@ -337,6 +337,7 @@
         "paint",
         "reshape",
         "scroll-anchor",
+        "stroke",
         "table",
         "text-decoration",
         "transform-property",
@@ -5237,7 +5238,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
-      invalidate: ["paint"],
+      invalidate: ["paint", "stroke"],
     },
     {
       name: "stroke-dasharray",
@@ -5254,6 +5255,7 @@
       converter: "ConvertStrokeDasharray",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["paint", "stroke"],
     },
     {
       name: "stroke-dashoffset",

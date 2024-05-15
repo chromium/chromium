@@ -41,14 +41,6 @@
             method: "UsesStandardScrollbarStyle()",
             field_dependencies: ["StyleType"]
           },
-          {
-            method: "HasStroke()",
-            field_dependencies: ["stroke"]
-          },
-          {
-            method: "HasDashArray()",
-            field_dependencies: ["stroke-dasharray"]
-          },
         ],
     },
     {
@@ -87,10 +79,6 @@
           {
             predicate: "a.InternalVisitedOutlineColorHasNotChanged(b)",
             field_dependencies: ["-internal-visited-outline-color"]
-          },
-          {
-            predicate: "a.StrokeDashArrayDataEquivalent(b)",
-            field_dependencies: ["stroke-dasharray"]
           },
         ]
     },

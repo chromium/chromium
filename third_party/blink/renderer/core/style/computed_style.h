@@ -887,7 +887,6 @@ class ComputedStyle final : public ComputedStyleBase {
            InternalVisitedStrokePaint().HasCurrentColor();
   }
   bool HasDashArray() const { return !StrokeDashArray()->data.empty(); }
-  bool StrokeDashArrayDataEquivalent(const ComputedStyle&) const;
 
   // accent-color
   // An empty optional means the accent-color is 'auto'
