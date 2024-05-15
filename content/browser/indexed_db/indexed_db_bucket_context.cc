@@ -1383,6 +1383,9 @@ void IndexedDBBucketContext::HandleBackingStoreCorruption(
   const base::FilePath file_path =
       data_path_.Append(indexed_db::GetLevelDBFileName(bucket_locator()));
   ForceClose(/*doom=*/false);
+  // In order to successfully delete the corrupted DB, the open handle must
+  // first be closed.
+  ResetBackingStore();
 
   // NB: `this` will be synchronously deleted here while
   // kIndexedDBShardBackingStores is false.

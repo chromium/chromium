@@ -442,7 +442,9 @@ TEST_F(IndexedDBTransactionTest, SchedulePreemptiveTask) {
   transaction->DidCompletePreemptiveEvent();
   transaction->SetCommitFlag();
   RunPostedTasks();
-  EXPECT_TRUE(bucket_context_->force_close_called_for_testing());
+  // The bucket context should have been destroyed via
+  // `OnDbReadyForDestruction`.
+  EXPECT_FALSE(bucket_context_);
 }
 
 TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
@@ -466,8 +468,9 @@ TEST_P(IndexedDBTransactionTestMode, AbortTasks) {
   transaction->SetCommitFlag();
   RunPostedTasks();
   EXPECT_TRUE(observer.abort_task_called());
-  // An error was reported which deletes the databases.
-  EXPECT_TRUE(bucket_context_->GetDatabasesForTesting().empty());
+  // An error was reported which deletes the backing store, as well as the
+  // bucket context by way of `OnDbReadyForDestruction`.
+  EXPECT_FALSE(bucket_context_);
 }
 
 TEST_P(IndexedDBTransactionTestMode, AbortPreemptive) {

@@ -329,8 +329,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  bool force_close_called_for_testing() const { return skip_closing_sequence_; }
-
   TransactionalLevelDBFactory& transactional_leveldb_factory() const {
     return *transactional_leveldb_factory_;
   }

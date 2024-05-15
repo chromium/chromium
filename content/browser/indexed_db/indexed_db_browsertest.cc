@@ -981,7 +981,9 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     return std::move(http_response);
-  } else if (request_path == "fail" && !request_query.empty()) {
+  }
+
+  if (request_path == "fail" && !request_query.empty()) {
     FailClass failure_class = FailClass::NOTHING;
     FailMethod failure_method = FailMethod::NOTHING;
     int instance_num = 1;
