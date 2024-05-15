@@ -9,11 +9,15 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import org.junit.Assert;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
@@ -25,6 +29,27 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
 
     public CustomTabActivityTestRule() {
         super(CustomTabActivity.class);
+    }
+
+    @Override
+    public Statement apply(final Statement base, Description description) {
+        Statement statement =
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        try {
+                            base.evaluate();
+                        } finally {
+                            TestThreadUtils.runOnUiThreadBlocking(
+                                    () -> {
+                                        WarmupManager.getInstance().destroySpareTab();
+                                        // Prevent further async spare tab creation.
+                                        CustomTabsConnection.sSkipTabPrewarmingForTesting = true;
+                                    });
+                        }
+                    }
+                };
+        return super.apply(statement, description);
     }
 
     public static void putCustomTabIdInIntent(Intent intent) {
