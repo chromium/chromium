@@ -13,10 +13,10 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideBrowserProxy, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PerformanceBrowserProxyImpl, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -47,6 +47,10 @@ suite('BasicPage', () => {
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
+    // Don't show the privacy guide promo in regular tests.
+    loadTimeData.overrideValues({showPrivacyGuide: false});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -60,8 +64,6 @@ suite('BasicPage', () => {
 
     page = document.createElement('settings-basic-page');
     page.prefs = settingsPrefs.prefs!;
-    // Don't show the privacy guide promo in regular tests.
-    page.setPrefValue('privacy_guide.viewed', true);
     document.body.appendChild(page);
     page.scroller = document.body;
 
@@ -287,23 +289,27 @@ suite('PrivacyGuidePromo', () => {
   let privacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
+    loadTimeData.overrideValues({showPrivacyGuide: true});
+    resetRouterForTesting();
+
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
 
   setup(async function() {
-    loadTimeData.overrideValues({showPrivacyGuide: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
     PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
     page = document.createElement('settings-basic-page');
     page.prefs = settingsPrefs.prefs!;
     // The promo is only shown when privacy guide hasn't been visited yet.
     page.setPrefValue('privacy_guide.viewed', false);
     document.body.appendChild(page);
     page.scroller = document.body;
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     // Need to wait for the 'show-container' event to fire after every
     // transition, to ensure no logic related to previous transitions is still
@@ -324,32 +330,13 @@ suite('PrivacyGuidePromo', () => {
     // This will fail if there are any asserts or errors in the Settings page.
   });
 
-  test('promoNotShown', async function() {
-    loadTimeData.overrideValues({showPrivacyGuide: false});
-
-    page.remove();
-    page = document.createElement('settings-basic-page');
-    page.prefs = settingsPrefs.prefs!;
-    // The promo is only shown when privacy guide hasn't been visited yet.
-    page.setPrefValue('privacy_guide.viewed', false);
-    document.body.appendChild(page);
-
-    await flushTasks();
-    assertFalse(
-        loadTimeData.getBoolean('showPrivacyGuide'),
-        'showPrivacyGuide was not overwritten');
-    assertFalse(
-        isChildVisible(page, '#privacyGuidePromo'),
-        'privacyGuidePromo is visible');
-  });
-
   // Same as the SometimesMoreSectionsShown test in the suite above, but
   // including the privacy guide.
-  test('SometimesMoreSectionsShownWithPrivacyGuide', async () => {
+  test('SometimesMoreSectionsShownWithPrivacyGuide', async function() {
     const whenDone = eventToPromise('show-container', page);
     Router.getInstance().navigateTo(routes.PRIVACY);
     await whenDone;
-    await flushTasks();
+    await microtasksFinished();
     await privacyGuideBrowserProxy.whenCalled('incrementPromoImpressionCount');
 
     const activeSections =
@@ -370,7 +357,7 @@ suite('PrivacyGuidePromo', () => {
     assertEquals(routes.PRIVACY.section, activeSections[2]!.section);
   });
 
-  test('privacyGuidePromoVisibilitySupervisedAccount', function() {
+  test('privacyGuidePromoVisibilitySupervisedAccount', async function() {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user signs in to a supervised user account. This hides the privacy
@@ -380,32 +367,32 @@ suite('PrivacyGuidePromo', () => {
       statusAction: StatusAction.NO_ACTION,
     };
     webUIListenerCallback('sync-status-changed', syncStatus);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user is no longer signed in to a supervised user account. This
     // doesn't show the promo.
     syncStatus = {supervisedUser: false, statusAction: StatusAction.NO_ACTION};
     webUIListenerCallback('sync-status-changed', syncStatus);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
-  test('privacyGuidePromoVisibilityManaged', function() {
+  test('privacyGuidePromoVisibilityManaged', async function() {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user becomes managed. This hides the privacy guide promo.
     webUIListenerCallback('is-managed-changed', true);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user is no longer managed. This doesn't show the promo.
     webUIListenerCallback('is-managed-changed', false);
-    flush();
+    await microtasksFinished();
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
-  test('privacyGuidePromoNoThanksTest', function() {
+  test('privacyGuidePromoNoThanksTest', async function() {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
     assertFalse(page.getPref('privacy_guide.viewed').value);
 
@@ -414,7 +401,7 @@ suite('PrivacyGuidePromo', () => {
         page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
     privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
                                      '#noThanksButton')!.click();
-    flush();
+    await microtasksFinished();
 
     // The privacy guide should be marked as seen and the promo no longer
     // visible.
@@ -429,7 +416,7 @@ suite('PrivacyGuidePromo', () => {
         page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
     privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
                                      '#startButton')!.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const result = await testMetricsBrowserProxy.whenCalled(
         'recordPrivacyGuideEntryExitHistogram');
@@ -545,6 +532,7 @@ suite('SafetyHubDisabled', () => {
 
   setup(async function() {
     loadTimeData.overrideValues({enableSafetyHub: false});
+    resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-basic-page');
@@ -610,6 +598,8 @@ suite('ExperimentalAdvanced', () => {
 
   test('sectionNotVisible', function() {
     loadTimeData.overrideValues({showAdvancedFeaturesMainControl: false});
+    resetRouterForTesting();
+
     createBasicPage();
     const sectionElement =
         page.shadowRoot!.querySelector('settings-section[section=ai]');
@@ -618,6 +608,8 @@ suite('ExperimentalAdvanced', () => {
 
   test('sectionVisible', function() {
     loadTimeData.overrideValues({showAdvancedFeaturesMainControl: true});
+    resetRouterForTesting();
+
     createBasicPage();
     const sectionElement =
         page.shadowRoot!.querySelector('settings-section[section=ai]');
