@@ -894,7 +894,7 @@ int WebRequestEventRouter::OnBeforeRequest(
     }
   }
 
-  // Whether to initialized |blocked_requests_|.
+  // Whether to initialized `blocked_requests_`.
   bool initialize_blocked_requests = false;
 
   initialize_blocked_requests |= ProcessDeclarativeRules(
@@ -918,17 +918,12 @@ int WebRequestEventRouter::OnBeforeRequest(
         browser_context, request, listeners, std::move(event_details));
   }
 
-  // Handle Declarative Net Request API rules. In case the request is blocked or
-  // redirected, we un-block the request and ignore any subsequent responses
-  // from webRequestBlocking listeners. Note: We don't remove the request from
-  // the |EventListener::blocked_requests| set of any blocking listeners it was
-  // dispatched to, since the listener's response will be ignored in
-  // |DecrementBlockCount| anyway.
-
-  // Only checking the rules in the OnBeforeRequest stage works, since the rules
-  // currently only depend on the request url, initiator and resource type,
-  // which should stay the same during the diffierent network request stages. A
-  // redirect should cause another OnBeforeRequest call.
+  // Handle Declarative Net Request API rules matched in this request phase.
+  // In case the request is blocked or redirected, we un-block the request and
+  // ignore any subsequent responses from webRequestBlocking listeners. Note: We
+  // don't remove the request from the `EventListener::blocked_requests` set of
+  // any blocking listeners it was dispatched to, since the listener's response
+  // will be ignored in `DecrementBlockCount` anyway.
   declarative_net_request::RulesetManager* ruleset_manager =
       declarative_net_request::RulesMonitorService::Get(browser_context)
           ->ruleset_manager();
@@ -954,9 +949,12 @@ int WebRequestEventRouter::OnBeforeRequest(
       scoped_timer = base::ScopedClosureRunner(
           base::BindOnce(record_completion_time,
                          &GetExtensionWebRequestTimeTracker(), request->id));
-    }
 
-    for (const auto& action : actions) {
+      // Only the first action in `actions` need to be checked, as all action
+      // types except MODIFY_HEADERS expect only one action, and for
+      // MODIFY_HEADERS, a check is performed to make sure all `actions` are
+      // MODIFY_HEADERS.
+      const DNRRequestAction& action = actions[0];
       switch (action.type) {
         case DNRRequestAction::Type::BLOCK:
           ClearPendingCallbacks(browser_context, *request);
@@ -1160,9 +1158,14 @@ int WebRequestEventRouter::OnHeadersReceived(
             *request, original_response_headers, is_incognito_context);
 
     // TODO(crbug.com/40727004): This shares a lot of logic with the equivalent
-    // loop in OnBeforeRequest. Refactor into a common method once all action
+    // block in OnBeforeRequest. Refactor into a common method once all action
     // types are supported.
-    for (const auto& action : actions) {
+    if (!actions.empty()) {
+      // Similar to OnBeforeRequest, only the first action needs to be examined.
+      // In the case of MODIFY_HEADERS, any operations needed to re-compute
+      // `request->dnr_actions` only needs to be executed once.
+      const DNRRequestAction& action = actions[0];
+
       switch (action.type) {
         case DNRRequestAction::Type::BLOCK:
           ClearPendingCallbacks(browser_context, *request);
@@ -1222,6 +1225,8 @@ int WebRequestEventRouter::OnHeadersReceived(
           // to `request->dnr_actions` since said action(s) can be taken on the
           // request now. Modify header actions need to be saved since they will
           // take effect later.
+          // Note: Since `actions` will be moved here either way, `action` is
+          // unsafe to use after this point!
 
           // If no modify header actions were matched in previous request
           // stages, then `request->dnr_actions` can simply be overwritten by
