@@ -13,13 +13,15 @@
 namespace device::enclave {
 
 const base::FilePath::StringPieceType kTestDigestPath =
-    FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_digest");
+    FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_digest.txt");
 const base::FilePath::StringPieceType kTestSignaturePath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_signature");
 const base::FilePath::StringPieceType kTestPemPath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_pub_key.pem");
 const base::FilePath::StringPieceType kTestRawPath =
     FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/test_pub_key.der");
+const base::FilePath::StringPieceType kTestRekorPath =
+    FILE_PATH_LITERAL("device/fido/enclave/verify/testdata/rekor_pub_key.pem");
 const base::FilePath::StringPieceType kTestAlternateRawPath = FILE_PATH_LITERAL(
     "device/fido/enclave/verify/testdata/test_alternate_pub_key.der");
 const uint8_t kInvalidSignature[] = {1, 2, 3, 4};
@@ -79,15 +81,17 @@ TEST(UtilsTest, ConvertRawToPem_ReturnsPem) {
 TEST(UtilsTest, VerifySignatureRaw_WithValidSignature_Succeeds) {
   auto test_digest = ReadContentsOfFile(kTestDigestPath);
   auto test_digest_signature = ReadContentsOfFile(kTestSignaturePath);
-  auto test_raw = ReadContentsOfFile(kTestRawPath);
+  auto test_raw = ConvertPemToRaw(ReadContentsOfFile(kTestRekorPath));
+  EXPECT_TRUE(test_raw.has_value());
   base::span<const uint8_t> test_digest_span =
       base::make_span(static_cast<const uint8_t*>((uint8_t*)test_digest.data()),
                       test_digest.size());
   base::span<const uint8_t> test_digest_sig_span = base::make_span(
       static_cast<const uint8_t*>((uint8_t*)test_digest_signature.data()),
       test_digest_signature.size());
-  base::span<const uint8_t> test_raw_span = base::make_span(
-      static_cast<const uint8_t*>((uint8_t*)test_raw.data()), test_raw.size());
+  base::span<const uint8_t> test_raw_span =
+      base::make_span(static_cast<const uint8_t*>((uint8_t*)test_raw->data()),
+                      test_raw->size());
 
   auto res = device::enclave::VerifySignatureRaw(
       test_digest_sig_span, test_digest_span, test_raw_span);
@@ -97,12 +101,14 @@ TEST(UtilsTest, VerifySignatureRaw_WithValidSignature_Succeeds) {
 
 TEST(UtilsTest, VerifySignatureRaw_WithInvalidSignature_Fails) {
   auto test_digest = ReadContentsOfFile(kTestDigestPath);
-  auto test_raw = ReadContentsOfFile(kTestRawPath);
+  auto test_raw = ConvertPemToRaw(ReadContentsOfFile(kTestRekorPath));
+  EXPECT_TRUE(test_raw.has_value());
   base::span<const uint8_t> test_digest_span =
       base::make_span(static_cast<const uint8_t*>((uint8_t*)test_digest.data()),
                       test_digest.size());
-  base::span<const uint8_t> test_raw_span = base::make_span(
-      static_cast<const uint8_t*>((uint8_t*)test_raw.data()), test_raw.size());
+  base::span<const uint8_t> test_raw_span =
+      base::make_span(static_cast<const uint8_t*>((uint8_t*)test_raw->data()),
+                      test_raw->size());
 
   auto res = device::enclave::VerifySignatureRaw(
       kInvalidSignature, test_digest_span, test_raw_span);

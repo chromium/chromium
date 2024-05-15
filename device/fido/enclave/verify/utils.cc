@@ -16,6 +16,7 @@
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace device::enclave {
 
@@ -95,10 +96,12 @@ base::expected<void, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
   if (!ec_key) {
     return base::unexpected("Could not parse public_key");
   }
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  SHA256(reinterpret_cast<const unsigned char*>(contents.data()),
+         contents.size(), digest);
   bssl::UniquePtr<ECDSA_SIG> sig(
       ECDSA_SIG_from_bytes(signature.data(), signature.size()));
-  if (!ECDSA_do_verify(contents.data(), contents.size(), sig.get(),
-                       ec_key.get())) {
+  if (!ECDSA_do_verify(digest, sizeof(digest), sig.get(), ec_key.get())) {
     return base::unexpected("Could not verify the signature");
   }
   return base::expected<void, std::string>();

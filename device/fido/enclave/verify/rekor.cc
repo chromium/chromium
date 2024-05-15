@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "device/fido/enclave/verify/utils.h"
 
 namespace device::enclave {
 
@@ -172,17 +173,34 @@ std::optional<RekorSignatureBundle> GetRekorSignatureBundle(
       log_entry.log_id.find('\"') != std::string::npos) {
     return std::nullopt;
   }
-  std::string canonicalized =
-      base::StrCat({"{\"body\":{\"", log_entry.body, "\"},\"integratedTime\":{",
-                    base::NumberToString(log_entry.integrated_time.ToTimeT()),
-                    "},\"logID\":{\"", log_entry.log_id, "\"},\"logIndex\":{",
-                    base::NumberToString(log_entry.log_index), "}}"});
+  std::string canonicalized = base::StrCat(
+      {"{\"body\":\"", log_entry.body, "\",\"integratedTime\":",
+       base::NumberToString(log_entry.integrated_time.ToTimeT()),
+       ",\"logID\":\"", log_entry.log_id,
+       "\",\"logIndex\":", base::NumberToString(log_entry.log_index), "}"});
   RekorSignatureBundle rekor_signature_bundle;
   rekor_signature_bundle.canonicalized =
       std::vector<uint8_t>(canonicalized.begin(), canonicalized.end());
   rekor_signature_bundle.signature =
       std::vector<uint8_t>(signature.begin(), signature.end());
   return rekor_signature_bundle;
+}
+
+bool VerifyRekorSignature(base::span<const uint8_t> log_entry,
+                          base::span<const uint8_t> rekor_public_key) {
+  std::optional<LogEntry> log_entry_result = GetRekorLogEntry(log_entry);
+  if (!log_entry_result.has_value()) {
+    return false;
+  }
+  std::optional<RekorSignatureBundle> rekor_signature_bundle =
+      GetRekorSignatureBundle(log_entry_result.value());
+  if (!rekor_signature_bundle.has_value()) {
+    return false;
+  }
+  return VerifySignatureRaw(rekor_signature_bundle->signature,
+                            rekor_signature_bundle->canonicalized,
+                            rekor_public_key)
+      .has_value();
 }
 
 }  // namespace device::enclave
