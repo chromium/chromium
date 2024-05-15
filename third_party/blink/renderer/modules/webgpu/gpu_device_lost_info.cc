@@ -17,11 +17,6 @@ GPUDeviceLostInfo::GPUDeviceLostInfo(const wgpu::DeviceLostReason reason,
     case wgpu::DeviceLostReason::Destroyed:
       reason_ = "destroyed";
       break;
-    default:
-      // this case handles the old Undefined enum case.
-      // TODO(crbug.com/dawn/2139): Remove this after removing enum from Dawn
-      reason_ = "unknown";
-      break;
   }
   message_ = message;
 }
