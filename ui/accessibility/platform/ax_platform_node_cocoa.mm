@@ -1272,10 +1272,6 @@ void CollectAncestorRoles(
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
-  // Drop effect.
-  if (_node->HasHtmlAttribute("aria-dropeffect"))
-    [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
-
   // Error messages.
   if (_node->HasIntListAttribute(
           ax::mojom::IntListAttribute::kErrormessageIds)) {
@@ -1603,10 +1599,6 @@ void CollectAncestorRoles(
     return base::SysUTF8ToNSString(id);
 
   return @"";
-}
-
-- (NSString*)AXDropEffects {
-  return nil;
 }
 
 - (id)AXEditableAncestor {
