@@ -16,7 +16,7 @@ depsscanner_address=$depsscanner_address
 max_concurrent_streams_per_conn=50
 max_concurrent_requests_per_conn=50
 min_grpc_connections=50
-cas_concurrency=1000
+cas_concurrency=200
 
 # Always compress artifacts
 compression_threshold=0
