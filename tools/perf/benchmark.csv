@@ -53,7 +53,6 @@ media.mobile,dalecurtis@chromium.org,Internals>Media,https://chromium.googlesour
 memory.desktop,lizeb@chromium.org,,,
 octane,"vahl@chromium.org, mlippautz@chromium.org",Blink>JavaScript,,all
 octane-nominorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,,all
-performance_browser_tests,jophba@chromium.org,Internals>Media>ScreenCapture,,
 power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
 rasterize_and_record_micro.top_25,"pdr@chromium.org, wangxianzhu@chromium.org",Internals>Compositing>Rasterization,https://bit.ly/rasterize-and-record-benchmark,
 rendering.desktop,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,gpu_rasterization,image_decoding,key_desktop_move,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,repaint_desktop,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,throughput_test,top_real_world_desktop,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"

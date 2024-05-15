@@ -316,10 +316,6 @@
         "name": "system_health.common_desktop/play:media:soundcloud:2018"
     },
     {
-        "duration": "165.0",
-        "name": "performance_browser_tests/_gtest_"
-    },
-    {
         "duration": "5.0",
         "name": "tracing_perftests/_gtest_"
     },

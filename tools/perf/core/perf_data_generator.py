@@ -1489,22 +1489,17 @@ GTEST_BENCHMARKS = {
     'tracing_perftests':
     BenchmarkMetadata(
         'eseckler@chromium.org, khokhlov@chromium.org, kraskevich@chromium.org',
-        'Speed>Tracing'
-    ),
+        'Speed>Tracing'),
     'load_library_perf_tests':
     BenchmarkMetadata('xhwang@chromium.org, jrummell@chromium.org',
                       'Internals>Media>Encrypted'),
-    'performance_browser_tests':
-    BenchmarkMetadata('jophba@chromium.org',
-                      'Internals>Media>ScreenCapture'),
     'views_perftests':
     BenchmarkMetadata('tapted@chromium.org', 'Internals>Views'),
     'components_perftests':
     BenchmarkMetadata('csharrison@chromium.org'),
     'dawn_perf_tests':
     BenchmarkMetadata(
-        'enga@chromium.org',
-        'Dawn',
+        'enga@chromium.org', 'Dawn',
         'https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md'
     ),
 }

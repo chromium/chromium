@@ -6078,12 +6078,7 @@ template("performance_test_suite_template_base") {
     }
 
     if (!is_android) {
-      if (is_chromeos_lacros) {
-        # Work around crbug/1299041
-        data_deps += [ "//testing:run_perf_test" ]
-      } else {
-        data_deps += [ "//chrome/test:performance_browser_tests" ]
-      }
+      data_deps += [ "//testing:run_perf_test" ]
     }
   }
 }

@@ -4402,9 +4402,5 @@
     {
         "duration": "7.0",
         "name": "views_perftests/_gtest_"
-    },
-    {
-        "duration": "190.0",
-        "name": "performance_browser_tests/_gtest_"
     }
 ]

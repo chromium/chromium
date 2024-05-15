@@ -13,7 +13,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'memory.desktop',
     'octane',
     'octane-nominorms',
-    'performance_browser_tests',
     'startup.mobile',
     'system_health.webview_startup',
     'tracing_perftests',

@@ -1,9 +1,5 @@
 [
     {
-        "duration": "190.0",
-        "name": "performance_browser_tests/_gtest_"
-    },
-    {
         "duration": "7.0",
         "name": "views_perftests/_gtest_"
     },
