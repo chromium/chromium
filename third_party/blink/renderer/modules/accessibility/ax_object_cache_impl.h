@@ -183,7 +183,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ListboxActiveIndexChanged(HTMLSelectElement*) override;
   void SetMenuListOptionsBounds(HTMLSelectElement*,
                                 const WTF::Vector<gfx::Rect>&) override;
-  const WTF::Vector<gfx::Rect>& GetOptionsBounds(
+  // Return the bounds for <option>s in an open <select>, or nullptr if they
+  // are not available.
+  const WTF::Vector<gfx::Rect>* GetOptionsBounds(
       const AXObject& ax_menu_list) const;
 
   void ImageLoaded(const LayoutObject*) override;

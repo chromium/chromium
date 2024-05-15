@@ -5040,16 +5040,15 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
     auto* select = To<HTMLOptionElement>(GetNode())->OwnerSelectElement();
     if (auto* ax_select = AXObjectCache().Get(select)) {
       if (ax_select->IsExpanded() == kExpandedExpanded) {
-        WTF::Vector<gfx::Rect> options_bounds =
-            AXObjectCache().GetOptionsBounds(*ax_select);
-        if (options_bounds.size()) {
+        auto* options_bounds = AXObjectCache().GetOptionsBounds(*ax_select);
+        if (options_bounds) {
           unsigned int index = static_cast<unsigned int>(
               To<HTMLOptionElement>(GetNode())->index());
-          DUMP_WILL_BE_CHECK(index < options_bounds.size())
+          DUMP_WILL_BE_CHECK(index < options_bounds->size())
               << "Out of bounds option index=" << index
-              << " should be less than " << options_bounds.size()
+              << " should be less than " << options_bounds->size()
               << "\n* Object = " << this;
-          out_bounds_in_container = gfx::RectF(options_bounds.at(index));
+          out_bounds_in_container = gfx::RectF(options_bounds->at(index));
           return;
         }
       }

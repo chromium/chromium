@@ -3758,7 +3758,7 @@ void AXObjectCacheImpl::SetMenuListOptionsBounds(
   current_menu_list_axid_ = select->GetDomNodeId();
 }
 
-const WTF::Vector<gfx::Rect>& AXObjectCacheImpl::GetOptionsBounds(
+const WTF::Vector<gfx::Rect>* AXObjectCacheImpl::GetOptionsBounds(
     const AXObject& ax_menu_list) const {
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     // Stylable select does not render in a special popup document and does
@@ -3767,18 +3767,19 @@ const WTF::Vector<gfx::Rect>& AXObjectCacheImpl::GetOptionsBounds(
     if (select->IsAppearanceBaseSelect()) {
       CHECK(!current_menu_list_axid_);
       CHECK(options_bounds_.empty());
-      return options_bounds_;
+      return nullptr;
     }
   }
 
-  // Android and Mac can use the OS widget and may not provide options bounds.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-  CHECK(current_menu_list_axid_);
+  if (!current_menu_list_axid_ ||
+      current_menu_list_axid_ != ax_menu_list.AXObjectID()) {
+    return nullptr;
+  }
+
   CHECK_EQ(ax_menu_list.IsExpanded(), kExpandedExpanded);
-  CHECK_EQ(ax_menu_list.AXObjectID(), current_menu_list_axid_);
   CHECK(options_bounds_.size());
-#endif
-  return options_bounds_;
+
+  return &options_bounds_;
 }
 
 void AXObjectCacheImpl::ImageLoaded(const LayoutObject* layout_object) {
