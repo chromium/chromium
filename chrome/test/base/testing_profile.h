@@ -286,7 +286,7 @@ class TestingProfile : public Profile {
       TestingFactories testing_factories,
       const std::string& profile_name,
       std::optional<bool> override_policy_connector_is_managed,
-      std::optional<OTRProfileID> otr_profile_id,
+      const OTRProfileID* otr_profile_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~TestingProfile() override;
@@ -321,14 +321,9 @@ class TestingProfile : public Profile {
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
-  // Do not override IsOffTheRecord to turn a normal profile into an incognito
-  // profile dynamically.
-  bool IsOffTheRecord() final;
-  bool IsOffTheRecord() const final;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -535,7 +530,6 @@ class TestingProfile : public Profile {
   std::string profile_name_{kDefaultProfileUserName};
 
   std::optional<bool> override_policy_connector_is_managed_;
-  std::optional<OTRProfileID> otr_profile_id_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>

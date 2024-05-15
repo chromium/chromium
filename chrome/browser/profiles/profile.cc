@@ -229,16 +229,26 @@ std::string Profile::OTRProfileID::Serialize() const {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-Profile::Profile() {
+Profile::Profile(const OTRProfileID* otr_profile_id)
+    : otr_profile_id_(otr_profile_id ? std::make_optional(*otr_profile_id)
+                                     : std::nullopt) {
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
 #endif  // DCHECK_IS_ON()
 
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
+
+#if BUILDFLAG(IS_ANDROID)
+  InitJavaObject();
+#endif
 }
 
 Profile::~Profile() {
+#if BUILDFLAG(IS_ANDROID)
+  DestroyJavaObject();
+#endif
+
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().erase(this);
@@ -440,7 +450,8 @@ bool Profile::IsMainProfilePath(base::FilePath profile_path) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool Profile::IsPrimaryOTRProfile() const {
-  return IsOffTheRecord() && GetOTRProfileID() == OTRProfileID::PrimaryID();
+  return otr_profile_id_.has_value() &&
+         otr_profile_id_.value() == OTRProfileID::PrimaryID();
 }
 
 bool Profile::CanUseDiskWhenOffTheRecord() {
@@ -538,6 +549,11 @@ Profile* Profile::GetPrimaryOTRProfile(bool create_if_needed) {
   return GetOffTheRecordProfile(OTRProfileID::PrimaryID(), create_if_needed);
 }
 
+const Profile::OTRProfileID& Profile::GetOTRProfileID() const {
+  DCHECK(IsOffTheRecord());
+  return otr_profile_id_.value();
+}
+
 bool Profile::HasPrimaryOTRProfile() {
   return HasOffTheRecordProfile(OTRProfileID::PrimaryID());
 }
@@ -559,6 +575,10 @@ class Profile::ChromeVariationsClient : public variations::VariationsClient {
  private:
   raw_ptr<Profile> profile_;
 };
+
+bool Profile::IsOffTheRecord() {
+  return otr_profile_id_.has_value();
+}
 
 variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)

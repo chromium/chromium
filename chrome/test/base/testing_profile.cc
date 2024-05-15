@@ -183,7 +183,7 @@ TestingProfile::TestingProfile(const base::FilePath& path)
     : TestingProfile(path, nullptr) {}
 
 TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
-    : profile_path_(path), delegate_(delegate) {
+    : Profile(nullptr), profile_path_(path), delegate_(delegate) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized()) {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -228,9 +228,10 @@ TestingProfile::TestingProfile(
     TestingFactories testing_factories,
     const std::string& profile_name,
     std::optional<bool> override_policy_connector_is_managed,
-    std::optional<OTRProfileID> otr_profile_id,
+    const OTRProfileID* otr_profile_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : prefs_(std::move(prefs)),
+    : Profile(otr_profile_id),
+      prefs_(std::move(prefs)),
       original_profile_(parent),
       guest_session_(guest_session),
       allows_browser_windows_(allows_browser_windows),
@@ -247,7 +248,6 @@ TestingProfile::TestingProfile(
       profile_name_(profile_name),
       override_policy_connector_is_managed_(
           override_policy_connector_is_managed),
-      otr_profile_id_(otr_profile_id),
       policy_service_(std::move(policy_service)),
       url_loader_factory_(url_loader_factory) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -596,14 +596,6 @@ std::string TestingProfile::GetProfileUserName() const {
   return profile_name_;
 }
 
-bool TestingProfile::IsOffTheRecord() {
-  return original_profile_;
-}
-
-bool TestingProfile::IsOffTheRecord() const {
-  return original_profile_;
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool TestingProfile::IsMainProfile() const {
   return is_main_profile_;
@@ -614,11 +606,6 @@ void TestingProfile::SetIsMainProfile(bool is_main_profile) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-const Profile::OTRProfileID& TestingProfile::GetOTRProfileID() const {
-  DCHECK(IsOffTheRecord());
-  return *otr_profile_id_;
-}
 
 void TestingProfile::SetOffTheRecordProfile(
     std::unique_ptr<Profile> otr_profile) {
@@ -1166,8 +1153,7 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_, std::optional<OTRProfileID>(),
-      url_loader_factory_);
+      override_policy_connector_is_managed_, nullptr, url_loader_factory_);
 }
 
 TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
@@ -1190,8 +1176,8 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       std::move(user_cloud_policy_manager_), std::move(policy_service_),
       std::move(testing_factories_), profile_name_,
-      override_policy_connector_is_managed_,
-      std::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
+      override_policy_connector_is_managed_, &otr_profile_id,
+      url_loader_factory_);
 }
 
 TestingProfile* TestingProfile::Builder::BuildIncognito(

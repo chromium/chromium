@@ -6,14 +6,12 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 ProfileManagerAndroid::ProfileManagerAndroid(ProfileManager* manager) {
   profile_manager_observation_.Observe(manager);
@@ -22,9 +20,8 @@ ProfileManagerAndroid::ProfileManagerAndroid(ProfileManager* manager) {
 ProfileManagerAndroid::~ProfileManagerAndroid() = default;
 
 void ProfileManagerAndroid::OnProfileAdded(Profile* profile) {
-  Java_ProfileManager_onProfileAdded(
-      jni_zero::AttachCurrentThread(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+  Java_ProfileManager_onProfileAdded(jni_zero::AttachCurrentThread(),
+                                     profile->GetJavaObject());
 }
 
 void ProfileManagerAndroid::OnProfileMarkedForPermanentDeletion(
@@ -36,16 +33,9 @@ ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile) {
     NOTREACHED_IN_MIGRATION() << "Profile not found.";
-    return ScopedJavaLocalRef<jobject>();
+    return nullptr;
   }
-
-  ProfileAndroid* profile_android = ProfileAndroid::FromProfile(profile);
-  if (!profile_android) {
-    NOTREACHED_IN_MIGRATION() << "ProfileAndroid not found.";
-    return ScopedJavaLocalRef<jobject>();
-  }
-
-  return profile_android->GetJavaObject();
+  return profile->GetJavaObject();
 }
 
 // static

@@ -184,7 +184,7 @@ class Profile : public content::BrowserContext {
   // Key used to bind profile to the widget with which it is associated.
   static const char kProfileKey[];
 
-  Profile();
+  explicit Profile(const OTRProfileID* otr_profile_id);
   Profile(const Profile&) = delete;
   Profile& operator=(const Profile&) = delete;
   ~Profile() override;
@@ -223,11 +223,11 @@ class Profile : public content::BrowserContext {
   // Similar to GetBaseName(), but returns a string for debugging.
   std::string GetDebugName() const;
 
-  // Return whether this context is off the record. Default is false.
+  // Return whether this context is off the record.
   // Note that for Chrome this covers BOTH Incognito mode and Guest sessions.
-  bool IsOffTheRecord() override = 0;
-  virtual bool IsOffTheRecord() const = 0;
-  virtual const OTRProfileID& GetOTRProfileID() const = 0;
+  bool IsOffTheRecord() final;
+  bool IsOffTheRecord() const { return otr_profile_id_.has_value(); }
+  const OTRProfileID& GetOTRProfileID() const;
 
   variations::VariationsClient* GetVariationsClient() override;
 
@@ -515,6 +515,12 @@ class Profile : public content::BrowserContext {
     return instant_service_;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(agrieve): Delete this no-op.
+  static Profile* FromProfile(Profile* profile) { return profile; }
+  static Profile* FromProfileAndroid(const jni_zero::JavaRef<jobject>& obj);
+  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+#endif  // BUILDFLAG(IS_ANDROID)
  protected:
   // Creates an OffTheRecordProfile which points to this Profile.
   static std::unique_ptr<Profile> CreateOffTheRecordProfile(
@@ -531,6 +537,9 @@ class Profile : public content::BrowserContext {
 
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
+
+ protected:
+  const std::optional<OTRProfileID> otr_profile_id_;
 
  private:
   bool restored_last_session_ = false;
@@ -561,6 +570,12 @@ class Profile : public content::BrowserContext {
   // match that of Profile itself.
   std::unique_ptr<variations::VariationsClient> chrome_variations_client_;
 
+#if BUILDFLAG(IS_ANDROID)
+  void InitJavaObject();
+  void DestroyJavaObject();
+
+  jni_zero::ScopedJavaGlobalRef<jobject> j_obj_;
+#endif
   base::WeakPtrFactory<Profile> weak_factory_{this};
 };
 

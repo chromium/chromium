@@ -95,12 +95,9 @@ class OffTheRecordProfileImpl : public Profile {
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
-  bool IsOffTheRecord() override;
-  bool IsOffTheRecord() const override;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -149,8 +146,6 @@ class OffTheRecordProfileImpl : public Profile {
   raw_ptr<Profile> profile_;
   // Prevent |profile_| from being destroyed first.
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-
-  const OTRProfileID otr_profile_id_;
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 

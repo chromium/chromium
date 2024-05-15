@@ -61,11 +61,7 @@ public class CookiesFetcher {
 
     /** Asynchronously fetches cookies from the incognito profile and saves them to a file. */
     public static void persistCookies() {
-        try {
-            CookiesFetcherJni.get().persistCookies();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
+        CookiesFetcherJni.get().persistCookies();
     }
 
     /**
@@ -74,15 +70,10 @@ public class CookiesFetcher {
      * cookies.
      */
     public static void restoreCookies() {
-        try {
-            if (deleteCookiesIfNecessary()) return;
-            restoreCookiesInternal();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
+        if (!ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
+            scheduleDeleteCookies();
+            return;
         }
-    }
-
-    private static void restoreCookiesInternal() {
         new AsyncTask<List<CanonicalCookie>>() {
             @Override
             protected List<CanonicalCookie> doInBackground() {
@@ -104,17 +95,12 @@ public class CookiesFetcher {
 
                     // The Cookie File should not be restored again. It'll be overwritten
                     // on the next onPause.
-                    scheduleDeleteCookiesFile();
-
-                } catch (IOException e) {
-                    Log.w(TAG, "IOException during Cookie Restore", e);
+                    scheduleDeleteCookies();
                 } catch (Throwable t) {
                     Log.w(TAG, "Error restoring cookies.", t);
                 } finally {
                     try {
                         if (in != null) in.close();
-                    } catch (IOException e) {
-                        Log.w(TAG, "IOException during Cooke Restore");
                     } catch (Throwable t) {
                         Log.w(TAG, "Error restoring cookies.", t);
                     }
@@ -149,24 +135,8 @@ public class CookiesFetcher {
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    /**
-     * Ensure the incognito cookies are deleted when the incognito profile is gone.
-     *
-     * @return Whether or not the cookies were deleted.
-     */
-    public static boolean deleteCookiesIfNecessary() {
-        try {
-            if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) return false;
-            scheduleDeleteCookiesFile();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
     /** Delete the cookies file. Called when we detect that all incognito tabs have been closed. */
-    private static void scheduleDeleteCookiesFile() {
+    public static void scheduleDeleteCookies() {
         new BackgroundOnlyAsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
