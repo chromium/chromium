@@ -21,6 +21,8 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputConnectionWrapper;
 import android.view.inputmethod.InputContentInfo;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -43,7 +45,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     private static final Pattern NON_COMPOSITIONAL_TEXT_PATTERN =
             Pattern.compile(
                     "[\\p{script=latin}\\p{script=cyrillic}\\p{script=greek}\\p{script=hebrew}\\p{Punct}"
-                            + " 0-9]*");
+                        + " 0-9]*");
 
     private final AutocompleteEditTextModelBase.Delegate mDelegate;
 
@@ -365,16 +367,20 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
     }
 
     @Override
-    public void setAutocompleteText(CharSequence userText, CharSequence inlineAutocompleteText) {
+    public void setAutocompleteText(
+            @NonNull CharSequence userText, @Nullable CharSequence inlineAutocompleteText) {
         // Note: this is invoked when the Autocomplete text is supplied by the Autocomplete
         // subsystem. These changes should be ignored for Autocomplete, specifically should not
         // be sent back to the Autocomplete subsystem to trigger suggestions fetch.
         setIgnoreTextChangeFromAutocomplete(true);
-        setAutocompleteTextInternal(userText.toString(), inlineAutocompleteText.toString());
+        setAutocompleteTextInternal(
+                userText.toString(),
+                inlineAutocompleteText != null ? inlineAutocompleteText.toString() : null);
         setIgnoreTextChangeFromAutocomplete(false);
     }
 
-    private void setAutocompleteTextInternal(String userText, String autocompleteText) {
+    private void setAutocompleteTextInternal(
+            @NonNull String userText, @Nullable String autocompleteText) {
         if (DEBUG) Log.i(TAG, "setAutocompleteText: %s[%s]", userText, autocompleteText);
         mPreviouslySetState.set(userText, autocompleteText, userText.length(), userText.length());
         // TODO(changwan): avoid any unnecessary removal and addition of autocomplete text when it
@@ -484,15 +490,19 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
             int sel = state.getSelStart();
 
             if (mSpan == null) mSpan = new BackgroundColorSpan(mDelegate.getHighlightColor());
-            SpannableString spanString = new SpannableString(state.getAutocompleteText());
-            // The flag here helps make sure that span does not get spill to other part of the text.
-            spanString.setSpan(
-                    mSpan,
-                    0,
-                    state.getAutocompleteText().length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             Editable editable = mDelegate.getEditableText();
-            editable.append(spanString);
+
+            if (state.hasAutocompleteText()) {
+                SpannableString spanString = new SpannableString(state.getAutocompleteText());
+                // The flag here helps make sure that span does not get spill to other part of the
+                // text.
+                spanString.setSpan(
+                        mSpan,
+                        0,
+                        state.getAutocompleteText().length(),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                editable.append(spanString);
+            }
 
             // Keep the original selection before adding spannable string.
             Selection.setSelection(editable, sel, sel);

@@ -101,4 +101,12 @@ public class AutocompleteStateUnitTest {
                 false,
                 "a");
     }
+
+    @Test
+    public void testNullAutocompleteText() {
+        AutocompleteState autocompleteState = new AutocompleteState("abc", null, 3, 3);
+        assertEquals("abc", autocompleteState.getUserText());
+        assertEquals("", autocompleteState.getAutocompleteText());
+        assertEquals("abc", autocompleteState.getText());
+    }
 }

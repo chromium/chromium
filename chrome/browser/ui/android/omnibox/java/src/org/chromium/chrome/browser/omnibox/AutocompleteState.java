@@ -6,14 +6,17 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
 /** A state to keep track of EditText and autocomplete. */
 class AutocompleteState {
-    private String mUserText;
-    private String mAutocompleteText;
+    @NonNull private String mUserText;
+    // TODO(gangwu) : make to to be Optional<>
+    @NonNull private String mAutocompleteText;
     private int mSelStart;
     private int mSelEnd;
 
@@ -21,13 +24,15 @@ class AutocompleteState {
         copyFrom(a);
     }
 
-    public AutocompleteState(String userText, String autocompleteText, int selStart, int selEnd) {
+    public AutocompleteState(
+            @NonNull String userText, @Nullable String autocompleteText, int selStart, int selEnd) {
         set(userText, autocompleteText, selStart, selEnd);
     }
 
-    public void set(String userText, String autocompleteText, int selStart, int selEnd) {
+    public void set(
+            @NonNull String userText, @Nullable String autocompleteText, int selStart, int selEnd) {
         mUserText = userText;
-        mAutocompleteText = autocompleteText;
+        mAutocompleteText = autocompleteText == null ? "" : autocompleteText;
         mSelStart = selStart;
         mSelEnd = selEnd;
     }
@@ -36,12 +41,14 @@ class AutocompleteState {
         set(a.mUserText, a.mAutocompleteText, a.mSelStart, a.mSelEnd);
     }
 
+    @NonNull
     public String getUserText() {
         return mUserText;
     }
 
+    @NonNull
     public String getAutocompleteText() {
-        return mAutocompleteText;
+        return mAutocompleteText != null ? mAutocompleteText : "";
     }
 
     public boolean hasAutocompleteText() {
@@ -51,8 +58,9 @@ class AutocompleteState {
     /**
      * @return The whole text including autocomplete text.
      */
+    @NonNull
     public String getText() {
-        return mUserText + mAutocompleteText;
+        return mUserText + getAutocompleteText();
     }
 
     public int getSelStart() {

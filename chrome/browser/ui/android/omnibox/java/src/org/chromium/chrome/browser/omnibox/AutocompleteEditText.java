@@ -17,6 +17,7 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -199,7 +200,8 @@ public class AutocompleteEditText extends VerticallyFixedEditText
      * @param userText user The text entered by the user.
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
      */
-    public void setAutocompleteText(CharSequence userText, CharSequence inlineAutocompleteText) {
+    public void setAutocompleteText(
+            @NonNull CharSequence userText, @Nullable CharSequence inlineAutocompleteText) {
         boolean emptyAutocomplete = TextUtils.isEmpty(inlineAutocompleteText);
         if (!emptyAutocomplete) mDisableTextScrollingFromAutocomplete = true;
         if (mModel != null) mModel.setAutocompleteText(userText, inlineAutocompleteText);

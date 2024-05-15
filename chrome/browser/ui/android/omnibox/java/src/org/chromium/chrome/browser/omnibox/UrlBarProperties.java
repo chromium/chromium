@@ -87,7 +87,7 @@ class UrlBarProperties {
                 @Nullable String autocompleteText,
                 @Nullable String additionalText) {
             this.userText = userText;
-            this.autocompleteText = autocompleteText != null ? autocompleteText : "";
+            this.autocompleteText = autocompleteText;
             this.additionalText = additionalText;
         }
 
