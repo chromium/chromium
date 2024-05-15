@@ -958,6 +958,10 @@ const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 const char kOobeShowAccessibilityButtonOnMarketingOptInForTesting[] =
     "oobe-show-accessibility-button-on-marketing-opt-in-for-testing";
 
+// Skips new user check in the personalized recommend apps screen for testing.
+const char kOobeSkipNewUserCheckForTesting[] =
+    "oobe-skip-new-user-check-for-testing";
+
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
@@ -1207,6 +1211,11 @@ bool IsSigninFrameClientCertsEnabled() {
 bool ShouldTetherHostScansIgnoreWiredConnections() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kTetherHostScansIgnoreWiredConnections);
+}
+
+bool ShouldSkipNewUserCheckForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeSkipNewUserCheckForTesting);
 }
 
 bool ShouldSkipOobePostLogin() {

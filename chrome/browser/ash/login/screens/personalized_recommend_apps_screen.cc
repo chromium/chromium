@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 
+#include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -68,9 +69,16 @@ bool PersonalizedRecommendAppsScreen::MaybeSkip(WizardContext& context) {
     return true;
   }
 
-  // Only show screen for new ChromeOS user.
+  // This screen is currently shown only to the new-to-ChromeOS users. To
+  // understand which user is actually a new one we use a synced preference
+  // `kOobeMarketingOptInScreenFinished` which is set only once for each user
+  // in the end of the OOBE flow.
+  // This logic might be replaced in the future by checking a list of potential
+  // synced apps for the user, but at this moment this preference check is
+  // sufficient for our needs.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  if (prefs->GetBoolean(prefs::kOobeMarketingOptInScreenFinished)) {
+  if (prefs->GetBoolean(prefs::kOobeMarketingOptInScreenFinished) &&
+      !ash::switches::ShouldSkipNewUserCheckForTesting()) {
     return true;
   }
 
