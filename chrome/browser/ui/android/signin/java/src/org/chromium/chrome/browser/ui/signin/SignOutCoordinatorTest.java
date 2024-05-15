@@ -173,7 +173,6 @@ public class SignOutCoordinatorTest {
         doAnswer(
                         args -> {
                             SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
-                            signOutCallback.preWipeData();
                             signOutCallback.signOutComplete();
                             return null;
                         })

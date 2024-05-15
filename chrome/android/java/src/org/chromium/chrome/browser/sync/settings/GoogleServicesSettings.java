@@ -19,6 +19,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -187,9 +188,9 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
-            boolean shouldShowSignOutDialog =
-                    identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
-            if (!shouldShowSignOutDialog) {
+            if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                    && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
                 // Don't show signout dialog if there's no sync consent, as it never wipes the data.
                 IdentityServicesProvider.get()
                         .getSigninManager(getProfile())
@@ -209,8 +210,8 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                         mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
                         updatePreferences();
                     });
-            // Don't change the preference state yet, it will be updated by SignOutDialogCoordinator
-            // if the user actually confirms the sign-out.
+            // Don't change the preference state yet, it will be updated by SignOutCoordinator if
+            // the user actually confirms the sign-out.
             return false;
         } else if (PREF_SEARCH_SUGGESTIONS.equals(key)) {
             mPrefService.setBoolean(Pref.SEARCH_SUGGEST_ENABLED, (boolean) newValue);

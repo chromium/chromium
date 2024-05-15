@@ -207,26 +207,24 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
-        SigninManager.SignOutCallback signOutCallback =
-                new SigninManager.SignOutCallback() {
-                    @Override
-                    public void preWipeData() {
-                        snackbarManager.showSnackbar(
-                                Snackbar.make(
-                                                context.getString(
-                                                        R.string.sign_out_snackbar_message),
-                                                /* controller= */ null,
-                                                Snackbar.TYPE_ACTION,
-                                                Snackbar.UMA_SIGN_OUT)
-                                        .setSingleLine(false));
-                    }
-
-                    @Override
-                    public void signOutComplete() {
-                        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, onSignOut);
-                    }
-                };
-        signOut(signinManager, signOutReason, signOutCallback);
+        signOut(
+                signinManager,
+                signOutReason,
+                () -> {
+                    PostTask.runOrPostTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                snackbarManager.showSnackbar(
+                                        Snackbar.make(
+                                                        context.getString(
+                                                                R.string.sign_out_snackbar_message),
+                                                        /* controller= */ null,
+                                                        Snackbar.TYPE_ACTION,
+                                                        Snackbar.UMA_SIGN_OUT)
+                                                .setSingleLine(false));
+                                onSignOut.run();
+                            });
+                });
     }
 
     private static void signOut(
