@@ -141,15 +141,22 @@ class ProfileImpl;
 class ScopedAllowBlockingForProfile;
 class StartupTabProviderImpl;
 class WebEngineBrowserMainParts;
+struct StartupProfilePathInfo;
 
 namespace base {
 class Environment;
 class File;
 class FilePath;
+class CommandLine;
 namespace sequence_manager::internal {
 class WorkTracker;
 }  // namespace sequence_manager::internal
 }  // namespace base
+
+StartupProfilePathInfo GetStartupProfilePath(
+    const base::FilePath& cur_dir,
+    const base::CommandLine& command_line,
+    bool ignore_profile_picker);
 
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
                                           const base::FilePath&,
@@ -667,6 +674,12 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
                                                      const base::FilePath&,
                                                      const base::FilePath&);
   friend Profile* ::GetLastProfileMac();  // http://crbug.com/1176734
+  // Note: This function return syntax is required so the "::" doesn't get
+  // mis-parsed. See https://godbolt.org/z/KGhnPxfc8 for the issue.
+  friend auto ::GetStartupProfilePath(const base::FilePath& cur_dir,
+                                      const base::CommandLine& command_line,
+                                      bool ignore_profile_picker)
+      -> StartupProfilePathInfo;
   friend bool ::HasWaylandDisplay(
       base::Environment* env);  // http://crbug.com/1246928
   friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
