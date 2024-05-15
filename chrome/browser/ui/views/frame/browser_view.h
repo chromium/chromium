@@ -948,13 +948,10 @@ class BrowserView : public BrowserWindow,
   // so we
   // ask the window to change its fullscreen node_data, then when we get
   // notification that it succeeded this method is invoked.
-  // If |url| is not empty, it is the URL of the page that requested fullscreen
-  // (via the fullscreen JS API).
   // If the Window Placement experiment is enabled, fullscreen may be requested
   // on a particular display. In that case, |display_id| is the display's id;
   // otherwise, display::kInvalidDisplayId indicates no display is specified.
   void ProcessFullscreen(bool fullscreen,
-                         const GURL& url,
                          int64_t display_id);
 
   // Request the underlying platform to make the window fullscreen.
@@ -962,11 +959,6 @@ class BrowserView : public BrowserWindow,
 
   void SynchronizeRenderWidgetHostVisualPropertiesForMainFrame();
   void NotifyWidgetSizeConstraintsChanged();
-
-  // Returns whether immmersive fullscreen should replace fullscreen. This
-  // should only occur for "browser-fullscreen" for tabbed-typed windows (not
-  // for tab-fullscreen and not for app/popup type windows).
-  bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) const;
 
   // Copy the accelerator table from the app resources into something we can
   // use.
