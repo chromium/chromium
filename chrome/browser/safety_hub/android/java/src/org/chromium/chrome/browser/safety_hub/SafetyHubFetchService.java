@@ -10,6 +10,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -33,21 +34,22 @@ public class SafetyHubFetchService extends NativeBackgroundTask {
     /** See {@link ChromeActivitySessionTracker#onForegroundSessionStart()}. */
     public static void onForegroundSessionStart() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB)) {
-            schedulePeriodicFetchJob();
+            scheduleFetchJobAfterDelay(0);
         } else {
-            cancelPeriodicFetchJob();
+            cancelFetchJob();
         }
     }
 
-    /** Schedules the fetch job to run periodically at the given interval. */
-    private static void schedulePeriodicFetchJob() {
-        TaskInfo.TimingInfo periodicTimingInfo =
-                TaskInfo.PeriodicInfo.create()
-                        .setIntervalMs(TimeUnit.DAYS.toMillis(SAFETY_HUB_JOB_INTERVAL_IN_DAYS))
+    /** Schedules the fetch job to run after the given delay if it doesn't already exist. */
+    private static void scheduleFetchJobAfterDelay(long delayMs) {
+        TaskInfo.TimingInfo oneOffTimingInfo =
+                TaskInfo.OneOffInfo.create()
+                        .setWindowStartTimeMs(delayMs)
+                        .setWindowEndTimeMs(delayMs)
                         .build();
 
         TaskInfo taskInfo =
-                TaskInfo.createTask(TaskIds.SAFETY_HUB_JOB_ID, periodicTimingInfo)
+                TaskInfo.createTask(TaskIds.SAFETY_HUB_JOB_ID, oneOffTimingInfo)
                         .setUpdateCurrent(false)
                         .setIsPersisted(true)
                         .build();
@@ -56,9 +58,33 @@ public class SafetyHubFetchService extends NativeBackgroundTask {
                 .schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
-    private static void cancelPeriodicFetchJob() {
+    private static void cancelFetchJob() {
         BackgroundTaskSchedulerFactory.getScheduler()
                 .cancel(ContextUtils.getApplicationContext(), TaskIds.SAFETY_HUB_JOB_ID);
+    }
+
+    /** Schedules the next fetch job to run after a delay. */
+    private void scheduleNextFetchJob() {
+        long nextFetchDelayMs = TimeUnit.DAYS.toMillis(SAFETY_HUB_JOB_INTERVAL_IN_DAYS);
+
+        // Cancel existing job if it wasn't already stopped.
+        cancelFetchJob();
+        scheduleFetchJobAfterDelay(nextFetchDelayMs);
+    }
+
+    private static boolean checkConditions() {
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        String accountEmail =
+                (syncService != null)
+                        ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
+                        : null;
+
+        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                && PasswordManagerUtilBridge.areMinUpmRequirementsMet()
+                && passwordManagerHelper.canUseUpm()
+                && accountEmail != null;
     }
 
     @Override
@@ -87,21 +113,20 @@ public class SafetyHubFetchService extends NativeBackgroundTask {
     }
 
     private void fetchBreachedCredentialsCount(final TaskFinishedCallback callback) {
+        if (!checkConditions()) {
+            // TODO(324562205): Listen to sync status changes and schedule/cancel tasks accordingly,
+            // instead of rescheduling when conditions are not met.
+            callback.taskFinished(/* needsReschedule= */ true);
+            return;
+        }
+
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         PrefService prefService = UserPrefs.get(profile);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        String accountEmail =
-                (syncService != null)
-                        ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
-                        : null;
 
-        if (!PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                || !passwordManagerHelper.canUseUpm()
-                || accountEmail == null) {
-            callback.taskFinished(/* needsReschedule= */ true);
-            return;
-        }
+        assert syncService != null;
+        String accountEmail = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
 
         passwordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
@@ -111,6 +136,7 @@ public class SafetyHubFetchService extends NativeBackgroundTask {
                     // account or clear the pref when the user signs out.
                     prefService.setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
                     callback.taskFinished(/* needsReschedule= */ false);
+                    scheduleNextFetchJob();
                 },
                 error -> {
                     callback.taskFinished(/* needsReschedule= */ true);

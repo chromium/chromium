@@ -93,7 +93,6 @@ public class SafetyHubFetchServiceTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet()).thenReturn(true);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -119,6 +118,8 @@ public class SafetyHubFetchServiceTest {
     }
 
     private void setUPMStatus(boolean isUPMEnabled) {
+        when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet())
+                .thenReturn(isUPMEnabled);
         when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(isUPMEnabled);
     }
@@ -184,6 +185,22 @@ public class SafetyHubFetchServiceTest {
         verify(mPrefService, times(1))
                 .setInteger(Pref.BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
         verify(mTaskFinishedCallback, times(1)).taskFinished(eq(/* needsReschedule= */ false));
+
+        // Check previous job is cleaned up.
+        verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
+
+        // Check next job is scheduled after the specified period.
+        verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCaptor.capture());
+        TaskInfo taskInfo = mTaskInfoCaptor.getValue();
+        assertEquals(TaskIds.SAFETY_HUB_JOB_ID, taskInfo.getTaskId());
+        assertTrue(taskInfo.isPersisted());
+        assertFalse(taskInfo.shouldUpdateCurrent());
+        assertEquals(
+                ONE_DAY_IN_MILLISECONDS,
+                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowStartTimeMs());
+        assertEquals(
+                ONE_DAY_IN_MILLISECONDS,
+                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowEndTimeMs());
     }
 
     @Test
@@ -201,17 +218,15 @@ public class SafetyHubFetchServiceTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
-    public void onSessionStart_WithSafetyHubEnabled_SchedulesTask() {
+    public void onSessionStart_WithSafetyHubEnabled_SchedulesTaskImmediately() {
         SafetyHubFetchService.onForegroundSessionStart();
         verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCaptor.capture());
         TaskInfo taskInfo = mTaskInfoCaptor.getValue();
         assertEquals(TaskIds.SAFETY_HUB_JOB_ID, taskInfo.getTaskId());
-        assertTrue(taskInfo.isPeriodic());
         assertTrue(taskInfo.isPersisted());
         assertFalse(taskInfo.shouldUpdateCurrent());
-        assertEquals(
-                ONE_DAY_IN_MILLISECONDS,
-                ((TaskInfo.PeriodicInfo) taskInfo.getTimingInfo()).getIntervalMs());
+        assertEquals(0, ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowStartTimeMs());
+        assertEquals(0, ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowEndTimeMs());
     }
 
     @Test
