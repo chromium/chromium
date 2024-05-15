@@ -531,4 +531,13 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP" translateable="false" desc="The title of the menu item for renaming the product specification list.">
     Rename group
   </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_ADD_TO_NEW_GROUP" translateable="false" desc="The title of the menu item for adding all tabs in the product specification list to a new tab group.">
+    Add all tabs to new group
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_SEE_ALL" translateable="false" desc="The title of the menu item for viewing all product specification lists.">
+    See all product specification lists
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_DELETE" translateable="false" desc="The title of the menu item for deleting the product specification list.">
+    Delete product specification list
+  </message>
 </grit-part>

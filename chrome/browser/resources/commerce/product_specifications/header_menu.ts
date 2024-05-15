@@ -50,6 +50,30 @@ export class HeaderMenuElement extends PolymerElement {
       composed: true,
     }));
   }
+
+  private onAddToNewGroupClick_() {
+    this.close();
+    this.dispatchEvent(new CustomEvent('add-to-new-group-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onSeeAllClick_() {
+    this.close();
+    this.dispatchEvent(new CustomEvent('see-all-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private onDeleteClick_() {
+    this.close();
+    this.dispatchEvent(new CustomEvent('delete-click', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 }
 
 declare global {

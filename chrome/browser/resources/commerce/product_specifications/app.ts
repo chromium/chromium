@@ -190,8 +190,20 @@ export class ProductSpecificationsElement extends PolymerElement {
     return infos;
   }
 
+  private addToNewGroup_() {
+    // TODO(b/330345730): Plumb through mojom
+  }
+
+  private deleteSet_() {
+    // TODO(b/330345730): Plumb through mojom
+  }
+
   private updateSetName_(_: CustomEvent<{name: string}>) {
     // TODO(b/330345730): Plumb name update through mojom
+  }
+
+  private seeAllSets_() {
+    // TODO(b/330345730): Plumb through mojom
   }
 
   private onUrlAdd_(e: CustomEvent<{url: string}>) {

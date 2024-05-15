@@ -71,7 +71,10 @@
   }
 </style>
 <product-specifications-header id="header" subtitle="[[setName_]]"
-    on-name-change="updateSetName_">
+    on-add-to-new-group-click="addToNewGroup_"
+    on-delete-click="removeSet_"
+    on-name-change="updateSetName_"
+    on-see-all-click="seeAllSets_">
 </product-specifications-header>
 <div id="summaryContainer">
   <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">

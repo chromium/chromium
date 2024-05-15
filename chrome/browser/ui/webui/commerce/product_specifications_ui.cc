@@ -57,6 +57,8 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"addToNewGroup", IDS_PRODUCT_SPECIFICATIONS_ADD_TO_NEW_GROUP},
+      {"delete", IDS_PRODUCT_SPECIFICATIONS_DELETE},
       {"emptyMenu", IDS_PRODUCT_SPECIFICATIONS_EMPTY_SELECTION_MENU},
       {"emptyProductSelector",
        IDS_PRODUCT_SPECIFICATIONS_EMPTY_PRODUCT_SELECTOR},
@@ -67,6 +69,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"recentlyViewedTabs",
        IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
       {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
+      {"seeAll", IDS_PRODUCT_SPECIFICATIONS_SEE_ALL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
