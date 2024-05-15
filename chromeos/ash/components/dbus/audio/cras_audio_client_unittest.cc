@@ -1524,6 +1524,22 @@ TEST_F(CrasAudioClientTest, SetNoiseCancellationEnabled) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(CrasAudioClientTest, SetStyleTransferEnabled) {
+  const bool kStyleTransferOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(
+      cras::kSetStyleTransferEnabled,
+      base::BindRepeating(&ExpectBoolArgument, kStyleTransferOn),
+      response.get());
+  // Call method.
+  client()->SetStyleTransferEnabled(kStyleTransferOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(CrasAudioClientTest, SetHfpMicSrEnabled) {
   const bool kHfpMicSrOn = true;
   // Create response.

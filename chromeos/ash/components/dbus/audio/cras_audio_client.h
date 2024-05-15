@@ -185,6 +185,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetNoiseCancellationSupported(
       chromeos::DBusMethodCallback<bool> callback) = 0;
 
+  // Sets input style transfer state to |style_transfer_on| value.
+  virtual void SetStyleTransferEnabled(bool style_transfer_on) = 0;
+
+  // Gets if style transfer is supported.
+  virtual void GetStyleTransferSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
+
   // Sets the active output node to |node_id|.
   virtual void SetActiveOutputNode(uint64_t node_id) = 0;
 

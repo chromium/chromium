@@ -254,6 +254,24 @@ uint32_t FakeCrasAudioClient::GetNoiseCancellationEnabledCount() {
   return noise_cancellation_enabled_counter_;
 }
 
+void FakeCrasAudioClient::SetStyleTransferSupported(
+    bool style_transfer_supported) {
+  style_transfer_supported_ = style_transfer_supported;
+}
+
+void FakeCrasAudioClient::SetStyleTransferEnabled(bool style_transfer_on) {
+  style_transfer_enabled_ = style_transfer_on;
+}
+
+void FakeCrasAudioClient::GetStyleTransferSupported(
+    chromeos::DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(style_transfer_supported_);
+}
+
+bool FakeCrasAudioClient::GetStyleTransferEnabled() {
+  return style_transfer_enabled_;
+}
+
 void FakeCrasAudioClient::SetNumberOfNonChromeOutputStreams(int32_t streams) {
   number_non_chrome_output_streams_ = streams;
   for (auto& observer : observers_) {

@@ -377,6 +377,30 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetStyleTransferEnabled(bool style_transfer_on) override {
+    VLOG(1) << "cras_audio_client: Setting style transfer state: "
+            << style_transfer_on;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetStyleTransferEnabled);
+
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(style_transfer_on);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void GetStyleTransferSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting style transfer support.";
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kIsStyleTransferSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetStyleTransferSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetHfpMicSrEnabled(bool hfp_mic_sr_on) override {
     VLOG(1) << "cras_audio_client: Setting hfp_mic_sr state: " << hfp_mic_sr_on;
     dbus::MethodCall method_call(cras::kCrasControlInterface,
@@ -1208,6 +1232,26 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(is_noise_cancellation_supported);
     VLOG(1) << "cras_audio_client: Retrieved noise cancellation support: "
             << is_noise_cancellation_supported;
+  }
+
+  void OnGetStyleTransferSupported(chromeos::DBusMethodCallback<bool> callback,
+                                   dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling GetStyleTransferSupported";
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    bool is_style_transfer_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&is_style_transfer_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_style_transfer_supported);
+    VLOG(1) << "cras_audio_client: Retrieved style transfer support: "
+            << is_style_transfer_supported;
   }
 
   void OnGetHfpMicSrSupported(chromeos::DBusMethodCallback<bool> callback,
