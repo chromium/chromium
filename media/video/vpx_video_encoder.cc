@@ -10,6 +10,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -271,9 +272,8 @@ std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // Checked during Initialize().
+      NOTREACHED_NORETURN();  // Checked during Initialize().
   }
-
   return std::nullopt;
 }
 
@@ -415,7 +415,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       codec_config_.g_input_bit_depth = 10;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // Enforced via a profile check above.
+      NOTREACHED_NORETURN();  // Enforced via a profile check above.
   }
 
   auto status = SetUpVpxConfig(options, profile_, &codec_config_);
@@ -543,7 +543,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   bool key_frame = encode_options.key_frame;
   if (!frame) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+        EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
                       "No frame provided for encoding."));
     return;
   }
@@ -552,7 +552,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kSystemAPICallError,
                         "Convert GMB frame to MemoryMappedFrame failed."));
       return;
     }
@@ -560,9 +560,9 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
   if (!frame->IsMappable()) {
     std::move(done_cb).Run(
-        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
-                      "Unexpected frame format.")
-            .WithData("IsMappable", frame->IsMappable())
+        EncoderStatus(EncoderStatus::Codes::kInvalidInputFrame,
+                      "Frame is not mappable")
+            .WithData("storage type", frame->storage_type())
             .WithData("format", frame->format()));
     return;
   }
@@ -578,7 +578,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         options_.frame_size, frame->timestamp());
     if (!temp_frame) {
       std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+          EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError,
                         "Can't allocate a temporary frame for conversion"));
       return;
     }
@@ -586,9 +586,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     // If `frame->format()` is unsupported ConvertAndScale() will fail.
     auto convert_status = frame_converter_.ConvertAndScale(*frame, *temp_frame);
     if (!convert_status.is_ok()) {
-      std::move(done_cb).Run(
-          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
-              .AddCause(std::move(convert_status)));
+      std::move(done_cb).Run(std::move(convert_status));
       return;
     }
 
@@ -665,7 +663,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();  // Checked during Initialize().
+      NOTREACHED_NORETURN();  // Checked during Initialize().
   }
 
   // Use zero as a timestamp, so encoder will not use it for rate control.
