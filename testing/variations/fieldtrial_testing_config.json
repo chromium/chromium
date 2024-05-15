@@ -19709,7 +19709,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TabGroupPaneAndroid",
-                        "TabGroupSyncAndroid"
+                        "TabGroupSyncAndroid",
+                        "TabStripGroupCollapseAndroid"
                     ]
                 }
             ]
