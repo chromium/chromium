@@ -11,6 +11,7 @@
 
 namespace ash {
 
+class PickerAssetFetcher;
 class PickerItemView;
 class PickerSectionView;
 
@@ -19,7 +20,8 @@ class ASH_EXPORT PickerSectionListView : public views::View {
   METADATA_HEADER(PickerSectionListView, views::View)
 
  public:
-  explicit PickerSectionListView(int section_width);
+  explicit PickerSectionListView(int section_width,
+                                 PickerAssetFetcher* asset_fetcher);
   PickerSectionListView(const PickerSectionListView&) = delete;
   PickerSectionListView& operator=(const PickerSectionListView&) = delete;
   ~PickerSectionListView() override;
@@ -64,6 +66,9 @@ class ASH_EXPORT PickerSectionListView : public views::View {
 
   // Width of the sections in this view.
   int section_width_;
+
+  // `asset_fetcher` outlives `this`.
+  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
 };
 
 }  // namespace ash

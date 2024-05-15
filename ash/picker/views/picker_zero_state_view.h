@@ -25,6 +25,7 @@ class View;
 
 namespace ash {
 
+class PickerAssetFetcher;
 class PickerClipboardProvider;
 class PickerSearchResult;
 class PickerSectionListView;
@@ -39,7 +40,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
       PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
       bool show_suggested_results,
-      int picker_view_width);
+      int picker_view_width,
+      PickerAssetFetcher* asset_fetcher);
   PickerZeroStateView(const PickerZeroStateView&) = delete;
   PickerZeroStateView& operator=(const PickerZeroStateView&) = delete;
   ~PickerZeroStateView() override;

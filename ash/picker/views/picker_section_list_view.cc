@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "base/ranges/algorithm.h"
@@ -19,8 +20,9 @@
 
 namespace ash {
 
-PickerSectionListView::PickerSectionListView(int section_width)
-    : section_width_(section_width) {
+PickerSectionListView::PickerSectionListView(int section_width,
+                                             PickerAssetFetcher* asset_fetcher)
+    : section_width_(section_width), asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -103,12 +105,14 @@ PickerItemView* PickerSectionListView::GetItemRightOf(PickerItemView* item) {
 }
 
 PickerSectionView* PickerSectionListView::AddSection() {
-  return AddChildView(std::make_unique<PickerSectionView>(section_width_));
+  return AddChildView(
+      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_));
 }
 
 PickerSectionView* PickerSectionListView::AddSectionAt(size_t index) {
-  return AddChildViewAt(std::make_unique<PickerSectionView>(section_width_),
-                        index);
+  return AddChildViewAt(
+      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_),
+      index);
 }
 
 void PickerSectionListView::ClearSectionList() {

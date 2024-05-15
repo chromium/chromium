@@ -397,7 +397,8 @@ void PickerView::AddContentsViewWithSeparator(PickerLayoutType layout_type) {
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
           this, delegate_->GetAvailableCategories(),
-          delegate_->ShouldShowRecentResults(), kMaxSize.width()));
+          delegate_->ShouldShowRecentResults(), kMaxSize.width(),
+          delegate_->GetAssetFetcher()));
 
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
       this, kMaxSize.width(), delegate_->GetAssetFetcher()));

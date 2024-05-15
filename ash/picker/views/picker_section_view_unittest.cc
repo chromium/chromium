@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
@@ -15,6 +16,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -46,7 +48,8 @@ std::unique_ptr<PickerImageItemView> CreateGifItem(
 using PickerSectionViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   const std::u16string kSectionTitleText = u"Section";
   section_view.AddTitleLabel(kSectionTitleText);
@@ -56,7 +59,8 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
 }
 
 TEST_F(PickerSectionViewTest, AddsListItem) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -68,7 +72,8 @@ TEST_F(PickerSectionViewTest, AddsListItem) {
 }
 
 TEST_F(PickerSectionViewTest, AddsTwoListItems) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -83,7 +88,8 @@ TEST_F(PickerSectionViewTest, AddsTwoListItems) {
 }
 
 TEST_F(PickerSectionViewTest, AddsEmojiItem) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddEmojiItem(
       std::make_unique<PickerEmojiItemView>(base::DoNothing(), u"😊"));
@@ -95,7 +101,8 @@ TEST_F(PickerSectionViewTest, AddsEmojiItem) {
 }
 
 TEST_F(PickerSectionViewTest, AddsSymbolItem) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddSymbolItem(
       std::make_unique<PickerSymbolItemView>(base::DoNothing(), u"♬"));
@@ -107,7 +114,8 @@ TEST_F(PickerSectionViewTest, AddsSymbolItem) {
 }
 
 TEST_F(PickerSectionViewTest, AddsEmoticonItem) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddEmoticonItem(std::make_unique<PickerEmoticonItemView>(
       base::DoNothing(), u"¯\\_(ツ)_/¯"));
@@ -119,7 +127,8 @@ TEST_F(PickerSectionViewTest, AddsEmoticonItem) {
 }
 
 TEST_F(PickerSectionViewTest, AddsGifItem) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
@@ -130,7 +139,8 @@ TEST_F(PickerSectionViewTest, AddsGifItem) {
 }
 
 TEST_F(PickerSectionViewTest, EmojiItemsAndGifItems) {
-  PickerSectionView section_view(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
 
   section_view.AddEmojiItem(
       std::make_unique<PickerEmojiItemView>(base::DoNothing(), u"😊"));
@@ -141,6 +151,22 @@ TEST_F(PickerSectionViewTest, EmojiItemsAndGifItems) {
   ASSERT_THAT(items, SizeIs(2));
   EXPECT_TRUE(views::IsViewClass<PickerEmojiItemView>(items[0]));
   EXPECT_TRUE(views::IsViewClass<PickerImageItemView>(items[1]));
+}
+
+TEST_F(PickerSectionViewTest, AddsResults) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+
+  section_view.AddResult(PickerSearchResult::Text(u"Result"),
+                         base::DoNothing());
+
+  section_view.AddResult(PickerSearchResult::Emoji(u"😊"), base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(2));
+  EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
+  EXPECT_TRUE(views::IsViewClass<PickerEmojiItemView>(items[1]));
 }
 
 }  // namespace

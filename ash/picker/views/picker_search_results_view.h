@@ -88,9 +88,6 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
-  // `asset_fetcher` outlives `this`.
-  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
-
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
 

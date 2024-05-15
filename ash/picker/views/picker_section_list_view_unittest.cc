@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
@@ -30,7 +31,8 @@ constexpr int kDefaultSectionWidth = 320;
 using PickerSectionListViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSectionListViewTest, AddsSection) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section = section_list.AddSection();
 
@@ -38,7 +40,8 @@ TEST_F(PickerSectionListViewTest, AddsSection) {
 }
 
 TEST_F(PickerSectionListViewTest, ClearsSectionList) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   section_list.AddSection();
   section_list.ClearSectionList();
@@ -47,7 +50,8 @@ TEST_F(PickerSectionListViewTest, ClearsSectionList) {
 }
 
 TEST_F(PickerSectionListViewTest, GetsTopItem) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* top_item = section1->AddEmojiItem(
@@ -62,7 +66,8 @@ TEST_F(PickerSectionListViewTest, GetsTopItem) {
 }
 
 TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
@@ -75,13 +80,15 @@ TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
 }
 
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoTopItem) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   EXPECT_EQ(section_list.GetTopItem(), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsBottomItem) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddEmojiItem(
@@ -96,13 +103,15 @@ TEST_F(PickerSectionListViewTest, GetsBottomItem) {
 }
 
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoBottomItem) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   EXPECT_EQ(section_list.GetBottomItem(), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsItemAbove) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddEmojiItem(
@@ -119,14 +128,16 @@ TEST_F(PickerSectionListViewTest, GetsItemAbove) {
 }
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
   PickerEmojiItemView item_not_in_section_list(base::DoNothing(), u"😊");
 
   EXPECT_EQ(section_list.GetItemAbove(&item_not_in_section_list), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsItemBelow) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddEmojiItem(
@@ -143,14 +154,16 @@ TEST_F(PickerSectionListViewTest, GetsItemBelow) {
 }
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
   PickerEmojiItemView item_not_in_section_list(base::DoNothing(), u"😊");
 
   EXPECT_EQ(section_list.GetItemBelow(&item_not_in_section_list), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsItemLeftOf) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddEmojiItem(
@@ -167,14 +180,16 @@ TEST_F(PickerSectionListViewTest, GetsItemLeftOf) {
 }
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
   PickerEmojiItemView item_not_in_section_list(base::DoNothing(), u"😊");
 
   EXPECT_EQ(section_list.GetItemLeftOf(&item_not_in_section_list), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsItemRightOf) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddEmojiItem(
@@ -191,7 +206,8 @@ TEST_F(PickerSectionListViewTest, GetsItemRightOf) {
 }
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemRightOf) {
-  PickerSectionListView section_list(kDefaultSectionWidth);
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
   PickerEmojiItemView item_not_in_section_list(base::DoNothing(), u"😊");
 
   EXPECT_EQ(section_list.GetItemRightOf(&item_not_in_section_list), nullptr);

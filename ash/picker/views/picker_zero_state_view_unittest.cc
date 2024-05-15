@@ -9,6 +9,7 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
+#include "ash/picker/mock_picker_asset_fetcher.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
@@ -82,13 +83,17 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {
+ protected:
+  MockPickerAssetFetcher asset_fetcher_;
+
  private:
   AshColorProvider ash_color_provider_;
 };
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   MockZeroStateViewDelegate mock_delegate;
-  PickerZeroStateView view(&mock_delegate, kAllCategories, true, kPickerWidth);
+  PickerZeroStateView view(&mock_delegate, kAllCategories, true, kPickerWidth,
+                           &asset_fetcher_);
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kEditorWrite),
@@ -104,7 +109,7 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
       &mock_delegate, std::vector<PickerCategory>{PickerCategory::kExpressions},
-      false, kPickerWidth));
+      false, kPickerWidth, &asset_fetcher_));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kGeneral)));
@@ -145,7 +150,7 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   base::test::TestFuture<const PickerSearchResult&> future;
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories, true, kPickerWidth));
+      &mock_delegate, kAllCategories, true, kPickerWidth, &asset_fetcher_));
   widget->Show();
 
   EXPECT_CALL(
@@ -182,7 +187,7 @@ TEST_F(PickerZeroStateViewTest, HidesRecentSectionWhenNoItemsToDisplay) {
   widget->SetFullscreen(true);
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories, true, kPickerWidth));
+      &mock_delegate, kAllCategories, true, kPickerWidth, &asset_fetcher_));
   widget->Show();
 
   EXPECT_THAT(view->RecentSectionForTesting(), IsNull());
@@ -193,7 +198,7 @@ TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
   widget->SetFullscreen(true);
   MockZeroStateViewDelegate mock_delegate;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      &mock_delegate, kAllCategories, false, kPickerWidth));
+      &mock_delegate, kAllCategories, false, kPickerWidth, &asset_fetcher_));
   widget->Show();
 
   EXPECT_THAT(view->RecentSectionForTesting(), IsNull());
@@ -206,7 +211,7 @@ TEST_F(PickerZeroStateViewTest,
       .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
                        callback) { std::move(callback).Run({}); });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           false, kPickerWidth);
+                           false, kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.section_views_for_testing(),
@@ -234,7 +239,7 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
         });
       });
   PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
-                           false, kPickerWidth);
+                           false, kPickerWidth, &asset_fetcher_);
 
   EXPECT_THAT(
       view.section_views_for_testing(),

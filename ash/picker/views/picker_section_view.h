@@ -22,6 +22,7 @@ class Label;
 
 namespace ash {
 
+class PickerAssetFetcher;
 class PickerEmojiItemView;
 class PickerEmoticonItemView;
 class PickerImageItemGridView;
@@ -29,6 +30,7 @@ class PickerImageItemView;
 class PickerItemView;
 class PickerListItemContainerView;
 class PickerListItemView;
+class PickerSearchResult;
 class PickerSmallItemGridView;
 class PickerSymbolItemView;
 class PickerTraversableItemContainer;
@@ -38,7 +40,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
   METADATA_HEADER(PickerSectionView, views::View)
 
  public:
-  explicit PickerSectionView(int section_width);
+  using SelectResultCallback = base::RepeatingClosure;
+
+  explicit PickerSectionView(int section_width,
+                             PickerAssetFetcher* asset_fetcher);
   PickerSectionView(const PickerSectionView&) = delete;
   PickerSectionView& operator=(const PickerSectionView&) = delete;
   ~PickerSectionView() override;
@@ -65,6 +70,10 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // columns.
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
+
+  // Creates an item based on `result` and adds it to the section view.
+  void AddResult(const PickerSearchResult& result,
+                 SelectResultCallback select_result_callback);
 
   // Returns the item to highlight to when navigating to this section from the
   // top, or nullptr if the section is empty.
@@ -135,6 +144,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // The views for each result item.
   std::vector<raw_ptr<PickerItemView>> item_views_;
+
+  // `asset_fetcher` outlives `this`.
+  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
 };
 
 }  // namespace ash

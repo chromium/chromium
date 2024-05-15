@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
@@ -95,13 +96,14 @@ PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
     base::span<const PickerCategory> available_categories,
     bool show_recent_results,
-    int picker_view_width)
+    int picker_view_width,
+    PickerAssetFetcher* asset_fetcher)
     : delegate_(delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  section_list_view_ =
-      AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
+  section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
+      picker_view_width, asset_fetcher));
 
   if (show_recent_results) {
     clipboard_provider_ = std::make_unique<PickerClipboardProvider>();
