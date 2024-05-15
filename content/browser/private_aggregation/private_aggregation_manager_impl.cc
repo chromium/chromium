@@ -219,14 +219,6 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions,
     PrivateAggregationBudgetKey::Api api_for_budgeting) {
-  // Temporary feature until change is approved.
-  // TODO(alexmt): Remove once approved.
-  if (contributions.empty() &&
-      !base::FeatureList::IsEnabled(
-          kPrivateAggregationApiContextIdEnhancements)) {
-    return;
-  }
-
   AggregationService* aggregation_service = GetAggregationService();
   if (!aggregation_service) {
     return;

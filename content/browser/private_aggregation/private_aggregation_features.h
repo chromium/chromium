@@ -19,13 +19,6 @@ namespace content {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiDebugModeRequires3pcEligibility);
 
-// Enables two bundled Private Aggregation API enhancements relating to context
-// IDs. Specifically:
-// - Whether to send a null report if a context ID is specified.
-// - Whether to reduce the delay for reports if a context ID is specified.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrivateAggregationApiContextIdEnhancements);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_FEATURES_H_

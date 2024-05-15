@@ -546,10 +546,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   base::Time report_issued_time = now + remaining_timeout;
 
   bool should_not_delay_this_report =
-      should_not_delay_reports_ ||
-      (base::FeatureList::IsEnabled(
-           kPrivateAggregationApiContextIdEnhancements) &&
-       receiver_context.timeout_enabled);
+      should_not_delay_reports_ || receiver_context.timeout_enabled;
 
   ReportRequestGenerator report_request_generator = base::BindOnce(
       GenerateReportRequest, std::move(timeout_or_disconnect_timer),

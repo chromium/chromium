@@ -85,11 +85,8 @@ class PrivateAggregationHostTest : public testing::Test {
   PrivateAggregationHostTest() = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {kPrivateAggregationApiDebugModeRequires3pcEligibility,
-         kPrivateAggregationApiContextIdEnhancements},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivateAggregationApiDebugModeRequires3pcEligibility);
     host_ = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_received=*/mock_callback_.Get(),
         /*browser_context=*/&test_browser_context_);
