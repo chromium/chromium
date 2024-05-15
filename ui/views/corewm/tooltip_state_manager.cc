@@ -128,6 +128,11 @@ void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
   if (!tooltip_parent_window_)
     return;
 
+  if (!tooltip_parent_window_->GetRootWindow()) {
+    // This can happen if the window is in the process of closing.
+    return;
+  }
+
   tooltip_->Update(tooltip_parent_window_, trimmed_text, position_,
                    tooltip_trigger_);
   tooltip_->Show();

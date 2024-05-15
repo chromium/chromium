@@ -220,6 +220,7 @@ void TooltipAura::Update(aura::Window* window,
   gfx::Point anchor_point = position;
   aura::client::ScreenPositionClient* screen_position_client =
       aura::client::GetScreenPositionClient(window->GetRootWindow());
+  CHECK(screen_position_client);
   screen_position_client->ConvertPointToScreen(window, &anchor_point);
 
   new_tooltip_view->SetMaxWidth(GetMaxWidth(anchor_point));
