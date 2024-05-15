@@ -4413,6 +4413,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisconnectWiFiOnEthernetConnectedName,
      flag_descriptions::kDisconnectWiFiOnEthernetConnectedDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisconnectWiFiOnEthernetConnected)},
+    {"lacros-extension-printing",
+     flag_descriptions::kLacrosExtensionPrintingName,
+     flag_descriptions::kLacrosExtensionPrintingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kLacrosExtensionPrinting)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1272,6 +1272,9 @@ extern const char kJourneysZeroStateFilteringDescription[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 
+extern const char kLacrosExtensionPrintingName[];
+extern const char kLacrosExtensionPrintingDescription[];
+
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 
