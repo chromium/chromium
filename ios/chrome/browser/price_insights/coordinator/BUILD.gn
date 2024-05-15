@@ -10,10 +10,13 @@ source_set("coordinator") {
 
   deps = [
     ":delegates",
+    "//components/commerce/core:commerce_constants",
     "//components/image_fetcher/core",
+    "//components/payments/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/contextual_panel/coordinator:public",
+    "//ios/chrome/browser/price_insights/model",
     "//ios/chrome/browser/price_insights/ui:price_insights_ui",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
@@ -22,6 +25,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/price_notifications",
     "//ios/chrome/browser/ui/price_notifications:price_notifications_ui",
+    "//ios/web/public",
     "//ui/base",
     "//url",
   ]
