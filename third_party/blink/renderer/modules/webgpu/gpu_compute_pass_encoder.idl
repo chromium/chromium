@@ -14,7 +14,7 @@
                                                 optional GPUSize32 workgroupCountZ = 1);
     [NoAllocDirectCall] void dispatchWorkgroupsIndirect(GPUBuffer indirectBuffer,
                                                         GPUSize64 indirectOffset);
-    [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RaisesException, NoAllocDirectCall] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     [NoAllocDirectCall] void end();
 };

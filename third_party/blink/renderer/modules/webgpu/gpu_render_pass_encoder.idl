@@ -23,7 +23,7 @@
     void executeBundles(sequence<GPURenderBundle> bundles);
     [NoAllocDirectCall] void beginOcclusionQuery(GPUSize32 queryIndex);
     [NoAllocDirectCall] void endOcclusionQuery();
-    [RaisesException] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
+    [RaisesException, NoAllocDirectCall] void writeTimestamp(GPUQuerySet querySet, GPUSize32 queryIndex);
 
     [NoAllocDirectCall] void end();
 };

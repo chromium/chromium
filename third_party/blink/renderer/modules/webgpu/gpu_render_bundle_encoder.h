@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_RENDER_BUNDLE_ENCODER_H_
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
+#include "third_party/blink/renderer/core/typed_arrays/nadc_typed_array_view.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_pass_encoder.h"
@@ -46,7 +47,7 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
                     const Vector<uint32_t>& dynamicOffsets);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bind_group,
-                    const FlexibleUint32Array& dynamic_offsets_data,
+                    NADCTypedArrayView<uint32_t> dynamic_offsets_data,
                     uint64_t dynamic_offsets_data_start,
                     uint32_t dynamic_offsets_data_length,
                     ExceptionState& exception_state);
