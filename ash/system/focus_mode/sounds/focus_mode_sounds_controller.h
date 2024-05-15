@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_CONTROLLER_H_
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_CONTROLLER_H_
 
+#include <utility>
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "base/functional/callback.h"
@@ -17,6 +20,8 @@ class ImageSkia;
 }  // namespace gfx
 
 namespace ash {
+
+class FocusModeSoundsDelegate;
 
 // This class is used to download images and record the info of playlists after
 // getting the response data we need from Music API, which will be used to show
@@ -98,17 +103,13 @@ class ASH_EXPORT FocusModeSoundsController {
   void ResetSelectedPlaylist();
   void SelectPlaylist(const SelectedPlaylist& playlist_data);
 
-  // Invoked upon completion of the `thumbnail` download, `thumbnail` can be a
-  // null image if the download attempt from the url failed.
-  void OnOneThumbnailDownloaded(
-      base::OnceCallback<void(std::unique_ptr<Playlist>)> barrier_callback,
-      std::string id,
-      std::string title,
-      const gfx::ImageSkia& thumbnail);
   void OnAllThumbnailsDownloaded(
       bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback,
       std::vector<std::unique_ptr<Playlist>> playlists);
+
+  std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
+  std::unique_ptr<FocusModeSoundsDelegate> youtube_music_delegate_;
 
   std::vector<std::unique_ptr<Playlist>> soundscape_playlists_;
   std::vector<std::unique_ptr<Playlist>> youtube_music_playlists_;
