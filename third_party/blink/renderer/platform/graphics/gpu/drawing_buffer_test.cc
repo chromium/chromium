@@ -148,7 +148,7 @@ TEST_F(DrawingBufferTestMultisample, verifyMultisampleResolve) {
 }
 
 TEST_F(DrawingBufferTest, VerifyResizingProperlyAffectsResources) {
-  viz::TestSharedImageInterface* sii =
+  gpu::TestSharedImageInterface* sii =
       drawing_buffer_->SharedImageInterfaceForTests();
 
   VerifyStateWasRestored();
@@ -363,7 +363,7 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     // TestSII by default creates backing SharedMemory GMBs that don't support
     // this usage. Configure the TestSII to instead use test GMBs that have
     // relaxed usage validation.
-    auto* sii = static_cast<viz::TestSharedImageInterface*>(
+    auto* sii = static_cast<gpu::TestSharedImageInterface*>(
         provider->SharedImageInterface());
     sii->UseTestGMBInSharedImageCreationWithBufferUsage();
     GLES2InterfaceForTests* gl_ =
@@ -384,7 +384,7 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
 
 TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
-  viz::TestSharedImageInterface* sii =
+  gpu::TestSharedImageInterface* sii =
       drawing_buffer_->SharedImageInterfaceForTests();
 
   viz::TransferableResource resource;
@@ -517,7 +517,7 @@ TEST_F(DrawingBufferImageChromiumTest, AllocationFailure) {
       features::kDrawingBufferWithoutGpuMemoryBuffer);
 
   GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
-  viz::TestSharedImageInterface* sii =
+  gpu::TestSharedImageInterface* sii =
       drawing_buffer_->SharedImageInterfaceForTests();
 
   viz::TransferableResource resource1;

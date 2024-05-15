@@ -271,7 +271,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   raw_ptr<MockWebGPUInterface> webgpu_;
-  raw_ptr<viz::TestSharedImageInterface> sii_;
+  raw_ptr<gpu::TestSharedImageInterface> sii_;
   FakeProviderClient client_;
   scoped_refptr<WebGPUSwapBufferProviderForTests> provider_;
   bool provider_alive_ = true;

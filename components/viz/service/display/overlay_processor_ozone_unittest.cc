@@ -88,7 +88,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   gfx::BufferFormat format_;
 };
 
-class MockSharedImageInterface : public TestSharedImageInterface {
+class MockSharedImageInterface : public gpu::TestSharedImageInterface {
  public:
   MOCK_METHOD1(GetNativePixmap,
                scoped_refptr<gfx::NativePixmap>(const gpu::Mailbox& mailbox));

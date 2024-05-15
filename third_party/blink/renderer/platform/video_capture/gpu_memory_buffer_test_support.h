@@ -15,13 +15,10 @@ namespace media {
 class MockGpuVideoAcceleratorFactories;
 }  // namespace media
 
-namespace viz {
-class TestSharedImageInterface;
-}  // namespace viz
-
 namespace gpu {
 struct Capabilities;
 struct SharedImageCapabilities;
+class TestSharedImageInterface;
 }  // namespace gpu
 
 namespace blink {
@@ -51,7 +48,7 @@ class TestingPlatformSupportForGpuMemoryBuffer
       const gpu::SharedImageCapabilities& capabilities);
 
  private:
-  scoped_refptr<viz::TestSharedImageInterface> sii_;
+  scoped_refptr<gpu::TestSharedImageInterface> sii_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;
   base::Thread media_thread_;
   raw_ptr<gpu::Capabilities> capabilities_ = nullptr;

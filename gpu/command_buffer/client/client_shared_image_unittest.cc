@@ -37,12 +37,11 @@ constexpr viz::SharedImageFormat kMultiPlaneFormatsWithHardwareGMBs[4] = {
 }  // namespace
 
 namespace {
-// NOTE: If this test implementation starts to grow heavy, consider pulling the
-// viz::TestSharedImageInterface implementation down into //gpu, unifying that
-// with this one, and exposing that as a general-purpose test utility.
-class TestSharedImageInterface : public SharedImageInterface {
+// TODO(crbug.com/340303225): Eliminate this in favor of this test using
+// TestSharedImageInterface.
+class StubSharedImageInterface : public SharedImageInterface {
  public:
-  TestSharedImageInterface() = default;
+  StubSharedImageInterface() = default;
 
   // SharedImageInterface:
   scoped_refptr<ClientSharedImage> CreateSharedImage(
@@ -151,7 +150,7 @@ class TestSharedImageInterface : public SharedImageInterface {
 #endif
 
  private:
-  ~TestSharedImageInterface() override = default;
+  ~StubSharedImageInterface() override = default;
 
   SharedImageCapabilities shared_image_capabilities_;
   Mailbox mailbox_for_most_recently_created_shared_image_;
@@ -187,7 +186,7 @@ TEST(ClientSharedImageTest, ImportUnowned) {
 }
 
 TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
@@ -220,7 +219,7 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
 }
 
 TEST(ClientSharedImageTest, ExportAndImport) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
@@ -248,7 +247,7 @@ TEST(ClientSharedImageTest, ExportAndImport) {
 }
 
 TEST(ClientSharedImageTest, MakeUnowned) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
 
   const auto kFormat = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size kSize(256, 256);
@@ -279,7 +278,7 @@ TEST(ClientSharedImageTest, MakeUnowned) {
 // native buffer used.
 TEST(ClientSharedImageTest,
      GetTextureTarget_SinglePlaneFormats_NoNativeBuffer) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -304,7 +303,7 @@ TEST(ClientSharedImageTest,
 // than Mac, where the MacOS-specific target for native buffers should be used.
 TEST(ClientSharedImageTest,
      GetTextureTarget_SinglePlaneFormats_ClientNativeBuffer) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
   sii->emulate_client_provided_native_buffer();
 
 #if BUILDFLAG(IS_MAC)
@@ -342,7 +341,7 @@ TEST(ClientSharedImageTest,
 // texture target on all platforms other than Mac, where the MacOS-specific
 // target for native buffers should be used.
 TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
   // Explicitly set the MacOS-specific texture target to a target other than
@@ -388,7 +387,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_ScanoutUsage) {
 // texture target on all platforms other than Mac, where the MacOS-specific
 // target for native buffers should be used.
 TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
 
 #if BUILDFLAG(IS_MAC)
   // Explicitly set the MacOS-specific texture target to a target other than
@@ -438,7 +437,7 @@ TEST(ClientSharedImageTest, GetTextureTarget_WebGPUUsage) {
 // specified.
 TEST(ClientSharedImageTest,
      GetTextureTarget_MultiplanarFormats_NoScanoutOrWebGPUUsage) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
   const gfx::Size kSize(256, 256);
   const uint32_t kUsage =
       SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
@@ -467,7 +466,7 @@ TEST(ClientSharedImageTest,
 // multiplanar format with external sampling is passed.
 TEST(ClientSharedImageTest,
      GetTextureTarget_MultiplanarFormatsWithExternalSampling) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
   sii->emulate_client_provided_native_buffer();
 
   const gfx::Size kSize(256, 256);
@@ -505,7 +504,7 @@ TEST(ClientSharedImageTest,
 // On Ozone, the target for native buffers should be used if a legacy
 // multiplanar format is passed.
 TEST(ClientSharedImageTest, GetTextureTarget_LegacyMultiplanarFormats) {
-  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto sii = base::MakeRefCounted<StubSharedImageInterface>();
   sii->emulate_client_provided_native_buffer();
 
   const gfx::Size kSize(256, 256);

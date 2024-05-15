@@ -11515,7 +11515,7 @@ class FakeLayerWithQuads : public LayerImpl {
 TEST_F(LayerTreeHostImplTest, LayersFreeTextures) {
   scoped_refptr<viz::TestContextProvider> context_provider =
       viz::TestContextProvider::Create();
-  viz::TestSharedImageInterface* sii = context_provider->SharedImageInterface();
+  gpu::TestSharedImageInterface* sii = context_provider->SharedImageInterface();
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d(context_provider));
   CreateHostImpl(DefaultSettings(), std::move(layer_tree_frame_sink));
@@ -11983,7 +11983,7 @@ TEST_F(LayerTreeHostImplTestPrepareTiles, PrepareTilesWhenInvisible) {
 
 TEST_F(LayerTreeHostImplTest, UIResourceManagement) {
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
-  viz::TestSharedImageInterface* sii =
+  gpu::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
   CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::Create3d(
                                         std::move(test_context_provider)));
@@ -12027,7 +12027,7 @@ TEST_F(LayerTreeHostImplTest, UIResourceManagement) {
 
 TEST_F(LayerTreeHostImplTest, CreateETC1UIResource) {
   auto test_context_provider = viz::TestContextProvider::CreateRaster();
-  viz::TestSharedImageInterface* sii =
+  gpu::TestSharedImageInterface* sii =
       test_context_provider->SharedImageInterface();
   CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::Create3d(
                                         std::move(test_context_provider)));

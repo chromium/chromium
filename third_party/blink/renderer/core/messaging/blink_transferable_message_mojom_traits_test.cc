@@ -221,7 +221,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
-    auto sii = base::MakeRefCounted<viz::TestSharedImageInterface>();
+    auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     sii_ = sii.get();
     context_provider_ = viz::TestContextProvider::Create(std::move(sii));
     InitializeSharedGpuContextGLES2(context_provider_.get());
@@ -262,7 +262,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
  protected:
-  viz::TestSharedImageInterface* sii_;
+  gpu::TestSharedImageInterface* sii_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
 
   bool image_destroyed_ = false;

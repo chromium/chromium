@@ -102,7 +102,7 @@ class VideoCaptureEffectsProcessorTest
     : public testing::TestWithParam<VideoPixelFormat> {
  public:
   void SetUp() override {
-    test_sii_ = base::MakeRefCounted<viz::TestSharedImageInterface>();
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
     mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
         pending_receiver;
@@ -126,7 +126,7 @@ class VideoCaptureEffectsProcessorTest
  protected:
   base::test::TaskEnvironment task_environment_;
 
-  scoped_refptr<viz::TestSharedImageInterface> test_sii_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
   gpu::TestGpuMemoryBufferManager test_gmb_manager_;
 
   std::optional<VideoEffectsProcessor> video_effects_processor_;

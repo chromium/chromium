@@ -175,6 +175,8 @@ static_library("test_support") {
     "command_buffer/client/gles2_interface_stub_impl_autogen.h",
     "command_buffer/client/test_gpu_memory_buffer_manager.cc",
     "command_buffer/client/test_gpu_memory_buffer_manager.h",
+    "command_buffer/client/test_shared_image_interface.cc",
+    "command_buffer/client/test_shared_image_interface.h",
     "command_buffer/client/webgpu_interface_stub.cc",
     "command_buffer/client/webgpu_interface_stub.h",
     "command_buffer/client/webgpu_interface_stub_autogen.h",

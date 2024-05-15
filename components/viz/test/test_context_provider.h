@@ -20,8 +20,8 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
-#include "components/viz/test/test_shared_image_interface.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -45,7 +45,7 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> Create(
       std::unique_ptr<TestGLES2Interface> gl);
   static scoped_refptr<TestContextProvider> Create(
-      scoped_refptr<TestSharedImageInterface> sii);
+      scoped_refptr<gpu::TestSharedImageInterface> sii);
   static scoped_refptr<TestContextProvider> Create(
       std::unique_ptr<TestContextSupport> support);
 
@@ -69,7 +69,7 @@ class TestContextProvider
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
       std::unique_ptr<gpu::raster::RasterInterface> raster,
-      scoped_refptr<TestSharedImageInterface> sii,
+      scoped_refptr<gpu::TestSharedImageInterface> sii,
       bool support_locking);
 
   TestContextProvider(const TestContextProvider&) = delete;
@@ -85,7 +85,7 @@ class TestContextProvider
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
   class GrDirectContext* GrContext() override;
-  TestSharedImageInterface* SharedImageInterface() override;
+  gpu::TestSharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
   void AddObserver(ContextLostObserver* obs) override;
@@ -132,7 +132,7 @@ class TestContextProvider
   std::unique_ptr<TestRasterInterface> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
-  scoped_refptr<TestSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
   [[maybe_unused]] const bool support_locking_;
   bool bound_ = false;
 

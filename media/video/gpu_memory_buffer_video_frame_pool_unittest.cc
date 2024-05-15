@@ -45,7 +45,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     // empty base::TimeTicks values.
     test_clock_.Advance(base::Seconds(1234));
 
-    sii_ = base::MakeRefCounted<viz::TestSharedImageInterface>();
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     copy_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     media_task_runner_handle_ =
@@ -269,7 +269,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   // which requires SingleThreadTaskRunner::CurrentDefaultHandle initialization.
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       media_task_runner_handle_;
-  scoped_refptr<viz::TestSharedImageInterface> sii_;
+  scoped_refptr<gpu::TestSharedImageInterface> sii_;
 };
 
 void MaybeCreateHardwareFrameCallback(

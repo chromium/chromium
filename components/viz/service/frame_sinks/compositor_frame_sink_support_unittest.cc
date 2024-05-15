@@ -2054,7 +2054,8 @@ TEST_F(CompositorFrameSinkSupportTest,
   ASSERT_TRUE(surface);
 
   auto test_context_provider = TestContextProvider::CreateRaster();
-  TestSharedImageInterface* sii = test_context_provider->SharedImageInterface();
+  gpu::TestSharedImageInterface* sii =
+      test_context_provider->SharedImageInterface();
   ReservedResourceIdTracker id_tracker;
 
   std::unique_ptr<SurfaceAnimationManager> animation_manager =

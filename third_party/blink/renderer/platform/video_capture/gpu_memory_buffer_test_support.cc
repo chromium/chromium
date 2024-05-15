@@ -59,7 +59,7 @@ FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
 
 TestingPlatformSupportForGpuMemoryBuffer::
     TestingPlatformSupportForGpuMemoryBuffer()
-    : sii_(base::MakeRefCounted<viz::TestSharedImageInterface>()),
+    : sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       gpu_factories_(new media::MockGpuVideoAcceleratorFactories(sii_.get())),
       media_thread_("TestingMediaThread") {
   gpu_factories_->SetVideoFrameOutputFormat(

@@ -18,13 +18,10 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-namespace viz {
-class TestSharedImageInterface;
-}
-
 namespace gpu {
 
 class ClientSharedImageInterface;
+class TestSharedImageInterface;
 
 // Controls whether all ClientSharedImage::GetTextureTarget*(...) variants call
 // through to ClientSharedImage::GetTextureTarget() under the hood.
@@ -239,7 +236,7 @@ class GPU_EXPORT ClientSharedImage
   // SharedImageInterface::ImportSharedImage().
   // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
-  friend class viz::TestSharedImageInterface;
+  friend class TestSharedImageInterface;
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
@@ -275,7 +272,7 @@ struct GPU_EXPORT ExportedSharedImage {
   friend class ClientSharedImage;
   friend class SharedImageInterface;
   friend class ClientSharedImageInterface;
-  friend class viz::TestSharedImageInterface;
+  friend class TestSharedImageInterface;
   friend struct mojo::StructTraits<gpu::mojom::ExportedSharedImageDataView,
                                    ExportedSharedImage>;
   FRIEND_TEST_ALL_PREFIXES(ClientSharedImageTest, ImportUnowned);
