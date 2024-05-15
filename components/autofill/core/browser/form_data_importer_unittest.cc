@@ -4216,15 +4216,46 @@ TEST_F(FormDataImporterTest,
       StartOptInFlow)
       .Times(0);
 
-  EXPECT_FALSE(test_api(form_data_importer())
-                   .ProcessExtractedCreditCard(
-                       *form_structure, extracted_credit_card,
-                       /*payment_methods_autofill_enabled=*/true,
-                       /*is_credit_card_upstream_enabled=*/true));
+  test_api(form_data_importer())
+      .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
+                                  /*payment_methods_autofill_enabled=*/true,
+                                  /*is_credit_card_upstream_enabled=*/true);
+}
+
+// Test that in the case where the MandatoryReauthManager denotes re-auth opt-in
+// should be offered, but the card is a new card (presumed updated by the user
+// after filling), re-auth opt-in is not offered.
+TEST_F(FormDataImporterTest,
+       ProcessExtractedCreditCard_MandatoryReauthNotOffered_NewCard) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalCard);
+  test_api(form_data_importer())
+      .set_credit_card_import_type(
+          FormDataImporter::CreditCardImportType::kNewCard);
+
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      ShouldOfferOptin)
+      .Times(0);
+  EXPECT_CALL(
+      *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
+          autofill_client_->GetOrCreatePaymentsMandatoryReauthManager()),
+      StartOptInFlow)
+      .Times(0);
+
+  test_api(form_data_importer())
+      .ProcessExtractedCreditCard(*form_structure, test::GetCreditCard2(),
+                                  /*payment_methods_autofill_enabled=*/true,
+                                  /*is_credit_card_upstream_enabled=*/true);
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should
-// offer re-auth opt-in, we start the opt-in in credit card processing flow.
+// offer re-auth opt-in, we start the opt-in in credit card processing flow if
+// the card is not a new card.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthOffered) {
   CreditCard extracted_credit_card = test::GetCreditCard2();
@@ -4235,7 +4266,7 @@ TEST_F(FormDataImporterTest,
           NonInteractivePaymentMethodType::kLocalCard);
   test_api(form_data_importer())
       .set_credit_card_import_type(
-          FormDataImporter::CreditCardImportType::kVirtualCard);
+          FormDataImporter::CreditCardImportType::kLocalCard);
 
   EXPECT_CALL(
       *static_cast<::testing::NiceMock<payments::MockMandatoryReauthManager>*>(
