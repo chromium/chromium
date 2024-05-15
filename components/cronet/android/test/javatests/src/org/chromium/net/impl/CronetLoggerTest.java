@@ -76,7 +76,8 @@ import java.util.concurrent.atomic.AtomicReference;
         reason = "CronetLoggerTestRule is supported only by the native implementation.")
 public final class CronetLoggerTest {
     private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
-    private final CronetLoggerTestRule mLoggerTestRule = new CronetLoggerTestRule(TestLogger.class);
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
 
     @Rule public final RuleChain chain = RuleChain.outerRule(mTestRule).around(mLoggerTestRule);
 
@@ -86,7 +87,7 @@ public final class CronetLoggerTest {
     @Before
     public void setUp() {
         mContext = mTestRule.getTestFramework().getContext();
-        mTestLogger = (TestLogger) mLoggerTestRule.mTestLogger;
+        mTestLogger = mLoggerTestRule.mTestLogger;
         assertThat(NativeTestServer.startNativeTestServer(mContext)).isTrue();
     }
 
@@ -317,7 +318,7 @@ public final class CronetLoggerTest {
                             builder.setThreadPriority(threadPriority);
                         });
 
-        CronetEngine engine = mTestRule.getTestFramework().startEngine();
+        mTestRule.getTestFramework().startEngine();
         final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
         final CronetVersion version = mTestLogger.getLastCronetVersion();
         final CronetSource source = mTestLogger.getLastCronetSource();
@@ -601,11 +602,9 @@ public final class CronetLoggerTest {
     public void testMultipleEngineCreationAndTrafficInfoEngineId() throws Exception {
         final String url = "www.example.com";
         ExperimentalCronetEngine.Builder engineBuilder =
-                (ExperimentalCronetEngine.Builder)
-                        mTestRule
-                                .getTestFramework()
-                                .createNewSecondaryBuilder(
-                                        mTestRule.getTestFramework().getContext());
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
 
         CronetEngine engine1 = engineBuilder.build();
         final long engine1Id = mTestLogger.getLastCronetEngineId();
@@ -901,33 +900,21 @@ public final class CronetLoggerTest {
     @Test
     @SmallTest
     public void testNonEmptyHeadersSizeNative() {
-        Map<String, List<String>> headers =
-                new HashMap<String, List<String>>() {
-                    {
-                        put("header1", Arrays.asList("value1", "value2")); // 7 + 6 + 6 = 19
-                        put("header2", null); // 19 + 7 = 26
-                        put("header3", Collections.emptyList()); // 26 + 7 + 0 = 33
-                        put(null, Arrays.asList("")); // 33 + 0 + 0 = 33
-                    }
-                };
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("header1", Arrays.asList("value1", "value2")); // 7 + 6 + 6 = 19
+        headers.put("header2", null); // 19 + 7 = 26
+        headers.put("header3", Collections.emptyList()); // 26 + 7 + 0 = 33
+        headers.put(null, Arrays.asList("")); // 33 + 0 + 0 = 33
+
         assertThat(CronetRequestCommon.estimateHeadersSizeInBytes(headers)).isEqualTo(33);
 
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
+        headersList.add(new AbstractMap.SimpleImmutableEntry<>("header1", "value1")); // 7 + 6 = 13
         headersList.add(
-                new AbstractMap.SimpleImmutableEntry<String, String>(
-                        "header1", "value1") // 7 + 6 = 13
-                );
-        headersList.add(
-                new AbstractMap.SimpleImmutableEntry<String, String>(
-                        "header1", "value2") // 13 + 7 + 6 = 26
-                );
-        headersList.add(
-                new AbstractMap.SimpleImmutableEntry<String, String>(
-                        "header2", null) // 26 + 7 + 0 = 33
-                );
-        headersList.add(
-                new AbstractMap.SimpleImmutableEntry<String, String>(null, "") // 33 + 0 + 0 = 33
-                );
+                new AbstractMap.SimpleImmutableEntry<>("header1", "value2")); // 13 + 7 + 6 = 26
+        headersList.add(new AbstractMap.SimpleImmutableEntry<>("header2", null)); // 26 + 7 + 0 = 33
+        headersList.add(new AbstractMap.SimpleImmutableEntry<>(null, "")); // 33 + 0 + 0 = 33
+
         assertThat(CronetRequestCommon.estimateHeadersSizeInBytes(headersList)).isEqualTo(33);
     }
 

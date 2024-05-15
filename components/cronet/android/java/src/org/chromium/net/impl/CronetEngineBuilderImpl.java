@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -371,15 +372,10 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             Set<byte[]> pinsSha256,
             boolean includeSubdomains,
             Date expirationDate) {
-        if (hostName == null) {
-            throw new NullPointerException("The hostname cannot be null");
-        }
-        if (pinsSha256 == null) {
-            throw new NullPointerException("The set of SHA256 pins cannot be null");
-        }
-        if (expirationDate == null) {
-            throw new NullPointerException("The pin expiration date cannot be null");
-        }
+        Objects.requireNonNull(hostName, "The hostname cannot be null.");
+        Objects.requireNonNull(pinsSha256, "The set of SHA256 pins cannot be null.");
+        Objects.requireNonNull(expirationDate, "The pin expiration date cannot be null.");
+
         String idnHostName = validateHostNameForPinningAndConvert(hostName);
         // Convert the pin to BASE64 encoding to remove duplicates.
         Map<String, byte[]> hashes = new HashMap<>();

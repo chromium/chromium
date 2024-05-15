@@ -254,8 +254,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
         private final Executor mExecutor;
 
         public PrioritySettingExecutor(Executor executor) {
-            Objects.requireNonNull(executor, "Executor is required.");
-            mExecutor = executor;
+            mExecutor = Objects.requireNonNull(executor, "Executor is required.");
         }
 
         @Override

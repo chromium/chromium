@@ -8,6 +8,7 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_API_LEVEL;
 import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import androidx.annotation.RequiresExtension;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -18,8 +19,7 @@ class AndroidUploadDataProviderWrapper extends android.net.http.UploadDataProvid
     private final org.chromium.net.UploadDataProvider mBackend;
 
     public AndroidUploadDataProviderWrapper(org.chromium.net.UploadDataProvider backend) {
-        Objects.requireNonNull(backend, "Invalid UploadDataProvider.");
-        this.mBackend = backend;
+        this.mBackend = Objects.requireNonNull(backend, "Invalid UploadDataProvider.");
     }
 
     @Override

@@ -23,8 +23,7 @@ class AndroidUrlRequestCallbackWrapper implements android.net.http.UrlRequest.Ca
     private AndroidUrlRequestWrapper mWrappedRequest;
 
     public AndroidUrlRequestCallbackWrapper(org.chromium.net.UrlRequest.Callback backend) {
-        Objects.requireNonNull(backend, "Callback is required.");
-        this.mBackend = backend;
+        this.mBackend = Objects.requireNonNull(backend, "Callback is required.");
     }
 
     /**

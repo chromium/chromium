@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -102,7 +103,7 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
 
     // The {@link UploadDataSink} for the {@link UploadDataProvider}.
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     FakeDataSink mFakeDataSink;
 
     // The {@link UrlResponseInfo} for the current request.
@@ -219,20 +220,11 @@ final class FakeUrlRequest extends ExperimentalUrlRequest {
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
             Executor uploadDataProviderExecutor) {
-        if (url == null) {
-            throw new NullPointerException("URL is required");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Listener is required");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required");
-        }
-        mCallback = callback;
+        mCurrentUrl = Objects.requireNonNull(url, "URL is required");
+        mCallback = Objects.requireNonNull(callback, "Listener is required");
+        mExecutor = Objects.requireNonNull(executor, "Executor is required");
         mUserExecutor =
                 allowDirectExecutor ? userExecutor : new DirectPreventingExecutor(userExecutor);
-        mExecutor = executor;
-        mCurrentUrl = url;
         mFakeCronetController = fakeCronetController;
         mFakeCronetEngine = fakeCronetEngine;
         mAllowDirectExecutor = allowDirectExecutor;

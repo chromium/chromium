@@ -25,8 +25,7 @@ class AndroidBidirectionalStreamCallbackWrapper
 
     public AndroidBidirectionalStreamCallbackWrapper(
             org.chromium.net.BidirectionalStream.Callback backend) {
-        Objects.requireNonNull(backend, "Callback is required.");
-        this.mBackend = backend;
+        this.mBackend = Objects.requireNonNull(backend, "Callback is required.");
     }
 
     @Override

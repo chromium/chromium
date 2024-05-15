@@ -82,7 +82,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
      * all URLs previously requested. New URLs are added before
      * mCallback.onRedirectReceived is called.
      */
-    private final List<String> mUrlChain = new ArrayList<String>();
+    private final List<String> mUrlChain = new ArrayList<>();
 
     private final VersionSafeCallbacks.UrlRequestCallback mCallback;
     private final String mInitialUrl;
@@ -464,12 +464,10 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             long receivedByteCount) {
         ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
         for (int i = 0; i < headers.length; i += 2) {
-            headersList.add(
-                    new AbstractMap.SimpleImmutableEntry<String, String>(
-                            headers[i], headers[i + 1]));
+            headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
         }
         return new UrlResponseInfoImpl(
-                new ArrayList<String>(mUrlChain),
+                new ArrayList<>(mUrlChain),
                 httpStatusCode,
                 httpStatusText,
                 headersList,

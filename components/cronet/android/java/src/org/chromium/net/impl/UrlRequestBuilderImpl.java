@@ -63,10 +63,9 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     @CronetEngineBase.Idempotency private int mIdempotency = DEFAULT_IDEMPOTENCY;
 
     /**
-     * Creates a builder for {@link UrlRequest} objects. All callbacks for
-     * generated {@link UrlRequest} objects will be invoked on
-     * {@code executor}'s thread. {@code executor} must not run tasks on the
-     * current thread to prevent blocking networking operations and causing
+     * Creates a builder for {@link UrlRequest} objects. All callbacks for generated {@link
+     * UrlRequest} objects will be invoked on {@code executor}'s thread. {@code executor} must not
+     * run tasks on the current thread to prevent blocking networking operations and causing
      * exceptions during shutdown.
      *
      * @param url URL for the generated requests.
@@ -80,30 +79,15 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
             Executor executor,
             CronetEngineBase cronetEngine) {
         super();
-        if (url == null) {
-            throw new NullPointerException("URL is required.");
-        }
-        if (callback == null) {
-            throw new NullPointerException("Callback is required.");
-        }
-        if (executor == null) {
-            throw new NullPointerException("Executor is required.");
-        }
-        if (cronetEngine == null) {
-            throw new NullPointerException("CronetEngine is required.");
-        }
-        mUrl = url;
-        mCallback = callback;
-        mExecutor = executor;
-        mCronetEngine = cronetEngine;
+        mUrl = Objects.requireNonNull(url, "URL is required.");
+        mCallback = Objects.requireNonNull(callback, "Callback is required.");
+        mExecutor = Objects.requireNonNull(executor, "Executor is required.");
+        mCronetEngine = Objects.requireNonNull(cronetEngine, "CronetEngine is required.");
     }
 
     @Override
     public ExperimentalUrlRequest.Builder setHttpMethod(String method) {
-        if (method == null) {
-            throw new NullPointerException("Method is required.");
-        }
-        mMethod = method;
+        mMethod = Objects.requireNonNull(method, "Method is required.");
         return this;
     }
 
@@ -153,13 +137,13 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     @Override
     public UrlRequestBuilderImpl setUploadDataProvider(
             UploadDataProvider uploadDataProvider, Executor executor) {
-        Objects.requireNonNull(uploadDataProvider, "Invalid UploadDataProvider.");
-        Objects.requireNonNull(executor, "Invalid UploadDataProvider Executor.");
+        mUploadDataProvider =
+                Objects.requireNonNull(uploadDataProvider, "Invalid UploadDataProvider.");
+        mUploadDataProviderExecutor =
+                Objects.requireNonNull(executor, "Invalid UploadDataProvider Executor.");
         if (mMethod == null) {
             mMethod = "POST";
         }
-        mUploadDataProvider = uploadDataProvider;
-        mUploadDataProviderExecutor = executor;
         return this;
     }
 
