@@ -93,7 +93,8 @@ TEST_F(SQLiteFeaturesTest, FTS3) {
 // "*"}.  Test that fts3 works correctly.
 TEST_F(SQLiteFeaturesTest, FTS3_Prefix) {
   db_.Close();
-  sql::Database db({.enable_virtual_tables_discouraged = true});
+  sql::Database db;
+  db.SetEnableVirtualTablesForTesting(true);
   ASSERT_TRUE(db.Open(db_path_));
 
   static constexpr char kCreateSql[] =
