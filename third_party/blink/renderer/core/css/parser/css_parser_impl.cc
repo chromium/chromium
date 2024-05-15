@@ -170,8 +170,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
   StyleRule::RuleType rule_type = RuleTypeForMutableDeclaration(declaration);
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
-  CSSTokenizedValue tokenized_value = ConsumeRestrictedPropertyValue(stream);
-  parser.ConsumeDeclarationValue(tokenized_value, unresolved_property,
+  parser.ConsumeDeclarationValue(stream, unresolved_property,
                                  /*is_in_declaration_list=*/false, rule_type);
   if (parser.parsed_properties_.empty()) {
     return MutableCSSPropertyValueSet::kParseError;
@@ -2818,13 +2817,11 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
         ConsumeVariableValue(tokenized_value, variable_name, important,
                              is_animation_tainted);
       } else if (unresolved_property != CSSPropertyID::kInvalid) {
-        CSSTokenizedValue tokenized_value =
-            ConsumeRestrictedPropertyValue(stream);
-        if (stream.AtEnd()) {
-          ConsumeDeclarationValue(tokenized_value, unresolved_property,
-                                  /*is_in_declaration_list=*/true, rule_type);
-        }
         if (observer_) {
+          CSSParserTokenStream::State savepoint = stream.Save();
+          ConsumeDeclarationValue(stream, unresolved_property,
+                                  /*is_in_declaration_list=*/true, rule_type);
+
           // The observer would like to know (below) whether this declaration
           // was !important or not. If our parse succeeded, we can just pick it
           // out from the list of properties. If not, we'll need to look at the
@@ -2832,13 +2829,18 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
           if (parsed_properties_.size() != properties_count) {
             important = parsed_properties_.back().IsImportant();
           } else {
+            stream.Restore(savepoint);
+            CSSTokenizedValue tokenized_value =
+                ConsumeRestrictedPropertyValue(stream);
             important = RemoveImportantAnnotationIfPresent(tokenized_value);
           }
+        } else {
+          ConsumeDeclarationValue(stream, unresolved_property,
+                                  /*is_in_declaration_list=*/true, rule_type);
         }
       }
     }
   }
-
   if (observer_ &&
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kKeyframe ||
        rule_type == StyleRule::kProperty ||
@@ -2875,18 +2877,17 @@ void CSSParserImpl::ConsumeVariableValue(
   }
 }
 
-// NOTE: Leading whitespace must be stripped from tokenized_value, since
+// NOTE: Leading whitespace must be stripped from the stream, since
 // ParseValue() has the same requirement.
-void CSSParserImpl::ConsumeDeclarationValue(
-    const CSSTokenizedValue& tokenized_value,
-    CSSPropertyID unresolved_property,
-    bool is_in_declaration_list,
-    StyleRule::RuleType rule_type) {
+void CSSParserImpl::ConsumeDeclarationValue(CSSParserTokenStream& stream,
+                                            CSSPropertyID unresolved_property,
+                                            bool is_in_declaration_list,
+                                            StyleRule::RuleType rule_type) {
   const bool allow_important_annotation = is_in_declaration_list &&
                                           rule_type != StyleRule::kKeyframe &&
                                           rule_type != StyleRule::kPositionTry;
   CSSPropertyParser::ParseValue(unresolved_property, allow_important_annotation,
-                                tokenized_value, context_, parsed_properties_,
+                                stream, context_, parsed_properties_,
                                 rule_type);
 }
 

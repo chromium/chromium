@@ -52,14 +52,14 @@ class CORE_EXPORT CSSPropertyParser {
   CSSPropertyParser(const CSSPropertyParser&) = delete;
   CSSPropertyParser& operator=(const CSSPropertyParser&) = delete;
 
-  // NOTE: The CSSTokenizedValue must have leading whitespace (and comments)
+  // NOTE: The stream must have leading whitespace (and comments)
   // stripped; it will strip any trailing whitespace (and comments) itself.
   // This is done because it's easy to strip tokens from the start when
   // tokenizing (but trailing comments is so rare that we can just as well
   // do that in a slow path).
   static bool ParseValue(CSSPropertyID,
                          bool allow_important_annotation,
-                         const CSSTokenizedValue&,
+                         CSSParserTokenStream&,
                          const CSSParserContext*,
                          HeapVector<CSSPropertyValue, 64>&,
                          StyleRule::RuleType);
@@ -70,7 +70,7 @@ class CORE_EXPORT CSSPropertyParser {
                                           const CSSParserContext*);
 
  private:
-  CSSPropertyParser(const CSSTokenizedValue&,
+  CSSPropertyParser(CSSParserTokenStream&,
                     const CSSParserContext*,
                     HeapVector<CSSPropertyValue, 64>*);
 
@@ -85,11 +85,8 @@ class CORE_EXPORT CSSPropertyParser {
 
  private:
   // Inputs:
-  CSSTokenizedValue value_;
+  CSSParserTokenStream& stream_;
   const CSSParserContext* context_;
-  // State:
-  CSSTokenizer tokenizer_;
-  CSSParserTokenStream stream_;
   // Outputs:
   HeapVector<CSSPropertyValue, 64>* parsed_properties_;
 };

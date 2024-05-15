@@ -291,7 +291,7 @@ class CORE_EXPORT CSSParserImpl {
   // Returns true if a declaration was parsed and added to parsed_properties_,
   // and false otherwise.
   bool ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
-  void ConsumeDeclarationValue(const CSSTokenizedValue&,
+  void ConsumeDeclarationValue(CSSParserTokenStream&,
                                CSSPropertyID,
                                bool is_in_declaration_list,
                                StyleRule::RuleType);

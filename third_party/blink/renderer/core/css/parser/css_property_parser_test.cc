@@ -47,11 +47,10 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
 static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
                                              const String& value) {
   CSSTokenizer tokenizer(value);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  const CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(tokenizer);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
-      property_id, /*allow_important_annotation=*/false, {range, value},
+      property_id, /*allow_important_annotation=*/false, stream,
       StrictCSSParserContext(SecureContextMode::kSecureContext),
       parsed_properties, StyleRule::RuleType::kStyle);
 }
@@ -1006,12 +1005,11 @@ bool ParseCSSValue(CSSPropertyID property_id,
                    const String& value,
                    const CSSParserContext* context) {
   CSSTokenizer tokenizer(value);
-  const auto tokens = tokenizer.TokenizeToEOF();
-  const CSSParserTokenRange range(tokens);
+  CSSParserTokenStream stream(tokenizer);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
-      property_id, /*allow_important_annotation=*/false, {range, value},
-      context, parsed_properties, StyleRule::RuleType::kStyle);
+      property_id, /*allow_important_annotation=*/false, stream, context,
+      parsed_properties, StyleRule::RuleType::kStyle);
 }
 
 }  // namespace

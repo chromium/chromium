@@ -56,40 +56,27 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
   }
 }
 
-CSSTokenizedValue StripInitialWhitespace(CSSTokenizedValue value) {
-  value.range.ConsumeWhitespace();
-
-  wtf_size_t initial_whitespace_len = 0;
-  while (initial_whitespace_len < value.text.length() &&
-         IsHTMLSpace(value.text[initial_whitespace_len])) {
-    ++initial_whitespace_len;
-  }
-  value.text = StringView(value.text, initial_whitespace_len);
-  return value;
-}
-
 }  // namespace
 
 CSSPropertyParser::CSSPropertyParser(
-    const CSSTokenizedValue& value,
+    CSSParserTokenStream& stream,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>* parsed_properties)
-    : value_(StripInitialWhitespace(value)),
+    : stream_(stream),
       context_(context),
-      tokenizer_(value_.text),
-      stream_(tokenizer_),
       parsed_properties_(parsed_properties) {
-  stream_.EnsureLookAhead();  // Because we want to Save()/Restore().
+  // Strip initial whitespace/comments from stream_.
+  stream_.ConsumeWhitespace();
 }
 
 bool CSSPropertyParser::ParseValue(
     CSSPropertyID unresolved_property,
     bool allow_important_annotation,
-    const CSSTokenizedValue& value,
+    CSSParserTokenStream& stream,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     StyleRule::RuleType rule_type) {
-  CSSPropertyParser parser(value, context, &parsed_properties);
+  CSSPropertyParser parser(stream, context, &parsed_properties);
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   bool parse_success;
   if (rule_type == StyleRule::kFontFace) {
@@ -126,6 +113,15 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
   return value;
 }
 
+StringView StripInitialWhitespace(StringView value) {
+  wtf_size_t initial_whitespace_len = 0;
+  while (initial_whitespace_len < value.length() &&
+         IsHTMLSpace(value[initial_whitespace_len])) {
+    ++initial_whitespace_len;
+  }
+  return StringView(value, initial_whitespace_len);
+}
+
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
                                         bool allow_important_annotation,
                                         StyleRule::RuleType rule_type) {
@@ -133,7 +129,6 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     return true;
   }
 
-  CSSParserTokenRange original_range = value_.range;
   CSSParserTokenStream::State savepoint = stream_.Save();
 
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
@@ -201,41 +196,34 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   }
 
   // We did not parse properly without variable substitution,
-  // so rewind the stream (both in token form and in streaming-parser form;
-  // the tokenized form does this by using original_range instead of
-  // value_.range, and the streaming-parser form uses explicit Restore() here)
-  // and see if substituting variables will help.
+  // so rewind the stream, and see if parsing it as something
+  // containing variables will help.
+  //
+  // Note that if so, this needs the original text, so we need to take
+  // note of the original offsets so that we can see what we tokenized.
   stream_.EnsureLookAhead();
   stream_.Restore(savepoint);
+  wtf_size_t start_offset = stream_.LookAheadOffset();
+  CSSParserTokenRange range = stream_.ConsumeUntilPeekedTypeIs<>();
+  wtf_size_t end_offset = stream_.Offset();
+  StringView original_text = StripInitialWhitespace(
+      stream_.StringRangeAt(start_offset, end_offset - start_offset));
 
-#if DCHECK_IS_ON()
-  // Due to this requirement, we can use StripTrailingWhitespaceAndComments()
-  // instead of having to also strip from the beginning.
-  if (original_range.size() > 0) {
-    DCHECK_NE(original_range.Peek().GetType(), kCommentToken);
-    DCHECK_NE(original_range.Peek().GetType(), kWhitespaceToken);
-  }
-  if (!value_.text.empty()) {
-    DCHECK(!IsHTMLSpace(value_.text[0]));
-    DCHECK(!value_.text.ToString().StartsWith("/*"));
-  }
-#endif
-
-  value_.range = original_range;
+  CSSTokenizedValue value{range, original_text};
   const bool important =
-      CSSParserImpl::RemoveImportantAnnotationIfPresent(value_);
+      CSSParserImpl::RemoveImportantAnnotationIfPresent(value);
+  value.text =
+      CSSVariableParser::StripTrailingWhitespaceAndComments(value.text);
 
   if (CSSVariableParser::ContainsValidVariableReferences(
-          value_.range, context_->GetExecutionContext())) {
-    value_.text =
-        CSSVariableParser::StripTrailingWhitespaceAndComments(value_.text);
-    if (value_.text.length() > CSSVariableData::kMaxVariableBytes) {
+          value.range, context_->GetExecutionContext())) {
+    if (value.text.length() > CSSVariableData::kMaxVariableBytes) {
       return false;
     }
 
     bool is_animation_tainted = false;
     auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-        CSSVariableData::Create(std::move(value_), is_animation_tainted, true),
+        CSSVariableData::Create(std::move(value), is_animation_tainted, true),
         context_);
 
     if (is_shorthand) {
@@ -470,8 +458,23 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
   if (id == AtRuleDescriptorID::Invalid) {
     return false;
   }
-  CSSValue* parsed_value =
-      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, value_, *context_);
+
+  // ParseFontFaceDescriptor() could want the original text,
+  // for re-tokenization for the specific case of the “unicode-range”
+  // property (which is the only property where UnicodeRange productions
+  // are allowed). Thus, we need to keep track of exactly what
+  // we tokenized, so that we can also send in the original text.
+  //
+  // This should obviously go away when everything uses
+  // the streaming parser.
+  wtf_size_t start_offset = stream_.LookAheadOffset();
+  CSSParserTokenRange range = stream_.ConsumeUntilPeekedTypeIs();
+  wtf_size_t end_offset = stream_.Offset();
+  StringView original_text =
+      stream_.StringRangeAt(start_offset, end_offset - start_offset);
+
+  CSSValue* parsed_value = AtRuleDescriptorParser::ParseFontFaceDescriptor(
+      id, {range, original_text}, *context_);
   if (!parsed_value) {
     return false;
   }

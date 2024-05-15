@@ -1151,16 +1151,16 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
                            FunctionContext{}, sequence)) {
       return cssvalue::CSSUnsetValue::Create();
     }
-    sequence.StripCommentTokens();
 
     HeapVector<CSSPropertyValue, 64> parsed_properties;
 
     // NOTE: We don't actually need the original text to be comment-stripped,
     // since we're not storing it in a custom property anywhere.
+    CSSTokenizer tokenizer2(sequence.OriginalText());
+    CSSParserTokenStream stream2(tokenizer2);
     if (!CSSPropertyParser::ParseValue(
             shorthand_property_id, /*allow_important_annotation=*/false,
-            {sequence.TokenRange(), sequence.OriginalText()},
-            shorthand_value->ParserContext(), parsed_properties,
+            stream2, shorthand_value->ParserContext(), parsed_properties,
             StyleRule::RuleType::kStyle)) {
       return cssvalue::CSSUnsetValue::Create();
     }
