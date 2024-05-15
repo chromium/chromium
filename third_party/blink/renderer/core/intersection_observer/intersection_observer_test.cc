@@ -550,6 +550,23 @@ TEST_P(IntersectionObserverTest, DirectlyUpdateTransform) {
   EXPECT_FALSE(GetDocument().GetLayoutView()->NeedsPaintPropertyUpdate());
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(LocalFrameView::kDesired,
+            GetDocument().View()->GetIntersectionObservationStateForTesting());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  EXPECT_EQ(target_observer_delegate->CallCount(), 2);
+  EXPECT_EQ(target_observer_delegate->EntryCount(), 2);
+  EXPECT_FALSE(target_observer_delegate->LastEntry()->isIntersecting());
+
+  container->SetInlineStyleProperty(CSSPropertyID::kColor, "yellow");
+  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_EQ(LocalFrameView::kNotNeeded,
+            GetDocument().View()->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_FALSE(Compositor().NeedsBeginFrame());

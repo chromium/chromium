@@ -4915,24 +4915,26 @@ bool LocalFrameView::ExecuteAllPendingUpdates() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
   bool updated = false;
   ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
-    if (frame_view.pending_opacity_updates_) {
+    if (frame_view.pending_opacity_updates_ &&
+        !frame_view.pending_opacity_updates_->empty()) {
       for (LayoutObject* object : *frame_view.pending_opacity_updates_) {
         DCHECK(
             !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
         PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
-        updated = true;
       }
+      updated = true;
       frame_view.pending_opacity_updates_->clear();
     }
-    if (frame_view.pending_transform_updates_) {
+    if (frame_view.pending_transform_updates_ &&
+        !frame_view.pending_transform_updates_->empty()) {
       for (LayoutObject* object : *frame_view.pending_transform_updates_) {
         DCHECK(
             !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*object));
         PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-        updated = true;
       }
-      frame_view.pending_transform_updates_->clear();
+      updated = true;
       frame_view.SetIntersectionObservationState(kDesired);
+      frame_view.pending_transform_updates_->clear();
     }
   });
   return updated;
