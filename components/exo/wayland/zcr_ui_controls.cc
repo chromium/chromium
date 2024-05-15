@@ -138,7 +138,6 @@ void ResetDisplay(UiControlsState* state) {
   ash::ScreenOrientationControllerTestApi(
       ash::Shell::Get()->screen_orientation_controller())
       .UpdateNaturalOrientation();
-  state->original_displays_.clear();
   state->pending_display_.reset();
   state->pending_display_info_list_.clear();
 }
