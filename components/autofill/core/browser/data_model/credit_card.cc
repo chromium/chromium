@@ -356,6 +356,7 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
   // MIR                    2200-2204                                  16
   // Troy                   22050-22052, 9792                          16
   // UnionPay               62                                         16-19
+  // Verve                  506099–506198,507865-507964,650002–650027  16,18,19
 
   // Determine the network for the given |number| by going from the longest
   // (most specific) prefix to the shortest (most general) prefix.
@@ -429,6 +430,14 @@ const char* CreditCard::GetCardNetwork(const std::u16string& number) {
     if (MatchesRegex<kEloRegexPattern>(
             base::NumberToString16(first_six_digits))) {
       return kEloCard;
+    }
+
+    if (((first_six_digits >= 506099 && first_six_digits <= 506198) ||
+         (first_six_digits >= 507865 && first_six_digits <= 507964) ||
+         (first_six_digits >= 650002 && first_six_digits <= 650027)) &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableVerveCardSupport)) {
+      return kVerveCard;
     }
   }
 

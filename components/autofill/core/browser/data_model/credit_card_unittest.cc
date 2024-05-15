@@ -2037,6 +2037,63 @@ INSTANTIATE_TEST_SUITE_P(
                     GetCardNetworkTestCase{"6550511446391275", kEloCard,
                                            true}));
 
+class GetCardNetworkTestForVerve
+    : public testing::TestWithParam<std::u16string> {
+ public:
+  GetCardNetworkTestForVerve() {
+    scoped_feature_list.InitAndEnableFeature(
+        features::kAutofillEnableVerveCardSupport);
+  }
+
+  GetCardNetworkTestForVerve(const GetCardNetworkTestForVerve&) = delete;
+  GetCardNetworkTestForVerve& operator=(const GetCardNetworkTestForVerve&) =
+      delete;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+TEST_P(GetCardNetworkTestForVerve, GetCardNetwork) {
+  SCOPED_TRACE(GetParam());
+  EXPECT_EQ(kVerveCard, CreditCard::GetCardNetwork(GetParam()));
+  EXPECT_TRUE(IsValidCreditCardNumber(GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardTest,
+    GetCardNetworkTestForVerve,
+    testing::Values(  // These card numbers have been randomly generated within
+                      // the defined Verve BIN ranges.
+        u"5060995764815772",
+        u"5060990806358451",
+        u"5060997273266067",
+        u"5060997740230613",
+        u"5060992737163430",
+        u"5061987110470625",
+        u"5061987445171377",
+        u"5061981765105453",
+        u"5061983034587008",
+        u"5061980318637566",
+        u"5078650770753174",
+        u"5078651316662341",
+        u"5078654408537421",
+        u"5078651087312688",
+        u"5078657863711753",
+        u"5079644313343253",
+        u"5079640116033778",
+        u"5079648281607102",
+        u"5079648238122783",
+        u"5079641364480216",
+        u"6500024766120234",
+        u"6500026554888641",
+        u"6500023336434125",
+        u"6500022576606814",
+        u"6500025257576727",
+        u"6500277710817343",
+        u"6500271430718311",
+        u"6500273357378327",
+        u"6500270580206358",
+        u"6500270130817308"));
+
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   "https://www.example.com/");
