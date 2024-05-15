@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
+import {PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelController} from 'chrome://os-print/js/summary_panel_controller.js';
@@ -18,6 +19,7 @@ suite('SummaryPanelController', () => {
   let controller: SummaryPanelController|null = null;
   let mockController: MockController;
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let previewTicketManger: PreviewTicketManager;
   let printTicketManger: PrintTicketManager;
   let eventTracker: EventTracker;
 
@@ -29,6 +31,7 @@ suite('SummaryPanelController', () => {
     // Setup fakes.
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
+    previewTicketManger = PreviewTicketManager.getInstance();
     printTicketManger = PrintTicketManager.getInstance();
 
     controller = new SummaryPanelController(eventTracker);
@@ -119,24 +122,45 @@ suite('SummaryPanelController', () => {
         mockController.verifyMocks();
       });
 
-  // Verify shouldDisablePrintButton is true when print request is in progress.
+  // Verify shouldDisablePrintButton is true when preview is loaded but print
+  // request is in progress.
   test(
       'shouldDisablePrintButton true while print request is in progress',
       () => {
+        // Set preview loaded to true since that can also disable the print
+        // button.
+        const previewRequestInProgressFn = mockController.createFunctionMock(
+            previewTicketManger, 'isPreviewLoaded');
+        previewRequestInProgressFn.returnValue = true;
+
         const printRequestInProgressFn = mockController.createFunctionMock(
             printTicketManger, 'isPrintRequestInProgress');
         printRequestInProgressFn.returnValue = true;
         assertTrue(controller!.shouldDisablePrintButton());
       });
 
-  // Verify shouldDisablePrintButton is false when print request is not in
-  // progress.
+  // Verify shouldDisablePrintButton is false when preview is loaded and print
+  // request is not in progress.
   test(
-      'shouldDisablePrintButton true while print request is in progress',
+      'shouldDisablePrintButton false while print request is not in progress',
       () => {
+        // Set preview loaded to true since that can also disable the print
+        // button.
+        const previewRequestInProgressFn = mockController.createFunctionMock(
+            previewTicketManger, 'isPreviewLoaded');
+        previewRequestInProgressFn.returnValue = true;
+
         const printRequestInProgressFn = mockController.createFunctionMock(
             printTicketManger, 'isPrintRequestInProgress');
         printRequestInProgressFn.returnValue = false;
         assertFalse(controller!.shouldDisablePrintButton());
       });
+
+  // Verify shouldDisablePrintButton is true when preview isn't loaded.
+  test('shouldDisablePrintButton true while preview is not loaded', () => {
+    const previewRequestInProgressFn = mockController.createFunctionMock(
+        previewTicketManger, 'isPreviewLoaded');
+    previewRequestInProgressFn.returnValue = false;
+    assertTrue(controller!.shouldDisablePrintButton());
+  });
 });

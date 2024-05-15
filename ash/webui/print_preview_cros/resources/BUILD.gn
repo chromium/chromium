@@ -18,6 +18,7 @@ build_webui("build") {
   non_web_component_files = [
     "js/data/destination_constants.ts",
     "js/data/destination_manager.ts",
+    "js/data/preview_ticket_manager.ts",
     "js/data/print_ticket_manager.ts",
     "js/data/ticket_constants.ts",
     "js/destination_dropdown_controller.ts",

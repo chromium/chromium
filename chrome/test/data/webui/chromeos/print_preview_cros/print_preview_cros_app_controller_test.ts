@@ -5,6 +5,7 @@
 import 'chrome://os-print/js/print_preview_cros_app_controller.js';
 
 import {DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
@@ -26,6 +27,7 @@ suite('PrintPreviewCrosAppController', () => {
 
     DestinationManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
+    PreviewTicketManager.resetInstanceForTesting();
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
 
@@ -35,6 +37,7 @@ suite('PrintPreviewCrosAppController', () => {
   teardown(() => {
     printPreviewPageHandler.reset();
     DestinationManager.resetInstanceForTesting();
+    PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
     mockTimer.uninstall();
   });
@@ -115,6 +118,31 @@ suite('PrintPreviewCrosAppController', () => {
         assertTrue(
             printTicketManager.isSessionInitialized(),
             'After initializeSession PrintTicketManager instance should be ' +
+                'initialized');
+      });
+
+  // Verify preview ticket manager is initialized after start session resolves.
+  test(
+      'on resolve of startSession calls PreviewTicketManager.initializeSession',
+      async () => {
+        printPreviewPageHandler.setTestDelay(testDelay);
+
+        const controller = new PrintPreviewCrosAppController();
+        assertTrue(!!controller, 'Unable to create controller');
+        const previewTicketManager = PreviewTicketManager.getInstance();
+        assertFalse(
+            previewTicketManager.isSessionInitialized(),
+            'Before initializeSession PreviewTicketManager instance should ' +
+                'not be initialized');
+
+        // Move timer forward to resolve startSession.
+        mockTimer.tick(testDelay);
+        await eventToPromise(
+            PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, previewTicketManager);
+
+        assertTrue(
+            previewTicketManager.isSessionInitialized(),
+            'After initializeSession PreviewTicketManager instance should be ' +
                 'initialized');
       });
 });

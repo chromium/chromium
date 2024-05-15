@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
+import {PREVIEW_REQUEST_FINISHED_EVENT, PREVIEW_REQUEST_STARTED_EVENT, PreviewTicketManager} from './data/preview_ticket_manager.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PrintTicketManager} from './data/print_ticket_manager.js';
 
 /**
@@ -23,6 +24,7 @@ export const SHEETS_USED_CHANGED_EVENT =
 // `summary-panel` element.
 export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
+  private previewTicketManager = PreviewTicketManager.getInstance();
   private printTicketManger = PrintTicketManager.getInstance();
 
   /**
@@ -31,6 +33,12 @@ export class SummaryPanelController extends EventTarget {
    */
   constructor(eventTracker: EventTracker) {
     super();
+    eventTracker.add(
+        this.previewTicketManager, PREVIEW_REQUEST_STARTED_EVENT,
+        () => this.onPreviewRequestStarted());
+    eventTracker.add(
+        this.previewTicketManager, PREVIEW_REQUEST_FINISHED_EVENT,
+        () => this.onPreviewRequestFinished());
     eventTracker.add(
         this.printTicketManger, PRINT_REQUEST_STARTED_EVENT,
         (e: Event) => this.onPrintRequestStarted(e));
@@ -75,6 +83,16 @@ export class SummaryPanelController extends EventTarget {
         new CustomEvent<void>(eventName, {bubbles: true, composed: true}));
   }
 
+  // Handles notifying UI to update state when preview request starts.
+  private onPreviewRequestStarted(): void {
+    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
+  }
+
+  // Handles notifying UI to update state when preview request finishes.
+  private onPreviewRequestFinished(): void {
+    this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
+  }
+
   // Handles notifying UI to update state when print request starts.
   private onPrintRequestStarted(_e: Event): void {
     this.dispatch(PRINT_BUTTON_DISABLED_CHANGED_EVENT);
@@ -87,7 +105,8 @@ export class SummaryPanelController extends EventTarget {
 
   // Whether the print button should be enabled for the current state.
   shouldDisablePrintButton(): boolean {
-    return this.printTicketManger.isPrintRequestInProgress();
+    return !this.previewTicketManager.isPreviewLoaded() ||
+        this.printTicketManger.isPrintRequestInProgress();
   }
 }
 

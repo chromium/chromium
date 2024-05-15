@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/summary_panel.js';
 
+import {PREVIEW_REQUEST_FINISHED_EVENT, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {SummaryPanelElement} from 'chrome://os-print/js/summary_panel.js';
@@ -35,6 +36,7 @@ suite('SummaryPanel', () => {
     mockController = new MockController();
     mockTimer = new MockTimer();
     mockTimer.install();
+    PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
@@ -61,6 +63,7 @@ suite('SummaryPanel', () => {
     controller = null;
     mockController?.reset();
     mockController = null;
+    PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
   });
 
@@ -72,6 +75,18 @@ suite('SummaryPanel', () => {
     controller.setSheetsUsedForTesting(sheetsUsed);
     await sheetsUsedEvent;
     flush();
+  }
+
+  // Initialize the session to request a preview and enable the print button.
+  async function waitForPreviewRequestFinished(delay: number = 1):
+      Promise<void> {
+    const previewTicketManger = PreviewTicketManager.getInstance();
+    const previewRequestFinishedEvent =
+        eventToPromise(PREVIEW_REQUEST_FINISHED_EVENT, previewTicketManger);
+    previewTicketManger.initializeSession(
+        FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    mockTimer.tick(delay);
+    await previewRequestFinishedEvent;
   }
 
   // Verify the summary-panel element can be rendered, contains print, cancel,
@@ -131,10 +146,15 @@ suite('SummaryPanel', () => {
 
   // Verify print button calls controller.handlePrintClicked functionality.
   test('click print triggers PrintPreviewPageHandler', async () => {
+    const delay = 1;
+    printPreviewPageHandler.setTestDelay(delay);
+
     assert(mockController);
     const handlePrintClickedMock =
         mockController.createFunctionMock(controller!, 'handlePrintClicked');
     handlePrintClickedMock.addExpectation();
+
+    await waitForPreviewRequestFinished();
 
     // Click print button.
     const printButton =
@@ -173,6 +193,8 @@ suite('SummaryPanel', () => {
         eventToPromise(PRINT_BUTTON_DISABLED_CHANGED_EVENT, controller);
     const delay = 10;
     printPreviewPageHandler.setTestDelay(delay);
+
+    await waitForPreviewRequestFinished(delay);
 
     const printButton =
         strictQuery<Button>(printButtonSelector, element!.shadowRoot, Button);

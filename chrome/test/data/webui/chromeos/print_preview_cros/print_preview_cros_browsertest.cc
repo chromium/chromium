@@ -90,6 +90,10 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PrintPreviewCrosAppTest) {
   RunTestAtPath("print_preview_cros_app_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PreviewTicketManagerTest) {
+  RunTestAtPath("preview_ticket_manager_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, PrintTicketManagerTest) {
   RunTestAtPath("print_ticket_manager_test.js");
 }
