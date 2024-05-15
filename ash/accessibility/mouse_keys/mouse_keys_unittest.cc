@@ -341,15 +341,9 @@ TEST_F(MouseKeysTest, Click) {
   SetEnabled(true);
   EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
-  auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  ASSERT_EQ(2u, mouse_events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
-  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
-  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 
   // We should not get any more events.
   ClearEvents();
@@ -591,15 +585,9 @@ TEST_F(MouseKeysTest, KeyboardLayout) {
   // Click
   PressAndReleaseColemakKey(ui::VKEY_U);
 
-  mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  ASSERT_EQ(2u, mouse_events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
-  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
-  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 
   ClearEvents();
   // Unmapped
@@ -796,15 +784,9 @@ TEST_F(MouseKeysTest, LeftHanded) {
   // We should be able to click by pressing w.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_W);
-  auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  ASSERT_EQ(2u, mouse_events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
-  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
-  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 
   // Enable Mouse Keys, and we should be able to move the mouse with 1, 2, 3, q,
   // e, a, s, d.
@@ -831,15 +813,9 @@ TEST_F(MouseKeysTest, NumPad) {
   // We should be able to click with the num pad 5.
   ClearEvents();
   PressAndReleaseKey(ui::VKEY_NUMPAD5);
-  auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
-  ASSERT_EQ(2u, mouse_events.size());
-  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
-  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
-  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
-  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
-  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+  ExpectClick(CheckForMouseEvents(), ui::EF_LEFT_MOUSE_BUTTON,
+              kDefaultPosition);
 
   // We should be able to move the mouse with the num pad.
   ClearEvents();
