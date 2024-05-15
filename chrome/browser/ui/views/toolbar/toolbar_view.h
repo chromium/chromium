@@ -158,6 +158,9 @@ class ToolbarView : public views::AccessiblePaneView,
   BatterySaverButton* battery_saver_button() const {
     return battery_saver_button_;
   }
+  PerformanceInterventionButton* performance_intervention_button() const {
+    return performance_intervention_button_;
+  }
   media_router::CastToolbarButton* cast_button() const { return cast_; }
   SidePanelToolbarContainer* side_panel_container() const {
     return side_panel_container_;

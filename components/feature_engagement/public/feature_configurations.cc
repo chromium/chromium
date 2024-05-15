@@ -374,6 +374,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPerformanceInterventionDialogFeature.name == feature->name) {
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show intervention dialog at most once per day and no more than 5 times
+    // per week.
+    config->trigger = EventConfig("performance_intervention_dialog_trigger",
+                                  Comparator(EQUAL, 0), 1, 360);
+    config->event_configs.insert(
+        EventConfig("performance_intervention_dialog_trigger",
+                    Comparator(LESS_THAN, 5), 7, 360));
+    return config;
+  }
+
   if (kIPHPowerBookmarksSidePanelFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

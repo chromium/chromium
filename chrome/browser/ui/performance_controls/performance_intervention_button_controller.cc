@@ -4,11 +4,21 @@
 
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 
+#include "base/functional/bind.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 
 PerformanceInterventionButtonController::
     PerformanceInterventionButtonController(
-        PerformanceInterventionButtonControllerDelegate* delegate) {
+        PerformanceInterventionButtonControllerDelegate* delegate,
+        Browser* browser)
+    : browser_(browser) {
   CHECK(delegate);
   delegate_ = delegate;
   CHECK(PerformanceDetectionManager::HasInstance());
@@ -31,6 +41,22 @@ PerformanceInterventionButtonController::
 void PerformanceInterventionButtonController::OnActionableTabListChanged(
     PerformanceDetectionManager::ResourceType type,
     PerformanceDetectionManager::ActionableTabsResult result) {
-  // TODO(crbug.com/338072465): Implement show/hide toolbar button functionality
-  delegate_->Show();
+  Profile* const profile = browser_->profile();
+  actionable_cpu_tabs_ = result;
+  if (!result.empty()) {
+    auto* const tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+    CHECK(tracker);
+    if (tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHPerformanceInterventionDialogFeature)) {
+      delegate_->Show();
+      // Immediately dismiss the feature engagement tracker because the
+      // performance intervention button shouldn't prevent other promos from
+      // showing.
+      tracker->Dismissed(
+          feature_engagement::kIPHPerformanceInterventionDialogFeature);
+    }
+  } else {
+    delegate_->Hide();
+  }
 }

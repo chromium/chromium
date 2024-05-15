@@ -444,7 +444,7 @@ void ToolbarView::Init() {
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceIntervention)) {
     performance_intervention_button_ = container_view_->AddChildView(
-        std::make_unique<PerformanceInterventionButton>());
+        std::make_unique<PerformanceInterventionButton>(browser_view_));
   }
 
   if (cast)

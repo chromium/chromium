@@ -42912,6 +42912,9 @@ should be able to be added at any place in this file.
   <suffix name="PasswordSuggestions" label="For PasswordSuggestions feature."/>
   <suffix name="PasswordsWebAppProfileSwitch"
       label="For PasswordsWebAppProfileSwitch feature."/>
+  <suffix name="PerformanceInterventionDialog"
+      label="For triggering the performance intervention dialog and toolbar
+             button feature."/>
   <suffix name="PerformanceNewBadge"
       label="For new badge next to Performance feature."/>
   <suffix name="PowerBookmarksSidePanel"

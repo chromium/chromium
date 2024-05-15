@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,7 +21,8 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/view_class_properties.h"
 
-PerformanceInterventionButton::PerformanceInterventionButton()
+PerformanceInterventionButton::PerformanceInterventionButton(
+    BrowserView* browser_view)
     : ToolbarButton(PressedCallback()) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -31,8 +33,10 @@ PerformanceInterventionButton::PerformanceInterventionButton()
                     ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   SetProperty(views::kElementIdentifierKey,
               kToolbarPerformanceInterventionButtonElementId);
+  SetVisible(false);
 
-  controller_ = std::make_unique<PerformanceInterventionButtonController>(this);
+  controller_ = std::make_unique<PerformanceInterventionButtonController>(
+      this, browser_view->browser());
 }
 
 PerformanceInterventionButton::~PerformanceInterventionButton() = default;
@@ -48,7 +52,7 @@ void PerformanceInterventionButton::Hide() {
 }
 
 void PerformanceInterventionButton::OnThemeChanged() {
-  views::View::OnThemeChanged();
+  ToolbarButton::OnThemeChanged();
   SetImageModel(
       ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(

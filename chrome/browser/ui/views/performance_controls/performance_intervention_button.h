@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class PerformanceInterventionButtonController;
+class BrowserView;
 
 class PerformanceInterventionButton
     : public ToolbarButton,
@@ -18,7 +19,7 @@ class PerformanceInterventionButton
   METADATA_HEADER(PerformanceInterventionButton, ToolbarButton)
 
  public:
-  PerformanceInterventionButton();
+  explicit PerformanceInterventionButton(BrowserView* browser_view);
   ~PerformanceInterventionButton() override;
 
   PerformanceInterventionButton(const PerformanceInterventionButton&) = delete;
@@ -31,6 +32,10 @@ class PerformanceInterventionButton
 
   // views::View:
   void OnThemeChanged() override;
+
+  PerformanceInterventionButtonController* controller() {
+    return controller_.get();
+  }
 
  private:
   std::unique_ptr<PerformanceInterventionButtonController> controller_;

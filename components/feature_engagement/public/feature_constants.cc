@@ -108,6 +108,9 @@ BASE_FEATURE(kIPHPasswordManagerShortcutFeature,
 BASE_FEATURE(kIPHPasswordSharingFeature,
              "IPH_PasswordSharingFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPerformanceInterventionDialogFeature,
+             "IPH_PerformanceInterventionDialogFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPowerBookmarksSidePanelFeature,
              "IPH_PowerBookmarksSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
