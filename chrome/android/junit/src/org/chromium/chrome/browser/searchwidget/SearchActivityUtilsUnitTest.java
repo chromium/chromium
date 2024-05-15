@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -37,7 +38,9 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -232,6 +235,11 @@ public class SearchActivityUtilsUnitTest {
         for (var testCase : cases) {
             SearchActivityClientImpl.requestOmniboxForResult(mActivity, GOOD_URL, testCase);
             var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+            // Referrer will likely be stripped by the Client part...
+            assertNull(IntentUtils.safeGetStringExtra(intent, SearchActivityExtras.EXTRA_REFERRER));
+
+            // ... so let's simulate scenario where it's a custom origin:
+            intent.putExtra(SearchActivityExtras.EXTRA_REFERRER, testCase);
             assertNull(SearchActivityUtils.getReferrer(intent));
         }
     }
@@ -441,5 +449,30 @@ public class SearchActivityUtilsUnitTest {
         assertArrayEquals(
                 new byte[] {1, 2, 3}, intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
         assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createIntentForStartActivity_fromUntrustedSource() {
+        Activity untrustedActivity = spy(Robolectric.buildActivity(Activity.class).setup().get());
+        doReturn("com.some.app").when(untrustedActivity).getPackageName();
+        var intent =
+                SearchActivityUtils.createIntentForStartActivity(
+                        untrustedActivity, getLoadUrlParamsBuilder().build());
+        assertNull(intent);
+    }
+
+    @Test
+    public void createIntentForStartActivity_fromSelf() {
+        var intent =
+                SearchActivityUtils.createIntentForStartActivity(
+                        mActivity, getLoadUrlParamsBuilder().build());
+
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT,
+                intent.getFlags());
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
     }
 }

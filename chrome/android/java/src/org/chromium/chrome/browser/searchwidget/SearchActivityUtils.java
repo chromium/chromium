@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.IntentHandler;
@@ -131,7 +132,10 @@ public class SearchActivityUtils {
             Context context, OmniboxLoadUrlParams params) {
         var intent =
                 createLoadUrlIntent(
-                        context, new ComponentName(context, ChromeLauncherActivity.class), params);
+                        context,
+                        new ComponentName(
+                                ContextUtils.getApplicationContext(), ChromeLauncherActivity.class),
+                        params);
         if (intent == null) return null;
 
         intent.setAction(Intent.ACTION_VIEW);
