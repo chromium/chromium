@@ -175,7 +175,7 @@ is_debug = false
 is_official_build = true
 target_cpu = "arm64"
 target_os = "fuchsia"
-use_goma = true  # If appropriate.
+use_remoteexec = true  # If appropriate.
 ```
 
 ### 2. Build

@@ -127,7 +127,7 @@ strip_absolute_paths_from_debug_symbols = true
 symbol_level = 1
 system_webview_package_name = "com.google.android.webview"
 target_os = "android"
-use_goma = true
+use_remoteexec = true
 ```
 
 ## Bot selection criteria

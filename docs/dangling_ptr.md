@@ -51,7 +51,7 @@ gn args ./out/dangling/
 ```
 
 ```gn
-use_goma = true
+use_remoteexec = true
 is_debug = false  # Important! (*)
 is_component_build = false  # Important! (*)
 dcheck_always_on = true
