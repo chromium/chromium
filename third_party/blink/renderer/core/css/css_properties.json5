@@ -5406,7 +5406,8 @@
       property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
-      field_template: "external",
+      field_template: "primitive",
+      field_size: 6,  // Sync with `TextBoxEdge::kBits`.
       include_paths: ["third_party/blink/renderer/core/style/text_box_edge.h"],
       default_value: "TextBoxEdge()",
       type_name: "TextBoxEdge",

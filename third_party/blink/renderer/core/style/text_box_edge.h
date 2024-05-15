@@ -28,12 +28,29 @@ class CORE_EXPORT TextBoxEdge {
 
     // kIdeographic, not implemented.
     // kIdeographicInk, not implemented.
+
+    // When adding values, ensure the following constants and the `field_size`
+    // in `css_properties.json5` are in sync.
   };
 
-  TextBoxEdge() : TextBoxEdge(Type::kLeading, Type::kLeading) {}
-  explicit TextBoxEdge(Type over)
+  static constexpr unsigned kTypeBits = 3;
+  static constexpr unsigned kTypeMask = (1 << kTypeBits) - 1;
+  // The number of bits needed when storing `TextBoxEdge` as `unsigned`.
+  static constexpr unsigned kBits = kTypeBits * 2;
+
+  constexpr TextBoxEdge() : TextBoxEdge(Type::kLeading, Type::kLeading) {}
+  explicit constexpr TextBoxEdge(Type over)
       : TextBoxEdge(over, ComputeMissingUnderEdge(over)) {}
-  TextBoxEdge(Type over, Type under) : over_(over), under_(under) {}
+  constexpr TextBoxEdge(Type over, Type under) : over_(over), under_(under) {}
+
+  // Convert from/to `unsigned` to store in a bit field in `ComputedStyle`.
+  explicit constexpr TextBoxEdge(unsigned value)
+      : TextBoxEdge(static_cast<Type>(value & kTypeMask),
+                    static_cast<Type>((value >> kTypeBits) & kTypeMask)) {}
+  explicit constexpr operator unsigned() const {
+    return static_cast<unsigned>(over_) |
+           (static_cast<unsigned>(under_) << kTypeBits);
+  }
 
   bool operator==(const TextBoxEdge& other) const {
     return over_ == other.Over() && under_ == other.Under();
@@ -60,6 +77,9 @@ class CORE_EXPORT TextBoxEdge {
   Type over_;
   Type under_;
 };
+
+// The initial value being 0 is preferred for performance reasons.
+static_assert(static_cast<unsigned>(TextBoxEdge()) == 0);
 
 }  // namespace blink
 
