@@ -2880,6 +2880,8 @@ static_library("browser") {
       "android/consent_auditor/consent_auditor_bridge.cc",
       "android/content/content_utils.cc",
       "android/content/web_contents_factory.cc",
+      "android/content/web_contents_factory_data_deleter.cc",
+      "android/content/web_contents_factory_data_deleter.h",
       "android/context_menu/context_menu_native_delegate_impl.cc",
       "android/context_menu/context_menu_native_delegate_impl.h",
       "android/contextualsearch/contextual_search_manager.cc",

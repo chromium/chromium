@@ -24241,6 +24241,8 @@ from previous Chrome versions.
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
   <int value="1304892658" label="AuthenticateUsingNewWindowsHelloApi:disabled"/>
+  <int value="1305339782"
+      label="MayLaunchUrlUsesSeparateStoragePartition:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1306412559" label="FastPairPwaCompanion:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>
@@ -24377,6 +24379,8 @@ from previous Chrome versions.
   <int value="1369022678" label="OrganicRepeatableQueries:disabled"/>
   <int value="1369449914" label="SysInternals:disabled"/>
   <int value="1369649674" label="ChromeShareScreenshot:enabled"/>
+  <int value="1369663360"
+      label="MayLaunchUrlUsesSeparateStoragePartition:enabled"/>
   <int value="1370797930" label="ShowBluetoothDeviceBattery:enabled"/>
   <int value="1371092708" label="disable-desktop-capture-picker-old-ui"/>
   <int value="1371190773"

@@ -7077,6 +7077,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMagicStackAndroidVariations,
                                     "MagicStackAndroid")},
 
+    {"maylaunchurl-uses-separate-storage-partition",
+     flag_descriptions::kMayLaunchUrlUsesSeparateStoragePartitionName,
+     flag_descriptions::kMayLaunchUrlUsesSeparateStoragePartitionDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kMayLaunchUrlUsesSeparateStoragePartition)},
+
     {"enable-segmentation-platform-android-home-module-ranker",
      flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerName,
      flag_descriptions::kSegmentationPlatformAndroidHomeModuleRankerDescription,

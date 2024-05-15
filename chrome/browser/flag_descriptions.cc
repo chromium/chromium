@@ -4244,6 +4244,13 @@ const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "
     "NTPs on Android.";
 
+const char kMayLaunchUrlUsesSeparateStoragePartitionName[] =
+    "MayLaunchUrl Uses Separate Storage Partition";
+const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
+    "Forces MayLaunchUrl to use a new, ephemeral, storage partition for the "
+    "url given to it. This is an experimental feature and may reduce "
+    "performance.";
+
 const char kSegmentationPlatformAndroidHomeModuleRankerName[] =
     "Segmentation platform Android home module ranker";
 const char kSegmentationPlatformAndroidHomeModuleRankerDescription[] =

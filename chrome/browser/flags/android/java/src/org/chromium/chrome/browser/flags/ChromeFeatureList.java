@@ -337,6 +337,8 @@ public abstract class ChromeFeatureList {
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
+    public static final String MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION =
+            "MayLaunchUrlUsesSeparateStoragePartition";
     public static final String MESSAGES_FOR_ANDROID_ADS_BLOCKED = "MessagesForAndroidAdsBlocked";
     public static final String MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES =
             "MigrateAccountManagementSettingsToCapabilities";

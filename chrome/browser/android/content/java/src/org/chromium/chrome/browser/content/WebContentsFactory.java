@@ -31,6 +31,22 @@ public class WebContentsFactory {
     }
 
     /**
+     * A factory method to build a {@link WebContents} object with an separate and ephemeral
+     * StoragePartition. This functionality is for an experiment and is tailored to that
+     * experiment's use case. This WebContents is also initially hidden and does not initialize the
+     * renderer.
+     *
+     * @param profile The profile with which the {@link WebContents} should be built.
+     * @return A newly created {@link WebContents} object.
+     */
+    public static WebContents createWebContentsWithSeparateStoragePartitionForExperiment(
+            Profile profile) {
+        return WebContentsFactoryJni.get()
+                .createWebContentsWithSeparateStoragePartitionForExperiment(
+                        profile, new WebContentsCreationException());
+    }
+
+    /**
      * A factory method to build a {@link WebContents} object.
      *
      * @param profile The profile with which the {@link WebContents} should be built.
@@ -68,5 +84,8 @@ public class WebContentsFactory {
                 boolean initiallyHidden,
                 boolean initializeRenderer,
                 Throwable javaCreator);
+
+        WebContents createWebContentsWithSeparateStoragePartitionForExperiment(
+                @JniType("Profile*") Profile profile, Throwable javaCreator);
     }
 }

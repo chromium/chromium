@@ -8,6 +8,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_D
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,17 +23,24 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
@@ -42,20 +50,29 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for CustomTabsConnection. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class CustomTabsConnectionTest {
     private CustomTabsConnection mCustomTabsConnection;
     private static final String URL = "http://www.google.com";
     private static final String URL2 = "https://www.android.com";
+    private static final String URL3 = "https://example.com";
     private static final String INVALID_SCHEME_URL = "intent://www.google.com";
+
+    @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Before
     public void setUp() {
@@ -375,6 +392,172 @@ public class CustomTabsConnectionTest {
                 () ->
                         Assert.assertNull(
                                 WarmupManager.getInstance().takeSpareWebContents(false, false)));
+    }
+
+    /**
+     * Tests that the tab used my mayLaunchUrl's high confidence mode uses a separate, empty, cookie
+     * jar from the normal navigations.
+     */
+    @Test
+    @SmallTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @EnableFeatures(ChromeFeatureList.MAYLAUNCHURL_USES_SEPARATE_STORAGE_PARTITION)
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+    public void testMayLaunchUrlUsesSeparateCookieJar() throws Exception {
+        // This test has 4 major parts.
+        // 1. Launch a custom tab and set a cookie.
+        // 2. Launch a hidden tab to the same site via mayLaunchUrl, set a different cookie, and
+        // confirm only that cookie is accessible.
+        // 3. Launch a second hidden tab, set a third cookie, and confirm only that cookie is
+        // accessible.
+        // 4. Launch a second custom tab and confirm that it sees the third cookie.
+        // 5. Launch a third custom tab and confirm that it sees the first cookie.
+
+        Context context = ApplicationProvider.getApplicationContext();
+
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+
+        EmbeddedTestServer server =
+                EmbeddedTestServer.createAndStartHTTPSServer(context, ServerCertificate.CERT_OK);
+        final String url = server.getURL("/chrome/test/data/android/simple.html");
+
+        final OnEvaluateJavaScriptResultHelper JsHelper = new OnEvaluateJavaScriptResultHelper();
+
+        // Launch a custom tab and load the url.
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        mCustomTabActivityTestRule.launchActivity(intent);
+        Tab normalTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+
+        // We can check if the page title is correct to know if the tab is done loading.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                normalTab.getWebContents().getTitle(),
+                                Matchers.is("Activity test page")));
+        // Set a cookie.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    JsHelper.evaluateJavaScriptForTests(
+                            normalTab.getWebContents(),
+                            "document.cookie = \"foo=bar; max-age = 1000 \";" + " document.cookie");
+                });
+
+        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        // Verify the tab has the expected cookie.
+        Assert.assertEquals("\"foo=bar\"", JsHelper.getJsonResultAndClear());
+        mCustomTabActivityTestRule.getActivity().finish();
+
+        // Launch the first hidden tab. This tab should use a separate storage partition and
+        // therefore shouldn't see the first cookie.
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Intent intent2 = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent2);
+        Assert.assertTrue("Failed newSession()", mCustomTabsConnection.newSession(token));
+        mCustomTabsConnection.setCanUseHiddenTabForSession(token, true);
+
+        Assert.assertTrue(
+                "Failed first mayLaunchUrl()",
+                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(url), null, null));
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                mCustomTabsConnection.getSpeculationParamsForTesting(),
+                                Matchers.notNullValue()));
+        Tab hiddenTab = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                hiddenTab.getWebContents().getTitle(),
+                                Matchers.is("Activity test page")));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    JsHelper.evaluateJavaScriptForTests(
+                            hiddenTab.getWebContents(),
+                            "document.cookie = \"foo_hidden=bar; max-age =1000 \";"
+                                    + " document.cookie");
+                });
+
+        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        // The hidden tab should only see the cookie it set.
+        Assert.assertEquals("\"foo_hidden=bar\"", JsHelper.getJsonResultAndClear());
+
+        // Launch another hidden tab. Doing this closes the first hidden tab and causes the cookie
+        // jar to be cleared.
+        mCustomTabsConnection.resetThrottling(Process.myUid());
+        Assert.assertTrue(
+                "Failed second mayLaunchUrl()",
+                mCustomTabsConnection.mayLaunchUrl(token, Uri.parse(url), null, null));
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                mCustomTabsConnection.getSpeculationParamsForTesting(),
+                                Matchers.notNullValue()));
+        Tab hiddenTab2 = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                hiddenTab2.getWebContents().getTitle(),
+                                Matchers.is("Activity test page")));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    JsHelper.evaluateJavaScriptForTests(
+                            hiddenTab2.getWebContents(), "document.cookie=\"foo_hidden2=baz\"");
+                });
+
+        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        // The second hidden tab should only have the cookie it set.
+        Assert.assertEquals("\"foo_hidden2=baz\"", JsHelper.getJsonResultAndClear());
+
+        // Launch the second custom tab. Because there is already a hidden tab for the same url this
+        // custom tab should just re-use the hidden tab. This means that this tab will use the same
+        // storage partition and therefore access the same cookie.
+        mCustomTabActivityTestRule.launchActivity(intent2);
+        Tab normalTab2 = mCustomTabActivityTestRule.getActivity().getActivityTab();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                normalTab2.getWebContents().getTitle(),
+                                Matchers.is("Activity test page")));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    JsHelper.evaluateJavaScriptForTests(
+                            normalTab2.getWebContents(), "document.cookie");
+                });
+
+        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        // This custom tab should see the third cookie set.
+        Assert.assertEquals("\"foo_hidden2=baz\"", JsHelper.getJsonResultAndClear());
+
+        // Finally, launch a third custom tab. Because there isn't an associated mayLaunchUrl this
+        // custom tab will use the default storage partition and will access the first cookie.
+        Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup(0));
+        Intent intent3 = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url);
+        mCustomTabActivityTestRule.launchActivity(intent3);
+        Tab normalTab3 = mCustomTabActivityTestRule.getActivity().getActivityTab();
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                normalTab3.getWebContents().getTitle(),
+                                Matchers.is("Activity test page")));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    JsHelper.evaluateJavaScriptForTests(
+                            normalTab3.getWebContents(), "document.cookie");
+                });
+
+        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        // This custom tab should see the third cookie set.
+        Assert.assertEquals("\"foo=bar\"", JsHelper.getJsonResultAndClear());
     }
 
     private void assertSpareWebContentsNotNullAndDestroy() {

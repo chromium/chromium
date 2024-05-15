@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
@@ -99,6 +100,8 @@ public class HiddenTabHolder {
      *     PostMessage.
      * @param url The URL to load into the Tab.
      * @param extras Extras to be passed that may contain referrer information.
+     * @param webContents The {@link WebContents} to use in the hidden tab. If null the default is
+     *     used.
      */
     void launchUrlInHiddenTab(
             Callback<Tab> tabCreatedCallback,
@@ -106,7 +109,8 @@ public class HiddenTabHolder {
             Profile profile,
             ClientManager clientManager,
             String url,
-            @Nullable Bundle extras) {
+            @Nullable Bundle extras,
+            @Nullable WebContents webContents) {
         assert mSpeculation == null;
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
@@ -115,7 +119,7 @@ public class HiddenTabHolder {
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
         WarmupManager warmupManager = WarmupManager.getInstance();
-        warmupManager.createRegularSpareTab(profile);
+        warmupManager.createRegularSpareTab(profile, webContents);
         // In case creating the tab fails for some reason.
         if (!warmupManager.hasSpareTab(profile)) return;
         Tab tab =

@@ -220,6 +220,22 @@ public class WarmupManager {
      * <p>The tab's launch type will be set when the tab is used.
      */
     public void createRegularSpareTab(Profile profile) {
+        createRegularSpareTab(profile, /* webContents= */ null);
+    }
+
+    /**
+     * Creates and initializes a Regular (non-Incognito) spare Tab, to be used for a subsequent
+     * navigation.
+     *
+     * <p>This creates a WebContents and initializes renderer if SPARE_TAB_INITIALIZE_RENDERER is
+     * true. Can be called multiple times, and must be called from the UI thread.
+     *
+     * <p>The tab's launch type will be set when the tab is used.
+     *
+     * <p>* @param webContents The {@link WebContents} to use in the tab. If null the default is
+     * used.
+     */
+    public void createRegularSpareTab(Profile profile, @Nullable WebContents webContents) {
         ThreadUtils.assertOnUiThread();
         assert !profile.isOffTheRecord();
         try (TraceEvent e = TraceEvent.scoped("WarmupManager.createSpareTab")) {
@@ -231,7 +247,7 @@ public class WarmupManager {
             if (mSpareTab != null) return;
 
             // Build a spare detached tab.
-            Tab spareTab = buildDetachedSpareTab(profile);
+            Tab spareTab = buildDetachedSpareTab(profile, webContents);
 
             mSpareTab = spareTab;
             assert mSpareTab != null : "Building a spare detached tab shouldn't return null.";
@@ -249,10 +265,11 @@ public class WarmupManager {
      *
      * <p>Also performs general tab initialization as well as detached specifics.
      *
+     * @param webContents The {@link WebContents} to use in the tab. If null the default is used.
      * @return The newly created and initialized spare tab.
      *     <p>TODO(crbug.com/40255340): Adapt this method to create other tabs.
      */
-    private Tab buildDetachedSpareTab(Profile profile) {
+    private Tab buildDetachedSpareTab(Profile profile, @Nullable WebContents webContents) {
         Context context = ContextUtils.getApplicationContext();
 
         // These are effectively unused as they will be set when finishing reparenting.
@@ -269,6 +286,7 @@ public class WarmupManager {
                         .setDelegateFactory(delegateFactory)
                         .setInitiallyHidden(true)
                         .setInitializeRenderer(true)
+                        .setWebContents(webContents)
                         .build();
 
         // Resize the webContents to avoid expensive post load resize when attaching the tab.
