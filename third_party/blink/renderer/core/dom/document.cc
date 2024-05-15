@@ -1773,6 +1773,9 @@ CaretPosition* Document::caretPositionFromPoint(
   }
 
   Node* anchor_node = position_with_affinity.AnchorNode();
+  if (TextControlElement* text_control = EnclosingTextControl(anchor_node)) {
+    anchor_node = text_control;
+  }
   bool adjust_position = false;
   while (anchor_node->IsInShadowTree() &&
          !shadow_roots.Contains(anchor_node->GetTreeScope())) {

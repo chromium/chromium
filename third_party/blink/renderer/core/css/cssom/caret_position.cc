@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 
 namespace blink {
 
@@ -19,10 +20,8 @@ Node* CaretPosition::offsetNode() const {
     return nullptr;
   }
 
-  if (ShadowRoot* root = node_->ContainingShadowRoot()) {
-    if (root->IsUserAgent()) {
-      return node_->OwnerShadowHost();
-    }
+  if (Node* text_control = EnclosingTextControl(node_)) {
+    return text_control;
   }
   return node_;
 }
