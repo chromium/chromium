@@ -43,6 +43,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   bool ExecuteJavaScript(
       const std::u16string& script,
       base::OnceCallback<void(const base::Value*, NSError*)> callback) override;
+  base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   // FakeWebFrame:
   std::u16string GetLastJavaScriptCall() const override;
@@ -109,6 +110,8 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   raw_ptr<BrowserState> browser_state_;
 
   base::RepeatingClosure call_java_script_function_callback_;
+
+  base::WeakPtrFactory<WebFrame> weak_ptr_factory_{this};
 };
 
 }  // namespace web

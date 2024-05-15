@@ -190,6 +190,10 @@ bool WebFrameImpl::ExecuteJavaScript(
                                          std::move(callback));
 }
 
+base::WeakPtr<WebFrame> WebFrameImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool WebFrameImpl::ExecuteJavaScriptInContentWorld(
     const std::u16string& script,
     JavaScriptContentWorld* content_world,
@@ -252,7 +256,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
 
   void (^completion_handler)(id, NSError*) = nil;
   if (reply_with_result) {
-    base::WeakPtr<WebFrameImpl> weak_frame = base::AsWeakPtr(this);
+    base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
     completion_handler = ^void(id value, NSError* error) {
       if (error) {
         LogScriptWarning(script, error);

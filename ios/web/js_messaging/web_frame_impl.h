@@ -11,6 +11,7 @@
 
 #include "base/cancelable_callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "ios/web/js_messaging/web_frame_internal.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -24,9 +25,9 @@ namespace web {
 
 class JavaScriptContentWorld;
 
-class WebFrameImpl : public WebFrame,
-                     public WebFrameInternal,
-                     public web::WebStateObserver {
+class WebFrameImpl final : public WebFrame,
+                           public WebFrameInternal,
+                           public web::WebStateObserver {
  public:
   // Creates a new WebFrame.
   WebFrameImpl(WKFrameInfo* frame_info,
@@ -64,6 +65,7 @@ class WebFrameImpl : public WebFrame,
       base::OnceCallback<void(const base::Value*)> callback) override;
   bool ExecuteJavaScript(const std::u16string& script,
                          ExecuteJavaScriptCallbackWithError callback) override;
+  base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   // WebFrameContentWorldAPI:
   bool CallJavaScriptFunctionInContentWorld(
@@ -164,6 +166,8 @@ class WebFrameImpl : public WebFrame,
   GURL security_origin_;
   // The associated web state.
   raw_ptr<web::WebState> web_state_ = nullptr;
+
+  base::WeakPtrFactory<WebFrameImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace web

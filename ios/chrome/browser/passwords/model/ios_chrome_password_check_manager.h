@@ -42,9 +42,8 @@ enum class PasswordCheckState {
 };
 
 // This class handles the bulk password check feature.
-class IOSChromePasswordCheckManager
-    : public base::SupportsWeakPtr<IOSChromePasswordCheckManager>,
-      public base::RefCounted<IOSChromePasswordCheckManager>,
+class IOSChromePasswordCheckManager final
+    : public base::RefCounted<IOSChromePasswordCheckManager>,
       public password_manager::SavedPasswordsPresenter::Observer,
       public password_manager::InsecureCredentialsManager::Observer,
       public password_manager::BulkLeakCheckServiceInterface::Observer {
@@ -85,6 +84,10 @@ class IOSChromePasswordCheckManager
 
   // Unmutes the provided muted compromised credential.
   void UnmuteCredential(const password_manager::CredentialUIEntry& credential);
+
+  base::WeakPtr<IOSChromePasswordCheckManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   friend class base::RefCounted<IOSChromePasswordCheckManager>;

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PRICE_INSIGHTS_MODEL_PRICE_INSIGHTS_MODEL_H_
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/commerce/core/commerce_types.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
@@ -60,7 +61,8 @@ struct PriceInsightsExecution {
 
 // Price Insights contextual panel model object responsible for managing Price
 // Insights functionality.
-class PriceInsightsModel : public ContextualPanelModel, public KeyedService {
+class PriceInsightsModel final : public ContextualPanelModel,
+                                 public KeyedService {
  public:
   PriceInsightsModel();
   PriceInsightsModel(const PriceInsightsModel&) = delete;

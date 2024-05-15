@@ -177,6 +177,10 @@ bool FakeWebFrameImpl::ExecuteJavaScript(
   return !error;
 }
 
+base::WeakPtr<WebFrame> FakeWebFrameImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool FakeWebFrameImpl::ExecuteJavaScriptInContentWorld(
     const std::u16string& script,
     JavaScriptContentWorld* content_world,

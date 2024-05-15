@@ -13,8 +13,7 @@ enum class ContextualPanelItemType;
 
 // Data to configure a Contextual Panel item. Individual features can subclass
 // this to add their own data.
-struct ContextualPanelItemConfiguration
-    : public base::SupportsWeakPtr<ContextualPanelItemConfiguration> {
+struct ContextualPanelItemConfiguration {
   // A constant defined to always be a high relevance amount.
   static const int high_relevance;
 
@@ -59,6 +58,8 @@ struct ContextualPanelItemConfiguration
   // the user. Individual panel models can use one of the provided constants or
   // set their own value.
   int relevance;
+
+  base::WeakPtrFactory<ContextualPanelItemConfiguration> weak_ptr_factory{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_ITEM_CONFIGURATION_H_

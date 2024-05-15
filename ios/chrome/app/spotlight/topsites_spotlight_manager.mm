@@ -64,8 +64,7 @@ class SpotlightTopSitesCallbackBridge;
 
 @end
 
-class SpotlightTopSitesCallbackBridge
-    : public base::SupportsWeakPtr<SpotlightTopSitesCallbackBridge> {
+class SpotlightTopSitesCallbackBridge final {
  public:
   explicit SpotlightTopSitesCallbackBridge(TopSitesSpotlightManager* owner)
       : owner_(owner) {}
@@ -76,8 +75,13 @@ class SpotlightTopSitesCallbackBridge
     [owner_ onMostVisitedURLsAvailable:data];
   }
 
+  base::WeakPtr<SpotlightTopSitesCallbackBridge> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   __weak TopSitesSpotlightManager* owner_;
+  base::WeakPtrFactory<SpotlightTopSitesCallbackBridge> weak_ptr_factory_{this};
 };
 
 class SpotlightTopSitesBridge : public history::TopSitesObserver {

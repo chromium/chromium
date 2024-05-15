@@ -11,15 +11,13 @@
 #include <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 
 namespace web {
 
-class WebUIIOSImpl : public web::WebUIIOS,
-                     public base::SupportsWeakPtr<WebUIIOSImpl> {
+class WebUIIOSImpl : public web::WebUIIOS {
  public:
   explicit WebUIIOSImpl(WebState* web_state);
 

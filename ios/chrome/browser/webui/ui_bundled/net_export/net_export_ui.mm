@@ -49,7 +49,6 @@ web::WebUIIOSDataSource* CreateNetExportHTMLSource() {
 // this class's member methods are expected to run on the UI thread.
 class NetExportMessageHandler
     : public web::WebUIIOSMessageHandler,
-      public base::SupportsWeakPtr<NetExportMessageHandler>,
       public net_log::NetExportFileWriter::StateObserver {
  public:
   NetExportMessageHandler();
@@ -85,13 +84,10 @@ class NetExportMessageHandler
   base::ScopedObservation<net_log::NetExportFileWriter,
                           net_log::NetExportFileWriter::StateObserver>
       state_observation_manager_{this};
-
-  base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
 };
 
 NetExportMessageHandler::NetExportMessageHandler()
-    : file_writer_(GetApplicationContext()->GetNetExportFileWriter()),
-      weak_ptr_factory_(this) {
+    : file_writer_(GetApplicationContext()->GetNetExportFileWriter()) {
   file_writer_->Initialize();
 }
 

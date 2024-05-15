@@ -48,8 +48,7 @@ enum class IOSDownloadARModelState {
 
 // TabHelper to download and preview USDZ format 3D models for AR.
 class ARQuickLookTabHelper
-    : public base::SupportsWeakPtr<ARQuickLookTabHelper>,
-      public web::DownloadTaskObserver,
+    : public web::DownloadTaskObserver,
       public web::LazyWebStateUserData<ARQuickLookTabHelper> {
  public:
   ARQuickLookTabHelper(const ARQuickLookTabHelper&) = delete;

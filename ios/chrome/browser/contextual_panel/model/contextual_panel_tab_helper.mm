@@ -164,7 +164,7 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
 
     if (response.configuration) {
       sorted_weak_configurations_.push_back(
-          response.configuration->AsWeakPtr());
+          response.configuration->weak_ptr_factory.GetWeakPtr());
     }
   }
 

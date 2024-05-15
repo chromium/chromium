@@ -27,8 +27,7 @@ extern const double kJavaScriptFunctionCallDefaultTimeout;
 using ExecuteJavaScriptCallbackWithError =
     base::OnceCallback<void(const base::Value*, NSError* error)>;
 
-class WebFrame : public base::SupportsUserData,
-                 public base::SupportsWeakPtr<WebFrame> {
+class WebFrame : public base::SupportsUserData {
  public:
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
@@ -92,6 +91,9 @@ class WebFrame : public base::SupportsUserData,
 
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
+
+  // Gets a weak pointer to the instance.
+  virtual base::WeakPtr<WebFrame> AsWeakPtr() = 0;
 
   WebFrame(const WebFrame&) = delete;
   WebFrame& operator=(const WebFrame&) = delete;

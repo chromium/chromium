@@ -45,7 +45,7 @@ void PolicyDecisionStateTracker::FinishedRequestingDecisions(
   decision_closure_ = base::BarrierClosure(
       num_decisions_requested - num_decisions_received_,
       base::BindOnce(&PolicyDecisionStateTracker::OnFinalResultDetermined,
-                     AsWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PolicyDecisionStateTracker::OnFinalResultDetermined() {
