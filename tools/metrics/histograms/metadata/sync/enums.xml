@@ -1032,12 +1032,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Shutdown"/>
   <int value="1" label="Unrecoverable error"/>
   <int value="2" label="Disabled account"/>
-  <int value="3" label="Requested pref change"/>
+  <int value="3"
+      label="(Obsolete) Requested pref change. Removed 04/2024 (and not used
+             for some time before that)"/>
   <int value="4" label="Stop and clear"/>
   <int value="5"
       label="(Obsolete) Set sync allowed by platform. Removed 01/2022."/>
   <int value="6" label="Credentials updated"/>
   <int value="7" label="Reset local Sync data"/>
+  <int value="8" label="Not signed in"/>
+  <int value="9" label="Enterprise policy"/>
+  <int value="10" label="Disable sync on client"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_impl.h:SyncResetEngineReason) -->

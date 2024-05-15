@@ -383,7 +383,7 @@ void SyncServiceImpl::Initialize() {
   // If sync is disabled permanently, clean up old data that may be around (e.g.
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY)) {
-    StopAndClear();
+    StopAndClear(ResetEngineReason::kEnterprisePolicy);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
     // removed, for historic reasons. It is unclear if this behavior is
@@ -400,7 +400,7 @@ void SyncServiceImpl::Initialize() {
     // first startup of a fresh profile, the signed-in account isn't known yet
     // at this point (see also https://crbug.com/1458701#c7).
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    StopAndClear();
+    StopAndClear(ResetEngineReason::kNotSignedIn);
 #endif
   }
 
@@ -512,6 +512,9 @@ ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
     case ResetEngineReason::kDisabledAccount:
     case ResetEngineReason::kResetLocalData:
     case ResetEngineReason::kStopAndClear:
+    case ResetEngineReason::kNotSignedIn:
+    case ResetEngineReason::kEnterprisePolicy:
+    case ResetEngineReason::kDisableSyncOnClient:
       return ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
   }
 }
@@ -522,7 +525,7 @@ void SyncServiceImpl::AccountStateChanged() {
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.
     sync_disabled_by_admin_ = false;
-    StopAndClear();
+    StopAndClear(ResetEngineReason::kNotSignedIn);
     DCHECK(!engine_);
   } else {
     // Either a new account was signed in, or the existing account's
@@ -1168,7 +1171,7 @@ void SyncServiceImpl::OnActionableProtocolError(
       // Note: This method might get called again in the following code when
       // clearing the primary account. But due to rarity of the event, this
       // should be okay.
-      StopAndClear();
+      StopAndClear(ResetEngineReason::kDisableSyncOnClient);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Ash, the primary account is always set and sync the feature
@@ -1848,7 +1851,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 
   if (is_sync_managed) {
-    StopAndClear();
+    StopAndClear(ResetEngineReason::kEnterprisePolicy);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
     // removed, for historic reasons. It is unclear if this behavior is
@@ -2250,21 +2253,25 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClient() {
 }
 
 void SyncServiceImpl::StopAndClear() {
+  StopAndClear(ResetEngineReason::kStopAndClear);
+}
+
+void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ClearUnrecoverableError();
-  ResetEngine(ResetEngineReason::kStopAndClear);
-  // Note: ResetEngine(kStopAndClear) does *not* clear prefs which
-  // are directly user-controlled such as the set of selected types here, so
-  // that if the user ever chooses to enable Sync again, they start off with
-  // their previous settings by default. We do however require going through
-  // first-time setup again and set SyncRequested to false.
+  ResetEngine(reset_engine_reason);
+
   // For explicit passphrase users, clear the encryption key, such that they
   // will need to reenter it if sync gets re-enabled. Note: the gaia-keyed
   // passphrase pref should be cleared before clearing
   // InitialSyncFeatureSetupComplete().
   sync_prefs_.ClearAllEncryptionBootstrapTokens();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Note: ResetEngine() does *not* clear directly user-controlled prefs (such
+  // as the set of selected types), so that if the user ever chooses to enable
+  // Sync again, they start off with their previous settings by default.
+  // However, they do have to go through the initial setup again.
   sync_prefs_.ClearInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
