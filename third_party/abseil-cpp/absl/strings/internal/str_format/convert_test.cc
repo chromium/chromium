@@ -844,15 +844,13 @@ void TestWithMultipleFormatsHelper(Floating tested_float) {
         // Apple formats NaN differently (+nan) vs. (nan)
         if (std::isnan(tested_float)) continue;
 #endif
-        if (string_printf_result != str_format_result) {
-          // We use ASSERT_EQ here because failures are usually correlated and a
-          // bug would print way too many failed expectations causing the test
-          // to time out.
-          ASSERT_EQ(string_printf_result, str_format_result)
-              << fmt_str << " " << StrPrint("%.18g", tested_float) << " "
-              << StrPrint("%a", tested_float) << " "
-              << StrPrint("%.50f", tested_float);
-        }
+        // We use ASSERT_EQ here because failures are usually correlated and a
+        // bug would print way too many failed expectations causing the test
+        // to time out.
+        ASSERT_EQ(string_printf_result, str_format_result)
+            << fmt_str << " " << StrPrint("%.18g", tested_float) << " "
+            << StrPrint("%a", tested_float) << " "
+            << StrPrint("%.50f", tested_float);
     }
   }
 }

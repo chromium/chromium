@@ -33,10 +33,8 @@ namespace debugging_internal {
 // call-stack space.  It is suitable for symbolizing stack traces in a signal
 // handler.
 //
-// The demangling logic is under development.  In this version of Abseil,
-// DemangleRustSymbolEncoding parses a few simple kinds of symbol names, but
-// nothing having backreferences in the input or angle brackets in the
-// demangling, and it emits raw Punycode instead of the UTF-8 represented by it.
+// The demangling logic is under development; search for "not yet implemented"
+// in the .cc file to see where the gaps are.
 bool DemangleRustSymbolEncoding(const char* mangled, char* out,
                                 std::size_t out_size);
 

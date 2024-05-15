@@ -58,12 +58,12 @@
 #include <cstring>
 #include <exception>
 #include <functional>
-#include <initializer_list>
 #include <memory>
 #include <new>
 #include <type_traits>
 #include <utility>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/invoke.h"
 #include "absl/base/macros.h"

@@ -34,6 +34,7 @@
 #define ABSL_FUNCTIONAL_ANY_INVOCABLE_H_
 
 #include <cstddef>
+#include <functional>
 #include <initializer_list>
 #include <type_traits>
 #include <utility>
