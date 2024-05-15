@@ -330,6 +330,7 @@
         "opacity",
         "outline",
         "out-of-flow",
+        "paint",
         "reshape",
         "scroll-anchor",
         "table",
@@ -2547,7 +2548,7 @@
       typedom_types: ["Keyword"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      invalidate: ["visual-overflow"],
+      invalidate: ["paint", "visual-overflow"],
     },
     {
       name: "box-sizing",
@@ -2694,6 +2695,7 @@
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "color-interpolation",
@@ -2705,6 +2707,7 @@
       keywords: ["auto", "srgb", "linearrgb"],
       default_value: "srgb",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "color-interpolation-filters",
@@ -2716,6 +2719,7 @@
       keywords: ["auto", "srgb", "linearrgb"],
       default_value: "linearrgb",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "color-rendering",
@@ -2995,6 +2999,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["paint"],
     },
     {
       name: "fill-opacity",
@@ -3008,6 +3013,7 @@
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
+      invalidate: ["paint"],
     },
     {
       name: "fill-rule",
@@ -3022,6 +3028,7 @@
       keywords: ["nonzero", "evenodd"],
       default_value: "RULE_NONZERO",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "filter",
@@ -3125,6 +3132,7 @@
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
       supports_incremental_style: true,
+      invalidate: ["paint"],
     },
     {
       name: "flood-opacity",
@@ -3138,6 +3146,7 @@
       typedom_types: ["Number"],
       supports_incremental_style: true,
       accepts_numeric_literal: true,
+      invalidate: ["paint"],
     },
     {
       name: "grid-auto-columns",
@@ -3358,6 +3367,7 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      invalidate: ["paint"],
     },
     {
       name: "image-orientation",
@@ -3387,6 +3397,7 @@
       typedom_types: ["Keyword"],
       include_paths: ["third_party/blink/renderer/platform/graphics/graphics_types.h"],
       default_value: "DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh)",
+      invalidate: ["paint"],
     },
     {
       name: "initial-letter",
@@ -3410,6 +3421,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_permission_element: true,
+      invalidate: ["paint"],
     },
     {
       name: "justify-content",
@@ -3497,6 +3509,7 @@
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "line-height",
@@ -3711,6 +3724,7 @@
       keywords: ["luminance", "alpha"],
       typedom_types: ["Keyword"],
       default_value: "luminance",
+      invalidate: ["paint"],
     },
     {
       name: "math-shift",
@@ -3829,7 +3843,7 @@
       default_value: "normal",
       name_for_methods: "BlendMode",
       type_name: "BlendMode",
-      invalidate: ["blend-mode"],
+      invalidate: ["blend-mode", "paint"],
     },
     {
       name: "object-fit",
@@ -3840,6 +3854,7 @@
       typedom_types: ["Keyword"],
       default_value: "fill",
       getter: "GetObjectFit",
+      invalidate: ["paint"],
     },
     {
       name: "object-position",
@@ -3852,6 +3867,7 @@
       type_name: "LengthPoint",
       converter: "ConvertPosition",
       typedom_types: ["Keyword", "Position"],
+      invalidate: ["paint"],
     },
     {
       name: "object-view-box",
@@ -4339,6 +4355,7 @@
       converter: "ConvertPaintOrder",
       keywords: ["normal", "fill", "stroke", "markers"],
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "perspective",
@@ -4509,6 +4526,7 @@
       keywords: ["none", "both", "horizontal", "vertical", "block", "inline"],
       typedom_types: ["Keyword"],
       default_value: "none",
+      invalidate: ["paint"],
     },
     {
       name: "right",
@@ -5074,6 +5092,7 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertShapeValue",
       keywords: ["none"],
+      invalidate: ["paint"],
     },
     {
       name: "shape-rendering",
@@ -5084,6 +5103,7 @@
       keywords: ["auto", "optimizespeed", "crispedges", "geometricprecision"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "size",
@@ -5122,6 +5142,7 @@
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "stop-opacity",
@@ -5134,6 +5155,7 @@
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
+      invalidate: ["paint"],
     },
     {
       name: "stroke",
@@ -5153,6 +5175,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["paint"],
     },
     {
       name: "stroke-dasharray",
@@ -5182,6 +5205,7 @@
       name_for_methods: "StrokeDashOffset",
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
+      invalidate: ["paint"],
     },
     {
       name: "stroke-linecap",
@@ -5233,6 +5257,7 @@
       converter: "ConvertAlpha",
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
+      invalidate: ["paint"],
     },
     {
       name: "stroke-width",
@@ -5866,6 +5891,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["paint"],
     },
     {
       name: "x",
@@ -6087,6 +6113,7 @@
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
+      invalidate: ["paint"],
     },
     {
       name: "column-rule-style",
@@ -6100,6 +6127,7 @@
       default_value: "none",
       type_name: "EBorderStyle",
       typedom_types: ["Keyword"],
+      invalidate: ["paint"],
     },
     {
       name: "column-rule-width",
@@ -6113,6 +6141,7 @@
       converter: "ConvertColumnRuleWidth",
       keywords: ["thin", "medium", "thick"],
       typedom_types: ["Keyword", "Length"],
+      invalidate: ["paint"],
     },
     {
       name: "column-span",
@@ -6370,6 +6399,7 @@
       keywords: ["economy", "exact"],
       default_value: "economy",
       valid_for_permission_element: true,
+      invalidate: ["paint"],
     },
     {
       name: "-webkit-rtl-ordering",
@@ -6559,6 +6589,7 @@
       keywords: ["auto", "none", "element"],
       default_value: "auto",
       valid_for_permission_element: true,
+      invalidate: ["paint"],
     },
     {
       name: "-webkit-user-modify",
@@ -6570,6 +6601,7 @@
       keywords: ["read-only", "read-write", "read-write-plaintext-only"],
       default_value: "read-only",
       affected_by_all: false,
+      invalidate: ["paint"],
     },
     {
       name: "user-select",
@@ -6582,6 +6614,7 @@
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_permission_element: true,
+      invalidate: ["paint"],
     },
     {
       name: "white-space",
@@ -8162,6 +8195,7 @@
       computed_style_protected_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      invalidate: ["paint"],
     },
     {
       name: "-internal-visited-background-color",
@@ -8349,6 +8383,7 @@
       },
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["paint"],
     },
     {
       name: "-internal-visited-text-decoration-color",

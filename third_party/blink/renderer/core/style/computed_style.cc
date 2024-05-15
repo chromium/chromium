@@ -1068,7 +1068,7 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     const Document& document,
     const ComputedStyle& other,
     uint32_t field_diff) const {
-  if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other)) {
+  if (field_diff & kPaint) {
     return true;
   }
 
@@ -1082,6 +1082,10 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
 
   if ((field_diff & kBackground) &&
       !BackgroundInternal().VisuallyEqual(other.BackgroundInternal())) {
+    return true;
+  }
+
+  if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other)) {
     return true;
   }
 

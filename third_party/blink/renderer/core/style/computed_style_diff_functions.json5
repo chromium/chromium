@@ -168,33 +168,7 @@
     },
     {
         name: "DiffNeedsPaintInvalidation",
-        fields_to_diff: ["-webkit-user-modify", "user-select", "image-rendering",
-                "dynamic-range-limit", "column-rule-style", "column-rule-width",
-                "column-rule-color", "-internal-visited-column-rule-color",
-                "-webkit-user-drag", "object-fit", "object-position",
-                "mix-blend-mode", "isolation", "Mask", "MaskBoxImage", "mask-type",
-                "stop-color", "stop-opacity", "flood-color", "flood-opacity",
-                "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
-                "color-interpolation", "color-interpolation-filters", "paint-order",
-                "fill", "fill-opacity", "stroke", "stroke-opacity",
-                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced"],
         methods_to_diff: [
-          {
-            method: "Visibility()",
-            field_dependencies: ["visibility"]
-          },
-          {
-            method: "PrintColorAdjust()",
-            field_dependencies: ["-webkit-print-color-adjust"]
-          },
-          {
-            method: "InsideLink()",
-            field_dependencies: ["InsideLink"]
-          },
-          {
-            method: "Resize()",
-            field_dependencies: ["resize"]
-          },
           {
             method: "UsedColorScheme()",
             field_dependencies: ["color-scheme"]
@@ -209,14 +183,6 @@
           },
         ],
         predicates_to_test: [
-          {
-            predicate: "a.BoxShadowDataEquivalent(b)",
-            field_dependencies: ["box-shadow"]
-          },
-          {
-            predicate: "a.ShapeOutsideDataEquivalent(b)",
-            field_dependencies: ["shape-outside"]
-          },
           {
             predicate: "a.InternalVisitedBorderLeftColorHasNotChanged(b)",
             field_dependencies: ["-internal-visited-border-left-color"]

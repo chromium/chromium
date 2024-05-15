@@ -587,11 +587,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return BorderWidth(BorderRightStyle(), BorderRightWidthInternal());
   }
 
-  // box-shadow (aka -webkit-box-shadow)
-  bool BoxShadowDataEquivalent(const ComputedStyle& other) const {
-    return base::ValuesEquivalent(BoxShadow(), other.BoxShadow());
-  }
-
   // clip-path
   ClipPathOperation* ClipPath() const {
     // This method is accessed frequently during SVG Hit Testing, but the
@@ -737,9 +732,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // shape-outside (aka -webkit-shape-outside)
   ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
-  bool ShapeOutsideDataEquivalent(const ComputedStyle& other) const {
-    return base::ValuesEquivalent(ShapeOutside(), other.ShapeOutside());
-  }
 
   // vertical-align
   EVerticalAlign VerticalAlign() const {
