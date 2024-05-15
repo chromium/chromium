@@ -70,7 +70,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
 
 @implementation PushNotificationUtil
 
-+ (void)registerDeviceWithAPNS {
++ (void)registerDeviceWithAPNSWithContentNotificationsAvailable:
+    (BOOL)contentNotificationAvailability {
   [PushNotificationUtil
       getPermissionSettings:^(UNNotificationSettings* settings) {
         // Logs the users iOS settings' push notification permission status over
@@ -78,7 +79,7 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
         [PushNotificationUtil
             logPermissionSettingsMetrics:settings.authorizationStatus];
         if (settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
-            IsContentPushNotificationsEnabled()) {
+            contentNotificationAvailability) {
           [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
       }];
@@ -255,7 +256,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
                            granted:(BOOL)granted
                              error:(NSError*)error {
   if (granted) {
-    [PushNotificationUtil registerDeviceWithAPNS];
+    [PushNotificationUtil
+        registerDeviceWithAPNSWithContentNotificationsAvailable:NO];
     base::UmaHistogramEnumeration(kEnabledPermissionsHistogram,
                                   PermissionPromptAction::ACCEPTED);
   } else if (!error) {
@@ -278,7 +280,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
                                       granted:(BOOL)granted
                                         error:(NSError*)error {
   if (granted) {
-    [PushNotificationUtil registerDeviceWithAPNS];
+    [PushNotificationUtil
+        registerDeviceWithAPNSWithContentNotificationsAvailable:NO];
     base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
                                   ProvisionalPermissionAction::ENABLED);
   } else if (!granted || error) {
