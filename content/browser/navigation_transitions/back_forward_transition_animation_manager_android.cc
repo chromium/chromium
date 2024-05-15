@@ -77,11 +77,17 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
       << "The embedder should only delegate the history navigation task "
          "to this manager if there is a destination entry.";
 
+  // Each previous gesture should finished with `OnGestureCancelled()` or
+  // `OnGestureInvoked()`. In both cases we reset `destination_entry_index_` to
+  // -1.
+  CHECK_EQ(destination_entry_index_, -1);
+  destination_entry_index_ = *index;
+
   if (animator_) {
     // It's possible for a user to start a second gesture when the first gesture
-    // is still on-going (aka "chained back"). For now, abort the previous
-    // animation (impl's dtor will reset the layer's position and reclaim all
-    // the resources).
+    // animation is still on-going (aka "chained back"). For now, abort the
+    // previous animation (impl's dtor will reset the layer's position and
+    // reclaim all the resources).
     //
     // TODO(crbug.com/40261105): We need a proper UX to support this.
     animator_.reset();
@@ -91,10 +97,6 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
       ShouldSkipDefaultNavTransition(
           web_contents_view_android_->GetNativeView()->GetPhysicalBackingSize(),
           destination_entry)) {
-    CHECK(!destination_entry_index_.has_value());
-    // Cache the index here so that when `OnGestureInvoked()` is called this
-    // animation manager knows which navigation entry to navigate to.
-    destination_entry_index_ = index;
     return;
   }
 
@@ -112,21 +114,21 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
+  CHECK_NE(destination_entry_index_, -1);
   if (animator_) {
     animator_->OnGestureCancelled();
   }
-  destination_entry_index_.reset();
+  destination_entry_index_ = -1;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
+  CHECK_NE(destination_entry_index_, -1);
   if (animator_) {
-    CHECK(!destination_entry_index_.has_value());
     animator_->OnGestureInvoked();
   } else {
-    CHECK(destination_entry_index_.has_value());
-    navigation_controller_->GoToIndex(*destination_entry_index_);
-    destination_entry_index_.reset();
+    navigation_controller_->GoToIndex(destination_entry_index_);
   }
+  destination_entry_index_ = -1;
 }
 
 void BackForwardTransitionAnimationManagerAndroid::

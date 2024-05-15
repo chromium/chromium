@@ -2124,6 +2124,32 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   }
 }
 
+// Regression test for https://crbug.com/339501357: If the animator is destroyed
+// in the middle of a gesture, the history navigation should still proceed.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       AnimatorDestroyedMidGesture) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k30ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  GetAnimatorForTesting()->SetFinishedStateToInProgress();
+
+  // Destroy the animator.
+  auto* manager = static_cast<BackForwardTransitionAnimationManagerAndroid*>(
+      web_contents()->GetBackForwardTransitionAnimationManager());
+  manager->SynchronouslyDestroyAnimator();
+
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  // Invoke the gesture and start the navigation.
+  manager->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          BackForwardTransitionAnimationManagerBrowserTest,
                          ::testing::ValuesIn(kGestureNavTypes),

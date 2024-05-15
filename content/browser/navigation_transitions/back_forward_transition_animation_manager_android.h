@@ -107,17 +107,15 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // this manager.
   const raw_ptr<NavigationControllerImpl> navigation_controller_;
 
-  // The index of the destination entry in the history list. Only set if we are
-  // not able to show an animated session history preview. When the feature is
-  // enabled, Clank will delegate the navigation task to this AnimatinoManager
-  // completely. This optional field helps the manager to memorize where to
-  // navigate. This covers all the cases where we don't show an animation (e.g.,
-  // LtR language right-edge swipe).
+  // The index of the destination entry in the history list. Set when the
+  // embedder notifies the animation manager upon a gesture's start. This is
+  // used to ensure the navigation is initiated at gesture end, even if the
+  // animation had to be terminated sooner.
   //
   // Use an index instead of an offset, in case during the animated transition
   // the session history is updated (e.g., history.pushState()) and we don't
   // want to lead the user to the wrong entry.
-  std::optional<int> destination_entry_index_;
+  int destination_entry_index_ = -1;
 
   // The actual implementation of the animation manager that manages the history
   // navigation animation. One instance per gesture.
