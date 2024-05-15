@@ -190,6 +190,10 @@ export class ProductSpecificationsElement extends PolymerElement {
     return infos;
   }
 
+  private updateSetName_(_: CustomEvent<{name: string}>) {
+    // TODO(b/330345730): Plumb name update through mojom
+  }
+
   private onUrlAdd_(e: CustomEvent<{url: string}>) {
     const urls = this.getTableUrls_();
     urls.push(e.detail.url);

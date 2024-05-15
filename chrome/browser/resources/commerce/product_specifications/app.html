@@ -3,12 +3,13 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 24px;
+    gap: 22px;
     width: fit-content;
   }
 
   product-specifications-header {
     width: 100%;
+    height: 38px;
   }
 
   #summaryContainer {
@@ -69,7 +70,8 @@
     padding: 16px;
   }
 </style>
-<product-specifications-header id="header" subtitle="[[setName_]]">
+<product-specifications-header id="header" subtitle="[[setName_]]"
+    on-name-change="updateSetName_">
 </product-specifications-header>
 <div id="summaryContainer">
   <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">

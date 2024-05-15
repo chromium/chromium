@@ -63,20 +63,16 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"emptyStateDescription",
        IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
       {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
+      {"openTabs", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
+      {"recentlyViewedTabs",
+       IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
+      {"renameGroup", IDS_PRODUCT_SPECIFICATIONS_RENAME_GROUP},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Product Specifications");
   source->AddString("summaryTitle", "Summary");
-
-  static constexpr webui::LocalizedString kStrings[] = {
-      {"openTabs", IDS_PRODUCT_SPECIFICATIONS_OPEN_TABS_SECTION},
-      {"recentlyViewedTabs",
-       IDS_PRODUCT_SPECIFICATIONS_RECENTLY_VIEWED_TABS_SECTION},
-  };
-
-  source->AddLocalizedStrings(kStrings);
 }
 
 void ProductSpecificationsUI::BindInterface(

@@ -5,9 +5,10 @@
 import 'chrome://compare/header.js';
 
 import type {HeaderElement} from 'chrome://compare/header.js';
-import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle} from './test_support.js';
 
@@ -57,6 +58,37 @@ suite('HeaderTest', () => {
         baseBackgroundColor.toString(), menuClosedBackgroundColor.toString());
   });
 
+  test('menu rename shows input', async () => {
+    header.$.menuButton.click();
+    await flushTasks();
+
+    assertFalse(!!header.shadowRoot!.querySelector('#input'));
+    const menu = header.$.menu.$.menu;
+    const renameMenuItem = menu.get().querySelector<HTMLElement>('#rename');
+    assertTrue(!!renameMenuItem);
+    renameMenuItem.click();
+    await waitAfterNextRender(header);
+
+    assertTrue(!!header.shadowRoot!.querySelector('#input'));
+    assertFalse(menu.get().open);
+  });
+
+  test('input hides and changes name on enter', async () => {
+    header.$.menu.dispatchEvent(new CustomEvent('rename-click'));
+    await waitAfterNextRender(header);
+
+    const input = header.shadowRoot!.querySelector<CrInputElement>('#input');
+    assertTrue(!!input);
+    assertTrue(isVisible(input));
+    const newName = 'new name';
+    input.value = newName;
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+    await waitAfterNextRender(input);
+
+    assertFalse(isVisible(input));
+    assertEquals(newName, header.subtitle);
+  });
+
   test('setting `subtitle` gives the header a subtitle', async () => {
     assertStyle($$(header, '#subtitle')!, 'display', 'none');
     assertStyle($$(header, '#divider')!, 'display', 'none');
@@ -65,7 +97,7 @@ suite('HeaderTest', () => {
     header.subtitle = 'foo';
     await waitAfterNextRender(header);
 
-    assertEquals('foo', $$(header, '#subtitle')!.textContent);
+    assertEquals('foo', $$(header, '#subtitle')!.textContent!.trim());
     assertNotStyle($$(header, '#subtitle')!, 'display', 'none');
     assertNotStyle($$(header, '#divider')!, 'display', 'none');
     assertNotStyle($$(header, '#menuButton')!, 'display', 'none');

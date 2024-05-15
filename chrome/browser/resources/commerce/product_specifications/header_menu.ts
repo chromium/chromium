@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import './images/icons.html.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -39,6 +41,14 @@ export class HeaderMenuElement extends PolymerElement {
 
   close() {
     this.$.menu.get().close();
+  }
+
+  private onRenameClick_() {
+    this.close();
+    this.dispatchEvent(new CustomEvent('rename-click', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 

@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './header_menu.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './header.html.js';
 import type {HeaderMenuElement} from './header_menu.js';
@@ -40,12 +43,19 @@ export class HeaderElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+
+      showingInput_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   subtitle: string|null = null;
 
   private showingMenu_: boolean;
+  private showingInput_: boolean;
+  private pageName_: string;
 
   private showMenu_() {
     this.$.menu.showAt(this.$.menuButton);
@@ -54,6 +64,40 @@ export class HeaderElement extends PolymerElement {
 
   private onCloseMenu_() {
     this.showingMenu_ = false;
+  }
+
+  private getInput_(): CrInputElement {
+    const input = this.shadowRoot!.querySelector('cr-input');
+    assert(!!input);
+    return input;
+  }
+
+  private onRenaming_() {
+    this.showingInput_ = true;
+    afterNextRender(this, () => this.getInput_().focus());
+  }
+
+  private onInputKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.stopPropagation();
+      this.getInput_().blur();
+    }
+  }
+
+  private onInputBlur_() {
+    const inputValue = this.getInput_().value;
+    this.showingInput_ = false;
+    if (!inputValue) {
+      return;
+    }
+    this.subtitle = inputValue;
+    this.dispatchEvent(new CustomEvent('name-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        name: inputValue,
+      },
+    }));
   }
 }
 

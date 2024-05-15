@@ -115,7 +115,7 @@
         caret-color: var(--cr-input-focus-color);
         color: var(--cr-input-color);
         font-family: inherit;
-        font-size: 12px;
+        font-size: var(--cr-input-font-size, 12px);
         font-weight: inherit;
         line-height: 16px;
         min-height: var(--cr-input-min-height, auto);

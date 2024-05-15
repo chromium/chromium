@@ -5,6 +5,16 @@
     gap: 12px;
   }
 
+  cr-input {
+    --cr-input-background-color: transparent;
+    --cr-input-error-display: none;
+    margin: 12px 20px;
+  }
+
+  cr-input.stroked:hover {
+    --cr-input-hover-background-color: transparent;
+  }
+
   :host([showing-menu_]) #menuButton {
     background-color: var(--cr-hover-background-color);
   }
@@ -17,6 +27,16 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 500;
+  }
+
+  #input {
+    --cr-input-font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .spacer {
+    flex: 1;
   }
 
   #title {
@@ -44,9 +64,21 @@
     role="presentation">
 <div class="title-text" id="title">$i18n{pageTitle}</div>
 <div id="divider" hidden="[[!subtitle]]"></div>
-<div class="title-text" id="subtitle" hidden="[[!subtitle]]">[[subtitle]]</div>
+<template is="dom-if" if="[[showingInput_]]">
+  <cr-input id="input" class="stroked" value="[[subtitle]]"
+    on-keydown="onInputKeyDown_"
+    on-blur="onInputBlur_">
+  </cr-input>
+  <div class="spacer"></div>
+</template>
+<template is="dom-if" if="[[!showingInput_]]">
+  <div class="title-text" id="subtitle" hidden="[[!subtitle]]">
+    [[subtitle]]
+  </div>
+</template>
 <cr-icon-button id="menuButton" class="icon-more-vert" on-click="showMenu_"
     hidden="[[!subtitle]]">
 </cr-icon-button>
 
-<header-menu id="menu" on-close="onCloseMenu_"></header-menu>
+<header-menu id="menu" on-close="onCloseMenu_" on-rename-click="onRenaming_">
+</header-menu>
