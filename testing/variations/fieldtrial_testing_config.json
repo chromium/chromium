@@ -3001,25 +3001,6 @@
             ]
         }
     ],
-    "CCTPageInsightsHub": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "page_insights_alt_privacy_notice_url": "https://support.google.com/chrome?p=page_insights",
-                        "page_insights_send_context_metadata": "true"
-                    },
-                    "enable_features": [
-                        "CCTPageInsightsHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS-V2-Android": [
         {
             "platforms": [
