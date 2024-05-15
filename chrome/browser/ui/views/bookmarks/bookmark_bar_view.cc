@@ -752,6 +752,13 @@ void BookmarkBarView::Layout(PassKey) {
     // In v2 UI we need to allocate space for both saved tab group and
     // bookmarks to prevent one overwhelming the other.
     int saved_tab_groups_bar_available_width;
+    // Manually set the overflow(Everything) button's preferred width to be
+    // the `button_height` which will be used to calculate the preferred width
+    // of `saved_tab_group_bar_` below. Later the overflow button will be laid
+    // out with both width and height the same as `button_height` (i.e. the
+    // height of `saved_tab_group_bar_`).
+    saved_tab_group_bar_->overflow_button()->SetPreferredSize(
+        gfx::Size(button_height, button_height));
     if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
       // Calculate the save tab group width without any restriction.
       int saved_tab_group_max_width =
