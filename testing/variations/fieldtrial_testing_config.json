@@ -11287,7 +11287,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "available_languages": "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR,ko-KR,pl-PL,th-TH,tr-TR,id-ID,cmn-Hans-CN,cmn-Hant-TW"
+                        "available_languages": "en-US,fr-FR,it-IT,de-DE,es-ES,ja-JP,hi-IN,pt-BR,ko-KR,pl-PL,th-TH,tr-TR,id-ID,cmn-Hans-CN,cmn-Hant-TW,vi-VN,ru-RU"
                     },
                     "enable_features": [
                         "LiveCaptionExperimentalLanguages"
