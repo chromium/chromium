@@ -5,53 +5,47 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_TERM_TABLE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_TERM_TABLE_H_
 
-#include <memory>
 #include <string>
 
-#include "chrome/browser/ash/file_manager/indexing/text_table.h"
+#include "base/memory/raw_ptr.h"
 #include "sql/database.h"
 
 namespace file_manager {
 
-// A table that maintains a mapping from a unique token ID to the token text.
-// Tokens for us are any pieces of text associated with some file. For example,
-// if a file is labeled as "downloaded", the "downloaded" text is considered
-// a token. In this table it is assigned a unique integer ID that is used
-// across other tables for information retrieval.
-class TokenTable : public TextTable {
+// Stores a mapping from term IDs to an terms. A term term is a combination of
+// a token and a field name. The main job of this table is to provide a unique
+// ID for, say "label:starred" and "content:starred" terms. The token table
+// provides a unique value for "starred". However, we need to be able to
+// distinguish between "starred" being used a, say, label, vs it being part of
+// a content. This is what this table does.
+class TermTable {
  public:
-  // Creates a new table and passes the pointer to the SQL database to it. The
-  // caller must make sure it owns both the sql::Database object and this table.
-  // The caller also must make sure that the sql::Database outlives the table.
-  explicit TokenTable(sql::Database* db);
-  ~TokenTable() override;
+  // Creates a table that maps term IDs to terms. An term consists of the field
+  // name and a token ID.
+  explicit TermTable(sql::Database* db);
+  ~TermTable();
 
-  TokenTable(const TokenTable&) = delete;
-  TokenTable& operator=(const TokenTable&) = delete;
+  TermTable(const TermTable&) = delete;
+  TermTable& operator=(const TermTable&) = delete;
 
-  // Deletes the given token from the table. Returns -1, if the term was not
-  // found. Otherwise, returns the ID that the term was assigned.
-  int64_t DeleteToken(const std::string& token_bytes);
+  // Initializes the table. Returns true on success, and false on failure.
+  bool Init();
 
-  // Gets the term ID for the given token bytes. If the term cannot be found,
-  // this method returns -1.
-  int64_t GetTokenId(const std::string& token_bytes) const;
+  // Returns the ID corresponding to the given term. If the term cannot be
+  // located, the method returns -1.
+  int64_t GetTermId(const std::string& field_name, int64_t term_id) const;
 
-  // For the given `token_id` attempts to find the corresponding token value.
-  // If one cannot be found, returns -1. Otherwise returns `token_id` and fills
-  // the token with the found value.
-  int64_t GetToken(int64_t term_id, std::string* token_bytes) const;
+  // Returns the ID corresponding to the term. If the term cannot be located,
+  // a new ID is allocated and returned.
+  int64_t GetOrCreateTermId(const std::string& field_name, int64_t term_id);
 
-  // Gets or creates the unique token ID for the given token bytes.
-  int64_t GetOrCreateTokenId(const std::string& term_bytes);
+  // Attempts to remove the given term by its ID from the database. If not
+  // present, this method returns -1. Otherwise, it returns the `term_id`.
+  int64_t DeleteTermById(int64_t term_id);
 
- protected:
-  std::unique_ptr<sql::Statement> MakeGetValueIdStatement() const override;
-  std::unique_ptr<sql::Statement> MakeGetValueStatement() const override;
-  std::unique_ptr<sql::Statement> MakeInsertStatement() const override;
-  std::unique_ptr<sql::Statement> MakeDeleteStatement() const override;
-  std::unique_ptr<sql::Statement> MakeCreateTableStatement() const override;
-  std::unique_ptr<sql::Statement> MakeCreateIndexStatement() const override;
+ private:
+  // The pointer to a database owned by the whoever created this table.
+  raw_ptr<sql::Database> db_;
 };
 
 }  // namespace file_manager
