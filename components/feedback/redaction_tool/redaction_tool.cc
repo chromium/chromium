@@ -1133,11 +1133,16 @@ RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
     return RedactionToolCaller::kSysLogUploader;
   } else if (fileName == "system_logs_fetcher.cc") {
     return RedactionToolCaller::kSysLogFetcher;
+  } else if (fileName == "chrome_js_error_report_processor.cc") {
+    return RedactionToolCaller::kCrashToolJSErrors;
   } else if (fileName == "crash_collector.cc") {
     return RedactionToolCaller::kCrashTool;
-  } else if (fileName == "feedback_common.cc" ||
-             fileName == "log_source_access_manager.cc") {
-    return RedactionToolCaller::kFeedbackTool;
+  } else if (fileName == "feedback_common.cc") {
+    return RedactionToolCaller::kFeedbackToolUserDescriptions;
+  } else if (fileName == "log_source_access_manager.cc") {
+    return RedactionToolCaller::kFeedbackToolHotRod;
+  } else if (fileName == "system_logs_fetcher.cc") {
+    return RedactionToolCaller::kFeedbackToolLogs;
   }
   return RedactionToolCaller::kUnknown;
 }

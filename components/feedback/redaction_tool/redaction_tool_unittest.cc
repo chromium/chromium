@@ -710,9 +710,15 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kErrorReporting, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
-                    RedactionToolCaller::kFeedbackTool, 0);
+                    RedactionToolCaller::kFeedbackToolHotRod, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackToolUserDescriptions, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackToolLogs, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kCrashTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kCrashToolJSErrors, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kUndetermined, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
@@ -769,9 +775,15 @@ TEST_F(RedactionToolTest, RedactChunk) {
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kErrorReporting, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
-                    RedactionToolCaller::kFeedbackTool, 0);
+                    RedactionToolCaller::kFeedbackToolHotRod, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackToolUserDescriptions, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackToolLogs, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kCrashTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kCrashToolJSErrors, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,
                     RedactionToolCaller::kUndetermined, 0);
   ExpectBucketCount(kRedactionToolCallerHistogram,

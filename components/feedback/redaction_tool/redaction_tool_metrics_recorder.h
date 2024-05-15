@@ -33,7 +33,8 @@ enum class RedactionToolCaller {
   kSysLogFetcher = 2,
   kSupportTool = 3,
   kErrorReporting = 4,
-  kFeedbackTool = 5,
+  // Feedback Tool is deprecated and split into it's components.
+  // kFeedbackTool = 5,
   // Browser system logs is deprecated since it's being called only
   // by the feedback tool.
   // kBrowserSystemLogs = 6,
@@ -41,7 +42,11 @@ enum class RedactionToolCaller {
   kUndetermined = 8,
   kUnknown = 9,
   kCrashTool = 10,
-  kMaxValue = kCrashTool,
+  kCrashToolJSErrors = 11,
+  kFeedbackToolHotRod = 12,
+  kFeedbackToolUserDescriptions = 13,
+  kFeedbackToolLogs = 14,
+  kMaxValue = kFeedbackToolLogs,
 };
 
 inline constexpr char kPIIRedactedHistogram[] = "Feedback.RedactionTool";
