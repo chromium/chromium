@@ -1143,7 +1143,6 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
             MaybeCreateEventLevelReport(
                 attribution_info, source_to_attribute->source, trigger,
                 new_event_level_report, dedup_key,
-                limits.max_event_level_reports_per_destination,
                 limits.rate_limits_max_attributions);
         create_event_level_status != EventLevelResult::kSuccess) {
       event_level_status = create_event_level_status;
@@ -1197,7 +1196,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     store_event_level_status = MaybeStoreEventLevelReport(
         *new_event_level_report, dedup_key,
         source_to_attribute->num_conversions, replaced_event_level_report,
-        dropped_event_level_report);
+        dropped_event_level_report,
+        limits.max_event_level_reports_per_destination);
   }
 
   std::optional<AggregatableResult> store_aggregatable_status;
@@ -1349,7 +1349,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     const AttributionTrigger& trigger,
     std::optional<AttributionReport>& report,
     std::optional<uint64_t>& dedup_key,
-    std::optional<int>& max_event_level_reports_per_destination,
     std::optional<int64_t>& rate_limits_max_attributions) {
   if (source.attribution_logic() == StoredSource::AttributionLogic::kFalsely) {
     DCHECK_EQ(source.active_state(),
@@ -1401,19 +1400,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kReportWindowPassed;
   }
 
-  switch (
-      CapacityForStoringReport(trigger, AttributionReport::Type::kEventLevel)) {
-    case ConversionCapacityStatus::kHasCapacity:
-      break;
-    case ConversionCapacityStatus::kNoCapacity:
-      max_event_level_reports_per_destination =
-          delegate_->GetMaxReportsPerDestination(
-              AttributionReport::Type::kEventLevel);
-      return EventLevelResult::kNoCapacityForConversionDestination;
-    case ConversionCapacityStatus::kError:
-      return EventLevelResult::kInternalError;
-  }
-
   switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
       &db_, attribution_info, source,
       RateLimitTable::Scope::kEventLevelAttribution)) {
@@ -1448,7 +1434,8 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
     std::optional<uint64_t> dedup_key,
     int num_conversions,
     std::optional<AttributionReport>& replaced_report,
-    std::optional<AttributionReport>& dropped_report) {
+    std::optional<AttributionReport>& dropped_report,
+    std::optional<int>& max_event_level_reports_per_destination) {
   auto* event_level_data =
       absl::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(event_level_data);
@@ -1485,6 +1472,22 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
                  ? EventLevelResult::kPriorityTooLow
                  : EventLevelResult::kExcessiveReports;
     case ReplaceReportResult::kAddNewReport: {
+      switch (CapacityForStoringReport(report.attribution_info().context_origin,
+                                       AttributionReport::Type::kEventLevel)) {
+        case ConversionCapacityStatus::kHasCapacity:
+          break;
+        case ConversionCapacityStatus::kNoCapacity:
+          if (!transaction.Commit()) {
+            return EventLevelResult::kInternalError;
+          }
+          max_event_level_reports_per_destination =
+              delegate_->GetMaxReportsPerDestination(
+                  AttributionReport::Type::kEventLevel);
+          return EventLevelResult::kNoCapacityForConversionDestination;
+        case ConversionCapacityStatus::kError:
+          return EventLevelResult::kInternalError;
+      }
+
       // Only increment the number of conversions associated with the source if
       // we are adding a new one, rather than replacing a dropped one.
       static constexpr char kUpdateImpressionForConversionSql[] =
@@ -2090,12 +2093,11 @@ AttributionStorageSql::ReportAlreadyStored(
 
 AttributionStorageSql::ConversionCapacityStatus
 AttributionStorageSql::CapacityForStoringReport(
-    const AttributionTrigger& trigger,
+    const url::Origin& destination_origin,
     AttributionReport::Type report_type) {
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kCountReportsForDestinationSql));
-  statement.BindString(
-      0, net::SchemefulSite(trigger.destination_origin()).Serialize());
+  statement.BindString(0, net::SchemefulSite(destination_origin).Serialize());
   statement.BindInt(1, SerializeReportType(report_type));
 
   if (!statement.Step()) {
@@ -2971,7 +2973,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   }
 
   switch (CapacityForStoringReport(
-      trigger, AttributionReport::Type::kAggregatableAttribution)) {
+      attribution_info.context_origin,
+      AttributionReport::Type::kAggregatableAttribution)) {
     case ConversionCapacityStatus::kHasCapacity:
       break;
     case ConversionCapacityStatus::kNoCapacity:

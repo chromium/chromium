@@ -223,9 +223,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  ConversionCapacityStatus CapacityForStoringReport(const AttributionTrigger&,
-                                                    AttributionReport::Type)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  ConversionCapacityStatus CapacityForStoringReport(
+      const url::Origin& context_origin,
+      AttributionReport::Type) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ReplaceReportResult {
     kError,
@@ -299,7 +299,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const AttributionTrigger& trigger,
       std::optional<AttributionReport>& report,
       std::optional<uint64_t>& dedup_key,
-      std::optional<int>& max_event_level_reports_per_destination,
       std::optional<int64_t>& rate_limits_max_attributions)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -308,7 +307,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       std::optional<uint64_t> dedup_key,
       int num_conversions,
       std::optional<AttributionReport>& replaced_report,
-      std::optional<AttributionReport>& dropped_report)
+      std::optional<AttributionReport>& dropped_report,
+      std::optional<int>& max_event_level_reports_per_destination)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Initializes the database if necessary, and returns whether the database is
