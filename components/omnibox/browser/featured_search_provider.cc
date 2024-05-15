@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <climits>
 #include <string>
 #include <vector>
 
@@ -52,14 +53,8 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
   matches_.clear();
 
-  // In zero suggest, show an informational IPH message.  All other
-  // FeaturedSearchProvider suggestions require a non-empty input, so it's safe
-  // to return early in zps.
-  if (input.IsZeroSuggest()) {
-    if (OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
-      AddIPHMatch();
-    }
-    return;
+  if (ShouldShowIPHMatch(input)) {
+    AddIPHMatch();
   }
 
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
@@ -190,13 +185,6 @@ void FeaturedSearchProvider::AddStarterPackMatch(
 }
 
 void FeaturedSearchProvider::AddIPHMatch() {
-  // If the IPH suggestion has been deleted by the user and the pref gets set,
-  // do not continue to offer it.
-  PrefService* prefs = client_->GetPrefs();
-  if (!prefs->GetBoolean(omnibox::kShowGeminiIPH)) {
-    return;
-  }
-
   // This value doesn't really matter as this suggestion is grouped after all
   // other suggestions. Use an arbitrary constant.
   constexpr int kRelevanceScore = 1000;
@@ -216,6 +204,7 @@ void FeaturedSearchProvider::AddIPHMatch() {
       ACMatchClassification::DIM);
 
   matches_.push_back(match);
+  iph_shown_count_++;
 }
 
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
@@ -246,4 +235,33 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
   match.keyword = template_url.keyword();
 
   matches_.push_back(match);
+}
+
+bool FeaturedSearchProvider::ShouldShowIPHMatch(
+    const AutocompleteInput& input) {
+  // The IPH suggestion should only be shown in Zero prefix state.
+  if (!OmniboxFieldTrial::IsStarterPackIPHEnabled() || !input.IsZeroSuggest()) {
+    return false;
+  }
+
+  // If the IPH suggestion has been shown more than the limited number of times
+  // this session, or has been manually deleted by the user, do not continue to
+  // offer it. If the limit is set to INT_MAX, do not limit.
+  PrefService* prefs = client_->GetPrefs();
+  size_t iph_shown_limit =
+      OmniboxFieldTrial::kStarterPackIPHPerSessionLimit.Get();
+  if (!prefs->GetBoolean(omnibox::kShowGeminiIPH) ||
+      ((iph_shown_limit != INT_MAX) && (iph_shown_count_ >= iph_shown_limit))) {
+    return false;
+  }
+
+  // The @gemini IPH should no longer be shown once a user has successfully
+  // used @gemini.
+  TemplateURL* gemini_turl = template_url_service_->FindStarterPackTemplateURL(
+      TemplateURLStarterPackData::kAskGoogle);
+  if (gemini_turl && gemini_turl->usage_count() > 0) {
+    return false;
+  }
+
+  return true;
 }

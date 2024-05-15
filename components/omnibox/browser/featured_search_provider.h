@@ -50,8 +50,16 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
                                         const AutocompleteInput& input);
 
+  // Whether to show the @gemini IPH row. This takes into account factors like
+  // feature flags, zero suggest state, how many times its been shown, and past
+  // user behavior.
+  bool ShouldShowIPHMatch(const AutocompleteInput& input);
+
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;
+
+  // The number of times the IPH row has been shown so far in this session.
+  size_t iph_shown_count_{0};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FEATURED_SEARCH_PROVIDER_H_
