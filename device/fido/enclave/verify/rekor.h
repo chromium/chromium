@@ -40,7 +40,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) LogEntry {
            std::string log_id,
            uint64_t log_index,
            std::optional<LogEntryVerification> verification);
-  LogEntry(LogEntry& log_entry);
+  LogEntry(const LogEntry& log_entry);
+  LogEntry(LogEntry&& log_entry);
   LogEntry();
   ~LogEntry();
 

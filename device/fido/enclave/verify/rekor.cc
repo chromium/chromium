@@ -72,7 +72,8 @@ LogEntry::LogEntry(std::string body,
       verification(std::move(verification)) {}
 LogEntry::LogEntry() = default;
 LogEntry::~LogEntry() = default;
-LogEntry::LogEntry(LogEntry& log_entry) = default;
+LogEntry::LogEntry(const LogEntry& log_entry) = default;
+LogEntry::LogEntry(LogEntry&& log_entry) = default;
 
 void LogEntry::RegisterJSONConverter(
     base::JSONValueConverter<LogEntry>* converter) {
