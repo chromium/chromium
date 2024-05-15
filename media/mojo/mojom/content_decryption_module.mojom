@@ -138,7 +138,7 @@ interface ContentDecryptionModuleClient {
   // when the session is no longer needed, or when system resources are lost.
   // After `OnSessionClosed()` is called for a `session_id`, no methods in this
   // interface should be called with the same `session_id`.
-  // See http://w3c.github.io/encrypted-media/#session-close
+  // See http://w3c.github.io/encrypted-media/#session-closed
   OnSessionClosed(string session_id, CdmSessionClosedReason reason);
 
   // Called when there has been a change in the keys in the session or their

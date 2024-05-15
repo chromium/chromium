@@ -206,7 +206,7 @@ using SessionMessageCB =
 // CDM may close a session at any point, such as in response to a CloseSession()
 // call, when the session is no longer needed, or when system resources are
 // lost, as specified by `reason`.
-// See http://w3c.github.io/encrypted-media/#session-close
+// See http://w3c.github.io/encrypted-media/#session-closed
 using SessionClosedCB =
     base::RepeatingCallback<void(const std::string& session_id,
                                  CdmSessionClosedReason reason)>;
