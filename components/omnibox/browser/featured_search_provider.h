@@ -24,6 +24,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
 
   // AutocompleteProvider:
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
+  void DeleteMatch(const AutocompleteMatch& match) override;
 
  private:
   ~FeaturedSearchProvider() override;

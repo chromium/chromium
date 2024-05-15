@@ -90,6 +90,11 @@ inline constexpr char kZeroSuggestCachedResults[] = "zerosuggest.cachedresults";
 inline constexpr char kZeroSuggestCachedResultsWithURL[] =
     "zerosuggest.cachedresults_with_url";
 
+// Boolean that specifies whether to show the "Type @gemini to Chat with Gemini"
+// IPH suggestion at the bottom of the Omnibox in ZPS. This is true until a
+// user deletes (presses the X button on) the suggestion.
+inline constexpr char kShowGeminiIPH[] = "omnibox.show_gemini_iph";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the stored visibility preference for |suggestion_group_id|.
