@@ -192,4 +192,9 @@ public abstract class ConditionalState {
                         "No short string representation for phase " + phase);
         }
     }
+
+    /** Should be used only by {@link EntryPointSentinelStation}. */
+    void setStateActiveWithoutTransition() {
+        mLifecyclePhase = Phase.ACTIVE;
+    }
 }

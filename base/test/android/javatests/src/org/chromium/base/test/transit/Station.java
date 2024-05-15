@@ -17,19 +17,19 @@ import java.util.List;
  * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Elements}
  * that determine its enter and exit {@link Condition}s.
  *
- * <p>Transitions should be done with {@link Trip#travelSync(Station, Station,
- * Trigger)}. The transit-layer derived class should expose screen-specific methods for the
- * test-layer to use.
+ * <p>Transitions should be done with {@link Trip#travelSync(Station, Station, Trigger)}. The
+ * transit-layer derived class should expose screen-specific methods for the test-layer to use.
  */
 public abstract class Station extends ConditionalState {
     private static final String TAG = "Transit";
-    private final int mId;
     private static int sLastStationId;
-    private List<Facility> mFacilities = new ArrayList<>();
-    private String mName;
+
+    private final int mId;
+    private final List<Facility> mFacilities = new ArrayList<>();
+    private final String mName;
 
     protected Station() {
-        mId = ++sLastStationId;
+        mId = sLastStationId++;
         TrafficControl.notifyCreatedStation(this);
         mName = String.format("<S%d: %s>", mId, getClass().getSimpleName());
     }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
+import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -28,13 +29,16 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
      * @return the active entry {@link PageStation}
      */
     public WebPageStation startOnBlankPageNonBatched() {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
                         .withEntryPoint()
                         .build();
         return Trip.travelSync(
-                null, entryPageStation, () -> mActivityTestRule.startMainActivityOnBlankPage());
+                sentinel, entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
     }
 
     /**

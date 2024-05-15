@@ -24,6 +24,11 @@ public class TrafficControl {
         sAllStations.add(station);
     }
 
+    static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
+        assert sActiveStation == null : "EntryPointSentinelStation was created twice";
+        sActiveStation = sentinelStation;
+    }
+
     static void notifyActiveStationChanged(Station newActiveStation) {
         assert newActiveStation.getPhase() == Phase.ACTIVE : "New active Station must be ACTIVE";
         if (sActiveStation != null) {

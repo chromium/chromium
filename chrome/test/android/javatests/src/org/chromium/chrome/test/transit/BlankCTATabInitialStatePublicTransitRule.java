@@ -10,6 +10,8 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
+import org.chromium.base.test.transit.EntryPointSentinelStation;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -43,16 +45,21 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
      * <p>From the second test onwards, state was reset by {@link BlankCTATabInitialStateRule}.
      */
     public WebPageStation startOnBlankPage() {
+        // Null in the first test, non-null from the second test onwards.
+        Station homeStation = mBatchedRule.getHomeStation();
+        if (homeStation == null) {
+            EntryPointSentinelStation entryPoint = new EntryPointSentinelStation();
+            entryPoint.setAsEntryPoint();
+            homeStation = entryPoint;
+        }
+
         WebPageStation entryPageStation =
                 WebPageStation.newWebPageStationBuilder()
                         .withActivityTestRule(mActivityTestRule)
                         .withEntryPoint()
                         .build();
 
-        // Null in the first test, non-null from the second test onwards.
-        PageStation homeStation = mBatchedRule.getHomeStation();
-
         // Wait for the Conditions to be met to return an active PageStation.
-        return Trip.travelSync(/* origin= */ homeStation, entryPageStation, /* trigger= */ null);
+        return Trip.travelSync(homeStation, entryPageStation, /* trigger= */ null);
     }
 }
