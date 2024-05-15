@@ -17,14 +17,14 @@
 using base::android::AttachCurrentThread;
 
 AccountStorageNotice::AccountStorageNotice(content::WebContents* web_contents,
-                                           base::OnceClosure accepted_cb)
+                                           base::OnceClosure closed_cb)
     : java_coordinator_(Java_AccountStorageNoticeCoordinator_Constructor(
           AttachCurrentThread(),
           web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
           Java_SettingsLauncherImpl_create(AttachCurrentThread()),
           reinterpret_cast<intptr_t>(this))),
-      accepted_cb_(std::move(accepted_cb)) {
-  CHECK(accepted_cb_);
+      closed_cb_(std::move(closed_cb)) {
+  CHECK(closed_cb_);
 }
 
 AccountStorageNotice::~AccountStorageNotice() {
@@ -35,11 +35,11 @@ AccountStorageNotice::~AccountStorageNotice() {
   }
 }
 
-void AccountStorageNotice::OnAccepted(JNIEnv* env) {
+void AccountStorageNotice::OnClosed(JNIEnv* env) {
   CHECK(java_coordinator_);
   Java_AccountStorageNoticeCoordinator_destroy(AttachCurrentThread(),
                                                java_coordinator_);
   java_coordinator_.Reset();
-  std::move(accepted_cb_).Run();
-  // `accepted_cb_` might have deleted the object above, do nothing else.
+  std::move(closed_cb_).Run();
+  // `closed_cb_` might have deleted the object above, do nothing else.
 }

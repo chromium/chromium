@@ -2950,7 +2950,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/flags:javatests",
       "//chrome/browser/gesturenav/android:javatests",
       "//chrome/browser/password_check/android:test_java",
-      "//chrome/browser/password_manager/android/pwd_migration:javatests",
+      "//chrome/browser/password_manager/android:javatests",
       "//chrome/browser/recent_tabs/internal:recent_tabs_javatests",
       "//chrome/browser/subresource_filter:subresource_filter_javatests",
       "//chrome/browser/touch_to_fill/autofill/android/internal:javatests",

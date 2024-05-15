@@ -216,6 +216,14 @@ generate_jni("jni_headers") {
   ]
 }
 
+java_group("javatests") {
+  testonly = true
+  deps = [
+    "account_storage_notice:javatests",
+    "pwd_migration:javatests",
+  ]
+}
+
 robolectric_binary("password_manager_junit_tests") {
   testonly = true
 

@@ -21,30 +21,31 @@ class WebContents;
 //   - A link to the settings page, in case they want to disable account
 //     passwords via the appropriate toggle. The sheet remains open in the
 //     meantime.
-// The sheet cannot be closed by swiping.
+// The sheet can also be closed by swiping, pressing back or navigating away.
 class AccountStorageNotice : public CoordinatorObserver {
  public:
-  // Shows the notice. `accepted_cb` must be non-null and will be invoked once
-  // the user clicks "Got it" and the sheet is closed. The object does nothing
-  // else after that, so it's safe for the callback to destroy the object.
+  // Shows the notice. `closed_cb` must be non-null and will be invoked once the
+  // sheet is closed by user interaction. It will not be invoked if the object
+  // is prematurely destroyed, see note in the destructor.
+  // The object does nothing else after invoking the callback, so it's safe for
+  // the callback to destroy the object.
   AccountStorageNotice(content::WebContents* web_contents,
-                       base::OnceClosure accepted_cb);
+                       base::OnceClosure closed_cb);
 
   AccountStorageNotice(const AccountStorageNotice&) = delete;
   AccountStorageNotice& operator=(const AccountStorageNotice&) = delete;
 
-  // By the time this object is destroyed, normally the user should've clicked
-  // "Got it", thus closing the sheet and invoking `accepted_cb`. If that didn't
-  // happen, the destructor will hide the sheet promptly without invoking
-  // `accepted_cb`. (That's why the callback isn't called `closed_cb` :D)
+  // By the time this object is destroyed, normally the sheet should have been
+  // closed and `closed_cb` invoked. If that didn't happen, the destructor will
+  // hide the sheet promptly without invoking `closed_cb`.
   ~AccountStorageNotice() override;
 
  private:
-  void OnAccepted(JNIEnv* env) override;
+  void OnClosed(JNIEnv* env) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_coordinator_;
 
-  base::OnceClosure accepted_cb_;
+  base::OnceClosure closed_cb_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCOUNT_STORAGE_NOTICE_ACCOUNT_STORAGE_NOTICE_H_

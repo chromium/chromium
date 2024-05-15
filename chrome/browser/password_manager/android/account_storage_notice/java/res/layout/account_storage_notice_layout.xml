@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/notice_lateral_padding"
+    android:paddingRight="@dimen/notice_lateral_padding"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/account_storage_notice_illustration"
+        android:contentDescription="@null"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="16dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/passwords_account_storage_notice_title"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:layout_marginBottom="12dp"/>
+    <TextView
+        android:id="@+id/account_storage_settings_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:layout_marginBottom="24dp"/>
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/account_storage_notice_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/passwords_account_storage_notice_button_text"
+        style="@style/FilledButton"/>
+</LinearLayout>

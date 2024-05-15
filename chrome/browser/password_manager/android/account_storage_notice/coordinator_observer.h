@@ -12,7 +12,7 @@ class CoordinatorObserver {
  public:
   virtual ~CoordinatorObserver() = default;
 
-  virtual void OnAccepted(JNIEnv* env) = 0;
+  virtual void OnClosed(JNIEnv* env) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCOUNT_STORAGE_NOTICE_COORDINATOR_OBSERVER_H_

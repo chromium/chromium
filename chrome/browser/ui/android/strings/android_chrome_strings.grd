@@ -657,6 +657,24 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORDS_AUTO_SIGNIN_TITLE" desc="Title for checkbox to enable automatically signing the user in to websites">
         Auto Sign-in
       </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE" desc="Title of the sheet that notifies the user they are saving passwords to their Google Account.">
+        Passwords on all your devices
+      </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account.">
+        When you’re signed in to Chrome, passwords you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK">&lt;link&gt;</ph>go to settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT" desc="Button text for the sheet that notifies the user they are saving passwords to their Google Account.">
+        Got it
+      </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_HALF_HEIGHT_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is at half height.">
+        Passwords on all your devices opened at half height
+      </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_FULL_HEIGHT_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is at full height.">
+        Passwords on all your devices opened at full height
+      </message>
+      <message name="IDS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_CLOSED_ACCESSIBILITY_LABEL" desc="Accessibility label of the sheet that notifies the user they are saving passwords to their Google Account, when the sheet is closed.">
+        Passwords on all your devices closed
+      </message>
       <message name="IDS_PASSWORDS_AUTO_SIGNIN_DESCRIPTION" desc="Text under 'Auto sign-in' checkbox">
         Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.
       </message>
