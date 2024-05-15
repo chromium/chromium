@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -386,6 +387,20 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   }
 }
 
+// static
+HTMLPermissionElement::UserInteractionDeniedReason
+HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
+    DisableReason reason) {
+  switch (reason) {
+    case DisableReason::kRecentlyAttachedToLayoutTree:
+      return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
+    case DisableReason::kIntersectionChanged:
+      return UserInteractionDeniedReason::kIntersectionChanged;
+    case DisableReason::kInvalidStyle:
+      return UserInteractionDeniedReason::kInvalidStyle;
+  }
+}
+
 PermissionService* HTMLPermissionElement::GetPermissionService() {
   if (!permission_service_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
@@ -589,6 +604,9 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
       AddConsoleError(
           "The permission element can only be activated by actual user "
           "clicks.");
+      base::UmaHistogramEnumeration(
+          "Blink.PermissionElement.UserInteractionDeniedReason",
+          UserInteractionDeniedReason::kUntrustedEvent);
     }
     return;
   }
@@ -699,6 +717,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
     AddConsoleError(String::Format(
         "The permission element '%s' cannot be activated due to invalid type.",
         GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.UserInteractionDeniedReason",
+        UserInteractionDeniedReason::kInvalidType);
     return false;
   }
 
@@ -707,6 +728,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
         "The permission element '%s' cannot be activated because of security "
         "checks or because the page's quota has been exceeded.",
         GetType().Utf8().c_str()));
+    base::UmaHistogramEnumeration(
+        "Blink.PermissionElement.UserInteractionDeniedReason",
+        UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
     return false;
   }
 
@@ -726,6 +750,9 @@ bool HTMLPermissionElement::IsClickingEnabled() {
           "The permission element '%s' cannot be activated due to %s.",
           GetType().Utf8().c_str(),
           DisableReasonToString(it->key).Utf8().c_str()));
+      base::UmaHistogramEnumeration(
+          "Blink.PermissionElement.UserInteractionDeniedReason",
+          DisableReasonToUserInteractionDeniedReason(it->key));
       return false;
     }
     clicking_disabled_reasons_.erase(it);

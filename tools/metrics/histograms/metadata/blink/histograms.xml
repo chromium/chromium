@@ -3663,6 +3663,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
+    enum="PermissionElementUserInteractionDeniedReason"
+    expires_after="2024-08-04">
+  <owner>tungnh@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the cause of a user interaction (e.g., user click on the permission
+    element) that has been denied. This metric is emitted once for every user
+    interaction that has been denied.
+  </summary>
+</histogram>
+
 <histogram base="true"
     name="Blink.PermissionElementIntersectionObserver.UpdateTime"
     units="microseconds" expires_after="2024-08-04">

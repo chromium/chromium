@@ -109,9 +109,26 @@ class CORE_EXPORT HTMLPermissionElement final
     kInvalidStyle,
   };
 
+  // These values are used for histograms. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class UserInteractionDeniedReason {
+    kInvalidType = 0,
+    kFailedOrHasNotBeenRegistered = 1,
+    kRecentlyAttachedToLayoutTree = 2,
+    kIntersectionChanged = 3,
+    kInvalidStyle = 4,
+    kUntrustedEvent = 5,
+    kMaxValue = kUntrustedEvent,
+  };
+
   // Translates `DisableReason` into strings, primarily used for logging
   // console messages.
   static String DisableReasonToString(DisableReason reason);
+
+  // Translates `DisableReason` into `UserInteractionDeniedReason`, primarily
+  // used for metrics.
+  static UserInteractionDeniedReason DisableReasonToUserInteractionDeniedReason(
+      DisableReason reason);
 
   // Ensure there is a connection to the permission service and return it.
   mojom::blink::PermissionService* GetPermissionService();
