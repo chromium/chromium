@@ -58,6 +58,10 @@ const char kSodaKoKrConfigPath[] =
 const char kSodaPlPlConfigPath[] =
     "accessibility.captions.soda_pl_pl_config_path";
 
+// The file path of the ru-RU Speech On-Device API (SODA) configuration file.
+const char kSodaRuRuConfigPath[] =
+    "accessibility.captions.soda_ru_ru_config_path";
+
 // The file path of the th-TH Speech On-Device API (SODA) configuration file.
 const char kSodaThThConfigPath[] =
     "accessibility.captions.soda_th_th_config_path";
@@ -65,6 +69,10 @@ const char kSodaThThConfigPath[] =
 // The file path of the tr-TR Speech On-Device API (SODA) configuration file.
 const char kSodaTrTrConfigPath[] =
     "accessibility.captions.soda_tr_tr_config_path";
+
+// The file path of the vi-VN Speech On-Device API (SODA) configuration file.
+const char kSodaViVnConfigPath[] =
+    "accessibility.captions.soda_vi_vn_config_path";
 
 // The file path of the zh-CN Speech On-Device API (SODA) configuration file.
 const char kSodaZhCnConfigPath[] =

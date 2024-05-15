@@ -21,8 +21,10 @@ extern const char kSodaPtBrConfigPath[];
 extern const char kSodaIdIdConfigPath[];
 extern const char kSodaKoKrConfigPath[];
 extern const char kSodaPlPlConfigPath[];
+extern const char kSodaRuRuConfigPath[];
 extern const char kSodaThThConfigPath[];
 extern const char kSodaTrTrConfigPath[];
+extern const char kSodaViVnConfigPath[];
 extern const char kSodaZhCnConfigPath[];
 extern const char kSodaZhTwConfigPath[];
 
