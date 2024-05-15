@@ -547,6 +547,38 @@ bool IsTriggerSourceOnlyRelevantForCompose(
   }
 }
 
+void LogSuggestionsCount(const SuggestionsContext& context,
+                         const std::vector<Suggestion>& suggestions) {
+  if (!context.is_autofill_available) {
+    return;
+  }
+
+  if (context.filling_product == FillingProduct::kCreditCard) {
+    AutofillMetrics::LogIsQueriedCreditCardFormSecure(
+        context.is_context_secure);
+    // TODO(b/41484171): Move to PaymentsSuggestionGenerator.
+    autofill_metrics::LogSuggestionsCount(
+        base::ranges::count_if(suggestions,
+                               [](const Suggestion& suggestion) {
+                                 return GetFillingProductFromSuggestionType(
+                                            suggestion.type) ==
+                                        FillingProduct::kCreditCard;
+                               }),
+        FillingProduct::kCreditCard);
+  }
+  if (context.filling_product == FillingProduct::kAddress) {
+    // TODO(b/41484171): Move to AddressSuggestionGenerator.
+    autofill_metrics::LogSuggestionsCount(
+        base::ranges::count_if(suggestions,
+                               [](const Suggestion& suggestion) {
+                                 return GetFillingProductFromSuggestionType(
+                                            suggestion.type) ==
+                                        FillingProduct::kAddress;
+                               }),
+        FillingProduct::kAddress);
+  }
+}
+
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
@@ -1142,33 +1174,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
             << " Reason: autocomplete=unrecognized";
         return;
     }
+  }
 
-    if (!suggestions.empty()) {
-      if (context.filling_product == FillingProduct::kCreditCard) {
-        AutofillMetrics::LogIsQueriedCreditCardFormSecure(
-            context.is_context_secure);
-        // TODO(b/41484171): Move to PaymentsSuggestionGenerator.
-        autofill_metrics::LogSuggestionsCount(
-            base::ranges::count_if(suggestions,
-                                   [](const Suggestion& suggestion) {
-                                     return GetFillingProductFromSuggestionType(
-                                                suggestion.type) ==
-                                            FillingProduct::kCreditCard;
-                                   }),
-            FillingProduct::kCreditCard);
-      }
-      if (context.filling_product == FillingProduct::kAddress) {
-        // TODO(b/41484171): Move to AddressSuggestionGenerator.
-        autofill_metrics::LogSuggestionsCount(
-            base::ranges::count_if(suggestions,
-                                   [](const Suggestion& suggestion) {
-                                     return GetFillingProductFromSuggestionType(
-                                                suggestion.type) ==
-                                            FillingProduct::kAddress;
-                                   }),
-            FillingProduct::kAddress);
-      }
-    }
+  if (!suggestions.empty()) {
+    // TODO(b/340494671): Show Autofill suggestions UI from this branch.
+    LogSuggestionsCount(context, suggestions);
   }
 
   // Check if other suggestion sources should be queried. Manual fallbacks can't
