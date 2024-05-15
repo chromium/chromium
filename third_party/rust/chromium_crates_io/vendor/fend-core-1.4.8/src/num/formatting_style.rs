@@ -20,12 +20,12 @@ pub(crate) enum FormattingStyle {
 	DecimalPlaces(usize),
 	/// Print with the given number of significant figures (not including any leading zeroes)
 	SignificantFigures(usize),
-	/// If exact and no recurring digits: ExactFloat, if complex/imag: MixedFraction,
+	/// If exact and no recurring digits: `ExactFloat`, if complex/imag: `MixedFraction`,
 	/// otherwise: DecimalPlaces(10)
 	#[default]
 	Auto,
-	/// If not exact: DecimalPlaces(10). If no recurring digits: ExactFloat.
-	/// Other numbers: MixedFraction, albeit possibly including fractions of pi
+	/// If not exact: DecimalPlaces(10). If no recurring digits: `ExactFloat`.
+	/// Other numbers: `MixedFraction`, albeit possibly including fractions of pi
 	Exact,
 }
 

@@ -8,6 +8,7 @@ use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
 use crate::value::{built_in_function::BuiltInFunction, ApplyMulHandling, Value};
 use crate::Attrs;
+use std::borrow::Cow;
 use std::sync::Arc;
 use std::{borrow, cmp, fmt, io};
 
@@ -771,6 +772,7 @@ pub(crate) fn resolve_identifier<I: Interrupt>(
 		"today" => Value::Date(crate::date::Date::today(context)?),
 		"tomorrow" => Value::Date(crate::date::Date::today(context)?.next()),
 		"yesterday" => Value::Date(crate::date::Date::today(context)?.prev()),
+		"trans" => Value::String(Cow::Borrowed("🏳️‍⚧️")),
 		_ => return crate::units::query_unit(ident.as_str(), attrs, context, int),
 	})
 }

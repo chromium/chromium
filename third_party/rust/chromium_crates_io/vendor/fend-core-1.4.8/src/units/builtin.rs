@@ -219,12 +219,14 @@ const CONSTANTS: &[UnitTuple] = &[
 		"=1.380649e-23 J/K",
 		"Boltzmann constant (exact)",
 	),
-	(
-		"electron_charge",
-		"",
-		"=1.602176634e-19 coulomb",
-		"electron charge (exact)",
-	),
+	("electron_charge", "", "=1.602176634e-19 coulomb", ""),
+	("electroncharge", "", "=electron_charge", ""),
+	("electronmass", "", "=9.1093837015e-31 kg", ""),
+	("electron_mass", "", "=electronmass", ""),
+	("protonmass", "", "=1.67262192369e-27 kg", ""),
+	("proton_mass", "", "=protonmass", ""),
+	("neutronmass", "", "=1.67492749804e-27 kg", ""),
+	("neutron_mass", "", "=neutronmass", ""),
 	(
 		"avogadro",
 		"",
@@ -700,6 +702,13 @@ const CURRENCIES: &[UnitTuple] = &[
 	("zl", "zl", "PLN", ""),
 ];
 
+const HISTORICAL_UNITS: &[UnitTuple] = &[
+	("shaku", "shaku", "0.303 m", ""),
+	("tsubo", "tsubo", "3.306 m^2", ""),
+	("tatami", "tatami", "tsubo / 2", ""),
+	("tatami_mat", "tatami_mats", "=tatami", ""),
+];
+
 // from https://en.wikipedia.org/wiki/ISO_4217
 const CURRENCY_IDENTIFIERS: &[&str] = &[
 	"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT",
@@ -743,6 +752,7 @@ pub(crate) const ALL_UNIT_DEFS: &[&[UnitTuple]] = &[
 	NAUTICAL_UNITS,
 	CURRENCIES,
 	CGS_UNITS,
+	HISTORICAL_UNITS,
 ];
 
 const SHORT_PREFIXES: &[(&str, &str)] = &[

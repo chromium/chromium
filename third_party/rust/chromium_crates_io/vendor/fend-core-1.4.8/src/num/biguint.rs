@@ -35,6 +35,22 @@ const fn truncate(n: u128) -> u64 {
 }
 
 impl BigUint {
+	fn bits(&self) -> u64 {
+		match self {
+			Small(n) => u64::from(n.ilog2()) + 1,
+			Large(value) => {
+				for (i, v) in value.iter().enumerate().rev() {
+					if *v != 0 {
+						let bits_in_v = u64::from(v.ilog2()) + 1;
+						let bits_in_rest = u64::try_from(i).unwrap() * u64::from(u64::BITS);
+						return bits_in_v + bits_in_rest;
+					}
+				}
+				0
+			}
+		}
+	}
+
 	fn is_zero(&self) -> bool {
 		match self {
 			Small(n) => *n == 0,
@@ -189,26 +205,38 @@ impl BigUint {
 	}
 
 	// computes the exact `n`-th root if possible, otherwise the next lower integer
-	#[allow(clippy::redundant_clone)]
 	pub(crate) fn root_n<I: Interrupt>(self, n: &Self, int: &I) -> FResult<Exact<Self>> {
 		if self == 0.into() || self == 1.into() || n == &Self::from(1) {
 			return Ok(Exact::new(self, true));
 		}
+		if n.value_len() > 1 {
+			return Err(FendError::OutOfRange {
+				value: Box::new(n.format(&FormatOptions::default(), int)?.value),
+				range: Range {
+					start: RangeBound::Closed(Box::new(1)),
+					end: RangeBound::Closed(Box::new(u64::MAX)),
+				},
+			});
+		}
+		let max_bits = self.bits() / n.get(0) + 1;
 		let mut low_guess = Self::from(1);
-		let mut high_guess = self.clone();
-		while high_guess.clone().sub(&low_guess) > 1.into() {
+		let mut high_guess = Small(1).lshift_n(&(max_bits + 1).into(), int)?;
+		let result = loop {
 			test_int(int)?;
 			let mut guess = low_guess.clone().add(&high_guess);
 			guess.rshift(int)?;
 
 			let res = Self::pow(&guess, n, int)?;
 			match res.cmp(&self) {
-				Ordering::Equal => return Ok(Exact::new(guess, true)),
+				Ordering::Equal => break Exact::new(guess, true),
 				Ordering::Greater => high_guess = guess,
 				Ordering::Less => low_guess = guess,
 			}
-		}
-		Ok(Exact::new(low_guess, false))
+			if high_guess.clone().sub(&low_guess) <= 1.into() {
+				break Exact::new(low_guess, false);
+			}
+		};
+		Ok(result)
 	}
 
 	fn pow_internal<I: Interrupt>(&self, mut exponent: u64, int: &I) -> FResult<Self> {
@@ -817,6 +845,8 @@ mod tests {
 		test_sqrt_inner(20, 4, false)?;
 		test_sqrt_inner(200_000, 447, false)?;
 		test_sqrt_inner(1_740_123_984_719_364_372, 1_319_137_591, false)?;
+
+		// sqrt(3_260_954_456_333_195_555 * 2^64)
 		let val = BigUint::Large(vec![0, 3_260_954_456_333_195_555]).root_n(two, &int)?;
 		assert_eq!(val.value, BigUint::from(7_755_900_482_342_532_476));
 		assert!(!val.exact);

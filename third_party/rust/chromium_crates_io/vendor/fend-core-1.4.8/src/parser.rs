@@ -284,6 +284,27 @@ fn parse_modulo_cont(input: &[Token]) -> ParseResult<'_> {
 	Ok((b, input))
 }
 
+// try parsing `%` as modulo
+fn parse_modulo2_cont(input: &[Token]) -> ParseResult<'_> {
+	let (token, input) = parse_token(input)?;
+	if let Token::Ident(ident) = token {
+		if ident.as_str() != "%" {
+			return Err(ParseError::UnexpectedInput);
+		}
+	} else {
+		return Err(ParseError::UnexpectedInput);
+	}
+	// extra restriction: `%` can't be directly followed by an operator, since we
+	// assume that e.g. `1 % + ...` should be a percentage
+	if input.first().is_some_and(|t| {
+		matches!(t, Token::Symbol(_)) && !matches!(t, Token::Symbol(Symbol::OpenParens))
+	}) {
+		return Err(ParseError::UnexpectedInput);
+	}
+	let (b, input) = parse_power(input, true)?;
+	Ok((b, input))
+}
+
 fn parse_multiplicative(input: &[Token]) -> ParseResult<'_> {
 	let (mut res, mut input) = parse_power(input, true)?;
 	loop {
@@ -294,6 +315,9 @@ fn parse_multiplicative(input: &[Token]) -> ParseResult<'_> {
 			res = Expr::Bop(Bop::Div, Box::new(res.clone()), Box::new(term));
 			input = remaining;
 		} else if let Ok((term, remaining)) = parse_modulo_cont(input) {
+			res = Expr::Bop(Bop::Mod, Box::new(res.clone()), Box::new(term));
+			input = remaining;
+		} else if let Ok((term, remaining)) = parse_modulo2_cont(input) {
 			res = Expr::Bop(Bop::Mod, Box::new(res.clone()), Box::new(term));
 			input = remaining;
 		} else if let Ok((new_res, remaining)) = parse_mixed_fraction(input, &res) {

@@ -45,8 +45,8 @@ pub(crate) mod sign {
 
 		pub(crate) fn deserialize(read: &mut impl io::Read) -> FResult<Self> {
 			Ok(match u8::deserialize(read)? {
-				1 => Self::Positive,
-				2 => Self::Negative,
+				1 => Self::Negative,
+				2 => Self::Positive,
 				_ => return Err(FendError::DeserializationError),
 			})
 		}
