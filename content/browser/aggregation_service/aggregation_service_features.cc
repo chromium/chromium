@@ -16,10 +16,6 @@ const base::FeatureParam<std::string>
         "https://publickeyservice.aws.privacysandboxservices.com/v1alpha/"
         "publicKeys"};
 
-BASE_FEATURE(kPrivacySandboxAggregationServiceReportPadding,
-             "PrivacySandboxAggregationServiceReportPadding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrivacySandboxAggregationServiceFilteringIds,
              "PrivacySandboxAggregationServiceFilteringIds",
              base::FEATURE_ENABLED_BY_DEFAULT);

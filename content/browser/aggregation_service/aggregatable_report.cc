@@ -241,15 +241,9 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
             data, contribution, payload_contents.filtering_id_max_bytes);
       });
 
-  int number_of_null_contributions_to_add = 0;
-  if (base::FeatureList::IsEnabled(
-          kPrivacySandboxAggregationServiceReportPadding)) {
-    number_of_null_contributions_to_add =
-        payload_contents.max_contributions_allowed -
-        payload_contents.contributions.size();
-  } else if (payload_contents.contributions.empty()) {
-    number_of_null_contributions_to_add = 1;
-  }
+  int number_of_null_contributions_to_add =
+      payload_contents.max_contributions_allowed -
+      payload_contents.contributions.size();
   CHECK_GE(number_of_null_contributions_to_add, 0);
 
   for (int i = 0; i < number_of_null_contributions_to_add; ++i) {
@@ -944,13 +938,10 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       unencrypted_payloads = ConstructUnencryptedTeeBasedPayload(
           report_request.payload_contents());
 
-      if (base::FeatureList::IsEnabled(
-              kPrivacySandboxAggregationServiceReportPadding)) {
-        MaybeVerifyPayloadLength(
-            report_request.payload_contents().max_contributions_allowed,
-            /*payload_length=*/unencrypted_payloads[0].size(),
-            report_request.payload_contents().filtering_id_max_bytes);
-      }
+      MaybeVerifyPayloadLength(
+          report_request.payload_contents().max_contributions_allowed,
+          /*payload_length=*/unencrypted_payloads[0].size(),
+          report_request.payload_contents().filtering_id_max_bytes);
       break;
     }
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar: {
