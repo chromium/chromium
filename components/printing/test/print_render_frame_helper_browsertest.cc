@@ -1362,6 +1362,33 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
   VerifyPagesPrinted(true);
 }
 
+// See http:://crbug.com/340732144
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MatchMediaShrinkContent) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 500px;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <div id="shrinkme" style="height:5000px;"></div>
+    <script>
+      var mediaQuery = window.matchMedia("print");
+      mediaQuery.addListener(function() {
+        shrinkme.style.height = "2000px";
+      });
+    </script>
+  )HTML");
+
+  // The correct page count here should be 4 (2000px split into pages of 500px),
+  // but due to crbug.com/41154234 , this doesn't work correctly (and the number
+  // will be 10). For now, just make sure that we don't crash.
+  OnPrintPages();
+}
+
 TEST_F(MAYBE_PrintRenderFrameHelperTest, InputScale1) {
   // The default page size in these tests is US Letter - 8.5 by 11 inches.
   // Setting vertical margins to 0.5in results in a page area of 10 inches.

@@ -1935,6 +1935,15 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
 
 WebPrintPageDescription WebLocalFrameImpl::GetPageDescription(
     uint32_t page_index) {
+  if (page_index >= print_context_->PageCount()) {
+    // TODO(crbug.com/452672): The number of pages may change after layout for
+    // pagination. Very bad, but let's avoid crashing. The GetPageDescription()
+    // API has no way of reporting failure, and the API user should be able to
+    // trust that the numbers of pages reported when generating print layout
+    // anyway. Due to Blink bugs, this isn't always the case, though. Get the
+    // description of the first page.
+    page_index = 0;
+  }
   return print_context_->GetPageDescription(page_index);
 }
 
