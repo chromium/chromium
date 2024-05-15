@@ -16660,7 +16660,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240214",
+                    "name": "Enabled_20240514",
+                    "params": {
+                        "supported_countries": "*",
+                        "supported_locales": "*"
+                    },
                     "enable_features": [
                         "RemotePageMetadata"
                     ]
@@ -16675,7 +16679,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240402",
+                    "name": "Enabled_20240514",
+                    "params": {
+                        "supported_countries": "*",
+                        "supported_locales": "*"
+                    },
                     "enable_features": [
                         "PageContentAnnotationsPersistSalientImageMetadata",
                         "RemotePageMetadata"
@@ -16695,7 +16703,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240214",
+                    "name": "Enabled_20240514",
+                    "params": {
+                        "supported_countries": "*",
+                        "supported_locales": "*"
+                    },
                     "enable_features": [
                         "RemotePageMetadata"
                     ]
