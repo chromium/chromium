@@ -147,7 +147,7 @@ PersistentPrefStore::PrefReadError TestingPrefStore::ReadPrefs() {
 
 void TestingPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   DCHECK(!pending_async_read_);
-  error_delegate_.reset(error_delegate);
+  error_delegate_.emplace(error_delegate);
   if (block_async_read_)
     pending_async_read_ = true;
   else
@@ -176,8 +176,10 @@ void TestingPrefStore::NotifyPrefValueChanged(const std::string& key) {
 void TestingPrefStore::NotifyInitializationCompleted() {
   DCHECK(!init_complete_);
   init_complete_ = true;
-  if (read_success_ && read_error_ != PREF_READ_ERROR_NONE && error_delegate_)
-    error_delegate_->OnError(read_error_);
+  if (read_success_ && read_error_ != PREF_READ_ERROR_NONE &&
+      error_delegate_.has_value() && error_delegate_.value()) {
+    error_delegate_.value()->OnError(read_error_);
+  }
   for (Observer& observer : observers_)
     observer.OnInitializationCompleted(read_success_);
 }
@@ -293,4 +295,8 @@ void TestingPrefStore::CheckPrefIsSerializable(const std::string& key,
   std::string json;
   EXPECT_TRUE(base::JSONWriter::Write(value, &json))
       << "Pref \"" << key << "\" is not serializable as JSON.";
+}
+
+bool TestingPrefStore::HasReadErrorDelegate() const {
+  return error_delegate_.has_value();
 }

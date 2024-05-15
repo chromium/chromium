@@ -83,8 +83,14 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
   // TODO(crbug.com/41447167) Remove this after fixing the bug.
   virtual bool IsInMemoryPrefStore() const;
 
+  // Returns whether this holds a read error delegate (can be null), passed
+  // during ReadPrefsAsync().
+  // When used in conjugation with IsInitializationComplete() and
+  // GetReadError(), this can be used to identity if there's a pending read.
+  virtual bool HasReadErrorDelegate() const = 0;
+
  protected:
-  ~PersistentPrefStore() override {}
+  ~PersistentPrefStore() override = default;
 };
 
 #endif  // COMPONENTS_PREFS_PERSISTENT_PREF_STORE_H_

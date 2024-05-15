@@ -558,6 +558,29 @@ TEST_P(JsonPrefStoreTest, RemoveValuesByPrefix) {
   EXPECT_TRUE(pref_store->GetValue(other_name, &value));
 }
 
+TEST_P(JsonPrefStoreTest, HasReadErrorDelegate) {
+  base::FilePath bogus_input_file = temp_dir_.GetPath().AppendASCII("read.txt");
+  ASSERT_FALSE(PathExists(bogus_input_file));
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(bogus_input_file);
+
+  EXPECT_FALSE(pref_store->HasReadErrorDelegate());
+
+  pref_store->ReadPrefsAsync(new MockReadErrorDelegate);
+  EXPECT_TRUE(pref_store->HasReadErrorDelegate());
+}
+
+TEST_P(JsonPrefStoreTest, HasReadErrorDelegateWithNullDelegate) {
+  base::FilePath bogus_input_file = temp_dir_.GetPath().AppendASCII("read.txt");
+  ASSERT_FALSE(PathExists(bogus_input_file));
+  auto pref_store = base::MakeRefCounted<JsonPrefStore>(bogus_input_file);
+
+  EXPECT_FALSE(pref_store->HasReadErrorDelegate());
+
+  pref_store->ReadPrefsAsync(nullptr);
+  // Returns true even though no instance was passed.
+  EXPECT_TRUE(pref_store->HasReadErrorDelegate());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     JsonPrefStoreTestVariations,
     JsonPrefStoreTest,

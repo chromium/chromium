@@ -54,6 +54,7 @@ class COMPONENTS_PREFS_EXPORT InMemoryPrefStore : public PersistentPrefStore {
   void OnStoreDeletionFromDisk() override {}
   bool IsInMemoryPrefStore() const override;
   void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+  bool HasReadErrorDelegate() const override;
 
  protected:
   ~InMemoryPrefStore() override;

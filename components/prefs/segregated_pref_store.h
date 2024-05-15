@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -81,6 +82,7 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
           base::OnceClosure()) override;
   void SchedulePendingLossyWrites() override;
   void OnStoreDeletionFromDisk() override;
+  bool HasReadErrorDelegate() const override;
 
  protected:
   ~SegregatedPrefStore() override;
@@ -121,7 +123,9 @@ class COMPONENTS_PREFS_EXPORT SegregatedPrefStore : public PersistentPrefStore {
   const scoped_refptr<PersistentPrefStore> selected_pref_store_;
   const PrefNameSet selected_preference_names_;
 
-  std::unique_ptr<PersistentPrefStore::ReadErrorDelegate> read_error_delegate_;
+  // Optional so we can differentiate `nullopt` from `nullptr`.
+  std::optional<std::unique_ptr<PersistentPrefStore::ReadErrorDelegate>>
+      read_error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
   UnderlyingPrefStoreObserver default_observer_;
   UnderlyingPrefStoreObserver selected_observer_;

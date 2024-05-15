@@ -323,6 +323,22 @@ TEST_F(DualLayerUserPrefStoreInitializationTest,
   EXPECT_TRUE(store()->IsInitializationComplete());
 }
 
+TEST_F(DualLayerUserPrefStoreInitializationTest, HasReadErrorDelegate) {
+  EXPECT_FALSE(store()->HasReadErrorDelegate());
+
+  store()->ReadPrefsAsync(new MockReadErrorDelegate);
+  EXPECT_TRUE(store()->HasReadErrorDelegate());
+}
+
+TEST_F(DualLayerUserPrefStoreInitializationTest,
+       HasReadErrorDelegateWithNullDelegate) {
+  EXPECT_FALSE(store()->HasReadErrorDelegate());
+
+  store()->ReadPrefsAsync(nullptr);
+  // Returns true even though no instance was passed.
+  EXPECT_TRUE(store()->HasReadErrorDelegate());
+}
+
 TEST_F(DualLayerUserPrefStoreInitializationTest,
        ShouldReportInitializationCompleteAsyncReadAsync) {
   // Should report init completion after async read for underlying stores is

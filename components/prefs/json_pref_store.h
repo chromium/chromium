@@ -95,6 +95,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   void RemoveValue(const std::string& key, uint32_t flags) override;
   bool ReadOnly() const override;
   PrefReadError GetReadError() const override;
+  bool HasReadErrorDelegate() const override;
   // Note this method may be asynchronous if this instance has a |pref_filter_|
   // in which case it will return PREF_READ_ERROR_ASYNCHRONOUS_TASK_INCOMPLETE.
   // See details in pref_filter.h.
@@ -114,6 +115,7 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   // Just like RemoveValue(), but removes all the prefs that start with
   // |prefix|. Used for pref-initialization cleanup.
   void RemoveValuesByPrefixSilently(const std::string& prefix) override;
+
   // Registers |on_next_successful_write_reply| to be called once, on the next
   // successful write event of |writer_|.
   // |on_next_successful_write_reply| will be called on the thread from which
@@ -202,7 +204,8 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore final
   std::unique_ptr<PrefFilter> pref_filter_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 
-  std::unique_ptr<ReadErrorDelegate> error_delegate_;
+  // Optional so we can differentiate `nullopt` from `nullptr`.
+  std::optional<std::unique_ptr<ReadErrorDelegate>> error_delegate_;
 
   bool initialized_;
   bool filtering_in_progress_;

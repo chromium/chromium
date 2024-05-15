@@ -68,10 +68,11 @@ void DualLayerUserPrefStore::UnderlyingPrefStoreObserver::
 
   // Forward error if any of the underlying store reported error upon
   // ReadPrefsAsync().
-  if (outer_->read_error_delegate_) {
+  if (outer_->read_error_delegate_.has_value() &&
+      outer_->read_error_delegate_.value()) {
     if (auto read_error = outer_->GetReadError();
         read_error != PersistentPrefStore::PREF_READ_ERROR_NONE) {
-      outer_->read_error_delegate_->OnError(read_error);
+      outer_->read_error_delegate_.value()->OnError(read_error);
     }
   }
 
@@ -377,7 +378,7 @@ void DualLayerUserPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   // The store is expected to take ownership of `error_delegate`, thus it's not
   // valid to forward the same to the two underlying stores. Instead, if any
   // error occurs, it's reported in OnInitializationCompleted() handle.
-  read_error_delegate_.reset(error_delegate);
+  read_error_delegate_.emplace(error_delegate);
   local_pref_store_->ReadPrefsAsync(nullptr);
   account_pref_store_->ReadPrefsAsync(nullptr);
 }
@@ -796,6 +797,10 @@ void DualLayerUserPrefStore::SetValueInAccountStoreOnly(const std::string& key,
       observer.OnPrefValueChanged(key);
     }
   }
+}
+
+bool DualLayerUserPrefStore::HasReadErrorDelegate() const {
+  return read_error_delegate_.has_value();
 }
 
 }  // namespace sync_preferences

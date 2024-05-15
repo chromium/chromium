@@ -90,3 +90,7 @@ void InMemoryPrefStore::ReportValueChanged(const std::string& key,
 bool InMemoryPrefStore::IsInMemoryPrefStore() const {
   return true;
 }
+
+bool InMemoryPrefStore::HasReadErrorDelegate() const {
+  return false;
+}

@@ -243,4 +243,13 @@ TEST_F(OverlayUserPrefStoreTest, CommitPendingWriteWithCallback) {
   TestCommitPendingWriteWithCallback(overlay_.get(), &task_environment_);
 }
 
+TEST_F(OverlayUserPrefStoreTest, HasReadErrorDelegate) {
+  ASSERT_FALSE(underlay_->HasReadErrorDelegate());
+  EXPECT_FALSE(overlay_->HasReadErrorDelegate());
+
+  underlay_->ReadPrefsAsync(nullptr);
+  ASSERT_TRUE(underlay_->HasReadErrorDelegate());
+  EXPECT_TRUE(overlay_->HasReadErrorDelegate());
+}
+
 }  // namespace base

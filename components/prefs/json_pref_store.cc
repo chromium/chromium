@@ -296,7 +296,7 @@ void JsonPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   initialized_ = false;
-  error_delegate_.reset(error_delegate);
+  error_delegate_.emplace(error_delegate);
 
   // Weakly binds the read task so that it doesn't kick in during shutdown.
   file_task_runner_->PostTaskAndReplyWithResult(
@@ -527,8 +527,10 @@ void JsonPrefStore::FinalizeFileRead(bool initialization_successful,
   if (schedule_write)
     ScheduleWrite(DEFAULT_PREF_WRITE_FLAGS);
 
-  if (error_delegate_ && read_error_ != PREF_READ_ERROR_NONE)
-    error_delegate_->OnError(read_error_);
+  if (error_delegate_.has_value() && error_delegate_.value() &&
+      read_error_ != PREF_READ_ERROR_NONE) {
+    error_delegate_.value()->OnError(read_error_);
+  }
 
   for (PrefStore::Observer& observer : observers_)
     observer.OnInitializationCompleted(true);
@@ -545,4 +547,8 @@ void JsonPrefStore::ScheduleWrite(uint32_t flags) {
   } else {
     writer_.ScheduleWriteWithBackgroundDataSerializer(this);
   }
+}
+
+bool JsonPrefStore::HasReadErrorDelegate() const {
+  return error_delegate_.has_value();
 }

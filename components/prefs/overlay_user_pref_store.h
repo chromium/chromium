@@ -73,6 +73,7 @@ class COMPONENTS_PREFS_EXPORT OverlayUserPrefStore
   void RegisterPersistentPref(const std::string& key);
 
   void OnStoreDeletionFromDisk() override;
+  bool HasReadErrorDelegate() const override;
 
  protected:
   ~OverlayUserPrefStore() override;

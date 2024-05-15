@@ -105,6 +105,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
           base::OnceClosure()) override;
   void SchedulePendingLossyWrites() override;
   void OnStoreDeletionFromDisk() override;
+  bool HasReadErrorDelegate() const override;
 
   // SyncServiceObserver implementation
   void OnStateChanged(syncer::SyncService* sync_service) override;
@@ -205,7 +206,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   UnderlyingPrefStoreObserver local_pref_store_observer_;
   UnderlyingPrefStoreObserver account_pref_store_observer_;
 
-  std::unique_ptr<PersistentPrefStore::ReadErrorDelegate> read_error_delegate_;
+  // Optional so we can differentiate `nullopt` from `nullptr`.
+  std::optional<std::unique_ptr<PersistentPrefStore::ReadErrorDelegate>>
+      read_error_delegate_;
 
   // List of preference types currently syncing.
   base::flat_set<syncer::ModelType> active_types_;

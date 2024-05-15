@@ -42,10 +42,11 @@ void SegregatedPrefStore::UnderlyingPrefStoreObserver::
   if (!outer_->IsInitializationComplete())
     return;
 
-  if (outer_->read_error_delegate_) {
+  if (outer_->read_error_delegate_.has_value() &&
+      outer_->read_error_delegate_.value()) {
     PersistentPrefStore::PrefReadError read_error = outer_->GetReadError();
     if (read_error != PersistentPrefStore::PREF_READ_ERROR_NONE)
-      outer_->read_error_delegate_->OnError(read_error);
+      outer_->read_error_delegate_.value()->OnError(read_error);
   }
 
   for (auto& observer : outer_->observers_)
@@ -171,9 +172,9 @@ PersistentPrefStore::PrefReadError SegregatedPrefStore::ReadPrefs() {
 }
 
 void SegregatedPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
-  read_error_delegate_.reset(error_delegate);
-  default_pref_store_->ReadPrefsAsync(NULL);
-  selected_pref_store_->ReadPrefsAsync(NULL);
+  read_error_delegate_.emplace(error_delegate);
+  default_pref_store_->ReadPrefsAsync(nullptr);
+  selected_pref_store_->ReadPrefsAsync(nullptr);
 }
 
 void SegregatedPrefStore::CommitPendingWrite(
@@ -225,4 +226,8 @@ const PersistentPrefStore* SegregatedPrefStore::StoreForKey(
   return (base::Contains(selected_preference_names_, key) ? selected_pref_store_
                                                           : default_pref_store_)
       .get();
+}
+
+bool SegregatedPrefStore::HasReadErrorDelegate() const {
+  return read_error_delegate_.has_value();
 }

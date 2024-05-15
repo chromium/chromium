@@ -244,3 +244,7 @@ bool OverlayUserPrefStore::ShallBeStoredInPersistent(
     std::string_view key) const {
   return persistent_names_set_.find(key) != persistent_names_set_.end();
 }
+
+bool OverlayUserPrefStore::HasReadErrorDelegate() const {
+  return persistent_user_pref_store_->HasReadErrorDelegate();
+}

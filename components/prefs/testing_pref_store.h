@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -53,6 +54,7 @@ class TestingPrefStore : public PersistentPrefStore {
   void CommitPendingWrite(base::OnceClosure reply_callback,
                           base::OnceClosure synchronous_done_callback) override;
   void SchedulePendingLossyWrites() override;
+  bool HasReadErrorDelegate() const override;
 
   // Marks the store as having completed initialization.
   void SetInitializationCompleted();
@@ -127,7 +129,8 @@ class TestingPrefStore : public PersistentPrefStore {
   // mutation.
   bool committed_;
 
-  std::unique_ptr<ReadErrorDelegate> error_delegate_;
+  // Optional so we can differentiate `nullopt` from `nullptr`.
+  std::optional<std::unique_ptr<ReadErrorDelegate>> error_delegate_;
   base::ObserverList<PrefStore::Observer, true>::Unchecked observers_;
 };
 
