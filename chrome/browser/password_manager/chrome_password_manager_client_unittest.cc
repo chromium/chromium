@@ -38,6 +38,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/content/browser/autofill_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -115,6 +116,7 @@ using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
 using autofill::mojom::FocusedFieldType;
+using autofill::test::CreateFormDataForRenderFrameHost;
 using autofill::test::CreateTestFormField;
 using content::BrowserContext;
 using content::WebContents;
@@ -171,21 +173,6 @@ PasswordForm MakePasswordForm() {
   return form;
 }
 #endif
-
-// Creates a FormData with `fields` whose `url` and `host_frame` match `rfh`.
-FormData CreateFormForRenderHost(content::RenderFrameHost& rfh,
-                                 std::vector<FormFieldData> fields) {
-  FormData form;
-  form.url = rfh.GetLastCommittedURL();
-  form.action = form.url;
-  form.host_frame = autofill::LocalFrameToken(rfh.GetFrameToken().value());
-  form.renderer_id = autofill::test::MakeFormRendererId();
-  form.fields = std::move(fields);
-  for (FormFieldData& field : form.fields) {
-    field.set_host_frame(form.host_frame);
-  }
-  return form;
-}
 
 // TODO(crbug.com/40412780): Get rid of the mocked client in the client's own
 // test.
@@ -579,7 +566,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
           ->DriverForFrame(main_rfh());
   ASSERT_TRUE(autofill_driver);
 
-  FormData form = CreateFormForRenderHost(
+  FormData form = CreateFormDataForRenderFrameHost(
       *main_rfh(), {CreateTestFormField("Username", "username", "",
                                         FormControlType::kInputText),
                     CreateTestFormField("Password", "password", "",
@@ -627,12 +614,12 @@ TEST_F(ChromePasswordManagerClientTest,
   ASSERT_TRUE(main_driver);
   ASSERT_TRUE(child_driver);
 
-  FormData main_form = CreateFormForRenderHost(
+  FormData main_form = CreateFormDataForRenderFrameHost(
       *main_rfh(), {CreateTestFormField("Username", "username", "",
                                         FormControlType::kInputText),
                     CreateTestFormField("Password", "password", "",
                                         FormControlType::kInputPassword)});
-  FormData child_form = CreateFormForRenderHost(
+  FormData child_form = CreateFormDataForRenderFrameHost(
       *child_rfh,
       {CreateTestFormField("OTP", "OTP", "", FormControlType::kInputText)});
 

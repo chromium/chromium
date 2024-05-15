@@ -776,6 +776,37 @@ class AutofillClient {
   virtual void set_test_addresses(std::vector<AutofillProfile> test_addresses);
 
   virtual base::span<const AutofillProfile> GetTestAddresses() const;
+
+  // `PasswordFormType` describes the different outcomes of Password Manager's
+  // form parsing heuristics (see `FormDataParser`). Note that these are all
+  // predictions and may be inaccurate.
+  enum class PasswordFormType {
+    // The form is not password-related.
+    kNoPasswordForm = 0,
+    // The form is a predicted to be a login form, i.e. it has a username and a
+    // password field.
+    kLoginForm = 1,
+    // The form is predicted to be a signup form, i.e. it has a username field
+    // and a new password field.
+    kSignupForm = 2,
+    // The form is predicted to be a change password form, i.e. it has a current
+    // password field and a new password field.
+    kChangePasswordForm = 3,
+    // The form is predicted to be a reset password form, i.e. it has a new
+    // password field.
+    kResetPasswordForm = 4,
+    // The form is predicted to be the username form of a username-first flow,
+    // i.e. there is only a username field.
+    kSingleUsernameForm = 5
+  };
+  // Returns the heuristics predictions for the renderer form to which
+  // `field_id` belongs inside the form with `form_id`. The browser form with
+  // `form_id` is decomposed into renderer forms prior to running Password
+  // Manager heuristics.
+  // If the form cannot be found, `kNoPasswordForm` is returned.
+  virtual PasswordFormType ClassifyAsPasswordForm(AutofillManager& manager,
+                                                  FormGlobalId form_id,
+                                                  FieldGlobalId field_id) const;
 };
 
 }  // namespace autofill

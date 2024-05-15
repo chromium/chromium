@@ -253,4 +253,11 @@ base::span<const AutofillProfile> AutofillClient::GetTestAddresses() const {
   return {};
 }
 
+AutofillClient::PasswordFormType AutofillClient::ClassifyAsPasswordForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) const {
+  return PasswordFormType::kNoPasswordForm;
+}
+
 }  // namespace autofill

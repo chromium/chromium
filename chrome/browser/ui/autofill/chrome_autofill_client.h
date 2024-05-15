@@ -232,14 +232,18 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const FormFieldData& field) override;
   void HideAutofillFieldIphForManualFallbackFeature() override;
   void NotifyAutofillManualFallbackUsed() override;
+  void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
+  base::span<const AutofillProfile> GetTestAddresses() const override;
+  PasswordFormType ClassifyAsPasswordForm(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      FieldGlobalId field_id) const override;
 
   // TODO(b/320634151): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
   suggestion_controller_for_testing() {
     return suggestion_controller_;
   }
-  void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
-  base::span<const AutofillProfile> GetTestAddresses() const override;
 #if defined(UNIT_TEST)
   void SetKeepPopupOpenForTesting(bool keep_popup_open_for_testing) {
     keep_popup_open_for_testing_ = keep_popup_open_for_testing;
