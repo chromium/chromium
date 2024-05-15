@@ -34,22 +34,6 @@
         name: "DiffNeedsFullLayoutAndPaintInvalidation",
         methods_to_diff: [
           {
-            method: "BorderLeftWidth()",
-            field_dependencies: ["border-left-width"]
-          },
-          {
-            method: "BorderTopWidth()",
-            field_dependencies: ["border-top-width"]
-          },
-          {
-            method: "BorderBottomWidth()",
-            field_dependencies: ["border-bottom-width"]
-          },
-          {
-            method: "BorderRightWidth()",
-            field_dependencies: ["border-right-width"]
-          },
-          {
             method: "HasPseudoElementStyle(kPseudoIdScrollbar)",
             field_dependencies: ["StyleType"]
           },

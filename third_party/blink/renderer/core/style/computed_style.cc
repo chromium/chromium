@@ -879,32 +879,15 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  if (field_diff & kLayout) {
+  if (!diff.NeedsFullLayout() &&
+      DiffNeedsFullLayout(document, other, field_diff)) {
     diff.SetNeedsFullLayout();
   }
 
-  if (!diff.NeedsFullLayout()) {
-    if (IsDisplayLayoutCustomBox() &&
-        DiffNeedsFullLayoutForLayoutCustom(document, other)) {
-      diff.SetNeedsFullLayout();
-    }
-    if (DisplayLayoutCustomParentName() &&
-        DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
-      diff.SetNeedsFullLayout();
-    }
-  }
-
-  if (HasOutOfFlowPosition()) {
-    if (!diff.NeedsLayout() && (field_diff & kOutOfFlow)) {
+  if (!diff.NeedsLayout()) {
+    if ((field_diff & kOutOfFlow) && HasOutOfFlowPosition()) {
       diff.SetNeedsPositionedMovementLayout();
-    }
-  } else {
-    // Inflow elements participate in margin-collapsing so need a full layout.
-    if (field_diff & kMargin) {
-      diff.SetNeedsFullLayout();
-    }
-
-    if (!diff.NeedsLayout() && HasInFlowPosition() && (field_diff & kInset)) {
+    } else if ((field_diff & kInset) && HasInFlowPosition()) {
       diff.SetNeedsPositionedMovementLayout();
     }
   }
@@ -1001,6 +984,39 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
 
   // Movement of non-static-positioned object is special cased in
   // ComputedStyle::VisualInvalidationDiff().
+
+  return false;
+}
+
+bool ComputedStyle::DiffNeedsFullLayout(const Document& document,
+                                        const ComputedStyle& other,
+                                        uint32_t field_diff) const {
+  if (field_diff & kLayout) {
+    return true;
+  }
+
+  if (field_diff & kBorderWidth) {
+    if (BorderTopWidth() != other.BorderTopWidth() ||
+        BorderRightWidth() != other.BorderRightWidth() ||
+        BorderBottomWidth() != other.BorderBottomWidth() ||
+        BorderLeftWidth() != other.BorderLeftWidth()) {
+      return true;
+    }
+  }
+
+  if ((field_diff & kMargin) && !HasOutOfFlowPosition()) {
+    return true;
+  }
+
+  if (IsDisplayLayoutCustomBox() &&
+      DiffNeedsFullLayoutForLayoutCustom(document, other)) {
+    return true;
+  }
+
+  if (DisplayLayoutCustomParentName() &&
+      DiffNeedsFullLayoutForLayoutCustomChild(document, other)) {
+    return true;
+  }
 
   return false;
 }

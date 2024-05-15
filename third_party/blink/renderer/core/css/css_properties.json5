@@ -318,6 +318,7 @@
         "blend-mode",
         "border-image",
         "border-radius",
+        "border-width",
         "clip-path",
         "color",
         "compositing",
@@ -2163,6 +2164,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-bottom-width",
@@ -2186,6 +2188,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-collapse",
@@ -2311,6 +2314,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-left-width",
@@ -2334,6 +2338,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-right-color",
@@ -2379,6 +2384,7 @@
       },
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-right-width",
@@ -2402,6 +2408,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-top-color",
@@ -2492,6 +2499,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "border-top-width",
@@ -2515,6 +2523,7 @@
       overlapping: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      invalidate: ["border-width"],
     },
     {
       name: "bottom",
