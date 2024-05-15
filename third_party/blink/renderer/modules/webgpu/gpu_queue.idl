@@ -12,9 +12,6 @@
 
     [CallWith=ScriptState] Promise<undefined> onSubmittedWorkDone();
 
-    // TODO(crbug.com/1088107): Merge these overloads into one with
-    // [AllowShared] BufferSource (or whatever the upstream spec has), which
-    // would expand this to allow SharedArrayBuffer (can't be implemented now).
     [CallWith=ScriptState, RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
@@ -24,7 +21,7 @@
     [CallWith=ScriptState, RaisesException] void writeBuffer(
         GPUBuffer buffer,
         GPUSize64 bufferOffset,
-        ArrayBuffer data,
+        [AllowShared] ArrayBuffer data,
         optional GPUSize64 dataByteOffset = 0,
         optional GPUSize64 byteSize);
 
@@ -35,7 +32,7 @@
         GPUExtent3D size);
     [CallWith=ScriptState, RaisesException] void writeTexture(
         GPUImageCopyTexture destination,
-        ArrayBuffer data,
+        [AllowShared] ArrayBuffer data,
         GPUImageDataLayout dataLayout,
         GPUExtent3D size);
 
