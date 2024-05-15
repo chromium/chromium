@@ -284,21 +284,46 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics() {
 
   static const double kHzInMhz = 1000 * 1000;
 
-  double estimated_mhz = base::EstimateCpuFrequency() / kHzInMhz;
-  unsigned long max_mhz = base::GetCpuMaxMhz();
-  unsigned long mhz_limit = base::GetCpuMhzLimit();
+  std::optional<base::CpuThroughputEstimationResult> cpu_throughput =
+      base::EstimateCpuThroughput();
+  base::CpuFrequencyInfo cpu_frequency_info = base::GetCpuFrequencyInfo();
 
-  if (max_mhz > 0UL) {
-    base::UmaHistogramPercentage(
-        "CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
-        static_cast<int>(estimated_mhz * 100.0 / static_cast<double>(max_mhz)));
+  if (!cpu_throughput) {
+    return;
   }
 
-  if (mhz_limit > 0UL) {
+  if (cpu_throughput->migrated) {
+    // Don't record these metrics if the code migrated from one CPU to another
+    // in the middle of the estimation loop.
+    return;
+  }
+
+  double estimated_mhz = cpu_throughput->estimated_frequency / kHzInMhz;
+
+  std::string_view suffix = "Performance";
+  if (cpu_frequency_info.type == base::CpuFrequencyInfo::CoreType::kBalanced) {
+    suffix = "Balanced";
+  } else if (cpu_frequency_info.type ==
+             base::CpuFrequencyInfo::CoreType::kEfficiency) {
+    suffix = "Efficiency";
+  }
+
+  // Max/Limit can (rarely) be 0 in the field, perhaps in virtualized or
+  // sandboxed environments.
+  if (cpu_frequency_info.max_mhz > 0UL) {
     base::UmaHistogramPercentage(
-        "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
+        base::StrCat(
+            {"CPU.Experimental.EstimatedFrequencyAsPercentOfMax.", suffix}),
         static_cast<int>(estimated_mhz * 100.0 /
-                         static_cast<double>(mhz_limit)));
+                         static_cast<double>(cpu_frequency_info.max_mhz)));
+  }
+
+  if (cpu_frequency_info.mhz_limit > 0UL) {
+    base::UmaHistogramPercentage(
+        base::StrCat(
+            {"CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.", suffix}),
+        static_cast<int>(estimated_mhz * 100.0 /
+                         static_cast<double>(cpu_frequency_info.mhz_limit)));
   }
 }
 }  // namespace performance_manager

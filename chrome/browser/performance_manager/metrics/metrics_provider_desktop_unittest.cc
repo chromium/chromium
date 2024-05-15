@@ -281,15 +281,17 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
   base::HistogramTester tester;
 
   FastForwardBy(base::Minutes(5));
-  tester.ExpectTotalCount("CPU.Experimental.EstimatedFrequencyAsPercentOfMax",
-                          performance_manager::MetricsProviderDesktop::
-                                  ShouldCollectCpuFrequencyMetrics()
-                              ? 1
-                              : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfMax.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
 
-  tester.ExpectTotalCount("CPU.Experimental.EstimatedFrequencyAsPercentOfLimit",
-                          performance_manager::MetricsProviderDesktop::
-                                  ShouldCollectCpuFrequencyMetrics()
-                              ? 1
-                              : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
 }

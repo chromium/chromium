@@ -15,6 +15,7 @@
 #include <windows.h>
 
 #include <powerbase.h>
+#include <processthreadsapi.h>
 #include <winternl.h>
 #endif
 
@@ -38,8 +39,18 @@ typedef struct _PROCESSOR_POWER_INFORMATION {
 }  // namespace
 
 double EstimateCpuFrequency() {
+  std::optional<CpuThroughputEstimationResult> result = EstimateCpuThroughput();
+  return result ? result->estimated_frequency : 0.0;
+}
+
+std::optional<CpuThroughputEstimationResult> EstimateCpuThroughput() {
 #if defined(ARCH_CPU_X86_FAMILY)
-  TRACE_EVENT0("power", "EstimateCpuFrequency");
+  TRACE_EVENT0("power", "EstimateCpuThroughput");
+
+#if BUILDFLAG(IS_WIN)
+  DWORD start_processor_number = GetCurrentProcessorNumber();
+#endif
+
   // The heuristic to estimate CPU frequency is based on UIforETW code.
   // see: https://github.com/google/UIforETW/blob/main/UIforETW/CPUFrequency.cpp
   //      https://github.com/google/UIforETW/blob/main/UIforETW/SpinALot64.asm
@@ -66,52 +77,67 @@ double EstimateCpuFrequency() {
   const base::TimeDelta elapsed = timer.Elapsed();
   const double estimated_frequency =
       (kAmountOfIterations * kAmountOfInstructions) / elapsed.InSecondsF();
-  return estimated_frequency;
+
+  CpuThroughputEstimationResult result{
+      .estimated_frequency = estimated_frequency,
+      .migrated = false,
+  };
+
+#if BUILDFLAG(IS_WIN)
+  result.migrated = start_processor_number != GetCurrentProcessorNumber();
+#endif
+
+  return result;
 #else
-  return 0.0;
+  return std::nullopt;
 #endif
 }
 
-unsigned long GetCpuMaxMhz() {
+BASE_EXPORT CpuFrequencyInfo GetCpuFrequencyInfo() {
+  CpuFrequencyInfo cpu_info{
+      .max_mhz = 0,
+      .mhz_limit = 0,
+      .type = CpuFrequencyInfo::CoreType::kPerformance,
+  };
+
 #if BUILDFLAG(IS_WIN)
+  unsigned long fastest = std::numeric_limits<unsigned long>::min();
+  unsigned long slowest = std::numeric_limits<unsigned long>::max();
+
+  DWORD current_processor_number = GetCurrentProcessorNumber();
   size_t num_cpu = static_cast<size_t>(base::SysInfo::NumberOfProcessors());
   std::vector<PROCESSOR_POWER_INFORMATION> info(num_cpu);
   if (!NT_SUCCESS(CallNtPowerInformation(
           ProcessorInformation, nullptr, 0, &info[0],
           static_cast<ULONG>(sizeof(PROCESSOR_POWER_INFORMATION) * num_cpu)))) {
-    return 0;
+    return cpu_info;
   }
 
-  unsigned long max_mhz = 0;
   for (const auto& i : info) {
-    max_mhz = std::max(max_mhz, i.MaxMhz);
+    if (current_processor_number == i.Number) {
+      cpu_info.max_mhz = i.MaxMhz;
+      cpu_info.mhz_limit = i.MhzLimit;
+    }
+    fastest = std::max(fastest, i.MaxMhz);
+    slowest = std::min(slowest, i.MaxMhz);
   }
 
-  return max_mhz;
-#else
-  return 0;
+  // If the CPU frequency is the fastest of all the cores, or the CPU is
+  // homogeneous, report the core as being a performance core.
+  if (cpu_info.max_mhz == fastest) {
+    cpu_info.type = CpuFrequencyInfo::CoreType::kPerformance;
+  } else if (cpu_info.max_mhz == slowest) {
+    // If the system is heterogenous, and the current CPU is the slowest, report
+    // it as an efficiency core.
+    cpu_info.type = CpuFrequencyInfo::CoreType::kEfficiency;
+  } else {
+    // Otherwise, the CPU is neither the fastest or the slowest, so report it as
+    // "balanced".
+    cpu_info.type = CpuFrequencyInfo::CoreType::kBalanced;
+  }
 #endif
-}
 
-unsigned long GetCpuMhzLimit() {
-#if BUILDFLAG(IS_WIN)
-  size_t num_cpu = static_cast<size_t>(base::SysInfo::NumberOfProcessors());
-  std::vector<PROCESSOR_POWER_INFORMATION> info(num_cpu);
-  if (!NT_SUCCESS(CallNtPowerInformation(
-          ProcessorInformation, nullptr, 0, &info[0],
-          static_cast<ULONG>(sizeof(PROCESSOR_POWER_INFORMATION) * num_cpu)))) {
-    return 0;
-  }
-
-  unsigned long mhz_limit = 0;
-  for (const auto& i : info) {
-    mhz_limit = std::max(mhz_limit, i.MhzLimit);
-  }
-
-  return mhz_limit;
-#else
-  return 0;
-#endif
+  return cpu_info;
 }
 
 #if BUILDFLAG(IS_WIN)

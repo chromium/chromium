@@ -14,6 +14,12 @@ each histogram.
 
 <histograms>
 
+<variants name="CoreType">
+  <variant name="Balanced"/>
+  <variant name="Efficiency"/>
+  <variant name="Performance"/>
+</variants>
+
 <variants name="PerformanceInterventionsCPUTiming">
   <variant name="Baseline"
       summary="every 2 minutes regardless of CPU threshold"/>
@@ -28,8 +34,9 @@ each histogram.
   <variant name="WriteSiteDataIntoStore"/>
 </variants>
 
-<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit" units="%"
-    expires_after="2024-07-10">
+<histogram
+    name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
+    units="%" expires_after="2024-07-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -39,10 +46,11 @@ each histogram.
 
     Recorded every 5 minutes. Windows x86 only.
   </summary>
+  <token key="CoreType" variants="CoreType"/>
 </histogram>
 
-<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax" units="%"
-    expires_after="2024-07-10">
+<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax.{CoreType}"
+    units="%" expires_after="2024-07-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -52,6 +60,7 @@ each histogram.
 
     Recorded every 5 minutes. Windows x86 only.
   </summary>
+  <token key="CoreType" variants="CoreType"/>
 </histogram>
 
 <histogram
