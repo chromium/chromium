@@ -159,19 +159,19 @@ TEST_CONFIG = """\
     'chromium': {},
     'fake_builder_group': {
       'fake_args_bot': 'fake_args_bot',
-      'fake_args_file': 'args_file_goma',
+      'fake_args_file': 'args_file_remoteexec',
       'fake_builder': 'rel_bot',
-      'fake_debug_builder': 'debug_goma',
+      'fake_debug_builder': 'debug_remoteexec',
       'fake_multi_phase': { 'phase_1': 'phase_1', 'phase_2': 'phase_2'},
     },
   },
   'configs': {
-    'args_file_goma': ['fake_args_bot', 'goma'],
-    'debug_goma': ['debug', 'goma'],
+    'args_file_remoteexec': ['fake_args_bot', 'remoteexec'],
+    'debug_remoteexec': ['debug', 'remoteexec'],
     'fake_args_bot': ['fake_args_bot'],
     'phase_1': ['rel', 'phase_1'],
     'phase_2': ['rel', 'phase_2'],
-    'rel_bot': ['rel', 'goma', 'fake_feature1'],
+    'rel_bot': ['rel', 'remoteexec', 'fake_feature1'],
   },
   'mixins': {
     'debug': {
@@ -183,9 +183,6 @@ TEST_CONFIG = """\
     'fake_feature1': {
       'gn_args': 'enable_doom_melon=true',
     },
-    'goma': {
-      'gn_args': 'use_goma=true',
-    },
     'phase_1': {
       'gn_args': 'phase=1',
     },
@@ -194,6 +191,9 @@ TEST_CONFIG = """\
     },
     'rel': {
       'gn_args': 'is_debug=false dcheck_always_on=false',
+    },
+    'remoteexec': {
+      'gn_args': 'use_remoteexec=true',
     },
   },
 }
@@ -412,8 +412,12 @@ class UnitTest(unittest.TestCase):
     mbw = self.fake_mbw(files)
     mbw.Call = lambda cmd, env=None, capture_output=True, input='': (0, '', '')
 
-    self.check(['analyze', '-c', 'debug_goma', '//out/Default',
-                '/tmp/in.json', '/tmp/out.json'], mbw=mbw, ret=0)
+    self.check([
+        'analyze', '-c', 'debug_remoteexec', '//out/Default', '/tmp/in.json',
+        '/tmp/out.json'
+    ],
+               mbw=mbw,
+               ret=0)
     out = json.loads(mbw.files['/tmp/out.json'])
     self.assertEqual(out, {
       'status': 'Found dependency',
@@ -436,8 +440,12 @@ class UnitTest(unittest.TestCase):
     mbw = self.fake_mbw(files)
     mbw.Call = lambda cmd, env=None, capture_output=True, input='': (0, '', '')
 
-    self.check(['analyze', '-c', 'debug_goma', '//out/Default',
-                '/tmp/in.json', '/tmp/out.json'], mbw=mbw, ret=0)
+    self.check([
+        'analyze', '-c', 'debug_remoteexec', '//out/Default', '/tmp/in.json',
+        '/tmp/out.json'
+    ],
+               mbw=mbw,
+               ret=0)
     out = json.loads(mbw.files['/tmp/out.json'])
 
     # check that 'foo_unittests' is not in the compile_targets
@@ -459,8 +467,12 @@ class UnitTest(unittest.TestCase):
     mbw = self.fake_mbw(files)
     mbw.Call = lambda cmd, env=None, capture_output=True, input='': (0, '', '')
 
-    self.check(['analyze', '-c', 'debug_goma', '//out/Default',
-                '/tmp/in.json', '/tmp/out.json'], mbw=mbw, ret=0)
+    self.check([
+        'analyze', '-c', 'debug_remoteexec', '//out/Default', '/tmp/in.json',
+        '/tmp/out.json'
+    ],
+               mbw=mbw,
+               ret=0)
     out = json.loads(mbw.files['/tmp/out.json'])
 
     # crbug.com/736215: If GN returns a label containing a toolchain,
@@ -486,8 +498,12 @@ class UnitTest(unittest.TestCase):
     mbw = self.fake_mbw(files)
     mbw.Call = lambda cmd, env=None, capture_output=True, input='': (0, '', '')
 
-    self.check(['analyze', '-c', 'debug_goma', '//out/Default',
-                '/tmp/in.json', '/tmp/out.json'], mbw=mbw, ret=0)
+    self.check([
+        'analyze', '-c', 'debug_remoteexec', '//out/Default', '/tmp/in.json',
+        '/tmp/out.json'
+    ],
+               mbw=mbw,
+               ret=0)
     out = json.loads(mbw.files['/tmp/out.json'])
 
     # If GN returns so many compile targets that we might have command-line
@@ -498,12 +514,12 @@ class UnitTest(unittest.TestCase):
 
   def test_gen(self):
     mbw = self.fake_mbw()
-    self.check(['gen', '-c', 'debug_goma', '//out/Default', '-g', '/goma'],
-               mbw=mbw, ret=0)
+    self.check(['gen', '-c', 'debug_remoteexec', '//out/Default'],
+               mbw=mbw,
+               ret=0)
     self.assertMultiLineEqual(mbw.files['/fake_src/out/Default/args.gn'],
-                              ('goma_dir = "/goma"\n'
-                               'is_debug = true\n'
-                               'use_goma = true\n'))
+                              ('is_debug = true\n'
+                               'use_remoteexec = true\n'))
 
     # Make sure we log both what is written to args.gn and the command line.
     self.assertIn('Writing """', mbw.out)
@@ -511,12 +527,10 @@ class UnitTest(unittest.TestCase):
                   mbw.out)
 
     mbw = self.fake_mbw(win32=True)
-    self.check(['gen', '-c', 'debug_goma', '-g', 'c:\\goma', '//out/Debug'],
-               mbw=mbw, ret=0)
+    self.check(['gen', '-c', 'debug_remoteexec', '//out/Debug'], mbw=mbw, ret=0)
     self.assertMultiLineEqual(mbw.files['c:\\fake_src\\out\\Debug\\args.gn'],
-                              ('goma_dir = "c:\\\\goma"\n'
-                               'is_debug = true\n'
-                               'use_goma = true\n'))
+                              ('is_debug = true\n'
+                               'use_remoteexec = true\n'))
     self.assertIn(
         'c:\\fake_src\\buildtools\\win\\gn.exe gen //out/Debug '
         '--check', mbw.out)
@@ -538,7 +552,7 @@ class UnitTest(unittest.TestCase):
     self.assertEqual(
         mbw.files['/fake_src/out/Debug/args.gn'],
         ('import("//build/args/bots/fake_builder_group/fake_args_bot.gn")\n'
-         'use_goma = true\n'))
+         'use_remoteexec = true\n'))
 
   def test_gen_args_file_twice(self):
     mbw = self.fake_mbw()
@@ -549,7 +563,9 @@ class UnitTest(unittest.TestCase):
   def test_gen_fails(self):
     mbw = self.fake_mbw()
     mbw.Call = lambda cmd, env=None, capture_output=True, input='': (1, '', '')
-    self.check(['gen', '-c', 'debug_goma', '//out/Default'], mbw=mbw, ret=1)
+    self.check(['gen', '-c', 'debug_remoteexec', '//out/Default'],
+               mbw=mbw,
+               ret=1)
 
   def test_gen_swarming(self):
     files = {
@@ -575,12 +591,13 @@ class UnitTest(unittest.TestCase):
 
     mbw.Call = fake_call
 
-    self.check(['gen',
-                '-c', 'debug_goma',
-                '--swarming-targets-file', '/tmp/swarming_targets',
-                '//out/Default'], mbw=mbw, ret=0)
-    self.assertIn('/fake_src/out/Default/base_unittests.isolate',
-                  mbw.files)
+    self.check([
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
+        '/tmp/swarming_targets', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=0)
+    self.assertIn('/fake_src/out/Default/base_unittests.isolate', mbw.files)
     self.assertIn('/fake_src/out/Default/base_unittests.isolated.gen.json',
                   mbw.files)
 
@@ -608,14 +625,14 @@ class UnitTest(unittest.TestCase):
 
     mbw.Call = fake_call
 
-    self.check(['gen',
-                '-c', 'debug_goma',
-                '--swarming-targets-file', '/tmp/swarming_targets',
-                '--isolate-map-file',
-                '/fake_src/testing/buildbot/gn_isolate_map.pyl',
-                '//out/Default'], mbw=mbw, ret=0)
-    self.assertIn('/fake_src/out/Default/cc_perftests.isolate',
-                  mbw.files)
+    self.check([
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
+        '/tmp/swarming_targets', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=0)
+    self.assertIn('/fake_src/out/Default/cc_perftests.isolate', mbw.files)
     self.assertIn('/fake_src/out/Default/cc_perftests.isolated.gen.json',
                   mbw.files)
 
@@ -647,16 +664,15 @@ class UnitTest(unittest.TestCase):
 
     mbw.Call = fake_call
 
-    self.check(['gen',
-                '-c', 'debug_goma',
-                '--swarming-targets-file', '/tmp/swarming_targets',
-                '--isolate-map-file',
-                '/fake_src/testing/buildbot/gn_isolate_map.pyl',
-                '--isolate-map-file',
-                '/fake_src/testing/buildbot/gn_isolate_map2.pyl',
-                '//out/Default'], mbw=mbw, ret=0)
-    self.assertIn('/fake_src/out/Default/cc_perftests.isolate',
-                  mbw.files)
+    self.check([
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
+        '/tmp/swarming_targets', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=0)
+    self.assertIn('/fake_src/out/Default/cc_perftests.isolate', mbw.files)
     self.assertIn('/fake_src/out/Default/cc_perftests.isolated.gen.json',
                   mbw.files)
 
@@ -680,14 +696,14 @@ class UnitTest(unittest.TestCase):
     }
     mbw = self.fake_mbw(files=files, win32=True)
     # Check that passing duplicate targets into mb fails.
-    self.check(['gen',
-                '-c', 'debug_goma',
-                '--swarming-targets-file', '/tmp/swarming_targets',
-                '--isolate-map-file',
-                '/fake_src/testing/buildbot/gn_isolate_map.pyl',
-                '--isolate-map-file',
-                '/fake_src/testing/buildbot/gn_isolate_map2.pyl',
-                '//out/Default'], mbw=mbw, ret=1)
+    self.check([
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
+        '/tmp/swarming_targets', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl', '--isolate-map-file',
+        '/fake_src/testing/buildbot/gn_isolate_map2.pyl', '//out/Default'
+    ],
+               mbw=mbw,
+               ret=1)
 
 
   def test_isolate(self):
@@ -702,8 +718,11 @@ class UnitTest(unittest.TestCase):
         '/fake_src/out/Default/base_unittests.runtime_deps':
         ("base_unittests\n"),
     }
-    self.check(['isolate', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], files=files, ret=0)
+    self.check([
+        'isolate', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
+    ],
+               files=files,
+               ret=0)
 
     # test running isolate on an existing build_dir
     files['/fake_src/out/Default/args.gn'] = 'is_debug = true\n'
@@ -748,7 +767,7 @@ class UnitTest(unittest.TestCase):
     mbw.Call = fake_call
 
     self.check([
-        'gen', '-c', 'debug_goma', '--swarming-targets-file',
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
         '/tmp/swarming_targets', '//out/Default'
     ],
                mbw=mbw,
@@ -784,7 +803,7 @@ class UnitTest(unittest.TestCase):
     mbw.Call = fake_call
 
     self.check([
-        'gen', '-c', 'debug_goma', '--swarming-targets-file',
+        'gen', '-c', 'debug_remoteexec', '--swarming-targets-file',
         '/tmp/swarming_targets', '//out/Default'
     ],
                mbw=mbw,
@@ -812,8 +831,12 @@ class UnitTest(unittest.TestCase):
 
     # Result of `gn desc runtime_deps`
     mbw.cmds.append((0, 'base_unitests\n../../test_data/\n', ''))
-    self.check(['isolate', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], mbw=mbw, ret=0, err='')
+    self.check([
+        'isolate', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
+    ],
+               mbw=mbw,
+               ret=0,
+               err='')
 
   def test_isolate_generated_dir(self):
     files = {
@@ -834,8 +857,11 @@ class UnitTest(unittest.TestCase):
     expected_err = ('error: gn `data` items may not list generated directories;'
                     ' list files in directory instead for:\n'
                     '//out/Default/test_data/\n')
-    self.check(['isolate', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], mbw=mbw, ret=1)
+    self.check([
+        'isolate', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
+    ],
+               mbw=mbw,
+               ret=1)
     self.assertEqual(mbw.out[-len(expected_err):], expected_err)
 
 
@@ -849,8 +875,10 @@ class UnitTest(unittest.TestCase):
         '/fake_src/out/Default/base_unittests.runtime_deps':
         ("base_unittests\n"),
     }
-    mbw = self.check(['run', '-c', 'debug_goma', '//out/Default',
-                     'base_unittests'], files=files, ret=0)
+    mbw = self.check(
+        ['run', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'],
+        files=files,
+        ret=0)
     # pylint: disable=line-too-long
     self.assertEqual(
         mbw.files['/fake_src/out/Default/base_unittests.isolate'],
@@ -888,16 +916,23 @@ class UnitTest(unittest.TestCase):
 
     mbw.ToSrcRelPath = to_src_rel_path_stub
 
-    self.check(['run', '-s', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], mbw=mbw, ret=0)
+    self.check([
+        'run', '-s', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
+    ],
+               mbw=mbw,
+               ret=0)
 
     # Specify a custom dimension via '-d'.
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
-    self.check(['run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7',
-                '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
+    self.check([
+        'run', '-s', '-c', 'debug_remoteexec', '-d', 'os', 'Win7',
+        '//out/Default', 'base_unittests'
+    ],
+               mbw=mbw,
+               ret=0)
 
     # Use the internal swarming server via '--internal'.
     mbw = self.fake_mbw(files=files)
@@ -905,7 +940,7 @@ class UnitTest(unittest.TestCase):
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
     self.check([
-        'run', '-s', '--internal', '-c', 'debug_goma', '//out/Default',
+        'run', '-s', '--internal', '-c', 'debug_remoteexec', '//out/Default',
         'base_unittests'
     ],
                mbw=mbw,
@@ -942,27 +977,29 @@ class UnitTest(unittest.TestCase):
 
     mbw.ToSrcRelPath = to_src_rel_path_stub
 
-    self.check(
-        ['run', '-s', '-c', 'debug_goma', '//out/Default', 'base_unittests'],
-        mbw=mbw,
-        ret=1)
+    self.check([
+        'run', '-s', '-c', 'debug_remoteexec', '//out/Default', 'base_unittests'
+    ],
+               mbw=mbw,
+               ret=1)
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
     self.check([
-        'run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7', '//out/Default',
-        'base_unittests'
+        'run', '-s', '-c', 'debug_remoteexec', '-d', 'os', 'Win7',
+        '//out/Default', 'base_unittests'
     ],
                mbw=mbw,
                ret=1)
 
   def test_lookup(self):
-    self.check(['lookup', '-c', 'debug_goma'], ret=0,
+    self.check(['lookup', '-c', 'debug_remoteexec'],
+               ret=0,
                out=('\n'
                     'Writing """\\\n'
                     'is_debug = true\n'
-                    'use_goma = true\n'
+                    'use_remoteexec = true\n'
                     '""" to _path_/args.gn.\n\n'
                     '/fake_src/buildtools/linux64/gn gen _path_\n'))
 
@@ -1070,22 +1107,10 @@ class UnitTest(unittest.TestCase):
                ret=0)
 
   def test_quiet_lookup(self):
-    self.check(['lookup', '-c', 'debug_goma', '--quiet'], ret=0,
-               out=('is_debug = true\n'
-                    'use_goma = true\n'))
-
-  def test_lookup_goma_dir_expansion(self):
-    self.check(['lookup', '-c', 'rel_bot', '-g', '/foo'],
+    self.check(['lookup', '-c', 'debug_remoteexec', '--quiet'],
                ret=0,
-               out=('\n'
-                    'Writing """\\\n'
-                    'dcheck_always_on = false\n'
-                    'enable_doom_melon = true\n'
-                    'goma_dir = "/foo"\n'
-                    'is_debug = false\n'
-                    'use_goma = true\n'
-                    '""" to _path_/args.gn.\n\n'
-                    '/fake_src/buildtools/linux64/gn gen _path_\n'))
+               out=('is_debug = true\n'
+                    'use_remoteexec = true\n'))
 
   def test_help(self):
     orig_stdout = sys.stdout
@@ -1137,7 +1162,7 @@ class UnitTest(unittest.TestCase):
                ret=0,
                out=('dcheck_always_on = false\n'
                     'is_debug = false\n'
-                    'use_goma = true\n'))
+                    'use_remoteexec = true\n'))
 
   def test_train(self):
     mbw = self.fake_mbw()

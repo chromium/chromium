@@ -159,7 +159,6 @@ class MetaBuildWrapper:
                         metavar='PATH',
                         help=('path to config file '
                               '(default is mb_config.pyl'))
-      subp.add_argument('-g', '--goma-dir', help='path to goma directory')
       subp.add_argument('--android-version-code',
                         help='Sets GN arg android_default_version_code')
       subp.add_argument('--android-version-name',
@@ -1360,12 +1359,7 @@ class MetaBuildWrapper:
         self.Print(out)
       return ret
 
-    runtime_deps = []
-    for l in out.splitlines():
-      # FIXME: Can remove this check if/when use_goma is removed.
-      if 'The gn arg use_goma=true will be deprecated by EOY 2023' not in l:
-        runtime_deps.append(l)
-    runtime_deps = self._DedupDependencies(runtime_deps)
+    runtime_deps = self._DedupDependencies(out.splitlines())
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)
@@ -1547,9 +1541,6 @@ class MetaBuildWrapper:
     If expand_imports is true, any import() lines will be read in and
     valuese them will be included."""
     gn_args = vals['gn_args']
-
-    if self.args.goma_dir:
-      gn_args += ' goma_dir="%s"' % self.args.goma_dir
 
     android_version_code = self.args.android_version_code
     if android_version_code:
