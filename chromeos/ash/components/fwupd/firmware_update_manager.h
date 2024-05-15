@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -66,7 +65,7 @@ enum class MethodResult {
   // DEPRECATED: kInstallFailed = 1,
   kFailedToCreateUpdateDirectory = 2,
   // DEPRECATED: kInvalidDestinationFile = 3,
-  kInvalidFileDescriptor = 4,
+  kInvalidFile = 4,
   kFailedToDownloadToFile = 5,
   kFailedToCreatePatchFile = 6,
   kEmptyPatchFile = 7,
@@ -217,11 +216,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
                     const base::FilePath& filepath,
                     MethodCallback callback);
 
-  // Callback handler after fetching the file descriptor.
-  void OnGetFileDescriptor(const std::string& device_id,
-                           FirmwareInstallOptions options,
-                           MethodCallback callback,
-                           base::ScopedFD file_descriptor);
+  // Callback handler after fetching the file.
+  void OnGetFile(const std::string& device_id,
+                 FirmwareInstallOptions options,
+                 MethodCallback callback,
+                 base::File file);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
