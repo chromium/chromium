@@ -72,7 +72,7 @@ CookiePrimarySetting ToCookiePrimarySetting(
     case CookieControlsMode::kOff:
       return CookiePrimarySetting::ALLOW_ALL;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

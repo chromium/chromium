@@ -161,7 +161,7 @@ void LacrosWebAppsController::DEPRECATED_LoadIcon(
     apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::LoadIconCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosWebAppsController::GetCompressedIcon(

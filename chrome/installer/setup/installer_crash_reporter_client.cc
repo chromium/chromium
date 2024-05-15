@@ -83,7 +83,7 @@ bool InstallerCrashReporterClient::GetShouldDumpLargerDumps() {
 
 int InstallerCrashReporterClient::GetResultCodeRespawnFailed() {
   // The restart dialog is never shown for the installer.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

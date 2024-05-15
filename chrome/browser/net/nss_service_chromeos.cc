@@ -89,7 +89,7 @@ void DidGetTPMInfoForUserOnUIThread(
         FROM_HERE, base::BindOnce(&crypto::InitializeTPMForChromeOSUser,
                                   username_hash, token_info->slot()));
   } else {
-    NOTREACHED() << "TPMTokenInfoGetter reported invalid token.";
+    NOTREACHED_IN_MIGRATION() << "TPMTokenInfoGetter reported invalid token.";
   }
 }
 

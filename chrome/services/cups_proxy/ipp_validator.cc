@@ -86,7 +86,7 @@ size_t GetAttributeValuesSize(const ipp_parser::mojom::IppAttributePtr& attr) {
       return attr_value->get_resolutions().size();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -291,7 +291,7 @@ ipp_t* IppValidator::ValidateIppMessage(
         break;
       }
       default:
-        NOTREACHED() << "Unknown IPP attribute type found.";
+        NOTREACHED_IN_MIGRATION() << "Unknown IPP attribute type found.";
     }
   }
 

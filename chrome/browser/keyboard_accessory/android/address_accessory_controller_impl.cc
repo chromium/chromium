@@ -140,15 +140,15 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
     autofill::ShowAutofillProfileSettings(&GetWebContents());
     return;
   }
-  NOTREACHED() << "Unhandled selected action: "
-               << static_cast<int>(selected_action);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled selected action: " << static_cast<int>(selected_action);
 }
 
 void AddressAccessoryControllerImpl::OnToggleChanged(
     AccessoryAction toggled_action,
     bool enabled) {
-  NOTREACHED() << "Unhandled toggled action: "
-               << static_cast<int>(toggled_action);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled toggled action: " << static_cast<int>(toggled_action);
 }
 
 void AddressAccessoryControllerImpl::RefreshSuggestions() {

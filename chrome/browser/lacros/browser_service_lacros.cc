@@ -645,7 +645,7 @@ void BrowserServiceLacros::NewWindowWithProfile(
       incognito = true;
       break;
     case policy::IncognitoModeAvailability::kNumTypes:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

@@ -189,7 +189,7 @@ void RetargetUserShortcutsWithArgs(const InstallerState& installer_state,
                                    const base::FilePath& old_target_exe,
                                    const base::FilePath& new_target_exe) {
   if (installer_state.system_install()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   ShellUtil::ShellChange install_level = ShellUtil::CURRENT_USER;
@@ -1118,7 +1118,7 @@ bool MoveSetupOutOfInstallFolder(const base::FilePath& setup_exe) {
   base::FilePath tmp_dir;
   base::FilePath temp_file;
   if (!base::PathService::Get(base::DIR_TEMP, &tmp_dir)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

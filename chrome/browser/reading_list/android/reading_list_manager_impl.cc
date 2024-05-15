@@ -283,7 +283,7 @@ bool ReadingListManagerImpl::GetReadStatus(
   if (value == kReadStatusUnread)
     return false;
 
-  NOTREACHED() << "May not be reading list node.";
+  NOTREACHED_IN_MIGRATION() << "May not be reading list node.";
   return false;
 }
 

@@ -506,7 +506,7 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
                                              FaviconsLocation favicons_location,
                                              bool* empty_folder) {
   if (position >= list->size()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -196,7 +196,7 @@ blink::mojom::StreamDevices CreateFakeDevice(
   else if (blink::IsVideoInputMediaType(param.stream_type))
     fake_devices.video_device = device;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return fake_devices;
 }

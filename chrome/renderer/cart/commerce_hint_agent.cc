@@ -269,7 +269,7 @@ void RecordCommerceEvent(CommerceEvent event) {
       base::RecordAction(base::UserMetricsAction("Commerce.Purchase"));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

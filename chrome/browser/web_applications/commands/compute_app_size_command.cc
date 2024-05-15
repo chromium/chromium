@@ -88,7 +88,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }
@@ -99,7 +99,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }

@@ -156,7 +156,7 @@ std::ostream& operator<<(std::ostream& out,
                          const GeneratedIconFixSource& source) {
   switch (source) {
     case GeneratedIconFixSource_UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return out << "Unknown";
     case GeneratedIconFixSource_SYNC_INSTALL:
       return out << "SyncInstall";

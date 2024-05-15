@@ -384,7 +384,7 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
           DlpEventRestriction2RuleRestriction(event.restriction()));
       break;
     case DlpPolicyEvent_Mode_UNDEFINED_MODE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   report_queue_->Enqueue(std::make_unique<DlpPolicyEvent>(std::move(event)),

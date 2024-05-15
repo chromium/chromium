@@ -46,7 +46,7 @@ crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
     default:
       LOG(ERROR) << "ShowFeedbackPage is called by unknown Lacros source: "
                  << static_cast<int>(source);
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::LacrosFeedbackSource::kUnknown;
   }
 }

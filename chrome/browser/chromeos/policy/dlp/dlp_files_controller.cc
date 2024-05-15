@@ -178,7 +178,7 @@ DlpFilesController::FolderRecursionDelegate::~FolderRecursionDelegate() =
     default;
 
 void DlpFilesController::FolderRecursionDelegate::Run() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DlpFilesController::FolderRecursionDelegate::RunRecursively() {

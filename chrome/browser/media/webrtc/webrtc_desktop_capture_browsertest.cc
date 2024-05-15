@@ -185,7 +185,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
 
     void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                            infobars::InfoBar* new_infobar) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {

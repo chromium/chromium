@@ -40,54 +40,64 @@ class FakeUriRuntimeClass final
 
   // ABI::Windows::Foundation::IUriRuntimeClass:
   IFACEMETHODIMP get_AbsoluteUri(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_DisplayUri(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Domain(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Extension(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Fragment(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Host(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Password(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Path(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Query(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_QueryParsed(
       IWwwFormUrlDecoderRuntimeClass** www_form_url_decoder) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_RawUri(HSTRING* value) final {
@@ -96,35 +106,41 @@ class FakeUriRuntimeClass final
     return S_OK;
   }
   IFACEMETHODIMP get_SchemeName(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_UserName(HSTRING* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Port(INT32* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Suspicious(boolean* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   Equals(IUriRuntimeClass* uri, boolean* value) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   CombineUri(HSTRING relative_uri, IUriRuntimeClass** instance) final {
-    NOTREACHED() << "get_RawUri should be the only function called on an "
-                    "IUriRuntimeClass - see FakeUriRuntimeClass.";
+    NOTREACHED_IN_MIGRATION()
+        << "get_RawUri should be the only function called on an "
+           "IUriRuntimeClass - see FakeUriRuntimeClass.";
     return E_NOTIMPL;
   }
 
@@ -177,7 +193,7 @@ IFACEMETHODIMP FakeUriRuntimeClassFactory::CreateWithRelativeUri(
     HSTRING base_uri,
     HSTRING relative_uri,
     IUriRuntimeClass** instance) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 

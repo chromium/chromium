@@ -672,7 +672,7 @@ HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
         return E_ABORT;
       case kUiecTimeout:
       case kUiecKilled:
-        NOTREACHED() << "Internal codes, not returned by GLS";
+        NOTREACHED_IN_MIGRATION() << "Internal codes, not returned by GLS";
         break;
       case kUiecEMailMissmatch:
         *status_text =

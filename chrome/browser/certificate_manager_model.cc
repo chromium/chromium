@@ -373,7 +373,7 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
                     true /* policy_web_trusted */);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

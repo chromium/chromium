@@ -60,7 +60,7 @@ void HandleChromeOSErrorResult(
       LOG(ERROR) << "Unknown error in ParentAccess UI";
       return;
     case crosapi::mojom::ParentAccessErrorResult::Type::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }

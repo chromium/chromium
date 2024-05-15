@@ -94,7 +94,7 @@ void AddCdmHostFilePaths(
 
   base::FilePath chrome_exe_dir;
   if (!base::PathService::Get(base::DIR_EXE, &chrome_exe_dir))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   base::FilePath chrome_path =
       chrome_exe_dir.Append(FILE_PATH_LITERAL("chrome"));

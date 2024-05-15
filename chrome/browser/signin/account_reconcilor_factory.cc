@@ -77,7 +77,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
         // 60 seconds is enough to cover about 99% of all reconcile cases.
         return base::Seconds(60);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return MirrorAccountReconcilorDelegate::GetReconcileTimeout();
     }
   }
@@ -220,11 +220,11 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
           IdentityManagerFactory::GetForProfile(profile),
           ChromeSigninClientFactory::GetForProfile(profile));
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }

@@ -259,7 +259,7 @@ PotentialPasswordTheftSignalProcessor::
       return extension_telemetry_pw_account_type;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return extension_telemetry_pw_account_type;
 }
 

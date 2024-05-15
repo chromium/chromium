@@ -50,7 +50,7 @@ UiElementName UserFriendlyElementNameToUiElementName(
     case UserFriendlyElementName::kWebXrVideoPermissionIndicator:
       return kWebVrVideoCaptureIndicator;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kNone;
   }
 }

@@ -92,7 +92,7 @@ class ContentIndexTest : public InProcessBrowserTest,
   void OnItemUpdated(const OfflineItem& item,
                      const std::optional<offline_items_collection::UpdateDelta>&
                          update_delta) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnContentProviderGoingDown() override {

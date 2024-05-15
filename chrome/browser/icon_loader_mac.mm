@@ -107,7 +107,7 @@ void IconLoader::ReadIcon() {
         size = NSMakeSize(32, 32);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     gfx::ImageSkia image_skia = gfx::ImageSkiaFromResizedNSImage(icon, size);

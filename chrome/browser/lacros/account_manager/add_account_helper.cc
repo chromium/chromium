@@ -121,7 +121,7 @@ void AddAccountHelper::OnShowAddAccountDialogCompleted(
 void AddAccountHelper::OnNewProfileInitialized(Profile* new_profile) {
   DCHECK(account_);
   if (!new_profile) {
-    NOTREACHED() << "Error creating new profile";
+    NOTREACHED_IN_MIGRATION() << "Error creating new profile";
     profile_path_ = base::FilePath();
     MaybeCompleteAddAccount();
     // `this` may be deleted.

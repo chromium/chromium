@@ -244,7 +244,7 @@ std::string EventResultToString(EventResult result) {
     case EventResult::BYPASSED:
       return "EVENT_RESULT_BYPASSED";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -263,7 +263,7 @@ std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point) {
     case DeepScanAccessPoint::FILE_TRANSFER:
       return "FileTransfer";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -450,7 +450,7 @@ DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting) {
     case 2:
       return DataRegion::EUROPE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DataRegion::NO_PREFERENCE;
 }
 

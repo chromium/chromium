@@ -47,7 +47,7 @@ class MemlogBrowserTest : public PlatformBrowserTest,
           heap_profiling::kMemlogStackMode,
           heap_profiling::kMemlogStackModeNativeWithThreadNames);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     // Use a sampling rate of 10k.

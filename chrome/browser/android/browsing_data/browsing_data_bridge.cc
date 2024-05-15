@@ -133,7 +133,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::DOWNLOADS:
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
         // Only implemented on Desktop.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   std::vector<std::string> excluding_domains;

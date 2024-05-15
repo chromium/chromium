@@ -72,7 +72,7 @@ std::u16string PermissionInfoBarDelegate::GetCompactLinkText() const {
           IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_DETAILS_LINK);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -150,7 +150,7 @@ bool PermissionInfoBarDelegate::Cancel() {
       permission_prompt_->Accept();
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

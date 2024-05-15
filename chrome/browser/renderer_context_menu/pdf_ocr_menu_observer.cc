@@ -87,6 +87,6 @@ void PdfOcrMenuObserver::ExecuteCommand(int command_id) {
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }

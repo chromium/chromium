@@ -127,7 +127,7 @@ std::string GetReauthAccessPointHistogramSuffix(
     signin_metrics::ReauthAccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::ReauthAccessPoint::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
     case signin_metrics::ReauthAccessPoint::kAutofillDropdown:
       return "ToFillPassword";
@@ -198,7 +198,7 @@ void ShowReauthForPrimaryAccountWithAuthError(
     signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, sync errors are fixed by re-signing into the OS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -236,7 +236,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // There is no sign-in flow for guest or system profile.
   if (profile->IsGuestSession() || profile->IsSystemProfile())
@@ -273,7 +273,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
 void ShowSigninPromptFromPromo(Profile* profile,
                                signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
   CHECK(!profile->IsOffTheRecord());
@@ -349,7 +349,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
       ->SetPrimaryAccount(account.account_id, signin::ConsentLevel::kSignin,
                           access_point);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

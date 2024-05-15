@@ -360,7 +360,7 @@ std::unique_ptr<Profile> Profile::CreateProfile(const base::FilePath& path,
       CreateProfileReadme(path);
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::unique_ptr<Profile> profile = base::WrapUnique(new ProfileImpl(
@@ -1019,7 +1019,7 @@ bool ProfileImpl::IsMainProfile() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 const Profile::OTRProfileID& ProfileImpl::GetOTRProfileID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   static base::NoDestructor<OTRProfileID> otr_profile_id(
       OTRProfileID::CreateUnique("ProfileImp::NoOTRProfileID"));
   return *otr_profile_id;
@@ -1466,7 +1466,7 @@ void ProfileImpl::EnsureSessionServiceCreated() {
 void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
                                   AppLocaleChangedVia via) {
   if (new_locale.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   PrefService* local_state = g_browser_process->local_state();
@@ -1546,7 +1546,7 @@ void ProfileImpl::ChangeAppLocale(const std::string& new_locale,
       break;
     }
     case APP_LOCALE_CHANGED_VIA_UNKNOWN: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

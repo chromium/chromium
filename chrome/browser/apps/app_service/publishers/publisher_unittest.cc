@@ -472,7 +472,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->AppCapabilityAccessCache()
             .ForOneApp(app_id, [](const apps::CapabilityAccessUpdate& update) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
   }
 

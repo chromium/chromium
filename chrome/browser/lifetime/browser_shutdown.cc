@@ -83,7 +83,7 @@ int g_shutdown_num_processes_slow;
 const char* ToShutdownTypeString(ShutdownType type) {
   switch (type) {
     case ShutdownType::kNotValid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ShutdownType::kWindowClose:
       return "close";
@@ -290,7 +290,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
     switch (restart_mode) {
       case RestartMode::kNoRestart:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case RestartMode::kRestartInBackground:

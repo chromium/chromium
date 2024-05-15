@@ -150,7 +150,7 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
@@ -226,6 +226,6 @@ void PasswordManagerErrorMessageDelegate::HandleActionButtonClicked(
     case PasswordStoreBackendErrorType::kUncategorized:
     case PasswordStoreBackendErrorType::kKeychainError:
       // Other error types aren't supported.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }

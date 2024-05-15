@@ -761,7 +761,7 @@ class MLPromotionInstallDialogBrowserTest
       case InstallDialogState::kDetailedInstallDialog:
         return "PWA Bottom Sheet";
       case InstallDialogState::kCreateShortcutDialog:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return std::string();
     }
   }

@@ -78,7 +78,7 @@ std::vector<float> ConstructInputVector(
             signals.most_frequent_category_used_count_last_24h);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   return input_vector;

@@ -175,7 +175,7 @@ void PopulateLaunchNewItemFromMenuItem(const MenuItemPtr& menu_item,
     case apps::MenuItemType::kRadio:
     case apps::MenuItemType::kSeparator:
     case apps::MenuItemType::kPublisherCommand:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -197,7 +197,7 @@ void PopulateItemFromMenuItem(const apps::MenuItemPtr& item,
     case apps::MenuItemType::kCommand:
     case apps::MenuItemType::kRadio:
     case apps::MenuItemType::kSubmenu:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -268,7 +268,7 @@ uint32_t StringIdForUseLaunchTypeCommand(uint32_t command_id) {
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

@@ -3641,7 +3641,7 @@ TEST_P(ManagedGuestSessionAppMetricsTest,
     } else {
       // All install reasons should be covered by either
       // `kAllowedInstallReasonsInMgs` or `kBlockedInstallReasonsInMgs`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

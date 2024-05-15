@@ -427,7 +427,7 @@ WebAppManagement::Type WebApp::GetHighestPrioritySource() const {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebAppManagement::kMaxValue;
 }
 

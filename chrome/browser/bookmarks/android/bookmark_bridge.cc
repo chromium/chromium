@@ -1072,7 +1072,7 @@ void BookmarkBridge::DeleteBookmarkImpl(const BookmarkNode* node, int type) {
   // See https://crbug.com/981172.
   if (!IsEditable(node)) {
     LOG(ERROR) << "Deleting non editable bookmark, type:" << type;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1184,7 +1184,8 @@ void BookmarkBridge::MoveNodeBetweenReadingListAndBookmarks(
       new_node = manager->Add(node->url(), base::UTF16ToUTF8(node->GetTitle()));
     } else {
       new_node = nullptr;
-      NOTREACHED() << "Type swapping is only supported for reading list.";
+      NOTREACHED_IN_MIGRATION()
+          << "Type swapping is only supported for reading list.";
     }
 
     // The add operations aren't guaranteed to succeed, so bail early if

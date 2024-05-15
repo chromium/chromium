@@ -382,7 +382,7 @@ IFACEMETHODIMP FakeRandomAccessStream::Seek(UINT64 position) {
 
 IFACEMETHODIMP
 FakeRandomAccessStream::CloneStream(IRandomAccessStream** stream) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 

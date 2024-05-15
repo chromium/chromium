@@ -357,7 +357,7 @@ base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
   std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (!env->GetVar(env_vars::kSessionLogDir, &log_dir))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return base::FilePath(log_dir);
 }
 

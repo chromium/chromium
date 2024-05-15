@@ -232,7 +232,7 @@ base::Value::Dict CreateAppMessageBody(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return message;

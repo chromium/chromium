@@ -96,7 +96,7 @@ void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
           pin, std::move(callback));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
           content::BluetoothDelegate::PairPromptStatus::kCancelled));
       break;
@@ -105,7 +105,7 @@ void ChromeBluetoothDelegateImplClient::ShowBluetoothDevicePairDialog(
   // WebBluetoothServiceImpl will only start the pairing process (which prompts
   // for credentials) on devices that pair on demand. This should never be
   // reached.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(content::BluetoothDelegate::PairPromptResult(
       content::BluetoothDelegate::PairPromptStatus::kCancelled));
 #endif

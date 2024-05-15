@@ -49,7 +49,7 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
     case CONTENT_SETTING_BLOCK:
       return PermissionStatus::BLOCKED_SETTINGS;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PermissionStatus::BLOCKED_SETTINGS;
   }
 

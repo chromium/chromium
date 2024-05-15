@@ -336,7 +336,7 @@ BackgroundModeManager* TestingBrowserProcess::background_mode_manager() {
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void TestingBrowserProcess::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

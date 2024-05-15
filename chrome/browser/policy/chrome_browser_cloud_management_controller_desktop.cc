@@ -92,7 +92,7 @@ void ChromeBrowserCloudManagementControllerDesktop::
 #elif BUILDFLAG(IS_WIN)
   storage_delegate = std::make_unique<BrowserDMTokenStorageWin>();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   BrowserDMTokenStorage::SetDelegate(std::move(storage_delegate));
@@ -277,8 +277,9 @@ ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   if (invalidation_service_) {
-    NOTREACHED() << "Trying to start an invalidation service when there's "
-                    "already one. Please see crbug.com/1186159.";
+    NOTREACHED_IN_MIGRATION()
+        << "Trying to start an invalidation service when there's "
+           "already one. Please see crbug.com/1186159.";
     return;
   }
 

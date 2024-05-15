@@ -37,7 +37,7 @@ GeneratedPermissionPromptingBehaviorPref::
       cpss_pref_name_ = prefs::kEnableGeolocationCPSS;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   user_prefs_registrar_.Init(profile->GetPrefs());
   user_prefs_registrar_.Add(

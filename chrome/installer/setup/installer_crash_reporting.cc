@@ -40,7 +40,7 @@ const char* OperationToString(InstallerState::Operation operation) {
       // Fall out of switch.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

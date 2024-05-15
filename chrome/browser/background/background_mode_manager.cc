@@ -879,7 +879,7 @@ gfx::ImageSkia GetStatusTrayIcon() {
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       IDR_STATUS_TRAY_ICON);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::ImageSkia();
 #endif
 }

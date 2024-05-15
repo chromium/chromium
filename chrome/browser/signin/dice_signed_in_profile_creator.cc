@@ -141,7 +141,7 @@ DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
 void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
   if (!new_profile) {
-    NOTREACHED() << "Error creating new profile";
+    NOTREACHED_IN_MIGRATION() << "Error creating new profile";
     if (callback_)
       std::move(callback_).Run(nullptr);
     return;

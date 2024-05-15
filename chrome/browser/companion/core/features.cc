@@ -88,8 +88,9 @@ std::optional<bool> ShouldForceOverrideCompanionPinState() {
     return false;
   }
 
-  NOTREACHED() << "Invalid Companion pin state command line switch value: "
-               << pinned_state;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid Companion pin state command line switch value: "
+      << pinned_state;
   return std::nullopt;
 }
 

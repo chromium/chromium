@@ -97,7 +97,7 @@ void UiElement::Render(UiElementRenderer* renderer,
   // draw phase set to kPhaseNone and should, consequently, be filtered out when
   // the UiRenderer collects elements to draw. Therefore, if we invoke this
   // function, it is an error.
-  NOTREACHED() << "element: " << DebugName();
+  NOTREACHED_IN_MIGRATION() << "element: " << DebugName();
 }
 
 void UiElement::Initialize(SkiaSurfaceProvider* provider) {}
@@ -503,7 +503,7 @@ void UiElement::OnTransformAnimated(const gfx::TransformOperations& operations,
   } else if (target_property_id == LAYOUT_OFFSET) {
     layout_offset_ = operations;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   local_transform_ = layout_offset_.Apply() * transform_operations_.Apply();
   world_space_transform_dirty_ = true;

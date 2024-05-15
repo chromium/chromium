@@ -854,7 +854,7 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
     return success;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED() << "Init not called";
+  NOTREACHED_IN_MIGRATION() << "Init not called";
   return false;
 }
 

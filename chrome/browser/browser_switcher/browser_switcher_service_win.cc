@@ -80,7 +80,7 @@ std::string ParsingModeToString(ParsingMode parsing_mode) {
       return "ie_sitelist";
     default:
       // BrowserSwitcherPrefs should've sanitized the value for us.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

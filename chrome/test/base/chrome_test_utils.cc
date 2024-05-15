@@ -22,7 +22,7 @@ content::WebContents* GetActiveWebContents(PlatformBrowserTest* browser_test) {
     if (model->IsActiveModel())
       return model->GetActiveWebContents();
   }
-  NOTREACHED() << "No active TabModel??";
+  NOTREACHED_IN_MIGRATION() << "No active TabModel??";
   return nullptr;
 #else
   return browser_test->browser()->tab_strip_model()->GetActiveWebContents();
@@ -35,7 +35,7 @@ Profile* GetProfile(PlatformBrowserTest* browser_test) {
     if (model->IsActiveModel())
       return model->GetProfile();
   }
-  NOTREACHED() << "No active TabModel??";
+  NOTREACHED_IN_MIGRATION() << "No active TabModel??";
   return nullptr;
 #else
   return browser_test->browser()->profile();

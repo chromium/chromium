@@ -248,7 +248,7 @@ const base::Value::List& GetAndMaybeMigratePref(PrefService& prefs,
   } else if (pref_name == kVideoInputUserPreferenceRanking) {
     default_device_pref_name = prefs::kDefaultVideoCaptureDeviceDeprecated;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (!prefs.HasPrefPath(default_device_pref_name)) {

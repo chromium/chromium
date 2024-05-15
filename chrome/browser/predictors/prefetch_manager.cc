@@ -215,7 +215,7 @@ blink::mojom::ResourceType GetResourceType(
     case network::mojom::RequestDestination::kFont:
       return blink::mojom::ResourceType::kFontResource;
     default:
-      NOTREACHED() << destination;
+      NOTREACHED_IN_MIGRATION() << destination;
   }
   return blink::mojom::ResourceType::kSubResource;
 }

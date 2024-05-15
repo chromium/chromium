@@ -12,7 +12,7 @@ namespace safe_browsing {
 PathSanitizer::PathSanitizer() {
   // Get the home directory path.
   if (!base::PathService::Get(base::DIR_HOME, &home_path_))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 const base::FilePath& PathSanitizer::GetHomeDirectory() const {

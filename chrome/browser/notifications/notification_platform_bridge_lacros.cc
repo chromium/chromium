@@ -40,11 +40,11 @@ crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
       return crosapi::mojom::NotificationType::kProgress;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
       // TYPE_CUSTOM exists only within ash.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::NotificationType::kSimple;
     case message_center::NOTIFICATION_TYPE_CONVERSATION:
       // TYPE_CONVERSATION is not currently supported for Lacros.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::NotificationType::kSimple;
   }
 }

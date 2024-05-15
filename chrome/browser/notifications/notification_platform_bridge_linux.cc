@@ -160,7 +160,7 @@ int NotificationPriorityToFdoUrgency(int priority) {
     case message_center::MAX_PRIORITY:
       return URGENCY_CRITICAL;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case message_center::DEFAULT_PRIORITY:
       return URGENCY_NORMAL;

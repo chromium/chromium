@@ -52,7 +52,7 @@ class AppInstanceWaiter : public apps::InstanceRegistry::Observer {
   }
 
   void OnInstanceRegistryWillBeDestroyed(apps::InstanceRegistry*) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const std::string app_id_;

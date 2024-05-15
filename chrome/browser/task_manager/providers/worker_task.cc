@@ -25,7 +25,7 @@ int GetTaskTitlePrefixMessageId(Task::Type task_type) {
     case Task::Type::SERVICE_WORKER:
       return IDS_TASK_MANAGER_SERVICE_WORKER_PREFIX;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }

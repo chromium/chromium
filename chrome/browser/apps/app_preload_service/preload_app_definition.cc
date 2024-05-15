@@ -95,7 +95,7 @@ AppInstallData PreloadAppDefinition::ToAppInstallData() const {
     web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
     web_app_data.document_url = GetWebAppManifestId().GetWithEmptyPath();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return result;
 }

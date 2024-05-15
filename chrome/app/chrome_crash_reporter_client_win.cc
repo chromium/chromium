@@ -211,7 +211,7 @@ bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
 bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   // This is not used by Crashpad (at least on Windows).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

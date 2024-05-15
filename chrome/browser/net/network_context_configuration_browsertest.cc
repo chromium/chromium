@@ -331,7 +331,7 @@ class NetworkContextConfigurationBrowserTest
     switch (network_context_type) {
       case NetworkContextType::kSystem:
       case NetworkContextType::kSafeBrowsing:
-        NOTREACHED() << "Network context has no storage partition";
+        NOTREACHED_IN_MIGRATION() << "Network context has no storage partition";
         return nullptr;
       case NetworkContextType::kProfile:
         return browser()->profile()->GetDefaultStoragePartition();
@@ -355,7 +355,7 @@ class NetworkContextConfigurationBrowserTest
         return incognito_->profile()->GetStoragePartition(kIncognitoConfig);
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -382,7 +382,7 @@ class NetworkContextConfigurationBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess()
             .get();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -407,7 +407,7 @@ class NetworkContextConfigurationBrowserTest
         return GetStoragePartitionForContextType(network_context_type)
             ->GetNetworkContext();
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -424,7 +424,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kOnDiskAppWithIncognitoProfile:
         return StorageType::kMemory;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return StorageType::kNone;
   }
 
@@ -440,7 +440,7 @@ class NetworkContextConfigurationBrowserTest
       case NetworkContextType::kOnDiskApp:
         return StorageType::kDisk;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return StorageType::kNone;
   }
 

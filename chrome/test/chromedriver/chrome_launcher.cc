@@ -1321,10 +1321,10 @@ std::string GetTerminationReason(base::TerminationStatus status) {
       return "integrity failure";
 #endif
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "max enum";
   }
-  NOTREACHED() << "Unknown Termination Status.";
+  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
   return "unknown";
 }
 

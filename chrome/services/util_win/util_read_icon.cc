@@ -83,7 +83,7 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
       size = 48;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   std::move(callback).Run(
       LoadIcon(filename.value().c_str(), size * scale, scale),

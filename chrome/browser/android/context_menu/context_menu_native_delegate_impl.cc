@@ -67,7 +67,7 @@ chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {
       return chrome::mojom::ImageFormat::ORIGINAL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chrome::mojom::ImageFormat::JPEG;
 }
 

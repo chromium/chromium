@@ -55,7 +55,7 @@ bool IsListSurface(UiSurface ui_surface) {
 std::string UiSurfaceToHistogramVariant(UiSurface ui_surface) {
   switch (ui_surface) {
     case UiSurface::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown";
     case UiSurface::kPH:
       return "PH";
@@ -78,7 +78,7 @@ std::string UiSurfaceToHistogramVariant(UiSurface ui_surface) {
     case UiSurface::kPHResult:
       return "PHResult";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "Unknown";
   }
 }

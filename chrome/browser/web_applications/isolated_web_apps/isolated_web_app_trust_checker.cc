@@ -89,7 +89,7 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
   const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
       prefs::kIsolatedWebAppInstallForceList);
   if (!pref) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

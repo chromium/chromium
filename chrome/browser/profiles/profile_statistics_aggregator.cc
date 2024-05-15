@@ -135,7 +135,7 @@ void ProfileStatisticsAggregator::OnCounterResult(
   } else if (pref_name == browsing_data::prefs::kDeleteFormData) {
     StatisticsCallback(profiles::kProfileStatisticsAutofill, count);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

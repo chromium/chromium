@@ -570,14 +570,14 @@ void MockAndroidConnection::Receive(const std::string& data) {
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromePages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "chrome_devtools_remote_1002") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleChromeBetaVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleChromeBetaPages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (base::StartsWith(socket_name_, "noprocess_devtools_remote",
                               base::CompareCase::SENSITIVE)) {
     if (path == kJsonVersionPath)
@@ -585,23 +585,23 @@ void MockAndroidConnection::Receive(const std::string& data) {
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse("[]");
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "webview_devtools_remote_2425") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleWebViewVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleWebViewPages);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else if (socket_name_ == "node_devtools_remote") {
     if (path == kJsonVersionPath)
       SendHTTPResponse(kSampleNodeVersion);
     else if (base::StartsWith(path, kJsonListPath))
       SendHTTPResponse(kSampleNodePage);
     else
-      NOTREACHED() << "Unknown command " << request;
+      NOTREACHED_IN_MIGRATION() << "Unknown command " << request;
   } else {
-    NOTREACHED() << "Unknown socket " << socket_name_;
+    NOTREACHED_IN_MIGRATION() << "Unknown socket " << socket_name_;
   }
 }
 
@@ -634,12 +634,12 @@ void MockAndroidConnection::ProcessCommand(const std::string& command) {
         result += line.substr(sizeof(kEchoCommandPrefix) - 1);
         result += "\r\n";
       } else {
-        NOTREACHED() << "Unknown shell command - " << command;
+        NOTREACHED_IN_MIGRATION() << "Unknown shell command - " << command;
       }
     }
     delegate_->SendSuccess(result);
   } else {
-    NOTREACHED() << "Unknown command - " << command;
+    NOTREACHED_IN_MIGRATION() << "Unknown command - " << command;
   }
   delegate_->Close();
 }

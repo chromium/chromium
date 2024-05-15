@@ -287,7 +287,7 @@ void LogProvisionalAborts(const page_load_metrics::PageAbortInfo& abort_info) {
           abort_info.time_to_abort);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

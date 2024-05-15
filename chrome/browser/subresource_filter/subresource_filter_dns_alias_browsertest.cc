@@ -64,7 +64,7 @@ std::string PrintToString(Level level) {
     case ActivationLevel::kDisabled:
       return "ActivationDisabled";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

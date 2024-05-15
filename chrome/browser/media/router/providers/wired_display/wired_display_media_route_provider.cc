@@ -161,14 +161,14 @@ void WiredDisplayMediaRouteProvider::SendRouteMessage(
     const std::string& media_route_id,
     const std::string& message) {
   // Messages should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
   // Messages should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::StartObservingMediaSinks(
@@ -198,7 +198,7 @@ void WiredDisplayMediaRouteProvider::StartObservingMediaRoutes() {
 
 void WiredDisplayMediaRouteProvider::DetachRoute(const std::string& route_id) {
   // Detaching should be handled by LocalPresentationManager.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WiredDisplayMediaRouteProvider::EnableMdnsDiscovery() {}

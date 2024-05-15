@@ -205,10 +205,10 @@ nearby_share::mojom::TransferStatus TransferMetadata::StatusToMojo(
     case Status::kMediaDownloading:
     case Status::kExternalProviderLaunched:
       // These statuses are not used anywhere.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nearby_share::mojom::TransferStatus::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 nearby_share::mojom::TransferMetadataPtr TransferMetadata::ToMojo() const {

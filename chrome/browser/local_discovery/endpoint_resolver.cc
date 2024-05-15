@@ -26,7 +26,7 @@ void EndpointResolver::Start(const net::HostPortPair& address,
 #if BUILDFLAG(IS_MAC)
   net::IPAddress ip_address;
   if (!ip_address.AssignFromIPLiteral(address.host())) {
-    NOTREACHED() << address.ToString();
+    NOTREACHED_IN_MIGRATION() << address.ToString();
     // Unexpected, but could be a reason for crbug.com/513505
     base::debug::DumpWithoutCrashing();
     return std::move(callback).Run(net::IPEndPoint());

@@ -36,7 +36,7 @@ chrome::mojom::SelectFileDialogType EnumTraits<
     case ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE:
       return chrome::mojom::SelectFileDialogType::kOpenMultiFile;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chrome::mojom::SelectFileDialogType::kNone;
 }
 
@@ -68,7 +68,7 @@ bool EnumTraits<chrome::mojom::SelectFileDialogType,
       *output = ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -84,7 +84,7 @@ EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::ToMojom(
     case CertificateInfo::Type::CERTIFICATE_IN_CATALOG:
       return chrome::mojom::CertificateType::kCertificateInCatalog;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return chrome::mojom::CertificateType::kNoCertificate;
 }
 
@@ -121,7 +121,7 @@ bool EnumTraits<chrome::mojom::ShortcutOperation,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -148,7 +148,7 @@ bool EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

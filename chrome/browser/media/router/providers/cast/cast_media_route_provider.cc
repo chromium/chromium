@@ -237,7 +237,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
   if (!activity_manager_) {
     // This should never happen, but it looks like maybe it does.  See
     // crbug.com/1114067.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // This message will probably go unnoticed, but it's here to give some
     // indication of what went wrong, since NOTREACHED() is compiled out of
     // release builds.  It would be nice if we could log a message to |logger_|,
@@ -267,7 +267,8 @@ void CastMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
 void CastMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
-  NOTREACHED() << "Binary messages are not supported for Cast routes.";
+  NOTREACHED_IN_MIGRATION()
+      << "Binary messages are not supported for Cast routes.";
 }
 
 void CastMediaRouteProvider::StartObservingMediaSinks(

@@ -228,8 +228,9 @@ void ValidityService::CheckTrialStatusOnUiThread(
 
       break;
     default:
-      NOTREACHED() << "ContentSettingsType::" << trial_settings_type
-                   << " is not associated with a 3PCD trial.";
+      NOTREACHED_IN_MIGRATION()
+          << "ContentSettingsType::" << trial_settings_type
+          << " is not associated with a 3PCD trial.";
       return;
   }
 
@@ -261,8 +262,9 @@ bool ValidityService::CheckTrialContentSetting(
                                               trial_settings_type,
                                               info) == CONTENT_SETTING_ALLOW);
     default:
-      NOTREACHED() << "ContentSettingsType::" << trial_settings_type
-                   << " is not associated with a 3PCD trial.";
+      NOTREACHED_IN_MIGRATION()
+          << "ContentSettingsType::" << trial_settings_type
+          << " is not associated with a 3PCD trial.";
       return false;
   }
 }

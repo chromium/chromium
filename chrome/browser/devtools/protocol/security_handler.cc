@@ -50,11 +50,11 @@ std::string SecurityLevelToProtocolSecurityState(
     case security_state::DANGEROUS:
       return protocol::Security::SecurityStateEnum::InsecureBroken;
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return protocol::Security::SecurityStateEnum::Neutral;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Security::SecurityStateEnum::Neutral;
 }
 

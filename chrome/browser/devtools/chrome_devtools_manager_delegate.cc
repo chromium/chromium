@@ -226,7 +226,7 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
     std::move(callback).Run(message);
     // This should not happen, but happens. NOTREACHED tries to get
     // a repro in some test.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   it->second->HandleCommand(message, std::move(callback));
@@ -347,7 +347,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       }
       return true;
     default:
-      NOTREACHED() << "Unknown developer tools policy";
+      NOTREACHED_IN_MIGRATION() << "Unknown developer tools policy";
       return true;
   }
 }
@@ -376,7 +376,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return true;
     }
     default:
-      NOTREACHED() << "Unknown developer tools policy";
+      NOTREACHED_IN_MIGRATION() << "Unknown developer tools policy";
       return true;
   }
 }

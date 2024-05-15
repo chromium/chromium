@@ -138,7 +138,7 @@ bool ShouldInsertInBlocklistCache(ModuleBlockingDecision blocking_decision) {
       return true;
   }
 
-  NOTREACHED() << static_cast<int>(blocking_decision);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(blocking_decision);
   return false;
 }
 

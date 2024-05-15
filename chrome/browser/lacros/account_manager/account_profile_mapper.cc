@@ -81,7 +81,7 @@ void AccountProfileMapper::GetAccounts(const base::FilePath& profile_path,
       const account_manager::Account* account =
           account_cache_.FindAccountByGaiaId(gaia_id);
       if (!account) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       accounts.push_back(*account);
@@ -161,7 +161,7 @@ void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
       const account_manager::Account* account =
           account_cache_.FindAccountByGaiaId(gaia_id);
       if (!account) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       accounts_map[path].push_back(*account);
@@ -615,7 +615,7 @@ void AccountProfileMapper::OnGetAccountsCompleted(
     for (const auto& [profile_path, gaia_id] : removed_ids) {
       auto it = old_cache.find(gaia_id);
       if (it == old_cache.cend()) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       removed_accounts_notified.insert(gaia_id);

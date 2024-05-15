@@ -66,7 +66,7 @@ int ContentTypePriority(AvailableContentType type) {
     case AvailableContentType::kUninteresting:
       return 10000;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 AvailableContentType ContentType(const OfflineItem& item) {

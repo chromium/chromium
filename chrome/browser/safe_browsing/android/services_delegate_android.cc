@@ -30,7 +30,7 @@ std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
     SafeBrowsingService* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::WrapUnique(new ServicesDelegateAndroid(safe_browsing_service));
 }
 

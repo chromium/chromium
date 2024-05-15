@@ -110,7 +110,7 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kExtension:
     case AppType::kStandaloneBrowserExtension:
     case AppType::kBruschetta:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IntentHandlingMetrics::Platform::ARC;
   }
 }

@@ -27,7 +27,7 @@ void StatusTray::RemoveStatusIcon(StatusIcon* icon) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 StatusTray::StatusTray() {

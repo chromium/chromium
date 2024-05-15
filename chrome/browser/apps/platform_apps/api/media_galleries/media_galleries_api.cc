@@ -437,7 +437,7 @@ void MediaGalleriesGetMediaFileSystemsFunction::OnPreferencesInit(
       GetAndReturnGalleries();
       return;
     case MediaGalleries::GetMediaFileSystemsInteractivity::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   Respond(Error("Error initializing Media Galleries preferences."));
 }

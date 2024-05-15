@@ -52,7 +52,7 @@ std::wstring GetLocalizedString(UINT base_message_id,
   if (image) {
     return std::wstring(image->achString, image->nLength);
   }
-  NOTREACHED() << "Unable to find resource id " << message_id;
+  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
   return std::wstring();
 }
 

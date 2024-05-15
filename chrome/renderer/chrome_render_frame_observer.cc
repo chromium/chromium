@@ -769,7 +769,7 @@ bool ChromeRenderFrameObserver::NeedsEncodeImage(
   }
 
   // Should never hit this code since all cases were handled above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

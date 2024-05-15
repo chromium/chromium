@@ -489,7 +489,7 @@ bool CreateDesktopShortcut(base::Environment* env,
       shell_integration_linux::internal::GetChromeExePath();
   if (chrome_exe_path.empty()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetChromeExePath);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -535,7 +535,7 @@ bool CreateDesktopShortcut(base::Environment* env,
           shell_integration::GetAppShortcutsSubdirName(), "");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

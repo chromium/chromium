@@ -332,14 +332,14 @@ TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
 }
 
 void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
@@ -363,11 +363,11 @@ void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
 }
 
 void TestTurnSyncOnHelperDelegate::ShowSyncSettings() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 IN_PROC_BROWSER_TEST_P(UserPolicySigninServiceTest, BasicSignin) {

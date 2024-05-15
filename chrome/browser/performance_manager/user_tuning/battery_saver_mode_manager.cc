@@ -440,7 +440,7 @@ class ChromeOSBatterySaverProvider
   }
   int SampledBatteryPercentage() const override { return -1; }
   void SetTemporaryBatterySaverDisabledForSession(bool disabled) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // No-op when BSM is controlled by the OS
   }
   bool IsBatterySaverModeDisabledForSession() const override { return false; }

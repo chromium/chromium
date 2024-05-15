@@ -149,7 +149,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
       return E_UNEXPECTED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 

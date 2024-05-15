@@ -557,11 +557,11 @@ void OnIntentPickerClosed(
       break;
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // We shouldn't be here if a preferred app was found.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;  // no UMA recording.
     case apps::IntentPickerCloseReason::STAY_IN_CHROME:
       LOG(ERROR) << "Chrome is not a valid option for external protocol URLs";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;  // no UMA recording.
     case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
       // This can happen since an error could occur right before invoking

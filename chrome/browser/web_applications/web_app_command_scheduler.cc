@@ -595,7 +595,8 @@ void WebAppCommandScheduler::SetAppCapturesSupportedLinksDisableOverlapping(
     base::OnceClosure done,
     const base::Location& location) {
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED() << "Preferred apps in ChromeOS are implemented in AppService";
+  NOTREACHED_IN_MIGRATION()
+      << "Preferred apps in ChromeOS are implemented in AppService";
 #else
   ScheduleCallback(
       "SetAppCapturesSupporedLinks", AllAppsLockDescription(),

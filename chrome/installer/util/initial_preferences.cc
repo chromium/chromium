@@ -42,7 +42,7 @@ std::vector<std::string> GetNamedList(const char* name,
   list.reserve(value_list->size());
   for (const base::Value& entry : *value_list) {
     if (!entry.is_string()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     list.push_back(entry.GetString());
@@ -340,7 +340,7 @@ std::string InitialPreferences::ExtractPrefString(const std::string& name) {
     if (pref_value->is_string())
       result = pref_value->GetString();
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return result;
 }

@@ -178,7 +178,7 @@ void LegacyPasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
 void LegacyPasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LegacyPasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(

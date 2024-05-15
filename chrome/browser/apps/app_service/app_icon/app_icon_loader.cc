@@ -541,7 +541,7 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
       MaybeLoadFallbackOrCompleteEmpty();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension) {

@@ -236,7 +236,7 @@ class FakePolicyCertificateProvider : public ash::PolicyCertificateProvider {
   net::CertificateList GetAllAuthorityCertificates(
       const chromeos::onc::CertificateScope& scope) const override {
     // This function is not called by CertificateManagerModel.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::CertificateList();
   }
 
@@ -259,7 +259,7 @@ class FakePolicyCertificateProvider : public ash::PolicyCertificateProvider {
   const std::set<std::string>& GetExtensionIdsWithPolicyCertificates()
       const override {
     // This function is not called by CertificateManagerModel.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kNoExtensions;
   }
 

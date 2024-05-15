@@ -120,7 +120,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
       return kEngagementLevelHighOrMaxPenalty;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kEngagementLevelNonePenalty;
 }
 

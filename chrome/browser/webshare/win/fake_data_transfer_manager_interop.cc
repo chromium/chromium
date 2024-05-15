@@ -66,7 +66,7 @@ IFACEMETHODIMP FakeDataTransferManagerInterop::ShowShareUIForWindow(
     case ShowShareUIForWindowBehavior::SucceedWithoutAction:
       return S_OK;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_UNEXPECTED;
 }
 

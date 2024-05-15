@@ -199,7 +199,7 @@ SyncStatusLabels SetUpDistinctCase(
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case NUMBER_OF_STATUS_CASES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
           IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};

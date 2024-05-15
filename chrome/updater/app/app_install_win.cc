@@ -232,7 +232,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnWaitingToDownload(const std::string& app_id,
                            const std::u16string& app_name) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnDownloading(const std::string& app_id,
@@ -249,7 +249,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
                               const base::Time& next_retry_time) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnWaitingToInstall(const std::string& app_id,
@@ -931,7 +931,7 @@ void AppInstallControllerImpl::DoCancel() {
       completion_text = GetLocalizedString(IDS_INSTALL_UPDATER_FAILED_BASE);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

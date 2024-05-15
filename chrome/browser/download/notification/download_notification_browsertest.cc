@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   else if (download1 == downloads[1])
     download2 = downloads[0];
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   EXPECT_NE(download1, download2);
 
   notifications = GetDownloadNotifications();

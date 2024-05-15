@@ -100,7 +100,7 @@ const std::optional<std::string> RestrictionToWarnProceededUMASuffix(
     case DlpRulesManager::Restriction::kClipboard:
     case DlpRulesManager::Restriction::kPrivacyScreen:
     case DlpRulesManager::Restriction::kFiles:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }
@@ -402,7 +402,7 @@ void DlpContentManager::ScreenShareInfo::ChangeStateBeforeSourceChange() {
     state_ = State::kRunningBeforeSourceChange;
   } else {
     // This should only be called if state_ is Running or Paused.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -412,7 +412,7 @@ void DlpContentManager::ScreenShareInfo::Stop() {
     std::move(stop_callback_).Run();
     state_ = State::kStopped;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

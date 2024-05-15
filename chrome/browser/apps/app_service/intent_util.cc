@@ -661,7 +661,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
             case apps::PatternMatchType::kFileExtension:
             case apps::PatternMatchType::kIsDirectory:
             case apps::PatternMatchType::kSuffix:
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
               return arc::IntentFilter();
           }
           paths.emplace_back(condition_value->value, match_type);
@@ -679,7 +679,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
         }
         break;
       case apps::ConditionType::kFile:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return arc::IntentFilter();
     }
   }

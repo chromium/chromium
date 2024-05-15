@@ -514,7 +514,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
 ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
 #if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
           gfx::kPlaceholderColor};
 #else

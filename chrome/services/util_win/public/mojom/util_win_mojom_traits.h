@@ -156,7 +156,7 @@ struct StructTraits<chrome::mojom::AntiVirusProductDataView,
       case metrics::SystemProfileProto_AntiVirusState_STATE_EXPIRED:
         return chrome::mojom::AntiVirusProductState::kExpired;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return chrome::mojom::AntiVirusProductState::kOff;
   }
 

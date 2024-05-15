@@ -38,7 +38,7 @@ std::string TestProfileTypeToString(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     result += "_Crosapi";
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 
@@ -53,7 +53,7 @@ void ConfigureCommandLineForGuestMode(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       ash::switches::kLoginUser, user_manager::GuestAccountId().GetUserEmail());
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -69,7 +69,7 @@ void InitCrosapiFeaturesForParam(
     base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
   }
 #else
-    NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   scoped_feature_list->InitWithFeatures(enabled_features, disabled_features);
 }

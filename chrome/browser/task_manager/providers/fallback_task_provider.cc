@@ -103,7 +103,7 @@ void FallbackTaskProvider::ShowTaskLater(Task* task) {
                                            std::forward_as_tuple(task),
                                            std::forward_as_tuple(this));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     it->second.InvalidateWeakPtrs();
   }
 

@@ -34,7 +34,7 @@ class ProfileKeyedServiceFactoryTest : public ProfileKeyedServiceFactory {
   // Implementation is not for testing.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };
@@ -59,7 +59,7 @@ class RefcountedProfileKeyedServiceFactoryTest
   // Implementation is not for testing.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 };

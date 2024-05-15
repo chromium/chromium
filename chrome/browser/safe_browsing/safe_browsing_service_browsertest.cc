@@ -197,7 +197,7 @@ std::string ContextTypeToString(ContextType context_type) {
       return "service-worker";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -209,7 +209,7 @@ std::string JsRequestTypeToString(JsRequestType request_type) {
       return "fetch";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -241,7 +241,7 @@ GURL ConstructJsRequestURL(const GURL& base_url, JsRequestType request_type) {
     case JsRequestType::kFetch:
       return base_url.Resolve(kMalwarePage);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GURL();
 }
 

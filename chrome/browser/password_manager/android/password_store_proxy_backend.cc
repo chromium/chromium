@@ -161,7 +161,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
 void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(

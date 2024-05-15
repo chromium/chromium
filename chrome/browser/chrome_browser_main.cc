@@ -838,7 +838,7 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
     if (!upgrade_util::RelaunchChromeBrowser(
             *base::CommandLine::ForCurrentProcess())) {
       // The relaunch failed. Feel free to panic now.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to
@@ -1854,7 +1854,7 @@ void ChromeBrowserMainParts::WillRunMainMessageLoop(
 #if BUILDFLAG(IS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
   // Android specific MessageLoop
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   DCHECK(base::CurrentUIThread::IsSet());
 
@@ -1894,7 +1894,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_ANDROID)
   // Chrome on Android does not use default MessageLoop. It has its own
   // Android specific MessageLoop
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   // Shutdown the UpgradeDetector here before `ChromeBrowserMainPartsAsh`
   // disconnects DBus services in its PostDestroyThreads.
@@ -1943,7 +1943,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
 #if BUILDFLAG(IS_ANDROID)
   // On Android, there is no quit/exit. So the browser's main message loop will
   // not finish.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
 
   for (auto& chrome_extra_part : chrome_extra_parts_) {

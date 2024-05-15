@@ -116,7 +116,7 @@ void RemoteCopyMessageHandler::OnMessage(
       HandleImage(message.remote_copy_message().image_url());
       break;
     case chrome_browser_sharing::RemoteCopyMessage::CONTENT_NOT_SET:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

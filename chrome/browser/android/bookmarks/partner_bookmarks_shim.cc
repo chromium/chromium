@@ -259,7 +259,7 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
 
   for (const auto& entry : list) {
     if (!entry.is_dict()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     const base::Value::Dict& dict = entry.GetDict();
@@ -268,7 +268,7 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
     const std::string* provider_title = dict.FindString(kMappingProviderTitle);
     const std::string* mapped_title = dict.FindString(kMappingTitle);
     if (!url || !provider_title || !mapped_title) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

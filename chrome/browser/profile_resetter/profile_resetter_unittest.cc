@@ -367,7 +367,7 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
       // do nothing
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   manifest.SetByDottedPath(extensions::manifest_keys::kOmniboxKeyword, name);
   std::string error;

@@ -438,7 +438,7 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
                 icon = &kOpenInBrowserIcon;
                 break;
               case ExternalPromptNotificationType::kPromptNone:
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
             }
 
             text_element->SetText(l10n_util::GetStringUTF16(message_id));

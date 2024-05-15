@@ -1435,7 +1435,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   int enum_id =
       FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
   if (enum_id == -1) {
-    NOTREACHED() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
+    NOTREACHED_IN_MIGRATION() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
     return;
   }
 
@@ -3023,7 +3023,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
              !chromeos::clipboard_history::QueryItemDescriptors().empty();
     }
 #else
-      NOTREACHED() << "Unhandled id: " << id;
+      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
       return false;
 #endif
 
@@ -3514,7 +3514,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
       ShowClipboardHistoryMenu(event_flags);
 #else
-      NOTREACHED() << "Unhandled id: " << id;
+      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
 #endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     }
@@ -4210,7 +4210,7 @@ void RenderViewContextMenu::ExecSaveAs() {
 void RenderViewContextMenu::ExecExitFullscreen() {
   Browser* browser = GetBrowser();
   if (!browser) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

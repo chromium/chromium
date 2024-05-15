@@ -499,11 +499,11 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::DEEP_SCANNED_FAILED:
     case Result::IMMEDIATE_DEEP_SCAN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kAllow;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock;
 }
 
@@ -907,7 +907,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       case PermissionAction::REVOKED:
       case PermissionAction::GRANTED_ONCE:
       case PermissionAction::NUM:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -981,7 +981,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
         break;
       case PermissionAction::REVOKED:
       case PermissionAction::NUM:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1272,7 +1272,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1358,7 +1358,7 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

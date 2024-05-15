@@ -92,7 +92,7 @@ void PageLiveStateDecoratorHelperTest::EndToEndStreamPropertyTest(
   else if (blink::IsVideoInputMediaType(device.type))
     devices.video_device = device;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   std::unique_ptr<content::MediaStreamUI> ui =
       indicator()->RegisterMediaStream(web_contents(), devices);

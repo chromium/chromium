@@ -65,7 +65,7 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
                         std::move(analysis_finished_callback),
                         std::move(temp_file_getter_callback), &results_);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

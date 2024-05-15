@@ -30,27 +30,27 @@ void SyncFileSystemCustomBindings::AddRoutes() {
 void SyncFileSystemCustomBindings::GetSyncFileSystemObject(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() != 2) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (!args[0]->IsString()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   if (!args[1]->IsString()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   v8::Isolate* isolate = args.GetIsolate();
   std::string name(*v8::String::Utf8Value(isolate, args[0]));
   if (name.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   std::string root_url(*v8::String::Utf8Value(isolate, args[1]));
   if (root_url.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

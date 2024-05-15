@@ -44,7 +44,7 @@ ContentSetting GetSettingFromDownloadStatus(
     case DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED:
       return CONTENT_SETTING_BLOCK;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CONTENT_SETTING_DEFAULT;
 }
 
@@ -61,10 +61,10 @@ DownloadRequestLimiter::DownloadStatus GetDownloadStatusFromSetting(
     case CONTENT_SETTING_SESSION_ONLY:
     case CONTENT_SETTING_NUM_SETTINGS:
     case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD;
 }
 
@@ -83,7 +83,7 @@ DownloadRequestLimiter::DownloadUiStatus GetUiStatusFromDownloadStatus(
     case DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD:
       return DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT;
 }
 
@@ -698,14 +698,14 @@ void DownloadRequestLimiter::CanDownloadImpl(
         case CONTENT_SETTING_SESSION_ONLY:
         case CONTENT_SETTING_NUM_SETTINGS:
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
       }
       break;
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (!on_can_download_decided_callback_.is_null())

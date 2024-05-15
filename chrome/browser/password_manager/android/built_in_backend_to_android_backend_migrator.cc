@@ -74,7 +74,7 @@ std::string MigrationTypeToString(
         kReenrollmentAttempt:
       return "ReenrollmentAttemptMigration";
     case BuiltInBackendToAndroidBackendMigrator::MigrationType::kNone:
-      NOTREACHED() << "No migration should be executed.";
+      NOTREACHED_IN_MIGRATION() << "No migration should be executed.";
       return std::string();
   }
 }

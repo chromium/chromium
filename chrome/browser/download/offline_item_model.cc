@@ -181,7 +181,7 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     case OfflineItemState::CANCELLED:
       return download::DownloadItem::CANCELLED;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DownloadItem::CANCELLED;
   }
 }
@@ -225,7 +225,7 @@ bool OfflineItemModel::IsDone() const {
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -322,7 +322,7 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

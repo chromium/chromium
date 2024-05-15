@@ -81,7 +81,7 @@ void TestActionHandler::PrepareFiles(const base::FilePath& unpack_path) const {}
 
 // This test fixture only tests the per-user execution flow.
 void TestActionHandler::Elevate(Callback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

@@ -60,7 +60,7 @@ void DownloadDialogBridge::ShowDialog(
 
   // This shouldn't happen, but if it does, cancel download.
   if (dialog_type == DownloadLocationDialogType::NO_DIALOG) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     DownloadDialogResult dialog_result;
     dialog_result.location_result = DownloadLocationDialogResult::USER_CANCELED;
     CompleteSelection(std::move(dialog_result));

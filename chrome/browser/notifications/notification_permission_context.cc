@@ -57,7 +57,7 @@ void NotificationPermissionContext::UpdatePermission(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

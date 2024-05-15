@@ -256,7 +256,7 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
                             OPEN_LEARN_MORE_LINK);
       break;
     case DownloadItemWarningData::WarningAction::SHOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   action.set_is_terminal_action(event.is_terminal_action);

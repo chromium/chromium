@@ -196,7 +196,7 @@ class ConnectorsServiceReportingFeatureTest
       case 2:
         return kEmptySettingsPref;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

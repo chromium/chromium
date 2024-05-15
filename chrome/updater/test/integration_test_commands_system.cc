@@ -413,7 +413,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   base::FilePath GetDifferentUserPath() const override {
     // On POSIX, the path may be chowned; so do not use a file not owned by the
     // test, nor the test executable itself.
-    NOTREACHED() << __func__ << ": not implemented.";
+    NOTREACHED_IN_MIGRATION() << __func__ << ": not implemented.";
     return base::FilePath();
   }
 

@@ -79,7 +79,7 @@ void FakeIpHelper::FreeMibTable(void* table) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeIpHelper::AddIpAdapterAddresses(

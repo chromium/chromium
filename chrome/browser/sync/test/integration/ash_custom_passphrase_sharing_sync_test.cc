@@ -125,7 +125,7 @@ class PassphraseStateNotifiedToCrosapiObserverChecker
         return passphrase_required_notified_;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

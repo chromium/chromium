@@ -61,7 +61,7 @@ std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     case policy::MarketSegment::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -82,7 +82,7 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case UserSegment::kDemoMode:
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

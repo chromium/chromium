@@ -100,7 +100,7 @@ bool DesktopMediaListBase::IsSourceListDelegated() const {
 }
 
 void DesktopMediaListBase::ClearDelegatedSourceListSelection() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DesktopMediaListBase::FocusList() {}

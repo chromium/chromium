@@ -136,11 +136,11 @@ void ShutdownDetector::ThreadMain() {
                             reinterpret_cast<char*>(&signal) + bytes_read,
                             sizeof(signal) - bytes_read));
     if (ret < 0) {
-      NOTREACHED() << "Unexpected error: " << strerror(errno);
+      NOTREACHED_IN_MIGRATION() << "Unexpected error: " << strerror(errno);
       ShutdownFDReadError();
       break;
     } else if (ret == 0) {
-      NOTREACHED() << "Unexpected closure of shutdown pipe.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected closure of shutdown pipe.";
       ShutdownFDClosedError();
       break;
     }

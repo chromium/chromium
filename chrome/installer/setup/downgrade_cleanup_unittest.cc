@@ -127,7 +127,7 @@ MULTIPROCESS_TEST_MAIN(DowngradeCleanupSuccessMain) {
   } else if (operation == L"revert") {
     result_code = installer::UNDO_DOWNGRADE_CLEANUP_SUCCESS;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return ::testing::Test::HasFailure() ? -1 : result_code;

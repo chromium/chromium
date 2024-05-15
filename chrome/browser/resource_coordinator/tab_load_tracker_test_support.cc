@@ -122,7 +122,7 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
       wait_successful_ = (waiting_for_state_ == loading_state);
     } else {
 #if BUILDFLAG(IS_ANDROID)
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #else
       DCHECK(waiting_for_tab_strip_);
       wait_successful_ = AllContentsReachedState();

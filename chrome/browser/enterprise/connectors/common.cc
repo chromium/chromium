@@ -262,7 +262,7 @@ const char* ConnectorPref(AnalysisConnector connector) {
       return kOnFileTransferPref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED() << "Using unspecified analysis connector";
+      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
       return "";
   }
 }
@@ -289,7 +289,7 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
       return kOnFileTransferScopePref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED() << "Using unspecified analysis connector";
+      NOTREACHED_IN_MIGRATION() << "Using unspecified analysis connector";
       return "";
   }
 }
@@ -345,7 +345,7 @@ TriggeredRule::Action GetHighestPrecedenceAction(
       action_2 == TriggeredRule::ACTION_UNSPECIFIED) {
     return TriggeredRule::ACTION_UNSPECIFIED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TriggeredRule::ACTION_UNSPECIFIED;
 }
 
@@ -376,7 +376,7 @@ ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
       action_2 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED) {
     return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
 }
 

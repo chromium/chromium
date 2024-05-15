@@ -223,6 +223,6 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
   return AccountConsistencyMethod::kDice;
 #endif
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AccountConsistencyMethod::kDisabled;
 }

@@ -170,7 +170,7 @@ std::string GetHistogramPrefix(const SBThreatType& threat_type) {
   } else if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_UNWANTED) {
     return "harmful";
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 }
@@ -591,7 +591,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -601,7 +601,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

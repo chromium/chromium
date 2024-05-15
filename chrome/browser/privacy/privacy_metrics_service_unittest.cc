@@ -76,7 +76,8 @@ class PrivacyMetricsServiceTest : public testing::Test {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       identity_test_env()->RevokeSyncConsent();
 #else
-      NOTREACHED() << "It is not possible to unconsent from Sync on Ash";
+      NOTREACHED_IN_MIGRATION()
+          << "It is not possible to unconsent from Sync on Ash";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
       return;
     }

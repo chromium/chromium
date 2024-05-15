@@ -70,7 +70,7 @@ RequestResult PrintingHooksDelegate::HandleSubmitJob(
   gin::Dictionary submit_job_request_dict(isolate, v8_submit_job_request);
   v8::Local<v8::Value> v8_print_job;
   if (!submit_job_request_dict.Get(kJobKey, &v8_print_job)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RequestResult(RequestResult::THROWN);
   }
   DCHECK(v8_print_job->IsObject());
@@ -78,7 +78,7 @@ RequestResult PrintingHooksDelegate::HandleSubmitJob(
   gin::Dictionary print_job_dict(isolate, v8_print_job.As<v8::Object>());
   v8::Local<v8::Value> v8_document;
   if (!print_job_dict.Get(kDocumentKey, &v8_document)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return RequestResult(RequestResult::THROWN);
   }
   DCHECK(!v8_document.IsEmpty());
@@ -92,7 +92,8 @@ RequestResult PrintingHooksDelegate::HandleSubmitJob(
                          &document_blob_uuid);
   if (!submit_job_request_dict.Set(kDocumentBlobUuidKey,
                                    document_blob_uuid.As<v8::Value>())) {
-    NOTREACHED() << "Unexpected exception: couldn't update arguments";
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected exception: couldn't update arguments";
     return RequestResult(RequestResult::THROWN);
   }
 

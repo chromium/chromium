@@ -707,7 +707,7 @@ class MultiCaptureNotificationTest : public InProcessBrowserTest {
            (int)crosapi::mojom::MultiCaptureService::MethodMinVersions::
                kMultiCaptureStartedFromAppMinVersion;
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 

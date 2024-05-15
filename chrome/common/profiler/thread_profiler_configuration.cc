@@ -225,7 +225,7 @@ ThreadProfilerConfiguration::ChooseVariationGroup(
     }
     cumulative_weight += variation.weight;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kProfileDisabled;
 }
 

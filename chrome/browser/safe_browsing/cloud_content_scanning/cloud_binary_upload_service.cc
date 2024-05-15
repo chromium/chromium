@@ -552,7 +552,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
                   std::move(data.page), std::move(traffic_annotation),
                   std::move(callback));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     FinishRequest(request, Result::UNKNOWN,
                   enterprise_connectors::ContentAnalysisResponse());
     return;

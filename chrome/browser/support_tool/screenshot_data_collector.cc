@@ -203,7 +203,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
       break;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }
@@ -245,7 +245,7 @@ void ScreenshotDataCollector::OnSourceSelected(const std::string& err,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   desktop_capturer_->Start(this);
   if (!desktop_capturer_->SelectSource(id.id)) {

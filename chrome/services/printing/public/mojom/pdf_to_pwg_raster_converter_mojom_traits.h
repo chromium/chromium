@@ -32,8 +32,8 @@ struct EnumTraits<printing::mojom::PwgRasterSettings_TransformType,
         return printing::mojom::PwgRasterSettings_TransformType::
             TRANSFORM_FLIP_VERTICAL;
     }
-    NOTREACHED() << "Unknown transform type "
-                 << static_cast<int>(transform_type);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown transform type " << static_cast<int>(transform_type);
     return printing::mojom::PwgRasterSettings_TransformType::TRANSFORM_NORMAL;
   }
 
@@ -56,7 +56,8 @@ struct EnumTraits<printing::mojom::PwgRasterSettings_TransformType,
         *output = printing::PwgRasterTransformType::TRANSFORM_FLIP_VERTICAL;
         return true;
     }
-    NOTREACHED() << "Unknown transform type " << static_cast<int>(input);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown transform type " << static_cast<int>(input);
     return false;
   }
 };
@@ -76,7 +77,8 @@ struct EnumTraits<printing::mojom::PwgRasterSettings_DuplexMode,
       case printing::mojom::DuplexMode::kShortEdge:
         return printing::mojom::PwgRasterSettings_DuplexMode::SHORT_EDGE;
     }
-    NOTREACHED() << "Unknown duplex mode " << static_cast<int>(duplex_mode);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown duplex mode " << static_cast<int>(duplex_mode);
     return printing::mojom::PwgRasterSettings_DuplexMode::SIMPLEX;
   }
 
@@ -93,7 +95,8 @@ struct EnumTraits<printing::mojom::PwgRasterSettings_DuplexMode,
         *output = printing::mojom::DuplexMode::kShortEdge;
         return true;
     }
-    NOTREACHED() << "Unknown duplex mode " << static_cast<int>(input);
+    NOTREACHED_IN_MIGRATION()
+        << "Unknown duplex mode " << static_cast<int>(input);
     return false;
   }
 };

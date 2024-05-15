@@ -346,7 +346,7 @@ std::unique_ptr<Rule> CanonicalizeRule(std::string_view original_rule,
         rule = std::make_unique<IESiteListModeRule>(original_rule);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

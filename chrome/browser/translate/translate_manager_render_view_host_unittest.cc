@@ -190,10 +190,10 @@ class TranslateManagerRenderViewHostTest
         case TranslateBubbleModel::VIEW_STATE_ERROR:
           return translate::TRANSLATE_STEP_TRANSLATE_ERROR;
         case TranslateBubbleModel::VIEW_STATE_ADVANCED:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return translate::TRANSLATE_STEP_TRANSLATE_ERROR;
     } else {
       translate::TranslateInfoBarDelegate* infobar = GetTranslateInfoBar();

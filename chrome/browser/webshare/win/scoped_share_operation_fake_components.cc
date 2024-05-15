@@ -43,7 +43,7 @@ static HRESULT FakeRoGetActivationFactory(HSTRING class_id,
   }
 
   if (!instance) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
 

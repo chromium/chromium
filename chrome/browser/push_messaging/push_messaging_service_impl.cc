@@ -319,7 +319,7 @@ bool PushMessagingServiceImpl::CanHandle(const std::string& app_id) const {
 void PushMessagingServiceImpl::ShutdownHandler() {
   // Shutdown() should come before and it removes us from the list of app
   // handlers of gcm::GCMDriver so this shouldn't ever been called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PushMessagingServiceImpl::OnStoreReset() {
@@ -468,7 +468,7 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
         status = blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     // Drop message and unregister if origin has lost push permission.
@@ -730,13 +730,15 @@ void PushMessagingServiceImpl::OnMessagesDeleted(const std::string& app_id) {
 void PushMessagingServiceImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {
-  NOTREACHED() << "The Push API shouldn't have sent messages upstream";
+  NOTREACHED_IN_MIGRATION()
+      << "The Push API shouldn't have sent messages upstream";
 }
 
 void PushMessagingServiceImpl::OnSendAcknowledged(
     const std::string& app_id,
     const std::string& message_id) {
-  NOTREACHED() << "The Push API shouldn't have sent messages upstream";
+  NOTREACHED_IN_MIGRATION()
+      << "The Push API shouldn't have sent messages upstream";
 }
 
 void PushMessagingServiceImpl::OnMessageDecryptionFailed(

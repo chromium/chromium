@@ -118,7 +118,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     v8::Local<v8::Value> result =
         GetMainFrame()->ExecuteScriptAndReturnValue(source);
     if (result.IsEmpty() || !result->IsNumber()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       // TODO(toyoshim): Return NaN here and the real implementation in
       // TranslateAgent::ExecuteScriptAndGetDoubleResult().
       return 0.0;
@@ -134,7 +134,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     v8::Local<v8::Value> result =
         GetMainFrame()->ExecuteScriptAndReturnValue(source);
     if (result.IsEmpty() || !result->IsBoolean()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     }
     return result.As<v8::Boolean>()->Value();

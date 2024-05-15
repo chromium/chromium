@@ -371,7 +371,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
               GURL(kUploadUrl), std::move(content_response_head),
               "final_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }));
   mock_request->Start();
@@ -413,7 +413,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
               GURL("https://google.com"), std::move(metadata_response_head),
               "metadata_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }));
   mock_request->Start();
@@ -447,7 +447,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesEncryptedFile) {
               GURL("https://google.com"), std::move(metadata_response_head),
               "metadata_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }));
   mock_request->Start();
@@ -494,7 +494,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
               network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED),
               "final_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
       }));
 

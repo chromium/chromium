@@ -193,7 +193,7 @@ void ImportBookmarksFile(
         post_data.empty() &&
         (valid_url_callback.is_null() || valid_url_callback.Run(url))) {
       if (toolbar_folder_index > path.size() && !path.empty()) {
-        NOTREACHED();  // error in parsing.
+        NOTREACHED_IN_MIGRATION();  // error in parsing.
         break;
       }
 

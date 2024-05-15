@@ -910,7 +910,7 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
       return otr;
   }
 
-  NOTREACHED() << "An invalid profile key is passed.";
+  NOTREACHED_IN_MIGRATION() << "An invalid profile key is passed.";
   return nullptr;
 }
 
@@ -1421,9 +1421,9 @@ void ProfileManager::UnloadProfileIfNoKeepAlive(const ProfileInfo* info) {
     return;
 
   if (!info->GetCreatedProfile()) {
-    NOTREACHED() << "Attempted to unload profile "
-                 << info->GetRawProfile()->GetDebugName()
-                 << " before it was loaded. This is not valid.";
+    NOTREACHED_IN_MIGRATION() << "Attempted to unload profile "
+                              << info->GetRawProfile()->GetDebugName()
+                              << " before it was loaded. This is not valid.";
   }
 
   VLOG(1) << "Unloading profile " << info->GetCreatedProfile()->GetDebugName();
@@ -1703,9 +1703,9 @@ bool ProfileManager::AddProfile(std::unique_ptr<Profile> profile) {
   // Make sure that we're not loading a profile with the same ID as a profile
   // that's already loaded.
   if (GetProfileByPathInternal(profile->GetPath())) {
-    NOTREACHED() << "Attempted to add profile with the same path ("
-                 << profile->GetPath().value()
-                 << ") as an already-loaded profile.";
+    NOTREACHED_IN_MIGRATION()
+        << "Attempted to add profile with the same path ("
+        << profile->GetPath().value() << ") as an already-loaded profile.";
     return false;
   }
 

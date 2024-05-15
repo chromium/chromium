@@ -1134,7 +1134,7 @@ void CastActivityManager::HandleMissingSessionIdOnJoin(
     mojom::MediaRouteProvider::JoinRouteCallback callback) {
   // This should never happen, but it looks like maybe it does.  See
   // crbug.com/1114067.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   static const char kErrorMessage[] = "Internal error: missing session ID";
   // Checking for |logger_| here is pure paranoia, but this code only exists
   // to fix a crash we can't reproduce, so creating even a tiny possibility of

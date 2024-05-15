@@ -12,5 +12,5 @@ bool CanShowNetworkDiagnosticsDialog(content::WebContents* web_contents) {
 
 void ShowNetworkDiagnosticsDialog(content::WebContents* web_contents,
                                   const std::string& failed_url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

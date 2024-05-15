@@ -243,7 +243,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       use_color = true;  // Still need to initialize `color` or MSVC will warn.
       break;
   }

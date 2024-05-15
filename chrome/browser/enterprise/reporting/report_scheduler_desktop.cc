@@ -54,7 +54,7 @@ ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
   if (profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Profile reporting is on LaCrOs instead of Ash.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 }

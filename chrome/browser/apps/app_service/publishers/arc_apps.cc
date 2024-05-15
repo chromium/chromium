@@ -219,7 +219,7 @@ std::optional<arc::UserInteractionType> GetUserInterationType(
           arc::UserInteractionType::APP_STARTED_FROM_OTHER_APP;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
   return user_interaction_type;

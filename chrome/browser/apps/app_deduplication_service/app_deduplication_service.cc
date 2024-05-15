@@ -296,7 +296,7 @@ void AppDeduplicationService::DeduplicateDataToEntries(
         app_id = package_id.value().identifier();
         if (source != PackageType::kArc && source != PackageType::kWeb) {
           LOG(ERROR) << "Source is an unsupported type.";
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
         entry = Entry(app_id, ConvertPackageTypeToAppType(source).value());
       }

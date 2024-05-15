@@ -115,7 +115,7 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::MICROSOFT_365_SETUP:
       return false;
     case InstallSource::COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

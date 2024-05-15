@@ -155,7 +155,7 @@ void LacrosExtensionAppsController::GetMenuModel(
     GetMenuModelCallback callback) {
   // The current implementation of chrome apps menu models never uses the
   // AppService GetMenuModel method.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosExtensionAppsController::DEPRECATED_LoadIcon(
@@ -164,7 +164,7 @@ void LacrosExtensionAppsController::DEPRECATED_LoadIcon(
     apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::LoadIconCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosExtensionAppsController::GetCompressedIcon(
@@ -280,7 +280,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
         ->BrowserAppInstanceTracker()
         ->StopInstancesOfApp(app_id);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -398,7 +398,7 @@ void LacrosExtensionAppsController::FinallyLaunch(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(std::move(result));
 }
 

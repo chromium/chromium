@@ -291,7 +291,7 @@ void ShareServiceImpl::OnSafeBrowsingResultReceived(
          blink::mojom::ShareError result) { std::move(callback).Run(result); },
       std::move(share_operation), std::move(callback)));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(blink::mojom::ShareError::INTERNAL_ERROR);
 #endif
 }

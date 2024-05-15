@@ -495,7 +495,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   void SetKeepAlive(bool enable,
                     int32_t delay_secs,
                     SetKeepAliveCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:
@@ -1006,7 +1006,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   void Connect(const net::IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Bind(const net::IPEndPoint& local_addr,
             network::mojom::UDPSocketOptionsPtr options,
@@ -1067,7 +1067,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   }
   void ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
                                  uint32_t buffer_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SendTo(const net::IPEndPoint& dest_addr,
               base::span<const uint8_t> data,
@@ -1087,7 +1087,7 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   void Send(base::span<const uint8_t> data,
             const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
             SendCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Close() override {
     // Deleting |this| before closing the bindings can cause Mojo to DCHECK if

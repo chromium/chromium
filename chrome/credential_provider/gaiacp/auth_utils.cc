@@ -147,7 +147,7 @@ void KerbInteractiveUnlockLogonInit(wchar_t* domain,
       pkil->MessageType = KerbInteractiveLogon;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

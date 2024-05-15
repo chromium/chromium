@@ -72,10 +72,10 @@ crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
     case apps::LaunchContainer::kLaunchContainerNone:
       return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
@@ -88,7 +88,7 @@ apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
     case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
       return apps::LaunchContainer::kLaunchContainerNone;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
@@ -112,11 +112,11 @@ crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
     case WindowOpenDisposition::OFF_THE_RECORD:
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::WindowOpenDisposition::kUnknown;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
@@ -136,7 +136,7 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
       return WindowOpenDisposition::NEW_POPUP;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -350,7 +350,7 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
       return ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ui::EF_NONE;
   }
 }

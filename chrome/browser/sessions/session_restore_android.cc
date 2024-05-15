@@ -70,6 +70,6 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
     Profile* profile,
     std::vector<const sessions::SessionWindow*>::const_iterator begin,
     std::vector<const sessions::SessionWindow*>::const_iterator end) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<Browser*>();
 }

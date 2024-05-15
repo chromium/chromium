@@ -80,7 +80,7 @@ TEST_F(UiTest, CaptureToasts) {
           string_id = spec.potential_resource_string;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
 

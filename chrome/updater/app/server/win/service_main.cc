@@ -91,7 +91,8 @@ ServiceMain::ServiceMain() {
 }
 
 ServiceMain::~ServiceMain() {
-  NOTREACHED();  // The instance of this class is a leaky singleton.
+  NOTREACHED_IN_MIGRATION();  // The instance of this class is a leaky
+                              // singleton.
 }
 
 int ServiceMain::RunAsService() {

@@ -225,7 +225,7 @@ display::Display GetSecondaryDisplay(display::Screen* screen) {
       return iter;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::Display();
 }
 

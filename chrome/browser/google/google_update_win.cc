@@ -544,7 +544,7 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
   if (!google_update_) {
     base::FilePath chrome_exe;
     if (!base::PathService::Get(base::DIR_EXE, &chrome_exe))
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 
     system_level_install_ = !InstallUtil::IsPerUserInstall();
 
@@ -839,7 +839,7 @@ bool UpdateCheckDriver::IsIntermediateState(
     case STATE_NO_UPDATE:
     case STATE_ERROR:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return true;

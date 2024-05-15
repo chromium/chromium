@@ -960,7 +960,7 @@ class ChildProfileTransitionBrowserTest
           content::IsPreTest() ? crosapi::mojom::SessionType::kRegularSession
                                : crosapi::mojom::SessionType::kChildSession;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
@@ -978,7 +978,7 @@ class ChildProfileTransitionBrowserTest
     if (transition == TransitionType::kRegularToChild) {
       return !is_pre_test;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

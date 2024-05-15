@@ -459,7 +459,7 @@ void ProfileAttributesStorage::RemoveProfile(
     const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry = GetProfileAttributesWithPath(profile_path);
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

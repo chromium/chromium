@@ -60,7 +60,7 @@ void SharesheetServiceDelegator::ShowBubble(
                                        std::move(close_callback));
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -84,7 +84,7 @@ void SharesheetServiceDelegator::OnActionLaunched(bool has_action_view) {
     sharesheet_controller_->OnActionLaunched(has_action_view);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharesheetServiceDelegator::CloseBubble(SharesheetResult result) {
@@ -92,7 +92,7 @@ void SharesheetServiceDelegator::CloseBubble(SharesheetResult result) {
     sharesheet_controller_->CloseBubble(result);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SharesheetServiceDelegator::OnBubbleClosed(

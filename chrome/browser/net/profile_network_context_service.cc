@@ -197,7 +197,7 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   }
 
   // Profile type not yet supported.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return false;
 }

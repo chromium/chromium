@@ -96,7 +96,7 @@ void UiUtils::DisableOverlayForTesting() {
 #if BUILDFLAG(IS_WIN)
   VRBrowserRendererThread::DisableOverlayForTesting();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -104,7 +104,7 @@ VRBrowserRendererThread* UiUtils::GetRendererThread() {
 #if BUILDFLAG(IS_WIN)
   return VRBrowserRendererThread::GetInstanceForTesting();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -116,7 +116,7 @@ BrowserRenderer* UiUtils::GetBrowserRenderer() {
   return static_cast<VRBrowserRendererThread*>(renderer_thread)
       ->GetBrowserRendererForTesting();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_WIN)
 }
 

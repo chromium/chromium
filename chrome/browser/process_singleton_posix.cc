@@ -364,7 +364,7 @@ bool DisplayProfileInUseError(const base::FilePath& lock_path,
   return true;
 #endif
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -935,7 +935,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     return PROCESS_NOTIFIED;
   }
 
-  NOTREACHED() << "The other process returned unknown message: " << buf;
+  NOTREACHED_IN_MIGRATION()
+      << "The other process returned unknown message: " << buf;
   return PROCESS_NOTIFIED;
 }
 
@@ -1091,7 +1092,8 @@ bool ProcessSingleton::Create() {
   }
 
   if (listen(sock_, 5) < 0)
-    NOTREACHED() << "listen failed: " << base::safe_strerror(errno);
+    NOTREACHED_IN_MIGRATION()
+        << "listen failed: " << base::safe_strerror(errno);
 
   return true;
 }

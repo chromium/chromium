@@ -929,7 +929,7 @@ printing::PrintJobManager* BrowserProcessImpl::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
   return print_job_manager_.get();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

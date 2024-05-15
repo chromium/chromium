@@ -303,7 +303,7 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
       PAPCFUNC exit_process =
           reinterpret_cast<PAPCFUNC>(::GetProcAddress(kernel32, "ExitProcess"));
       if (!sleep || !delete_file || !exit_process) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         ok = FALSE;
       } else {
         ::QueueUserAPC(sleep, pi.hThread, delay_before_delete_ms);

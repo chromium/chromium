@@ -478,7 +478,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
     CloseInstallCompleteDialog(base::ASCIIToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 }
@@ -1321,13 +1321,13 @@ void ExpectCleanProcesses() {
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // !BUILDFLAG(IS_WIN)
 

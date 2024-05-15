@@ -298,7 +298,7 @@ void SyncableFileSystemOperation::TouchFile(
 void SyncableFileSystemOperation::OpenFile(const FileSystemURL& url,
                                            uint32_t file_flags,
                                            OpenFileCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SyncableFileSystemOperation::Cancel(StatusCallback cancel_callback) {

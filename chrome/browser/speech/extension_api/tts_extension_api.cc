@@ -86,7 +86,7 @@ const char* TtsEventTypeToString(content::TtsEventType event_type) {
     case content::TTS_EVENT_RESUME:
       return constants::kEventTypeResume;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return constants::kEventTypeError;
   }
 }
@@ -113,7 +113,7 @@ content::TtsEventType TtsEventTypeFromString(const std::string& str) {
   if (str == constants::kEventTypeResume)
     return content::TTS_EVENT_RESUME;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return content::TTS_EVENT_ERROR;
 }
 

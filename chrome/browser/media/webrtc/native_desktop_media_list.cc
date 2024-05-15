@@ -543,7 +543,7 @@ NativeDesktopMediaList::Worker::FormatSources(
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     DesktopMediaID source_id(source_type, sources[i].id);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

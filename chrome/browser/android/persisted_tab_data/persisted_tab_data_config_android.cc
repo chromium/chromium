@@ -30,7 +30,7 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
             ->GetForBrowserContext(profile),
         kSensitivityId);
   }
-  NOTREACHED() << "Unknown UserDataKey";
+  NOTREACHED_IN_MIGRATION() << "Unknown UserDataKey";
   return nullptr;
 }
 

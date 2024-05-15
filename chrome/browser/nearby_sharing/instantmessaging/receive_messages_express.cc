@@ -292,7 +292,7 @@ void ReceiveMessagesExpress::DelegateMessage(
       CD_LOG(ERROR, Feature::NS)
           << __func__
           << ": message body case was unexpected: " << response.body_case();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

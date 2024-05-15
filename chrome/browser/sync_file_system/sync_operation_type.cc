@@ -31,7 +31,7 @@ const char* SyncOperationTypeToString(SyncOperationType type) {
     case SYNC_OPERATION_FAIL:
       return "FAIL";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UNKNOWN";
 }
 

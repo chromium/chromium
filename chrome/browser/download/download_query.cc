@@ -170,7 +170,7 @@ bool FieldMatches(
     case EQ: return accessor.Run(item) == value;
     case GT: return accessor.Run(item) > value;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

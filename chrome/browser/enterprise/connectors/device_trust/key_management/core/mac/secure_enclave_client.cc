@@ -61,7 +61,7 @@ SecureEnclaveClient::GetTypeFromWrappedKey(
     return SecureEnclaveClient::KeyType::kTemporary;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

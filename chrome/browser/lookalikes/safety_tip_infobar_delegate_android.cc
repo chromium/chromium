@@ -43,9 +43,9 @@ std::u16string SafetyTipInfoBarDelegate::GetButtonLabel(
           GetSafetyTipLeaveButtonId(safety_tip_status_));
     case BUTTON_CANCEL:
     case BUTTON_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

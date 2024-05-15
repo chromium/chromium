@@ -398,8 +398,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
                 WebAuthnCredManDelegate::RequestPasswords(false));
             return;
           default:
-            NOTREACHED() << "WebAuthnCredManDelegate should not be used if "
-                            "CredManMode is kNotEnabled!";
+            NOTREACHED_IN_MIGRATION()
+                << "WebAuthnCredManDelegate should not be used if "
+                   "CredManMode is kNotEnabled!";
         }
       }
       return;
@@ -416,8 +417,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       }
       return;
     default:
-      NOTREACHED() << "Unhandled selected action: "
-                   << static_cast<int>(selected_action);
+      NOTREACHED_IN_MIGRATION()
+          << "Unhandled selected action: " << static_cast<int>(selected_action);
   }
 }
 
@@ -428,8 +429,8 @@ void PasswordAccessoryControllerImpl::OnToggleChanged(
     ChangeCurrentOriginSavePasswordsStatus(enabled);
     return;
   }
-  NOTREACHED() << "Unhandled selected action: "
-               << static_cast<int>(toggled_action);
+  NOTREACHED_IN_MIGRATION()
+      << "Unhandled selected action: " << static_cast<int>(toggled_action);
 }
 
 void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
@@ -682,8 +683,8 @@ void PasswordAccessoryControllerImpl::FillSelection(
     const AccessorySheetField& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
                             GetFocusedFrameOrigin())) {
-    NOTREACHED() << "Tried to fill '" << selection.display_text() << "' into "
-                 << GetFocusedFrameOrigin();
+    NOTREACHED_IN_MIGRATION() << "Tried to fill '" << selection.display_text()
+                              << "' into " << GetFocusedFrameOrigin();
     return;  // Never fill across different origins!
   }
   password_manager::PasswordManagerDriver* driver =

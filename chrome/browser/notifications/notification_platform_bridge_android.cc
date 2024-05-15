@@ -121,7 +121,7 @@ constexpr NotificationHandler::Type JavaToNotificationType(
   if (notification_type >= kMinValue && notification_type <= kMaxValue)
     return static_cast<NotificationHandler::Type>(notification_type);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NotificationHandler::Type::WEB_PERSISTENT;
 }
 

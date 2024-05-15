@@ -274,5 +274,5 @@ void TopLevelStorageAccessPermissionContext::UpdateContentSetting(
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

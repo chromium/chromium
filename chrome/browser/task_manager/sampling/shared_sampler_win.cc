@@ -82,7 +82,7 @@ class ByteBuffer {
 bool QuerySystemProcessInformation(ByteBuffer* buffer) {
   HMODULE ntdll = ::GetModuleHandle(L"ntdll.dll");
   if (!ntdll) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -90,7 +90,7 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
       reinterpret_cast<NTQUERYSYSTEMINFORMATION>(
           ::GetProcAddress(ntdll, "NtQuerySystemInformation"));
   if (!nt_query_system_information_ptr) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

@@ -27,7 +27,7 @@ const base::Feature* GetFeatureToUse() {
           features::internal::kCompanionEnabledByObservingExpsNavigations)) {
     return &features::internal::kCompanionEnabledByObservingExpsNavigations;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return &features::internal::kSidePanelCompanion;
 }
 }  // namespace

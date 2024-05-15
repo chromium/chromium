@@ -66,7 +66,7 @@ void ListChangesTask::DidListChanges(
   }
 
   if (!change_list) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     token->RecordLog("Got invalid change list.");
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
     return;

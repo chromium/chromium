@@ -198,7 +198,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
       pending.pop_back();
 
       if (!visited_trackers.insert(tracker_id).second) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 
@@ -377,7 +377,7 @@ void MetadataDatabaseIndexOnDisk::RemoveFileMetadata(
 void MetadataDatabaseIndexOnDisk::RemoveFileTracker(int64_t tracker_id) {
   FileTracker tracker;
   if (!GetFileTracker(tracker_id, &tracker)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -897,7 +897,7 @@ void MetadataDatabaseIndexOnDisk::AddToPathIndexes(
       if (!base::StringToInt64(id_str, &tracker_id))
         continue;
       if (tracker_id == new_tracker.tracker_id()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 

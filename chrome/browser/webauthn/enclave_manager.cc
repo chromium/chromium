@@ -1105,7 +1105,7 @@ class EnclaveManager::StateMachine {
       case State::kStop:
         // This should never be observed here as this special case is handled
         // below.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case State::kNextAction:

@@ -53,7 +53,7 @@ FillingSource GetSourceForTabType(const AccessorySheetData& accessory_sheet) {
     case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
-      NOTREACHED() << "Cannot determine filling source";
+      NOTREACHED_IN_MIGRATION() << "Cannot determine filling source";
       return FillingSource::PASSWORD_FALLBACKS;
   }
 }
@@ -101,7 +101,7 @@ bool IsRelevantActionForVisibility(AccessoryAction action) {
       return true;
 
     case AccessoryAction::COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -468,8 +468,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
     case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
-      NOTREACHED() << "Controller not defined for tab: "
-                   << static_cast<int>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Controller not defined for tab: " << static_cast<int>(type);
       return nullptr;
   }
 }
@@ -491,8 +491,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
       return payment_method_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::COUNT:
-      NOTREACHED() << "Controller not defined for action: "
-                   << static_cast<int>(action);
+      NOTREACHED_IN_MIGRATION()
+          << "Controller not defined for action: " << static_cast<int>(action);
       return nullptr;
   }
 }
@@ -507,8 +507,8 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
     case FillingSource::ADDRESS_FALLBACKS:
       return address_controller_.get();
     case FillingSource::AUTOFILL:
-      NOTREACHED() << "Controller not defined for filling source: "
-                   << static_cast<int>(filling_source);
+      NOTREACHED_IN_MIGRATION() << "Controller not defined for filling source: "
+                                << static_cast<int>(filling_source);
       return nullptr;
   }
 }

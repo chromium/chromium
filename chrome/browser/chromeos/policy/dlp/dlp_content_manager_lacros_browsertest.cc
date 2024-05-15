@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerLacrosBrowserTest,
                        blink::mojom::MediaStreamStateChange::PLAY) {
               resumed_run_loop.Quit();
             } else {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }
           }),
       /*source_callback=*/base::DoNothing());

@@ -65,7 +65,7 @@ std::u16string GenerateUniqueFolderName(BookmarkModel* model,
       return name;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return folder_name;
 }
 

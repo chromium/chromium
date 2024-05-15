@@ -261,14 +261,14 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
     // because of http://crbug.com/139902.
     const int* argcp = _NSGetArgc();
     if (!argcp) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
     }
     int argc = *argcp;
 
     const char* const* const* argvp = _NSGetArgv();
     if (!argvp) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 1;
     }
     const char* const* argv = *argvp;

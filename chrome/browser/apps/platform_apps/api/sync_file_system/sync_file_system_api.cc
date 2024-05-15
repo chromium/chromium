@@ -89,7 +89,7 @@ const char* QuotaStatusCodeToString(blink::mojom::QuotaStatusCode status) {
     case blink::mojom::QuotaStatusCode::kUnknown:
       return "Unknown error.";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown error.";
 }
 

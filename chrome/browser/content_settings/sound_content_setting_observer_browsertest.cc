@@ -197,7 +197,7 @@ class MultipleFramesObserver : public content::WebContentsObserver {
         return client.second.get();
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

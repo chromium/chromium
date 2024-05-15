@@ -377,7 +377,7 @@ void SessionServiceBase::SetTabUserAgentOverride(
   // This is overridden by session_service implementation.
   // We still need it here because we derive from
   // sessions::SessionTabHelperDelegate.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 

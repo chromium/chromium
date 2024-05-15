@@ -152,7 +152,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
       return;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
                             /*enable=*/false);
   }

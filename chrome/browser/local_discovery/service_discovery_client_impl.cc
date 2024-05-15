@@ -139,7 +139,7 @@ void ServiceWatcherImpl::OnRecordUpdate(
         AddService(rdata->ptrdomain());
         break;
       case net::MDnsListener::RECORD_CHANGED:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case net::MDnsListener::RECORD_REMOVED:
         RemovePTR(rdata->ptrdomain());
@@ -458,7 +458,7 @@ ServiceResolver::RequestStatus ServiceResolverImpl::MDnsStatusToRequestStatus(
       return ServiceResolver::STATUS_KNOWN_NONEXISTENT;
     case net::MDnsTransaction::RESULT_DONE:  // Pass through.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ServiceResolver::STATUS_REQUEST_TIMEOUT;
   }
 }

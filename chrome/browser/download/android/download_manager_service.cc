@@ -545,7 +545,7 @@ void DownloadManagerService::EnqueueDownloadAction(
       iter->second = download_action;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -612,7 +612,7 @@ void DownloadManagerService::OnPendingDownloadsLoaded() {
         CancelDownloadInternal(download_guid, profile_key);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

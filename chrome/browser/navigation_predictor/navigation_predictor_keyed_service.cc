@@ -41,7 +41,7 @@ void WritePredictionToConsoleLog(
 
   std::string json_body;
   if (!base::JSONWriter::Write(message, &json_body)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

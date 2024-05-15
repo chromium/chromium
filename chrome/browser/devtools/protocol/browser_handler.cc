@@ -174,7 +174,7 @@ Response BrowserHandler::SetWindowBounds(
       window->SetBounds(bounds);
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   return Response::Success();

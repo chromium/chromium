@@ -53,7 +53,7 @@ class FakeWebPageMetadataAgent
   ~FakeWebPageMetadataAgent() override = default;
 
   WebPageMetadataAgent* GetForwardingInterface() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

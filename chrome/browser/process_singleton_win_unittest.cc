@@ -43,7 +43,7 @@ bool NotificationCallback(base::CommandLine command_line,
                           const base::FilePath& current_directory) {
   // This is never called in this test, but would signal that the singleton
   // notification was successfully handled.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

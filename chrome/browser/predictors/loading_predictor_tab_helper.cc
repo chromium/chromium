@@ -128,7 +128,7 @@ bool ShouldPrefetchDestination(network::mojom::RequestDestination destination) {
       return destination == network::mojom::RequestDestination::kScript ||
              destination == network::mojom::RequestDestination::kStyle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

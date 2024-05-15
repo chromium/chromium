@@ -133,7 +133,7 @@ std::string ProcessMemoryInformation::GetRendererTypeNameInEnglish(
       return "Background App";
     case RENDERER_UNKNOWN:
     default:
-      NOTREACHED() << "Unknown renderer process type!";
+      NOTREACHED_IN_MIGRATION() << "Unknown renderer process type!";
       return "Unknown";
   }
 }

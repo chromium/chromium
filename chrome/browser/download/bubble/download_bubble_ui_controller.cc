@@ -341,8 +341,8 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       commands.ExecuteCommand(command);
       break;
     default:
-      NOTREACHED() << "Unexpected button pressed on download bubble: "
-                   << command;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected button pressed on download bubble: " << command;
   }
 }
 

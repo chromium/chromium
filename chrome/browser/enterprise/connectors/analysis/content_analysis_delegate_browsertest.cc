@@ -181,7 +181,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
         case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
         case AnalysisConnector::FILE_DOWNLOADED:
         case AnalysisConnector::FILE_TRANSFER:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

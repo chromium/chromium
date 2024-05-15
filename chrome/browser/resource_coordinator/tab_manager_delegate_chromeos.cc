@@ -162,7 +162,7 @@ base::TimeTicks TabManagerDelegate::Candidate::LastActivityTime() const {
   if (lifecycle_unit()) {
     return lifecycle_unit()->GetLastFocusedTime();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::TimeTicks();
 }
 
@@ -463,7 +463,7 @@ void TabManagerDelegate::Observe(int type,
       break;
     }
     default:
-      NOTREACHED() << "Received unexpected notification";
+      NOTREACHED_IN_MIGRATION() << "Received unexpected notification";
       break;
   }
 }

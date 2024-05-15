@@ -168,7 +168,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
     } else if (blink::IsVideoInputMediaType(stream_type)) {
       fake_devices.video_device = device;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return fake_devices;

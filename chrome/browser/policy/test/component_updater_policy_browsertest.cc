@@ -263,7 +263,7 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
       EXPECT_FALSE(update_check->Find("updatedisabled"));
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

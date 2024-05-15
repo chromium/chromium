@@ -742,7 +742,7 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
     gfx::ImageSkia* image,
     std::u16string* tool_tip) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else   // !BUILDFLAG(IS_ANDROID)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(audio || video);

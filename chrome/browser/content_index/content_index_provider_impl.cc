@@ -231,15 +231,15 @@ void ContentIndexProviderImpl::RemoveItem(const ContentId& id) {
 }
 
 void ContentIndexProviderImpl::CancelDownload(const ContentId& id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ContentIndexProviderImpl::PauseDownload(const ContentId& id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ContentIndexProviderImpl::ResumeDownload(const ContentId& id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ContentIndexProviderImpl::GetItemById(const ContentId& id,
@@ -396,5 +396,5 @@ void ContentIndexProviderImpl::GetShareInfoForItem(const ContentId& id,
 void ContentIndexProviderImpl::RenameItem(const ContentId& id,
                                           const std::string& name,
                                           RenameCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

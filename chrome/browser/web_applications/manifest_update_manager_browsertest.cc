@@ -5521,7 +5521,7 @@ IN_PROC_BROWSER_TEST_P(
     ending_stage = starting_stage;  // No icon change.
     expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
   } else {
-    NOTREACHED();  // Unhandled test input.
+    NOTREACHED_IN_MIGRATION();  // Unhandled test input.
   }
 
   OverrideManifest(kManifestTemplate, {app_name, starting_stage});
@@ -5536,7 +5536,7 @@ IN_PROC_BROWSER_TEST_P(
   } else if (IsWebApp()) {
     app_id = InstallWebApp();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);

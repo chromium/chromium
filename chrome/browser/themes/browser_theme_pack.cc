@@ -439,7 +439,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
       SkBitmap bitmap;
       if (!gfx::PNGCodec::Decode(exact_png_it->second->data(),
                                  exact_png_it->second->size(), &bitmap)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return gfx::ImageSkiaRep();
       }
       bitmap_map_[scale_factor] = bitmap;
@@ -471,7 +471,7 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
       if (!gfx::PNGCodec::Decode(available_png_it->second->data(),
                                  available_png_it->second->size(),
                                  &available_bitmap)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return gfx::ImageSkiaRep();
       }
       bitmap_map_[available_scale_factor] = available_bitmap;
@@ -1550,8 +1550,8 @@ bool BrowserThemePack::LoadRawBitmapsTo(
             image_skia.AddRepresentation(gfx::ImageSkiaRep(
                 bitmap, ui::GetScaleForResourceScaleFactor(scale_factor)));
           } else {
-            NOTREACHED() << "Unable to decode theme image resource "
-                         << entry.first;
+            NOTREACHED_IN_MIGRATION()
+                << "Unable to decode theme image resource " << entry.first;
           }
         }
       }
@@ -2076,8 +2076,9 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
   SkBitmap available_bitmap;
   if (!gfx::PNGCodec::Decode(it->second->data(), it->second->size(),
                              &available_bitmap)) {
-    NOTREACHED() << "Unable to decode theme image for prs_id=" << prs_id
-                 << " for scale_factor=" << available_scale_factor;
+    NOTREACHED_IN_MIGRATION()
+        << "Unable to decode theme image for prs_id=" << prs_id
+        << " for scale_factor=" << available_scale_factor;
     return;
   }
 
@@ -2094,8 +2095,9 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
     if (!gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
                                            false,
                                            &bitmap_data)) {
-      NOTREACHED() << "Unable to encode theme image for prs_id=" << prs_id
-                   << " for scale_factor=" << scale_factors_[i];
+      NOTREACHED_IN_MIGRATION()
+          << "Unable to encode theme image for prs_id=" << prs_id
+          << " for scale_factor=" << scale_factors_[i];
       break;
     }
     image_memory_[scaled_raw_id] =

@@ -938,7 +938,7 @@ std::wstring GetStringResource(UINT base_message_id) {
   if (image) {
     localized_string = std::wstring(image->achString, image->nLength);
   } else {
-    NOTREACHED() << "Unable to find resource id " << message_id;
+    NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
   }
 
   return localized_string;

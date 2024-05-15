@@ -62,7 +62,7 @@ void RecordContactDistributionMetrics(
           ContactRecord_Type_ContactRecord_Type_INT_MIN_SENTINEL_DO_NOT_USE_:
       case nearby::sharing::proto::
           ContactRecord_Type_ContactRecord_Type_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   base::UmaHistogramCounts10000("Nearby.Share.Contacts.NumContacts.Unfiltered",

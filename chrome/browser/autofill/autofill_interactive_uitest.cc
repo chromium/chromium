@@ -299,7 +299,7 @@ const std::vector<FieldValue> kDefaultAddress{
       return fields;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return fields;
 }
 
@@ -2496,7 +2496,7 @@ class AutofillInteractiveFencedFrameTest
         return cross_frame;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

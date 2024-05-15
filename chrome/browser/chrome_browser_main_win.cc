@@ -769,7 +769,7 @@ std::wstring TranslationDelegate::GetLocalizedString(int installer_string_id) {
     DO_STRING_MAPPING
 #undef HANDLE_STRING
   default:
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   if (resource_id)
     return base::UTF16ToWide(l10n_util::GetStringUTF16(resource_id));

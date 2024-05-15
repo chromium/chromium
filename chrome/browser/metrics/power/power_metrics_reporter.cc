@@ -63,7 +63,7 @@ const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
     case MonitoredProcessType::kOther:
       return "OtherProcess";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

@@ -465,7 +465,7 @@ ipp_parser::mojom::IppMessagePtr ConvertIppToMojo(ipp_t* ipp) {
     }
 
     if (!attrptr->value)
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 
     attributes.push_back(std::move(attrptr));
   }

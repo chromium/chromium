@@ -360,7 +360,7 @@ void BackgroundContentsService::OnExtensionUnloaded(
         break;
     }
   }
-  NOTREACHED() << "Undefined UnloadedExtensionReason.";
+  NOTREACHED_IN_MIGRATION() << "Undefined UnloadedExtensionReason.";
   return ShutdownAssociatedBackgroundContents(extension->id());
 }
 

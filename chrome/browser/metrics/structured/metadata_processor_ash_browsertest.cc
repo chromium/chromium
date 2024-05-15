@@ -78,7 +78,7 @@ std::optional<em::PolicyData::MarketSegment> GetMarketSegment(
     case StructuredDataProto::ENTERPRISE:
       return em::PolicyData::ENROLLED_ENTERPRISE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -100,7 +100,7 @@ std::optional<em::PolicyData::MetricsLogSegment> GetMetricsLogSegment(
     case StructuredEventProto::UNKNOWN_PRIMARY_USER_TYPE:
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

@@ -109,7 +109,8 @@ void ChromeOSMetricsProvider::LogCrash(const std::string& crash_type,
     IncrementPrefValue(prefs::kStabilitySystemUncleanShutdownCount,
                        num_samples);
   } else {
-    NOTREACHED() << "Unexpected Chrome OS crash type " << crash_type;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected Chrome OS crash type " << crash_type;
   }
 
   // Wake up metrics logs sending if necessary now that new

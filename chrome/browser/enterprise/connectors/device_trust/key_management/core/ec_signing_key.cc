@@ -85,7 +85,7 @@ std::optional<std::vector<uint8_t>> ECSigningKey::SignSlowly(
 
 #if BUILDFLAG(IS_MAC)
 SecKeyRef ECSigningKey::GetSecKeyRef() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_MAC)

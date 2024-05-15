@@ -100,7 +100,7 @@ ash::DictationBubbleHintType ConvertDictationHintType(
     case accessibility_private::DictationBubbleHintType::kCopy:
       return ash::DictationBubbleHintType::kCopy;
     case accessibility_private::DictationBubbleHintType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::DictationBubbleHintType::kTrySaying;
   }
 }
@@ -432,7 +432,7 @@ AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
       accelerator_action = ash::AcceleratorAction::kFocusNextPane;
       break;
     case accessibility_private::AcceleratorAction::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return RespondNow(Error("Invalid accelerator action."));
   }
 
@@ -521,7 +521,7 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
       type = ui::ET_MOUSE_EXITED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   int flags = 0;
@@ -638,7 +638,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
         focus_ring->type = ash::FocusRingType::GLOW;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     if (focus_ring_info.stacking_order !=
@@ -655,7 +655,7 @@ AccessibilityPrivateSetFocusRingsFunction::Run() {
               ash::FocusRingStackingOrder::BELOW_ACCESSIBILITY_BUBBLES;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
 
@@ -931,7 +931,7 @@ AccessibilityPrivateToggleDictationFunction::Run() {
              extension_misc::kAccessibilityCommonExtensionId) {
     source = ash::DictationToggleSource::kAccessibilityCommon;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   ash::AccessibilityController::Get()->ToggleDictationFromSource(source);
@@ -963,7 +963,7 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
       icon = ash::DictationBubbleIconType::kMacroFail;
       break;
     case accessibility_private::DictationBubbleIconType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

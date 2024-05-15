@@ -116,7 +116,7 @@ nearby_share::mojom::ContactIdentifierPtr ProtoToMojo(
         IDENTIFIER_NOT_SET:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

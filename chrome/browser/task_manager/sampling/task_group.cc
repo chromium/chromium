@@ -261,7 +261,7 @@ Task* TaskGroup::GetTaskById(TaskId task_id) const {
     if (task->task_id() == task_id)
       return task;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -1552,7 +1552,7 @@ NearbySharingServiceImpl::GetReceiveCallbacksFromState(
     case ReceiveSurfaceState::kBackground:
       return background_receive_callbacks_;
     case ReceiveSurfaceState::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return foreground_receive_callbacks_;
   }
 }

@@ -128,7 +128,7 @@ void ConfigureNetworkConnectionTracker(NetworkConnectionType connection_type,
 
     switch (connection_type) {
       case NetworkConnectionType::Undecided:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case NetworkConnectionType::ConnectionNone:

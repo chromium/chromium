@@ -250,5 +250,5 @@ void MediaStreamDevicePermissionContext::UpdateTabContext(
 void MediaStreamDevicePermissionContext::ResetPermission(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  NOTREACHED() << "ResetPermission is not implemented";
+  NOTREACHED_IN_MIGRATION() << "ResetPermission is not implemented";
 }

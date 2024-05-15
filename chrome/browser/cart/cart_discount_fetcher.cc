@@ -86,7 +86,7 @@ std::string GetMerchantUrl(const base::Value::Dict* merchant_identifier) {
   // TODO(crbug.com/40181210): Use a static constant for "cartUrl" instead.
   const std::string* value = merchant_identifier->FindString("cartUrl");
   if (!value) {
-    NOTREACHED() << "Missing cart_url or it is not a string";
+    NOTREACHED_IN_MIGRATION() << "Missing cart_url or it is not a string";
     return "";
   }
 
@@ -96,7 +96,7 @@ std::string GetMerchantUrl(const base::Value::Dict* merchant_identifier) {
 std::string GetMerchantId(const base::Value::Dict* merchant_identifier) {
   const std::string* value = merchant_identifier->FindString("merchantId");
   if (!value) {
-    NOTREACHED() << "Missing merchant_id or it is not a string";
+    NOTREACHED_IN_MIGRATION() << "Missing merchant_id or it is not a string";
     return "";
   }
 
@@ -111,7 +111,8 @@ std::string GetStringFromDict(const base::Value* dict,
   const std::string* value = dict->GetDict().FindString(key);
   if (!value) {
     if (is_required) {
-      NOTREACHED() << "Missing " << key << " or it is not a string";
+      NOTREACHED_IN_MIGRATION()
+          << "Missing " << key << " or it is not a string";
     }
     return "";
   }
@@ -139,7 +140,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
     // Parse ruleId
     const std::string* rule_id = rule_discount_dict.FindString("ruleId");
     if (!rule_id) {
-      NOTREACHED() << "Missing rule_id or it is not a string";
+      NOTREACHED_IN_MIGRATION() << "Missing rule_id or it is not a string";
       continue;
     }
     discount_proto.set_rule_id(*rule_id);
@@ -148,7 +149,8 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
     const std::string* merchant_rule_id =
         rule_discount_dict.FindString("merchantRuleId");
     if (!merchant_rule_id) {
-      NOTREACHED() << "Missing merchant_rule_id or it is not a string";
+      NOTREACHED_IN_MIGRATION()
+          << "Missing merchant_rule_id or it is not a string";
       continue;
     }
     discount_proto.set_merchant_rule_id(*merchant_rule_id);
@@ -159,7 +161,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
     if (!raw_merchant_offer_id_value) {
       VLOG(1) << "raw_merchant_offer_id is empty";
     } else if (!raw_merchant_offer_id_value->is_string()) {
-      NOTREACHED() << "raw_merchant_offer_id is not a string";
+      NOTREACHED_IN_MIGRATION() << "raw_merchant_offer_id is not a string";
       continue;
     } else {
       discount_proto.set_raw_merchant_offer_id(
@@ -170,14 +172,15 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
     const base::Value::Dict* discount_dict =
         rule_discount_dict.FindDict("discount");
     if (!discount_dict) {
-      NOTREACHED() << "discount is missing or it is not a dictionary";
+      NOTREACHED_IN_MIGRATION()
+          << "discount is missing or it is not a dictionary";
       continue;
     }
 
     if (discount_dict->Find("percentOff")) {
       std::optional<int> percent_off = discount_dict->FindInt("percentOff");
       if (!percent_off.has_value()) {
-        NOTREACHED() << "percent_off is not a int";
+        NOTREACHED_IN_MIGRATION() << "percent_off is not a int";
         continue;
       }
       discount_proto.set_percent_off(*percent_off);
@@ -186,7 +189,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
       const base::Value::Dict* amount_off_dict =
           discount_dict->FindDict("amountOff");
       if (!amount_off_dict) {
-        NOTREACHED() << "amount_off is not a dictionary";
+        NOTREACHED_IN_MIGRATION() << "amount_off is not a dictionary";
         continue;
       }
 
@@ -195,7 +198,8 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
       const std::string* currency_code_value =
           amount_off_dict->FindString("currencyCode");
       if (!currency_code_value) {
-        NOTREACHED() << "Missing currency_code or it is not a string";
+        NOTREACHED_IN_MIGRATION()
+            << "Missing currency_code or it is not a string";
         continue;
       }
       money->set_currency_code(*currency_code_value);
@@ -203,8 +207,9 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
       // Parse units
       const base::Value* units_value = amount_off_dict->Find("units");
       if (!units_value || !units_value->is_string()) {
-        NOTREACHED() << "Missing units or it is not a string, it is a "
-                     << units_value->type();
+        NOTREACHED_IN_MIGRATION()
+            << "Missing units or it is not a string, it is a "
+            << units_value->type();
         continue;
       }
       std::string units_string = units_value->GetString();
@@ -216,7 +221,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
       // Parse nanos
       std::optional<int> nano = amount_off_dict->FindInt("nanos");
       if (!nano.has_value()) {
-        NOTREACHED() << "Missing nanos or it is not a int";
+        NOTREACHED_IN_MIGRATION() << "Missing nanos or it is not a int";
         continue;
       }
       money->set_nanos(*nano);
@@ -231,7 +236,7 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
 
 CouponType ConvertToCouponType(const base::Value* type) {
   if (!type || !type->is_string()) {
-    NOTREACHED() << "Missing coupon type";
+    NOTREACHED_IN_MIGRATION() << "Missing coupon type";
     return CouponType::UNSPECIFIED;
   }
 
@@ -244,7 +249,7 @@ CouponType ConvertToCouponType(const base::Value* type) {
     return CouponType::RBD_WITH_CODE;
   }
 
-  NOTREACHED() << "Unrecognized coupon type";
+  NOTREACHED_IN_MIGRATION() << "Unrecognized coupon type";
   return CouponType::UNSPECIFIED;
 }
 
@@ -292,7 +297,7 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
     if (!base::StringToInt64(
             GetStringFromDict(&coupon_discount, "couponId", true),
             &coupon_id)) {
-      NOTREACHED() << "Failed to parsed couponId";
+      NOTREACHED_IN_MIGRATION() << "Failed to parsed couponId";
       continue;
     }
     coupon_info_proto.set_coupon_id(coupon_id);
@@ -301,15 +306,15 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
     const base::Value* expiry_time_sec_value =
         coupon_discount_dict.Find("expiryTimeSec");
     if (!expiry_time_sec_value) {
-      NOTREACHED() << "Missing expiryTimeSec";
+      NOTREACHED_IN_MIGRATION() << "Missing expiryTimeSec";
       continue;
     }
     if (expiry_time_sec_value->GetIfDouble() ||
         expiry_time_sec_value->GetIfInt()) {
       coupon_info_proto.set_expiry_time(expiry_time_sec_value->GetDouble());
     } else {
-      NOTREACHED() << "expiryTimeSec is in a wrong format: "
-                   << expiry_time_sec_value->type();
+      NOTREACHED_IN_MIGRATION() << "expiryTimeSec is in a wrong format: "
+                                << expiry_time_sec_value->type();
       continue;
     }
 
@@ -321,12 +326,12 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
 
 bool ValidateResponse(const std::optional<base::Value>& response) {
   if (!response) {
-    NOTREACHED() << "Response is not valid";
+    NOTREACHED_IN_MIGRATION() << "Response is not valid";
     return false;
   }
 
   if (!response->is_dict()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Wrong response format, response is not a dictionary. Response: "
         << response->DebugString();
     return false;
@@ -514,14 +519,14 @@ void CartDiscountFetcher::OnDiscountsAvailable(
   base::Value::Dict& dict = value->GetDict();
   const base::Value* error_value = dict.Find("error");
   if (error_value) {
-    NOTREACHED() << "Error: " << responses->response;
+    NOTREACHED_IN_MIGRATION() << "Error: " << responses->response;
     std::move(callback).Run(std::move(cart_discount_map), false);
     return;
   }
 
   const base::Value::List* discounts_list = dict.FindList("discounts");
   if (!discounts_list) {
-    NOTREACHED() << "Missing discounts or it is not a list";
+    NOTREACHED_IN_MIGRATION() << "Missing discounts or it is not a list";
     std::move(callback).Run(std::move(cart_discount_map), false);
     return;
   }
@@ -533,7 +538,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     const base::Value::Dict* merchant_identifier =
         merchant_discount_dict.FindDict("merchantIdentifier");
     if (!merchant_identifier) {
-      NOTREACHED() << "Missing merchant_identifier";
+      NOTREACHED_IN_MIGRATION() << "Missing merchant_identifier";
       continue;
     }
     std::string merchant_url = GetMerchantUrl(merchant_identifier);
@@ -574,7 +579,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
                 cart_rule_based_discounts_info.highest_percent_off) +
             "%";
       } else {
-        NOTREACHED() << "Missing hightest discount info";
+        NOTREACHED_IN_MIGRATION() << "Missing hightest discount info";
         continue;
       }
 

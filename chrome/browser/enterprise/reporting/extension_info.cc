@@ -45,7 +45,7 @@ em::Extension_InstallType GetExtensionInstallType(
     case ManifestLocation::kExternalPolicyDownload:
       return em::Extension_InstallType_TYPE_ADMIN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case ManifestLocation::kInvalidLocation:
     case ManifestLocation::kComponent:
@@ -154,7 +154,7 @@ em::Extension_ExtensionType ConvertExtensionTypeToProto(
     case extensions::Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
       return em::Extension_ExtensionType_TYPE_CHROMEOS_SYSTEM_EXTENSION;
     case extensions::Manifest::NUM_LOAD_TYPES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return em::Extension_ExtensionType_TYPE_UNKNOWN;
   }
 }

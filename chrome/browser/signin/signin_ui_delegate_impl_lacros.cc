@@ -50,8 +50,9 @@ GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeSigninPromoAddAccount;
     default:
-      NOTREACHED() << "Add account is requested from an unknown access point "
-                   << static_cast<int>(access_point);
+      NOTREACHED_IN_MIGRATION()
+          << "Add account is requested from an unknown access point "
+          << static_cast<int>(access_point);
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kMaxValue;
   }
@@ -83,8 +84,9 @@ GetAccountReauthSourceFromAccessPoint(
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeMenuTurnOnSync;
     default:
-      NOTREACHED() << "Reauth is requested from an unknown access point "
-                   << static_cast<int>(access_point);
+      NOTREACHED_IN_MIGRATION()
+          << "Reauth is requested from an unknown access point "
+          << static_cast<int>(access_point);
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kMaxValue;
   }

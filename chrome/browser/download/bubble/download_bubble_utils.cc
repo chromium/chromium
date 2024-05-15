@@ -63,7 +63,7 @@ bool ItemIsRecent(const offline_items_collection::OfflineItem& item,
       is_done = true;
       break;
     case offline_items_collection::OfflineItemState::NUM_ENTRIES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return ((item.creation_time.is_null() && !is_done) ||
           item.creation_time > cutoff_time);

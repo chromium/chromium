@@ -415,7 +415,7 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
 history_clusters::HistoryClustersService*
 HistoryClustersTabHelper::GetHistoryClustersService() {
   if (!web_contents()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   return HistoryClustersServiceFactory::GetForBrowserContext(
@@ -424,7 +424,7 @@ HistoryClustersTabHelper::GetHistoryClustersService() {
 
 history::HistoryService* HistoryClustersTabHelper::GetHistoryService() {
   if (!web_contents()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   Profile* profile =

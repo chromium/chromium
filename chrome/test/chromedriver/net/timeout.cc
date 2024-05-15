@@ -30,7 +30,7 @@ void Timeout::SetDuration(const base::TimeDelta& duration) {
     LOG(ERROR) << "Timeout::SetDuration was called with a duration different"
                   " from what was already set: " << duration << " vs. "
                << deadline_ - start_ << " (original).";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

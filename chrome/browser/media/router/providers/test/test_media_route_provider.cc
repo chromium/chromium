@@ -180,8 +180,8 @@ void TestMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
 void TestMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
-  NOTREACHED() << "Route " << media_route_id
-               << " does not support sending binary data.";
+  NOTREACHED_IN_MIGRATION()
+      << "Route " << media_route_id << " does not support sending binary data.";
 }
 
 void TestMediaRouteProvider::StartObservingMediaSinks(

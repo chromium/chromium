@@ -243,7 +243,7 @@ std::string RetrievalMethodToString(
     case WebElementDescriptor::NONE:
       return "NONE";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "UNKNOWN";
 }
 

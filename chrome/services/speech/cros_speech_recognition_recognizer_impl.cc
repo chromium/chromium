@@ -37,7 +37,7 @@ GetSodaSpeechRecognitionMode(
     case media::mojom::SpeechRecognitionMode::kUnknown:
       // Chrome OS SODA doesn't support unknown recognition type. Default to
       // caption.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
   }
 }

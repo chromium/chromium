@@ -20,7 +20,8 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
     case version_info::Channel::BETA: return "beta";
     case version_info::Channel::STABLE: return std::string();
   }
-  NOTREACHED() << "Unknown channel " << static_cast<int>(GetChannel());
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown channel " << static_cast<int>(GetChannel());
   return std::string();
 }
 

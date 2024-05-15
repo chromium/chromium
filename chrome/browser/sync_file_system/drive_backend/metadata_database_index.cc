@@ -158,7 +158,7 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
     pending.pop_back();
 
     if (!visited_trackers.insert(tracker_id).second) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -279,7 +279,7 @@ void MetadataDatabaseIndex::StoreFileMetadata(
     std::unique_ptr<FileMetadata> metadata) {
   PutFileMetadataToDB(*metadata.get(), db_);
   if (!metadata) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -291,7 +291,7 @@ void MetadataDatabaseIndex::StoreFileTracker(
     std::unique_ptr<FileTracker> tracker) {
   PutFileTrackerToDB(*tracker.get(), db_);
   if (!tracker) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -330,7 +330,7 @@ void MetadataDatabaseIndex::RemoveFileTracker(int64_t tracker_id) {
 
   auto tracker_it = tracker_by_id_.find(tracker_id);
   if (tracker_it == tracker_by_id_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   FileTracker* tracker = tracker_it->second.get();
@@ -476,7 +476,7 @@ int64_t MetadataDatabaseIndex::GetLargestChangeID() const {
 
 int64_t MetadataDatabaseIndex::GetNextTrackerID() const {
   if (!service_metadata_->has_next_tracker_id()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return kInvalidTrackerID;
   }
   return service_metadata_->next_tracker_id();
@@ -584,7 +584,7 @@ void MetadataDatabaseIndex::RemoveFromFileIDIndexes(
     const FileTracker& tracker) {
   auto found = trackers_by_file_id_.find(tracker.file_id());
   if (found == trackers_by_file_id_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -646,7 +646,7 @@ void MetadataDatabaseIndex::UpdateInPathIndexes(
       if (found->second.empty())
         trackers_by_title->erase(found);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     DVLOG(3) << "  Add to trackers_by_parent_and_title_: "

@@ -651,7 +651,7 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
           ->AsWeakPtr();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -671,7 +671,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
       return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)
           ->GetSavedTabGroupControllerDelegate();
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
@@ -752,11 +752,11 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     case syncer::SECURITY_EVENTS:
     case syncer::SEND_TAB_TO_SELF:
     case syncer::SESSIONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::WeakPtr<syncer::ModelTypeControllerDelegate>();
   }
 }

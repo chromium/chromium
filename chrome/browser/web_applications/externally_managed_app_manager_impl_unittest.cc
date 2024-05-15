@@ -1389,7 +1389,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
               EXPECT_EQ(GetInstallOptions(kBarWebAppUrl),
                         last_install_options());
             } else {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }
           }));
 
@@ -1488,7 +1488,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, InstallApps_PendingInstall) {
               run_loop.Quit();
               return;
             }
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }));
   run_loop.Run();
 }

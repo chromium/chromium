@@ -98,12 +98,12 @@ SystemMonitor::SystemObserver::~SystemObserver() {
 
 void SystemMonitor::SystemObserver::OnFreePhysicalMemoryMbSample(
     int free_phys_memory_mb) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SystemMonitor::SystemObserver::OnSystemMetricsStruct(
     const base::SystemMetrics& system_metrics) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SystemMonitor::AddOrUpdateObserver(

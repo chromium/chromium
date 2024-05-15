@@ -178,7 +178,7 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

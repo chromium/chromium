@@ -84,7 +84,7 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
     case ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE:
       return TranslateEventProto::EDITABLE_FIELD_IS_ACTIVE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return metrics::TranslateEventProto::UNKNOWN;
   }
 }

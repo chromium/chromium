@@ -29,7 +29,7 @@ void GetWinsockNamespaceProviders(
   DWORD size = 0;
   if (WSAEnumNameSpaceProviders(&size, nullptr) != SOCKET_ERROR ||
       GetLastError() != WSAEFAULT) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -40,7 +40,7 @@ void GetWinsockNamespaceProviders(
   int num_namespace_providers = WSAEnumNameSpaceProviders(&size,
                                                           namespace_providers);
   if (num_namespace_providers == SOCKET_ERROR) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -64,7 +64,7 @@ void GetWinsockLayeredServiceProviders(
   int error;
   if (SOCKET_ERROR != WSCEnumProtocols(nullptr, nullptr, &size, &error) ||
       error != WSAENOBUFS) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -75,7 +75,7 @@ void GetWinsockLayeredServiceProviders(
   int num_service_providers =
       WSCEnumProtocols(nullptr, service_providers, &size, &error);
   if (num_service_providers == SOCKET_ERROR) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -73,7 +73,7 @@ void ChromeBrowserFieldTrials::OnVariationsSetupComplete() {
     if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
       InstantiatePersistentHistogramsWithFeaturesAndCleanup(metrics_dir);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -153,7 +153,7 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 
     case profile_metrics::BrowserProfileType::kIncognito:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
 }
@@ -393,7 +393,7 @@ void OffTheRecordProfileImpl::DestroyOffTheRecordProfile(
     Profile* /*otr_profile*/) {
   // OffTheRecord profiles should be destroyed through a request to their
   // original profile.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool OffTheRecordProfileImpl::HasOffTheRecordProfile(

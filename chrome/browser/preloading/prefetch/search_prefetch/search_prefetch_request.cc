@@ -370,7 +370,7 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
     case SearchPrefetchStatus::kPrerenderActivated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // maintain a weak ptr so that this can cancel prerendering when

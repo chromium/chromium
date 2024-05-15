@@ -173,7 +173,7 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // We only handle GETs.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -203,7 +203,7 @@ void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   // This should never be called for a non-network service URLLoader.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CacheAliasSearchPrefetchURLLoader::SetPriority(

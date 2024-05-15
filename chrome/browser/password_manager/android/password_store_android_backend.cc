@@ -214,7 +214,7 @@ SuccessStatus GetSuccessStatusFromError(
     case AndroidBackendErrorType::kFailedToCreateFacetId:
       return SuccessStatus::kError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SuccessStatus::kError;
 }
 
@@ -243,7 +243,7 @@ std::string GetOperationName(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
       return "GetAllLoginsWithBrandingInfoAsync";
   }
-  NOTREACHED() << "Operation code not handled";
+  NOTREACHED_IN_MIGRATION() << "Operation code not handled";
   return "";
 }
 

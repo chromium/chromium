@@ -274,7 +274,7 @@ void TabManager::OnMemoryPressure(
       DiscardTabFromMemoryPressure();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TabManager::OnTabDiscardDone() {

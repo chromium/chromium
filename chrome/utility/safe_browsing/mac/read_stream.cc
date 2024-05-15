@@ -71,7 +71,7 @@ off_t MemoryReadStream::Seek(off_t offset, int whence) {
       offset_ = size_ + offset;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return -1;
   }
   if (static_cast<size_t>(offset_) >= size_)

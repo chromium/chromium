@@ -366,7 +366,7 @@ void TrackingProtectionNoticeService::SilentOnboardingNotice::HidePromo(
 void TrackingProtectionNoticeService::SilentOnboardingNotice::OnNoticeClosed(
     base::Time showed_when,
     user_education::FeaturePromoController* promo_controller) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {

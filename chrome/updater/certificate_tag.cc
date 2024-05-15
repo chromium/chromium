@@ -153,7 +153,7 @@ std::unique_ptr<PEBinary> PEBinary::Parse(base::span<const uint8_t> binary) {
   if (!CBS_skip(&bin_for_check, ret->certs_size_offset_) ||
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

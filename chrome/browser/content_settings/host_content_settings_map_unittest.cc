@@ -190,7 +190,7 @@ class TesterForType {
         break;
       default:
         // Add support as needed.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -76,7 +76,7 @@ void InvokeStorageAccessOnFrame(content::RenderFrameHost* frame,
     default:
       // Only invoke storage access for web features associated with a third
       // party storage access type.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

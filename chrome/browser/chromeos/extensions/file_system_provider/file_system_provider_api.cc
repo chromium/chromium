@@ -86,7 +86,7 @@ crosapi::mojom::FSPChangeType ParseChangeType(
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return crosapi::mojom::FSPChangeType::kChanged;
 }
 

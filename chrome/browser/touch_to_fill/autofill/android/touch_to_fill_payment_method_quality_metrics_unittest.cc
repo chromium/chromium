@@ -70,7 +70,7 @@ class TouchToFillForPaymentMethodsTest
               "CVC", "CVC", "", FormControlType::kInputText));
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

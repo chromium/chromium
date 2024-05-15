@@ -61,7 +61,7 @@ sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
     case syncer::ModelType::OS_PRIORITY_PREFERENCES:
       return specifics.mutable_os_priority_preference()->mutable_preference();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return specifics.mutable_preference();
   }
 }

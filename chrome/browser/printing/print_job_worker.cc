@@ -79,17 +79,17 @@ bool PrintJobWorker::StartPrintingSanityCheck(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (page_number_ != PageNumber::npos()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   if (!document_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   if (document_.get() != new_document) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -142,7 +142,7 @@ void PrintJobWorker::OnDocumentChanged(PrintedDocument* new_document) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (page_number_ != PageNumber::npos()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

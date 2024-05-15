@@ -212,7 +212,7 @@ std::string GetSyntheticFieldTrialGroupName(HttpsFirstModeSetting setting) {
     case HttpsFirstModeSetting::kDisabled:
       return kHttpsFirstModeSyntheticFieldTrialDisabledGroup;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }

@@ -85,7 +85,7 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DownloadCheckResult::UNKNOWN;
 }
 
@@ -202,7 +202,7 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return EventResult::UNKNOWN;
   }
 }
@@ -248,7 +248,7 @@ EventResult GetEventResult(DownloadCheckResult download_result,
       return EventResult::BLOCKED;
 
     default:
-      NOTREACHED() << "Should never be final result";
+      NOTREACHED_IN_MIGRATION() << "Should never be final result";
       break;
   }
   return EventResult::UNKNOWN;
@@ -621,7 +621,7 @@ void DeepScanningRequest::OnScanComplete(
   } else if (IsEnterpriseTriggered()) {
     OnEnterpriseScanComplete(current_path, result, response);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

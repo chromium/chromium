@@ -21,7 +21,7 @@ std::string MacNotificationStyleSuffix(NotificationStyle notification_style) {
     case NotificationStyle::kAppShim:
       return "AppShim";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace mac_notifications

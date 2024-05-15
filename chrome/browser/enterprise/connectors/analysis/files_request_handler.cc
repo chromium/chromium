@@ -44,7 +44,7 @@ AnalysisConnector AccessPointToEnterpriseConnector(
       return enterprise_connectors::FILE_ATTACHED;
     case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
     case safe_browsing::DeepScanAccessPoint::PRINT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return enterprise_connectors::FILE_ATTACHED;
 }
@@ -62,7 +62,7 @@ std::string AccessPointToTriggerString(
       return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload;
     case safe_browsing::DeepScanAccessPoint::DOWNLOAD:
     case safe_browsing::DeepScanAccessPoint::PRINT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "";
 }

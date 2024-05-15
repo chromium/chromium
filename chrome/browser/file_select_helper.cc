@@ -126,10 +126,10 @@ bool IsDownloadAllowedBySafeBrowsing(
     case Result::DEEP_SCANNED_FAILED:
     case Result::BLOCKED_SCAN_FAILED:
     case Result::IMMEDIATE_DEEP_SCAN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -706,7 +706,7 @@ void FileSelectHelper::RunFileChooserOnUIThread(
     default:
       // Prevent warning.
       dialog_type_ = ui::SelectFileDialog::SELECT_OPEN_FILE;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   gfx::NativeWindow owning_window =

@@ -169,7 +169,8 @@ PasswordReuseLookup::ReputationVerdict GetVerdictToLogFromResponse(
     case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
       return PasswordReuseLookup::VERDICT_UNSPECIFIED;
   }
-  NOTREACHED() << "Unexpected response_verdict: " << response_verdict;
+  NOTREACHED_IN_MIGRATION()
+      << "Unexpected response_verdict: " << response_verdict;
   return PasswordReuseLookup::VERDICT_UNSPECIFIED;
 }
 
@@ -603,7 +604,7 @@ void ChromePasswordProtectionService::OnUserAction(
       HandleResetPasswordOnInterstitial(web_contents, action);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -908,8 +909,8 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
       break;
     case RequestOutcome::UNKNOWN:
     case RequestOutcome::DEPRECATED_NO_EXTENDED_REPORTING:
-      NOTREACHED() << __FUNCTION__
-                   << ": outcome: " << static_cast<int>(outcome);
+      NOTREACHED_IN_MIGRATION()
+          << __FUNCTION__ << ": outcome: " << static_cast<int>(outcome);
       break;
   }
 }
@@ -1187,7 +1188,7 @@ void ChromePasswordProtectionService::HandleUserActionOnPageInfo(
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ChromePasswordProtectionService::HandleResetPasswordOnInterstitial(

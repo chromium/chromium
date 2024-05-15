@@ -232,7 +232,7 @@ int BackgroundApplicationListModel::GetPosition(
       return position;
     ++position;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 
@@ -385,7 +385,7 @@ void BackgroundApplicationListModel::OnExtensionPermissionsUpdated(
         // Policy changes are only used for host permissions, so the
         // "background"
         // permission would never be present in  permissions .
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

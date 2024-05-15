@@ -74,5 +74,5 @@ void DefaultDownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
 void DefaultDownloadDirPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

@@ -220,7 +220,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
             << "Frame for right eye submitted more than once";
         seen_right.insert(frame_id);
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       // Validate that frames arrive in order.

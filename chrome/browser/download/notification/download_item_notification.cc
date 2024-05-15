@@ -212,7 +212,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -336,7 +336,7 @@ void DownloadItemNotification::Click(
     if (*button_index < 0 ||
         static_cast<size_t>(*button_index) >= button_actions_->size()) {
       // Out of boundary.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
 
@@ -432,7 +432,7 @@ void DownloadItemNotification::Click(
       CloseNotification();
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -513,7 +513,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
@@ -539,7 +539,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
         break;
       case download::DownloadItem::CANCELLED:
         // Handled above.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
       case download::DownloadItem::INTERRUPTED:
         // Shows a notifiation as progress type once so the visible content will
@@ -549,7 +549,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
         notification_->set_priority(message_center::DEFAULT_PRIORITY);
         break;
       case download::DownloadItem::MAX_DOWNLOAD_STATE:  // sentinel
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   SkColor notification_color = GetNotificationIconColor();
@@ -628,7 +628,7 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -645,7 +645,7 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
       break;
 
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -750,7 +750,7 @@ DownloadItemNotification::GetExtraActions() const {
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     actions->push_back(DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD);
@@ -796,7 +796,7 @@ DownloadItemNotification::GetExtraActions() const {
       break;
     }
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return actions;
 }
@@ -857,7 +857,7 @@ std::u16string DownloadItemNotification::GetTitle() const {
           IDS_DOWNLOAD_STATUS_DOWNLOAD_FAILED_TITLE, file_name);
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return title_text;
 }
@@ -918,7 +918,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
 #else
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::EDIT_WITH_MEDIA_APP:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
 #endif
     case DownloadCommands::ALWAYS_OPEN_TYPE:
@@ -931,7 +931,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
       // Only for menu.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
   CHECK_NE(id, -1);
@@ -1005,7 +1005,7 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING: {
       // TODO(crbug.com/40074456): Implement UX for this danger type.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED: {
@@ -1023,7 +1023,7 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
       break;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -1114,7 +1114,7 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return std::u16string();

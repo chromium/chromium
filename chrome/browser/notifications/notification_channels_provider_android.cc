@@ -106,7 +106,7 @@ ContentSetting ChannelStatusToContentSetting(NotificationChannelStatus status) {
     case NotificationChannelStatus::BLOCKED:
       return CONTENT_SETTING_BLOCK;
     case NotificationChannelStatus::UNAVAILABLE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return CONTENT_SETTING_DEFAULT;
 }
@@ -416,7 +416,7 @@ void NotificationChannelsProviderAndroid::UpdateChannelForWebsiteImpl(
     }
     default:
       // We rely on notification settings being one of ALLOW/BLOCK/DEFAULT.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -536,7 +536,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
       break;
     default:
       // We assume notification preferences are either ALLOW/BLOCK.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -108,7 +108,7 @@ constexpr int GetMessageIdForTransportDescription(
       return IDS_WEBAUTHN_TRANSPORT_AOA;
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -134,7 +134,7 @@ constexpr int GetMessageIdForTransportShortDescription(
       return IDS_WEBAUTHN_TRANSPORT_POPUP_AOA;
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 }
@@ -160,7 +160,7 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
       return kUsbCableIcon;
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::kNoneIcon;
   }
 }
@@ -917,7 +917,7 @@ bool AuthenticatorRequestDialogController::
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return true;
@@ -973,7 +973,7 @@ bool AuthenticatorRequestDialogController::
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

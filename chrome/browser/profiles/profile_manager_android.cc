@@ -35,13 +35,13 @@ ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
     JNIEnv* env) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile) {
-    NOTREACHED() << "Profile not found.";
+    NOTREACHED_IN_MIGRATION() << "Profile not found.";
     return ScopedJavaLocalRef<jobject>();
   }
 
   ProfileAndroid* profile_android = ProfileAndroid::FromProfile(profile);
   if (!profile_android) {
-    NOTREACHED() << "ProfileAndroid not found.";
+    NOTREACHED_IN_MIGRATION() << "ProfileAndroid not found.";
     return ScopedJavaLocalRef<jobject>();
   }
 

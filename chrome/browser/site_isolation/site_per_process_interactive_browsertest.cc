@@ -1242,7 +1242,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
             browser(), ui::VKEY_ESCAPE, false, false, false, false));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     WaitForMultipleFullscreenEvents(expected_events, queue);
     waiter.Wait();

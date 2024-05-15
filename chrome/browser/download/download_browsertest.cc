@@ -3580,7 +3580,7 @@ IN_PROC_BROWSER_TEST_P(DownloadReferrerPolicyTest,
       EXPECT_TRUE(VerifyFile(file, origin.spec(), origin.spec().length()));
       break;
     default:
-      NOTREACHED() << "Unexpected policy.";
+      NOTREACHED_IN_MIGRATION() << "Unexpected policy.";
   }
 }
 

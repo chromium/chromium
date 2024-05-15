@@ -117,7 +117,7 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
           }
 #endif
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
         break;
       case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
@@ -134,7 +134,7 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -161,7 +161,7 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
                              IDS_MESSAGE_MISSING_XR_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return std::make_tuple(-1, -1, -1);

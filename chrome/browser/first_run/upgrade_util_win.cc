@@ -144,7 +144,7 @@ bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -257,7 +257,7 @@ bool DoUpgradeTasks(const base::CommandLine& command_line) {
   // At this point the chrome.exe has been swapped with the new one.
   if (!RelaunchChromeBrowser(command_line)) {
     // The relaunch failed. Feel free to panic now.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return true;
 }

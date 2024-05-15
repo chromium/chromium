@@ -136,7 +136,7 @@ std::u16string FailStateDescription(FailState fail_state) {
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_CONTENT_LENGTH_MISMATCH;
       break;
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     // fallthrough
     case FailState::CANNOT_DOWNLOAD:
@@ -289,7 +289,7 @@ std::u16string DownloadUIModel::StatusTextBuilderBase::GetStatusText(
     case DownloadItem::CANCELLED:
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
   }
 }
@@ -401,12 +401,12 @@ std::u16string DownloadUIModel::GetShowInFolderText() const {
 }
 
 ContentId DownloadUIModel::GetContentId() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ContentId();
 }
 
 Profile* DownloadUIModel::profile() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -538,7 +538,7 @@ base::FilePath DownloadUIModel::GetTargetFilePath() const {
 }
 
 void DownloadUIModel::OpenDownload() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 download::DownloadItem::DownloadState DownloadUIModel::GetState() const {
@@ -640,7 +640,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::EDIT_WITH_MEDIA_APP:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case DownloadCommands::CANCEL:
       return !IsDone();
@@ -668,7 +668,7 @@ bool DownloadUIModel::IsCommandEnabled(
     case DownloadCommands::OPEN_SAFE_BROWSING_SETTING:
       return CanUserTurnOnSafeBrowsing(profile());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -678,7 +678,7 @@ bool DownloadUIModel::IsCommandChecked(
   switch (command) {
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case DownloadCommands::PAUSE:
     case DownloadCommands::RESUME:
@@ -713,7 +713,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case DownloadCommands::PLATFORM_OPEN:
       OpenUsingPlatformHandler();
@@ -726,7 +726,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::KEEP:
     case DownloadCommands::LEARN_MORE_SCANNING:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
       download_commands->GetBrowser()->OpenURL(
@@ -782,7 +782,7 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       OpenUsingMediaApp();
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
       break;
   }
@@ -1312,7 +1312,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
       string_id = IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_WRONG;
       break;
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return l10n_util::GetStringUTF16(string_id);

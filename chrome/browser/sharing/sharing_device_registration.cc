@@ -246,7 +246,7 @@ void SharingDeviceRegistration::OnFCMTokenDeleted(RegistrationCallback callback,
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::optional<std::string> SharingDeviceRegistration::GetAuthorizationEntity()

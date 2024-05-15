@@ -370,7 +370,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_MAX:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE:
       // We shouldn't get any of these due to the MightBeMalicious() test above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
@@ -386,7 +386,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -424,10 +424,10 @@ bool DownloadItemModel::ShouldRemoveFromShelfWhenComplete() const {
       return false;
 
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -786,7 +786,7 @@ bool DownloadItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -920,7 +920,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
             download_, download_commands->GetBrowser());
 #else
       // Should only be getting invoked if we are using safe browsing.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
       break;
     }
@@ -1056,7 +1056,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
       break;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

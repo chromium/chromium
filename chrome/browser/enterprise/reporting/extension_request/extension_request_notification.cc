@@ -59,7 +59,7 @@ ExtensionRequestNotification::~ExtensionRequestNotification() = default;
 
 void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   if (extension_ids_.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

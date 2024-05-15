@@ -448,7 +448,7 @@ void PushMessagingBrowserTestBase::SubscribeSuccessfully(
           out_token));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -18,7 +18,7 @@ SpeechRecognitionTypeToApiType(SpeechRecognitionType type) {
           SpeechRecognitionType::kOnDevice;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace speech

@@ -260,7 +260,7 @@ cx_diag::ExceptionReason Convert(
     case crosapi::TelemetryExtensionException::Reason::kUnsupported:
       return cx_diag::ExceptionReason::kUnsupported;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 cx_diag::RoutineWaitingReason Convert(

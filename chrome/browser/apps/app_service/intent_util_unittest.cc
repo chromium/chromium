@@ -979,7 +979,7 @@ TEST_P(IntentUtilsFileSystemSchemeTest, ConvertFileSystemScheme) {
                      .Append(fusebox_subdir);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   auto app_service_intent = std::make_unique<apps::Intent>("action");

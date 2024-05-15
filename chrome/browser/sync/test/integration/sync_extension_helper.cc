@@ -76,7 +76,7 @@ std::string SyncExtensionHelper::InstallExtension(Profile* profile,
   base::ScopedAllowBlockingForTesting allow_blocking;
   scoped_refptr<Extension> extension = GetExtension(profile, name, type);
   if (!extension.get()) {
-    NOTREACHED() << "Could not install extension " << name;
+    NOTREACHED_IN_MIGRATION() << "Could not install extension " << name;
     return std::string();
   }
   extensions::ExtensionSystem::Get(profile)

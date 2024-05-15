@@ -151,7 +151,7 @@ std::optional<MirroringActivity::MirroringType> GetMirroringType(
   }
 
   if (!source.url().is_valid()) {
-    NOTREACHED() << "Invalid source: " << source;
+    NOTREACHED_IN_MIGRATION() << "Invalid source: " << source;
     return std::nullopt;
   }
 
@@ -162,14 +162,14 @@ std::optional<MirroringActivity::MirroringType> GetMirroringType(
       // StreamingApp. We should return Tab Mirroring here.
       return MirroringActivity::MirroringType::kTab;
     } else {
-      NOTREACHED() << "Non-mirroring Cast app: " << source;
+      NOTREACHED_IN_MIGRATION() << "Non-mirroring Cast app: " << source;
       return std::nullopt;
     }
   } else if (source.url().SchemeIsHTTPOrHTTPS()) {
     return MirroringActivity::MirroringType::kOffscreenTab;
   }
 
-  NOTREACHED() << "Invalid source: " << source;
+  NOTREACHED_IN_MIGRATION() << "Invalid source: " << source;
   return std::nullopt;
 }
 

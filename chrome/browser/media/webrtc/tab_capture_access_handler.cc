@@ -126,7 +126,7 @@ void TabCaptureAccessHandler::HandleRequest(
   extensions::TabCaptureRegistry* tab_capture_registry =
       extensions::TabCaptureRegistry::Get(profile);
   if (!tab_capture_registry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
         blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);

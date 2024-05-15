@@ -174,7 +174,7 @@ std::string ConvertOnDeviceModelEligibilityReasonToString(
         kModelAdaptationNotAvailable:
       return "Model adaptation was required but not available.";
     case optimization_guide::OnDeviceModelEligibilityReason::kSuccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "";
 }

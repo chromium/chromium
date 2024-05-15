@@ -87,7 +87,7 @@ HWND CreateUACForegroundWindow() {
       ::MoveWindow(foreground_window, screen_rect.left + x_offset,
                    screen_rect.top + y_offset, 0, 0, FALSE);
     } else {
-      NOTREACHED() << "Unable to get default monitor";
+      NOTREACHED_IN_MIGRATION() << "Unable to get default monitor";
     }
     ::SetForegroundWindow(foreground_window);
   }

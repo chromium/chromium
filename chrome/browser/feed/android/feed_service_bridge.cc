@@ -119,7 +119,7 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
     case static_cast<jint>(ContentOrder::kUnspecified):
       break;
   }
-  NOTREACHED() << "Invalid content order: " << content_order;
+  NOTREACHED_IN_MIGRATION() << "Invalid content order: " << content_order;
 }
 
 static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {

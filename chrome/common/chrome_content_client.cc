@@ -352,7 +352,7 @@ std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
   }
 #endif
 
-  NOTREACHED() << "Unknown child process type!";
+  NOTREACHED_IN_MIGRATION() << "Unknown child process type!";
   return "Unknown";
 }
 

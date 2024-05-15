@@ -57,7 +57,7 @@ NotificationOperation GetNotificationOperationFromAction(
           isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
     return NotificationOperation::kSettings;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NotificationOperation::kClick;
 }
 

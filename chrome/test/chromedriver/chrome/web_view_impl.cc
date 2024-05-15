@@ -206,7 +206,7 @@ const char* GetAsString(PointerType type) {
     case kPen:
       return "pen";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -457,7 +457,7 @@ std::unique_ptr<PageLoadStrategy> WebViewImpl::CreatePageLoadStrategy(
     return std::make_unique<NavigationTracker>(client_.get(), this,
                                                dialog_manager_.get(), true);
   } else {
-    NOTREACHED() << "invalid strategy '" << strategy << "'";
+    NOTREACHED_IN_MIGRATION() << "invalid strategy '" << strategy << "'";
     return nullptr;
   }
 }

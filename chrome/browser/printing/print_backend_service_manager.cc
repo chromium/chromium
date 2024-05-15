@@ -76,7 +76,7 @@ uint32_t NativeViewToUint(gfx::NativeView view) {
 #if BUILDFLAG(IS_WIN)
   return base::win::HandleToUint32(views::HWNDForNativeView(view));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 #endif
 }

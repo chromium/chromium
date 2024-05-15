@@ -285,7 +285,7 @@ DlpContentManagerLacros::GetScreenShareConfidentialContentsInfo(
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     return GetScreenShareConfidentialContentsInfoForWebContents(web_contents);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ConfidentialContentsInfo();
 }
 

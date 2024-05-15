@@ -154,7 +154,7 @@ ProfileSelection ProfileSelections::GetProfileSelection(
     return system_profile_selection_.value_or(ProfileSelection::kNone);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ProfileSelection::kNone;
 }
 

@@ -22,14 +22,14 @@ bool RegisterUninstallationViaOsSettingsWithOs(
     const webapps::AppId& app_id,
     const std::string& app_name,
     const base::FilePath& profile_path) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
 bool UnregisterUninstallationViaOsSettingsWithOs(
     const webapps::AppId& app_id,
     const base::FilePath& profile_path) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

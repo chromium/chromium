@@ -997,12 +997,12 @@ class MockReportingService : public net::ReportingService {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void QueueReport(
@@ -1014,14 +1014,14 @@ class MockReportingService : public net::ReportingService {
       const std::string& type,
       base::Value::Dict body,
       int depth) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ProcessReportToHeader(
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& header_value) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void RemoveBrowsingData(
@@ -1043,25 +1043,25 @@ class MockReportingService : public net::ReportingService {
 
   const net::ReportingPolicy& GetPolicy() const override {
     static net::ReportingPolicy dummy_policy_;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return dummy_policy_;
   }
 
   net::ReportingContext* GetContextForTesting() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
   GetReports() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::vector<
         raw_ptr<const net::ReportingReport, VectorExperimental>>();
   }
 
   base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>();
   }
 
@@ -1103,13 +1103,13 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
                 const url::Origin& origin,
                 const net::IPAddress& received_ip_address,
                 const std::string& value) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void OnRequest(RequestDetails details) override {}
 
   void QueueSignedExchangeReport(SignedExchangeReportDetails details) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void RemoveBrowsingData(

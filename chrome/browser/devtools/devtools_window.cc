@@ -1963,7 +1963,7 @@ void DevToolsWindow::DoAction(const DevToolsToggleAction& action) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

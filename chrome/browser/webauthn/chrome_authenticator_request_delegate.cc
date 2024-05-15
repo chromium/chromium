@@ -822,7 +822,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
   // AuthenticatorCommon can't evaluate attestation decisions with the UI
   // disabled.
   if (disable_ui_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(false);
     return;
   }

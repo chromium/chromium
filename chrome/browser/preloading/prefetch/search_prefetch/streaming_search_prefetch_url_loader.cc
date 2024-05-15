@@ -605,7 +605,7 @@ void StreamingSearchPrefetchURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // We only handle GETs.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -819,7 +819,7 @@ void StreamingSearchPrefetchURLLoader::FollowRedirect(
     return;
   }
   // This should never be called for a non-network service URLLoader.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void StreamingSearchPrefetchURLLoader::SetPriority(

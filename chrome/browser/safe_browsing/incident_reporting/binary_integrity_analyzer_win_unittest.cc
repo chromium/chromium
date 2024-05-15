@@ -66,7 +66,7 @@ BinaryIntegrityAnalyzerWinTest::BinaryIntegrityAnalyzerWinTest() {
   // We retrieve DIR_TEST_DATA here because it is based on DIR_EXE and we are
   // about to override the path to the latter.
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   exe_dir_override_ = std::make_unique<base::ScopedPathOverride>(
       base::DIR_EXE, temp_dir_.GetPath());

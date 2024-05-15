@@ -43,7 +43,7 @@ void AppInstallServiceLacros::InstallAppWithFallback(
       case AppInstallSurface::kAppPreloadServiceDefault:
       case AppInstallSurface::kOobeAppRecommendations:
         // These surfaces are triggered from Ash, not Lacros.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return Surface::kUnknown;
     }
   }();

@@ -241,7 +241,7 @@ void AppUninstall::FirstTaskRun() {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 scoped_refptr<App> MakeAppUninstall() {

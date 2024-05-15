@@ -134,7 +134,7 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeystoreSigningScheme::kUnknown;
 }
 

@@ -115,7 +115,7 @@ void OfflinePageURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OfflinePageURLLoader::SetPriority(net::RequestPriority priority,

@@ -306,7 +306,7 @@ void LocalFileSyncContext::ApplyRemoteChange(
                               std::move(callback));
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   std::move(callback).Run(SYNC_STATUS_FAILED);
 }
 
@@ -409,7 +409,7 @@ void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
           std::move(operation_callback));
       break;
     case SYNC_FILE_TYPE_UNKNOWN:
-      NOTREACHED() << "File type unknown for ADD_OR_UPDATE change";
+      NOTREACHED_IN_MIGRATION() << "File type unknown for ADD_OR_UPDATE change";
   }
 }
 

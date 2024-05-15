@@ -204,7 +204,7 @@ uint64_t GetRemoveMask(const base::Value::List& data_types) {
         result |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         break;
       case browsing_data::PolicyDataType::kNumTypes:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

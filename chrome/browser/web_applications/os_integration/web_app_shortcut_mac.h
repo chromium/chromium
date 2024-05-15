@@ -117,7 +117,7 @@ inline bool RecreateShimsRequested(LaunchShimUpdateBehavior update_behavior) {
     case LaunchShimUpdateBehavior::kRecreateUnconditionally:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 enum class ShimLaunchMode {

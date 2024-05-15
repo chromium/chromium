@@ -74,9 +74,9 @@ SyncServiceState RemoteStateToSyncServiceState(
     case REMOTE_SERVICE_DISABLED:
       return SYNC_SERVICE_DISABLED;
     case REMOTE_SERVICE_STATE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED() << "Unknown remote service state: " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown remote service state: " << state;
   return SYNC_SERVICE_DISABLED;
 }
 
