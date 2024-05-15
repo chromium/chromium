@@ -143485,6 +143485,19 @@
       ]
      },
      "text-box-trim": {
+      "text-box-trim-float-start-001.html": [
+       "99e4736baf09257d4f14577598f4f8d531c7c681",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-float-start-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-half-leading-block-box-001.html": [
        "2bfdc4e31b55c237a21068fb8bf931b6e2f91fd4",
        [
@@ -143505,6 +143518,19 @@
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-ruby-start-001.html": [
+       "257601236962ecc6eb5ec3a64e0a059a6626674c",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-ruby-start-001-ref.html",
           "=="
          ]
         ],
@@ -324089,12 +324115,20 @@
         []
        ]
       },
+      "text-box-trim-float-start-001-ref.html": [
+       "1b1941c96f15a76a8a6d38b17ac31e4e60fa94dc",
+       []
+      ],
       "text-box-trim-half-leading-block-box-001-ref.html": [
        "2dfe344ce35f59888337a34f1ae864925f9a35e4",
        []
       ],
       "text-box-trim-half-leading-block-box-002-ref.html": [
        "8c10a8037064a09d8a0c04357315ad8498e3a31d",
+       []
+      ],
+      "text-box-trim-ruby-start-001-ref.html": [
+       "390dbc73c6a1c8b7d46ea06a0a179315ebc1f9d9",
        []
       ],
       "text-box-trim-start-001-ref.html": [
@@ -359068,7 +359102,7 @@
          []
         ],
         "executor-window.js": [
-         "54df6735c9eeb0f1128b898615c129a8da705d7f",
+         "fd74711029e65af71b729575562a504716ae741f",
          []
         ],
         "executor-window.py": [
@@ -359080,7 +359114,7 @@
          []
         ],
         "remote-context-helper.js": [
-         "aa24b36e8ba11bb07885a28090087e64300d876e",
+         "6c66050072c5c3e464982e9253bde51f5c4bea01",
          []
         ]
        }
@@ -399758,12 +399792,6 @@
      ],
      "utils_validation.js": [
       "5c4eb087617916c1d337b2ca8bc2b8453025e857",
-      []
-     ]
-    },
-    "validation_tests": {
-     "elementwise-logical.https.any copy.js": [
-      "86183b074ae0fe832a9f9837791a8f28799e3212",
       []
      ]
     }
@@ -461684,6 +461712,13 @@
       ],
       "highlight-currentcolor-computed.html": [
        "97c31809dfc76cd3fdbd051e66fd7ec162f3708e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-pseudos-computed-001.tentative.html": [
+       "752af0b29f33652abd6e11601beccd8f25516725",
        [
         null,
         {}
@@ -539639,6 +539674,40 @@
        ]
       },
       "remote-context-helper-tests": {
+       "addFrame.window.js": [
+        "4c3c2eebe171685c44796842fe70efb0aa9df8b9",
+        [
+         "html/browsers/browsing-the-web/remote-context-helper-tests/addFrame.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "RemoteContextWrapper addFrame"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/test-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "addHTML.window.js": [
         "0c093cc462572f985a5b080e67d4f8232c9aef9d",
         [
@@ -682096,6 +682165,47 @@
          [
           "title",
           "validation tests for WebNN API element-wise binary operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "elementwise-logical.https.any.js": [
+      "86183b074ae0fe832a9f9837791a8f28799e3212",
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
          ],
          [
           "global",
