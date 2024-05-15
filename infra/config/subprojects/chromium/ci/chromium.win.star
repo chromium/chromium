@@ -438,6 +438,7 @@ ci.builder(
         short_name = "a64",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
