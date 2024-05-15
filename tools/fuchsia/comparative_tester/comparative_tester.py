@@ -259,7 +259,7 @@ def RunGnForDirectory(dir_name: str, target_os: str, is_debug: bool) -> None:
     args_file.write("is_debug = {}\n".format(debug_str))
     args_file.write("dcheck_always_on = false\n")
     args_file.write("is_component_build = false\n")
-    args_file.write("use_goma = true\n")
+    args_file.write("use_remoteexec = true\n")
     args_file.write("target_os = \"{}\"\n".format(target_os))
 
   subprocess.run(["gn", "gen", dir_name]).check_returncode()
@@ -305,7 +305,7 @@ def GenerateTestData(do_config: bool, do_build: bool, num_reps: int,
     print("Ran GN")
   elif is_debug:
     logging.warning("The --is_debug flag is ignored unless --do_config is also \
-                     specified"                               )
+                     specified")
 
   if do_build:
     # Build test targets in both output directories.
