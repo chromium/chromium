@@ -94,27 +94,25 @@ void SetDeviceDlcPredownloadListPolicy(
         IDS_POLICY_PROTO_PARSING_ERROR, {base::UTF8ToUTF16(warning)});
   }
 }
-
-// Returns true and sets |level| to a PolicyLevel if the policy has been set
-// at that level. Returns false if the policy has been set at the level of
-// PolicyOptions::UNSET.
-bool GetPolicyLevel(bool has_policy_options,
-                    const em::PolicyOptions& policy_option_proto,
-                    PolicyLevel* level) {
+// Returns a `PolicyLevel` if the policy has been set at that level. If the
+// policy has been set at the level of `PolicyOptions::UNSET` returns
+// `std::nullopt` instead.
+std::optional<PolicyLevel> GetPolicyLevel(
+    bool has_policy_options,
+    const em::PolicyOptions& policy_option_proto) {
   if (!has_policy_options) {
-    *level = POLICY_LEVEL_MANDATORY;
-    return true;
+    return POLICY_LEVEL_MANDATORY;
   }
   switch (policy_option_proto.mode()) {
     case em::PolicyOptions::MANDATORY:
-      *level = POLICY_LEVEL_MANDATORY;
-      return true;
+      return POLICY_LEVEL_MANDATORY;
     case em::PolicyOptions::RECOMMENDED:
-      *level = POLICY_LEVEL_RECOMMENDED;
-      return true;
+      return POLICY_LEVEL_RECOMMENDED;
     case em::PolicyOptions::UNSET:
-      return false;
+      return std::nullopt;
   }
+  NOTREACHED();
+  return std::nullopt;
 }
 
 void SetJsonDevicePolicy(const std::string& policy_name,
@@ -206,12 +204,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::BooleanPolicyProto& container(
         policy.login_screen_primary_mouse_button_switch());
     if (container.has_value()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_policy_options(),
-                         container.policy_options(), &level)) {
-        policies->Set(key::kDeviceLoginScreenPrimaryMouseButtonSwitch, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.value()), nullptr);
+      auto policy_level = GetPolicyLevel(container.has_policy_options(),
+                                         container.policy_options());
+      if (policy_level) {
+        policies->Set(key::kDeviceLoginScreenPrimaryMouseButtonSwitch,
+                      policy_level.value(), POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                      nullptr);
       }
     }
   }
@@ -431,12 +430,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::BooleanPolicyProto& container(
         policy.device_login_screen_system_info_enforced());
     if (container.has_value()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_policy_options(),
-                         container.policy_options(), &level)) {
-        policies->Set(key::kDeviceLoginScreenSystemInfoEnforced, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.value()), nullptr);
+      auto policy_level = GetPolicyLevel(container.has_policy_options(),
+                                         container.policy_options());
+      if (policy_level) {
+        policies->Set(key::kDeviceLoginScreenSystemInfoEnforced,
+                      policy_level.value(), POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                      nullptr);
       }
     }
   }
@@ -445,12 +445,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::BooleanPolicyProto& container(
         policy.device_show_numeric_keyboard_for_password());
     if (container.has_value()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_policy_options(),
-                         container.policy_options(), &level)) {
-        policies->Set(key::kDeviceShowNumericKeyboardForPassword, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.value()), nullptr);
+      auto policy_level = GetPolicyLevel(container.has_policy_options(),
+                                         container.policy_options());
+      if (policy_level) {
+        policies->Set(key::kDeviceShowNumericKeyboardForPassword,
+                      policy_level.value(), POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                      nullptr);
       }
     }
   }
@@ -479,9 +480,9 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::StringListPolicyProto& container(
         policy.device_web_based_attestation_allowed_urls());
 
-    PolicyLevel level;
-    if (GetPolicyLevel(container.has_policy_options(),
-                       container.policy_options(), &level)) {
+    auto policy_level = GetPolicyLevel(container.has_policy_options(),
+                                       container.policy_options());
+    if (policy_level) {
       base::Value::List urls;
 
       if (container.has_value()) {
@@ -490,9 +491,9 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         }
       }
 
-      policies->Set(key::kDeviceWebBasedAttestationAllowedUrls, level,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(std::move(urls)), nullptr);
+      policies->Set(key::kDeviceWebBasedAttestationAllowedUrls,
+                    policy_level.value(), POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(std::move(urls)), nullptr);
     }
   }
 
@@ -1275,12 +1276,12 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_large_cursor_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_large_cursor_enabled_options(),
-              container.login_screen_large_cursor_enabled_options(), &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_large_cursor_enabled_options(),
+          container.login_screen_large_cursor_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenLargeCursorEnabled, level,
+            key::kDeviceLoginScreenLargeCursorEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_large_cursor_enabled()),
             nullptr);
@@ -1288,16 +1289,15 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_show_options_in_system_tray_menu_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container
-                  .has_login_screen_show_options_in_system_tray_menu_enabled_options(),
-              container
-                  .login_screen_show_options_in_system_tray_menu_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container
+              .has_login_screen_show_options_in_system_tray_menu_enabled_options(),
+          container
+              .login_screen_show_options_in_system_tray_menu_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenShowOptionsInSystemTrayMenu, level,
-            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            key::kDeviceLoginScreenShowOptionsInSystemTrayMenu,
+            policy_level.value(), POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(
                 container
                     .login_screen_show_options_in_system_tray_menu_enabled()),
@@ -1314,13 +1314,12 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_spoken_feedback_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_spoken_feedback_enabled_options(),
-              container.login_screen_spoken_feedback_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_spoken_feedback_enabled_options(),
+          container.login_screen_spoken_feedback_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenSpokenFeedbackEnabled, level,
+            key::kDeviceLoginScreenSpokenFeedbackEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_spoken_feedback_enabled()),
             nullptr);
@@ -1336,12 +1335,12 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_high_contrast_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_high_contrast_enabled_options(),
-              container.login_screen_high_contrast_enabled_options(), &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_high_contrast_enabled_options(),
+          container.login_screen_high_contrast_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenHighContrastEnabled, level,
+            key::kDeviceLoginScreenHighContrastEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_high_contrast_enabled()),
             nullptr);
@@ -1349,14 +1348,14 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_shortcuts_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_login_screen_shortcuts_enabled_options(),
-                         container.login_screen_shortcuts_enabled_options(),
-                         &level)) {
-        policies->Set(key::kDeviceLoginScreenAccessibilityShortcutsEnabled,
-                      level, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.login_screen_shortcuts_enabled()),
-                      nullptr);
+      auto policy_level =
+          GetPolicyLevel(container.has_login_screen_shortcuts_enabled_options(),
+                         container.login_screen_shortcuts_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenAccessibilityShortcutsEnabled,
+            policy_level.value(), POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_shortcuts_enabled()), nullptr);
       }
     }
 
@@ -1380,13 +1379,12 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_virtual_keyboard_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_virtual_keyboard_enabled_options(),
-              container.login_screen_virtual_keyboard_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_virtual_keyboard_enabled_options(),
+          container.login_screen_virtual_keyboard_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenVirtualKeyboardEnabled, level,
+            key::kDeviceLoginScreenVirtualKeyboardEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_virtual_keyboard_enabled()),
             nullptr);
@@ -1394,115 +1392,110 @@ void DecodeAccessibilityPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
 
     if (container.has_login_screen_dictation_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_login_screen_dictation_enabled_options(),
-                         container.login_screen_dictation_enabled_options(),
-                         &level)) {
-        policies->Set(key::kDeviceLoginScreenDictationEnabled, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.login_screen_dictation_enabled()),
-                      nullptr);
+      auto policy_level =
+          GetPolicyLevel(container.has_login_screen_dictation_enabled_options(),
+                         container.login_screen_dictation_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenDictationEnabled, policy_level.value(),
+            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_dictation_enabled()), nullptr);
       }
     }
     if (container.has_login_screen_select_to_speak_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_select_to_speak_enabled_options(),
-              container.login_screen_select_to_speak_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_select_to_speak_enabled_options(),
+          container.login_screen_select_to_speak_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenSelectToSpeakEnabled, level,
+            key::kDeviceLoginScreenSelectToSpeakEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_select_to_speak_enabled()),
             nullptr);
       }
     }
     if (container.has_login_screen_cursor_highlight_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_cursor_highlight_enabled_options(),
-              container.login_screen_cursor_highlight_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_cursor_highlight_enabled_options(),
+          container.login_screen_cursor_highlight_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenCursorHighlightEnabled, level,
+            key::kDeviceLoginScreenCursorHighlightEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_cursor_highlight_enabled()),
             nullptr);
       }
     }
     if (container.has_login_screen_caret_highlight_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_caret_highlight_enabled_options(),
-              container.login_screen_caret_highlight_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_caret_highlight_enabled_options(),
+          container.login_screen_caret_highlight_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenCaretHighlightEnabled, level,
+            key::kDeviceLoginScreenCaretHighlightEnabled, policy_level.value(),
             POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(container.login_screen_caret_highlight_enabled()),
             nullptr);
       }
     }
     if (container.has_login_screen_mono_audio_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_mono_audio_enabled_options(),
-              container.login_screen_mono_audio_enabled_options(), &level)) {
-        policies->Set(key::kDeviceLoginScreenMonoAudioEnabled, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.login_screen_mono_audio_enabled()),
-                      nullptr);
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_mono_audio_enabled_options(),
+          container.login_screen_mono_audio_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenMonoAudioEnabled, policy_level.value(),
+            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_mono_audio_enabled()), nullptr);
       }
     }
     if (container.has_login_screen_autoclick_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(container.has_login_screen_autoclick_enabled_options(),
-                         container.login_screen_autoclick_enabled_options(),
-                         &level)) {
-        policies->Set(key::kDeviceLoginScreenAutoclickEnabled, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.login_screen_autoclick_enabled()),
-                      nullptr);
+      auto policy_level =
+          GetPolicyLevel(container.has_login_screen_autoclick_enabled_options(),
+                         container.login_screen_autoclick_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenAutoclickEnabled, policy_level.value(),
+            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_autoclick_enabled()), nullptr);
       }
     }
 
     if (container.has_login_screen_sticky_keys_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_sticky_keys_enabled_options(),
-              container.login_screen_sticky_keys_enabled_options(), &level)) {
-        policies->Set(key::kDeviceLoginScreenStickyKeysEnabled, level,
-                      POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                      base::Value(container.login_screen_sticky_keys_enabled()),
-                      nullptr);
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_sticky_keys_enabled_options(),
+          container.login_screen_sticky_keys_enabled_options());
+      if (policy_level) {
+        policies->Set(
+            key::kDeviceLoginScreenStickyKeysEnabled, policy_level.value(),
+            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            base::Value(container.login_screen_sticky_keys_enabled()), nullptr);
       }
     }
 
     if (container.has_login_screen_screen_magnifier_type()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container.has_login_screen_screen_magnifier_type_options(),
-              container.login_screen_screen_magnifier_type_options(), &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_screen_magnifier_type_options(),
+          container.login_screen_screen_magnifier_type_options());
+      if (policy_level) {
         std::unique_ptr<base::Value> value(
             DecodeIntegerValue(container.login_screen_screen_magnifier_type()));
         if (value) {
-          policies->Set(key::kDeviceLoginScreenScreenMagnifierType, level,
-                        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                        std::move(*value), nullptr);
+          policies->Set(key::kDeviceLoginScreenScreenMagnifierType,
+                        policy_level.value(), POLICY_SCOPE_MACHINE,
+                        POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
         }
       }
     }
 
     if (container.has_login_screen_keyboard_focus_highlight_enabled()) {
-      PolicyLevel level;
-      if (GetPolicyLevel(
-              container
-                  .has_login_screen_keyboard_focus_highlight_enabled_options(),
-              container.login_screen_keyboard_focus_highlight_enabled_options(),
-              &level)) {
+      auto policy_level = GetPolicyLevel(
+          container.has_login_screen_keyboard_focus_highlight_enabled_options(),
+          container.login_screen_keyboard_focus_highlight_enabled_options());
+      if (policy_level) {
         policies->Set(
-            key::kDeviceLoginScreenKeyboardFocusHighlightEnabled, level,
-            POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            key::kDeviceLoginScreenKeyboardFocusHighlightEnabled,
+            policy_level.value(), POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
             base::Value(
                 container.login_screen_keyboard_focus_highlight_enabled()),
             nullptr);
