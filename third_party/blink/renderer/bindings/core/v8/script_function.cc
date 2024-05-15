@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
@@ -89,7 +89,7 @@ void ScriptFunction::Callable::CallRaw(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   ScriptValue result =
       Call(script_state, ScriptValue(script_state->GetIsolate(), args[0]));
-  V8SetReturnValue(args, result.V8Value());
+  bindings::V8SetReturnValue(args, result);
 }
 
 ScriptFunction::ScriptFunction(ScriptState* script_state, Callable* callable)

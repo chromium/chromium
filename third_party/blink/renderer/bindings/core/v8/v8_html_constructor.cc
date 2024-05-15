@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -154,7 +155,7 @@ void V8HTMLConstructor::HtmlConstructor(
       isolate, element, wrapper_type, info.This());
   // If the element had a wrapper, we now update and return that
   // instead.
-  V8SetReturnValue(info, wrapper);
+  bindings::V8SetReturnValue(info, wrapper);
 
   // 11. Perform element.[[SetPrototypeOf]](prototype). Rethrow any exceptions.
   // Note that SetPrototype doesn't actually return the exceptions, it just

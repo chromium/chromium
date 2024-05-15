@@ -4,13 +4,13 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_page_popup_controller_binding.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -24,12 +24,12 @@ void PagePopupControllerAttributeGetter(
       To<LocalDOMWindow>(V8Window::ToWrappableUnsafe(info.GetIsolate(), holder))
           ->GetFrame();
   if (!frame) {
-    V8SetReturnValue(info, v8::Null(info.GetIsolate()));
+    bindings::V8SetReturnValue(info, nullptr);
     return;
   }
-  V8SetReturnValue(info, ToV8Traits<PagePopupController>::ToV8(
-                             ScriptState::ForCurrentRealm(info.GetIsolate()),
-                             PagePopupController::From(*frame->GetPage())));
+  bindings::V8SetReturnValue(
+      info, PagePopupController::From(*frame->GetPage())
+                ->ToV8(ScriptState::ForCurrentRealm(info.GetIsolate())));
 }
 
 void PagePopupControllerAttributeGetterCallback(

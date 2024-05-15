@@ -3,12 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
-#include "third_party/blink/renderer/core/dom/attr.h"
-#include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_list.h"
-#include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 
 #include <memory>
 
@@ -33,9 +27,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -49,6 +48,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -897,7 +897,8 @@ void ThreadDebuggerCommonImpl::GetAccessibleNameCallback(
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {
-    V8SetReturnValueString(info, element->computedName(), isolate);
+    bindings::V8SetReturnValue(info, element->computedName(), isolate,
+                               bindings::V8ReturnValue::kNonNullable);
   }
 }
 
@@ -914,7 +915,8 @@ void ThreadDebuggerCommonImpl::GetAccessibleRoleCallback(
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {
-    V8SetReturnValueString(info, element->computedRole(), isolate);
+    bindings::V8SetReturnValue(info, element->computedRole(), isolate,
+                               bindings::V8ReturnValue::kNonNullable);
   }
 }
 

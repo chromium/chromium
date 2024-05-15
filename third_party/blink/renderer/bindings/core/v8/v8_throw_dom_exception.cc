@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -30,8 +31,9 @@ void DomExceptionStackGetter(v8::Local<v8::Name> name,
   if (info.Data()
           .As<v8::Object>()
           ->Get(isolate->GetCurrentContext(), V8AtomicString(isolate, "stack"))
-          .ToLocal(&value))
-    V8SetReturnValue(info, value);
+          .ToLocal(&value)) {
+    bindings::V8SetReturnValue(info, value);
+  }
 }
 
 void DomExceptionStackSetter(v8::Local<v8::Name> name,

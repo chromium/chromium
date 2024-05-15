@@ -519,12 +519,13 @@ void MainThreadDebugger::XpathSelectorCallback(
   ScriptState* script_state =
       ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   if (result->resultType() == XPathResult::kNumberType) {
-    V8SetReturnValue(info, result->numberValue(exception_state));
+    bindings::V8SetReturnValue(info, result->numberValue(exception_state));
   } else if (result->resultType() == XPathResult::kStringType) {
-    V8SetReturnValue(info, result->stringValue(exception_state),
-                     info.GetIsolate(), bindings::V8ReturnValue::kNonNullable);
+    bindings::V8SetReturnValue(info, result->stringValue(exception_state),
+                               info.GetIsolate(),
+                               bindings::V8ReturnValue::kNonNullable);
   } else if (result->resultType() == XPathResult::kBooleanType) {
-    V8SetReturnValue(info, result->booleanValue(exception_state));
+    bindings::V8SetReturnValue(info, result->booleanValue(exception_state));
   } else {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> context = isolate->GetCurrentContext();

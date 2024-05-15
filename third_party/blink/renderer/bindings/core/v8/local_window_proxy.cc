@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -524,7 +525,7 @@ void Getter(v8::Local<v8::Name> property,
           .ToLocal(&prototypeChainValue);
 
   if (hasNamedProperty) {
-    V8SetReturnValue(info, namedPropertyValue);
+    bindings::V8SetReturnValue(info, namedPropertyValue);
     UseCounter::Count(
         html_document,
         hasPropertyInPrototypeChain
@@ -534,7 +535,7 @@ void Getter(v8::Local<v8::Name> property,
     return;
   }
   if (hasPropertyInPrototypeChain) {
-    V8SetReturnValue(info, prototypeChainValue);
+    bindings::V8SetReturnValue(info, prototypeChainValue);
   }
 }
 
