@@ -807,6 +807,9 @@
       <message name="IDS_TAB_GROUPS_EMPTY_STATE_DESCRIPTION" desc="The detailed description of the purpose of the tab groups surface. Shown when the user does not currently have any tab groups.">
         Tab groups automatically save and update across all your devices
       </message>
+      <message name="IDS_TAB_GROUPS_EMPTY_STATE_DESCRIPTION_NO_SYNC" desc="The detailed description of the purpose of the tab groups surface. Shown when the user does not currently have any tab groups and is not syncing.">
+        Create groups to organize your tabs.
+      </message>
       <message name="IDS_TAB_GROUP_SURFACE_IPH_WITH_SYNC" desc="IPH text to hint the user to opening the dedicated tab groups UI surface when syncing tab groups is enabled.">
         Your tab groups are saved here and get updated across all your signed-in devices
       </message>

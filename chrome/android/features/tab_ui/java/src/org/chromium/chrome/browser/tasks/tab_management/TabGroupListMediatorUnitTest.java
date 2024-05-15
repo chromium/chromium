@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -59,6 +61,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -72,6 +76,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupListMediator}. */
@@ -100,6 +105,7 @@ public class TabGroupListMediatorUnitTest {
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private SyncService mSyncService;
     @Mock private Callback<Drawable> mFaviconCallback1;
     @Mock private Callback<Drawable> mFaviconCallback2;
     @Mock private Callback<Drawable> mFaviconCallback3;
@@ -107,13 +113,18 @@ public class TabGroupListMediatorUnitTest {
     @Mock private Tab mTab;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserver;
-    @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mSyncObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupSyncService.Observer> mTabGroupSyncObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCallbackCaptor;
 
+    @Captor
+    private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+
+    private PropertyModel mPropertyModel;
     private ModelList mModelList;
 
     @Before
     public void setUp() {
+        mPropertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
         mModelList = new ModelList();
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(true);
@@ -124,12 +135,14 @@ public class TabGroupListMediatorUnitTest {
     private TabGroupListMediator createMediator() {
         return new TabGroupListMediator(
                 mModelList,
+                mPropertyModel,
                 mTabGroupModelFilter,
                 mFaviconResolver,
                 mTabGroupSyncService,
                 mPaneManager,
                 mTabGroupUiActionHandler,
-                mActionConfirmationManager);
+                mActionConfirmationManager,
+                mSyncService);
     }
 
     @Test
@@ -210,8 +223,10 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(1, mModelList.size());
 
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        verify(mTabGroupSyncService).addObserver(mSyncObserverCaptor.capture());
-        mSyncObserverCaptor.getValue().onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
+        verify(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
+        mTabGroupSyncObserverCaptor
+                .getValue()
+                .onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
         ShadowLooper.idleMainLooper();
 
         assertEquals(0, mModelList.size());
@@ -219,7 +234,7 @@ public class TabGroupListMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testTabModelObservervation() {
+    public void testTabModelObservation() {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = SYNC_GROUP_ID1;
         group.title = "Title";
@@ -700,5 +715,58 @@ public class TabGroupListMediatorUnitTest {
                 .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
         verify(mTabModel).commitTabClosure(ROOT_ID1);
         verify(mTabGroupSyncService).removeGroup(SYNC_GROUP_ID1);
+    }
+
+    @Test
+    @SmallTest
+    public void testEmptyStateEnabled() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        createMediator();
+        assertTrue(mPropertyModel.get(TabGroupListProperties.EMPTY_STATE_VISIBLE));
+
+        SavedTabGroup group = new SavedTabGroup();
+        group.syncId = SYNC_GROUP_ID1;
+        group.title = "Title";
+        group.color = TabGroupColorId.BLUE;
+        group.savedTabs = Arrays.asList(new SavedTabGroupTab());
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group);
+        verify(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
+        mTabGroupSyncObserverCaptor
+                .getValue()
+                .onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
+        ShadowLooper.idleMainLooper();
+        assertFalse(mPropertyModel.get(TabGroupListProperties.EMPTY_STATE_VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncEnabled() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        createMediator();
+        assertFalse(mPropertyModel.get(TabGroupListProperties.SYNC_ENABLED));
+
+        when(mSyncService.getActiveDataTypes())
+                .thenReturn(Collections.singleton(ModelType.SAVED_TAB_GROUP));
+        verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
+        mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
+        assertTrue(mPropertyModel.get(TabGroupListProperties.SYNC_ENABLED));
+    }
+
+    @Test
+    @SmallTest
+    public void testDestroy() {
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        createMediator().destroy();
+
+        verify(mTabGroupModelFilter).removeObserver(any());
+        verify(mTabGroupSyncService).removeObserver(any());
+        verify(mSyncService).removeSyncStateChangedListener(any());
+
+        verify(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
+        reset(mTabGroupSyncService);
+        mTabGroupSyncObserverCaptor.getValue().onTabGroupAdded(null, 0);
+        ShadowLooper.idleMainLooper();
+        verify(mTabGroupSyncService, never()).getAllGroupIds();
     }
 }

@@ -19,4 +19,5 @@ found in the LICENSE file.
     <color name="empty_state_icon_bg_background_color">@color/material_primary_10</color>
     <color name="empty_state_icon_bg_foreground_color">@color/material_primary_20</color>
     <color name="empty_state_icon_tabswitcher_bg_color">@macro/default_bg_color_elev_0</color>
+    <color name="empty_state_tab_group_border_color">@color/material_primary_80</color>
 </resources>

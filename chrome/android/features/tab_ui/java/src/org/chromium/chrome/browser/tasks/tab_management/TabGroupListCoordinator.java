@@ -8,18 +8,18 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -27,12 +27,15 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 
@@ -48,7 +51,8 @@ public class TabGroupListCoordinator {
         int TAB_GROUP = 0;
     }
 
-    private final RecyclerView mRecyclerView;
+    private final TabGroupListView mView;
+
     private final SimpleRecyclerViewAdapter mSimpleRecyclerViewAdapter;
     private TabGroupListMediator mTabGroupListMediator;
 
@@ -68,6 +72,7 @@ public class TabGroupListCoordinator {
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ModalDialogManager modalDialogManager) {
         ModelList modelList = new ModelList();
+        PropertyModel propertyModel = new PropertyModel(TabGroupListProperties.ALL_KEYS);
 
         ViewBuilder<TabGroupRowView> layoutBuilder =
                 new LayoutViewBuilder<>(R.layout.tab_group_row);
@@ -75,26 +80,30 @@ public class TabGroupListCoordinator {
         mSimpleRecyclerViewAdapter.registerType(
                 RowType.TAB_GROUP, layoutBuilder, new TabGroupRowViewBinder());
 
-        mRecyclerView = new RecyclerView(context);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        mRecyclerView.setAdapter(mSimpleRecyclerViewAdapter);
-        mRecyclerView.setItemAnimator(null);
+        mView =
+                (TabGroupListView)
+                        LayoutInflater.from(context).inflate(R.layout.tab_group_list, null);
+        PropertyModelChangeProcessor.create(propertyModel, mView, TabGroupListViewBinder::bind);
+        mView.setRecyclerViewAdapter(mSimpleRecyclerViewAdapter);
 
         Profile profile = profileProvider.getOriginalProfile();
         BiConsumer<GURL, Callback<Drawable>> faviconResolver =
                 buildFaviconResolver(context, profile);
-        TabGroupSyncService syncService = TabGroupSyncServiceFactory.getForProfile(profile);
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(profile, context, filter, modalDialogManager);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         mTabGroupListMediator =
                 new TabGroupListMediator(
                         modelList,
+                        propertyModel,
                         filter,
                         faviconResolver,
-                        syncService,
+                        tabGroupSyncService,
                         paneManager,
                         tabGroupUiActionHandler,
-                        actionConfirmationManager);
+                        actionConfirmationManager,
+                        syncService);
     }
 
     @VisibleForTesting
@@ -140,7 +149,7 @@ public class TabGroupListCoordinator {
 
     /** Returns the root view of this component, allowing the parent to anchor in the hierarchy. */
     public View getView() {
-        return mRecyclerView;
+        return mView;
     }
 
     /** Permanently cleans up this component. */

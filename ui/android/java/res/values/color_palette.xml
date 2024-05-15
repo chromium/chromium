@@ -15,6 +15,7 @@ found in the LICENSE file.
     <color name="baseline_primary_80_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
     <color name="baseline_primary_80_alpha_20">#33A8C7FA</color>
     <color name="baseline_primary_80_alpha_50">#80A8C7FA</color>
+    <color name="baseline_primary_60">#4C8DF6</color>
     <color name="baseline_primary_40">#0B57D0</color>
     <color name="baseline_primary_40_alpha_6">#0F0B57D0</color>
     <color name="baseline_primary_40_alpha_10">#190B57D0</color>
@@ -137,6 +138,7 @@ found in the LICENSE file.
     <color name="material_primary_95">@color/baseline_primary_95</color>
     <color name="material_primary_90">@color/baseline_primary_90</color>
     <color name="material_primary_80">@color/baseline_primary_80</color>
+    <color name="material_primary_60">@color/baseline_primary_60</color>
     <color name="material_primary_40">@color/baseline_primary_40</color>
     <color name="material_primary_20">@color/baseline_primary_20</color>
     <color name="material_primary_10">@color/baseline_primary_10</color>

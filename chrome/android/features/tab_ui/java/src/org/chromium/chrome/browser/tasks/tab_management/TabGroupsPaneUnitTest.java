@@ -27,11 +27,13 @@ import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -52,6 +54,7 @@ public class TabGroupsPaneUnitTest {
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock SyncService mSyncService;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -60,6 +63,7 @@ public class TabGroupsPaneUnitTest {
 
     @Before
     public void setUp() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
         ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);

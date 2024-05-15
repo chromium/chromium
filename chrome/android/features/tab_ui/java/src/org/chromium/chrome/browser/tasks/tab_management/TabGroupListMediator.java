@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -82,12 +84,14 @@ public class TabGroupListMediator {
     };
 
     private final ModelList mModelList;
+    private final PropertyModel mPropertyModel;
     private final TabGroupModelFilter mFilter;
     private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
-    private final TabGroupSyncService mSyncService;
+    private final TabGroupSyncService mTabGroupSyncService;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final SyncService mSyncService;
     private final CallbackController mCallbackController = new CallbackController();
     private final PendingRunnable mPendingRefresh =
             new PendingRunnable(
@@ -108,7 +112,7 @@ public class TabGroupListMediator {
                 }
             };
 
-    private final TabGroupSyncService.Observer mSyncObserver =
+    private final TabGroupSyncService.Observer mTabGroupSyncObserver =
             new Observer() {
                 @Override
                 public void onInitialized() {
@@ -136,40 +140,60 @@ public class TabGroupListMediator {
                 }
             };
 
+    private final SyncService.SyncStateChangedListener mSyncStateChangeListener =
+            new SyncService.SyncStateChangedListener() {
+                @Override
+                public void syncStateChanged() {
+                    boolean enabled =
+                            mSyncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+                    mPropertyModel.set(TabGroupListProperties.SYNC_ENABLED, enabled);
+                }
+            };
+
     /**
      * @param modelList Side effect is adding items to this list.
+     * @param propertyModel Properties for the empty state.
      * @param filter Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
-     * @param syncService Used to fetch synced copy of tab groups.
+     * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param paneManager Used switch panes to show details of a group.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
      * @param actionConfirmationManager Used to show confirmation dialogs.
+     * @param syncService Used to query active sync types.
      */
     public TabGroupListMediator(
             ModelList modelList,
+            PropertyModel propertyModel,
             TabGroupModelFilter filter,
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
-            TabGroupSyncService syncService,
+            TabGroupSyncService tabGroupSyncService,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
-            ActionConfirmationManager actionConfirmationManager) {
+            ActionConfirmationManager actionConfirmationManager,
+            SyncService syncService) {
         mModelList = modelList;
+        mPropertyModel = propertyModel;
         mFilter = filter;
         mFaviconResolver = faviconResolver;
-        mSyncService = syncService;
+        mTabGroupSyncService = tabGroupSyncService;
         mPaneManager = paneManager;
         mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mActionConfirmationManager = actionConfirmationManager;
+        mSyncService = syncService;
 
         mFilter.addObserver(mTabModelObserver);
-        mSyncService.addObserver(mSyncObserver);
+        mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
+        mSyncService.addSyncStateChangedListener(mSyncStateChangeListener);
+
         repopulateModelList();
+        mSyncStateChangeListener.syncStateChanged();
     }
 
     /** Clean up observers used by this class. */
     public void destroy() {
         mFilter.removeObserver(mTabModelObserver);
-        mSyncService.removeObserver(mSyncObserver);
+        mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
+        mSyncService.removeSyncStateChangedListener(mSyncStateChangeListener);
         mCallbackController.destroy();
     }
 
@@ -197,8 +221,8 @@ public class TabGroupListMediator {
 
     private List<Pair<SavedTabGroup, Integer>> getSortedGroupAndStateList() {
         List<Pair<SavedTabGroup, Integer>> groupAndStateList = new ArrayList<>();
-        for (String syncGroupId : mSyncService.getAllGroupIds()) {
-            SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
+        for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
             @TabGroupState int state = getState(savedTabGroup);
             // To simplify interactions, do not include any groups currently open in other windows.
             if (state != TabGroupState.IN_ANOTHER) {
@@ -252,10 +276,12 @@ public class TabGroupListMediator {
                     TabGroupRowProperties.DELETE_RUNNABLE,
                     () -> processDeleteGroup(savedTabGroup, state));
 
-            PropertyModel propertyModel = builder.build();
-            ListItem listItem = new ListItem(0, propertyModel);
+            ListItem listItem = new ListItem(0, builder.build());
             mModelList.add(listItem);
         }
+
+        boolean empty = mModelList.size() <= 0;
+        mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
     }
 
     private void openGroup(SavedTabGroup savedTabGroup, @TabGroupState int state) {
@@ -269,7 +295,7 @@ public class TabGroupListMediator {
         } else if (state == TabGroupState.HIDDEN) {
             String syncId = savedTabGroup.syncId;
             mTabGroupUiActionHandler.openTabGroup(syncId);
-            savedTabGroup = mSyncService.getGroup(syncId);
+            savedTabGroup = mTabGroupSyncService.getGroup(syncId);
             assert savedTabGroup.localId != null;
         }
 
@@ -317,7 +343,7 @@ public class TabGroupListMediator {
             }
             // Because the pending closure might have been hiding or part of a closure containing
             // more tabs we need to forcibly remove the group.
-            mSyncService.removeGroup(savedTabGroup.syncId);
+            mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
         } else if (state == TabGroupState.IN_CURRENT) {
             int rootId = mFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
             List<Tab> tabsToClose = mFilter.getRelatedTabListForRootId(rootId);
@@ -325,7 +351,7 @@ public class TabGroupListMediator {
                     tabsToClose, /* canUndo= */ false, /* hideTabGroups= */ false);
         } else {
             assert state == TabGroupState.HIDDEN;
-            mSyncService.removeGroup(savedTabGroup.syncId);
+            mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
         }
     }
 
