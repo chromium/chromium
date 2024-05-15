@@ -422,7 +422,7 @@ crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 # ========================
 
 # Failing new updated tests
-crbug.com/338008895 [ win angle-d3d11 nvidia-0x2184 passthrough release ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+crbug.com/338008895 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1131224 [ angle-d3d11 desktop no-asan oop-c passthrough release win10 ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
