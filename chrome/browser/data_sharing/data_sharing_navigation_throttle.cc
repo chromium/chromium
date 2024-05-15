@@ -65,6 +65,14 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
   if (data_sharing_service &&
       data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
     data_sharing_service->HandleShareURLNavigationIntercepted(url);
+
+    // Close the tab if the url interception ends with an empty page.
+    const GURL& last_committed_url =
+        navigation_handle()->GetWebContents()->GetLastCommittedURL();
+    if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
+        last_committed_url.is_empty()) {
+      navigation_handle()->GetWebContents()->ClosePage();
+    }
     return CANCEL;
   }
   return PROCEED;

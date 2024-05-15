@@ -500,8 +500,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param invitationId The id of the invitation.
      */
     public void openInvitationModal(String invitationId) {
-        if (mTabGridDialogCoordinator == null) return;
-        mTabGridDialogCoordinator.hideDialog(true);
+        if (mTabGridDialogCoordinator != null) {
+            mTabGridDialogCoordinator.hideDialog(true);
+        }
 
         if (mDataSharingDialogCoordinator == null) {
             mDataSharingDialogCoordinator =
