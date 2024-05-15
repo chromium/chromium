@@ -58,50 +58,6 @@
             field_dependencies: ["StyleType"]
           },
           {
-            method: "BoxDirection()",
-            field_dependencies: ["-webkit-box-direction"]
-          },
-          {
-            method: "GetTextAlign()",
-            field_dependencies: ["text-align"]
-          },
-          {
-            method: "GetWritingMode()",
-            field_dependencies: ["writing-mode"]
-          },
-          {
-            method: "OverflowX()",
-            field_dependencies: ["overflow-x"]
-          },
-          {
-            method: "OverflowY()",
-            field_dependencies: ["overflow-y"]
-          },
-          {
-            method: "ScrollbarWidth()",
-            field_dependencies: ["scrollbar-width"]
-          },
-          {
-            method: "Clear()",
-            field_dependencies: ["clear"]
-          },
-          {
-            method: "Floating()",
-            field_dependencies: ["float"]
-          },
-          {
-            method: "Display()",
-            field_dependencies: ["Display"]
-          },
-          {
-            method: "DisplayLayoutCustomName()",
-            field_dependencies: ["DisplayLayoutCustomName"]
-          },
-          {
-            method: "IsOriginalDisplayInlineType()",
-            field_dependencies: ["IsOriginalDisplayInlineType"]
-          },
-          {
             method: "HasStroke()",
             field_dependencies: ["stroke"]
           },
@@ -109,28 +65,12 @@
             method: "HasDashArray()",
             field_dependencies: ["stroke-dasharray"]
           },
-          {
-            method: "UsedScrollbarWidth()",
-            field_dependencies: ["scrollbar-width"]
-          },
         ],
         predicates_to_test: [
-          {
-            predicate: "a.TextShadowDataEquivalent(b)",
-            field_dependencies: ["text-shadow"]
-          },
-          {
-            predicate: "a.QuotesDataEquivalent(b)",
-            field_dependencies: ["quotes"]
-          },
           {
             predicate: "a.OpacityChangedStackingContext(b)",
             field_dependencies: ["IsStackingContextWithoutContainment",
                                  "opacity"]
-          },
-          {
-            predicate: "a.PositionAnchorDataEquivalent(b)",
-            field_dependencies: ["position-anchor"]
           },
         ]
     },

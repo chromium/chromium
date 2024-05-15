@@ -63,6 +63,7 @@
       type_name: "AtomicString",
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "g_null_atom",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "DisplayLayoutCustomParentName",
@@ -77,6 +78,7 @@
       field_template: "primitive",
       type_name: "bool",
       default_value: "true",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "InsideLink",
@@ -1287,6 +1289,7 @@
       type_name: "bool",
       default_value: "false",
       inherited: true,
+      invalidate: ["layout", "paint"],
     },
   ],
 }

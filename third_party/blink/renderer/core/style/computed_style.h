@@ -484,11 +484,6 @@ class ComputedStyle final : public ComputedStyleBase {
    * class, and be kept to a minimum.
    */
 
-  // position-anchor
-  bool PositionAnchorDataEquivalent(const ComputedStyle& o) const {
-    return base::ValuesEquivalent(PositionAnchor(), o.PositionAnchor());
-  }
-
   // anchor-name
   bool AnchorNameDataEquivalent(const ComputedStyle& o) const {
     return base::ValuesEquivalent(AnchorName(), o.AnchorName());
@@ -792,12 +787,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // In some cases, it should be inline even if `list-style-position` property
   // value is `outside`.
   bool MarkerShouldBeInside(const Element& parent) const;
-
-  // quotes
-  bool QuotesDataEquivalent(const ComputedStyle&) const;
-
-  // text-shadow
-  bool TextShadowDataEquivalent(const ComputedStyle&) const;
 
   // Text emphasis properties.
   TextEmphasisMark GetTextEmphasisMark() const;

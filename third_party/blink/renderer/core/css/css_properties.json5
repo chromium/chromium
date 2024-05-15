@@ -1713,6 +1713,7 @@
       // Incremental code does not call DidChangeWritingMode(), which influences
       // the font.
       supports_incremental_style: false,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-writing-mode",
@@ -2652,6 +2653,7 @@
       typedom_types: ["Keyword"],
       default_value: "none",
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "clip",
@@ -2965,6 +2967,7 @@
       // so we turn off incremental style for all them all.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "dominant-baseline",
@@ -3127,6 +3130,7 @@
       // See comment on display.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "flood-color",
@@ -4199,6 +4203,7 @@
       // Modifying overflow frequently should not be common, so we take it out.
       supports_incremental_style: false,
       idempotent: false,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "overflow-y",
@@ -4219,6 +4224,7 @@
       // See comment on overflow-x.
       supports_incremental_style: false,
       idempotent: false,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "overscroll-behavior-inline",
@@ -4473,6 +4479,7 @@
       // Needs to be applied before inset-area which in turn needs to be applied
       // before inset properties.
       priority: 2,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "position-try-options",
@@ -4531,6 +4538,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "content-visibility",
@@ -5365,6 +5373,7 @@
       style_builder_custom_functions: ["value"],
       valid_for_formatted_text: true,
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-align-last",
@@ -5592,6 +5601,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-size-adjust",
@@ -6075,6 +6085,7 @@
       keywords: ["normal", "reverse"],
       default_value: "normal",
       computed_style_protected_functions: ["getter"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-flex",

@@ -1319,10 +1319,6 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
   return false;
 }
 
-bool ComputedStyle::QuotesDataEquivalent(const ComputedStyle& other) const {
-  return base::ValuesEquivalent(Quotes(), other.Quotes());
-}
-
 static bool HasPropertyThatCreatesStackingContext(
     const Vector<CSSPropertyID>& properties) {
   for (CSSPropertyID property : properties) {
@@ -1857,10 +1853,6 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     transform.Translate(origin_x - anchor_point.x(),
                         origin_y - anchor_point.y());
   }
-}
-
-bool ComputedStyle::TextShadowDataEquivalent(const ComputedStyle& other) const {
-  return base::ValuesEquivalent(TextShadow(), other.TextShadow());
 }
 
 bool ComputedStyle::CanRenderBorderImage() const {
