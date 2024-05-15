@@ -1097,6 +1097,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Error Page"/>
 </enum>
 
+<enum name="NetworkPortalState">
+  <summary>
+    Used for Network.NetworkPortalDetectorState for the Chrome detection result.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Online"/>
+  <int value="2" label="PortalSuspected"/>
+  <int value="3" label="Portal"/>
+  <int value="4" label="NoInternet"/>
+</enum>
+
 <enum name="NetworkPortalStatus">
   <summary>
     DEPRECATED. Remove with Network.NetworkPortalDetectorResult 2024-07-21.

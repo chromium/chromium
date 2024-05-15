@@ -331,7 +331,9 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
       }
       break;
     case captive_portal::RESULT_INTERNET_CONNECTED:
-      // Do not set a portal state.
+      // Set the portal state to kOnline for metrics reporting. This will not
+      // override the shill result.
+      portal_state = NetworkState::PortalState::kOnline;
       detection_completed = true;
       break;
     case captive_portal::RESULT_BEHIND_CAPTIVE_PORTAL:
@@ -351,15 +353,6 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
                  << ", response_code=" << response_code
                  << ", content_length=" << results.content_length.value_or(-1);
 
-  NetworkState::NetworkTechnologyType type =
-      NetworkState::NetworkTechnologyType::kUnknown;
-  if (portal_state == NetworkState::PortalState::kPortal) {
-    if (network) {
-      type = network->GetNetworkTechnologyType();
-    }
-    base::UmaHistogramEnumeration("Network.NetworkPortalDetectorType", type);
-  }
-
   captive_portal_detector_run_count_++;
 
   if (detection_completed) {
@@ -369,6 +362,8 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
     DetectionCompleted(network, portal_state);
     return;
   }
+
+  MaybeReportMetrics(network, portal_state, /*detection_completed=*/false);
 
   if (!is_idle()) {
     return;
@@ -382,6 +377,27 @@ void NetworkPortalDetectorImpl::OnAttemptCompleted(
   ScheduleAttempt(results.retry_after_delta);
 }
 
+void NetworkPortalDetectorImpl::MaybeReportMetrics(
+    const NetworkState* network,
+    NetworkState::PortalState portal_state,
+    bool detection_completed) {
+  if (metrics_reported_) {
+    return;
+  }
+  if (!detection_completed &&
+      portal_state == NetworkState::PortalState::kUnknown &&
+      captive_portal_detector_run_count_ < 10) {
+    return;
+  }
+  base::UmaHistogramEnumeration("Network.NetworkPortalDetectorState",
+                                portal_state);
+  if (network && portal_state == NetworkState::PortalState::kPortal) {
+    base::UmaHistogramEnumeration("Network.NetworkPortalDetectorType",
+                                  network->GetNetworkTechnologyType());
+  }
+  metrics_reported_ = true;
+}
+
 void NetworkPortalDetectorImpl::DetectionCompleted(
     const NetworkState* network,
     NetworkState::PortalState portal_state) {
@@ -390,13 +406,16 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
                  << ", PortalState=" << portal_state;
 
   if (network) {
-    // Note: setting an unknown portal state will ignore the Chrome result and
-    // fall back to the Shill result.
-    SetNetworkPortalState(network, portal_state);
-    base::UmaHistogramBoolean("Network.NetworkPortalDetectorHasProxy",
-                              network->proxy_config().has_value());
+    // Only set kPortal to override the shill result. Setting kUnknown will
+    // ignore the Chrome result.
+    if (portal_state == NetworkState::PortalState::kPortal) {
+      SetNetworkPortalState(network, NetworkState::PortalState::kPortal);
+    } else {
+      SetNetworkPortalState(network, NetworkState::PortalState::kUnknown);
+    }
   }
 
+  MaybeReportMetrics(network, portal_state, /*detection_completed=*/true);
   ResetCountersAndSendMetrics();
 }
 
@@ -408,6 +427,7 @@ void NetworkPortalDetectorImpl::ResetCountersAndSendMetrics() {
                                    /*buckets=*/10);
     captive_portal_detector_run_count_ = 0;
   }
+  metrics_reported_ = false;
 }
 
 bool NetworkPortalDetectorImpl::AttemptTimeoutIsCancelledForTesting() const {
