@@ -1231,6 +1231,10 @@ TEST_P(CrasAudioHandlerTest,
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kInternalSpeaker,
                      /*has_alternative_device=*/false);
+
+  // Verify that the notification is removed because the hotplugged HDMI output
+  // is disconnected.
+  EXPECT_EQ(0u, GetNotificationCount());
 }
 
 TEST_P(CrasAudioHandlerTest, HandleHeadphoneAndHDMIOutput) {
@@ -1389,6 +1393,10 @@ TEST_P(CrasAudioHandlerTest,
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kInternalSpeaker,
                      /*has_alternative_device=*/false);
+
+  // Verify that the notification is removed because the hotplugged USB output
+  // is disconnected.
+  EXPECT_EQ(0u, GetNotificationCount());
 }
 
 TEST_P(CrasAudioHandlerTest, HandleMultipleUSBHeadphones) {
@@ -1509,6 +1517,10 @@ TEST_P(CrasAudioHandlerTest,
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kInternalSpeaker,
                      /*has_alternative_device=*/true);
+
+  // Verify that the notification is removed because the hotplugged USB output
+  // is disconnected.
+  EXPECT_EQ(0u, GetNotificationCount());
 }
 
 TEST_P(CrasAudioHandlerTest, UnplugUSBHeadphonesWithActiveSpeaker) {

@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::optional<std::string>& active_output_device_name,
       SwitchToDeviceCallback switch_to_device_callback);
 
+  // Handles the situation when a hotplugged device which triggers the
+  // notification has been removed. Remove the notification in this case.
+  void RemoveNotificationIfNecessary(const AudioDeviceList& removed_devices);
+
  private:
   // Grant friend access for comprehensive testing of private/protected members.
   friend class AudioSelectionNotificationHandlerTest;
@@ -115,6 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   // Handles firing of audio selection related metrics.
   AudioDeviceMetricsHandler audio_device_metrics_handler_;
+
+  // The hotplugged devices that trigger the notification. Clear the list if the
+  // notification is removed.
+  AudioDeviceList hotplug_input_devices_;
+  AudioDeviceList hotplug_output_devices_;
 
   base::WeakPtrFactory<AudioSelectionNotificationHandler> weak_ptr_factory_{
       this};

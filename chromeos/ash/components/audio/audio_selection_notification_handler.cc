@@ -36,6 +36,17 @@ std::string ExtractDeviceSourceName(const AudioDevice& device) {
   return parts.front();
 }
 
+// Checks if a given device is in a device list
+bool IsDeviceInList(const AudioDevice& target_device,
+                    const AudioDeviceList& device_list) {
+  for (const AudioDevice& device : device_list) {
+    if (target_device.stable_device_id == device.stable_device_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 AudioSelectionNotificationHandler::AudioSelectionNotificationHandler() =
@@ -98,6 +109,12 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
     SwitchToDeviceCallback switch_to_device_callback) {
   // At least input or output has hotplug device.
   CHECK(!hotplug_input_devices.empty() || !hotplug_output_devices.empty());
+
+  // Update hotplug_input_devices_ and hotplug_output_devices_.
+  hotplug_input_devices_.clear();
+  hotplug_input_devices_ = hotplug_input_devices;
+  hotplug_output_devices_.clear();
+  hotplug_output_devices_ = hotplug_output_devices;
 
   AudioDeviceList devices_to_activate;
   std::u16string title_message_id;
@@ -246,10 +263,12 @@ void AudioSelectionNotificationHandler::HandleSwitchButtonClicked(
                                   DeviceActivateType::kActivateByUser);
   }
 
-  // Remove notification.
+  // Remove notification and hotplug_input/output_devices_.
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(kAudioSelectionNotificationId,
                                      /*by_user=*/true);
+  hotplug_input_devices_.clear();
+  hotplug_output_devices_.clear();
 }
 
 AudioSelectionNotificationHandler::NotificationTemplate
@@ -313,6 +332,25 @@ AudioSelectionNotificationHandler::GetNotificationTemplate(
   return {AudioSelectionNotificationHandler::NotificationType::
               kSingleSourceWithOutputOnly,
           std::nullopt, hotplug_output_devices.front().display_name};
+}
+
+void AudioSelectionNotificationHandler::RemoveNotificationIfNecessary(
+    const AudioDeviceList& removed_devices) {
+  const AudioDeviceList& hotplug_devices = removed_devices.front().is_input
+                                               ? hotplug_input_devices_
+                                               : hotplug_output_devices_;
+  for (const AudioDevice& device : removed_devices) {
+    if (IsDeviceInList(device, hotplug_devices)) {
+      // Remove notification and hotplug_input/output_devices_.
+      auto* message_center = message_center::MessageCenter::Get();
+      message_center->RemoveNotification(kAudioSelectionNotificationId,
+                                         /*by_user=*/false);
+
+      hotplug_input_devices_.clear();
+      hotplug_output_devices_.clear();
+      return;
+    }
+  }
 }
 
 }  // namespace ash

@@ -1855,16 +1855,16 @@ void CrasAudioHandler::SwitchToDevice(const AudioDevice& device,
 bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
                                        bool is_input,
                                        AudioDeviceList* new_discovered,
-                                       bool* device_removed,
+                                       AudioDeviceList* removed_devices,
                                        bool* active_device_removed) {
-  *device_removed = false;
+  removed_devices->clear();
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
     if (is_input != device.is_input) {
       continue;
     }
     if (!IsDeviceInList(device, new_nodes)) {
-      *device_removed = true;
+      removed_devices->push_back(device);
       if ((is_input && device.id == active_input_node_id_) ||
           (!is_input && device.id == active_output_node_id_)) {
         *active_device_removed = true;
@@ -1896,7 +1896,7 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
       new_or_changed_device = true;
     }
   }
-  return new_or_changed_device || *device_removed;
+  return new_or_changed_device || !removed_devices->empty();
 }
 
 CrasAudioHandler::DeviceStatus CrasAudioHandler::CheckDeviceStatus(
@@ -2329,16 +2329,26 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   AudioDeviceList input_devices;
   AudioDeviceList hotplug_output_devices;
   AudioDeviceList hotplug_input_devices;
-  bool has_output_removed = false;
-  bool has_input_removed = false;
+  AudioDeviceList removed_output_devices;
+  AudioDeviceList removed_input_devices;
   bool active_output_removed = false;
   bool active_input_removed = false;
   bool output_devices_changed =
       HasDeviceChange(nodes, false, &hotplug_output_devices,
-                      &has_output_removed, &active_output_removed);
+                      &removed_output_devices, &active_output_removed);
   bool input_devices_changed =
-      HasDeviceChange(nodes, true, &hotplug_input_devices, &has_input_removed,
-                      &active_input_removed);
+      HasDeviceChange(nodes, true, &hotplug_input_devices,
+                      &removed_input_devices, &active_input_removed);
+
+  if (!removed_input_devices.empty()) {
+    audio_selection_notification_handler_.RemoveNotificationIfNecessary(
+        removed_input_devices);
+  }
+
+  if (!removed_output_devices.empty()) {
+    audio_selection_notification_handler_.RemoveNotificationIfNecessary(
+        removed_output_devices);
+  }
 
   // Record consecutive devices change metrics.
   if (input_devices_changed) {
@@ -2454,13 +2464,13 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   }
 
   // Handle output device changes.
-  HandleAudioDeviceChange(false, output_devices, hotplug_output_devices,
-                          output_devices_changed, has_output_removed,
-                          active_output_removed);
+  HandleAudioDeviceChange(
+      false, output_devices, hotplug_output_devices, output_devices_changed,
+      !removed_output_devices.empty(), active_output_removed);
 
   // Handle input device changes.
   HandleAudioDeviceChange(true, input_devices, hotplug_input_devices,
-                          input_devices_changed, has_input_removed,
+                          input_devices_changed, !removed_input_devices.empty(),
                           active_input_removed);
 
   // At this moment, system has already made the switching or not switching

@@ -610,4 +610,70 @@ TEST_F(AudioSelectionNotificationHandlerTest,
       1);
 }
 
+// Tests audio selection notification was removed because the hotplugged input
+// device is disconnected.
+TEST_F(AudioSelectionNotificationHandlerTest,
+       RemoveNotificationIfInputDeviceIsDisConnected) {
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug a web cam input.
+  const std::string input_device_name =
+      "HD Pro Webcam C920: USB Audio:2,0: Mic";
+  const AudioDevice input_device = AudioDevice(NewNodeWithName(
+      /*is_input=*/true, "USB", input_device_name));
+  AudioDeviceList hotplug_input_devices = {input_device};
+  AudioDeviceList hotplug_output_devices = {};
+
+  audio_selection_notification_handler().ShowAudioSelectionNotification(
+      hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // If a non related device is removed, notification should stay.
+  const AudioDevice output_device = AudioDevice(NewOutputNode("USB"));
+  audio_selection_notification_handler().RemoveNotificationIfNecessary(
+      {output_device});
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // If the device that triggers the notification is removed, notification
+  // should be removed too.
+  audio_selection_notification_handler().RemoveNotificationIfNecessary(
+      {input_device});
+  EXPECT_EQ(0u, GetNotificationCount());
+}
+
+// Tests audio selection notification was removed because the hotplugged output
+// device is disconnected.
+TEST_F(AudioSelectionNotificationHandlerTest,
+       RemoveNotificationIfOutputDeviceIsDisConnected) {
+  EXPECT_EQ(0u, GetNotificationCount());
+
+  // Plug a web cam input.
+  const std::string output_device_name =
+      "HD Pro Webcam C920: USB Audio:2,0: Speaker";
+  const AudioDevice output_device = AudioDevice(NewNodeWithName(
+      /*is_input=*/false, "USB", output_device_name));
+  AudioDeviceList hotplug_output_devices = {output_device};
+  AudioDeviceList hotplug_input_devices = {};
+
+  audio_selection_notification_handler().ShowAudioSelectionNotification(
+      hotplug_input_devices, hotplug_output_devices, std::nullopt, std::nullopt,
+      base::BindRepeating(
+          &AudioSelectionNotificationHandlerTest::SwitchToDevice));
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // If a non related device is removed, notification should stay.
+  const AudioDevice input_device = AudioDevice(NewInputNode("USB"));
+  audio_selection_notification_handler().RemoveNotificationIfNecessary(
+      {input_device});
+  EXPECT_EQ(1u, GetNotificationCount());
+
+  // If the device that triggers the notification is removed, notification
+  // should be removed too.
+  audio_selection_notification_handler().RemoveNotificationIfNecessary(
+      {output_device});
+  EXPECT_EQ(0u, GetNotificationCount());
+}
+
 }  // namespace ash

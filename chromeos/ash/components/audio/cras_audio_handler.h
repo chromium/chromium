@@ -759,7 +759,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool HasDeviceChange(const AudioNodeList& new_nodes,
                        bool is_input,
                        AudioDeviceList* new_discovered,
-                       bool* device_removed,
+                       AudioDeviceList* removed_devices,
                        bool* active_device_removed);
 
   // Handles dbus callback for GetNodes.
