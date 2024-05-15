@@ -350,4 +350,30 @@ float ClampScale(float scale) {
   return std::max(1.f, scale);
 }
 
+bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
+                                     bool start_drag_ack_received,
+                                     base::OnceClosure cancel_drag_cb) {
+  // Two distinct problematic edge cases are handled here, where mouse button or
+  // touch release events come in after start_drag has already been requested:
+  //
+  // 1. If it's received before the drag session effectively starts at
+  //    compositor side, which is possible given the asynchronous nature of the
+  //    Wayland protocol. In this case, to preventing UI from getting stuck on
+  //    the drag nested loop, we just abort the drag session.
+  //
+  // 2. Otherwise, button release events may be received from buggy compositors
+  //    in addition to the actual dnd drop events, in which case the event is
+  //    suppressed, otherwise it leads to broken UI state, as observed for
+  //    example in https://crbug.com/329703410.
+  if (!event->IsSynthesized() && (event->type() == ui::ET_MOUSE_RELEASED ||
+                                  event->type() == ui::ET_TOUCH_RELEASED)) {
+    if (!start_drag_ack_received) {
+      std::move(cancel_drag_cb).Run();
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace wl

@@ -223,6 +223,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // is kept alive until the end of the session.
   std::unique_ptr<WaylandSurface> origin_surface_;
 
+  // In outgoing sessions, tracks if any drag enter has already been received.
+  bool has_received_enter_ = false;
+
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
   base::OnceClosure quit_loop_closure_;
 

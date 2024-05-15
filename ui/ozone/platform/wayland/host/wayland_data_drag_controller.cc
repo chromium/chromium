@@ -817,30 +817,20 @@ bool WaylandDataDragController::CanDispatchEvent(const PlatformEvent& event) {
 uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   DCHECK_NE(state_, State::kIdle);
 
-  // Two distinct problematic edge cases are handled here, where mouse button
-  // release events come in after start_drag has already been requested:
-  //
-  // 1. If it's received before the drag session effectively starts at
-  // compositor side, which is possible given the asynchronous nature of the
-  // Wayland protocol. In this case, to preventing UI from getting stuck on the
-  // drag nested loop, we just abort the drag session by calling.
-  //
-  // 2. Otherwise, button release events may be received from buggy compositors
-  // in addition to the actual dnd drop events, in which case the event is
-  // suppressed, otherwise it leads to broken UI state, as observed for example
-  // in https://crbug.com/329703410.
-  //
   // Currently, there's no reliable way in the protocol to determine when the
   // drag session has effectively started, so as a best-effort heuristic we
   // consider it started once wl_data_device.enter has been received at least
   // once.
-  if (event->type() == ET_MOUSE_RELEASED) {
-    if (!has_received_enter_) {
-      HandleDragEnd(DragResult::kCancelled, event->time_stamp());
-      Reset();
-    } else {
-      return POST_DISPATCH_STOP_PROPAGATION;
-    }
+  auto cancel_drag_cb = base::BindOnce(
+      [](WaylandDataDragController* self, base::TimeTicks time_stamp) {
+        self->HandleDragEnd(DragResult::kCancelled, time_stamp);
+        self->Reset();
+      },
+      base::Unretained(this), event->time_stamp());
+  if (wl::MaybeHandlePlatformEventForDrag(
+          event, /*start_drag_ack_received=*/has_received_enter_,
+          std::move(cancel_drag_cb))) {
+    return POST_DISPATCH_STOP_PROPAGATION;
   }
 
   return POST_DISPATCH_PERFORM_DEFAULT;

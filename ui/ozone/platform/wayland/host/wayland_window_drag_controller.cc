@@ -161,6 +161,9 @@ bool WaylandWindowDragController::StartDragSession(
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
   should_process_drag_motion_events_ = false;
+  has_received_enter_ = false;
+  nested_dispatcher_ =
+      PlatformEventSource::GetInstance()->OverrideDispatcher(this);
 
   // Observe window so we can take ownership of the origin surface in case it
   // is destroyed during the DND session.
@@ -244,6 +247,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   CHECK(data_source_);
   CHECK(data_offer_);
 
+  has_received_enter_ = true;
   drag_target_window_ = window;
 
   // Forward focus change event to the input delegate, so other components, such
@@ -417,11 +421,13 @@ void WaylandWindowDragController::OnDataSourceFinish(WaylandDataSource* source,
   VLOG(1) << "DataSourceFinish received. completed=" << completed
           << ", state=" << state_;
   // Release DND objects.
+  nested_dispatcher_.reset();
   data_offer_.reset();
   data_source_.reset();
   extended_drag_source_.reset();
   origin_surface_.reset();
   origin_window_ = nullptr;
+  has_received_enter_ = false;
 
   // When extended-drag is available and the drop happens while a non-null
   // surface was being dragged (i.e: detached mode) which had pointer focus
@@ -467,16 +473,30 @@ void WaylandWindowDragController::OnDataSourceSend(WaylandDataSource* source,
 }
 
 bool WaylandWindowDragController::CanDispatchEvent(const PlatformEvent& event) {
-  return state_ == State::kDetached;
+  return state_ != State::kIdle;
 }
 
 uint32_t WaylandWindowDragController::DispatchEvent(
     const PlatformEvent& event) {
-  DCHECK_EQ(state_, State::kDetached);
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK_NE(state_, State::kIdle);
+  CHECK(base::CurrentUIThread::IsSet());
 
-  if (event->type() == ET_MOUSE_MOVED || event->type() == ET_MOUSE_DRAGGED ||
-      event->type() == ET_TOUCH_MOVED) {
+  // Currently, there's no reliable way in the protocol to determine when the
+  // drag session has effectively started, so as a best-effort heuristic we
+  // consider it started once wl_data_device.enter has been received at least
+  // once.
+  auto cancel_drag_cb = base::BindOnce(
+      &WaylandWindowDragController::OnDataSourceFinish, base::Unretained(this),
+      data_source_.get(), EventTimeForNow(), /*completed=*/false);
+  if (wl::MaybeHandlePlatformEventForDrag(
+          event, /*start_drag_ack_received=*/has_received_enter_,
+          std::move(cancel_drag_cb))) {
+    return POST_DISPATCH_STOP_PROPAGATION;
+  }
+
+  if (state_ == State::kDetached &&
+      (event->type() == ET_MOUSE_MOVED || event->type() == ET_MOUSE_DRAGGED ||
+       event->type() == ET_TOUCH_MOVED)) {
     HandleMotionEvent(event->AsLocatedEvent());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     if (event->type() != ET_TOUCH_MOVED) {
@@ -621,14 +641,10 @@ void WaylandWindowDragController::HandleDropAndResetState(
 void WaylandWindowDragController::RunLoop() {
   DCHECK_EQ(state_, State::kDetached);
   DCHECK(dragged_window_);
-  auto old_dispatcher = std::move(nested_dispatcher_);
+  CHECK(nested_dispatcher_);
 
   VLOG(1) << "Starting drag loop. widget=" << dragged_window_->GetWidget()
-          << " offset=" << drag_offset_.ToString()
-          << ", has old dispatcher=" << !!old_dispatcher;
-
-  nested_dispatcher_ =
-      PlatformEventSource::GetInstance()->OverrideDispatcher(this);
+          << " offset=" << drag_offset_.ToString();
 
   base::WeakPtr<WaylandWindowDragController> alive(weak_factory_.GetWeakPtr());
 
@@ -641,15 +657,12 @@ void WaylandWindowDragController::RunLoop() {
     return;
   }
 
-  nested_dispatcher_ = std::move(old_dispatcher);
-
   VLOG(1) << "Exited drag loop: state=" << state_;
 }
 
 void WaylandWindowDragController::QuitLoop() {
   DCHECK(!quit_loop_closure_.is_null());
-  VLOG(1) << "Quit Loop: resetting nested dispatcher=" << !!nested_dispatcher_;
-  nested_dispatcher_.reset();
+  VLOG(1) << "Quit Loop";
   std::move(quit_loop_closure_).Run();
 }
 

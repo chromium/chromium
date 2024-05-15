@@ -78,6 +78,14 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     return connection_->window_drag_controller()->state_;
   }
 
+  WaylandPointer::Delegate* pointer_delegate() {
+    return drag_controller()->pointer_delegate_.get();
+  }
+
+  WaylandTouch::Delegate* touch_delegate() {
+    return drag_controller()->touch_delegate_.get();
+  }
+
   wl::SerialTracker& serial_tracker() { return connection_->serial_tracker(); }
 
   MockWaylandPlatformWindowDelegate& delegate() { return delegate_; }
@@ -2038,6 +2046,57 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(gfx::kNullAcceleratedWidget,
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+TEST_P(WaylandWindowDragControllerTest,
+       PointerReleaseBeforeServerAckCancellsDrag) {
+  // Ensure there is no window currently focused.
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, /*location=*/{10, 10});
+
+  // Start the drag session.
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // Simulate a pointer release event arriving at the client before the server
+  // has acknowledged the drag request. This should cancel the drag.
+  pointer_delegate()->OnPointerButtonEvent(
+      ET_MOUSE_RELEASED, EF_LEFT_MOUSE_BUTTON, base::TimeTicks::Now(),
+      window_.get(), wl::EventDispatchPolicy::kImmediate,
+      /*allow_release_of_unpressed_button=*/false,
+      /*is_synthesized=*/false);
+  EXPECT_EQ(State::kIdle, drag_controller_state());
+}
+
+TEST_P(WaylandWindowDragControllerTest,
+       TouchReleaseBeforeServerAckCancellsDrag) {
+  // Ensure there is no window currently focused.
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  SendTouchDown(window_.get(), &delegate_, /*id=*/0, /*location=*/{0, 0});
+  SendTouchMotion(window_.get(), &delegate_, /*id=*/0, /*location=*/{10, 10});
+
+  // Start the drag session.
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kTouch,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller_state());
+
+  // Simulate a touch release event arriving at the client before the server
+  // has acknowledged the drag request. This should cancel the drag.
+  touch_delegate()->OnTouchReleaseEvent(base::TimeTicks::Now(), /*id=*/0,
+                                        wl::EventDispatchPolicy::kImmediate,
+                                        /*is_synthesized=*/false);
+  EXPECT_EQ(State::kIdle, drag_controller_state());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
