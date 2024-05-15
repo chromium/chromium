@@ -275,6 +275,7 @@ gfx::Size MediaDialogView::CalculatePreferredSize(
 }
 
 void MediaDialogView::UpdateBubbleSize() {
+  SizeToContents();
   if (!captions::IsLiveCaptionFeatureSupported()) {
     return;
   }
@@ -398,10 +399,7 @@ MediaDialogView::MediaDialogView(
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point)
-    : BubbleDialogDelegateView(anchor_view,
-                               anchor_position,
-                               views::BubbleBorder::DIALOG_SHADOW,
-                               true),
+    : BubbleDialogDelegateView(anchor_view, anchor_position),
       service_(service),
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(AddChildView(
