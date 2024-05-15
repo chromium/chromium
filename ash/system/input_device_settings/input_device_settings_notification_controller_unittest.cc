@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -795,6 +796,28 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "welcome_experience_keyboards_2"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       CorrectNotificationPrefUsed) {
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  mojom_mouse->device_key = "0001:0001";
+  mojom_mouse->id = 1;
+  mojom_mouse->settings = mojom::MouseSettings::New();
+  controller()->NotifyMouseIsCustomizable(*mojom_mouse);
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1"));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_mouse_1"));
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWelcomeExperience);
+  mojom_mouse->id = 2;
+  mojom_mouse->device_key = "0001:0002";
+  controller()->NotifyMouseIsCustomizable(*mojom_mouse);
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "welcome_experience_mouse_2"));
+  EXPECT_FALSE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_2"));
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,

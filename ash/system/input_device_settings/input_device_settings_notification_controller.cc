@@ -169,6 +169,9 @@ const char kKeyboardNotificationPrefix[] = "welcome_experience_keyboards";
 const char kTouchpadNotificationPrefix[] = "welcome_experience_touchpad";
 const char kPointingStickNotificationPrefix[] =
     "welcome_experience_pointing_stick";
+const char kMouseNotificationPrefix[] = "welcome_experience_mouse";
+const char kGraphicsTabletNotificationPrefix[] =
+    "welcome_experience_graphics_tablet";
 const char kDelimiter[] = "_";
 
 bool IsRightClickRewriteDisabled(SimulateRightClickModifier active_modifier) {
@@ -234,17 +237,23 @@ std::string GetRightClickNotificationId(
   }
 }
 
-std::string GetPeripheralCustomizationMouseNotificationID(uint32_t id) {
-  return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
-}
-
 std::string GetWelcomeExperienceNotificationId(const std::string& prefix,
                                                uint32_t id) {
   return prefix + kDelimiter + base::NumberToString(id);
 }
 
-std::string GetPeripheralCustomizationGraphicsTabletNotificationID(
-    uint32_t id) {
+std::string GetMouseNotificationID(uint32_t id) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    return GetWelcomeExperienceNotificationId(kMouseNotificationPrefix, id);
+  }
+  return kInputDeviceSettingsMousePrefix + base::NumberToString(id);
+}
+
+std::string GetGraphicsTabletNotificationID(uint32_t id) {
+  if (features::IsWelcomeExperienceEnabled()) {
+    return GetWelcomeExperienceNotificationId(kGraphicsTabletNotificationPrefix,
+                                              id);
+  }
   return kInputDeviceSettingsGraphicsTabletPrefix + base::NumberToString(id);
 }
 
@@ -576,6 +585,10 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     return;
   }
 
+  const char* pref_name = features::IsWelcomeExperienceEnabled()
+                              ? prefs::kMiceWelcomeNotificationSeen
+                              : prefs::kPeripheralNotificationMiceSeen;
+
   // Avoid showing notification for the virtual mouse device.
   if (mouse.device_key == kVirtualMouseDeviceKey) {
     return;
@@ -585,17 +598,14 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kPeripheralNotificationMiceSeen),
-                     mouse.device_key)) {
+  if (base::Contains(prefs->GetList(pref_name), mouse.device_key)) {
     return;
   }
 
-  auto seen_mouse_list =
-      prefs->GetList(prefs::kPeripheralNotificationMiceSeen).Clone();
+  auto seen_mouse_list = prefs->GetList(pref_name).Clone();
 
   seen_mouse_list.Append(mouse.device_key);
-  prefs->SetList(prefs::kPeripheralNotificationMiceSeen,
-                 std::move(seen_mouse_list));
+  prefs->SetList(pref_name, std::move(seen_mouse_list));
 
   CHECK(mouse.settings);
   // Do not show notification if the device remapping list has already been
@@ -619,8 +629,11 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  auto seen_graphics_tablet_list =
-      prefs->GetList(prefs::kPeripheralNotificationGraphicsTabletsSeen).Clone();
+  const char* pref_name =
+      features::IsWelcomeExperienceEnabled()
+          ? prefs::kGraphicsTabletsWelcomeNotificationSeen
+          : prefs::kPeripheralNotificationGraphicsTabletsSeen;
+  auto seen_graphics_tablet_list = prefs->GetList(pref_name).Clone();
 
   for (const auto& value : seen_graphics_tablet_list) {
     if (value.is_string() && value.GetString() == graphics_tablet.device_key) {
@@ -628,8 +641,7 @@ void InputDeviceSettingsNotificationController::
     }
   }
   seen_graphics_tablet_list.Append(graphics_tablet.device_key);
-  prefs->SetList(prefs::kPeripheralNotificationGraphicsTabletsSeen,
-                 std::move(seen_graphics_tablet_list));
+  prefs->SetList(pref_name, std::move(seen_graphics_tablet_list));
 
   CHECK(graphics_tablet.settings);
   // Do not show notification if the device remapping list has already been
@@ -901,8 +913,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
     const mojom::Mouse& mouse) {
   const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
-  const auto notification_id =
-      GetPeripheralCustomizationMouseNotificationID(mouse.id);
+  const auto notification_id = GetMouseNotificationID(mouse.id);
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
@@ -984,8 +995,7 @@ void InputDeviceSettingsNotificationController::
         const mojom::GraphicsTablet& graphics_tablet) {
   const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
   const auto notification_id =
-      GetPeripheralCustomizationGraphicsTabletNotificationID(
-          graphics_tablet.id);
+      GetGraphicsTabletNotificationID(graphics_tablet.id);
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
