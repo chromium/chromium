@@ -935,6 +935,9 @@ extern const char kEnableWasmGarbageCollectionDescription[];
 extern const char kEnableWasmLazyCompilationName[];
 extern const char kEnableWasmLazyCompilationDescription[];
 
+extern const char kEnableWasmMemory64Name[];
+extern const char kEnableWasmMemory64Description[];
+
 extern const char kEnableWasmRelaxedSimdName[];
 extern const char kEnableWasmRelaxedSimdDescription[];
 

@@ -169,6 +169,10 @@ RenderProcessImpl::RenderProcessImpl()
                         "--wasm-lazy-compilation",
                         "--no-wasm-lazy-compilation");
 
+  SetV8FlagIfOverridden(features::kWebAssemblyMemory64,
+                        "--experimental-wasm-memory64",
+                        "--no-experimental-wasm-memory64");
+
   SetV8FlagIfOverridden(features::kWebAssemblyTiering, "--wasm-tier-up",
                         "--no-wasm-tier-up");
 

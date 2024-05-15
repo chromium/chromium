@@ -1636,6 +1636,10 @@ const char kEnableWasmGarbageCollectionDescription[] =
     "Enables the experimental Garbage Collection (GC) extensions to "
     "WebAssembly.";
 
+const char kEnableWasmMemory64Name[] = "WebAssembly Memory64";
+const char kEnableWasmMemory64Description[] =
+    "Enables 64-bit memory indices on WebAssembly operations";
+
 const char kEnableWasmRelaxedSimdName[] = "WebAssembly Relaxed SIMD";
 const char kEnableWasmRelaxedSimdDescription[] =
     "Enables the use of WebAssembly vector operations with relaxed semantics";
