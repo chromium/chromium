@@ -108,9 +108,6 @@ class TestCase {
   int read_count_ = 0;
   int write_count_ = 0;
   base::ScopedTempDir temp_dir_;
-
-  // Arena instance for ArenaPersistentProto test cases.
-  google::protobuf::Arena arena_;
 };
 
 template <typename T>
@@ -129,8 +126,8 @@ TestCase<PersistentProto<KeyProto>>::BuildTestProto() {
 template <>
 ArenaPersistentProto<KeyProto>
 TestCase<ArenaPersistentProto<KeyProto>>::BuildTestProto() {
-  return ArenaPersistentProto<KeyProto>(&arena_, GetPath(), WriteDelay(),
-                                        ReadCallback(), WriteCallback());
+  return ArenaPersistentProto<KeyProto>(GetPath(), WriteDelay(), ReadCallback(),
+                                        WriteCallback());
 }
 
 }  // namespace

@@ -16,11 +16,11 @@ namespace metrics::structured {
 //
 // These resources could be disk space or memory consumption.
 struct ResourceInfo {
-  int32_t used_size;
-  int32_t max_size;
+  int32_t used_size_bytes;
+  int32_t max_size_bytes;
 
-  explicit ResourceInfo(int32_t max_size);
-  ResourceInfo(int32_t used_size, int32_t max_size);
+  explicit ResourceInfo(int32_t max_size_bytes);
+  ResourceInfo(int32_t used_size_bytes, int32_t max_size_bytes);
 
   // Check whether |this| can accommodate |size|.
   bool HasRoom(int32_t size) const;

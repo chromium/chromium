@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
 // Controls whether Phone Hub Structured Metrics is enabled or not.
 BASE_DECLARE_FEATURE(kPhoneHubStructuredMetrics);
 
+// Controls whether the new storage manager is used to manage events.
+BASE_DECLARE_FEATURE(kEventStorageManager);
+
 // Controls the minimum number of logs to be stored.
 extern const base::FeatureParam<int> kMinLogQueueCount;
 
@@ -64,6 +67,9 @@ int GetUploadInterval();
 // Retrieves the collection interval for external metrics (defaults to 10
 // minutes).
 base::TimeDelta GetExternalMetricsCollectionInterval();
+
+// Retrieves the backup interval for event buffers.
+base::TimeDelta GetBackupTimeDelta();
 
 }  // namespace metrics::structured
 

@@ -16,6 +16,10 @@ BASE_FEATURE(kPhoneHubStructuredMetrics,
              "PhoneHubStructuredMetrics",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEventStorageManager,
+             "EventStorageManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 100};
 constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
@@ -54,6 +58,10 @@ constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{
 constexpr base::FeatureParam<int> kMaxProtoKiBSize{
     &features::kStructuredMetrics, "max_proto_size_kib", 25};
 
+constexpr base::FeatureParam<int> kEventBackupTimeSec{
+    &kEventStorageManager, "event_backup_time_s", 3 * 60  // 3 minutes
+};
+
 int GetFileLimitPerScan() {
   return kLimitFilesPerScanParam.Get();
 }
@@ -80,6 +88,10 @@ int GetUploadInterval() {
 
 base::TimeDelta GetExternalMetricsCollectionInterval() {
   return base::Seconds(kExternalMetricsCollectionIntervalInSeconds.Get());
+}
+
+base::TimeDelta GetBackupTimeDelta() {
+  return base::Seconds(kEventBackupTimeSec.Get());
 }
 
 }  // namespace metrics::structured

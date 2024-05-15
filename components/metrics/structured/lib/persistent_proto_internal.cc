@@ -67,7 +67,10 @@ void PersistentProtoInternal::OnReadComplete(
     base::expected<std::string, ReadStatus> read_status) {
   ReadStatus status;
 
-  proto_ = GetProto();
+  // If the path was updated then we may not need to update the pointer.
+  if (proto_ == nullptr) {
+    proto_ = GetProto();
+  }
 
   if (read_status.has_value()) {
     status = ReadStatus::kOk;
