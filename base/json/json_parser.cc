@@ -555,8 +555,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
       // Fast path for ASCII.
       next_char = *c;
     } else if (!ReadUnicodeCharacter(input_.data(), input_.length(), &index_,
-                                     &next_char) ||
-               !IsValidCodepoint(next_char)) {
+                                     &next_char)) {
       if ((options_ & JSON_REPLACE_INVALID_CHARACTERS) == 0) {
         ReportError(JSON_UNSUPPORTED_ENCODING, 0);
         return false;
