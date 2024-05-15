@@ -17,13 +17,10 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/settings_updated_metrics_info.h"
 #include "ash/test/ash_test_base.h"
-#include "base/json/values_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
@@ -1289,121 +1286,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       "ChromeOS.Settings.Device.Mouse.ButtonRemapping.StaticShortcutAction."
       "Pressed",
       /*expected_count=*/1u);
-}
-
-TEST_F(InputDeviceSettingsMetricsManagerTest, RecordNumMiceUsedInLast28Days) {
-  mojom::Mouse mouse;
-  mouse.device_key = kExternalMouseId;
-  mouse.settings = mojom::MouseSettings::New();
-
-  base::Value::Dict test_pref_dict;
-
-  // Add 5 devices in the window we care about.
-  for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
-    test_pref_dict.Set("in_window_" + base::NumberToString(i),
-                       std::move(device_dict));
-  }
-
-  // Add a device that is outside the window we want to measure.
-  {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(29)));
-    test_pref_dict.Set("out_of_window", std::move(device_dict));
-  }
-
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref,
-                        std::move(test_pref_dict));
-
-  base::HistogramTester histogram_tester;
-
-  manager_->RecordMouseInitialMetrics(mouse);
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Settings.Device.Mouse.External.NumConnectedLast28Days", 5, 1);
-}
-
-TEST_F(InputDeviceSettingsMetricsManagerTest,
-       RecordNumKeyboardsUsedInLast28Days) {
-  mojom::Keyboard keyboard;
-  keyboard.device_key = kExternalMouseId;
-  keyboard.is_external = true;
-  keyboard.settings = mojom::KeyboardSettings::New();
-  keyboard.settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
-
-  base::Value::Dict test_pref_dict;
-
-  // Add 5 devices in the window we care about.
-  for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
-    test_pref_dict.Set("in_window_" + base::NumberToString(i),
-                       std::move(device_dict));
-  }
-
-  // Add a device that is outside the window we want to measure.
-  {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(29)));
-    test_pref_dict.Set("out_of_window", std::move(device_dict));
-  }
-
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref,
-                        std::move(test_pref_dict));
-
-  base::HistogramTester histogram_tester;
-
-  manager_->RecordKeyboardInitialMetrics(keyboard);
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Settings.Device.Keyboard.External.NumConnectedLast28Days", 5,
-      1);
-}
-
-TEST_F(InputDeviceSettingsMetricsManagerTest,
-       RecordNumTouchpadsUsedInLast28Days) {
-  mojom::Touchpad touchpad;
-  touchpad.device_key = kExternalTouchpadId;
-  touchpad.is_external = true;
-  touchpad.settings = mojom::TouchpadSettings::New();
-
-  base::Value::Dict test_pref_dict;
-
-  // Add 5 devices in the window we care about.
-  for (int i = 1; i <= 5; i++) {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(4 * i)));
-    test_pref_dict.Set("in_window_" + base::NumberToString(i),
-                       std::move(device_dict));
-  }
-
-  // Add a device that is outside the window we want to measure.
-  {
-    base::Value::Dict device_dict;
-    device_dict.Set(prefs::kLastUpdatedKey,
-                    base::TimeToValue(base::Time::Now() - base::Days(29)));
-    test_pref_dict.Set("out_of_window", std::move(device_dict));
-  }
-
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
-                        std::move(test_pref_dict));
-
-  base::HistogramTester histogram_tester;
-
-  manager_->RecordTouchpadInitialMetrics(touchpad);
-  histogram_tester.ExpectUniqueSample(
-      "ChromeOS.Settings.Device.Touchpad.External.NumConnectedLast28Days", 5,
-      1);
 }
 
 class SettingsUpdatedTimePeriodMetricsTest

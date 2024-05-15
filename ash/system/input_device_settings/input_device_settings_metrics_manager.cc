@@ -447,60 +447,6 @@ std::optional<ui::KeyboardDevice> FindKeyboardWithId(int device_id) {
   return *iter;
 }
 
-uint32_t CountNumberOfDevicesUsedInLast28Days(std::string_view pref_name) {
-  constexpr base::TimeDelta k28Days = base::Days(28);
-
-  PrefService* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  CHECK(pref_service);
-
-  uint32_t num_devices_used = 0;
-  const base::Value::Dict& devices_dict = pref_service->GetDict(pref_name);
-  for (const auto device_entry : devices_dict) {
-    const auto* device = device_entry.second.GetIfDict();
-    if (!device) {
-      continue;
-    }
-
-    const auto* last_updated_value = device->Find(prefs::kLastUpdatedKey);
-    if (!last_updated_value) {
-      continue;
-    }
-
-    const auto last_updated_time = base::ValueToTime(*last_updated_value);
-    if (!last_updated_time) {
-      continue;
-    }
-
-    if (base::Time::Now() - *last_updated_time <= k28Days) {
-      num_devices_used++;
-    }
-  }
-
-  return num_devices_used;
-}
-
-void RecordNumberOfMiceUsedInLast28Days() {
-  base::UmaHistogramCounts100(
-      "ChromeOS.Settings.Device.Mouse.External.NumConnectedLast28Days",
-      CountNumberOfDevicesUsedInLast28Days(
-          prefs::kMouseDeviceSettingsDictPref));
-}
-
-void RecordNumberOfKeyboardsUsedInLast28Days() {
-  base::UmaHistogramCounts100(
-      "ChromeOS.Settings.Device.Keyboard.External.NumConnectedLast28Days",
-      CountNumberOfDevicesUsedInLast28Days(
-          prefs::kKeyboardDeviceSettingsDictPref));
-}
-
-void RecordNumberOfTouchpadsUsedInLast28Days() {
-  base::UmaHistogramCounts100(
-      "ChromeOS.Settings.Device.Touchpad.External.NumConnectedLast28Days",
-      CountNumberOfDevicesUsedInLast28Days(
-          prefs::kTouchpadDeviceSettingsDictPref));
-}
-
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -510,12 +456,6 @@ InputDeviceSettingsMetricsManager::~InputDeviceSettingsMetricsManager() =
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     const mojom::Keyboard& keyboard) {
-  // Record this metric every time a mouse is plugged/unplugged to account for
-  // if a user session lasts for >28 days.
-  if (keyboard.is_external) {
-    RecordNumberOfKeyboardsUsedInLast28Days();
-  }
-
   // Only record the metrics once for each keyboard.
   const auto account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
@@ -680,10 +620,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysReset(
 
 void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
     const mojom::Mouse& mouse) {
-  // Record this metric every time a mouse is plugged/unplugged to account for
-  // if a user session lasts for >28 days.
-  RecordNumberOfMiceUsedInLast28Days();
-
   // Only record the metrics once for each mouse.
   const auto account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
@@ -862,12 +798,6 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickChangedMetrics(
 
 void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
     const mojom::Touchpad& touchpad) {
-  // Record this metric every time a mouse is plugged/unplugged to account for
-  // if a user session lasts for >28 days.
-  if (touchpad.is_external) {
-    RecordNumberOfTouchpadsUsedInLast28Days();
-  }
-
   // Only record the metrics once for each Touchpad.
   const auto account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
