@@ -532,10 +532,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
     public static final CachedFlag sAndroidHub = newCachedFlag(ANDROID_HUB, true);
     public static final CachedFlag sAndroidTabGroupStableIds =
-            newCachedFlag(
-                    ANDROID_TAB_GROUP_STABLE_IDS,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(ANDROID_TAB_GROUP_STABLE_IDS, true);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, false);
     public static final CachedFlag sArchiveTabService = newCachedFlag(ARCHIVE_TAB_SERVICE, false);
     public static final CachedFlag sAsyncNotificationManager =

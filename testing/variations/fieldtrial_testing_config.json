@@ -616,21 +616,6 @@
             ]
         }
     ],
-    "AndroidTabGroupStableIds": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabGroupStableIds"
-                    ]
-                }
-            ]
-        }
-    ],
     "AomVpxUseChromeThreads": [
         {
             "platforms": [
