@@ -509,8 +509,7 @@ public class HistoryUITest {
     }
 
     private boolean isAppFilterButtonEnabled() {
-        return mAdapter.isAppFilterHeaderItemVisible()
-                && mAdapter.getAppFilterButtonForTest().isEnabled();
+        return mAdapter.hasListHeader() && mAdapter.getAppFilterButtonForTest().isEnabled();
     }
 
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)

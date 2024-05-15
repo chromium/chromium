@@ -106,7 +106,7 @@ public class HistoryAdapterTest {
         doReturn(true).when(mContentManager).showAppFilter();
         mAdapter = new HistoryAdapter(mContentManager, mHistoryProvider);
 
-        mAdapter.generateHeaderItemsForTest(mAppFilterContainer);
+        mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setAppFilterButtonForTest(mAppFilterChip);
         Assert.assertTrue("Source app should be on", showSourceApp());

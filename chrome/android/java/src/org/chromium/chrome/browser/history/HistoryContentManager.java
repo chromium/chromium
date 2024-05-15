@@ -297,18 +297,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.queryApps();
     }
 
-    boolean onQueryAppsComplete(List<String> items) {
+    void onQueryAppsComplete(List<String> items) {
         mUmaRecorder.recordQueryAppDuration(SystemClock.elapsedRealtime() - mAppQueryStartMs);
-        return buildAppInfoList(items);
+        buildAppInfoList(items);
     }
 
     /**
      * Build a list of {@link AppInfo} using the app query result.
      *
      * @param appIds List of app IDs found from the history database.
-     * @return {@code true} if we have non-empty list of the apps to show.
      */
-    private boolean buildAppInfoList(List<String> appIds) {
+    private void buildAppInfoList(List<String> appIds) {
         mAppInfoList.clear();
         for (String appId : appIds) {
             AppInfo appInfo = mAppInfoCache.get(appId);
@@ -316,7 +315,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             // a default app.
             if (appInfo.isValid()) mAppInfoList.add(appInfo);
         }
-        return hasFilterList();
     }
 
     /**
