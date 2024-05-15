@@ -27,6 +27,7 @@ inline constexpr int kEditorMenuMarginDip = 8;
 
 // Minimum width of the editor menu.
 inline constexpr int kEditorMenuMinWidthDip = 320;
+inline constexpr int kBigEditorMenuMinWidthDip = 480;
 
 // Helper to compute editor menu bounds that for the provided anchor view
 // bounds. This tries to position the editor menu somewhere above/below/around

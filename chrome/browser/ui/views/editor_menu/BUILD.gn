@@ -24,6 +24,7 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/crosapi/mojom",
     "//ui/aura",

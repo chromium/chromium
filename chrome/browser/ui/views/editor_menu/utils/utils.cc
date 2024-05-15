@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 
+#include "chrome/browser/browser_process.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -11,6 +12,19 @@
 namespace chromeos::editor_menu {
 
 namespace {
+
+std::string GetSystemLocale() {
+  return g_browser_process != nullptr
+             ? g_browser_process->GetApplicationLocale()
+             : "";
+}
+
+int ComputeWidthOnSide() {
+  if (GetSystemLocale() == "ta") {
+    return kBigEditorMenuMinWidthDip;
+  }
+  return kEditorMenuMinWidthDip;
+}
 
 std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
     const gfx::Rect& anchor_view_bounds,
@@ -22,7 +36,8 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
   const int height_on_top_or_bottom =
       target->GetHeightForWidth(width_on_top_or_bottom);
 
-  const int height_on_side = target->GetHeightForWidth(kEditorMenuMinWidthDip);
+  const int width_on_side = ComputeWidthOnSide();
+  const int height_on_side = target->GetHeightForWidth(width_on_side);
 
   // The vertical starting position of top side candidates which makes them be
   // included in context menu range but also closer to cursor point.
@@ -107,10 +122,10 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x() - kEditorMenuMarginDip -
-                  kEditorMenuMinWidthDip,
+                  width_on_side,
               /*y=*/side_top_left),
           gfx::Size(
-              /*width=*/kEditorMenuMinWidthDip,
+              /*width=*/width_on_side,
               /*height=*/height_on_side),
       },
 
@@ -120,7 +135,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
               /*x=*/anchor_view_bounds.right() + kEditorMenuMarginDip,
               /*y=*/side_top_right),
           gfx::Size(
-              /*width=*/kEditorMenuMinWidthDip,
+              /*width=*/width_on_side,
               /*height=*/height_on_side),
       },
 
@@ -128,10 +143,10 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
       {
           gfx::Point(
               /*x=*/anchor_view_bounds.x() - kEditorMenuMarginDip -
-                  kEditorMenuMinWidthDip,
+                  width_on_side,
               /*y=*/side_bottom_left),
           gfx::Size(
-              /*width=*/kEditorMenuMinWidthDip,
+              /*width=*/width_on_side,
               /*height=*/height_on_side),
       },
 
@@ -141,7 +156,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
               /*x=*/anchor_view_bounds.right() + kEditorMenuMarginDip,
               /*y=*/side_bottom_right),
           gfx::Size(
-              /*width=*/kEditorMenuMinWidthDip,
+              /*width=*/width_on_side,
               /*height=*/height_on_side),
       },
   };
