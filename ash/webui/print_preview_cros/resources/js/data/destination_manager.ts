@@ -100,7 +100,8 @@ export class DestinationManager extends EventTarget implements
     // destination, and create the initial print ticket. If policy restricts
     // fetching a destination type an empty destination list will be returned.
     this.destinationProvider.getLocalDestinations().then(
-        (_destinations: Destination[]): void => {
+        (destinations: Destination[]): void => {
+          this.addOrUpdateDestinations(destinations);
           this.updateActiveDestination(PDF_DESTINATION.id);
           this.initialDestinationsLoaded = true;
           this.updateState(DestinationManagerState.LOADED);
@@ -142,6 +143,12 @@ export class DestinationManager extends EventTarget implements
   // known destinations. Existing destinations will not be removed from the set
   // of known destinations if disconnected during a preview session.
   onDestinationsChanged(destinations: Destination[]): void {
+    this.addOrUpdateDestinations(destinations);
+  }
+
+  // Handles processing multiple destinations and triggering the destinations
+  // changed event. If the destination list is empty the event is not fired.
+  private addOrUpdateDestinations(destinations: Destination[]): void {
     if (destinations.length === 0) {
       // TODO(b/323421684): Check if no-destination state has occurred.
       return;

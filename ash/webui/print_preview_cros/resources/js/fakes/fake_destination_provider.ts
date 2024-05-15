@@ -103,4 +103,8 @@ export class FakeDestinationProvider implements DestinationProvider {
   triggerOnDestinationsChanged(): void {
     this.observables.trigger(OBSERVABLE_ON_DESTINATIONS_CHANGED_METHOD);
   }
+
+  setLocalDestinationResult(destinations: Destination[]): void {
+    this.methods.setResult(GET_LOCAL_DESTINATIONS_METHOD, destinations);
+  }
 }

@@ -257,4 +257,56 @@ suite('DestinationManager', () => {
             mergedDestination.printerStatusReason,
             'Backend managed field printerStatusReason updated');
       });
+
+  // Verify destinations from getLocalDestinations are added to the manager's
+  // destination list and cache if new.
+  test(
+      'getLocalDestinations with new destinations are added to manager',
+      async () => {
+        const destinations = [createTestDestination()];
+        destinationProvider.setLocalDestinationResult(destinations);
+        const stateChanged =
+            eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
+
+        // Wait for getLocalDestinations to resolve.
+        mockTimer.tick(testDelay);
+        await stateChanged;
+
+        const managerDestinations = instance.getDestinations();
+        const expectedDestinations = [PDF_DESTINATION, ...destinations];
+        assertDeepEquals(expectedDestinations, managerDestinations);
+      });
+
+  // Verify destinations from getLocalDestinations are merged to the manager's
+  // destination list and cache if already in cache.
+  test(
+      'getLocalDestinations with existing destinations are merged into manager',
+      async () => {
+        // Set an existing destination with UI updated fields to merge.
+        const testDestination = createTestDestination();
+        testDestination.printerManuallySelected = true;
+        instance.setDestinationForTesting(testDestination);
+
+        let managerDestinations = instance.getDestinations();
+        let expectedDestinations = [PDF_DESTINATION, testDestination];
+        assertDeepEquals(expectedDestinations, managerDestinations);
+
+        // Create destination to merge into testDestination.
+        const testDestination2 = createTestDestination(testDestination.id);
+        const destinations = [testDestination2];
+        destinationProvider.setLocalDestinationResult(destinations);
+        const stateChanged =
+            eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
+
+        // Wait for getLocalDestinations to resolve.
+        mockTimer.tick(testDelay);
+        await stateChanged;
+
+        managerDestinations = instance.getDestinations();
+        expectedDestinations = [
+          PDF_DESTINATION,
+          {...testDestination2, printerManuallySelected: true},
+        ];
+        assertDeepEquals(expectedDestinations, managerDestinations);
+      });
 });
