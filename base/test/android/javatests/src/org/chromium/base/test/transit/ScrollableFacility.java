@@ -24,6 +24,7 @@ import androidx.test.espresso.action.ViewActions;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ScrollableFacility.Item.Presence;
+import org.chromium.base.test.util.RawFailureHandler;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -315,7 +316,15 @@ public abstract class ScrollableFacility<HostStationT extends Station>
 
             ItemOnScreenFacility<HostStationT, SelectReturnT> focusedItem =
                     new ItemOnScreenFacility<>(mHostStation, this);
-            return Facility.enterSync(focusedItem, this::maybeScrollTo);
+
+            try {
+                onView(mOnScreenViewMatcher)
+                        .withFailureHandler(RawFailureHandler.getInstance())
+                        .check(matches(isCompletelyDisplayed()));
+                return Facility.enterSync(focusedItem, /* trigger= */ null);
+            } catch (AssertionError | NoMatchingViewException e) {
+                return Facility.enterSync(focusedItem, this::triggerScrollTo);
+            }
         }
 
         protected void setSelectHandler(Callable<SelectReturnT> selectHandler) {
@@ -335,18 +344,14 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             return mSelectHandler;
         }
 
-        private void maybeScrollTo() {
+        private void triggerScrollTo() {
             try {
-                onView(mOnScreenViewMatcher).check(matches(isCompletelyDisplayed()));
-            } catch (AssertionError | NoMatchingViewException e) {
-                try {
-                    onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo());
-                } catch (PerformException performException) {
-                    throw TravelException.newTravelException(
-                            String.format(
-                                    "Could not scroll using data matcher %s", mOnScreenViewMatcher),
-                            performException);
-                }
+                onData(mOffScreenDataMatcher).perform(ViewActions.scrollTo());
+            } catch (PerformException performException) {
+                throw TravelException.newTravelException(
+                        String.format(
+                                "Could not scroll using data matcher %s", mOnScreenViewMatcher),
+                        performException);
             }
         }
     }

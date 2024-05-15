@@ -26,6 +26,8 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import org.chromium.base.test.util.RawFailureHandler;
+
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -97,7 +99,8 @@ public class ViewConditions {
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            ViewInteraction viewInteraction = onView(mMatcher);
+            ViewInteraction viewInteraction =
+                    onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
             String[] message = new String[1];
             try {
                 viewInteraction.perform(
@@ -191,7 +194,9 @@ public class ViewConditions {
         @Override
         protected ConditionStatus checkWithSuppliers() {
             try {
-                onView(mMatcher).check(doesNotExist());
+                onView(mMatcher)
+                        .withFailureHandler(RawFailureHandler.getInstance())
+                        .check(doesNotExist());
                 return fulfilled();
             } catch (AssertionError e) {
                 return notFulfilled();

@@ -4871,6 +4871,7 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
       "test/android/javatests/src/org/chromium/base/test/util/PayloadCallbackHelper.java",
+      "test/android/javatests/src/org/chromium/base/test/util/RawFailureHandler.java",
       "test/android/javatests/src/org/chromium/base/test/util/RequiresRestart.java",
       "test/android/javatests/src/org/chromium/base/test/util/Restriction.java",
       "test/android/javatests/src/org/chromium/base/test/util/RestrictionSkipCheck.java",
