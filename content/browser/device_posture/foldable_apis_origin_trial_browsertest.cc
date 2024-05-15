@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -23,6 +24,30 @@ namespace content {
 namespace {
 
 constexpr char kBaseDataDir[] = "content/test/data/device_posture";
+
+class TestRenderWidgetHostObserver : public RenderWidgetHostObserver {
+ public:
+  explicit TestRenderWidgetHostObserver(RenderWidgetHost* widget_host)
+      : widget_host_(widget_host) {
+    widget_host_->AddObserver(this);
+  }
+
+  ~TestRenderWidgetHostObserver() override {
+    widget_host_->RemoveObserver(this);
+  }
+
+  // RenderWidgetHostObserver:
+  void RenderWidgetHostDidUpdateVisualProperties(
+      RenderWidgetHost* widget_host) override {
+    run_loop_.Quit();
+  }
+
+  void WaitForVisualPropertiesUpdate() { run_loop_.Run(); }
+
+ private:
+  raw_ptr<RenderWidgetHost> widget_host_ = nullptr;
+  base::RunLoop run_loop_;
+};
 
 class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
  public:
@@ -63,6 +88,11 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
     RenderWidgetHostImpl* root_widget =
         root->current_frame_host()->GetRenderWidgetHost();
     root_widget->SynchronizeVisualProperties();
+    // We need to wait that visual properties are updated before we test the
+    // CSS APIs of Viewport Segments and Device Posture.
+    while (root_widget->visual_properties_ack_pending_for_testing()) {
+      TestRenderWidgetHostObserver(root_widget).WaitForVisualPropertiesUpdate();
+    }
   }
 
   void TearDownOnMainThread() override {
