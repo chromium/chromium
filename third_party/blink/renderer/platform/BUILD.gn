@@ -2636,6 +2636,7 @@ if (rtc_use_h265) {
       ":blink_fuzzer_test_support",
       ":platform",
     ]
+    libfuzzer_options = [ "rss_limit_mb=8192" ]
   }
 }
 
