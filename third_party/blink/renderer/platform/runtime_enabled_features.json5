@@ -4367,7 +4367,7 @@
     },
     {
       name: "WebCodecsCopyToRGB",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebCodecsHBDFormats",
