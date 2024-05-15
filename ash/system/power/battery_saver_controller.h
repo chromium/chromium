@@ -35,6 +35,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
  public:
   enum class UpdateReason {
     kCharging,
+    kChargeIncrease,
     kLowPower,
     kPowerManager,
     kSettings,

@@ -139,12 +139,11 @@ void BatterySaverController::OnPowerStatusChanged() {
     return;
   }
 
-  // Should we turn off battery saver?
-  if (active && on_AC_power) {
-    SetState(/*active=*/false, UpdateReason::kCharging);
-    return;
-  }
-
+  // Detect charging while powered off or sleeping.
+  // NB: This is above the on_AC_power check below so that we don't show the
+  // disabled toast just after startup if we had Battery Saver on before
+  // shutdown but are now charging. In that situation, we will restore battery
+  // saver in the ctor, but then disable it in the first OnPowerStatusChanged.
   if (active) {
     const int pref_battery_percent =
         local_state_->GetInteger(prefs::kPowerBatterySaverPercent);
@@ -156,12 +155,18 @@ void BatterySaverController::OnPowerStatusChanged() {
         pref_battery_percent + kBatterySaverSleepChargeThreshold;
     if (pref_battery_percent_set && above_activation_threshold &&
         battery_increased) {
-      SetState(/*active=*/false, UpdateReason::kCharging);
+      SetState(/*active=*/false, UpdateReason::kChargeIncrease);
       return;
     } else if (battery_percent != pref_battery_percent) {
       local_state_->SetInteger(prefs::kPowerBatterySaverPercent,
                                battery_percent);
     }
+  }
+
+  // Should we turn off battery saver?
+  if (active && on_AC_power) {
+    SetState(/*active=*/false, UpdateReason::kCharging);
+    return;
   }
 }
 
@@ -255,7 +260,8 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   if (!active && enable_record_) {
     // NB: We show the toast after checking enable_record_ to make sure we were
     // enabled before this Disable call.
-    if (reason != UpdateReason::kSettings) {
+    if (reason != UpdateReason::kSettings &&
+        reason != UpdateReason::kChargeIncrease) {
       ShowBatterySaverModeDisabledToast();
     }
 
@@ -274,6 +280,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
     switch (enable_record_->reason) {
       case UpdateReason::kAlwaysOn:
       case UpdateReason::kCharging:
+      case UpdateReason::kChargeIncrease:
       case UpdateReason::kPowerManager:
         break;
 
@@ -297,6 +304,7 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
         break;
 
       case UpdateReason::kCharging:
+      case UpdateReason::kChargeIncrease:
         base::UmaHistogramLongTimes(
             "Ash.BatterySaver.Duration.DisabledCharging", duration);
         break;
