@@ -559,7 +559,7 @@ TEST_P(SupervisedUserExtensionTest,
     // The extension should now be enabled and the version number increased.
     extension2 = CheckEnabled(id);
     EXPECT_TRUE(extension2);
-    // EXPECT_EQ(base::Version(version2), extension2->version());
+    EXPECT_EQ(extension2->version(), base::Version(version2));
   }
 }
 
@@ -696,6 +696,111 @@ TEST_P(SupervisedUserExtensionTest,
   CheckEnabled(id);
 }
 
+// Tests that extensions installed when the "Extensions" Family Link toggle
+// applies and is enabled, are installed enabled and have been granted parent
+// approval.
+TEST_P(SupervisedUserExtensionTest,
+       ExtensionsToggleOnGrantsParentApprovalOnInstallation) {
+  InitServices(/*profile_is_supervised=*/true);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+  // Set the "Extensions" toggle to true, allowing installation without parental
+  // approval.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions() ||
+                           GetExtensionManagementSwitch() ==
+                               ExtensionManagementSwitch::kManagedByExtensions;
+
+  // If the Extensions toggle applies, the extension is installed and enabled.
+  auto install_state =
+      should_be_enabled ? INSTALL_NEW : GetDefaultInstalledState();
+  const Extension* extension = InstallNoPermissionsTestExtension(install_state);
+  std::string id = extension->id();
+
+  if (should_be_enabled) {
+    // The extension has already been granted approval on its installation.
+    CheckEnabled(id);
+  } else {
+    CheckDisabledForCustodianApproval(id);
+  }
+}
+
+// Tests that for extensions installed under the enabled "Extensions" Family
+// Link toggle the approval remains on installed extensions if the switch is
+// toggled to false.
+TEST_P(SupervisedUserExtensionTest,
+       ExtensionsToggleOffDoesNotAffectAlreadyEnabled) {
+  InitServices(/*profile_is_supervised=*/true);
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+  // Set the "Extensions" toggle to true, allowing installation without parental
+  // approval.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions() ||
+                           GetExtensionManagementSwitch() ==
+                               ExtensionManagementSwitch::kManagedByExtensions;
+
+  // If the Extensions toggle applies, the extension is installed and enabled.
+  auto install_state =
+      should_be_enabled ? INSTALL_NEW : GetDefaultInstalledState();
+  const Extension* extension = InstallNoPermissionsTestExtension(install_state);
+  std::string id = extension->id();
+
+  if (should_be_enabled) {
+    // The extension has already been granted approval on its installation.
+    CheckEnabled(id);
+  } else {
+    CheckDisabledForCustodianApproval(id);
+  }
+
+  // Custodian sets the "Extensions" toggle to false.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  // Already installed and enabled extensions should remain that way.
+  if (should_be_enabled) {
+    CheckEnabled(id);
+  }
+}
+
+// Tests that for extensions installed under the enabled "Extensions" Family
+// Link, toggling the switch from false to true grants parental approval.
+TEST_P(SupervisedUserExtensionTest,
+       ExtensionsToggleOnGrantsMissingParentalApproval) {
+  InitServices(/*profile_is_supervised=*/true);
+  SetDefaultParentalControlSettings();
+
+  const Extension* extension =
+      InstallNoPermissionsTestExtension(GetDefaultInstalledState());
+  std::string id = extension->id();
+
+  if (ApplyParentalControlsOnExtensions()) {
+    CheckDisabledForCustodianApproval(id);
+  } else {
+    CheckEnabled(id);
+  }
+
+  // Custodian sets the "Extensions" toggle to True.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), true);
+
+  if (!ApplyParentalControlsOnExtensions() ||
+      GetExtensionManagementSwitch() ==
+          ExtensionManagementSwitch::kManagedByExtensions) {
+    // If the "Extensions" toggle manages the extensions, the extension has been
+    // granted approval and becomes enabled on toggling the switch.
+    CheckEnabled(id);
+  } else {
+    // If the "Permissions" toggle manages the extensions, toggling the
+    // "Extensions" switch has no effect.
+    CheckDisabledForCustodianApproval(id);
+  }
+}
+
 // Tests the case when the extension approval arrives through sync before the
 // extension itself is installed.
 TEST_P(SupervisedUserExtensionTest, ExtensionApprovalBeforeInstallation) {
@@ -715,6 +820,141 @@ TEST_P(SupervisedUserExtensionTest, ExtensionApprovalBeforeInstallation) {
 
   // Make sure it's enabled.
   CheckEnabled(good_crx);
+}
+
+// Tests that when the `SkipParentApprovalToInstallExtensions` feature is first
+// released (so Extensions are managed by Family Link "Extensions" toggle),
+// existing extensions remain enabled on Desktop. On ChromeOS they are disabled.
+TEST_P(SupervisedUserExtensionTest,
+       ExtensionsOnDesktopRemainEnabledOnSkipParentApprovalRelease) {
+  ExtensionServiceInitParams params;
+  params.profile_is_supervised = true;
+  InitializeExtensionService(params);
+  SetDefaultParentalControlSettings();
+  // Install an extension. It should be enabled as we haven't created the SU
+  // extension manager yet. Treated as a pre-existing extension.
+  base::FilePath path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(path, INSTALL_NEW);
+  ASSERT_TRUE(extension);
+
+  // Make sure it's enabled.
+  CheckEnabled(good_crx);
+
+  // Create the extensions manager. If the
+  // `SkipParentApprovalToInstallExtensions` feature applies for the first time,
+  // the existing extensions remain enabled on Desktop.
+  CreateExtensionManager();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions() ||
+                           GetExtensionManagementSwitch() ==
+                               ExtensionManagementSwitch::kManagedByExtensions;
+#else
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions();
+#endif
+  if (should_be_enabled) {
+    CheckEnabled(good_crx);
+  } else {
+    CheckDisabledForCustodianApproval(good_crx);
+  }
+
+  if (ApplyParentalControlsOnExtensions()) {
+    // Parent approval can be granted even if the extension behaves already as
+    // parent-approved on Win/Linux/Mac.
+    supervised_user_extensions_delegate()->AddExtensionApproval(*extension);
+  }
+  CheckEnabled(good_crx);
+}
+
+// Tests when the `SkipParentApprovalToInstallExtensions` feature is firstly
+// released (so Extensions are managed by Family Link "Extensions" toggle)
+// existing extensions that have been marked parent-approved on Desktop by
+// default can be upgraded without further parental approval.
+TEST_P(SupervisedUserExtensionTest,
+       ExtensionsEnabledOnSkipParentApprovalReleaseCanBeUpgraded) {
+  ExtensionServiceInitParams params;
+  params.profile_is_supervised = true;
+  InitializeExtensionService(params);
+  SetDefaultParentalControlSettings();
+  // Install an extension. It should be enabled as we haven't created the SU
+  // extension manager yet. Treated as a pre-existing extension.
+  const Extension* extension = InstallPermissionsTestExtension(INSTALL_NEW);
+  ASSERT_TRUE(extension);
+  std::string extension_id = extension->id();
+
+  // Make sure it's enabled.
+  CheckEnabled(extension_id);
+
+  // Create the extensions manager. If the
+  // `SkipParentApprovalToInstallExtensions` feature applies for the first time,
+  // the existing extensions remain enabled on Desktop.
+  CreateExtensionManager();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions() ||
+                           GetExtensionManagementSwitch() ==
+                               ExtensionManagementSwitch::kManagedByExtensions;
+#else
+  bool should_be_enabled = !ApplyParentalControlsOnExtensions();
+#endif
+  if (should_be_enabled) {
+    CheckEnabled(extension_id);
+  } else {
+    CheckDisabledForCustodianApproval(extension_id);
+  }
+
+  // Update to a new version with increased permissions.
+  UpdatePermissionsTestExtension(extension_id, "2", DISABLED);
+  const Extension* extension2 =
+      CheckDisabledForPermissionsIncrease(extension_id);
+  ASSERT_TRUE(extension2);
+
+  // Grant the upgraded permissions.
+  service()->GrantPermissionsAndEnableExtension(extension2);
+  if (should_be_enabled) {
+    // When no parental controls apply, or when Managed by the Extensions
+    // switch, the extensions becomes enabled upon granting the increased
+    // permission. The parental approval granted at SU Extension manager
+    // creation remains.
+    CheckEnabled(extension_id);
+  } else {
+    // When managed by the Permissions switch the extension is still disabled
+    // as parent approval was never granted.
+    CheckDisabledForCustodianApproval(extension_id);
+  }
+}
+
+// Tests that uninstalling a parent-approved extension removes the parental
+// approval.
+TEST_P(SupervisedUserExtensionTest, UnistallingRevokesParentApproval) {
+  InitServices(/*profile_is_supervised=*/true);
+  SetDefaultParentalControlSettings();
+
+  const Extension* extension =
+      InstallNoPermissionsTestExtension(GetDefaultInstalledState());
+  std::string extension_id = extension->id();
+
+  if (ApplyParentalControlsOnExtensions()) {
+    CheckDisabledForCustodianApproval(extension_id);
+    // Simulate parent approval.
+    supervised_user_extensions_delegate()->AddExtensionApproval(*extension);
+  }
+
+  CheckEnabled(extension_id);
+  EXPECT_EQ(ApplyParentalControlsOnExtensions(),
+            profile()
+                ->GetPrefs()
+                ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+                .contains(extension_id));
+
+  // Uninstall the extension.
+  std::u16string error;
+  service()->UninstallExtension(
+      extension_id, UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+                   .contains(extension_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(
