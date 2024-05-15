@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
+#include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/fake_gatt_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,9 +24,12 @@
 
 namespace {
 
-const char kServiceId[] = "12345678-1234-5678-9abc-def123456789";
-const char kCharacteristicUuid1[] = "00001101-0000-1000-8000-00805f9b34fb";
-const char kCharacteristicUuid2[] = "00001102-0000-1000-8000-00805f9b34fc";
+const device::BluetoothUUID kServiceId =
+    device::BluetoothUUID("12345678-1234-5678-9abc-def123456789");
+const device::BluetoothUUID kCharacteristicUuid1 =
+    device::BluetoothUUID("00001101-0000-1000-8000-00805f9b34fb");
+const device::BluetoothUUID kCharacteristicUuid2 =
+    device::BluetoothUUID("00001102-0000-1000-8000-00805f9b34fc");
 const char kNewCharacteristicValue[] = "1010101";
 
 }  // namespace
@@ -85,29 +89,30 @@ class BleV2GattServerTest : public testing::Test {
   }
 
   void CallCreateCharacteristic(
-      std::string characteristic_uuid,
+      device::BluetoothUUID characteristic_uuid,
       bool expected_success,
       api::ble_v2::GattCharacteristic::Permission permission =
           api::ble_v2::GattCharacteristic::Permission::kRead,
       api::ble_v2::GattCharacteristic::Property property =
           api::ble_v2::GattCharacteristic::Property::kRead) {
     gatt_characteristic_ = ble_v2_gatt_server_->CreateCharacteristic(
-        /*service_uuid=*/Uuid(/*data=*/kServiceId),
-        /*characteristic_uuid=*/Uuid(/*data=*/characteristic_uuid),
+        /*service_uuid=*/BluetoothUuidToNearbyUuid(kServiceId),
+        /*characteristic_uuid=*/BluetoothUuidToNearbyUuid(characteristic_uuid),
         /*permission=*/permission,
         /*property=*/property);
     EXPECT_EQ(expected_success, gatt_characteristic_.has_value());
   }
 
   void CallUpdateCharacteristic(
-      std::string characteristic_uuid,
+      device::BluetoothUUID characteristic_uuid,
       bool expected_success,
       api::ble_v2::GattCharacteristic::Permission permission =
           api::ble_v2::GattCharacteristic::Permission::kRead,
       api::ble_v2::GattCharacteristic::Property property =
           api::ble_v2::GattCharacteristic::Property::kRead) {
     api::ble_v2::GattCharacteristic gatt_characteristic = {
-        Uuid(characteristic_uuid), Uuid(kServiceId), permission, property};
+        BluetoothUuidToNearbyUuid(characteristic_uuid),
+        BluetoothUuidToNearbyUuid(kServiceId), permission, property};
     bool result = ble_v2_gatt_server_->UpdateCharacteristic(
         /*characteristic=*/gatt_characteristic,
         /*value=*/nearby::ByteArray(kNewCharacteristicValue));

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
@@ -172,9 +173,10 @@ BleV2GattServer::CreateCharacteristic(
   // only contain a single value.
   CHECK(gatt_service->gatt_service_remote.is_bound());
   bool create_characteristic_success;
+  device::BluetoothUUID bluetooth_characteristic_uuid{
+      std::string(characteristic_uuid)};
   gatt_service->gatt_service_remote->CreateCharacteristic(
-      /*characteristic_uuid=*/device::BluetoothUUID(
-          characteristic_uuid.Get16BitAsString()),
+      /*characteristic_uuid=*/bluetooth_characteristic_uuid,
       /*permissions=*/ConvertPermission(permission),
       /*properties=*/ConvertProperty(property),
       /*out_success=*/&create_characteristic_success);
@@ -319,8 +321,9 @@ void BleV2GattServer::OnLocalCharacteristicRead(
     OnLocalCharacteristicReadCallback callback) {
   VLOG(1) << __func__;
 
-  Uuid nearby_service_uuid = Uuid(service_uuid.value());
-  Uuid nearby_characteristic_uuid = Uuid(characteristic_uuid.value());
+  Uuid nearby_service_uuid = BluetoothUuidToNearbyUuid(service_uuid);
+  Uuid nearby_characteristic_uuid =
+      BluetoothUuidToNearbyUuid(characteristic_uuid);
 
   // Expect that `OnLocalCharacteristicRead()` is called for a
   // characteristic that already exists in the `uuid_to_gatt_service_map_` of
