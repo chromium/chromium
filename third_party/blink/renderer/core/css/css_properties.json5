@@ -1687,6 +1687,7 @@
       priority: 1,
       computable: false,
       valid_for_formatted_text: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-text-orientation",
@@ -1794,6 +1795,7 @@
                  "after-edge", "text-after-edge", "hanging"],
       typedom_types: ["Keyword"],
       default_value: "auto",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "align-self",
@@ -2060,6 +2062,7 @@
       style_builder_custom_functions: ["inherit", "value"],
       keywords: ["baseline", "sub", "super"],
       typedom_types: ["Keyword", "Percentage", "Length"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "baseline-source",
@@ -2758,6 +2761,7 @@
       getter: "GetColumnFill",
       typedom_types: ["Keyword"],
       computable: false,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "contain",
@@ -2913,6 +2917,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "cy",
@@ -2924,6 +2929,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "d",
@@ -2939,6 +2945,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "display",
@@ -2969,6 +2976,7 @@
                  "use-script", "no-change", "reset-size", "text-after-edge", "text-before-edge"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "empty-cells",
@@ -3057,6 +3065,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       keywords: ["auto", "fit-content", "min-content", "max-content", "content"],
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "flex-direction",
@@ -3067,6 +3076,7 @@
       keywords: ["row", "row-reverse", "column", "column-reverse"],
       default_value: "row",
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "flex-grow",
@@ -3078,6 +3088,7 @@
       type_name: "float",
       typedom_types: ["Number"],
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "flex-shrink",
@@ -3089,6 +3100,7 @@
       type_name: "float",
       typedom_types: ["Number"],
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "flex-wrap",
@@ -3099,6 +3111,7 @@
       keywords: ["nowrap", "wrap", "wrap-reverse"],
       default_value: "nowrap",
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "float",
@@ -3160,6 +3173,7 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-auto-flow",
@@ -3173,6 +3187,7 @@
       converter: "ConvertGridAutoFlow",
       keywords: ["row", "column"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-auto-rows",
@@ -3186,6 +3201,7 @@
       keywords: ["auto", "min-content", "max-content"],
       typedom_types: ["Keyword", "Length", "Percentage", "Flex"],
       separator: " ",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-column-end",
@@ -3198,6 +3214,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-column-start",
@@ -3210,6 +3227,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-row-end",
@@ -3222,6 +3240,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-row-start",
@@ -3234,6 +3253,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-template-areas",
@@ -3247,6 +3267,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       converter: "ConvertGridTemplateAreas",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-template-columns",
@@ -3264,6 +3285,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "grid-template-rows",
@@ -3281,6 +3303,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "height",
@@ -3316,6 +3339,7 @@
       default_value: "StyleHyphenateLimitChars()",
       include_paths: ["third_party/blink/renderer/core/style/style_hyphenate_limit_chars.h"],
       converter: "ConvertHyphenateLimitChars",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "popover-show-delay",
@@ -3354,6 +3378,7 @@
       type_name: "Hyphens",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "image-rendering",
@@ -3382,6 +3407,7 @@
       include_paths: [
         "third_party/blink/renderer/platform/graphics/image_orientation.h"
       ],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "dynamic-range-limit",
@@ -3411,6 +3437,7 @@
       property_methods: ["ParseSingleValueFromRange", "CSSValueFromComputedStyleInternal"],
       type_name: "StyleInitialLetter",
       valid_for_first_letter: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "isolation",
@@ -3530,6 +3557,7 @@
       valid_for_marker: true,
       valid_for_page_context: true,
       affected_by_zoom: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "list-style-image",
@@ -3545,6 +3573,7 @@
       type_name: "StyleImage",
       style_builder_custom_functions: ["value"],
       keywords: ["none"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "list-style-position",
@@ -3685,6 +3714,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "marker-mid",
@@ -3700,6 +3730,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "marker-start",
@@ -3715,6 +3746,7 @@
       converter: "ConvertElementReference",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "mask-type",
@@ -3882,6 +3914,7 @@
       converter: "ConvertObjectViewBox",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "offset-anchor",
@@ -3974,6 +4007,7 @@
       type_name: "int",
       typedom_types: ["Number"],
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       // This property is used for testing with origin trial intergration only.
@@ -4093,6 +4127,7 @@
       default_value: "normal",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "overflow-inline",
@@ -4252,7 +4287,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "paint", "scroll-anchor"],
     },
     {
       name: "padding-left",
@@ -4273,7 +4308,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "paint", "scroll-anchor"],
     },
     {
       name: "padding-right",
@@ -4294,7 +4329,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "paint", "scroll-anchor"],
     },
     {
       name: "padding-top",
@@ -4315,7 +4350,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
-      invalidate: ["scroll-anchor"],
+      invalidate: ["layout", "paint", "scroll-anchor"],
     },
     {
       name: "page",
@@ -4451,6 +4486,7 @@
       wrapper_pointer_name: "Member",
       type_name: "PositionTryOptions",
       default_value: "nullptr",
+      invalidate: ["layout", "paint"],
       runtime_flag: "CSSAnchorPositioning",
     },
     {
@@ -4461,6 +4497,7 @@
       keywords: ["normal", "most-width", "most-height", "most-block-size", "most-inline-size"],
       typedom_types: ["Keyword"],
       default_value: "normal",
+      invalidate: ["layout", "paint"],
       runtime_flag: "CSSPositionTryOrder",
     },
     {
@@ -4476,6 +4513,7 @@
       // TODO(crbug.com/332933527): Support anchors-valid.
       keywords: ["always", "anchors-visible", "no-overflow"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
       runtime_flag: "CSSPositionVisibility",
     },
     {
@@ -4559,6 +4597,7 @@
       typedom_types: ["Length", "Percentage"],
       converter: "ConvertLength",
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "rx",
@@ -4571,6 +4610,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "ry",
@@ -4583,6 +4623,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       converter: "ConvertLengthOrAuto",
       supports_incremental_style: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "scroll-markers",
@@ -4635,6 +4676,7 @@
       keywords: ["auto", "thin", "none"],
       default_value: "auto",
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
       runtime_flag: "ScrollbarWidth",
     },
     {
@@ -5077,6 +5119,7 @@
       converter: "ConvertLength",
       keywords: ["none"],
       typedom_types: ["Length", "Percentage"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "shape-outside",
@@ -5219,6 +5262,7 @@
       name_for_methods: "CapStyle",
       keywords: ["butt", "round", "square"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "stroke-linejoin",
@@ -5232,6 +5276,7 @@
       name_for_methods: "JoinStyle",
       keywords: ["miter", "bevel", "round"],
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "stroke-miterlimit",
@@ -5244,6 +5289,7 @@
       default_value: "4",
       name_for_methods: "StrokeMiterLimit",
       typedom_types: ["Number"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "stroke-opacity",
@@ -5273,6 +5319,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "table-layout",
@@ -5300,6 +5347,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Number", "Length"],
       valid_for_marker: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-align",
@@ -5328,6 +5376,7 @@
       default_value: "auto",
       typedom_types: ["Keyword"],
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-anchor",
@@ -5338,6 +5387,7 @@
       keywords: ["start", "middle", "end"],
       default_value: "start",
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-autospace",
@@ -5386,6 +5436,7 @@
       valid_for_marker: true,
       computable: false,
       valid_for_formatted_text: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-decoration-color",
@@ -5503,6 +5554,7 @@
       style_builder_custom_functions: ["value"],
       typedom_types: ["Length", "Percentage"],
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-overflow",
@@ -5514,6 +5566,7 @@
       default_value: "clip",
       valid_for_formatted_text: true,
       valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-shadow",
@@ -5553,6 +5606,7 @@
       converter: "ConvertTextSizeAdjust",
       keywords: ["none", "auto"],
       typedom_types: ["Keyword", "Percentage"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-spacing",
@@ -5807,6 +5861,7 @@
       keywords: ["none", "non-scaling-stroke"],
       typedom_types: ["Keyword"],
       default_value: "none",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "vertical-align",
@@ -5904,6 +5959,7 @@
       converter: "ConvertLength",
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "y",
@@ -5916,6 +5972,7 @@
       converter: "ConvertLength",
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "appearance",
@@ -5930,6 +5987,7 @@
       // appearance needs to be computed before
       // -internal-appearance-auto-base-select() can be resolved.
       priority: 1,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-appearance",
@@ -5962,6 +6020,7 @@
       type_name: "short",
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-border-image",
@@ -5984,6 +6043,7 @@
       type_name: "short",
       converter: "ConvertComputedLength<short>",
       valid_for_first_letter: true,
+      invalidate: ["layout", "paint"],
     },
     // For valid values of box-align see
     // http://www.w3.org/TR/2009/WD-css3-flexbox-20090723/#alignment
@@ -5996,6 +6056,7 @@
       default_value: "stretch",
       type_name: "EBoxAlignment",
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-decoration-break",
@@ -6004,6 +6065,7 @@
       field_template: "keyword",
       keywords: ["slice", "clone"],
       default_value: "slice",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-direction",
@@ -6021,6 +6083,7 @@
       default_value: "0.0f",
       type_name: "float",
       accepts_numeric_literal: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-ordinal-group",
@@ -6031,6 +6094,7 @@
       type_name: "unsigned",
       computed_style_custom_functions: ["setter"],
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-orient",
@@ -6039,6 +6103,7 @@
       field_template: "keyword",
       keywords: ["horizontal", "vertical"],
       default_value: "horizontal",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-pack",
@@ -6047,6 +6112,7 @@
       field_template: "keyword",
       keywords: ["start", "center", "end", "justify"],
       default_value: "start",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-box-reflect",
@@ -6072,6 +6138,7 @@
       style_builder_template: "auto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Number"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "column-gap",
@@ -6085,6 +6152,7 @@
       converter: "ConvertGapLength",
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "row-gap",
@@ -6098,6 +6166,7 @@
       converter: "ConvertGapLength",
       keywords: ["normal"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "column-rule-color",
@@ -6152,6 +6221,7 @@
       default_value: "none",
       getter: "GetColumnSpan",
       typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "column-width",
@@ -6166,6 +6236,7 @@
       converter: "ConvertComputedLength<float>",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "hyphenate-character",
@@ -6178,6 +6249,7 @@
       name_for_methods: "HyphenationString",
       type_name: "AtomicString",
       converter: "ConvertString<CSSValueID::kAuto>",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-line-break",
@@ -6189,6 +6261,7 @@
       default_value: "auto",
       type_name: "LineBreak",
       valid_for_formatted_text: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "line-break",
@@ -6220,6 +6293,7 @@
       field_template: "primitive",
       default_value: "0",
       type_name: "int",
+      invalidate: ["layout", "paint"],
       name_for_methods: "WebkitLineClamp",
     },
     {
@@ -6436,6 +6510,7 @@
       converter: "ConvertRubyPosition",
       valid_for_first_line: true,
       valid_for_permission_element: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-tap-highlight-color",
@@ -6486,6 +6561,7 @@
       type_name: "TextEmphasisPosition",
       converter: "ConvertTextTextEmphasisPosition",
       valid_for_marker: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "text-emphasis-style",
@@ -6518,6 +6594,7 @@
       field_template: "keyword",
       keywords: ["none", "disc", "circle", "square"],
       default_value: "none",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-text-stroke-color",
@@ -6547,6 +6624,7 @@
       converter: "ConvertTextStrokeWidth",
       valid_for_highlight_legacy: true,
       valid_for_highlight: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "-webkit-transform-origin-x",
@@ -6712,6 +6790,7 @@
       default_value: "normal",
       typedom_types: ["Keyword"],
       valid_for_marker: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "word-spacing",
@@ -7433,7 +7512,7 @@
       // anchor() functions compute relative to the containing block that is
       // modified by inset-area in AnchorEvaluatorImpl.
       priority: 1,
-      invalidate: ["out-of-flow"],
+      invalidate: ["layout", "out-of-flow", "paint"],
     },
 
     // Shorthands

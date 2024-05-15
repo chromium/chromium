@@ -383,6 +383,7 @@
       field_group: "inherited",
       default_value: "1.0",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "CursorData",
@@ -403,6 +404,7 @@
       default_value: "1.0f",
       field_group: "*",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "TextEmphasisFill",
@@ -412,6 +414,7 @@
       default_value: "filled",
       keywords: ["filled", "open"],
       field_group: "*",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "TextEmphasisMark",
@@ -422,6 +425,7 @@
       keywords: ["none", "auto", "dot", "circle", "double-circle", "triangle", "sesame", "custom"],
       field_group: "*",
       computed_style_custom_functions: ["getter"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "SubtreeWillChangeContents",
@@ -467,6 +471,7 @@
       include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
       default_value: "AtomicString()",
       field_group: "*",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "BaseTextDecorationData",
@@ -881,6 +886,7 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "HasAutoColumnCount",
@@ -889,6 +895,7 @@
       field_group: "*",
       default_value: "true",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["layout", "paint"],
     },
     // We only create and store ComputedStyle objects for elements in
     // display:none subtrees if we need it for e.g. getComputedStyle. This flag
@@ -1011,6 +1018,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathFractionBarThickness",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "MathLSpace",
@@ -1020,6 +1028,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathLSpace",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "MathRSpace",
@@ -1029,6 +1038,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathRSpace",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "MathPaddedVOffset",
@@ -1038,6 +1048,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathPaddedVOffset",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "MathPaddedDepth",
@@ -1056,6 +1067,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathMinSize",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "MathMaxSize",
@@ -1065,6 +1077,7 @@
       type_name: "Length",
       field_group: "*->math",
       getter: "GetMathMaxSize",
+      invalidate: ["layout", "paint"],
     },
     {
       name: "EffectiveZIndexZero",
@@ -1081,6 +1094,7 @@
       field_size: 2,
       type_name: "EBaselineShiftType",
       default_value: "EBaselineShiftType::kLength",
+      invalidate: ["layout", "paint"],
     },
     {
       // Represents 'dominant-baseline' defined in the css-inline specification,
@@ -1095,6 +1109,7 @@
       type_name: "EDominantBaseline",
       default_value: "EDominantBaseline::kAuto",
       inherited: true,
+      invalidate: ["layout", "paint"],
     },
     {
       name: "DependsOnSizeContainerQueries",
