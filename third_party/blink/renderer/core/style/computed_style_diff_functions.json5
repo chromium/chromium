@@ -50,13 +50,6 @@
             field_dependencies: ["stroke-dasharray"]
           },
         ],
-        predicates_to_test: [
-          {
-            predicate: "a.OpacityChangedStackingContext(b)",
-            field_dependencies: ["IsStackingContextWithoutContainment",
-                                 "opacity"]
-          },
-        ]
     },
     {
         name: "DiffNeedsPaintInvalidation",

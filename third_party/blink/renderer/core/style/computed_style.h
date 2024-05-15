@@ -621,25 +621,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // Returns whether `line-clamp` or `-webkit-line-clamp` are set and apply.
   bool HasLineClamp() const { return LineClamp() != 0; }
 
-  bool OpacityChangedStackingContext(const ComputedStyle& other) const {
-    // We only need do layout for opacity changes if adding or losing opacity
-    // could trigger a change
-    // in us being a stacking context.
-    if (IsStackingContextWithoutContainment() ==
-            other.IsStackingContextWithoutContainment() ||
-        HasOpacity() == other.HasOpacity()) {
-      // FIXME: We would like to use SimplifiedLayout here, but we can't quite
-      // do that yet.  We need to make sure SimplifiedLayout can operate
-      // correctly on LayoutInlines (we will need to add a
-      // selfNeedsSimplifiedLayout bit in order to not get confused and taint
-      // every line).  In addition we need to solve the floating object issue
-      // when layers come and go. Right now a full layout is necessary to keep
-      // floating object lists sane.
-      return true;
-    }
-    return false;
-  }
-
   // Outline properties.
 
   bool OutlineVisuallyEqual(const ComputedStyle& other) const {
