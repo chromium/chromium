@@ -2835,6 +2835,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4DatabaseInitializationTime" units="ms"
+    expires_after="2024-08-14">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    How long it took to create the V4 database. Logged on each startup, when the
+    database is created.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4GetHash.CacheFullyHit" enum="BooleanCacheHit"
     expires_after="2024-08-20">
   <owner>thefrog@chromium.org</owner>
@@ -3137,6 +3147,17 @@ and applied correctly. -->
     once for every 256 times (a heuristic applied starting M104 for making
     recording more efficient) a store is checked (a few times for each download,
     and once when a potentially dangerous subresource is loaded).
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Store.ReadyOnStartup" enum="BooleanReady"
+    expires_after="2024-08-14">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether an individual store has valid data immediately after being
+    constructed. This is logged once for each V4 store on each startup. Failures
+    here can indicate an inability to read data from disk.
   </summary>
 </histogram>
 

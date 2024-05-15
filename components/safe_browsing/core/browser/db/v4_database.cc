@@ -133,8 +133,11 @@ void V4Database::CreateOnTaskRunner(
     }
 
     const base::FilePath store_path = base_path.AppendASCII(it.filename());
-    store_map->insert({it.list_id(), g_store_factory.Get()->CreateV4Store(
-                                         db_task_runner, store_path)});
+    V4StorePtr store =
+        g_store_factory.Get()->CreateV4Store(db_task_runner, store_path);
+    base::UmaHistogramBoolean("SafeBrowsing.V4Store.ReadyOnStartup",
+                              store->HasValidData());
+    store_map->insert({it.list_id(), std::move(store)});
   }
 
   if (!g_db_factory.Get())

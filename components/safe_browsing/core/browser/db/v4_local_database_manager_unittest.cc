@@ -472,9 +472,9 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     // the fake database won't be set either.
     ForceEnableLocalDatabaseManager();
 
-    NewDatabaseReadyCallback db_ready_callback =
-        base::BindOnce(&V4LocalDatabaseManager::DatabaseReadyForChecks,
-                       base::Unretained(v4_local_database_manager_.get()));
+    NewDatabaseReadyCallback db_ready_callback = base::BindOnce(
+        &V4LocalDatabaseManager::DatabaseReadyForChecks,
+        base::Unretained(v4_local_database_manager_.get()), base::Time::Now());
     FakeV4Database::Create(
         task_runner_, std::make_unique<StoreMap>(), store_and_hash_prefixes,
         std::move(db_ready_callback), stores_available, store_file_size);

@@ -239,10 +239,13 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   typedef std::unordered_set<raw_ptr<PendingCheck, CtnExperimental>>
       PendingChecks;
 
-  // Called when all the stores managed by the database have been read from
-  // disk after startup and the database is ready for checking resource
-  // reputation.
+  // Called when all the stores managed by the database have been read
+  // from disk after startup and the database is ready for checking
+  // resource reputation. `start_time` represents when we started
+  // initializing the database. It is provided when this is bound as a
+  // callback, so we can measure end-to-end initialization time.
   void DatabaseReadyForChecks(
+      base::Time start_time,
       std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> v4_database);
 
   // Called when all the stores managed by the database have been verified for
