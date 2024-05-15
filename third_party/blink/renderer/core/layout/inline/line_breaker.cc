@@ -912,6 +912,13 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
           ? LineBreakState::kOverflow
           : LineBreakState::kContinue;
   trailing_whitespace_ = initial_whitespace_;
+
+  if (break_token_) {
+    if (const auto* ruby_data = break_token_->RubyData()) {
+      HandleRuby(ruby_data, line_info);
+    }
+  }
+
   while (state_ != LineBreakState::kDone) {
     // If we reach at the end of the block, this is the last line.
     DCHECK_LE(current_.item_index, items.size());
@@ -1010,7 +1017,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
         MoveToNextOf(item);
         continue;
       }
-      if (!HandleRuby(line_info)) {
+      if (!HandleRuby(nullptr, line_info)) {
         AddItem(item, line_info);
         MoveToNextOf(item);
       }
@@ -3195,12 +3202,13 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
   state_ = LineBreakState::kDone;
 }
 
-bool LineBreaker::HandleRuby(LineInfo* line_info) {
+bool LineBreaker::HandleRuby(const RubyBreakTokenData* ruby_token,
+                             LineInfo* line_info) {
   InlineItemTextIndex base_start = current_;
   wtf_size_t base_end_index;
   Vector<AnnotationBreakTokenData, 1> annotation_data;
   wtf_size_t open_column_item_index;
-  {
+  if (!ruby_token) {
     open_column_item_index = current_.item_index;
     RubyItemIndexes ruby_indexes =
         ParseRubyInInlineItems(Items(), current_.item_index);
@@ -3217,8 +3225,11 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
     wtf_size_t start = ruby_indexes.annotation_start;
     annotation_data.push_back(AnnotationBreakTokenData{
         {start, Items()[start].StartOffset()}, start, ruby_indexes.column_end});
+  } else {
+    open_column_item_index = ruby_token->open_column_item_index;
+    base_end_index = ruby_token->ruby_base_end_item_index;
+    annotation_data = ruby_token->annotation_data;
   }
-  // TODO(crbug.com/324111880): Setup for a wrapped ruby column.
   const InlineItem& item = Items()[open_column_item_index];
 
   LineInfo base_line_info = CreateSubLineInfo(
@@ -3248,7 +3259,7 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
     }
 
     AddRubyColumnResult(item, base_line_info, annotation_line_list,
-                        annotation_data, ruby_size, *line_info);
+                        annotation_data, ruby_size, ruby_token, *line_info);
     position_ += ruby_size;
     // Move to a kCloseRubyColumn item.
     current_ = annotation_line_list[0].End();
@@ -3293,6 +3304,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
     const HeapVector<LineInfo, 1>& annotation_line_list,
     const Vector<AnnotationBreakTokenData, 1>& annotation_data_list,
     LayoutUnit ruby_size,
+    bool is_continuation,
     LineInfo& line_info) {
   CHECK_EQ(item.Type(), InlineItem::kOpenRubyColumn);
   InlineItemResult* column_result = AddEmptyItem(item, &line_info);
@@ -3306,6 +3318,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
     line_info.SetMayHaveRubyOverhang();
   }
   line_info.SetHaveTextCombineOrRubyItem();
+  data->is_continuation = is_continuation;
 
   data->annotation_line_list = annotation_line_list;
   for (wtf_size_t i = 0; i < annotation_line_list.size(); ++i) {

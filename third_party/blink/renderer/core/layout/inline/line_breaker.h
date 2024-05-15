@@ -31,6 +31,7 @@ class LineInfo;
 class ResolvedTextLayoutAttributesIterator;
 class ShapingLineBreaker;
 struct AnnotationBreakTokenData;
+struct RubyBreakTokenData;
 
 // The line breaker needs to know which mode its in to properly handle floats.
 enum class LineBreakerMode { kContent, kMinContent, kMaxContent };
@@ -222,7 +223,10 @@ class CORE_EXPORT LineBreaker {
   void ComputeMinMaxContentSizeForBlockChild(const InlineItem&,
                                              InlineItemResult*);
   // Returns false if we can't handle the current InlineItem as a ruby.
-  bool HandleRuby(LineInfo* line_info);
+  // NOINLINE prevents a compiler for Android 64bit from inlining
+  // HandleRuby() twice.
+  NOINLINE bool HandleRuby(const RubyBreakTokenData* ruby_token,
+                           LineInfo* line_info);
   // `mode`: Must be kMaxContent or kContent.
   // `limit`: Must be non-negative or kIndefiniteSize, which means no auto-wrap.
   LineInfo CreateSubLineInfo(InlineItemTextIndex start,
@@ -236,6 +240,7 @@ class CORE_EXPORT LineBreaker {
       const HeapVector<LineInfo, 1>& annotation_line_list,
       const Vector<AnnotationBreakTokenData, 1>& annotation_data_list,
       LayoutUnit ruby_size,
+      bool is_continuation,
       LineInfo& line_info);
   bool CanBreakAfterRubyColumn(const InlineItemResult& column_result) const;
 
