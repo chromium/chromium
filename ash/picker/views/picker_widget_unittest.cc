@@ -32,7 +32,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   // PickerViewDelegate:
   std::vector<PickerCategory> GetAvailableCategories() override { return {}; }
-  bool ShouldShowRecentResults() override { return false; }
+  std::vector<PickerCategory> GetRecentResultsCategories() override {
+    return {};
+  }
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {}
   void TransformSelectedText(PickerCategory category) override {}

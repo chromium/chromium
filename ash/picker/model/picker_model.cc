@@ -67,6 +67,18 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   return categories;
 }
 
+std::vector<PickerCategory> PickerModel::GetRecentResultsCategories() const {
+  if (HasSelectedText()) {
+    return std::vector<PickerCategory>{};
+  }
+
+  return {
+      PickerCategory::kDriveFiles,
+      PickerCategory::kLocalFiles,
+      PickerCategory::kLinks,
+  };
+}
+
 bool PickerModel::HasSelectedText() const {
   return !selected_text_.empty();
 }

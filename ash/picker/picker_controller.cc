@@ -361,8 +361,9 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
                            : model_->GetAvailableCategories();
 }
 
-bool PickerController::ShouldShowRecentResults() {
-  return model_ && !model_->HasSelectedText();
+std::vector<PickerCategory> PickerController::GetRecentResultsCategories() {
+  return model_ == nullptr ? std::vector<PickerCategory>{}
+                           : model_->GetRecentResultsCategories();
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,

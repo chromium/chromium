@@ -33,6 +33,8 @@ class ASH_EXPORT PickerModel {
 
   std::vector<PickerCategory> GetAvailableCategories() const;
 
+  std::vector<PickerCategory> GetRecentResultsCategories() const;
+
   std::u16string_view selected_text() const;
 
   bool HasSelectedText() const;

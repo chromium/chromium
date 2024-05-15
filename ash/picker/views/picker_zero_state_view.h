@@ -39,7 +39,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
       base::span<const PickerCategory> available_categories,
-      bool show_suggested_results,
+      base::span<const PickerCategory> recent_results_categories,
       int picker_view_width,
       PickerAssetFetcher* asset_fetcher);
   PickerZeroStateView(const PickerZeroStateView&) = delete;

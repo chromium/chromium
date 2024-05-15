@@ -146,6 +146,19 @@ PickerCategory GetCategoryForMoreResults(PickerSectionType type) {
   }
 }
 
+std::vector<PickerSearchResult> GetMostRecentResult(
+    std::vector<PickerSearchResultsSection> results) {
+  if (results.empty() ||
+      results[0].type() != PickerSectionType::kRecentlyUsed) {
+    return {};
+  }
+  base::span<const PickerSearchResult> search_results = results[0].results();
+  if (search_results.empty()) {
+    return {};
+  }
+  return {search_results[0]};
+}
+
 }  // namespace
 
 PickerView::PickerView(PickerViewDelegate* delegate,
@@ -207,6 +220,13 @@ void PickerView::SelectZeroStateCategory(PickerCategory category) {
 
 void PickerView::SelectZeroStateResult(const PickerSearchResult& result) {
   SelectSearchResult(result);
+}
+
+void PickerView::GetZeroStateRecentResults(PickerCategory category,
+                                           SearchResultsCallback callback) {
+  delegate_->GetResultsForCategory(
+      category,
+      base::BindRepeating(&GetMostRecentResult).Then(std::move(callback)));
 }
 
 void PickerView::GetSuggestedZeroStateEditorResults(
@@ -397,7 +417,7 @@ void PickerView::AddContentsViewWithSeparator(PickerLayoutType layout_type) {
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
           this, delegate_->GetAvailableCategories(),
-          delegate_->ShouldShowRecentResults(), kMaxSize.width(),
+          delegate_->GetRecentResultsCategories(), kMaxSize.width(),
           delegate_->GetAssetFetcher()));
 
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
