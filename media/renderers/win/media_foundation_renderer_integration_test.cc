@@ -144,12 +144,11 @@ TEST_F(MediaFoundationRendererIntegrationTest, ChangePlaybackRate) {
   }
 
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
-  // Check default playback rate
+  // Check the default playback rate.
   ASSERT_EQ(0.0f, pipeline_->GetPlaybackRate());
-  // Change playback rate and verify
+  // Start playback at rate 2.0.
   pipeline_->SetPlaybackRate(2.0);
   EXPECT_EQ(2.0f, pipeline_->GetPlaybackRate());
-  Play();
   ASSERT_TRUE(WaitUntilOnEnded());
   Stop();
 }
