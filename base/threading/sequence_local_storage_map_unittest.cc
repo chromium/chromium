@@ -168,8 +168,9 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteExternal) {
   EXPECT_TRUE(set_on_destruction2);
 }
 
-TEST(SequenceLocalStorageMapTest, DestructorInline) {
-  if constexpr (!absl::is_trivially_relocatable<SetOnDestroy>()) {
+template <typename T>
+void DestructorInline() {
+  if constexpr (!absl::is_trivially_relocatable<T>()) {
     // Test disabled because there is no reliable way to detect SetOnDestroy
     // is trivially relocatble.
     // See https://github.com/llvm/llvm-project/issues/69394
@@ -183,7 +184,7 @@ TEST(SequenceLocalStorageMapTest, DestructorInline) {
           scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
       SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
+          CreateInlineValueDestructorPair<T>(&set_on_destruction);
 
       sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
     }
@@ -191,9 +192,13 @@ TEST(SequenceLocalStorageMapTest, DestructorInline) {
     EXPECT_TRUE(set_on_destruction);
   }
 }
+TEST(SequenceLocalStorageMapTest, DestructorInline) {
+  DestructorInline<SetOnDestroy>();
+}
 
-TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
-  if constexpr (!absl::is_trivially_relocatable<SetOnDestroy>()) {
+template <typename T>
+void DestructorCalledOnSetOverwriteInline() {
+  if constexpr (!absl::is_trivially_relocatable<T>()) {
     // Test disabled because there is no reliable way to detect SetOnDestroy
     // is trivially relocatble.
     // See https://github.com/llvm/llvm-project/issues/69394
@@ -207,9 +212,9 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
           scoped_sequence_local_storage_map(&sequence_local_storage_map);
 
       SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair =
-          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction);
+          CreateInlineValueDestructorPair<T>(&set_on_destruction);
       SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair2 =
-          CreateInlineValueDestructorPair<SetOnDestroy>(&set_on_destruction2);
+          CreateInlineValueDestructorPair<T>(&set_on_destruction2);
 
       sequence_local_storage_map.Set(kSlotId, std::move(value_destructor_pair));
 
@@ -226,6 +231,9 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
     }
     EXPECT_TRUE(set_on_destruction2);
   }
+}
+TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwriteInline) {
+  DestructorCalledOnSetOverwriteInline<SetOnDestroy>();
 }
 
 }  // namespace internal
