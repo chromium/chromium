@@ -401,7 +401,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
     with _backup_file(args_gn_path):
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
-            # determine whether use_goma is turned on or off.
+            # determine whether use_remoteexec is turned on or off.
             f.write('\n'.join(gn_args))
         for run_num in range(repeat):
             logging.info(f'Run number: {run_num + 1}')

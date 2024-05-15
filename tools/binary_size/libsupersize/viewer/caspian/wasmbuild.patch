@@ -115,7 +115,7 @@ index 0000000000000..4aed5264eae15
 +    current_os = "wasm"
 +
 +    is_clang = true
-+    use_goma = false
++    use_remoteexec = false
 +    use_debug_fission = false
 +    clang_use_chrome_plugins = false
 +    use_allocator_shim = false
