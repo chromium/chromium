@@ -2588,6 +2588,32 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Beacon loss"/>
 </enum>
 
+<enum name="WifiP2PCapabilities">
+  <int value="0" label="Neither group owner nor client is ready."/>
+  <int value="1" label="Only group owner is ready."/>
+  <int value="2" label="Only group client is ready."/>
+  <int value="3" label="Both group owner and client are ready."/>
+</enum>
+
+<enum name="WifiP2POperationResult">
+  <int value="0" label="Success."/>
+  <int value="1" label="Operation not allowed."/>
+  <int value="2" label="Operation not supported."/>
+  <int value="3" label="Concurreny not supported"/>
+  <int value="4" label="Frequency not supported"/>
+  <int value="5" label="Authentication failed."/>
+  <int value="6" label="P2P group not found."/>
+  <int value="7" label="P2P group already connected."/>
+  <int value="8" label="Not connected to P2P group."/>
+  <int value="9" label="Operaion in progress."/>
+  <int value="10" label="Invalid arguments."/>
+  <int value="11" label="Operation timed out."/>
+  <int value="12" label="Invalid or missing result code."/>
+  <int value="13" label="P2P group miss or has invalid properties."/>
+  <int value="14" label="Operation failed."/>
+  <int value="15" label="DBus error."/>
+</enum>
+
 <enum name="WiFiReasonCode">
   <int value="0" label="kReasonReserved0"/>
   <int value="1" label="kReasonCodeUnspecified"/>

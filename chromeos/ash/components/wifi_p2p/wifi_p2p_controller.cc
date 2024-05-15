@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/wifi_p2p/wifi_p2p_group.h"
+#include "chromeos/ash/components/wifi_p2p/wifi_p2p_metrics_logger.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
@@ -190,8 +191,9 @@ void WifiP2PController::CreateWifiP2PGroup(
   CHECK(ssid.has_value() == passphrase.has_value());
   if (ssid && passphrase &&
       !ValidateWifiDirectCredentails(*ssid, *passphrase)) {
-    std::move(callback).Run(OperationResult::kInvalidArguments,
-                            /*metadata=*/std::nullopt);
+    CompleteWifiP2PGroupCallback(
+        OperationType::kCreateGroup, OperationResult::kInvalidArguments,
+        std::move(callback), /*metadata=*/std::nullopt);
     return;
   }
 
@@ -199,23 +201,27 @@ void WifiP2PController::CreateWifiP2PGroup(
   ShillManagerClient::Get()->CreateP2PGroup(
       ShillManagerClient::CreateP2PGroupParameter{ssid, passphrase},
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), /*create_group=*/true,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kCreateGroup,
                      std::move(callback_split.first)),
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupFailure,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kCreateGroup,
                      std::move(callback_split.second)));
 }
 
 void WifiP2PController::OnCreateOrConnectP2PGroupSuccess(
-    bool create_group,
+    const OperationType& type,
     WifiP2PGroupCallback callback,
     base::Value::Dict result_dict) {
-  NET_LOG(EVENT) << "CreateOrConnectP2PGroup operation succeeded with result: "
-                 << result_dict;
+  CHECK(type == OperationType::kCreateGroup ||
+        type == OperationType::kConnectGroup);
+  NET_LOG(EVENT) << type << " operation completed with result: " << result_dict;
 
   const OperationResult result = GetOperationResult(result_dict);
   if (result != OperationResult::kSuccess) {
-    std::move(callback).Run(result, /*metadata=*/std::nullopt);
+    CompleteWifiP2PGroupCallback(type, result, std::move(callback),
+                                 /*metadata=*/std::nullopt);
     return;
   }
 
@@ -223,34 +229,37 @@ void WifiP2PController::OnCreateOrConnectP2PGroupSuccess(
   if (!shill_id) {
     NET_LOG(ERROR) << "Missing shill_id in Wifi direct operation response when "
                       "result code is success";
-    std::move(callback).Run(OperationResult::kInvalidResultCode,
-                            /*metadata=*/std::nullopt);
+    CompleteWifiP2PGroupCallback(type, OperationResult::kInvalidResultCode,
+                                 std::move(callback),
+                                 /*metadata=*/std::nullopt);
     return;
   }
 
   ShillManagerClient::Get()->GetProperties(base::BindOnce(
       &WifiP2PController::GetP2PGroupMetadata, weak_ptr_factory_.GetWeakPtr(),
-      *shill_id, create_group, std::move(callback)));
+      *shill_id, type, std::move(callback)));
 }
 
 void WifiP2PController::GetP2PGroupMetadata(
     int shill_id,
-    bool is_owner,
+    const OperationType& type,
     WifiP2PGroupCallback callback,
     std::optional<base::Value::Dict> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Error getting Shill manager properties.";
-    std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                            /*metadata=*/std::nullopt);
+    CompleteWifiP2PGroupCallback(type, OperationResult::kInvalidGroupProperties,
+                                 std::move(callback),
+                                 /*metadata=*/std::nullopt);
     return;
   }
-
+  const bool is_owner = type == OperationType::kCreateGroup;
   base::Value::List* entry_list =
       properties->FindList(is_owner ? shill::kP2PGroupInfosProperty
                                     : shill::kP2PClientInfosProperty);
   if (!entry_list || entry_list->size() == 0) {
-    std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                            /*metadata=*/std::nullopt);
+    CompleteWifiP2PGroupCallback(type, OperationResult::kInvalidGroupProperties,
+                                 std::move(callback),
+                                 /*metadata=*/std::nullopt);
     return;
   }
 
@@ -294,34 +303,38 @@ void WifiP2PController::GetP2PGroupMetadata(
     }
     if (!entry_frequency) {
       NET_LOG(ERROR) << "Missing frequency property in Wifi Direct group";
-      std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                              /*metadata=*/std::nullopt);
+      CompleteWifiP2PGroupCallback(
+          type, OperationResult::kInvalidGroupProperties, std::move(callback),
+          /*metadata=*/std::nullopt);
       return;
     }
     if (!entry_network_id) {
       NET_LOG(ERROR) << "Missing network id property in Wifi Direct group";
-      std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                              /*metadata=*/std::nullopt);
+      CompleteWifiP2PGroupCallback(
+          type, OperationResult::kInvalidGroupProperties, std::move(callback),
+          /*metadata=*/std::nullopt);
       return;
     }
     if (!entry_ssid) {
       NET_LOG(ERROR) << "Missing ssid property in Wifi Direct group";
-      std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                              /*metadata=*/std::nullopt);
+      CompleteWifiP2PGroupCallback(
+          type, OperationResult::kInvalidGroupProperties, std::move(callback),
+          /*metadata=*/std::nullopt);
       return;
     }
     if (!entry_passphrase) {
       NET_LOG(ERROR) << "Missing network id property in Wifi Direct group";
-      std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                              /*metadata=*/std::nullopt);
+      CompleteWifiP2PGroupCallback(
+          type, OperationResult::kInvalidGroupProperties, std::move(callback),
+          /*metadata=*/std::nullopt);
       return;
     }
     if (!entry_ipv4_address) {
       NET_LOG(ERROR) << "Missing ipv4 address property in Wifi Direct group";
     }
 
-    std::move(callback).Run(
-        OperationResult::kSuccess,
+    CompleteWifiP2PGroupCallback(
+        type, OperationResult::kSuccess, std::move(callback),
         WifiP2PGroup{shill_id, static_cast<uint32_t>(*entry_frequency),
                      *entry_network_id,
                      entry_ipv4_address ? *entry_ipv4_address : std::string(),
@@ -331,19 +344,36 @@ void WifiP2PController::GetP2PGroupMetadata(
 
   NET_LOG(ERROR) << "Did not find the matched P2P group info with shill_id: "
                  << shill_id;
-  std::move(callback).Run(OperationResult::kInvalidGroupProperties,
-                          /*metadata=*/std::nullopt);
+  CompleteWifiP2PGroupCallback(type, OperationResult::kInvalidGroupProperties,
+                               std::move(callback),
+                               /*metadata=*/std::nullopt);
 }
 
 void WifiP2PController::OnCreateOrConnectP2PGroupFailure(
+    const OperationType& type,
     WifiP2PGroupCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
-  NET_LOG(ERROR)
-      << "Create or connect to P2PGroup operation failed due to DBus error: "
-      << error_name << ", message: " << error_message;
-  std::move(callback).Run(OperationResult::kDBusError,
-                          /*metadata=*/std::nullopt);
+  CHECK(type == OperationType::kCreateGroup ||
+        type == OperationType::kConnectGroup);
+  NET_LOG(ERROR) << type
+                 << " operation failed due to DBus error: " << error_name
+                 << ", message: " << error_message;
+
+  CompleteWifiP2PGroupCallback(type, OperationResult::kDBusError,
+                               std::move(callback),
+                               /*metadata=*/std::nullopt);
+}
+
+void WifiP2PController::CompleteWifiP2PGroupCallback(
+    const OperationType& type,
+    const OperationResult& result,
+    WifiP2PGroupCallback callback,
+    std::optional<WifiP2PGroup> group_metadata) {
+  CHECK(type == OperationType::kCreateGroup ||
+        type == OperationType::kConnectGroup);
+  WifiP2PMetricsLogger::RecordWifiP2POperationResult(type, result);
+  std::move(callback).Run(result, group_metadata);
 }
 
 void WifiP2PController::DestroyWifiP2PGroup(
@@ -354,29 +384,40 @@ void WifiP2PController::DestroyWifiP2PGroup(
       shill_id,
       base::BindOnce(&WifiP2PController::OnDestroyOrDisconnectP2PGroupSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kDestroyGroup,
                      std::move(callback_split.first)),
       base::BindOnce(&WifiP2PController::OnDestroyOrDisconnectP2PGroupFailure,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kDestroyGroup,
                      std::move(callback_split.second)));
 }
 
 void WifiP2PController::OnDestroyOrDisconnectP2PGroupSuccess(
+    const OperationType& type,
     base::OnceCallback<void(OperationResult result)> callback,
     base::Value::Dict result_dict) {
-  NET_LOG(EVENT)
-      << "DestroyOrDisconnectP2PGroup operation succeeded with result: "
-      << result_dict;
+  CHECK(type == OperationType::kDestroyGroup ||
+        type == OperationType::kDisconnectGroup);
+  NET_LOG(EVENT) << type << " operation completed with result: " << result_dict;
 
-  std::move(callback).Run(GetOperationResult(result_dict));
+  const OperationResult result = GetOperationResult(result_dict);
+  WifiP2PMetricsLogger::RecordWifiP2POperationResult(type, result);
+  std::move(callback).Run(result);
 }
 
 void WifiP2PController::OnDestroyOrDisconnectP2PGroupFailure(
+    const OperationType& type,
     base::OnceCallback<void(OperationResult result)> callback,
     const std::string& error_name,
     const std::string& error_message) {
-  NET_LOG(ERROR) << "Destroy or disconnect to P2PGroup operation failed due to "
-                    "DBus error: "
-                 << error_name << ", message: " << error_message;
+  CHECK(type == OperationType::kDestroyGroup ||
+        type == OperationType::kDisconnectGroup);
+  NET_LOG(ERROR) << type
+                 << " operation failed due to  DBus error: " << error_name
+                 << ", message: " << error_message;
+
+  WifiP2PMetricsLogger::RecordWifiP2POperationResult(
+      type, OperationResult::kDBusError);
   std::move(callback).Run(OperationResult::kDBusError);
 }
 
@@ -393,10 +434,12 @@ void WifiP2PController::ConnectToWifiP2PGroup(const std::string& ssid,
           /*priority=*/std::nullopt,
       },
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), /*create_group=*/false,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kConnectGroup,
                      std::move(callback_split.first)),
       base::BindOnce(&WifiP2PController::OnCreateOrConnectP2PGroupFailure,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kConnectGroup,
                      std::move(callback_split.second)));
 }
 
@@ -408,14 +451,17 @@ void WifiP2PController::DisconnectFromWifiP2PGroup(
       shill_id,
       base::BindOnce(&WifiP2PController::OnDestroyOrDisconnectP2PGroupSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kDisconnectGroup,
                      std::move(callback_split.first)),
       base::BindOnce(&WifiP2PController::OnDestroyOrDisconnectP2PGroupFailure,
                      weak_ptr_factory_.GetWeakPtr(),
+                     OperationType::kDisconnectGroup,
                      std::move(callback_split.second)));
 }
 
 const WifiP2PController::WifiP2PCapabilities&
 WifiP2PController::GetP2PCapabilities() const {
+  WifiP2PMetricsLogger::RecordWifiP2PCapabilities(wifi_p2p_capabilities_);
   return wifi_p2p_capabilities_;
 }
 
@@ -511,6 +557,25 @@ void WifiP2PController::AddObserver(Observer* observer) {
 
 void WifiP2PController::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const WifiP2PController::OperationType& type) {
+  switch (type) {
+    case WifiP2PController::OperationType::kCreateGroup:
+      stream << "Create P2P group";
+      break;
+    case WifiP2PController::OperationType::kConnectGroup:
+      stream << "Connect to P2P group";
+      break;
+    case WifiP2PController::OperationType::kDestroyGroup:
+      stream << "Destroy P2P group";
+      break;
+    case WifiP2PController::OperationType::kDisconnectGroup:
+      stream << "Disconnect from P2P group";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace ash

@@ -23,6 +23,8 @@ component("wifi_p2p") {
     "wifi_p2p_controller.h",
     "wifi_p2p_group.cc",
     "wifi_p2p_group.h",
+    "wifi_p2p_metrics_logger.cc",
+    "wifi_p2p_metrics_logger.h",
   ]
 }
 
