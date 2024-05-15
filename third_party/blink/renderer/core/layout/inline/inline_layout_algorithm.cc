@@ -625,10 +625,12 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info) {
                   container_builder_.LineBoxBfcBlockOffset().value()
             : offset_for_trimming_box);
 
-    // Cancel adjusting the block start for the Ruby annotation. The use of the
-    // `text-box-trim` accepts the risk of collisions for the finer control of
-    // the alignment of the body text in the block direction.
+    // Cancel adjusting the block start for the initial letters and Ruby
+    // annotation. The use of the `text-box-trim` accepts the risk of collisions
+    // for the finer control of the alignment of the body text in the block
+    // direction.
     line_info.SetAnnotationBlockStartAdjustment(LayoutUnit());
+    line_info.SetInitialLetterBlockStartAdjustment(LayoutUnit());
   }
 
   if (should_apply_end) {
