@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <tuple>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
+#include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -1033,21 +1035,26 @@ class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
 // callback.
 TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
        Upload_OnSave_ShowConfirmationBubbleView) {
+  using enum SavePaymentIconController::PaymentBubbleType;
+
   ShowUploadBubble();
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
   EXPECT_TRUE(controller()->IsIconVisible());
   EXPECT_TRUE(IsSaveCardBubbleVisible());
+  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCard);
 
   controller()->OnSaveButton({});
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_IN_PROGRESS);
   EXPECT_TRUE(IsSaveCardBubbleVisible());
   EXPECT_FALSE(IsConfirmationBubbleVisible());
+  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCard);
 
   controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
   EXPECT_FALSE(IsSaveCardBubbleVisible());
   EXPECT_TRUE(IsConfirmationBubbleVisible());
   EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
+  EXPECT_EQ(controller()->GetPaymentBubbleType(), kCreditCardSaveConfirmation);
 
   controller()->HideSaveCardBubble();
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);

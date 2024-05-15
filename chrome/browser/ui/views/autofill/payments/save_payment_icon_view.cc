@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 
+#include "base/notreached.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
+#include "chrome/browser/ui/views/autofill/payments/save_card_and_virtual_card_enroll_confirmation_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -67,7 +69,13 @@ views::BubbleDialogDelegate* SavePaymentIconView::GetBubble() const {
     case SavePaymentIconController::PaymentBubbleType::kManageSavedIban:
       return static_cast<autofill::ManageSavedIbanBubbleView*>(
           controller->GetPaymentBubbleView());
+    case SavePaymentIconController::PaymentBubbleType::
+        kCreditCardSaveConfirmation:
+      return static_cast<
+          autofill::SaveCardAndVirtualCardEnrollConfirmationBubbleViews*>(
+          controller->GetPaymentBubbleView());
   }
+  NOTREACHED_NORETURN();
 }
 
 void SavePaymentIconView::UpdateImpl() {
