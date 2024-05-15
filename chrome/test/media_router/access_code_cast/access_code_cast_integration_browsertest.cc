@@ -624,7 +624,7 @@ AccessCodeCastPrefUpdater*
 AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
   auto* service = AccessCodeCastSinkServiceFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
-  return service ? service->pref_updater_.get() : nullptr;
+  return service ? service->GetPrefUpdaterForTesting() : nullptr;
 }
 
 void AccessCodeCastIntegrationBrowserTest::AddScreenplayTag(
@@ -656,7 +656,7 @@ void AccessCodeCastIntegrationBrowserTest::
   auto* service = AccessCodeCastSinkServiceFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
   if (service) {
-    service->SetTaskRunnerForTest(task_runner_);
+    service->SetTaskRunnerForTesting(task_runner_);
   }
 }
 

@@ -90,7 +90,7 @@ class AccessCodeCastPrefUpdater {
 
   // Sets the key for the given |sink| id with the actual |sink| itself. This
   // function will overwrite a sink id if it already exists.
-  virtual void UpdateDevicesDictForTest(const MediaSinkInternal& sink) = 0;
+  virtual void UpdateDevicesDictForTesting(const MediaSinkInternal& sink) = 0;
 };
 
 }  // namespace media_router

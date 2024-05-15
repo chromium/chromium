@@ -155,7 +155,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<MockAccessCodeCastSinkService>(
             profile_, router_, mock_cast_media_sink_service_impl_.get(),
             discovery_network_monitor_.get());
-    access_code_cast_sink_service_->SetTaskRunnerForTest(
+    access_code_cast_sink_service_->SetTaskRunnerForTesting(
         mock_time_task_runner_);
 
     std::unique_ptr<MediaRouteStarter> starter =

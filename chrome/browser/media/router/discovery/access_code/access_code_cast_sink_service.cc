@@ -174,6 +174,11 @@ AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
 AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
     ~AccessCodeMediaRoutesObserver() = default;
 
+void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
+    OnRoutesUpdatedForTesting(const std::vector<MediaRoute>& routes) {
+  OnRoutesUpdated(routes);
+}
+
 void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
     const std::vector<MediaRoute>& routes) {
   std::vector<MediaRoute::Id> new_routes;
@@ -273,8 +278,9 @@ bool AccessCodeCastSinkService::IsSinkValidAccessCodeSink(
 
 void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCode(
     const MediaSinkInternal* sink) {
-  if (!IsSinkValidAccessCodeSink(sink))
+  if (!IsSinkValidAccessCodeSink(sink)) {
     return;
+  }
 
   LogInfo("An Access Code Cast route has ended.", sink->id());
 
@@ -538,6 +544,78 @@ void AccessCodeCastSinkService::CheckMediaSinkForExpiration(
                      GetWeakPtr(), sink_id));
 }
 
+bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabledForTesting() {
+  return IsAccessCodeCastLacrosSyncEnabled();
+}
+
+void AccessCodeCastSinkService::ShutdownForTesting() {
+  Shutdown();
+}
+
+void AccessCodeCastSinkService::ResetPrefUpdaterForTesting() {
+  pref_updater_.reset();
+}
+
+void AccessCodeCastSinkService::StoreSinkInPrefsForTesting(
+    base::OnceClosure on_sink_stored_callback,
+    const MediaSinkInternal* sink) {
+  StoreSinkInPrefs(std::move(on_sink_stored_callback), sink);
+}
+
+void AccessCodeCastSinkService::SetExpirationTimerForTesting(
+    const MediaSink::Id& sink_id) {
+  SetExpirationTimer(sink_id);
+}
+
+void AccessCodeCastSinkService::OpenChannelIfNecessaryForTesting(
+    const MediaSinkInternal& sink,
+    AddSinkResultCallback add_sink_callback,
+    bool has_sink) {
+  OpenChannelIfNecessary(sink, std::move(add_sink_callback), has_sink);
+}
+
+void AccessCodeCastSinkService::HandleMediaRouteAddedForTesting(
+    const MediaRoute::Id route_id,
+    const bool is_route_local,
+    const MediaSource media_source,
+    const MediaSinkInternal* sink) {
+  HandleMediaRouteAdded(route_id, is_route_local, media_source, sink);
+}
+
+void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCodeForTesting(
+    const MediaSinkInternal* sink) {
+  HandleMediaRouteRemovedByAccessCode(sink);
+}
+
+void AccessCodeCastSinkService::OnAccessCodeValidatedForTesting(
+    AddSinkResultCallback add_sink_callback,
+    std::optional<DiscoveryDevice> discovery_device,
+    AddSinkResultCode result_code) {
+  OnAccessCodeValidated(std::move(add_sink_callback), discovery_device,
+                        result_code);
+}
+
+void AccessCodeCastSinkService::OnChannelOpenedResultForTesting(
+    AddSinkResultCallback add_sink_callback,
+    const MediaSinkInternal& sink,
+    bool channel_opened) {
+  OnChannelOpenedResult(std::move(add_sink_callback), sink, channel_opened);
+}
+
+void AccessCodeCastSinkService::InitializePrefUpdaterForTesting() {
+  InitializePrefUpdater();
+}
+void AccessCodeCastSinkService::InitAllStoredDevicesForTesting() {
+  InitAllStoredDevices();
+}
+
+void AccessCodeCastSinkService::CalculateDurationTillExpirationForTesting(
+    const MediaSink::Id& sink_id,
+    base::OnceCallback<void(base::TimeDelta)> on_duration_calculated_callback) {
+  CalculateDurationTillExpiration(sink_id,
+                                  std::move(on_duration_calculated_callback));
+}
+
 void AccessCodeCastSinkService::DoCheckMediaSinkForExpiration(
     const MediaSink::Id& sink_id,
     base::TimeDelta time_till_expiration) {
@@ -569,6 +647,11 @@ void AccessCodeCastSinkService::DoCheckMediaSinkForExpiration(
   // Instantly fire the timer and remove it from the map.
   expiration_timer->FireNow();
   current_session_expiration_timers_.erase(iterator);
+}
+
+void AccessCodeCastSinkService::OnObserverRoutesUpdatedForTesting(
+    const std::vector<MediaRoute>& routes) {
+  media_routes_observer_->OnRoutesUpdatedForTesting(routes);  // IN-TEST
 }
 
 void AccessCodeCastSinkService::InitAllStoredDevices() {
