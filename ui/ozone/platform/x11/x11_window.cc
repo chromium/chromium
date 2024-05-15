@@ -865,6 +865,8 @@ void X11Window::MoveCursorTo(const gfx::Point& location_px) {
       .dst_x = static_cast<int16_t>(bounds_in_pixels_.x() + location_px.x()),
       .dst_y = static_cast<int16_t>(bounds_in_pixels_.y() + location_px.y()),
   });
+  // The cached cursor location is no longer valid.
+  X11EventSource::GetInstance()->ClearLastCursorLocation();
 }
 
 void X11Window::ConfineCursorToBounds(const gfx::Rect& bounds) {

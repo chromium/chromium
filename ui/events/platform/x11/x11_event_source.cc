@@ -247,6 +247,10 @@ x11::Time X11EventSource::GetTimestamp() {
   return GetCurrentServerTime();
 }
 
+void X11EventSource::ClearLastCursorLocation() {
+  last_cursor_location_.reset();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // X11EventSource, protected
 
