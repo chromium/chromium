@@ -601,6 +601,7 @@ TEST_F(NoStatePrefetchTest, LinkManagerNavigateAwayLaunchAnother) {
 // and is aborted.
 TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
   const GURL kUrl("http://www.google.com/");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
   predictors::LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
@@ -613,26 +614,27 @@ TEST_F(NoStatePrefetchTest, NoStatePrefetchDuplicate) {
 
   // Prefetch the url once.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION, FINAL_STATUS_CANCELLED);
+  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
   // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-      kUrl, std::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
+      kUrl, kOrigin, ORIGIN_SAME_ORIGIN_SPECULATION,
+      FINAL_STATUS_PROFILE_DESTROYED);
 
   // Prefetch again before time_to_live aborts, because it is a duplicate.
   tick_clock()->Advance(base::Seconds(1));
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+  EXPECT_FALSE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
   // Prefetch after time_to_live succeeds.
   tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      kUrl, nullptr, gfx::Size(), nullptr));
+  EXPECT_TRUE(no_state_prefetch_manager()->AddSameOriginSpeculation(
+      kUrl, nullptr, gfx::Size(), kOrigin));
 }
 
 // Make sure that if we prerender more requests than we support, that we launch
@@ -877,19 +879,6 @@ TEST_F(NoStatePrefetchTest, CancelAllTest) {
   EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
   no_state_prefetch_manager()->CancelAllPrerenders();
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
-}
-
-// Test that when prefetch is enabled, a prefetch initiated by omnibox is
-// successful.
-TEST_F(NoStatePrefetchTest, OmniboxAllowedWhenNotDisabled) {
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          GURL("http://www.example.com"), std::nullopt, ORIGIN_OMNIBOX,
-          FINAL_STATUS_PROFILE_DESTROYED);
-
-  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
-      GURL("http://www.example.com"), nullptr, gfx::Size(), nullptr));
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
 }
 
 class NoStatePrefetchFallbackToPreconnectTest

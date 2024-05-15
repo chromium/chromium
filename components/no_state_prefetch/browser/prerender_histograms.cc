@@ -26,8 +26,6 @@ std::string GetHistogramName(Origin origin, const std::string& name) {
 
 std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
   switch (origin) {
-    case ORIGIN_OMNIBOX:
-      return "omnibox";
     case ORIGIN_NONE:
       return "none";
     case ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN:

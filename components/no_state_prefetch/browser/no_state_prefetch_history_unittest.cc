@@ -90,7 +90,7 @@ TEST(NoStatePrefetchHistoryTest, GetAsValue) {
   // Add a second entry and make sure both first and second appear.
   const char* const kSecondUrl = "http://www.beta.com/";
   const FinalStatus kSecondFinalStatus = FINAL_STATUS_DUPLICATE;
-  const Origin kSecondOrigin = ORIGIN_OMNIBOX;
+  const Origin kSecondOrigin = ORIGIN_SAME_ORIGIN_SPECULATION;
   NoStatePrefetchHistory::Entry entry_second(
       GURL(kSecondUrl), kSecondFinalStatus, kSecondOrigin,
       epoch_start + base::Milliseconds(1));

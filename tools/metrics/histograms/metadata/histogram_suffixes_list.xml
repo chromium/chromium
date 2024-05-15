@@ -2912,7 +2912,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="none"
       label="No origin; in the case of prefetch TTFCP this is when no
              prefetch was involved."/>
-  <suffix name="omnibox" label="Triggered from the omnibox."/>
   <suffix name="web" label="Link triggered prerender."/>
   <suffix name="webcross"
       label="Link triggered prerender, rel=prerender, cross domain."/>

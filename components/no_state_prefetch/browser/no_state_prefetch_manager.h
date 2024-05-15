@@ -110,21 +110,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const url::Origin& initiator_origin,
       const gfx::Size& size);
 
-  // Starts a prefetch for |url| if valid. As the prefetch request is coming
-  // from a source without a RenderFrameHost (i.e., the omnibox) we don't have a
-  // child or route id, or a referrer. This method uses sensible values for
-  // those. The |session_storage_namespace| matches the namespace of the active
-  // tab at the time the prefetch is started from the omnibox. Returns a
-  // NoStatePrefetchHandle or NULL. If the prefetch fails, the prefetch manager
-  // may fallback and initiate a preconnect to |url|. PreloadingAttempt
-  // represents the attempt corresponding to this prerender to log the necessary
-  // metrics.
-  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromOmnibox(
-      const GURL& url,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Size& size,
-      content::PreloadingAttempt* attempt);
-
   // Adds a NoStatePrefetch that only allows for same origin requests (i.e.,
   // requests that only redirect to the same origin).
   std::unique_ptr<NoStatePrefetchHandle> AddSameOriginSpeculation(

@@ -261,17 +261,6 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::StartPrefetchingFromOmnibox(
-    const GURL& url,
-    SessionStorageNamespace* session_storage_namespace,
-    const gfx::Size& size,
-    PreloadingAttempt* attempt) {
-  return StartPrefetchingWithPreconnectFallback(
-      ORIGIN_OMNIBOX, url, content::Referrer(), std::nullopt, gfx::Rect(size),
-      session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
-}
-
-std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddSameOriginSpeculation(
     const GURL& url,
     content::SessionStorageNamespace* session_storage_namespace,

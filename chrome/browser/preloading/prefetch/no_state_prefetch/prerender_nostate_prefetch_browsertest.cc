@@ -1454,15 +1454,15 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_RendererCrash) {
 
   // Navigate to about:crash without an intermediate loader because chrome://
   // URLs are ignored in renderers, and the test server has no support for them.
+  GURL url(blink::kChromeUICrashURL);
   const gfx::Size kSize(640, 480);
   std::unique_ptr<TestPrerender> test_prerender =
       no_state_prefetch_contents_factory()->ExpectNoStatePrefetchContents(
           FINAL_STATUS_RENDERER_CRASHED);
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      GetNoStatePrefetchManager()->StartPrefetchingFromOmnibox(
-          GURL(blink::kChromeUICrashURL), storage_namespace, kSize,
-          /*attempt=*/nullptr));
+      GetNoStatePrefetchManager()->AddSameOriginSpeculation(
+          url, storage_namespace, kSize, url::Origin::Create(url)));
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
   test_prerender->WaitForStop();
 }
