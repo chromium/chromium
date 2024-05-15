@@ -37,7 +37,7 @@
 //   is_debug= false
 //   symbol_level= 0
 //   target_os= "chromeos"
-//   use_goma=true
+//   use_remoteexec=true
 //   '''
 // 2 Build chromeos_integration_tests target
 //   Example commandline:
