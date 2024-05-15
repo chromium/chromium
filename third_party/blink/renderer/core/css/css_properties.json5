@@ -328,6 +328,7 @@
         "opacity",
         "outline",
         "out-of-flow",
+        "reshape",
         "scroll-anchor",
         "table",
         "text-decoration",
@@ -1176,6 +1177,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["reshape"],
     },
     {
       name: "font-family",
@@ -5315,6 +5317,7 @@
       keywords: ["normal", "no-autospace"],
       default_value: "normal",
       typedom_types: ["Keyword"],
+      invalidate: ["reshape"],
       runtime_flag: "CSSTextAutoSpace",
     },
     {
@@ -5554,6 +5557,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_page_context: true,
+      invalidate: ["reshape"],
     },
     {
       name: "text-underline-offset",
@@ -5762,6 +5766,7 @@
       default_value: "normal",
       type_name: "UnicodeBidi",
       valid_for_marker: true,
+      invalidate: ["reshape"],
     },
     {
       name: "vector-effect",
@@ -6371,6 +6376,7 @@
       name_for_methods: "RtlOrdering",
       setter: "SetRtlOrdering",
       type_name: "EOrder",
+      invalidate: ["reshape"],
     },
     {
       name: "-webkit-ruby-position",
@@ -6593,6 +6599,7 @@
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_page_context: true,
+      invalidate: ["reshape"],
     },
     {
       name: "text-wrap",

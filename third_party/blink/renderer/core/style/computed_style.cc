@@ -865,13 +865,14 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     const Document& document,
     const ComputedStyle& other) const {
   StyleDifference diff;
-  if (DiffNeedsReshapeAndFullLayoutAndPaintInvalidation(*this, other)) {
+  uint32_t field_diff = FieldInvalidationDiff(*this, other);
+
+  if ((field_diff & kReshape) || ShouldWrapLine() != other.ShouldWrapLine()) {
     diff.SetNeedsReshape();
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
   }
 
-  uint32_t field_diff = FieldInvalidationDiff(*this, other);
   if ((!diff.NeedsFullLayout() || !diff.NeedsNormalPaintInvalidation()) &&
       DiffNeedsFullLayoutAndPaintInvalidation(other, field_diff)) {
     diff.SetNeedsFullLayout();

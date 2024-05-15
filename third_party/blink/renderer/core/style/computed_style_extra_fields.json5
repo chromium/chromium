@@ -371,6 +371,7 @@
       field_group: "font",
       inherited: true,
       default_value: "Font()",
+      invalidate: ["reshape"],
     },
     {
       name: "TextAutosizingMultiplier",

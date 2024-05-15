@@ -31,36 +31,6 @@
   },
   data: [
     {
-        name: "DiffNeedsReshapeAndFullLayoutAndPaintInvalidation",
-        fields_to_diff: [
-            "font",
-            "white-space-collapse",
-            "text-autospace",
-        ],
-        methods_to_diff: [
-          {
-            method: "TextTransform()",
-            field_dependencies: ["text-transform"]
-          },
-          {
-            method: "ShouldWrapLine()",
-            field_dependencies: ["text-wrap"]
-          },
-          {
-            method: "Direction()",
-            field_dependencies: ["direction"]
-          },
-          {
-            method: "RtlOrdering()",
-            field_dependencies: ["-webkit-rtl-ordering"]
-          },
-          {
-            method: "GetUnicodeBidi()",
-            field_dependencies: ["unicode-bidi"]
-          },
-        ]
-    },
-    {
         name: "DiffNeedsFullLayoutAndPaintInvalidation",
         fields_to_diff: ["padding-top", "padding-left", "padding-right",
                 "padding-bottom", "appearance", "-webkit-line-clamp",
