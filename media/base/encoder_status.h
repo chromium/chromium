@@ -50,7 +50,11 @@ struct EncoderStatusTraits {
     kInvalidInputFrame = 16,
     // The given output buffer or its id  is invalid.
     kInvalidOutputBuffer = 17,
-    kMaxValue = kInvalidOutputBuffer,
+    // Failure in converting H264/HEVC AnnexB to H264/HEVC bitstream.
+    kBitstreamConversionError = 18,
+    // Failure in allocating a buffer.
+    kOutOfMemoryError = 19,
+    kMaxValue = kOutOfMemoryError,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

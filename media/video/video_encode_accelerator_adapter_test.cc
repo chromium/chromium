@@ -408,7 +408,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
   adapter()->Initialize(
       VIDEO_CODEC_PROFILE_UNKNOWN, options, /*info_cb=*/base::DoNothing(),
       std::move(output_cb), base::BindLambdaForTesting([](EncoderStatus s) {
-        EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderInitializationError);
+        EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderUnsupportedProfile);
       }));
 
   auto frame =

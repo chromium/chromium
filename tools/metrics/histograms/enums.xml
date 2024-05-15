@@ -5653,6 +5653,8 @@ Called by update_document_policy_enum.py.-->
   <int value="15" label="kSystemAPICallError"/>
   <int value="16" label="kInvalidInputFrame"/>
   <int value="17" label="kInvalidOutputBuffer"/>
+  <int value="18" label="kPostBitstreamConversionError"/>
+  <int value="19" label="kOutOfMemoryError"/>
 </enum>
 
 <enum name="EncryptionScheme">
