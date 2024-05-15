@@ -13,6 +13,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/value_store/value_store.h"
+#include "extensions/browser/api/storage/session_storage_manager.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_observer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
@@ -65,8 +67,20 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   void DeleteStorageSoon(const ExtensionId& extension_id,
                          base::OnceClosure done_callback);
 
+  // For a given `extension` and `storage_area`, determines the number of bytes
+  // in use and fires `callback` with the result. If `keys` is specified, the
+  // result is based only on keys contained within the vector. Otherwise, all
+  // keys are included.
+  void GetBytesInUse(scoped_refptr<const Extension> extension,
+                     StorageAreaNamespace storage_area,
+                     std::optional<std::vector<std::string>> keys,
+                     base::OnceCallback<void(size_t)> callback);
+
   // Gets the Settings change callback.
   SettingsChangedCallback GetObserver();
+
+  void SetCacheForTesting(settings_namespace::Namespace settings_namespace,
+                          std::unique_ptr<ValueStoreCache> cache);
 
   void DisableStorageForTesting(
       settings_namespace::Namespace settings_namespace);

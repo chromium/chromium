@@ -35,6 +35,7 @@
 
 using content::BrowserContext;
 using content::BrowserThread;
+using value_store::ValueStore;
 
 namespace extensions {
 
@@ -58,6 +59,16 @@ events::HistogramValue StorageAreaToEventHistogram(
       NOTREACHED_IN_MIGRATION();
       return events::UNKNOWN;
   }
+}
+
+void GetBytesInUseWithValueStore(std::optional<std::vector<std::string>> keys,
+                                 base::OnceCallback<void(size_t)> callback,
+                                 ValueStore* store) {
+  size_t size = keys.has_value() ? store->GetBytesInUse(keys.value())
+                                 : store->GetBytesInUse();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), size));
 }
 
 }  // namespace
@@ -110,6 +121,39 @@ StorageFrontend::~StorageFrontend() {
   }
 }
 
+void StorageFrontend::GetBytesInUse(
+    scoped_refptr<const Extension> extension,
+    StorageAreaNamespace storage_area,
+    std::optional<std::vector<std::string>> keys,
+    base::OnceCallback<void(size_t)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    SessionStorageManager* storage_manager =
+        SessionStorageManager::GetForBrowserContext(browser_context_);
+
+    size_t bytes_in_use =
+        keys.has_value()
+            ? storage_manager->GetBytesInUse(extension->id(), keys.value())
+            : storage_manager->GetTotalBytesInUse(extension->id());
+
+    // Using a task here is important since we want to consistently fire the
+    // callback asynchronously.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), bytes_in_use));
+    return;
+  }
+
+  extensions::settings_namespace::Namespace settings_namespace =
+      extensions::StorageAreaToSettingsNamespace(storage_area);
+
+  CHECK(StorageFrontend::IsStorageEnabled(settings_namespace));
+
+  RunWithStorage(extension, settings_namespace,
+                 base::BindOnce(&GetBytesInUseWithValueStore, std::move(keys),
+                                std::move(callback)));
+}
+
 ValueStoreCache* StorageFrontend::GetValueStoreCache(
     settings_namespace::Namespace settings_namespace) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -159,6 +203,13 @@ SettingsChangedCallback StorageFrontend::GetObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindRepeating(&StorageFrontend::OnSettingsChanged,
                              weak_factory_.GetWeakPtr());
+}
+
+void StorageFrontend::SetCacheForTesting(
+    settings_namespace::Namespace settings_namespace,
+    std::unique_ptr<ValueStoreCache> cache) {
+  DisableStorageForTesting(settings_namespace);  // IN-TEST
+  caches_[settings_namespace] = cache.release();
 }
 
 void StorageFrontend::DisableStorageForTesting(

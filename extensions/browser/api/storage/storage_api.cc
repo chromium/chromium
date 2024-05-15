@@ -147,16 +147,21 @@ bool SettingsFunction::ShouldSkipQuotaLimiting() const {
          StorageAreaNamespace::kSync;
 }
 
-ExtensionFunction::ResponseAction SettingsFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
-  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+bool SettingsFunction::PreRunValidation(std::string* error) {
+  if (!ExtensionFunction::PreRunValidation(error)) {
+    return false;
+  }
+
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(args()[0].is_string());
 
   // Not a ref since we remove the underlying value after.
   std::string storage_area_string = args()[0].GetString();
 
   mutable_args().erase(args().begin());
   storage_area_ = StorageAreaFromString(storage_area_string);
-  EXTENSION_FUNCTION_VALIDATE(storage_area_ != StorageAreaNamespace::kInvalid);
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(storage_area_ !=
+                                     StorageAreaNamespace::kInvalid);
 
   // Session is the only storage area that does not use ValueStore, and will
   // return synchronously.
@@ -164,33 +169,45 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
     // Currently only `session` can restrict the storage access. This call will
     // be moved after the other storage areas allow it.
     if (!IsAccessToStorageAllowed()) {
-      return RespondNow(
-          Error("Access to storage is not allowed from this context."));
+      *error = "Access to storage is not allowed from this context.";
+      return false;
     }
-    return RespondNow(RunInSession());
+    return true;
   }
 
   // All other StorageAreas use ValueStore with settings_namespace, and will
   // return asynchronously if successful.
   settings_namespace_ = StorageAreaToSettingsNamespace(storage_area_);
-  EXTENSION_FUNCTION_VALIDATE(settings_namespace_ !=
-                              settings_namespace::INVALID);
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(settings_namespace_ !=
+                                     settings_namespace::INVALID);
 
   if (extension()->is_login_screen_extension() &&
       storage_area_ != StorageAreaNamespace::kManaged) {
     // Login screen extensions are not allowed to use local/sync storage for
     // security reasons (see crbug.com/978443).
-    return RespondNow(Error(base::StringPrintf(
+    *error = base::StringPrintf(
         "\"%s\" is not available for login screen extensions",
-        storage_area_string.c_str())));
+        storage_area_string.c_str());
+    return false;
   }
 
   StorageFrontend* frontend = StorageFrontend::Get(browser_context());
   if (!frontend->IsStorageEnabled(settings_namespace_)) {
-    return RespondNow(Error(
+    *error =
         base::StringPrintf("\"%s\" is not available in this instance of Chrome",
-                           storage_area_string.c_str())));
+                           storage_area_string.c_str());
+    return false;
   }
+
+  return true;
+}
+
+ExtensionFunction::ResponseAction SettingsFunction::Run() {
+  if (storage_area_ == StorageAreaNamespace::kSession) {
+    return RespondNow(RunInSession());
+  }
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
 
   observer_ = GetSequenceBoundSettingsChangedCallback(
       base::SequencedTaskRunner::GetCurrentDefault(), frontend->GetObserver());
@@ -199,6 +216,21 @@ ExtensionFunction::ResponseAction SettingsFunction::Run() {
       extension(), settings_namespace_,
       base::BindOnce(&SettingsFunction::AsyncRunWithStorage, this));
   return RespondLater();
+}
+
+ExtensionFunction::ResponseValue SettingsFunction::RunWithStorage(
+    ValueStore* storage) {
+  // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
+  // from all functions.
+  NOTREACHED();
+  return BadMessage();
+}
+
+ExtensionFunction::ResponseValue SettingsFunction::RunInSession() {
+  // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
+  // from all functions.
+  NOTREACHED();
+  return BadMessage();
 }
 
 void SettingsFunction::AsyncRunWithStorage(ValueStore* storage) {
@@ -345,70 +377,53 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
   return WithArguments(std::move(value_dict));
 }
 
-ExtensionFunction::ResponseValue
-StorageStorageAreaGetBytesInUseFunction::RunWithStorage(ValueStore* storage) {
-  TRACE_EVENT1("browser",
-               "StorageStorageAreaGetBytesInUseFunction::RunWithStorage",
-               "extension_id", extension_id());
-
-  if (args().empty())
-    return BadMessage();
-  const base::Value& input = args()[0];
-
-  size_t bytes_in_use = 0;
-
-  switch (input.type()) {
-    case base::Value::Type::NONE:
-      bytes_in_use = storage->GetBytesInUse();
-      break;
-
-    case base::Value::Type::STRING:
-      bytes_in_use = storage->GetBytesInUse(input.GetString());
-      break;
-
-    case base::Value::Type::LIST:
-      bytes_in_use = storage->GetBytesInUse(GetKeysFromList(input.GetList()));
-      break;
-
-    default:
-      return BadMessage();
+ExtensionFunction::ResponseAction
+StorageStorageAreaGetBytesInUseFunction::Run() {
+  if (args().empty()) {
+    return RespondNow(BadMessage());
   }
 
-  return WithArguments(static_cast<double>(bytes_in_use));
-}
-
-ExtensionFunction::ResponseValue
-StorageStorageAreaGetBytesInUseFunction::RunInSession() {
-  if (args().empty())
-    return BadMessage();
   const base::Value& input = args()[0];
-
-  size_t bytes_in_use = 0;
-  SessionStorageManager* session_manager =
-      SessionStorageManager::GetForBrowserContext(browser_context());
+  std::optional<std::vector<std::string>> keys;
 
   switch (input.type()) {
     case base::Value::Type::NONE:
-      bytes_in_use = session_manager->GetTotalBytesInUse(extension_id());
+      keys = std::nullopt;
       break;
 
     case base::Value::Type::STRING:
-      bytes_in_use = session_manager->GetBytesInUse(
-          extension_id(), std::vector<std::string>(1, input.GetString()));
+      keys = std::optional(std::vector<std::string>(1, input.GetString()));
       break;
 
     case base::Value::Type::LIST:
-      bytes_in_use = session_manager->GetBytesInUse(
-          extension_id(), GetKeysFromList(input.GetList()));
+      keys = std::optional(GetKeysFromList(input.GetList()));
       break;
 
     default:
-      return BadMessage();
+      return RespondNow(BadMessage());
+  }
+
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->GetBytesInUse(
+      extension(), storage_area(), keys,
+      base::BindOnce(&StorageStorageAreaGetBytesInUseFunction::
+                         OnGetBytesInUseOperationFinished,
+                     this));
+
+  return RespondLater();
+}
+
+void StorageStorageAreaGetBytesInUseFunction::OnGetBytesInUseOperationFinished(
+    size_t bytes_in_use) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
   }
 
   // Checked cast should not overflow since a double can represent up to 2*53
   // bytes before a loss of precision.
-  return WithArguments(base::checked_cast<double>(bytes_in_use));
+  Respond(WithArguments(base::checked_cast<double>(bytes_in_use)));
 }
 
 ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(

@@ -4,7 +4,7 @@
 
 #include "extensions/browser/api/storage/storage_api.h"
 
-#include "stdint.h"
+#include <stdint.h>
 
 #include <limits>
 #include <memory>
@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "components/crx_file/id_util.h"
 #include "components/value_store/leveldb_value_store.h"
 #include "components/value_store/value_store.h"
@@ -27,9 +28,12 @@
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
+#include "extensions/browser/api/storage/value_store_cache.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/test_event_router_observer.h"
 #include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/api/storage.h"
@@ -282,6 +286,26 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
     size_t bytes_in_use_ = 0;
   };
 
+  // Create a fake ValueStoreCache that we can assign to a storage area in the
+  // StorageFrontend. This allows us to call StorageFrontend using an extension
+  // API and access our mock ValueStore.
+  class FakeValueStoreCache : public ValueStoreCache {
+   public:
+    explicit FakeValueStoreCache(FakeValueStore store) : store_(store) {}
+
+    // ValueStoreCache:
+    void ShutdownOnUI() override {}
+    void RunWithValueStoreForExtension(
+        FakeValueStoreCache::StorageCallback callback,
+        scoped_refptr<const Extension> extension) override {
+      std::move(callback).Run(&store_);
+    }
+    void DeleteStorageSoon(const ExtensionId& extension_id) override {}
+
+   private:
+    FakeValueStore store_;
+  };
+
   static constexpr struct TestCase {
     size_t bytes_in_use;
     double result;
@@ -293,21 +317,28 @@ TEST_F(StorageApiUnittest, GetBytesInUseIntOverflow) {
       {static_cast<size_t>(std::numeric_limits<int>::max()) + 1,
        static_cast<size_t>(std::numeric_limits<int>::max()) + 1}};
 
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+
   for (const auto& test_case : test_cases) {
     FakeValueStore value_store(test_case.bytes_in_use);
+    frontend->SetCacheForTesting(
+        settings_namespace::Namespace::LOCAL,
+        std::make_unique<FakeValueStoreCache>(value_store));
+
     auto function =
         base::MakeRefCounted<StorageStorageAreaGetBytesInUseFunction>();
-    // Call into the protected member function to avoid dealing with how the
-    // base class gets the StorageArea to use. Set `args` to a base::Value
-    // "none" so we get the total bytes in use.
-    base::Value::List args;
-    args.Append(base::Value());
-    function->SetArgs(std::move(args));
-    function->RunWithStorage(&value_store);
-    const base::Value::List* results = function->GetResultListForTest();
-    ASSERT_TRUE(results);
-    ASSERT_EQ(1u, results->size());
-    EXPECT_EQ(test_case.result, (*results)[0]);
+
+    function->set_extension(extension());
+
+    std::optional<base::Value> result =
+        api_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(),
+            base::Value::List().Append("local").Append(base::Value()),
+            browser_context());
+    ASSERT_TRUE(result);
+    ASSERT_TRUE(result->is_double());
+    EXPECT_EQ(test_case.result, result->GetDouble());
+    frontend->DisableStorageForTesting(settings_namespace::Namespace::LOCAL);
   }
 }
 
