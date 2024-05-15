@@ -7902,6 +7902,7 @@ CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,
   if (!IsValidCSSValueID(function_id)) {
     return nullptr;
   }
+  CSSParserSavePoint savepoint(range);
   CSSParserTokenRange args = ConsumeFunction(range);
   if (args.AtEnd()) {
     return nullptr;
@@ -8015,6 +8016,7 @@ CSSValue* ConsumeTransformValue(CSSParserTokenRange& range,
   if (!args.AtEnd()) {
     return nullptr;
   }
+  savepoint.Release();
   return transform_value;
 }
 
@@ -8030,10 +8032,14 @@ CSSValue* ConsumeTransformList(CSSParserTokenRange& range,
     CSSValue* parsed_transform_value =
         ConsumeTransformValue(range, context, local_context.UseAliasParsing());
     if (!parsed_transform_value) {
-      return nullptr;
+      break;
     }
     list->Append(*parsed_transform_value);
   } while (!range.AtEnd());
+
+  if (list->length() == 0) {
+    return nullptr;
+  }
 
   return list;
 }
