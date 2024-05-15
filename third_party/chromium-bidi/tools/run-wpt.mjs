@@ -51,7 +51,9 @@ function usage() {
       [VERBOSE==<true | default: false>]
       [WPT_REPORT=<default: 'wptreport.json'>]
       [WPT_METADATA=<default: 'wpt-metadata/$\{ 'chromedriver' | 'mapper' }/$\{ 'headless' | 'headful' }>]
-      ${process.argv[1]} [webdriver/tests/bidi/[...]]`
+      ${process.argv[1]}
+      [--wpt-report WPT_REPORT]
+      [webdriver/tests/bidi/[...]]`
   );
 }
 
@@ -62,9 +64,17 @@ if (
   usage();
   process.exit(0);
 }
+const restArgs = process.argv.slice(2);
+
+// Weather to run the tests. `false` value is useful for updating expectations
+// based on the WPT report.
+const RUN_TESTS = process.env.RUN_TESTS || 'true';
+
+// Whether to update the WPT expectations after running the tests.
+const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
 
 let BROWSER_BIN = process.env.BROWSER_BIN;
-if (!BROWSER_BIN) {
+if (RUN_TESTS === 'true' && !BROWSER_BIN) {
   BROWSER_BIN = installAndGetChromePath();
 }
 
@@ -72,7 +82,7 @@ if (!BROWSER_BIN) {
 const CHROMEDRIVER = process.env.CHROMEDRIVER || 'false';
 
 let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
-if (!CHROMEDRIVER_BIN) {
+if (RUN_TESTS === 'true' && !CHROMEDRIVER_BIN) {
   CHROMEDRIVER_BIN =
     CHROMEDRIVER === 'true'
       ? installAndGetChromeDriverPath()
@@ -88,10 +98,6 @@ const MANIFEST = process.env.MANIFEST || 'MANIFEST.json';
 // The browser product to test.
 const PRODUCT = process.env.PRODUCT || 'chrome';
 
-// Weather to run the tests. `false` value is useful for updating expectations
-// based on the WPT report.
-const RUN_TESTS = process.env.RUN_TESTS || 'true';
-
 // Multiplier relative to standard test timeout to use.
 const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '1';
 
@@ -101,14 +107,16 @@ const THIS_CHUNK = process.env.THIS_CHUNK || '1';
 // The total number of chunks. Required for shard testing.
 const TOTAL_CHUNKS = process.env.TOTAL_CHUNKS || '1';
 
-// Whether to update the WPT expectations after running the tests.
-const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
-
 // Whether to enable verbose logging.
 const VERBOSE = process.env.VERBOSE || 'false';
 
 // The path to the WPT report file.
-const WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
+let WPT_REPORT = process.env.WPT_REPORT || 'wptreport.json';
+
+// If provided a CLI `--metadata` parameter, use it.
+if (restArgs.includes('--wpt-report')) {
+  WPT_REPORT = restArgs[restArgs.indexOf('--wpt-report') + 1];
+}
 
 // Only set WPT_METADATA if it's not already set.
 const WPT_METADATA =
@@ -210,7 +218,6 @@ if (RUN_TESTS === 'true') {
     wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   }
 
-  const restArgs = process.argv.slice(2);
   let test =
     restArgs[restArgs.length - 1] ?? join('webdriver', 'tests', 'bidi');
 
@@ -242,22 +249,21 @@ if (RUN_TESTS === 'true') {
 if (UPDATE_EXPECTATIONS === 'true') {
   log('Updating WPT expectations...');
 
-  update_status = spawnSync(
-    wptBinary,
-    [
-      'update-expectations',
-      '--properties-file',
-      './update_properties.json',
-      '--product',
-      PRODUCT,
-      '--manifest',
-      MANIFEST,
-      '--metadata',
-      WPT_METADATA,
-      WPT_REPORT,
-    ],
-    {stdio: 'inherit'}
-  ).status;
+  const wptRunArgs = [
+    'update-expectations',
+    '--properties-file',
+    './update_properties.json',
+    '--product',
+    PRODUCT,
+    '--manifest',
+    MANIFEST,
+    '--metadata',
+    WPT_METADATA,
+    WPT_REPORT,
+  ];
+  log(`${wptBinary} ${wptRunArgs.map((arg) => `'${arg}'`).join(' ')}`);
+
+  update_status = spawnSync(wptBinary, wptRunArgs, {stdio: 'inherit'}).status;
 }
 
 // If WPT tests themselves or the expectations update failed, return failure.

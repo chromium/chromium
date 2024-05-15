@@ -23,9 +23,6 @@ on:
       - reopened
       - synchronize
 
-      # Used for `update-expectations`
-      - labeled
-
   workflow_dispatch:
     inputs:
       auto-commit:
@@ -84,7 +81,7 @@ jobs:
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
-    if: ${{ failure() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
+    if: ${{ failure() && github.event.inputs.auto-commit == 'true' }}
     # Needed to remove the label to prevent a loop
     permissions:
       pull-requests: write
@@ -128,7 +125,7 @@ jobs:
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-expectations') || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
     strategy:
       fail-fast: false
       matrix:

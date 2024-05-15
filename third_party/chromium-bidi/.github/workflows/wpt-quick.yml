@@ -26,6 +26,11 @@ on:
         default: false
         required: false
         type: boolean
+      auto-commit:
+        description: Auto-commit expectations
+        default: false
+        required: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -41,12 +46,14 @@ jobs:
       - if: ${{ needs.wpt.result != 'success' }}
         run: 'exit 1'
       - run: 'exit 0'
+
   wpt:
     name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        # Should be in sync with `update_expectations` job.
         kind: [chromedriver, mapper]
         head: [headless, headful]
         total_chunks: [6]
@@ -110,3 +117,132 @@ jobs:
           path: |
             logs
             out
+
+  update_expectations:
+    # The job gets all the sharded reports for a given configuration and updates the
+    # expectations for the configuration. It uploads the results to the artifacts.
+    name: Update WPT expectations (if required)
+    strategy:
+      matrix:
+        # Should be in sync with `wpt` job.
+        kind: [chromedriver, mapper]
+        head: [headless, headful]
+        exclude:
+          # Don't run headful mapper, as it takes too long.
+          - kind: mapper
+            head: headful
+    runs-on: ubuntu-latest
+    needs: [wpt]
+    # Only update expectations if the tests were failed and either `auto-commit`
+    # checkbox is set or `update-expectations` label is present.
+    if: ${{ failure() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        with:
+          submodules: true
+      - name: Set up Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - uses: google/wireit@4aad131006ea85c1e42af927534ebb13426dd730 # setup-github-actions-caching/v1.0.2
+      - name: Install and build npm dependencies
+        run: npm ci
+      - name: Setup dirs
+        run: mkdir -p out
+      - name: Set up Python
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Download Artifact
+        # Get all the artifacts from the previous WPT run in order to get all the
+        # test reports.
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          path: wpt_artifacts
+          # Merge the artifacts from all jobs in the same file.
+          merge-multiple: true
+      - name: Update expectations
+        timeout-minutes: 60
+        env:
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          # Do not run tests, only update expectations.
+          RUN_TESTS: false
+          UPDATE_EXPECTATIONS: true
+          VERBOSE: true
+        # Find all the reports for the given configuration and update the
+        # expectations with each report one-by-one.
+        run: >
+          find ./wpt_artifacts/
+          -name "wptreport.${{ matrix.kind }}-${{ matrix.head }}*.json"
+          -exec npm run wpt -- --wpt-report {} \;
+      - name: Move updated expectations
+        # Move the expectations from the current config to a separate directory to
+        # upload them to artifacts.
+        run: |
+          mkdir -p ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
+          mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
+      - name: Upload artifacts
+        if: success()
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        with:
+          name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
+          path: ./artifacts
+
+  commit_updated_expectations:
+    # Gets updated wpt expectations for all configurations and commits them in a
+    # single commit.
+    name: Commit updated expectations
+    runs-on: ubuntu-latest
+    needs: [update_expectations]
+    if: success() || failure()
+    permissions:
+      # Required to remove the label.
+      pull-requests: write
+    steps:
+      - name: Check if the expectations were updated.
+        # This check cannot be done on the job level. So if the `update_expectations`
+        # was not successful, just return.
+        if: ${{ needs.update_expectations.result != 'success' }}
+        run: 'exit 0'
+      # Just checkout the repo. No need in setting up Node.js or Python.
+      - name: Checkout
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
+        with:
+          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
+      - name: Download Artifact
+        # There is no way to download artifacts by wildcard, so we need to download
+        # all of them. The `updated-wpt-metadata` directory should contain all the
+        # updated expectations from the `update_expectations` matrix.
+        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        with:
+          path: all-artifacts
+          merge-multiple: true
+      - name: Replace expectations with the updated ones.
+        # Remove the actual expectations and replace them with the updated ones.
+        run: |
+          rm -rf wpt-metadata/
+          mkdir wpt-metadata
+          mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
+      - name: Remove update-expectations label
+        # Remove the `update-expectations`. This is needed to prevent a loop.
+        if: ${{ contains(github.event.pull_request.labels.*.name, 'update-expectations') }}
+        run: gh pr edit "$NUMBER" --remove-label "update-expectations"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+      - name: Auto-commit WPT expectations
+        uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5.0.1
+        with:
+          commit_message: Update WPT expectations
+          commit_options: -n --signoff
+          commit_user_name: Browser Automation Bot
+          commit_user_email: browser-automation-bot@google.com
+          commit_author: Browser Automation Bot <browser-automation-bot@google.com>
+          file_pattern: 'wpt-metadata/**/*.ini'
