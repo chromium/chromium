@@ -3574,6 +3574,11 @@ crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoin
 # User-Agent is not able to be set on XHR/fetch
 crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
 
+# Disable temporarily for v8 roll.
+crbug.com/340592165 inspector-protocol/runtime/runtime-console-basic-functions-paused.js [ Failure ]
+crbug.com/340592165 inspector-protocol/runtime/runtime-console-basic-functions.js [ Failure ]
+crbug.com/340592165 inspector-protocol/runtime/runtime-install-binding.js [ Failure ]
+
 # 1) V8 code cache doesn't support host defined options. When V8 code cache is
 # disabled, the subtest will pass. 2) Module cases always fail.
 crbug.com/1244145 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/v8-code-cache.html [ Failure ]
