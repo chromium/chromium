@@ -180,6 +180,7 @@ void HardwareDisplayController::SchedulePageFlip(
     SwapCompletionOnceCallback submission_callback,
     PresentationOnceCallback presentation_callback) {
   DCHECK(!page_flip_request_);
+  TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
   scoped_refptr<PageFlipRequest> page_flip_request =
       base::MakeRefCounted<PageFlipRequest>(GetRefreshInterval());
   gfx::GpuFenceHandle release_fence;
@@ -255,6 +256,7 @@ void HardwareDisplayController::SchedulePageFlip(
 
 bool HardwareDisplayController::TestPageFlip(
     const DrmOverlayPlaneList& plane_list) {
+  TRACE_EVENT0("drm", "HDC::TestPageFlip");
   return PageFlipResult::kSuccess ==
          ScheduleOrTestPageFlip(plane_list, nullptr, nullptr);
 }
@@ -264,7 +266,7 @@ HardwareDisplayController::ScheduleOrTestPageFlip(
     const DrmOverlayPlaneList& plane_list,
     scoped_refptr<PageFlipRequest> page_flip_request,
     gfx::GpuFenceHandle* release_fence) {
-  TRACE_EVENT0("drm", "HDC::SchedulePageFlip");
+  TRACE_EVENT0("drm", "HDC::ScheduleOrTestPageFlip");
   DCHECK(IsEnabled());
 
   // Ignore requests with no planes to schedule.
