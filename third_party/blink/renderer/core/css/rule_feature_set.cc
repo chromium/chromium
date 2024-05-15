@@ -121,6 +121,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoInvalid:
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoTarget:
+    case CSSSelector::kPseudoCurrent:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoMarker:
@@ -192,6 +193,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIs:
     case CSSSelector::kPseudoWhere:
     case CSSSelector::kPseudoParent:  // Same as kPseudoIs.
+    case CSSSelector::kPseudoSearchText:
     case CSSSelector::kPseudoTargetText:
     case CSSSelector::kPseudoHighlight:
     case CSSSelector::kPseudoSpellingError:

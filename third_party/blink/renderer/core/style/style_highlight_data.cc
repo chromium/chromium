@@ -45,6 +45,9 @@ const ComputedStyle* StyleHighlightData::Style(
   switch (pseudo_id) {
     case kPseudoIdSelection:
       return Selection();
+    case kPseudoIdSearchText:
+      // For ::search-text:current, call SearchTextCurrent() directly.
+      return SearchTextNotCurrent();
     case kPseudoIdTargetText:
       return TargetText();
     case kPseudoIdSpellingError:
@@ -61,6 +64,14 @@ const ComputedStyle* StyleHighlightData::Style(
 
 const ComputedStyle* StyleHighlightData::Selection() const {
   return selection_.Get();
+}
+
+const ComputedStyle* StyleHighlightData::SearchTextCurrent() const {
+  return search_text_current_.Get();
+}
+
+const ComputedStyle* StyleHighlightData::SearchTextNotCurrent() const {
+  return search_text_not_current_.Get();
 }
 
 const ComputedStyle* StyleHighlightData::TargetText() const {
@@ -89,6 +100,14 @@ const ComputedStyle* StyleHighlightData::CustomHighlight(
 
 void StyleHighlightData::SetSelection(const ComputedStyle* style) {
   selection_ = style;
+}
+
+void StyleHighlightData::SetSearchTextCurrent(const ComputedStyle* style) {
+  search_text_current_ = style;
+}
+
+void StyleHighlightData::SetSearchTextNotCurrent(const ComputedStyle* style) {
+  search_text_not_current_ = style;
 }
 
 void StyleHighlightData::SetTargetText(const ComputedStyle* style) {
@@ -135,6 +154,8 @@ bool StyleHighlightData::DependsOnSizeContainerQueries() const {
 
 void StyleHighlightData::Trace(Visitor* visitor) const {
   visitor->Trace(selection_);
+  visitor->Trace(search_text_current_);
+  visitor->Trace(search_text_not_current_);
   visitor->Trace(target_text_);
   visitor->Trace(spelling_error_);
   visitor->Trace(grammar_error_);

@@ -229,8 +229,9 @@ void StyleResolverState::LoadPendingResources() {
     }
   }
 
-  if (StyleBuilder().StyleType() == kPseudoIdTargetText) {
-    // Do not load any resources for ::target-text since that could leak text
+  if (StyleBuilder().StyleType() == kPseudoIdSearchText ||
+      StyleBuilder().StyleType() == kPseudoIdTargetText) {
+    // Do not load any resources for these pseudos, since that could leak text
     // content to external stylesheets.
     return;
   }

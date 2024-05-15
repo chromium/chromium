@@ -2683,41 +2683,54 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
           GetDocument(), *style));
     }
 
-    auto HighlightPseudoUpdateDiff = [this, style,
-                                      &diff](const PseudoId pseudo) {
-      DCHECK(pseudo == kPseudoIdTargetText ||
-             pseudo == kPseudoIdSpellingError ||
-             pseudo == kPseudoIdGrammarError);
+    auto HighlightPseudoUpdateDiff =
+        [this, style, &diff](const PseudoId pseudo,
+                             const ComputedStyle* pseudo_old_style,
+                             const ComputedStyle* pseudo_new_style) {
+          DCHECK(pseudo == kPseudoIdSearchText ||
+                 pseudo == kPseudoIdTargetText ||
+                 pseudo == kPseudoIdSpellingError ||
+                 pseudo == kPseudoIdGrammarError);
 
-      if (style_->HasPseudoElementStyle(pseudo) ||
-          style->HasPseudoElementStyle(pseudo)) {
-        const ComputedStyle* pseudo_old_style =
-            style_->HighlightData().Style(pseudo);
-        const ComputedStyle* pseudo_new_style =
-            style->HighlightData().Style(pseudo);
-
-        if (pseudo_old_style && pseudo_new_style) {
-          diff.Merge(pseudo_old_style->VisualInvalidationDiff(
-              GetDocument(), *pseudo_new_style));
-        } else {
-          diff.SetNeedsNormalPaintInvalidation();
-        }
-      }
-    };
+          if (style_->HasPseudoElementStyle(pseudo) ||
+              style->HasPseudoElementStyle(pseudo)) {
+            if (pseudo_old_style && pseudo_new_style) {
+              diff.Merge(pseudo_old_style->VisualInvalidationDiff(
+                  GetDocument(), *pseudo_new_style));
+            } else {
+              diff.SetNeedsNormalPaintInvalidation();
+            }
+          }
+        };
 
     // See HighlightRegistry for ::highlight() paint invalidation.
     // TODO(rego): We don't do anything regarding ::selection, as ::selection
     // uses its own mechanism for this (see
     // LayoutObject::InvalidateSelectedChildrenOnStyleChange()). Maybe in the
     // future we could detect changes here for ::selection too.
+    if (RuntimeEnabledFeatures::SearchTextHighlightPseudoEnabled() &&
+        UsesHighlightPseudoInheritance(kPseudoIdSearchText)) {
+      HighlightPseudoUpdateDiff(kPseudoIdSearchText,
+                                style_->HighlightData().SearchTextCurrent(),
+                                style->HighlightData().SearchTextCurrent());
+      HighlightPseudoUpdateDiff(kPseudoIdSearchText,
+                                style_->HighlightData().SearchTextNotCurrent(),
+                                style->HighlightData().SearchTextNotCurrent());
+    }
     if (UsesHighlightPseudoInheritance(kPseudoIdTargetText)) {
-      HighlightPseudoUpdateDiff(kPseudoIdTargetText);
+      HighlightPseudoUpdateDiff(kPseudoIdTargetText,
+                                style_->HighlightData().TargetText(),
+                                style->HighlightData().TargetText());
     }
     if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError)) {
-      HighlightPseudoUpdateDiff(kPseudoIdSpellingError);
+      HighlightPseudoUpdateDiff(kPseudoIdSpellingError,
+                                style_->HighlightData().SpellingError(),
+                                style->HighlightData().SpellingError());
     }
     if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError)) {
-      HighlightPseudoUpdateDiff(kPseudoIdGrammarError);
+      HighlightPseudoUpdateDiff(kPseudoIdGrammarError,
+                                style_->HighlightData().GrammarError(),
+                                style->HighlightData().GrammarError());
     }
   }
 

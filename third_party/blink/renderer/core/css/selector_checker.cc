@@ -387,6 +387,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   }
 
   next_context.has_selection_pseudo = dynamic_pseudo == kPseudoIdSelection;
+  next_context.has_search_text_pseudo = dynamic_pseudo == kPseudoIdSearchText;
   next_context.is_sub_selector = true;
   return MatchSelector(next_context, result);
 }
@@ -2049,6 +2050,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoTrue:
       return true;
+    case CSSSelector::kPseudoCurrent:
+      if (!context.has_search_text_pseudo) {
+        return false;
+      }
+      return context.search_text_request_is_current;
     case CSSSelector::kPseudoUnknown:
     default:
       NOTREACHED_IN_MIGRATION();

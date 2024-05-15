@@ -42,6 +42,7 @@ class StyleRequest {
  public:
   enum RequestType { kForRenderer, kForComputedStyle };
   enum RulesToInclude { kUAOnly, kAll };
+  enum SearchTextRequest { kNone, kCurrent, kNotCurrent };
 
   StyleRequest() = default;
 
@@ -65,6 +66,7 @@ class StyleRequest {
   Vector<AtomicString> pseudo_ident_list;
   RulesToInclude rules_to_include{kAll};
   bool can_trigger_animations{true};
+  SearchTextRequest search_text_request{kNone};
 
   explicit StyleRequest(const ComputedStyle* parent_override)
       : parent_override(parent_override),
