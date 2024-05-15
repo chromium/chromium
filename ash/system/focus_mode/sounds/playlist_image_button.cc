@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/rounded_rect_cutout_path_builder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -15,6 +16,8 @@
 namespace ash {
 namespace {
 
+constexpr auto kCutoutSize = gfx::SizeF(24.f, 24.f);
+constexpr int kCutoutInnerCornerRadius = 8;
 constexpr int kSinglePlaylistViewWidth = 72;
 constexpr int kIconSize = 20;
 constexpr int kMediaActionIconSpacing = 6;
@@ -93,8 +96,30 @@ void PlaylistImageButton::SetIsPlaying(bool is_playing) {
   lottie_animation_view_->SetVisible(is_playing_);
 }
 
+bool PlaylistImageButton::GetIsSelected() const {
+  return is_selected_;
+}
+
 void PlaylistImageButton::SetIsSelected(bool is_selected) {
-  selected_curvycutout_icon_->SetVisible(is_selected);
+  if (is_selected_ == is_selected) {
+    return;
+  }
+
+  is_selected_ = is_selected;
+  selected_curvycutout_icon_->SetVisible(is_selected_);
+
+  RoundedRectCutoutPathBuilder builder(
+      gfx::SizeF(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth));
+  if (is_selected_) {
+    // Add a cutout.
+    builder
+        .AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
+                   kCutoutSize)
+        .CutoutInnerCornerRadius(kCutoutInnerCornerRadius);
+  }
+  image_view_->SetClipPath(builder.Build());
+
+  OnPropertyChanged(&is_selected_, views::kPropertyEffectsPaint);
 }
 
 void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {
@@ -109,6 +134,7 @@ void PlaylistImageButton::OnSetTooltipText(const std::u16string& tooltip_text) {
 }
 
 BEGIN_METADATA(PlaylistImageButton)
+ADD_PROPERTY_METADATA(bool, IsSelected)
 END_METADATA
 
 }  // namespace ash

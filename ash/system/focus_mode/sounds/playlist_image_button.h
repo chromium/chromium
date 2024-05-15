@@ -39,6 +39,8 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   // state.
   void SetIsPlaying(bool is_playing);
 
+  bool GetIsSelected() const;
+
   // Called when this view is pressed to show/hide `selected_curvycutout_icon_`.
   void SetIsSelected(bool is_selected);
 
@@ -50,6 +52,7 @@ class ASH_EXPORT PlaylistImageButton : public views::Button,
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
   bool is_playing_ = false;
+  bool is_selected_ = true;
   raw_ptr<views::ImageView> image_view_ = nullptr;
   raw_ptr<views::ImageView> selected_curvycutout_icon_ = nullptr;
   raw_ptr<views::AnimatedImageView> lottie_animation_view_ = nullptr;
