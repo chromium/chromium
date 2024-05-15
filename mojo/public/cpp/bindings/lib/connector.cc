@@ -317,8 +317,9 @@ bool Connector::Accept(Message* message) {
   if (!lock_ && task_runner_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error_)
+  if (TS_UNCHECKED_READ(error_)) {
     return false;
+  }
 
   internal::MayAutoLock locker(&lock_);
 
@@ -398,6 +399,7 @@ void Connector::OverrideDefaultSerializationBehaviorForTesting(
 }
 
 bool Connector::SimulateReadMessage(ScopedMessageHandle message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return DispatchMessage(std::move(message));
 }
 
@@ -576,6 +578,7 @@ void Connector::PostDispatchNextMessageFromPipe() {
 }
 
 void Connector::CallDispatchNextMessageFromPipe() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(num_pending_dispatch_tasks_, 0u);
   --num_pending_dispatch_tasks_;
   ReadAllAvailableMessages();
