@@ -163,7 +163,7 @@ class FakeRemoteGattCharacteristic
   // UnsubscribeFromNotifications is called.
   std::optional<uint16_t> next_unsubscribe_from_notifications_response_;
 
-  size_t last_descriptor_id_;
+  size_t last_descriptor_id_ = 0;
 
   base::WeakPtrFactory<FakeRemoteGattCharacteristic> weak_ptr_factory_{this};
 };
