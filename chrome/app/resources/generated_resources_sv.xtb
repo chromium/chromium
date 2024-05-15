@@ -8157,7 +8157,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7296503797589217366">Välj mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Mörkgrön</translation>
 <translation id="7298195798382681320">Rekommenderas</translation>
-<translation id="7299337219131431707">Aktivera gästsurfning</translation>
+<translation id="7299337219131431707">Aktivera gästsessioner</translation>
 <translation id="7299515639584427954">Vill du ändra standardapp för länkar som stöds?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301812050652048720">En nyckel har raderats</translation>
@@ -10230,7 +10230,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8838601485495657486">Ogenomskinlig</translation>
 <translation id="8838770651474809439">Hamburgare</translation>
 <translation id="8838778928843281408">Hantera telefoner</translation>
-<translation id="883924185304953854">Bildsökning</translation>
+<translation id="883924185304953854">Sök med bild</translation>
 <translation id="8841786407272321022">Lösenordet har endast sparats på den här enheten. Uppdatera Google Play-tjänsterna om du vill spara nya lösenord i Google-kontot.</translation>
 <translation id="8841843049738266382">Läs och ändra användarna på godkännandelistan</translation>
 <translation id="8842594465773264717">Radera fingeravtrycket</translation>
