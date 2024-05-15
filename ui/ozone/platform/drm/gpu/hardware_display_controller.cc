@@ -544,18 +544,22 @@ void HardwareDisplayController::AllocateCursorBuffers() {
 
 DrmDumbBuffer* HardwareDisplayController::NextCursorBuffer(
     const SkBitmap& image) {
-  DrmDumbBuffer* next_buffer = nullptr;
-  // Find the smallest buffer size that fits the |image| size and return the not
-  // in-use buffer with that size.
+  // Use the largest buffer as default.
+  int buffer_size = valid_cursor_sizes_.back();
+
+  // Find the smallest buffer size that fits the |image| size.
   for (auto size : valid_cursor_sizes_) {
     if (image.width() <= size && image.height() <= size) {
-      auto& active_buffers = cursor_buffer_map_[size];
-      next_buffer = active_buffers.front().get();
-      if (next_buffer == current_cursor_) {
-        next_buffer = active_buffers.back().get();
-      }
+      buffer_size = size;
       break;
     }
+  }
+
+  // Return the not in-use buffer with the |buffer_size|.
+  auto& active_buffers = cursor_buffer_map_[buffer_size];
+  DrmDumbBuffer* next_buffer = active_buffers.front().get();
+  if (next_buffer == current_cursor_) {
+    return active_buffers.back().get();
   }
   return next_buffer;
 }
