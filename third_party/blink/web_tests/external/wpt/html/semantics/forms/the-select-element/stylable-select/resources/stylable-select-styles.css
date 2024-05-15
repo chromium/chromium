@@ -29,8 +29,10 @@
  * They will either have to be specced or also added to the main test file.
  * TODO(crbug.com/1511354): Spec these UA styles. */
 .stylable-select-option {
-  min-height: 1.2em;
-  padding: 0px 2px 1px;
+  padding-inline: 2px;
+  padding-block-start: 0;
+  padding-block-end: 1px;
+  min-block-size: 1.2em;
   white-space: nowrap;
 }
 

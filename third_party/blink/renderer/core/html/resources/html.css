@@ -1008,9 +1008,11 @@ optgroup {
 option {
     font-weight: normal;
     display: block;
-    padding: 0 2px 1px 2px;
+    padding-inline: 2px;
+    padding-block-start: 0;
+    padding-block-end: 1px;
     white-space: nowrap;
-    min-height: 1.2em;
+    min-block-size: 1.2em;
 }
 
 /* The following select style rules have to go after the other
