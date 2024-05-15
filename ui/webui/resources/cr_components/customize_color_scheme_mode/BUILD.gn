@@ -46,7 +46,6 @@ build_webui("build") {
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/customize_color_scheme_mode.mojom-webui.ts" ]
 
-  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/customize_color_scheme_mode"
   ts_composite = true
   ts_deps = [
