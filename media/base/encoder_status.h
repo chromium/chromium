@@ -54,7 +54,9 @@ struct EncoderStatusTraits {
     kBitstreamConversionError = 18,
     // Failure in allocating a buffer.
     kOutOfMemoryError = 19,
-    kMaxValue = kOutOfMemoryError,
+    // No hardware encoder is available.
+    kEncoderAccelerationSupportMissing = 20,
+    kMaxValue = kEncoderAccelerationSupportMissing,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

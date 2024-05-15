@@ -23,7 +23,8 @@ namespace media {
 // which are more reliable but less efficient.
 class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
  public:
-  using CreateFallbackCB = base::OnceCallback<std::unique_ptr<VideoEncoder>()>;
+  using CreateFallbackCB =
+      base::OnceCallback<EncoderStatus::Or<std::unique_ptr<VideoEncoder>>()>;
 
   VideoEncoderFallback(std::unique_ptr<VideoEncoder> main_encoder,
                        CreateFallbackCB create_fallback_cb);

@@ -5655,6 +5655,7 @@ Called by update_document_policy_enum.py.-->
   <int value="17" label="kInvalidOutputBuffer"/>
   <int value="18" label="kPostBitstreamConversionError"/>
   <int value="19" label="kOutOfMemoryError"/>
+  <int value="20" label="kEncoderAccelerationSupportMissing"/>
 </enum>
 
 <enum name="EncryptionScheme">

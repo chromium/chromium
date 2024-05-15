@@ -144,14 +144,16 @@ void VideoEncoderFallback::FallbackInitCompleted(EncoderStatus status) {
 void VideoEncoderFallback::FallbackInitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   use_fallback_ = true;
-  encoder_ = std::move(create_fallback_cb_).Run();
-  if (!encoder_) {
+  encoder_.reset();
+  auto fallback_encoder = std::move(create_fallback_cb_).Run();
+  if (!fallback_encoder.has_value()) {
     std::move(init_done_cb_)
         .Run(EncoderStatus::Codes::kEncoderInitializationError);
     FallbackInitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
 
+  encoder_ = std::move(fallback_encoder).value();
   encoder_->Initialize(
       profile_, options_,
       base::BindRepeating(&VideoEncoderFallback::CallInfo,
@@ -167,11 +169,14 @@ void VideoEncoderFallback::FallbackEncode(PendingEncode args,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!use_fallback_) {
     use_fallback_ = true;
-    encoder_ = std::move(create_fallback_cb_).Run();
-    if (!encoder_) {
+    encoder_.reset();
+    auto fallback_encoder = std::move(create_fallback_cb_).Run();
+    if (!fallback_encoder.has_value()) {
       std::move(args.done_callback).Run(main_encoder_status.code());
       return;
     }
+
+    encoder_ = std::move(fallback_encoder).value();
 
     encoder_->Initialize(
         profile_, options_,

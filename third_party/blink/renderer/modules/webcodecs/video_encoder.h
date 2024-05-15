@@ -122,10 +122,10 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
                       scoped_refptr<media::VideoFrame> txt_frame,
                       media::VideoEncoder::EncoderStatusCB done_callback,
                       scoped_refptr<media::VideoFrame> result_frame);
-  static std::unique_ptr<media::VideoEncoder> CreateSoftwareVideoEncoder(
-      VideoEncoder* self,
-      bool fallback,
-      media::VideoCodec codec);
+  static media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  CreateSoftwareVideoEncoder(VideoEncoder* self,
+                             bool fallback,
+                             media::VideoCodec codec);
 
   ParsedConfig* ParseConfig(const VideoEncoderConfig*,
                             ExceptionState&) override;
@@ -133,17 +133,18 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
 
   // Virtual for UTs.
   // Returns the VideoEncoder.
-  virtual std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
-      const ParsedConfig& config,
-      media::GpuVideoAcceleratorFactories* gpu_factories,
-      bool& is_platform_encoder);
+  virtual media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  CreateMediaVideoEncoder(const ParsedConfig& config,
+                          media::GpuVideoAcceleratorFactories* gpu_factories,
+                          bool& is_platform_encoder);
   virtual std::unique_ptr<media::VideoEncoderMetricsProvider>
   CreateVideoEncoderMetricsProvider() const;
 
   void ContinueConfigureWithGpuFactories(
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
-  std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
+  media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+  CreateAcceleratedVideoEncoder(
       media::VideoCodecProfile profile,
       const media::VideoEncoder::Options& options,
       media::GpuVideoAcceleratorFactories* gpu_factories,

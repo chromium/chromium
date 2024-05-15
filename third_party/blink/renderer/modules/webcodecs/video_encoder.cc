@@ -179,13 +179,13 @@ media::VideoEncodeAccelerator::SupportedRateControlMode BitrateToSupportedMode(
   }
 }
 
-bool IsAcceleratedConfigurationSupported(
+media::EncoderStatus IsAcceleratedConfigurationSupported(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     EncoderType required_encoder_type) {
   if (!gpu_factories || !gpu_factories->IsGpuVideoEncodeAcceleratorEnabled()) {
-    return false;
+    return media::EncoderStatus::Codes::kEncoderAccelerationSupportMissing;
   }
 
   // Hardware encoders don't currently support high bit depths or subsamplings
@@ -193,12 +193,16 @@ bool IsAcceleratedConfigurationSupported(
   if (options.subsampling.value_or(media::VideoChromaSampling::k420) !=
           media::VideoChromaSampling::k420 ||
       options.bit_depth.value_or(8) != 8) {
-    return false;
+    return media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
   }
 
   auto supported_profiles =
       gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
           media::VideoEncodeAccelerator::SupportedProfiles());
+
+  if (supported_profiles.empty()) {
+    return media::EncoderStatus::Codes::kEncoderAccelerationSupportMissing;
+  }
 
   bool found_supported_profile = false;
   for (auto& supported_profile : supported_profiles) {
@@ -250,7 +254,9 @@ bool IsAcceleratedConfigurationSupported(
     found_supported_profile = true;
     break;
   }
-  return found_supported_profile;
+  return found_supported_profile
+             ? media::EncoderStatus::Codes::kOk
+             : media::EncoderStatus::Codes::kEncoderUnsupportedConfig;
 }
 
 VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
@@ -643,23 +649,25 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   return VerifyCodecSupportStatic(config, js_error_message);
 }
 
-std::unique_ptr<media::VideoEncoder>
+media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
 VideoEncoder::CreateAcceleratedVideoEncoder(
     media::VideoCodecProfile profile,
     const media::VideoEncoder::Options& options,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     HardwarePreference hw_pref) {
   auto required_encoder_type = GetRequiredEncoderType(profile, hw_pref);
-  if (!IsAcceleratedConfigurationSupported(profile, options, gpu_factories,
-                                           required_encoder_type)) {
-    return nullptr;
+  if (media::EncoderStatus result = IsAcceleratedConfigurationSupported(
+          profile, options, gpu_factories, required_encoder_type);
+      !result.is_ok()) {
+    return std::move(result);
   }
 
-  return std::make_unique<
-      media::AsyncDestroyVideoEncoder<media::VideoEncodeAcceleratorAdapter>>(
-      std::make_unique<media::VideoEncodeAcceleratorAdapter>(
-          gpu_factories, logger_->log()->Clone(), callback_runner_,
-          required_encoder_type));
+  return std::unique_ptr<media::VideoEncoder>(
+      std::make_unique<media::AsyncDestroyVideoEncoder<
+          media::VideoEncodeAcceleratorAdapter>>(
+          std::make_unique<media::VideoEncodeAcceleratorAdapter>(
+              gpu_factories, logger_->log()->Clone(), callback_runner_,
+              required_encoder_type)));
 }
 
 std::unique_ptr<media::VideoEncoder> CreateAv1VideoEncoder() {
@@ -688,13 +696,13 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 
 // This method is static and takes |self| in order to make it possible to use it
 // with a weak |this|. It's needed in to avoid a persistent reference cycle.
-std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
-    VideoEncoder* self,
-    bool fallback,
-    media::VideoCodec codec) {
+media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+VideoEncoder::CreateSoftwareVideoEncoder(VideoEncoder* self,
+                                         bool fallback,
+                                         media::VideoCodec codec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
   if (!self)
-    return nullptr;
+    return media::EncoderStatus::Codes::kEncoderIllegalState;
   std::unique_ptr<media::VideoEncoder> result;
   switch (codec) {
     case media::VideoCodec::kAV1:
@@ -710,8 +718,9 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
     default:
       break;
   }
-  if (!result)
-    return nullptr;
+  if (!result) {
+    return media::EncoderStatus::Codes::kEncoderUnsupportedCodec;
+  }
   if (fallback) {
     CHECK(self->encoder_metrics_provider_);
     self->encoder_metrics_provider_->Initialize(
@@ -720,10 +729,12 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateSoftwareVideoEncoder(
         self->active_config_->options.scalability_mode.value_or(
             media::SVCScalabilityMode::kL1T1));
   }
-  return std::make_unique<media::OffloadingVideoEncoder>(std::move(result));
+  return std::unique_ptr<media::VideoEncoder>(
+      std::make_unique<media::OffloadingVideoEncoder>(std::move(result)));
 }
 
-std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
+media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>
+VideoEncoder::CreateMediaVideoEncoder(
     const ParsedConfig& config,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     bool& is_platform_encoder) {
@@ -735,13 +746,15 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
                                                 gpu_factories, config.hw_pref);
     if (config.hw_pref == HardwarePreference::kPreferHardware) {
       return result;
-    } else if (result) {
+    } else if (result.has_value()) {
       // 'no-preference' or 'prefer-software' and we have OS software encoders.
-      return std::make_unique<media::VideoEncoderFallback>(
-          std::move(result), ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                                 &VideoEncoder::CreateSoftwareVideoEncoder,
-                                 MakeUnwrappingCrossThreadWeakHandle(this),
-                                 /*fallback=*/true, config.codec)));
+      return std::unique_ptr<media::VideoEncoder>(
+          std::make_unique<media::VideoEncoderFallback>(
+              std::move(result).value(),
+              ConvertToBaseOnceCallback(
+                  CrossThreadBindOnce(&VideoEncoder::CreateSoftwareVideoEncoder,
+                                      MakeUnwrappingCrossThreadWeakHandle(this),
+                                      /*fallback=*/true, config.codec))));
     }
   }
 
@@ -756,19 +769,17 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_platform_encoder = false;
-  media_encoder_ = CreateMediaVideoEncoder(*active_config_, gpu_factories,
-                                           is_platform_encoder);
-  if (!media_encoder_) {
-    ReportError("Encoder creation error.",
-                media::EncoderStatus(
-                    media::EncoderStatus::Codes::kEncoderInitializationError,
-                    "Unable to create encoder (most likely unsupported "
-                    "codec/acceleration requirement combination)"),
+  media_encoder_.reset();
+  auto encoder_or_error = CreateMediaVideoEncoder(
+      *active_config_, gpu_factories, is_platform_encoder);
+  if (!encoder_or_error.has_value()) {
+    ReportError("Encoder creation error.", std::move(encoder_or_error).error(),
                 /*is_error_message_from_software_codec=*/!is_platform_encoder);
     request->EndTracing();
     return;
   }
 
+  media_encoder_ = std::move(encoder_or_error).value();
   auto info_cb = ConvertToBaseRepeatingCallback(
       CrossThreadBindRepeating(&VideoEncoder::OnMediaEncoderInfoChanged,
                                MakeUnwrappingCrossThreadWeakHandle(this)));
@@ -1520,8 +1531,10 @@ static void isConfigSupportedWithHardwareOnly(
     media::GpuVideoAcceleratorFactories* gpu_factories) {
   auto required_encoder_type =
       GetRequiredEncoderType(config->profile, config->hw_pref);
-  bool supported = IsAcceleratedConfigurationSupported(
-      config->profile, config->options, gpu_factories, required_encoder_type);
+  bool supported =
+      IsAcceleratedConfigurationSupported(config->profile, config->options,
+                                          gpu_factories, required_encoder_type)
+          .is_ok();
   support->setSupported(supported);
   std::move(callback).Run(support);
 }
