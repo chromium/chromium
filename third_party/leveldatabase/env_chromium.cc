@@ -888,7 +888,6 @@ Status ChromiumEnv::RenameFile(const std::string& src, const std::string& dst) {
 
 Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   *lock = nullptr;
-  Status result;
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
   FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result;
@@ -901,7 +900,7 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   }
 
   *lock = new ChromiumFileLock(std::move(lock_result.value()), fname);
-  return result;
+  return Status::OK();
 }
 
 Status ChromiumEnv::UnlockFile(FileLock* lock) {

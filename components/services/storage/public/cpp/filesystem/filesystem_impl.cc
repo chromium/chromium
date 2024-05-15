@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -267,8 +268,12 @@ base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
   if (!file.IsValid())
     return base::unexpected(file.error_details());
 
-  if (!GetLockTable().AddLock(path))
+  if (!GetLockTable().AddLock(path)) {
+    // TODO(crbug.com/340398745): resolve this mystery and remove this line, or
+    // even replace it with a CHECK.
+    base::debug::DumpWithoutCrashing();
     return base::unexpected(base::File::FILE_ERROR_IN_USE);
+  }
 
 #if !BUILDFLAG(IS_FUCHSIA)
   base::File::Error error = file.Lock(base::File::LockMode::kExclusive);
