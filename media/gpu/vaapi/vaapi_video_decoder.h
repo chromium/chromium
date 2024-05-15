@@ -13,9 +13,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/id_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
-#include "base/containers/small_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -246,9 +246,8 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // libva vaDestroySurfaces(): "Surfaces can only be destroyed after all
   // contexts using these surfaces have been destroyed."
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
-  // TODO(339518553): Use base::IDMap.
-  base::small_map<
-      std::map<gfx::GpuMemoryBufferId, std::unique_ptr<ScopedVASurface>>>
+  base::IDMap<std::unique_ptr<ScopedVASurface>,
+              decltype(gfx::GpuMemoryBufferId::id)>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // We need to use a CdmContextRef so that we destruct
