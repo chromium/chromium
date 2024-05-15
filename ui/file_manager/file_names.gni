@@ -216,6 +216,7 @@ ts_files = [
   "file_manager/foreground/js/constants.ts",
   "file_manager/foreground/js/crossover_search_utils.ts",
   "file_manager/foreground/js/crostini_controller.ts",
+  "file_manager/foreground/js/one_drive_controller.ts",
   "file_manager/foreground/js/deferred_elements.ts",
   "file_manager/foreground/js/dialog_action_controller.ts",
   "file_manager/foreground/js/directory_contents.ts",

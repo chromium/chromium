@@ -4,7 +4,7 @@
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
-import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isRecentRootType} from '../../common/js/entry_utils.js';
+import {getODFSMetadataQueryEntry, isInteractiveVolume, isOneDrive, isOneDrivePlaceholderKey, isRecentRootType} from '../../common/js/entry_utils.js';
 import type {FakeEntry} from '../../common/js/files_app_entry_types.js';
 import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
@@ -12,7 +12,7 @@ import {RootType} from '../../common/js/volume_manager_types.js';
 import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
-import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED} from './constants.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from './constants.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {ProvidersModel} from './providers_model.js';
 
@@ -234,6 +234,9 @@ export class EmptyFolderController {
     if (currentVolumeInfo && isOneDrive(currentVolumeInfo) &&
         currentVolumeInfo.providerId !== undefined) {
       this.providersModel_.requestMount(currentVolumeInfo.providerId);
+    } else if (isOneDrivePlaceholderKey(
+                   this.directoryModel_.getCurrentFileKey())) {
+      this.providersModel_.requestMount(ODFS_EXTENSION_ID);
     }
   }
 
@@ -255,6 +258,10 @@ export class EmptyFolderController {
       // Show ODFS reauthentication required empty state if is it
       // non-interactive.
       svgRef = ODFS_REAUTHENTICATION_REQUIRED;
+    } else if (currentRootType === RootType.PROVIDED) {
+      if (isOneDrivePlaceholderKey(this.directoryModel_.getCurrentFileKey())) {
+        svgRef = ODFS_REAUTHENTICATION_REQUIRED;
+      }
     } else {
       const {search} = getStore().getState();
       if (search && search.query) {

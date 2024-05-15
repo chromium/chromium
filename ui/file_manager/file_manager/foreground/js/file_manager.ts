@@ -24,7 +24,7 @@ import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/f
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isNewDirectoryTreeEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
@@ -80,6 +80,7 @@ import {MetadataUpdateController} from './metadata_update_controller.js';
 import {NamingController} from './naming_controller.js';
 import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {NavigationUma} from './navigation_uma.js';
+import {OneDriveController} from './one_drive_controller.js';
 import {ProvidersModel} from './providers_model.js';
 import {QuickViewController} from './quick_view_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
@@ -253,6 +254,11 @@ export class FileManager {
    * Last modified controller.
    */
   protected lastModifiedController_: LastModifiedController|null = null;
+
+  /**
+   * OneDrive controller.
+   */
+  protected oneDriveController_: OneDriveController|null = null;
 
   /**
    * Component for main window and its misc UI parts.
@@ -1184,6 +1190,10 @@ export class FileManager {
           // FileExperimental flag is off, remove it after the tree replacement.
           this.ui_.directoryTree as DirectoryTree, this.volumeManager_);
       await this.guestOsController_.refresh();
+    }
+
+    if (isSkyvaultV2Enabled()) {
+      this.oneDriveController_ = new OneDriveController();
     }
   }
 

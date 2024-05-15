@@ -8,6 +8,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
+import {isOneDrivePlaceholder} from './entry_utils.js';
 import {getMediaViewRootTypeFromVolumeId, MediaViewRootType, RootType} from './volume_manager_types.js';
 
 
@@ -197,6 +198,12 @@ export function getRootTypeLabel(locationInfo: EntryLocation) {
  */
 export function getEntryLabel(
     locationInfo: EntryLocation|null, entry: Entry|FilesAppEntry) {
+  if (isOneDrivePlaceholder(entry)) {
+    // Placeholders have locationInfo, but no locationInfo.volumeInfo
+    // so getRootTypeLabel() would return null.
+    return entry.name;
+  }
+
   if (locationInfo) {
     if (locationInfo.hasFixedLabel) {
       return getRootTypeLabel(locationInfo);

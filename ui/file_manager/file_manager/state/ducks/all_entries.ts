@@ -487,6 +487,8 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
         case RootType.DRIVE_SHARED_WITH_ME:
           // TODO(lucmult): This isn't really Recent but it's the closest.
           return EntryType.RECENT;
+        case RootType.PROVIDED:
+          return EntryType.PLACEHOLDER;
       }
       console.warn(`Invalid fakeEntry.rootType='${entry.rootType} rootType`);
       return EntryType.PLACEHOLDER;
@@ -494,6 +496,8 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
       return EntryType.PLACEHOLDER;
     case 'TrashEntry':
       return EntryType.TRASH;
+    case 'OneDrivePlaceholder':
+      return EntryType.PLACEHOLDER;
     default:
       console.warn(`Invalid entry.typeName='${entry.typeName}`);
       return EntryType.FS_API;

@@ -10,7 +10,7 @@ import {isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/
 import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';
 import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {ICON_TYPES} from '../../foreground/js/constants.js';
+import {ICON_TYPES, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {Slice} from '../../lib/base_store.js';
 import {PropStatus, type State, type Volume, type VolumeId} from '../../state/state.js';
@@ -34,6 +34,8 @@ export const drivePlaceHolderKey = `fake-entry://${RootType.DRIVE_FAKE_ROOT}`;
 export const recentRootKey = `fake-entry://${RootType.RECENT}/all`;
 export const trashRootKey = `fake-entry://${RootType.TRASH}`;
 export const driveRootEntryListKey = `entry-list://${RootType.DRIVE_FAKE_ROOT}`;
+export const oneDriveFakeRootKey =
+    `fake-entry://${RootType.PROVIDED}/${ODFS_EXTENSION_ID}`;
 export const makeRemovableParentKey =
     (volume: Volume|chrome.fileManagerPrivate.VolumeMetadata) => {
       // Should be consistent with EntryList's toURL() method.

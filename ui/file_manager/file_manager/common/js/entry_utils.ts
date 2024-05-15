@@ -10,7 +10,7 @@ import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import type {DirectoryItem} from '../../foreground/js/ui/directory_tree.js';
 import type {TreeItem} from '../../foreground/js/ui/tree.js';
 import {driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../../state/ducks/volumes.js';
-import {type CurrentDirectory, EntryType, type FileData, type State, type Volume} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, type FileKey, type State, type Volume} from '../../state/state.js';
 import {getEntry, getStore, getVolume} from '../../state/store.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
@@ -352,6 +352,13 @@ export function isTrashEntry(entry: Entry|FilesAppEntry): entry is TrashEntry {
 
 export function isTrashFileData(fileData: FileData): boolean {
   return fileData.fullPath === '/' && fileData.type === EntryType.TRASH;
+}
+
+/**
+ * Returns true if the given entry is a placeholder for OneDrive.
+ */
+export function isOneDrivePlaceholder(entry: Entry|FilesAppEntry) {
+  return isFakeEntry(entry) && isOneDrivePlaceholderKey(entry.toURL());
 }
 
 /**
@@ -906,6 +913,12 @@ export function isOneDrive(volumeInfo: VolumeInfo|Volume) {
   return isOneDriveId(volumeInfo?.providerId);
 }
 
+export function isOneDrivePlaceholderKey(key: FileKey|undefined) {
+  if (!key) {
+    return false;
+  }
+  return isOneDriveId(key.substr(key.lastIndexOf('/') + 1));
+}
 
 /**
  * Returns a boolean indicating whether the volume is a GuestOs volume. And

@@ -985,7 +985,8 @@ export async function fileDisplayLocalFilesDisabledUnmountRemovable() {
   await remoteCall.waitForVolumesCount(2);
 
   // Enable SkyVault, this should unmount Downloads.
-  await sendTestMessage({name: 'setupSkyVault'});
+  await sendTestMessage(
+      {name: 'setupSkyVault', defaultLocation: 'google_drive'});
   await remoteCall.waitForVolumesCount(1);
 
   // Open Files app without specifying the initial directory/root.
@@ -1027,8 +1028,46 @@ export async function fileDisplayLocalFilesDisableInMyFiles() {
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
 
   // Disable local storage.
-  await sendTestMessage({name: 'setupSkyVault'});
+  await sendTestMessage(
+      {name: 'setupSkyVault', defaultLocation: 'google_drive'});
 
   // We should navigate to Drive.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+}
+
+/**
+ * Tests that disabling local storage while in a local folder navigates away to
+ * the default set by the policy, e.g. Drive.
+ */
+export async function fileDisplayOneDrivePlaceholder() {
+  // Mount Downloads.
+  await sendTestMessage({name: 'mountDownloads'});
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that the Files App opened in MyFiles.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
+
+  // Confirm that OneDrive isn't shown yet.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  const oneDriveLabel = 'Microsoft OneDrive';
+  directoryTree.waitForSelectedItemLostByLabel(oneDriveLabel);
+
+  // Disable local storage.
+  await sendTestMessage(
+      {name: 'setupSkyVault', defaultLocation: 'microsoft_onedrive'});
+
+  // Check that the placeholder is added.
+  await directoryTree.waitForItemByLabel(oneDriveLabel);
+
+  // TODO(b/340170015): this should happen automatically.
+  // We should navigate to OneDrive.
+  await directoryTree.selectItemByLabel(oneDriveLabel);
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, `/${oneDriveLabel}`);
+
+  // Check: the empty folder should be visible.
+  await remoteCall.waitForElement(appId, '#empty-folder:not([hidden])');
 }

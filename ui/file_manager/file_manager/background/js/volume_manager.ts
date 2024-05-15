@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {getRootType, isComputersRoot, isFakeEntry, isOneDrivePlaceholder, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {type CustomEventMap, FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
@@ -597,7 +597,8 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
       // actually defer their logic to some underlying implementation or
       // delegate to the location filesystem.
       let isReadOnly = true;
-      if (rootType === RootType.RECENT || rootType === RootType.TRASH) {
+      if (rootType === RootType.RECENT || rootType === RootType.TRASH ||
+          (isOneDrivePlaceholder(entry))) {
         isReadOnly = false;
       }
       return new EntryLocation(
