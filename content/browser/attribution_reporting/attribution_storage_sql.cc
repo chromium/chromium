@@ -1035,6 +1035,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         if (event_level_status == EventLevelResult::kInternalError ||
             aggregatable_status == AggregatableResult::kInternalError) {
           min_null_aggregatable_report_time.reset();
+          limits = CreateReportResult::Limits();
         }
 
         return CreateReportResult(
