@@ -3064,7 +3064,7 @@
   {
       "name": "enable-fontations-backend",
       "owners": [ "drott@chromium.org", "layout-dev@chromium.org" ],
-      "expiry_milestone": 127
+      "expiry_milestone": 136
   },
   {
     "name": "enable-force-dark",
