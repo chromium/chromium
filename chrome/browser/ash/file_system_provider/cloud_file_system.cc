@@ -574,7 +574,7 @@ void CloudFileSystem::OnOpenFileCompleted(
                               OpenedCloudFile(file_path, mode, file_handle,
                                               GetVersionTag(metadata.get()),
                                               GetCloudSize(metadata.get())));
-  } else if (result == base::File::FILE_ERROR_NOT_FOUND) {
+  } else if (content_cache_ && result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(file_path);
   }
