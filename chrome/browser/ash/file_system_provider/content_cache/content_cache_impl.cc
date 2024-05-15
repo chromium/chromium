@@ -316,7 +316,7 @@ void ContentCacheImpl::ReadBytes(
 
   if (offset == ctx.bytes_on_disk() && offset == file.bytes_in_cloud) {
     VLOG(1) << "Ignored request: offset is at EOF";
-    callback.Run(0, false, base::File::FILE_OK);
+    callback.Run(/*bytes_read=*/0, /*has_more=*/false, base::File::FILE_OK);
     return;
   }
 
