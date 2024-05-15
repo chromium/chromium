@@ -7680,7 +7680,7 @@
 <translation id="6857145580237920905">Powerwash を実行する前に eSIM プロファイルを削除してください</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6860097299815761905">プロキシの設定...</translation>
-<translation id="68601584151169673">保存して共有(&amp;S)</translation>
+<translation id="68601584151169673">保存と共有(&amp;S)</translation>
 <translation id="6860427144121307915">タブで開く</translation>
 <translation id="6861179941841598556"><ph name="PROFILE_NAME" /> に対するその他の操作</translation>
 <translation id="6862472520095266519">名前は 32 文字以内にしてください</translation>
@@ -9078,7 +9078,7 @@
 <translation id="793293630927785390">新しい Wi-Fi ネットワーク ダイアログ</translation>
 <translation id="7932969338829957666">共有フォルダは Linux では <ph name="BASE_DIR" /> にあります。</translation>
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
-<translation id="7933486544522242079">保存して共有(&amp;S)</translation>
+<translation id="7933486544522242079">保存と共有(&amp;S)</translation>
 <translation id="7933518760693751884">ページを保存して後で読むには、ブックマーク アイコンをクリックします</translation>
 <translation id="7933634003144813719">共有フォルダを管理する</translation>
 <translation id="793474285422359265">[キャンセル] をクリックすると、ブラウザのデータに影響する可能性があり、出荷時の設定へのリセットが必要になることがあります。</translation>

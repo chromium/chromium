@@ -4275,7 +4275,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> менен аласызбы?</translation>
 <translation id="4192024474038595073">{NUM_SITES,plural, =1{1 колдонулбаган сайттын уруксаттары өчүрүлдү}other{{NUM_SITES} колдонулбаган сайттын уруксаттары өчүрүлдү}}</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> үчүн гана.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Генеративдүү жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.<ph name="END_PARAGRAPH2" /></translation>
+    <ph name="BEGIN_PARAGRAPH2" />Жаратуучу жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Ишенимдүү тастыктама борбору</translation>
 <translation id="4193575319002689239">Карталарды көрсөтүү</translation>
 <translation id="4193836101014293726">Бул профилди өчүрүүгө болбойт</translation>
