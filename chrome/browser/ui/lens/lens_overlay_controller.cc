@@ -26,8 +26,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -186,7 +184,6 @@ LensOverlayController::~LensOverlayController() {
   glued_webviews_.clear();
   tab_->GetContents()->RemoveUserData(
       LensOverlayControllerTabLookup::UserDataKey());
-
   state_ = State::kOff;
 }
 
@@ -257,6 +254,18 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
     return;
   }
 
+  // Begin the process of grabbing a screenshot.
+  content::RenderWidgetHostView* view = tab_->GetContents()
+                                            ->GetPrimaryMainFrame()
+                                            ->GetRenderViewHost()
+                                            ->GetWidget()
+                                            ->GetView();
+
+  // During initialization and shutdown a capture may not be possible.
+  if (!view || !view->IsSurfaceAvailableForCopy()) {
+    return;
+  }
+
   // Request user permission before grabbing a screenshot.
   Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
   CHECK(tab_browser);
@@ -300,23 +309,17 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
                           weak_factory_.GetWeakPtr()),
       variations_client_, identity_manager_);
 
-  side_panel_coordinator_ =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);
-  CHECK(side_panel_coordinator_);
-
-  // Setup observer to be notified of side panel opens and closes.
-  side_panel_state_observer_.Observe(side_panel_coordinator_);
-
-  if (side_panel_coordinator_->IsSidePanelShowing()) {
-    // Close the currently opened side panel and postpone taking the screenshot
-    // until OnSidePanelDidClose
-    state_ = State::kClosingOpenedSidePanel;
-    side_panel_coordinator_->Close();
-  } else {
-    CaptureScreenshot();
-  }
-
+  state_ = State::kScreenshot;
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
+
+  view->CopyFromSurface(
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(&LensOverlayController::DidCaptureScreenshot,
+                         weak_factory_.GetWeakPtr(),
+                         ++screenshot_attempt_id_)));
+
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
@@ -324,30 +327,14 @@ void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
   if (state_ == State::kOff || state_ == State::kClosing) {
     return;
   }
+  state_ = State::kClosing;
 
   // If the tab is in the background, the async processes needed if the callback
   // is coming from the WebUI don't apply and we can call CloseUI directly.
   if (!tab_->IsInForeground()) {
-    state_ = State::kClosing;
     CloseUIPart2(dismissal_source);
     return;
   }
-
-  if (state_ == State::kOverlayAndResults) {
-    if (side_panel_coordinator_->GetCurrentEntryId() ==
-        SidePanelEntry::Id::kLensOverlayResults) {
-      // If a close was triggered while our side panel is showing, instead of
-      // just immediately closing the overlay, we close side panel to show a
-      // smooth closing animation. Once the side panel deregisters, it will
-      // re-call our close method in OnSidePanelDidClose() which will finish the
-      // closing process.
-      state_ = State::kClosingSidePanel;
-      last_dismissal_source_ = dismissal_source;
-      side_panel_coordinator_->Close();
-      return;
-    }
-  }
-  state_ = State::kClosing;
 
   // To avoid flickering, we need to remove the background blur and wait for a
   // paint before closing the rest of the overlay.
@@ -483,8 +470,7 @@ void LensOverlayController::NotifyResultsPanelOpened() {
 
 bool LensOverlayController::IsOverlayShowing() {
   return state_ == State::kStartingWebUI || state_ == State::kOverlay ||
-         state_ == State::kOverlayAndResults ||
-         state_ == State::kClosingSidePanel;
+         state_ == State::kOverlayAndResults;
 }
 
 void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
@@ -586,12 +572,6 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
 }
 
 void LensOverlayController::OnSidePanelEntryDeregistered() {
-  if (state_ == State::kClosingSidePanel) {
-    CHECK(last_dismissal_source_.has_value());
-    CloseUIAsync(*last_dismissal_source_);
-    last_dismissal_source_.reset();
-    return;
-  }
   CloseUIAsync(DismissalSource::kSidePanelCloseButton);
 }
 
@@ -677,30 +657,6 @@ class LensOverlayController::UnderlyingWebContentsObserver
  private:
   raw_ptr<LensOverlayController> lens_overlay_controller_;
 };
-
-void LensOverlayController::CaptureScreenshot() {
-  // Begin the process of grabbing a screenshot.
-  content::RenderWidgetHostView* view = tab_->GetContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetRenderViewHost()
-                                            ->GetWidget()
-                                            ->GetView();
-
-  // During initialization and shutdown a capture may not be possible.
-  if (!view || !view->IsSurfaceAvailableForCopy()) {
-    CloseUIAsync(DismissalSource::kErrorScreenshotCreationFailed);
-  }
-
-  state_ = State::kScreenshot;
-  // Side panel is now full closed, take screenshot and open overlay.
-  view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
-      base::BindPostTask(
-          base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(&LensOverlayController::DidCaptureScreenshot,
-                         weak_factory_.GetWeakPtr(),
-                         ++screenshot_attempt_id_)));
-}
 
 void LensOverlayController::DidCaptureScreenshot(int attempt_id,
                                                  const SkBitmap& bitmap) {
@@ -867,9 +823,6 @@ void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
 
   permission_bubble_controller_.reset();
   results_side_panel_coordinator_.reset();
-
-  side_panel_state_observer_.Reset();
-  side_panel_coordinator_ = nullptr;
 
   // Widget destruction can be asynchronous. We want to synchronously release
   // resources, so we clear the contents view immediately.
@@ -1057,32 +1010,6 @@ void LensOverlayController::OnPageBound() {
   if (pending_thumbnail_uri_.has_value()) {
     searchbox_handler_->SetThumbnail(*pending_thumbnail_uri_);
     pending_thumbnail_uri_.reset();
-  }
-}
-
-void LensOverlayController::OnSidePanelDidOpen() {
-  // If a side panel opens that is not ours, we must close the overlay.
-  if (side_panel_coordinator_->GetCurrentEntryId() !=
-      SidePanelEntry::Id::kLensOverlayResults) {
-    CloseUIAsync(DismissalSource::kUnexpectedSidePanelOpen);
-  }
-}
-
-void LensOverlayController::OnSidePanelCloseInterrupted() {
-  // If we were waiting for the side panel to close, but another side panel
-  // opened in the process, we need to close the overlay to not show next to the
-  // unwanted side panel.
-  if (state_ == State::kClosingOpenedSidePanel) {
-    CloseUIAsync(DismissalSource::kUnexpectedSidePanelOpen);
-  }
-}
-
-void LensOverlayController::OnSidePanelDidClose() {
-  if (state_ == State::kClosingOpenedSidePanel) {
-    // This path is invoked after the user invokes the overlay, but we needed to
-    // close the side panel before taking a screenshot. The Side panel is now
-    // closed so we can now take the screenshot of the page.
-    CaptureScreenshot();
   }
 }
 
