@@ -182,6 +182,10 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           InvokePurchaseActionCompleted_HistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           OnInitiatePaymentResponseReceived_HistogramLogged);
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
   void RegisterPixAllowlist() const;
@@ -281,11 +285,18 @@ class FacilitatedPaymentsManager {
 
   // Measures the time taken to check the availability of the facilitated
   // payments API client.
-  base::TimeTicks api_availability_check_latency_;
+  base::TimeTicks api_availability_check_start_time_;
 
   // Measures the time take to load the client token from the facilitated
   // payments API client.
-  base::TimeTicks get_client_token_loading_latency_;
+  base::TimeTicks get_client_token_loading_start_time_;
+
+  // Measures the time take to complete the call to the InitiatePayment backend
+  // api.
+  base::TimeTicks initiate_payment_network_start_time_;
+
+  // Measures the time take to complete the purchase action.
+  base::TimeTicks purchase_action_start_time_;
 
   // Contains the details required for the `InitiatePayment` request to be sent
   // to the Payments server. Its ownership is transferred to

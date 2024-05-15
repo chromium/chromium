@@ -1369,4 +1369,60 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       /*expected_bucket_count=*/1);
 }
 
+// Test that once the purchase action response is received, the result and
+// latency of the invoke purchase action is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       InvokePurchaseActionCompleted_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+  EXPECT_CALL(*api_client_, InvokePurchaseAction);
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+
+  FastForwardBy(base::Seconds(2));
+  manager_->OnPurchaseActionResult(
+      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
+// Test that once the InitiatePayment response is received, the result and
+// latency of the network call is logged.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       OnInitiatePaymentResponseReceived_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+
+  FastForwardBy(base::Seconds(2));
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::AutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated

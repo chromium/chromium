@@ -179,7 +179,7 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   }
 
   initiate_payment_request_details_->pix_code_ = std::move(pix_code);
-  api_availability_check_latency_ = base::TimeTicks::Now();
+  api_availability_check_start_time_ = base::TimeTicks::Now();
   api_client_->IsAvailable(
       base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -197,8 +197,9 @@ int64_t FacilitatedPaymentsManager::GetPixCodeDetectionLatencyInMillis() const {
 
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
-  LogIsApiAvailableResult(is_api_available, (base::TimeTicks::Now() -
-                                             api_availability_check_latency_));
+  LogIsApiAvailableResult(
+      is_api_available,
+      (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
     Reset();
@@ -251,7 +252,7 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     return;
   }
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
-  get_client_token_loading_latency_ = base::TimeTicks::Now();
+  get_client_token_loading_start_time_ = base::TimeTicks::Now();
   api_client_->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -261,7 +262,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
   LogGetClientTokenResult(
       !client_token.empty(),
-      (base::TimeTicks::Now() - get_client_token_loading_latency_));
+      (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
     Reset();
     return;
@@ -274,6 +275,7 @@ void FacilitatedPaymentsManager::OnGetClientToken(
 }
 
 void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
+  initiate_payment_network_start_time_ = base::TimeTicks::Now();
   if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
           client_->GetFacilitatedPaymentsNetworkInterface()) {
     payments_network_interface->InitiatePayment(
@@ -289,11 +291,15 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     autofill::AutofillClient::PaymentsRpcResult result,
     std::unique_ptr<FacilitatedPaymentsInitiatePaymentResponseDetails>
         response_details) {
+  base::TimeDelta latency =
+      base::TimeTicks::Now() - initiate_payment_network_start_time_;
   if (result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
     // TODO(b/300335703): Show the error message.
+    LogInitiatePaymentResult(/*result=*/false, latency);
     Reset();
     return;
   }
+  LogInitiatePaymentResult(/*result=*/true, latency);
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
     Reset();
@@ -307,6 +313,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     Reset();
     return;
   }
+  purchase_action_start_time_ = base::TimeTicks::Now();
   api_client_->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
       base::BindOnce(&FacilitatedPaymentsManager::OnPurchaseActionResult,
@@ -314,7 +321,12 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 }
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
-    FacilitatedPaymentsApiClient::PurchaseActionResult result) {}
+    FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+  LogInitiatePurchaseActionResult(
+      /*result=*/result ==
+          FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
+      base::TimeTicks::Now() - purchase_action_start_time_);
+}
 
 void FacilitatedPaymentsManager::ResetForTesting() {
   is_test_ = false;
