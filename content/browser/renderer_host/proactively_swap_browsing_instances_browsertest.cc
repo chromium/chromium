@@ -1176,6 +1176,41 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   EXPECT_EQ(site_instance_5, site_instance_6);
 }
 
+// Regression test for crbug.com/340606786. This test ensures that the browser
+// doesn't crash if a reload happens on a post-commit error page.
+IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
+                       ReloadPostCommitErrorPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1) Navigate to title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // 2) Load post commit error page.
+  RenderFrameHost* root = shell()->web_contents()->GetPrimaryMainFrame();
+  std::string error_html = "Error page";
+  TestNavigationObserver error_observer(shell()->web_contents());
+  controller.LoadPostCommitErrorPage(root, url, error_html);
+  error_observer.Wait();
+
+  // 3) Request a reload to happen when the controller becomes active (e.g.
+  // after the renderer gets killed in background on Android).
+  ASSERT_FALSE(controller.NeedsReload());
+  controller.SetNeedsReload();
+  // Set the restore type to `kRestored`, since `SetNeedsReload()` should only
+  // be used for session restore.
+  controller.GetLastCommittedEntry()->set_restore_type(RestoreType::kRestored);
+  ASSERT_TRUE(controller.NeedsReload());
+
+  // Set the controller as active, triggering the requested reload.
+  controller.SetActive(true);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  // The reload should not crash.
+  ASSERT_FALSE(controller.NeedsReload());
+}
+
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
                        SwapOnNavigationToPageThatRedirects) {
   ASSERT_TRUE(embedded_test_server()->Start());
