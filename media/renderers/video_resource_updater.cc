@@ -636,7 +636,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
         video_resource_updater_(video_resource_updater),
         shared_bitmap_reporter_(shared_bitmap_reporter),
         shared_bitmap_id_(shared_image_interface
-                              ? gpu::Mailbox()
+                              ? viz::SharedBitmapId()
                               : viz::SharedBitmap::GenerateId()) {
     if (shared_image_interface) {
       auto shared_image_mapping = shared_image_interface->CreateSharedImage(

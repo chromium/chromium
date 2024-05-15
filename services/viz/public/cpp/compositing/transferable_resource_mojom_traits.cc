@@ -8,6 +8,7 @@
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/shared_bitmap_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -59,9 +60,12 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
          viz::TransferableResource* out) {
   viz::ResourceId id;
   gpu::Mailbox mailbox;
+  viz::SharedBitmapId shared_bitmap_id;
   gpu::SyncToken sync_token;
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
-      !data.ReadMailbox(&mailbox) || !data.ReadSyncToken(&sync_token) ||
+      !data.ReadMailbox(&mailbox) ||
+      !data.ReadSharedBitmapId(&shared_bitmap_id) ||
+      !data.ReadSyncToken(&sync_token) ||
       !data.ReadColorSpace(&out->color_space) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
@@ -70,7 +74,9 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   }
   out->id = id;
   out->is_software = data.is_software();
+  out->is_shared_bitmap = data.is_shared_bitmap();
   out->set_mailbox(mailbox);
+  out->set_shared_bitmap_id(shared_bitmap_id);
   out->set_sync_token(sync_token);
   out->set_texture_target(data.texture_target());
   out->is_overlay_candidate = data.is_overlay_candidate();

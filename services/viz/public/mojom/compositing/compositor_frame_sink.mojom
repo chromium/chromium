@@ -12,8 +12,8 @@ import "services/viz/public/mojom/compositing/layer_context.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
+import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
-import "gpu/ipc/common/mailbox.mojom";
 
 // Tags the frame sink with the type of source producing its content.
 enum CompositorFrameSinkType {
@@ -89,16 +89,14 @@ interface CompositorFrameSink {
 
   // Informs the display compositor that the client allocated a shared bitmap.
   // The |id| can then be used in subsequent CompositorFrames given to
-  // SubmitCompositorFrame. The |id| is a Mailbox type which doubles as a
-  // SharedBitmapId for this case.
+  // SubmitCompositorFrame. The |id| is a SharedBitmapId.
   DidAllocateSharedBitmap(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
-                          gpu.mojom.Mailbox id);
+                          SharedBitmapId id);
 
   // Informs the display compositor that the client deleted a shared bitmap. This
   // allows the service to free the shared memory that was previously given to it
-  // via DidAllocateSharedBitmap(). The |id| is a Mailbox type which doubles as a
-  // SharedBitmapId for this case.
-  DidDeleteSharedBitmap(gpu.mojom.Mailbox id);
+  // via DidAllocateSharedBitmap(). The |id| is a SharedBitmapId.
+  DidDeleteSharedBitmap(SharedBitmapId id);
 
   // This should be called atmost once for the lifetime of this frame sink. Once
   // the value has been set to anything other than kUnspecified, subsequent calls

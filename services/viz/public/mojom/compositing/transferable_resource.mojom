@@ -9,6 +9,7 @@ import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "services/viz/public/mojom/compositing/resource_id.mojom";
+import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
@@ -33,10 +34,12 @@ struct TransferableResource {
   SharedImageFormat format;
   gfx.mojom.Size size;
   gpu.mojom.Mailbox mailbox;
+  SharedBitmapId shared_bitmap_id;
   gpu.mojom.SyncToken sync_token;
   uint32 texture_target;
   SynchronizationType synchronization_type;
   bool is_software;
+  bool is_shared_bitmap;
   bool is_overlay_candidate;
 
   [EnableIf=is_android]

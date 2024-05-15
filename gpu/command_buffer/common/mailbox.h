@@ -17,11 +17,6 @@
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
 
-namespace viz {
-class SharedBitmap;
-struct TransferableResource;
-}
-
 namespace gpu {
 
 // Importance to use in tracing. Higher values get the memory cost attributed,
@@ -69,15 +64,6 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   std::strong_ordering operator<=>(const Mailbox& other) const;
 
   Name name;
-
- private:
-  // A temporary solution until when kSharedBitmapToSharedImage is enabled by
-  // default and the legacy ShareBitmap path is removed.
-  static Mailbox GenerateLegacySharedBitmapMailbox();
-  bool IsSharedImage() const;
-
-  friend class viz::SharedBitmap;
-  friend struct viz::TransferableResource;
 };
 
 }  // namespace gpu

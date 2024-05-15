@@ -49,6 +49,11 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.mailbox();
   }
 
+  static const viz::SharedBitmapId& shared_bitmap_id(
+      const viz::TransferableResource& resource) {
+    return resource.shared_bitmap_id();
+  }
+
   static const gpu::SyncToken& sync_token(
       const viz::TransferableResource& resource) {
     return resource.sync_token();
@@ -65,6 +70,10 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
 
   static bool is_software(const viz::TransferableResource& resource) {
     return resource.is_software;
+  }
+
+  static bool is_shared_bitmap(const viz::TransferableResource& resource) {
+    return resource.is_shared_bitmap;
   }
 
   static bool is_overlay_candidate(const viz::TransferableResource& resource) {

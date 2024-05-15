@@ -66,14 +66,6 @@ void Mailbox::SetName(const int8_t* n) {
   memcpy(name, n, sizeof(name));
 }
 
-bool Mailbox::IsSharedImage() const {
-  return name[kSharedImageFlagIndex] & kSharedImageFlag;
-}
-
-Mailbox Mailbox::GenerateLegacySharedBitmapMailbox() {
-  return GenerateMailbox(false /* is_shared_image */);
-}
-
 Mailbox Mailbox::GenerateForSharedImage() {
   return GenerateMailbox(true /* is_shared_image */);
 }

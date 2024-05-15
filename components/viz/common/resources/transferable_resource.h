@@ -110,7 +110,10 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ReturnedResource ToReturnedResource() const;
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
-  bool is_null() const { return mailbox_.IsZero(); }
+  bool is_null() const {
+    return (!is_shared_bitmap && mailbox_.IsZero()) ||
+           (is_shared_bitmap && shared_bitmap_id_.IsZero());
+  }
 
   // Returns true if this resource (which must be software) is holding a
   // SharedImage ID rather than a SharedBitmapId.
@@ -129,6 +132,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // Indicates if the resource is gpu or software backed.
   bool is_software = false;
 
+  // Indicates if the resource is SharedImage or SharedBitmap backed.
+  bool is_shared_bitmap = false;
+
   // The number of pixels in the gpu mailbox/software bitmap.
   gfx::Size size;
 
@@ -138,6 +144,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
 
   void set_mailbox(const gpu::Mailbox& mailbox) { mailbox_ = mailbox; }
+  void set_shared_bitmap_id(const SharedBitmapId& shared_bitmap_id) {
+    shared_bitmap_id_ = shared_bitmap_id;
+  }
   void set_sync_token(const gpu::SyncToken& sync_token) {
     sync_token_ = sync_token;
   }
@@ -145,22 +154,20 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     texture_target_ = texture_target;
   }
 
+  // Returns the Mailbox or SharedBitmapId that this instance is storing. The
+  // former will be non-zero only if created via MakeGpu() or
+  // MakeSoftwareSharedImage(), and the latter will be non-zero only if created
+  // via MakeSoftwareSharedBitmap().
+  // NOTE: These accessors cannot CHECK the state of `is_shared_bitmap` due to
+  // being invoked unconditionally during Mojo serialization.
   const gpu::Mailbox& mailbox() const { return mailbox_; }
-  // Returns the SharedBitmapId that this instance (which must have been created
-  // via MakeSoftwareSharedBitmap()) is storing.
-  // TODO(crbug.com/337538024): Decouple SharedBitmapId from Mailbox.
-  const SharedBitmapId& shared_bitmap_id() const {
-    CHECK(is_software && !IsSoftwareSharedImage());
-    return mailbox_;
-  }
+  const SharedBitmapId& shared_bitmap_id() const { return shared_bitmap_id_; }
   const gpu::SyncToken& sync_token() const { return sync_token_; }
   gpu::SyncToken& mutable_sync_token() { return sync_token_; }
   uint32_t texture_target() const { return texture_target_; }
 
-  // NOTE: This explicitly accesses the mailbox field directly so that we will
-  // be forced to update it when we change the Mailbox and the SharedBitmapId to
-  // be held in an std::variant.
-  bool is_empty() const { return mailbox_.IsZero(); }
+  // TODO(crbug.com/337538024): Change all callers to call is_null() instead.
+  bool is_empty() const { return is_null(); }
 
   // The color space that is used for pixel path operations (e.g, TexImage,
   // CopyTexImage, DrawPixels) and when displaying as an overlay.
@@ -218,6 +225,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool operator==(const TransferableResource& o) const {
     return id == o.id && is_software == o.is_software && size == o.size &&
            format == o.format && mailbox_ == o.mailbox_ &&
+           shared_bitmap_id_ == o.shared_bitmap_id_ &&
            sync_token_ == o.sync_token_ &&
            texture_target_ == o.texture_target_ &&
            color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
@@ -234,20 +242,11 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   bool operator!=(const TransferableResource& o) const { return !(*this == o); }
 
  private:
-  // TODO(crbug.com/337538024): Separate out holding of mailbox for software
-  // SharedImage and holding of SharedBitmapId internally and inline/adapt this
-  // impl into MakeSoftware{SharedImage, SharedBitmapId}.
-  static TransferableResource MakeSoftware(
-      const SharedBitmapId& id,
-      const gpu::SyncToken& sync_token,
-      const gfx::Size& size,
-      SharedImageFormat format,
-      ResourceSource source = ResourceSource::kUnknown);
-
   // The ID of the SharedImage or SharedBitmap that holds the actual memory
   // buffer of this resource (which may either be backed by a GPU texture or be
-  // shared memory).
+  // shared memory). Only one of these will be non-zero.
   gpu::Mailbox mailbox_;
+  SharedBitmapId shared_bitmap_id_;
 
   // The SyncToken associated with the above buffer. Allows the receiver to wait
   // until the producer has finished using the texture before it begins using
