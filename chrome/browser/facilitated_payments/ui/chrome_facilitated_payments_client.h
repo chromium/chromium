@@ -43,6 +43,8 @@ class ChromeFacilitatedPaymentsClient
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
   FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
+                           GetPersonalDataManager);
+  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
                            GetFacilitatedPaymentsNetworkInterface);
 
   // FacilitatedPaymentsClient:

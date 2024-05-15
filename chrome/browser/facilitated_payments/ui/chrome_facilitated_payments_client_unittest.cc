@@ -43,6 +43,14 @@ class MockOptimizationGuideDecider
 
 using ChromeFacilitatedPaymentsClientTest = ChromeRenderViewHostTestHarness;
 
+TEST_F(ChromeFacilitatedPaymentsClientTest, GetPersonalDataManager) {
+  MockOptimizationGuideDecider optimization_guide_decider;
+  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider);
+
+  EXPECT_NE(nullptr, client->GetPersonalDataManager());
+}
+
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        GetFacilitatedPaymentsNetworkInterface) {
   MockOptimizationGuideDecider optimization_guide_decider;
