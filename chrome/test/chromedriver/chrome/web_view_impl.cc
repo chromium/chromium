@@ -503,6 +503,8 @@ bool WebViewImpl::WasCrashed() {
 }
 
 Status WebViewImpl::AttachTo(DevToolsClient* root_client) {
+  // Add this target holder to extend the lifetime of webview object.
+  WebViewImplHolder target_holder(this);
   return client_->AttachTo(root_client);
 }
 
