@@ -17,23 +17,6 @@ impl<A, B> Cast<A, B> {
   );
 }
 
-// Workaround for https://github.com/rust-lang/miri/issues/2423.
-// Miri currently doesn't see post-monomorphization errors until runtime,
-// so `compile_fail` tests relying on post-monomorphization errors don't
-// actually fail. Instead use `should_panic` under miri as a workaround.
-#[cfg(miri)]
-macro_rules! post_mono_compile_fail_doctest {
-  () => {
-    "```should_panic"
-  };
-}
-#[cfg(not(miri))]
-macro_rules! post_mono_compile_fail_doctest {
-  () => {
-    "```compile_fail,E0080"
-  };
-}
-
 /// Cast `A` into `B` if infalliable, or fail to compile.
 ///
 /// Note that for this particular type of cast, alignment isn't a factor. The
@@ -50,7 +33,7 @@ macro_rules! post_mono_compile_fail_doctest {
 /// // compiles:
 /// let bytes: [u8; 2] = bytemuck::must_cast(12_u16);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// // fails to compile (size mismatch):
 /// let bytes : [u8; 3] = bytemuck::must_cast(12_u16);
 /// ```
@@ -72,11 +55,11 @@ pub fn must_cast<A: NoUninit, B: AnyBitPattern>(a: A) -> B {
 /// // compiles:
 /// let bytes: &[u8; 2] = bytemuck::must_cast_ref(&12_u16);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// // fails to compile (size mismatch):
 /// let bytes : &[u8; 3] = bytemuck::must_cast_ref(&12_u16);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// // fails to compile (alignment requirements increased):
 /// let bytes : &u16 = bytemuck::must_cast_ref(&[1u8, 2u8]);
 /// ```
@@ -97,12 +80,12 @@ pub fn must_cast_ref<A: NoUninit, B: AnyBitPattern>(a: &A) -> &B {
 /// // compiles:
 /// let bytes: &mut [u8; 2] = bytemuck::must_cast_mut(&mut i);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let mut bytes: &mut [u8; 2] = &mut [1, 2];
 /// // fails to compile (alignment requirements increased):
 /// let i : &mut u16 = bytemuck::must_cast_mut(bytes);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let mut i = 12_u16;
 /// // fails to compile (size mismatch):
 /// let bytes : &mut [u8; 3] = bytemuck::must_cast_mut(&mut i);
@@ -139,12 +122,12 @@ pub fn must_cast_mut<
 /// // compiles:
 /// let bytes: &[u8] = bytemuck::must_cast_slice(indicies);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let bytes : &[u8] = &[1, 0, 2, 0, 3, 0];
 /// // fails to compile (bytes.len() might not be a multiple of 2):
 /// let byte_pairs : &[[u8; 2]] = bytemuck::must_cast_slice(bytes);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let byte_pairs : &[[u8; 2]] = &[[1, 0], [2, 0], [3, 0]];
 /// // fails to compile (alignment requirements increased):
 /// let indicies : &[u16] = bytemuck::must_cast_slice(byte_pairs);
@@ -173,13 +156,13 @@ pub fn must_cast_slice<A: NoUninit, B: AnyBitPattern>(a: &[A]) -> &[B] {
 /// // compiles:
 /// let bytes: &mut [u8] = bytemuck::must_cast_slice_mut(indicies);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let mut bytes = [1, 0, 2, 0, 3, 0];
 /// # let bytes : &mut [u8] = &mut bytes[..];
 /// // fails to compile (bytes.len() might not be a multiple of 2):
 /// let byte_pairs : &mut [[u8; 2]] = bytemuck::must_cast_slice_mut(bytes);
 /// ```
-#[doc = post_mono_compile_fail_doctest!()]
+/// ```compile_fail,E0080
 /// # let mut byte_pairs = [[1, 0], [2, 0], [3, 0]];
 /// # let byte_pairs : &mut [[u8; 2]] = &mut byte_pairs[..];
 /// // fails to compile (alignment requirements increased):

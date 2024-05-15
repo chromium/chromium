@@ -12,9 +12,14 @@
 [package]
 edition = "2018"
 name = "bytemuck"
-version = "1.15.0"
+version = "1.16.0"
 authors = ["Lokathor <zefria@gmail.com>"]
+build = false
 exclude = ["/pedantic.bat"]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A crate for mucking around with piles of bytes."
 readme = "README.md"
 keywords = [
@@ -40,6 +45,7 @@ features = [
     "min_const_generics",
     "wasm_simd",
     "must_cast",
+    "const_zeroed",
 ]
 
 [package.metadata.playground]
@@ -52,7 +58,48 @@ features = [
     "min_const_generics",
     "wasm_simd",
     "must_cast",
+    "const_zeroed",
 ]
+
+[lib]
+name = "bytemuck"
+path = "src/lib.rs"
+
+[[test]]
+name = "array_tests"
+path = "tests/array_tests.rs"
+
+[[test]]
+name = "cast_slice_tests"
+path = "tests/cast_slice_tests.rs"
+
+[[test]]
+name = "checked_tests"
+path = "tests/checked_tests.rs"
+
+[[test]]
+name = "derive"
+path = "tests/derive.rs"
+
+[[test]]
+name = "doc_tests"
+path = "tests/doc_tests.rs"
+
+[[test]]
+name = "offset_of_tests"
+path = "tests/offset_of_tests.rs"
+
+[[test]]
+name = "std_tests"
+path = "tests/std_tests.rs"
+
+[[test]]
+name = "transparent"
+path = "tests/transparent.rs"
+
+[[test]]
+name = "wrapper_forgets"
+path = "tests/wrapper_forgets.rs"
 
 [dependencies.bytemuck_derive]
 version = "1.4"
@@ -61,6 +108,7 @@ optional = true
 [features]
 aarch64_simd = []
 align_offset = []
+const_zeroed = []
 derive = ["bytemuck_derive"]
 extern_crate_alloc = []
 extern_crate_std = ["extern_crate_alloc"]

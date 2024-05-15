@@ -89,9 +89,8 @@ use super::*;
 ///
 /// ## Deriving
 ///
-/// When deriving, the non-wrapped fields must uphold all the normal requirements,
-/// and must also be `Zeroable`.
-///
+/// When deriving, the non-wrapped fields must uphold all the normal
+/// requirements, and must also be `Zeroable`.
 #[cfg_attr(feature = "derive", doc = "```")]
 #[cfg_attr(
   not(feature = "derive"),
@@ -108,7 +107,6 @@ use super::*;
 /// ```
 ///
 /// Here, an error will occur, because `MyZst` does not implement `Zeroable`.
-///
 #[cfg_attr(feature = "derive", doc = "```compile_fail")]
 #[cfg_attr(
   not(feature = "derive"),
@@ -131,6 +129,8 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
     // SAFETY: The unsafe contract requires that `Self` and `Inner` have
     // identical representations.
     unsafe { transmute!(s) }
@@ -140,8 +140,13 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
   /// type.
   #[inline]
   fn wrap_ref(s: &Inner) -> &Self {
+    // The unsafe contract requires that these two have
+    // identical representations, and thus identical pointer metadata.
+    // Assert that Self and Inner have the same pointer size,
+    // which is the best we can do to assert their metadata is the same type
+    // on stable.
+    assert!(size_of::<*const Inner>() == size_of::<*const Self>());
     unsafe {
-      assert!(size_of::<*const Inner>() == size_of::<*const Self>());
       // A pointer cast doesn't work here because rustc can't tell that
       // the vtables match (because of the `?Sized` restriction relaxation).
       // A `transmute` doesn't work because the sizes are unspecified.
@@ -158,8 +163,12 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
   /// the wrapper type.
   #[inline]
   fn wrap_mut(s: &mut Inner) -> &mut Self {
+    // The unsafe contract requires that these two have
+    // identical representations, and thus identical pointer metadata.
+    // Assert that Self and Inner have the same pointer size,
+    // which is about the best we can do on stable.
+    assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
     unsafe {
-      assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
       // A pointer cast doesn't work here because rustc can't tell that
       // the vtables match (because of the `?Sized` restriction relaxation).
       // A `transmute` doesn't work because the sizes are unspecified.
@@ -179,13 +188,11 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
-    unsafe {
-      assert!(size_of::<*const Inner>() == size_of::<*const Self>());
-      assert!(align_of::<*const Inner>() == align_of::<*const Self>());
-      // SAFETY: The unsafe contract requires that these two have
-      // identical representations (size and alignment).
-      core::slice::from_raw_parts(s.as_ptr() as *const Self, s.len())
-    }
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
+    // SAFETY: The unsafe contract requires that these two have
+    // identical representations (size and alignment).
+    unsafe { core::slice::from_raw_parts(s.as_ptr() as *const Self, s.len()) }
   }
 
   /// Convert a mutable slice to the inner type into a mutable slice to the
@@ -196,11 +203,11 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
+    // SAFETY: The unsafe contract requires that these two have
+    // identical representations (size and alignment).
     unsafe {
-      assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
-      assert!(align_of::<*mut Inner>() == align_of::<*mut Self>());
-      // SAFETY: The unsafe contract requires that these two have
-      // identical representations (size and alignment).
       core::slice::from_raw_parts_mut(s.as_mut_ptr() as *mut Self, s.len())
     }
   }
@@ -212,6 +219,10 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
+    // SAFETY: The unsafe contract requires that `Self` and `Inner` have
+    // identical representations.
     unsafe { transmute!(s) }
   }
 
@@ -219,8 +230,12 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
   /// type.
   #[inline]
   fn peel_ref(s: &Self) -> &Inner {
+    // The unsafe contract requires that these two have
+    // identical representations, and thus identical pointer metadata.
+    // Assert that Self and Inner have the same pointer size,
+    // which is about the best we can do on stable.
+    assert!(size_of::<*const Inner>() == size_of::<*const Self>());
     unsafe {
-      assert!(size_of::<*const Inner>() == size_of::<*const Self>());
       // A pointer cast doesn't work here because rustc can't tell that
       // the vtables match (because of the `?Sized` restriction relaxation).
       // A `transmute` doesn't work because the sizes are unspecified.
@@ -237,8 +252,12 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
   /// to the inner type.
   #[inline]
   fn peel_mut(s: &mut Self) -> &mut Inner {
+    // The unsafe contract requires that these two have
+    // identical representations, and thus identical pointer metadata.
+    // Assert that Self and Inner have the same pointer size,
+    // which is about the best we can do on stable.
+    assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
     unsafe {
-      assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
       // A pointer cast doesn't work here because rustc can't tell that
       // the vtables match (because of the `?Sized` restriction relaxation).
       // A `transmute` doesn't work because the sizes are unspecified.
@@ -258,13 +277,11 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
-    unsafe {
-      assert!(size_of::<*const Inner>() == size_of::<*const Self>());
-      assert!(align_of::<*const Inner>() == align_of::<*const Self>());
-      // SAFETY: The unsafe contract requires that these two have
-      // identical representations (size and alignment).
-      core::slice::from_raw_parts(s.as_ptr() as *const Inner, s.len())
-    }
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
+    // SAFETY: The unsafe contract requires that these two have
+    // identical representations (size and alignment).
+    unsafe { core::slice::from_raw_parts(s.as_ptr() as *const Inner, s.len()) }
   }
 
   /// Convert a mutable slice to the wrapped type into a mutable slice to the
@@ -275,11 +292,11 @@ pub unsafe trait TransparentWrapper<Inner: ?Sized> {
     Self: Sized,
     Inner: Sized,
   {
+    assert!(size_of::<Inner>() == size_of::<Self>());
+    assert!(align_of::<Inner>() == align_of::<Self>());
+    // SAFETY: The unsafe contract requires that these two have
+    // identical representations (size and alignment).
     unsafe {
-      assert!(size_of::<*mut Inner>() == size_of::<*mut Self>());
-      assert!(align_of::<*mut Inner>() == align_of::<*mut Self>());
-      // SAFETY: The unsafe contract requires that these two have
-      // identical representations (size and alignment).
       core::slice::from_raw_parts_mut(s.as_mut_ptr() as *mut Inner, s.len())
     }
   }

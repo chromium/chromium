@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck"
 description = "A crate for mucking around with piles of bytes."
-version = "1.15.0"
+version = "1.16.0"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -34,6 +34,8 @@ aarch64_simd = [] # MSRV 1.59.0: support aarch64 simd types
 
 must_cast = [] # MSRV 1.57.0: support the `must` module.
 
+const_zeroed = [] # MSRV 1.75.0: support const `zeroed()`
+
 # Do not use if you can avoid it, because this is **unsound**!!!!
 unsound_ptr_pod_impl = []
 
@@ -59,6 +61,7 @@ features = [
   "min_const_generics",
   "wasm_simd",
   "must_cast",
+  "const_zeroed",
 ]
 
 [package.metadata.playground]
@@ -72,4 +75,5 @@ features = [
   "min_const_generics",
   "wasm_simd",
   "must_cast",
+  "const_zeroed",
 ]

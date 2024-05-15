@@ -66,7 +66,7 @@ unsafe impl Zeroable for *const str {}
 
 unsafe impl<T: ?Sized> Zeroable for PhantomData<T> {}
 unsafe impl Zeroable for PhantomPinned {}
-unsafe impl<T: Zeroable> Zeroable for ManuallyDrop<T> {}
+unsafe impl<T: Zeroable> Zeroable for core::mem::ManuallyDrop<T> {}
 unsafe impl<T: Zeroable> Zeroable for core::cell::UnsafeCell<T> {}
 unsafe impl<T: Zeroable> Zeroable for core::cell::Cell<T> {}
 

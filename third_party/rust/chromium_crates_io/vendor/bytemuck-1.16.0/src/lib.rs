@@ -1,5 +1,6 @@
 #![no_std]
 #![warn(missing_docs)]
+#![allow(unexpected_cfgs)]
 #![allow(clippy::match_like_matches_macro)]
 #![allow(clippy::uninlined_format_args)]
 #![cfg_attr(feature = "nightly_docs", feature(doc_cfg))]
@@ -83,6 +84,7 @@
 //!   instead of just for a select list of array lengths.
 //! * `must_cast`: Provides the `must_` functions, which will compile error if
 //!   the requested cast can't be statically verified.
+//! * `const_zeroed`: Provides a const version of the `zeroed` function.
 
 #[cfg(all(target_arch = "aarch64", feature = "aarch64_simd"))]
 use core::arch::aarch64;
@@ -93,7 +95,12 @@ use core::arch::x86;
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64;
 //
-use core::{marker::*, mem::*, num::*, ptr::*};
+use core::{
+  marker::*,
+  mem::{align_of, size_of},
+  num::*,
+  ptr::*,
+};
 
 // Used from macros to ensure we aren't using some locally defined name and
 // actually are referencing libcore. This also would allow pre-2018 edition
@@ -505,4 +512,12 @@ pub fn fill_zeroes<T: Zeroable>(slice: &mut [T]) {
     let len = core::mem::size_of_val::<[T]>(slice);
     unsafe { core::ptr::write_bytes(slice.as_mut_ptr() as *mut u8, 0u8, len) }
   }
+}
+
+/// Same as [`Zeroable::zeroed`], but as a `const fn` const.
+#[cfg(feature = "const_zeroed")]
+#[inline]
+#[must_use]
+pub const fn zeroed<T: Zeroable>() -> T {
+  unsafe { core::mem::zeroed() }
 }

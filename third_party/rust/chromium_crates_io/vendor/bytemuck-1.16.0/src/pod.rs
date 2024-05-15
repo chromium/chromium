@@ -74,7 +74,7 @@ unsafe impl<T: 'static> PodInOption for NonNull<T> {}
 
 unsafe impl<T: ?Sized + 'static> Pod for PhantomData<T> {}
 unsafe impl Pod for PhantomPinned {}
-unsafe impl<T: Pod> Pod for ManuallyDrop<T> {}
+unsafe impl<T: Pod> Pod for core::mem::ManuallyDrop<T> {}
 
 // Note(Lokathor): MaybeUninit can NEVER be Pod.
 

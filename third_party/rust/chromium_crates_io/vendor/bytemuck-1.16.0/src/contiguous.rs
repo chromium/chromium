@@ -1,3 +1,5 @@
+#![allow(clippy::legacy_numeric_constants)]
+
 use super::*;
 
 /// A trait indicating that:

@@ -56,7 +56,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."bitflags:2.5.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytemuck:1.15.0"]
+[policy."bytemuck:1.16.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."bytemuck_derive:1.6.0"]

@@ -64,8 +64,6 @@ jobs:
   miri-test:
     name: Test with miri
     runs-on: ubuntu-latest
-    env:
-      MIRIFLAGS: -Zmiri-tag-raw-pointers
     steps:
     - uses: hecrj/setup-rust-action@v1
       with:
