@@ -517,7 +517,7 @@ void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
       // Don't do this if it's also in the newly owned ids, as it's about to
       // get a new parent, and we want to avoid accidentally pruning it.
       if (!newly_owned_ids.Contains(removed_child_id)) {
-        MaybeRestoreParentOfOwnedChild(removed_child);
+        MaybeRestoreParentOfOwnedChild(removed_child_id);
       }
     }
   }
@@ -961,8 +961,8 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
               << "Removing owned child at a bad time, which leads to "
                  "parentless objects at a bad time: "
               << owned_child;
-          MaybeRestoreParentOfOwnedChild(owned_child);
         }
+        MaybeRestoreParentOfOwnedChild(child_axid);
       }
     }
   }
@@ -1025,33 +1025,34 @@ Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
   return label.control();
 }
 
-void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
-  // TODO Replace with AXObjectCacheImpl::RepairIncludedParentsChildren().
-  DCHECK(child);
-  if (child->IsDetached()) {
-    return;
+void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
+  AXObject* child = object_cache_->ObjectFromAXID(removed_child_axid);
+  if (child && !child->IsDetached()) {
+    AXObject* old_parent = child->ParentObjectIfPresent();
+    if (object_cache_->IsProcessingDeferredEvents()) {
+      if (AXObject* new_parent =
+              object_cache_->RestoreParentOrPruneWithCleanLayout(child)) {
+        object_cache_->ChildrenChangedWithCleanLayout(new_parent);
+      }
+      object_cache_->ChildrenChangedWithCleanLayout(old_parent);
+    } else if (AXObject* new_parent =
+                   object_cache_->RestoreParentOrPrune(child)) {
+      object_cache_->ChildrenChanged(new_parent);
+      object_cache_->ChildrenChanged(old_parent);
+    }
   }
 
-  AXObject* old_parent = child->ParentObjectIfPresent();
-  if (object_cache_->IsProcessingDeferredEvents()) {
-    if (AXObject* new_parent =
-            object_cache_->RestoreParentOrPruneWithCleanLayout(child)) {
-      object_cache_->ChildrenChangedWithCleanLayout(new_parent);
+  // This works because AXIDs are equal to the DOMNodeID for their DOM nodes.
+  if (Node* child_node = DOMNodeIds::NodeForId(removed_child_axid)) {
+    // Handle case where there were multiple elements aria-owns=|child|,
+    // by making sure they are updated in the next round, in case one of them
+    // can now own it because of the removal the old_parent.
+    HeapVector<Member<AXObject>> other_potential_owners;
+    GetReverseRelated(child_node, id_attr_to_owns_relation_mapping_,
+                      other_potential_owners);
+    for (AXObject* other_potential_owner : other_potential_owners) {
+      owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
     }
-    object_cache_->ChildrenChangedWithCleanLayout(old_parent);
-  } else if (AXObject* new_parent =
-                 object_cache_->RestoreParentOrPrune(child)) {
-    object_cache_->ChildrenChanged(new_parent);
-    object_cache_->ChildrenChanged(old_parent);
-  }
-  // Handle case where there were multiple elements aria-owns=|child|,
-  // by making sure they are updated in the next round, in case one of them
-  // can now own it because of the removal the old_parent.
-  HeapVector<Member<AXObject>> other_potential_owners;
-  GetReverseRelated(child->GetNode(), id_attr_to_owns_relation_mapping_,
-                    other_potential_owners);
-  for (AXObject* other_potential_owner : other_potential_owners) {
-    owner_ids_to_update_.insert(other_potential_owner->AXObjectID());
   }
 }
 

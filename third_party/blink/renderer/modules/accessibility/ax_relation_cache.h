@@ -198,7 +198,7 @@ class AXRelationCache {
       Node*,
       HashMap<String, HashSet<DOMNodeId>>& id_attr_to_node_map,
       HeapVector<Member<AXObject>>& sources);
-  void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
+  void MaybeRestoreParentOfOwnedChild(AXID removed_child_axid);
 
   // Updates |aria_owner_to_children_mapping_| after calling UpdateAriaOwns for
   // either the content attribute or the attr associated elements.
