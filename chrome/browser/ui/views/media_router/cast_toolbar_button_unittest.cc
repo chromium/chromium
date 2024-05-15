@@ -171,11 +171,7 @@ TEST_F(CastToolbarButtonTest, ShowAndHideButton) {
   EXPECT_FALSE(button_->GetVisible());
 }
 
-TEST_F(CastToolbarButtonTest, UpdateIssuesChromeResfresh) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kChromeRefresh2023);
-
+TEST_F(CastToolbarButtonTest, UpdateIssues) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
@@ -192,11 +188,7 @@ TEST_F(CastToolbarButtonTest, UpdateIssuesChromeResfresh) {
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 }
 
-TEST_F(CastToolbarButtonTest, UpdateRoutesChromeRefresh) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kChromeRefresh2023);
-
+TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
 
