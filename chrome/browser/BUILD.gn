@@ -3702,6 +3702,7 @@ static_library("browser") {
       "//components/ukm/android:ukm_recorder",
       "//components/ukm/content",
       "//components/user_prefs/android:jni_cc",
+      "//components/visited_url_ranking/public",
       "//components/viz/common",
       "//components/webapk:proto",
       "//components/webapps/browser/android:pwa_restore_bottom_sheet_mediator_jni_headers",
