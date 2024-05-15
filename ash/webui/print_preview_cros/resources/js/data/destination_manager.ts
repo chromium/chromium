@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext, type UiManagedDestinationFields} from '../utils/print_preview_cros_app_types.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
 
@@ -55,11 +55,9 @@ export class DestinationManager extends EventTarget implements
 
   // Non-static properties:
   private destinationProvider: DestinationProvider;
-  private destinations: Destination[] = [
-    // Digital destinations can be added at creation and will be removed if not
-    // supported by policy.
-    PDF_DESTINATION,
-  ];
+  private destinations: Destination[] = [];
+  // Cache used for constant lookup of destinations by key.
+  private destinationCache: Map<string, Destination> = new Map();
   private activeDestinationId: string = '';
   private initialDestinationsLoaded = false;
   private state = DestinationManagerState.NOT_LOADED;
@@ -90,6 +88,10 @@ export class DestinationManager extends EventTarget implements
     // Setup mojo data providers.
     this.destinationProvider = getDestinationProvider();
     this.destinationProvider.observeDestinationChanges(this);
+
+    // Digital destinations can be added at creation and will be removed during
+    // session initialization if not supported by policy.
+    this.insertDigitalDestinations();
 
     // Request initial data.
     this.updateState(DestinationManagerState.FETCHING);
@@ -129,9 +131,9 @@ export class DestinationManager extends EventTarget implements
       return null;
     }
 
-    return this.destinations.find(
-               (d: Destination) => d.id === this.activeDestinationId) ??
-        null;
+    const active = this.destinationCache.get(this.activeDestinationId);
+    assert(active);
+    return active;
   }
 
   // FakeDestinationObserverInterface:
@@ -145,9 +147,49 @@ export class DestinationManager extends EventTarget implements
       return;
     }
 
-    // TODO(b/323421684): Process destinations into this.destinations.
+    destinations.forEach(
+        (destination: Destination): void =>
+            this.addOrUpdateDestination(destination));
     this.dispatchEvent(
         createCustomEvent(DESTINATION_MANAGER_DESTINATIONS_CHANGED));
+  }
+
+  // Inserts new destinations into destination list and cache. If destination
+  // is already in cache then update list and cache with merged destination to
+  // ensure fields set by UI are not lost.
+  private addOrUpdateDestination(destination: Destination): void {
+    const existingDestination = this.destinationCache.get(destination.id);
+    // First time seeing destination.
+    if (!existingDestination) {
+      this.destinationCache.set(destination.id, destination);
+      this.destinations.push(destination);
+      return;
+    }
+
+    // Ensure fields managed by UI values are maintained.
+    this.overrideUiManagedFields(destination, existingDestination);
+
+    // Update destination in list and cache.
+    const index = this.destinations.findIndex(
+        (d: Destination) => d.id === destination.id);
+    assert(index !== -1);
+    this.destinationCache.set(destination.id, destination);
+    this.destinations[index] = destination;
+  }
+
+  // Insert hard-coded digital destinations into set of known destinations.
+  // Function should only be called once per session.
+  private insertDigitalDestinations(): void {
+    assert(!this.destinationCache.get(PDF_DESTINATION.id));
+    this.addOrUpdateDestination(PDF_DESTINATION);
+  }
+
+  // Creates a merge of `destination` and UI managed fields from `uiFields`
+  // to ensure fields set by UI are not lost during update.
+  // Example field: `printerManuallySelected`.
+  private overrideUiManagedFields(
+      destination: Destination, uiFields: UiManagedDestinationFields): void {
+    destination.printerManuallySelected = uiFields.printerManuallySelected;
   }
 
   // Updates destination ID and triggers event.
@@ -166,6 +208,19 @@ export class DestinationManager extends EventTarget implements
 
     this.state = nextState;
     this.dispatchEvent(createCustomEvent(DESTINATION_MANAGER_STATE_CHANGED));
+  }
+
+  // Adds or overrides destination in list and cache.
+  setDestinationForTesting(destination: Destination): void {
+    this.destinationCache.set(destination.id, destination);
+    const index = this.destinations.findIndex(
+        (d: Destination) => d.id === destination.id);
+    if (index === -1) {
+      this.destinations.push(destination);
+      return;
+    }
+    this.destinationCache.set(destination.id, destination);
+    this.destinations[index] = destination;
   }
 }
 

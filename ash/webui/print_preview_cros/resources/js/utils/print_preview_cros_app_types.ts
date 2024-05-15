@@ -30,6 +30,11 @@ export interface Destination {
   printerStatusReason: PrinterStatusReason|null;
 }
 
+// Used to track which fields are set by UI and values need to be maintained
+// during an update to destination.
+export type UiManagedDestinationFields =
+    Pick<Destination, 'printerManuallySelected'>;
+
 export interface PrintRequestOutcome {
   success: boolean;
   error?: string;

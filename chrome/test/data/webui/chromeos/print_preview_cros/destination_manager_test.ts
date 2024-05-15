@@ -9,7 +9,7 @@ import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DEST
 import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
-import {Destination} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {Destination, PrinterStatusReason, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
@@ -192,5 +192,69 @@ suite('DestinationManager', () => {
         destinationProvider.triggerOnDestinationsChanged();
 
         await destinationsChanged;
+      });
+
+  // Verify destinations from onDestinationsChanged are added to managers
+  // destination list and cache if new.
+  test(
+      'onDestinationsChanged with new destinations are added to manager',
+      async () => {
+        const destinationsChanged =
+            eventToPromise(DESTINATION_MANAGER_DESTINATIONS_CHANGED, instance);
+        const destinations = [createTestDestination()];
+        destinationProvider.setDestinationsChangesData(destinations);
+        destinationProvider.triggerOnDestinationsChanged();
+
+        await destinationsChanged;
+
+        const managerDestinations = instance.getDestinations();
+        assertEquals(/* expected length*/ 2, managerDestinations.length);
+        assertDeepEquals(PDF_DESTINATION, managerDestinations[0]);
+        assertDeepEquals(destinations[0], managerDestinations[1]);
+      });
+
+  // Verify existing destinations from onDestinationsChanged are merged into
+  // managers destination list and cache to avoid losing data set by UI.
+  test(
+      'onDestinationsChanged existing destinations are merged in manager',
+      async () => {
+        const destinationsChanged =
+            eventToPromise(DESTINATION_MANAGER_DESTINATIONS_CHANGED, instance);
+        const testDestination = createTestDestination();
+        testDestination.printerManuallySelected = true;
+        instance.setDestinationForTesting(testDestination);
+        let managerDestinations = instance.getDestinations();
+        assertEquals(/* expected length*/ 2, managerDestinations.length);
+        assertDeepEquals(testDestination, managerDestinations[1]);
+
+        // Change values on test destination.
+        const testDestination2 = createTestDestination(testDestination.id);
+        testDestination2.printerType = PrinterType.EXTENSION_PRINTER;
+        testDestination2.printerStatusReason = PrinterStatusReason.LOW_ON_INK;
+        const destinations = [testDestination2];
+        destinationProvider.setDestinationsChangesData(destinations);
+        destinationProvider.triggerOnDestinationsChanged();
+
+        await destinationsChanged;
+
+        managerDestinations = instance.getDestinations();
+        const mergedDestination = managerDestinations[1]!;
+        assertEquals(
+            testDestination.id, mergedDestination.id, 'Is merged destination');
+        // UI managed values are not updated.
+        assertTrue(
+            mergedDestination.printerManuallySelected,
+            'UI managed field printerManuallySelected not updated');
+        // Backend managed fields are updated.
+        assertEquals(
+            testDestination2.displayName, mergedDestination.displayName,
+            'Backend managed field displayName updated');
+        assertEquals(
+            testDestination2.printerType, mergedDestination.printerType,
+            'Backend managed field printerType updated');
+        assertEquals(
+            testDestination2.printerStatusReason,
+            mergedDestination.printerStatusReason,
+            'Backend managed field printerStatusReason updated');
       });
 });
