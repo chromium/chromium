@@ -5388,6 +5388,7 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/mojo_service_manager:mojo_service_manager",
       "//chrome/browser/ash/power/ml/smart_dim",
       "//chrome/browser/ash/smart_reader",
@@ -5555,6 +5556,7 @@ static_library("browser") {
     allow_circular_includes_from += [
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/system_web_apps",
     ]
 
