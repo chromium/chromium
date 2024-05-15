@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -148,25 +149,22 @@ const size_t kMaxStringBytesForCopy = 256;
 
 // Converts a V8 String to a UTF8 std::string.
 std::string V8StringToUTF8(v8::Isolate* isolate, v8::Local<v8::String> s) {
-  int len = s->Length();
-  std::string result;
-  if (len > 0)
-    s->WriteUtf8(isolate, base::WriteInto(&result, len + 1));
-  return result;
+  int len = s->Utf8Length(isolate);
+  std::string str(base::checked_cast<size_t>(len), '\0');
+  s->WriteUtf8(isolate, str.data(), len, /*nchars_ref=*/nullptr,
+               v8::String::NO_NULL_TERMINATION);
+  return str;
 }
 
 // Converts a V8 String to a UTF16 std::u16string.
 std::u16string V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
   int len = s->Length();
-  std::u16string result;
-  // Note that the reinterpret cast is because on Windows string16 is an alias
-  // to wstring, and hence has character type wchar_t not uint16_t.
-  if (len > 0) {
-    s->Write(isolate,
-             reinterpret_cast<uint16_t*>(base::WriteInto(&result, len + 1)), 0,
-             len);
-  }
-  return result;
+  std::u16string str(base::checked_cast<size_t>(len), '\0');
+  // `char16_t` and `uint16_t` are not the same type, but we build with strict
+  // aliasing off. See https://crbug.com/42209752.
+  s->Write(isolate, reinterpret_cast<uint16_t*>(str.data()), /*start=*/0, len,
+           v8::String::NO_NULL_TERMINATION);
+  return str;
 }
 
 // Converts an ASCII std::string to a V8 string.
