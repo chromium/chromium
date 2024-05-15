@@ -4631,6 +4631,7 @@ source_set("ash") {
 
 action("dbus_service_files") {
   sources = [
+    "dbus/org.chromium.ArcTracing.conf",
     "dbus/org.chromium.ChromeFeaturesService.conf",
     "dbus/org.chromium.ComponentUpdaterService.conf",
     "dbus/org.chromium.CryptohomeKeyDelegate.conf",
