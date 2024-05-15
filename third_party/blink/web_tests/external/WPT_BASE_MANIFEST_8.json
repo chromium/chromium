@@ -236620,6 +236620,19 @@
        {}
       ]
      ],
+     "sibling-frames-transition.html": [
+      "b4814c5ca81b768e73971ba7c1c858ac8b65c41f",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/sibling-frames-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "snapshot-containing-block-absolute.html": [
       "91b71f7eec99096a7f9ce7615f418634728cee5f",
       [
@@ -293005,6 +293018,10 @@
      []
     ],
     "resources": {
+     "2x3-svg-scaled-by-sec-ch-width.py": [
+      "d53574c361213ddf0949f906a08ebe388f9aa2d0",
+      []
+     ],
      "accept-ch-different.html": [
       "05cc0b61b07c36fca5816e277df1dc98e70d9ba1",
       []
@@ -342685,6 +342702,10 @@
       "cce8d5eec38f1889c8a4e793015ea15c778a6774",
       []
      ],
+     "sibling-frames-transition-ref.html": [
+      "437c730b9e9416e26995f929cef856c2386c57db",
+      []
+     ],
      "snapshot-containing-block-absolute-ref.html": [
       "5f2e780c58f488d924b3043519c9711143de64e7",
       []
@@ -348734,7 +348755,7 @@
       []
      ],
      "reverting.md": [
-      "d374f0558e3e3d539d47c3d5373986838ffdf6e1",
+      "a45b86a969cfebec875cac51fd2ca201a726f26c",
       []
      ]
     },
@@ -352436,7 +352457,7 @@
       []
      ],
      "playback-temporary-events.js": [
-      "28f45222cfa1bb108cfc18dc9b4a37e4aaf5aaa0",
+      "d8dac4463df42bde9cc57745f822b95b5ef7d583",
       []
      ],
      "playback-temporary-expired.js": [
@@ -379236,7 +379257,7 @@
     ]
    },
    "lint.ignore": [
-    "fdcd6be19dd7281d4ae5d32a38cc48d6ef43b3db",
+    "9d846b35194d4163398690f5f605c1273b381064",
     []
    ],
    "loading": {
@@ -428321,6 +428342,13 @@
     ],
     "sec-ch-ua.https.html": [
      "deb81692165f1c062c99db2e6bdb4f35c005e5e4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sec-ch-width.https.html": [
+     "28fe0860545d4f1f69908575a023ea7b540c83dd",
      [
       null,
       {}
