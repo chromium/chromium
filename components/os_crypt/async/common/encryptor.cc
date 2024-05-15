@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "crypto/aead.h"
@@ -259,6 +260,22 @@ std::optional<std::string> Encryptor::DecryptData(
   }
 
   return std::nullopt;
+}
+
+bool Encryptor::EncryptString16(const std::u16string& plaintext,
+                                std::string* ciphertext) const {
+  return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
+}
+
+bool Encryptor::DecryptString16(const std::string& ciphertext,
+                                std::u16string* plaintext) const {
+  std::string utf8;
+  if (!DecryptString(ciphertext, &utf8)) {
+    return false;
+  }
+
+  *plaintext = base::UTF8ToUTF16(utf8);
+  return true;
 }
 
 Encryptor Encryptor::Clone(Option option) const {

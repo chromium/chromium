@@ -231,6 +231,19 @@ TEST_P(EncryptorTest, EncryptSpanDecryptString) {
       std::equal(plaintext.cbegin(), plaintext.cend(), decrypted.cbegin()));
 }
 
+TEST_P(EncryptorTest, EncryptDecryptString16) {
+  const Encryptor encryptor = GetTestEncryptor();
+
+  const std::u16string plaintext = u"secrets";
+  std::string ciphertext;
+  ASSERT_TRUE(encryptor.EncryptString16(plaintext, &ciphertext));
+
+  std::u16string decrypted;
+  EXPECT_TRUE(encryptor.DecryptString16(ciphertext, &decrypted));
+
+  EXPECT_EQ(plaintext, decrypted);
+}
+
 TEST_P(EncryptorTest, EncryptEmpty) {
   const Encryptor encryptor = GetTestEncryptor();
 
@@ -280,6 +293,20 @@ TEST_P(EncryptorTest, DecryptFallback) {
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
 
   EXPECT_EQ("secret", decrypted);
+}
+
+// Encryptor can decrypt data encrypted with OSCrypt.
+TEST_P(EncryptorTest, Decrypt16Fallback) {
+  std::string ciphertext;
+  EXPECT_TRUE(OSCrypt::EncryptString16(u"secret", &ciphertext));
+
+  const Encryptor encryptor = GetTestEncryptor();
+  std::u16string decrypted;
+
+  // Fallback to OSCrypt takes place.
+  EXPECT_TRUE(encryptor.DecryptString16(ciphertext, &decrypted));
+
+  EXPECT_EQ(u"secret", decrypted);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -439,6 +466,7 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
 // Algorithm::kAES256GCM.
 TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
   std::string ciphertext;
+  std::string ciphertext16;
   auto random_key = GenerateRandomTestKey(kKeyLength);
   // Set the OSCrypt key to the fixed key.
   OSCrypt::SetRawEncryptionKey(
@@ -446,6 +474,7 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
 
   // OSCrypt will now encrypt using this random key.
   EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
+  EXPECT_TRUE(OSCrypt::EncryptString16(u"secret16", &ciphertext16));
 
   // Reset OSCrypt so it cannot know the key, so fallback will fail.
   OSCrypt::ResetStateForTesting();
@@ -471,7 +500,11 @@ TEST_F(EncryptorTestBase, AlgorithmDecryptCompatibility) {
 
   // The data should decrypt.
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &plaintext));
+  std::u16string plaintext16;
+  EXPECT_TRUE(encryptor.DecryptString16(ciphertext16, &plaintext16));
+
   EXPECT_EQ("secret", plaintext);
+  EXPECT_EQ(u"secret16", plaintext16);
 
   // Reset OSCrypt for the next test.
   OSCrypt::ResetStateForTesting();
@@ -498,13 +531,17 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
       GetEncryptor(std::move(key_ring), kEncryptionVersionPrefix);
   auto ciphertext = encryptor.EncryptString("secret");
   EXPECT_TRUE(ciphertext);
+  std::string ciphertext16;
+  EXPECT_TRUE(encryptor.EncryptString16(u"secret16", &ciphertext16));
 
   // OSCrypt should not be able to decrypt this yet, as it does not have the
   // key.
   OSCrypt::UseMockKeyForTesting(true);
   std::string plaintext;
+  std::u16string plaintext16;
   EXPECT_FALSE(OSCrypt::DecryptString(
       std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
+  EXPECT_FALSE(OSCrypt::DecryptString16(ciphertext16, &plaintext16));
 
   // Set the OSCrypt key to the fixed key.
   OSCrypt::ResetStateForTesting();
@@ -515,6 +552,9 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
   EXPECT_TRUE(OSCrypt::DecryptString(
       std::string(ciphertext->begin(), ciphertext->end()), &plaintext));
   EXPECT_EQ("secret", plaintext);
+
+  EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext16, &plaintext16));
+  EXPECT_EQ(u"secret16", plaintext16);
 
   // Reset OSCrypt for the next test.
   OSCrypt::ResetStateForTesting();
