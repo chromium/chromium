@@ -50,6 +50,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/pointers/instance_tracer.h"
@@ -1476,7 +1477,7 @@ void PartitionAllocSupport::OnBackgrounded() {
   // Performance matters less for background renderers, don't pay the memory
   // cost.
   ::partition_alloc::ThreadCache::SetLargestCachedSize(
-      ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold);
+      ::partition_alloc::kThreadCacheDefaultSizeThreshold);
 
   // In renderers, memory reclaim uses the "idle time" task runner to run
   // periodic reclaim. This does not always run when the renderer is idle, and

@@ -513,6 +513,17 @@ constexpr size_t kMac11MallocSizeHackRequestedSize = 32;
 
 }  // namespace internal
 
+// When trying to conserve memory, set the thread cache limit to this.
+static inline constexpr size_t kThreadCacheDefaultSizeThreshold = 512;
+
+// 32kiB is chosen here as from local experiments, "zone" allocation in
+// V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
+// each individual allocation.
+static inline constexpr size_t kThreadCacheLargeSizeThreshold = 1 << 15;
+static_assert(kThreadCacheLargeSizeThreshold <=
+                  std::numeric_limits<uint16_t>::max(),
+              "");
+
 // These constants are used outside PartitionAlloc itself, so we provide
 // non-internal aliases here.
 using ::partition_alloc::internal::kInvalidBucketSize;

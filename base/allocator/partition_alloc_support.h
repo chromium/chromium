@@ -114,7 +114,7 @@ class BASE_EXPORT PartitionAllocSupport {
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
-      ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
+      ::partition_alloc::kThreadCacheDefaultSizeThreshold;
 #endif
 };
 

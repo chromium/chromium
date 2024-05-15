@@ -21,6 +21,7 @@
 #include "partition_alloc/partition_alloc_base/time/time.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_bucket_lookup.h"
 #include "partition_alloc/partition_freelist_entry.h"
@@ -78,17 +79,6 @@ extern PA_COMPONENT_EXPORT(
 #endif
 
 }  // namespace internal
-
-struct ThreadCacheLimits {
-  // When trying to conserve memory, set the thread cache limit to this.
-  static constexpr size_t kDefaultSizeThreshold = 512;
-  // 32kiB is chosen here as from local experiments, "zone" allocation in
-  // V8 is performance-sensitive, and zones can (and do) grow up to 32kiB for
-  // each individual allocation.
-  static constexpr size_t kLargeSizeThreshold = 1 << 15;
-  static_assert(kLargeSizeThreshold <= std::numeric_limits<uint16_t>::max(),
-                "");
-};
 
 constexpr internal::base::TimeDelta kMinPurgeInterval =
     internal::base::Seconds(1);
@@ -186,8 +176,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   internal::base::TimeDelta periodic_purge_next_interval_;
   bool is_purging_configured_ = false;
 
-  uint16_t largest_active_bucket_index_ = internal::BucketIndexLookup::GetIndex(
-      ThreadCacheLimits::kDefaultSizeThreshold);
+  uint16_t largest_active_bucket_index_ =
+      internal::BucketIndexLookup::GetIndex(kThreadCacheDefaultSizeThreshold);
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -375,9 +365,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static constexpr uint8_t kSmallBucketBaseCount = 64;
 
   static constexpr size_t kDefaultSizeThreshold =
-      ThreadCacheLimits::kDefaultSizeThreshold;
-  static constexpr size_t kLargeSizeThreshold =
-      ThreadCacheLimits::kLargeSizeThreshold;
+      kThreadCacheDefaultSizeThreshold;
+  static constexpr size_t kLargeSizeThreshold = kThreadCacheLargeSizeThreshold;
   static constexpr uint16_t kBucketCount =
       internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
       1;
