@@ -64,7 +64,8 @@ constexpr auto kSystemWebAppsMapping =
          {"firmware_update", ash::SystemWebAppType::FIRMWARE_UPDATE},
          {"os_flags", ash::SystemWebAppType::OS_FLAGS},
          {"vc_background", ash::SystemWebAppType::VC_BACKGROUND},
-         {"print_preview_cros", ash::SystemWebAppType::PRINT_PREVIEW_CROS}});
+         {"print_preview_cros", ash::SystemWebAppType::PRINT_PREVIEW_CROS},
+         {"boca", ash::SystemWebAppType::BOCA}});
 
 constexpr ash::SystemWebAppType GetMaxSystemWebAppType() {
   return base::ranges::max(kSystemWebAppsMapping, base::ranges::less{},

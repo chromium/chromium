@@ -121,6 +121,11 @@ enum class SystemWebAppType {
   // Contact: cros-peripherals@google.com
   PRINT_PREVIEW_CROS = 26,
 
+  // Boca implementation.
+  // Source: //ash/webui/boca_ui/
+  // Contact: cros-edu-eng@google.com
+  BOCA = 27,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -160,7 +165,7 @@ enum class SystemWebAppType {
   //
   // 8. Have one of System Web App Platform owners review the CL.
   //    See: //ash/webui/PLATFORM_OWNERS
-  kMaxValue = PRINT_PREVIEW_CROS,
+  kMaxValue = BOCA,
 };
 
 }  // namespace ash

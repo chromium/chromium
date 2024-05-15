@@ -440,6 +440,9 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
              "CheckPasswordsAgainstCryptohomeHelper",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables Boca feature on ChromeOS
+BASE_FEATURE(kBoca, "Boca", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -1189,9 +1192,6 @@ BASE_FEATURE(kFlexAutoEnrollment,
 BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables Floating Workspace feature on ChromeOS
-BASE_FEATURE(kClassHub, "ClassHub", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables chrome.fileSystemProvider file systems in Files app Recents view.
 BASE_FEATURE(kFSPsInRecents, "FSPsInRecents", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3333,6 +3333,10 @@ bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
 }
 
+bool IsBocaEnabled() {
+  return base::FeatureList::IsEnabled(kBoca);
+}
+
 bool IsClipboardHistoryLongpressEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
 }
@@ -3576,10 +3580,6 @@ bool IsFloatingWorkspaceEnabled() {
 
 bool IsFloatingWorkspaceV2Enabled() {
   return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
-}
-
-bool IsClassHubEnabled() {
-  return base::FeatureList::IsEnabled(kClassHub);
 }
 
 bool IsFocusModeEnabled() {

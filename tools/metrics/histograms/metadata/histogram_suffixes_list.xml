@@ -4541,6 +4541,7 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="WebAppSystemAppInternalName" separator=".">
+  <suffix name="Boca" label="Boca"/>
   <suffix name="Camera" label="Camera"/>
   <suffix name="ConnectivityDiagnostics" label="Connectivity Diagnostics"/>
   <suffix name="Crosh" label="Crosh"/>

@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Coba App is ash-chrome only")
+
+static_library("boca_ui") {
+  sources = [
+    "boca_ui.cc",
+    "boca_ui.h",
+    "url_constants.h",
+  ]
+  deps = [
+    "resources:resources",
+    "//ash/constants:constants",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
+#include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/crosh_system_web_app_info.h"
@@ -141,6 +142,9 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
   info_vec.push_back(std::make_unique<PrintPreviewCrosDelegate>(profile));
+  if (features::IsBocaEnabled()) {
+    info_vec.push_back(std::make_unique<BocaSystemAppDelegate>(profile));
+  }
 
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
