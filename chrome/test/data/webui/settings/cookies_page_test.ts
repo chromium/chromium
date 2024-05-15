@@ -54,12 +54,13 @@ suite('CookiesPageTest', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
 
@@ -273,10 +274,11 @@ suite('ExceptionsList', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -359,6 +361,7 @@ suite('FirstPartySetsUIDisabled', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -395,10 +398,11 @@ suite('TrackingProtectionSettings', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -463,10 +467,11 @@ suite('IpProtectionToggle', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -508,10 +513,11 @@ suite('FingerprintingProtectionToggle', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -561,6 +567,7 @@ suite('TrackingProtectionSettingsRollbackNotice', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
