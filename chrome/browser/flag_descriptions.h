@@ -478,11 +478,6 @@ extern const char kCaptivePortalPopupWindowDescription[];
 extern const char kCapturedSurfaceControlName[];
 extern const char kCapturedSurfaceControlDescription[];
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-extern const char kCcoTest1Name[];
-extern const char kCcoTest1Description[];
-#endif
-
 extern const char kChromeLabsName[];
 extern const char kChromeLabsDescription[];
 

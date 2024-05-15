@@ -1267,11 +1267,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "cco-test1",
-    "owners": [ "petewil@chromium.org", "sky@chromium.org" ],
-    "expiry_milestone": 121
-  },
-  {
     "name": "cct-before-unload",
     "owners": [ "katzz@google.com", "twellington@google.com"],
     "expiry_milestone": 142

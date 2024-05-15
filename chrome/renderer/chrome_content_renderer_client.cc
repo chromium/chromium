@@ -257,10 +257,6 @@
 #include "chrome/renderer/media/chrome_key_systems.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/renderer/cco/multiline_detector.h"
-#endif
-
 using autofill::AutofillAgent;
 using autofill::PasswordAutofillAgent;
 using autofill::PasswordGenerationAgent;
@@ -781,10 +777,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
             base::BindRepeating(&RenderFrameFontFamilyAccessor::Bind,
                                 render_frame));
   }
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  MultilineDetector::InstallIfNecessary(render_frame);
 #endif
 
   if (render_frame->IsMainFrame()) {

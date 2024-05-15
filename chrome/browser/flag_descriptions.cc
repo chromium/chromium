@@ -799,11 +799,6 @@ const char kCaptivePortalPopupWindowDescription[] =
     "Use a popup window with proxies disabled for captive portal signin.";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-const char kCcoTest1Name[] = "Cco Test1";
-const char kCcoTest1Description[] = "Enables cco test 1";
-#endif
-
 const char kChromeLabsName[] = "Chrome Labs";
 const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "

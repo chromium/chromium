@@ -10545,12 +10545,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableFpanRiskBasedAuthentication)},
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-    {"cco-test1", flag_descriptions::kCcoTest1Name,
-     flag_descriptions::kCcoTest1Description, kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(features::kCcoTest1)},
-#endif
-
     {"draw-immediately-when-interactive",
      flag_descriptions::kDrawImmediatelyWhenInteractiveName,
      flag_descriptions::kDrawImmediatelyWhenInteractiveDescription, kOsAll,
