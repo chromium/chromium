@@ -452,6 +452,9 @@
         'test_suites': {
           'isolated_scripts': 'chromium_junit_tests_scripts',
         },
+        'mixins': [
+            'has_native_resultdb_integration',
+        ],
       },
       'Android arm64 Builder (dbg)': {
         'additional_compile_targets': [
@@ -482,6 +485,9 @@
         'test_suites': {
           'isolated_scripts': 'cast_junit_tests',
         },
+        'mixins': [
+            'has_native_resultdb_integration',
+        ],
       },
       'Oreo Phone Tester': {
         'os_type': 'android',
