@@ -14,7 +14,14 @@ class Notification;
 class NotificationControlButtonsView;
 }  // namespace message_center
 
+namespace views {
+class Label;
+}
+
 namespace ash {
+
+class IconButton;
+class PillButton;
 
 // Ash Pinned Notification View to be used when the `Ongoing Processes` flag is
 // enabled (go/ongoing-processes-spec). This view must have a title and an icon,
@@ -39,6 +46,13 @@ class ASH_EXPORT PinnedNotificationView : public message_center::MessageView {
 
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+  // Owned by the views hierarchy.
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> subtitle_label_ = nullptr;
+  raw_ptr<IconButton> secondary_button_ = nullptr;
+  raw_ptr<IconButton> primary_icon_button_ = nullptr;
+  raw_ptr<PillButton> primary_pill_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -333,4 +333,108 @@ TEST_F(PinnedNotificationViewTest, UpdateWithNotification) {
                                      catalog_name, 1);
 }
 
+// Tests that the notification pill button can be updated with a new text.
+TEST_F(PinnedNotificationViewTest, UpdateWithNotification_PillButton) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Create a notification with a pill button.
+  message_center::RichNotificationData data;
+  data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/sample_text));
+
+  auto notification =
+      ash::SystemNotificationBuilder()
+          .SetId("id")
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetSmallImage(*sample_icon)
+          .SetTitle(sample_text)
+          .SetMessage(sample_text)
+          .SetOptionalFields(data)
+          .Build(
+              /*keep_timestamp=*/false);
+
+  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
+      std::make_unique<PinnedNotificationView>(notification));
+
+  // Test that the pill buttons was created with the proper text.
+  auto* pill_button = GetPillButton(pinned_notification_view);
+  EXPECT_TRUE(pill_button->GetVisible());
+  EXPECT_EQ(pill_button->GetText(), sample_text);
+
+  // Set a new text for the pill button.
+  std::u16string updated_text = u"updated";
+  data.buttons.clear();
+  data.buttons.emplace_back(message_center::ButtonInfo(/*title=*/updated_text));
+  notification.set_buttons(data.buttons);
+  pinned_notification_view->UpdateWithNotification(notification);
+
+  // Ensure that the icon buttons is still visible and with the updated text.
+  EXPECT_TRUE(pill_button->GetVisible());
+  EXPECT_EQ(pill_button->GetText(), updated_text);
+
+  // Remove the text for the pill buttons.
+  data.buttons.clear();
+  notification.set_buttons(data.buttons);
+  pinned_notification_view->UpdateWithNotification(notification);
+
+  // The pill button should still be visible, as the buttons cannot be removed.
+  EXPECT_TRUE(pill_button->GetVisible());
+  EXPECT_EQ(pill_button->GetText(), updated_text);
+}
+
+// Tests that the notification buttons can be updated with new icons.
+TEST_F(PinnedNotificationViewTest, UpdateWithNotification_IconButtons) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Create a notification with two icons.
+  message_center::RichNotificationData data;
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      /*vector_icon=*/sample_icon, /*accessible_name=*/sample_text));
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      /*vector_icon=*/sample_icon, /*accessible_name=*/sample_text));
+
+  auto notification =
+      ash::SystemNotificationBuilder()
+          .SetId("id")
+          .SetCatalogName(NotificationCatalogName::kTestCatalogName)
+          .SetSmallImage(*sample_icon)
+          .SetTitle(sample_text)
+          .SetMessage(sample_text)
+          .SetOptionalFields(data)
+          .Build(
+              /*keep_timestamp=*/false);
+
+  PinnedNotificationView* pinned_notification_view = widget->SetContentsView(
+      std::make_unique<PinnedNotificationView>(notification));
+
+  auto* primary_button = GetPrimaryIconButton(pinned_notification_view);
+  auto* secondary_button = GetSecondaryIconButton(pinned_notification_view);
+
+  // Test that the icon buttons were created.
+  EXPECT_TRUE(primary_button);
+  EXPECT_TRUE(secondary_button);
+
+  // Set new icons for the icon buttons.
+  raw_ptr<const gfx::VectorIcon> updated_icon = &kPlaceholderAppIcon;
+  data.buttons.clear();
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      /*vector_icon=*/updated_icon, /*accessible_name=*/sample_text));
+  data.buttons.emplace_back(message_center::ButtonInfo(
+      /*vector_icon=*/updated_icon, /*accessible_name=*/sample_text));
+  notification.set_buttons(data.buttons);
+  pinned_notification_view->UpdateWithNotification(notification);
+
+  // Ensure that the icon buttons are still visible.
+  EXPECT_TRUE(primary_button);
+  EXPECT_TRUE(secondary_button);
+
+  // Remove the icons for the icon buttons.
+  data.buttons.clear();
+  notification.set_buttons(data.buttons);
+  pinned_notification_view->UpdateWithNotification(notification);
+
+  // The icon buttons should still be visible, as the buttons cannot be removed.
+  EXPECT_TRUE(primary_button);
+  EXPECT_TRUE(secondary_button);
+}
+
 }  // namespace ash

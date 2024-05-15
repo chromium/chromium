@@ -55,16 +55,6 @@ constexpr int kTitleMaxLines = 2;
 constexpr int kSubtitleMaxLines = 2;
 constexpr int kSubtitleLineHeight = 18;
 
-views::Label* GetTitleLabel(views::View* notification_view) {
-  return views::AsViewClass<views::Label>(
-      notification_view->GetViewByID(VIEW_ID_PINNED_NOTIFICATION_TITLE_LABEL));
-}
-
-views::Label* GetSubtitleLabel(views::View* notification_view) {
-  return views::AsViewClass<views::Label>(notification_view->GetViewByID(
-      VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL));
-}
-
 NotificationCatalogName GetCatalogName(
     const message_center::Notification& notification) {
   return notification.notifier_id().type ==
@@ -137,6 +127,7 @@ PinnedNotificationView::PinnedNotificationView(
 
   label_container->AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&title_label_)
           .SetID(VIEW_ID_PINNED_NOTIFICATION_TITLE_LABEL)
           .SetMultiLine(notification.message().empty())
           .SetMaxLines(kTitleMaxLines)
@@ -152,6 +143,7 @@ PinnedNotificationView::PinnedNotificationView(
 
   label_container->AddChildView(
       views::Builder<views::Label>()
+          .CopyAddressTo(&subtitle_label_)
           .SetID(VIEW_ID_PINNED_NOTIFICATION_SUBTITLE_LABEL)
           .SetVisible(!notification.message().empty())
           .SetMultiLine(true)
@@ -176,16 +168,18 @@ PinnedNotificationView::PinnedNotificationView(
   buttons_container->SetDefault(views::kMarginsKey,
                                 kButtonsContainerDefaultMargins);
 
-  bool has_pill_button = !notification.buttons().empty() &&
-                         !notification.buttons()[0].title.empty();
-  bool has_icon_button = !has_pill_button && !notification.buttons().empty() &&
-                         !notification.buttons()[0].vector_icon->is_empty();
+  const bool has_pill_button = !notification.buttons().empty() &&
+                               !notification.buttons()[0].title.empty();
+  const bool has_icon_button =
+      !has_pill_button && !notification.buttons().empty() &&
+      !notification.buttons()[0].vector_icon->is_empty();
 
   if (has_pill_button) {
     const std::u16string& pill_button_title = notification.buttons()[0].title;
 
     buttons_container->AddChildView(
         views::Builder<PillButton>()
+            .CopyAddressTo(&primary_pill_button_)
             .SetID(VIEW_ID_PINNED_NOTIFICATION_PILL_BUTTON)
             .SetText(pill_button_title)
             .SetTooltipText(pill_button_title)
@@ -209,7 +203,7 @@ PinnedNotificationView::PinnedNotificationView(
       primary_index = 1;
       primary_button = notification.buttons()[primary_index];
 
-      buttons_container->AddChildView(
+      secondary_button_ = buttons_container->AddChildView(
           IconButton::Builder()
               .SetViewId(VIEW_ID_PINNED_NOTIFICATION_SECONDARY_ICON_BUTTON)
               .SetType(IconButton::Type::kSmall)
@@ -229,7 +223,7 @@ PinnedNotificationView::PinnedNotificationView(
       primary_button = notification.buttons()[primary_index];
     }
 
-    buttons_container->AddChildView(
+    primary_icon_button_ = buttons_container->AddChildView(
         IconButton::Builder()
             .SetViewId(VIEW_ID_PINNED_NOTIFICATION_PRIMARY_ICON_BUTTON)
             .SetType(IconButton::Type::kSmall)
@@ -265,26 +259,57 @@ void PinnedNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
   MessageView::UpdateWithNotification(notification);
 
-  // Only the `title` and `subtitle` labels can be updated. Any other changes
-  // made to the buttons or icon will be ignored.
-  auto* title_label = GetTitleLabel(this);
-  if (title_label && title_label->GetText() != notification.title()) {
+  // Only the `title` and `subtitle` labels and the label or icon inside of the
+  // buttons can be updated. Any other changes will be ignored.
+  if (title_label_ && title_label_->GetText() != notification.title()) {
     auto catalog_name = GetCatalogName(notification);
     if (notification.title().empty()) {
       metrics_utils::LogPinnedNotificationShownWithoutTitle(catalog_name);
     }
-    title_label->SetText(notification.title());
+    title_label_->SetText(notification.title());
   }
 
-  auto* subtitle_label = GetSubtitleLabel(this);
-  if (subtitle_label && subtitle_label->GetText() != notification.message()) {
+  if (subtitle_label_ && subtitle_label_->GetText() != notification.message()) {
     if (notification.message().empty()) {
-      subtitle_label->SetVisible(false);
+      subtitle_label_->SetVisible(false);
     }
-    if (subtitle_label->GetText().empty()) {
-      subtitle_label->SetVisible(true);
+    if (subtitle_label_->GetText().empty()) {
+      subtitle_label_->SetVisible(true);
     }
-    subtitle_label->SetText(notification.message());
+    subtitle_label_->SetText(notification.message());
+  }
+
+  // Return early if there were no buttons in the original notification.
+  if (!primary_pill_button_ && !primary_icon_button_) {
+    return;
+  }
+
+  // Buttons can't be added or removed, only their contents updated.
+  const bool has_pill_button = primary_pill_button_ &&
+                               !notification.buttons().empty() &&
+                               !notification.buttons()[0].title.empty();
+  const bool has_icon_button =
+      primary_icon_button_ && !has_pill_button &&
+      !notification.buttons().empty() &&
+      !notification.buttons()[0].vector_icon->is_empty();
+
+  if (has_pill_button) {
+    primary_pill_button_->SetText(notification.buttons()[0].title);
+    return;
+  }
+
+  if (has_icon_button) {
+    int primary_button_index;
+    if (secondary_button_ && notification.buttons().size() > 1 &&
+        !notification.buttons()[1].vector_icon->is_empty()) {
+      secondary_button_->SetVectorIcon(*notification.buttons()[0].vector_icon);
+      primary_button_index = 1;
+    } else {
+      primary_button_index = 0;
+    }
+
+    primary_icon_button_->SetVectorIcon(
+        *notification.buttons()[primary_button_index].vector_icon);
   }
 }
 
