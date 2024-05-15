@@ -28,7 +28,7 @@ Color LayoutThemeAndroid::SystemColor(
   // DefaultSystemColor() for system colors.
   // TODO(crbug.com/40779801): This override can be removed if we can always
   // guarantee the provider is nullptr for Android.
-  return DefaultSystemColor(css_value_id, color_scheme);
+  return DefaultSystemColor(css_value_id, color_scheme, color_provider);
 }
 
 Color LayoutThemeAndroid::PlatformActiveSelectionBackgroundColor(

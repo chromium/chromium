@@ -238,7 +238,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   Color GetCustomFocusRingColor() const;
 
   Color DefaultSystemColor(CSSValueID,
-                           mojom::blink::ColorScheme color_scheme) const;
+                           mojom::blink::ColorScheme color_scheme,
+                           const ui::ColorProvider* color_provider) const;
   Color SystemColorFromColorProvider(
       CSSValueID,
       mojom::blink::ColorScheme color_scheme,

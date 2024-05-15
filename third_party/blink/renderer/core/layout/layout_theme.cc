@@ -552,12 +552,13 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
     return SystemColorFromColorProvider(css_value_id, color_scheme,
                                         color_provider);
   }
-  return DefaultSystemColor(css_value_id, color_scheme);
+  return DefaultSystemColor(css_value_id, color_scheme, color_provider);
 }
 
 Color LayoutTheme::DefaultSystemColor(
     CSSValueID css_value_id,
-    mojom::blink::ColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
   // The source for the deprecations commented on below is
   // https://www.w3.org/TR/css-color-4/#deprecated-system-colors.
 
@@ -665,6 +666,22 @@ Color LayoutTheme::DefaultSystemColor(
       return PlatformSpellingMarkerUnderlineColor();
     case CSSValueID::kInternalGrammarErrorColor:
       return PlatformGrammarMarkerUnderlineColor();
+    case CSSValueID::kInternalSearchColor:
+      return PlatformTextSearchHighlightColor(/* active_match */ false,
+                                              /* in_forced_colors */ false,
+                                              color_scheme, color_provider);
+    case CSSValueID::kInternalSearchTextColor:
+      return PlatformTextSearchColor(/* active_match */ false,
+                                     /* in_forced_colors */ false, color_scheme,
+                                     color_provider);
+    case CSSValueID::kInternalCurrentSearchColor:
+      return PlatformTextSearchHighlightColor(/* active_match */ true,
+                                              /* in_forced_colors */ false,
+                                              color_scheme, color_provider);
+    case CSSValueID::kInternalCurrentSearchTextColor:
+      return PlatformTextSearchColor(/* active_match */ true,
+                                     /* in_forced_colors */ false, color_scheme,
+                                     color_provider);
     default:
       break;
   }
@@ -740,7 +757,7 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemWindowText);
       break;
     default:
-      return DefaultSystemColor(css_value_id, color_scheme);
+      return DefaultSystemColor(css_value_id, color_scheme, color_provider);
   }
 
   return Color::FromSkColor(system_theme_color);

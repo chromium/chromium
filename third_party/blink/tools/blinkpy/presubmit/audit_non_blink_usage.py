@@ -1706,6 +1706,13 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/layout/layout_theme.cc',
+            'third_party/blink/renderer/core/layout/layout_theme.h',
+        ],
+        'allowed': ['ui::ColorProvider'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.h',
             'third_party/blink/renderer/core/scroll/mac_scrollbar_animator_impl.mm',
         ],

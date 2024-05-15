@@ -183,8 +183,15 @@ bool StyleColor::IsColorKeyword(CSSValueID id) {
   //   '-internal-spelling-error-color'
   //   '-internal-grammar-error-color'
   //
+  // ::search-text
+  // <https://github.com/w3c/csswg-drafts/issues/10329>
+  //   ‘-internal-search-color’
+  //   ‘-internal-search-text-color’
+  //   ‘-internal-current-search-color’
+  //   ‘-internal-current-search-text-color’
+  //
   return (id >= CSSValueID::kAqua &&
-          id <= CSSValueID::kInternalGrammarErrorColor) ||
+          id <= CSSValueID::kInternalCurrentSearchTextColor) ||
          (id >= CSSValueID::kAliceblue && id <= CSSValueID::kYellowgreen) ||
          id == CSSValueID::kMenu;
 }
@@ -222,6 +229,10 @@ bool StyleColor::IsSystemColor(CSSValueID id) {
     case CSSValueID::kHighlighttext:
     case CSSValueID::kInternalGrammarErrorColor:
     case CSSValueID::kInternalSpellingErrorColor:
+    case CSSValueID::kInternalSearchColor:
+    case CSSValueID::kInternalSearchTextColor:
+    case CSSValueID::kInternalCurrentSearchColor:
+    case CSSValueID::kInternalCurrentSearchTextColor:
     case CSSValueID::kLinktext:
     case CSSValueID::kMark:
     case CSSValueID::kMarktext:
