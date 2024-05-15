@@ -563,25 +563,17 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     WTF::HashMap<AnchorId, bool> newly_removed;
     wtf_size_t insert_idx = 0;
     wtf_size_t remove_idx = 0;
-    auto dump_if_id_is_invalid_key = [](AnchorId id) {
-      // TODO(https://crbug.com/331043758): Dump to investigate crash.
-      DUMP_WILL_BE_CHECK(
-          !WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<AnchorId>>(id))
-          << id;
-    };
     for (const auto& [insert_end, remove_end] : metrics_partitions_) {
       // For each partition, removals are processed before insertions.
       const auto removals = base::make_span(metrics_removed_anchors_)
                                 .subspan(remove_idx, (remove_end - remove_idx));
       for (AnchorId removed_id : removals) {
-        dump_if_id_is_invalid_key(removed_id);
         auto result = present.Set(removed_id, false);
         newly_removed.insert(removed_id, result.is_new_entry);
       }
       const auto insertions = base::make_span(metrics_).subspan(
           insert_idx, (insert_end - insert_idx));
       for (const auto& insertion : insertions) {
-        dump_if_id_is_invalid_key(insertion->anchor_id);
         present.Set(insertion->anchor_id, true);
       }
       insert_idx = insert_end;

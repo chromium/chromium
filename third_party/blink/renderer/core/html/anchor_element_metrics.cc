@@ -176,7 +176,14 @@ bool HasTextSibling(const HTMLAnchorElement& anchor_element) {
 // destroyed and a new one is created with the same address. We don't mind this
 // issue as the anchor ID is only used for metric collection.
 uint32_t AnchorElementId(const HTMLAnchorElement& element) {
-  return WTF::GetHash(&element);
+  uint32_t id = WTF::GetHash(&element);
+  if (WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<uint32_t>>(id)) {
+    // Anchor IDs are used in HashMaps, so we can't have sentinel values. If the
+    // hash happens to be a sentinel value, we return an arbitrary value
+    // instead.
+    return 1u;
+  }
+  return id;
 }
 
 mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
