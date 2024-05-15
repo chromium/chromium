@@ -56,8 +56,6 @@ public class PendingTabClosureManager {
     private class TabClosureEvent {
         private final LinkedList<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
-        private boolean mReadyToCommitCalled;
-        private boolean mCancelCalled;
 
         /**
          * @param tabs The list of closing tabs.
@@ -71,13 +69,7 @@ public class PendingTabClosureManager {
          * @param tab The tab to mark as having closed.
          */
         public boolean markReadyToCommit(Tab tab) {
-            final boolean removed = mUnhandledTabs.remove(tab);
-            if (removed) {
-                assert !mCancelCalled
-                        : "Committing a tab closure from an event that was partly cancelled.";
-                mReadyToCommitCalled = true;
-            }
-            return removed;
+            return mUnhandledTabs.remove(tab);
         }
 
         /**
@@ -87,9 +79,6 @@ public class PendingTabClosureManager {
             final boolean removed = mUnhandledTabs.remove(tab);
             if (removed) {
                 mClosingTabs.remove(tab);
-                assert !mReadyToCommitCalled
-                        : "Cancelling a tab closure from an event that was partly ready to commit.";
-                mCancelCalled = true;
             }
             return removed;
         }
@@ -345,6 +334,10 @@ public class PendingTabClosureManager {
             // Remove the event once all tabs in it are gone.
             if (event.allTabsHandled()) {
                 events.remove();
+                List<Tab> closingTabs = event.getList();
+                if (!closingTabs.isEmpty()) {
+                    commitClosuresInternal(closingTabs);
+                }
             }
             break;
         }

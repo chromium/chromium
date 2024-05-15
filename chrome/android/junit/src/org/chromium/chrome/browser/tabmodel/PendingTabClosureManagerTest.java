@@ -230,13 +230,9 @@ public class PendingTabClosureManagerTest {
         checkRewoundState(mPendingTabClosureManager, tabList, true);
     }
 
-    /**
-     * Test that unless {@link PendingTabClosureManager#openMostRecentlyClosedEntry()} is called it
-     * isn't possible to undo a tab of a multiple tab closure if at least one tab has requested to
-     * commit.
-     */
     @Test
-    public void testEnforceAtomicityOfCommit() {
+    public void testPartialCommitThenCancel() {
+        InOrder delegateInOrder = inOrder(mDelegate);
         Tab tab0 = new MockTab(0, mProfile);
         Tab tab1 = new MockTab(1, mProfile);
         Tab[] tabList = new Tab[] {tab1, tab0};
@@ -248,22 +244,15 @@ public class PendingTabClosureManagerTest {
         mPendingTabClosureManager.commitTabClosure(tab0.getId());
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
-        boolean threwError = false;
-        try {
-            mPendingTabClosureManager.cancelTabClosure(tab1.getId());
-        } catch (AssertionError e) {
-            threwError = true;
-        }
-        Assert.assertTrue(threwError);
+        mPendingTabClosureManager.cancelTabClosure(tab1.getId());
+        delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab1), eq(0));
+        delegateInOrder.verify(mDelegate).notifyOnFinishingMultipleTabClosure(eq(List.of(tab0)));
+        delegateInOrder.verify(mDelegate).finalizeClosure(eq(tab0));
+        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab1}, false);
     }
 
-    /**
-     * Test that unless {@link PendingTabClosureManager#commitAllTabClosures()} is called it isn't
-     * possible to commit a tab of a multiple tab closure if at least one tab has requested to
-     * cancel.
-     */
     @Test
-    public void testEnforceAtomicityOfCancel() {
+    public void testPartialCancelThenCommit() {
         InOrder delegateInOrder = inOrder(mDelegate);
         Tab tab0 = new MockTab(0, mProfile);
         Tab tab1 = new MockTab(1, mProfile);
@@ -277,13 +266,10 @@ public class PendingTabClosureManagerTest {
         checkRewoundState(mPendingTabClosureManager, tabList, true);
         delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab0), eq(0));
 
-        boolean threwError = false;
-        try {
-            mPendingTabClosureManager.commitTabClosure(tab1.getId());
-        } catch (AssertionError e) {
-            threwError = true;
-        }
-        Assert.assertTrue(threwError);
+        mPendingTabClosureManager.commitTabClosure(tab1.getId());
+        delegateInOrder.verify(mDelegate).notifyOnFinishingMultipleTabClosure(eq(List.of(tab1)));
+        delegateInOrder.verify(mDelegate).finalizeClosure(eq(tab1));
+        checkRewoundState(mPendingTabClosureManager, new Tab[] {tab0}, false);
     }
 
     @Test
