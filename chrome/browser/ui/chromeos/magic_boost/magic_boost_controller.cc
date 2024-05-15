@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace chromeos {
 
@@ -17,5 +19,13 @@ MagicBoostController* MagicBoostController::Get() {
 MagicBoostController::MagicBoostController() = default;
 
 MagicBoostController::~MagicBoostController() = default;
+
+void MagicBoostController::ShowDisclaimerUi() {
+  if (disclaimer_widget_) {
+    return;
+  }
+  disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget();
+  disclaimer_widget_->Show();
+}
 
 }  // namespace chromeos

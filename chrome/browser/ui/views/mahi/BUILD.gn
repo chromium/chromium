@@ -8,10 +8,6 @@ assert(is_chromeos)
 
 source_set("mahi") {
   sources = [
-    "magic_boost/disclaimer_view.cc",
-    "magic_boost/disclaimer_view.h",
-    "magic_boost/magic_boost_opt_in_card.cc",
-    "magic_boost/magic_boost_opt_in_card.h",
     "mahi_condensed_menu_view.cc",
     "mahi_condensed_menu_view.h",
     "mahi_menu_constants.h",
@@ -24,7 +20,6 @@ source_set("mahi") {
   deps = [
     "//base",
     "//chrome/browser/chromeos",
-    "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/editor_menu/public/cpp",

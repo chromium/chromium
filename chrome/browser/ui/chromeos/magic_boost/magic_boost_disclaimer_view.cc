@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/mahi/magic_boost/disclaimer_view.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_disclaimer_view.h"
 
 #include <memory>
 #include <string>
@@ -25,11 +25,11 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos::mahi {
+namespace chromeos {
 
 namespace {
 
-constexpr char kWidgetName[] = "MahiDisclaimerViewWidget";
+constexpr char kWidgetName[] = "MagicBoostDisclaimerViewWidget";
 
 // Paddings, sizes and insets.
 constexpr int kImageWidth = 360;
@@ -71,7 +71,7 @@ const gfx::FontList title_text_font_list =
 
 }  // namespace
 
-DisclaimerView::DisclaimerView()
+MagicBoostDisclaimerView::MagicBoostDisclaimerView()
     : chromeos::editor_menu::PreTargetHandlerView(
           chromeos::editor_menu::CardType::kMahiDefaultMenu) {
   views::Builder<views::View>(this)
@@ -120,30 +120,31 @@ DisclaimerView::DisclaimerView()
               .SetBetweenChildSpacing(kBetweenButtonsSpacing)
               .SetPreferredSize(gfx::Size(kWidgetWidth, kButtonHeight))
               .SetBorder(views::CreateEmptyBorder(kButtonContainerInsets))
-              .AddChildren(views::Builder<views::MdTextButton>()
-                               .SetText(secondary_button_text)
-                               .SetAccessibleName(secondary_button_text)
-                               .SetStyle(ui::ButtonStyle::kText)
-                               .SetCallback(base::BindRepeating(
-                                   &DisclaimerView::OnDeclineButtonPressed,
-                                   weak_ptr_factory_.GetWeakPtr())),
-                           views::Builder<views::MdTextButton>()
-                               .CopyAddressTo(&accept_button_)
-                               .SetText(primary_button_text)
-                               .SetAccessibleName(primary_button_text)
-                               .SetStyle(ui::ButtonStyle::kProminent)
-                               .SetCallback(base::BindRepeating(
-                                   &DisclaimerView::OnAcceptButtonPressed,
-                                   weak_ptr_factory_.GetWeakPtr())))
+              .AddChildren(
+                  views::Builder<views::MdTextButton>()
+                      .SetText(secondary_button_text)
+                      .SetAccessibleName(secondary_button_text)
+                      .SetStyle(ui::ButtonStyle::kText)
+                      .SetCallback(base::BindRepeating(
+                          &MagicBoostDisclaimerView::OnDeclineButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr())),
+                  views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&accept_button_)
+                      .SetText(primary_button_text)
+                      .SetAccessibleName(primary_button_text)
+                      .SetStyle(ui::ButtonStyle::kProminent)
+                      .SetCallback(base::BindRepeating(
+                          &MagicBoostDisclaimerView::OnAcceptButtonPressed,
+                          weak_ptr_factory_.GetWeakPtr())))
 
               )
       .BuildChildren();
 }
 
-DisclaimerView::~DisclaimerView() = default;
+MagicBoostDisclaimerView::~MagicBoostDisclaimerView() = default;
 
 // static
-views::UniqueWidgetPtr DisclaimerView::CreateWidget() {
+views::UniqueWidgetPtr MagicBoostDisclaimerView::CreateWidget() {
   views::Widget::InitParams params;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
@@ -155,7 +156,7 @@ views::UniqueWidgetPtr DisclaimerView::CreateWidget() {
 
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
-  widget->SetContentsView(std::make_unique<DisclaimerView>());
+  widget->SetContentsView(std::make_unique<MagicBoostDisclaimerView>());
 
   // Shows the widget in the middle of the screen.
   // TODO(b/339044721): Set the widget bounds based on different screen size.
@@ -171,25 +172,25 @@ views::UniqueWidgetPtr DisclaimerView::CreateWidget() {
 }
 
 // static
-const char* DisclaimerView::GetWidgetName() {
+const char* MagicBoostDisclaimerView::GetWidgetName() {
   return kWidgetName;
 }
 
-void DisclaimerView::RequestFocus() {
+void MagicBoostDisclaimerView::RequestFocus() {
   views::View::RequestFocus();
 
   accept_button_->RequestFocus();
 }
 
-void DisclaimerView::OnAcceptButtonPressed() {
+void MagicBoostDisclaimerView::OnAcceptButtonPressed() {
   // TODO(b/339044721): Implement accept action.
 }
 
-void DisclaimerView::OnDeclineButtonPressed() {
+void MagicBoostDisclaimerView::OnDeclineButtonPressed() {
   // TODO(b/339044721): Implement decline action.
 }
 
-BEGIN_METADATA(DisclaimerView)
+BEGIN_METADATA(MagicBoostDisclaimerView)
 END_METADATA
 
-}  // namespace chromeos::mahi
+}  // namespace chromeos

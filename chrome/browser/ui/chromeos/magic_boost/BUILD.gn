@@ -8,6 +8,19 @@ source_set("magic_boost") {
   sources = [
     "magic_boost_controller.cc",
     "magic_boost_controller.h",
+    "magic_boost_disclaimer_view.cc",
+    "magic_boost_disclaimer_view.h",
+    "magic_boost_opt_in_card.cc",
+    "magic_boost_opt_in_card.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chrome/browser/ui/views/editor_menu:utils",
+    "//chromeos/ui/vector_icons",
+    "//ui/color",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
 }

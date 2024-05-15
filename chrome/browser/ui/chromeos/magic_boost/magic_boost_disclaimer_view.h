@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAGIC_BOOST_DISCLAIMER_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_MAHI_MAGIC_BOOST_DISCLAIMER_VIEW_H_
+#ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_DISCLAIMER_VIEW_H_
+#define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_DISCLAIMER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,17 +17,19 @@ class UniqueWidgetPtr;
 
 }  // namespace views
 
-namespace chromeos::mahi {
+namespace chromeos {
 
 // A bubble style view to show the disclaimer view.
-class DisclaimerView : public chromeos::editor_menu::PreTargetHandlerView {
-  METADATA_HEADER(DisclaimerView, chromeos::editor_menu::PreTargetHandlerView)
+class MagicBoostDisclaimerView
+    : public chromeos::editor_menu::PreTargetHandlerView {
+  METADATA_HEADER(MagicBoostDisclaimerView,
+                  chromeos::editor_menu::PreTargetHandlerView)
 
  public:
-  DisclaimerView();
-  DisclaimerView(const DisclaimerView&) = delete;
-  DisclaimerView& operator=(const DisclaimerView&) = delete;
-  ~DisclaimerView() override;
+  MagicBoostDisclaimerView();
+  MagicBoostDisclaimerView(const MagicBoostDisclaimerView&) = delete;
+  MagicBoostDisclaimerView& operator=(const MagicBoostDisclaimerView&) = delete;
+  ~MagicBoostDisclaimerView() override;
 
   // chromeos::editor_menu::PreTargetHandlerView:
   void RequestFocus() override;
@@ -47,9 +49,9 @@ class DisclaimerView : public chromeos::editor_menu::PreTargetHandlerView {
   // Owned by the views hierarchy.
   raw_ptr<views::MdTextButton> accept_button_ = nullptr;
 
-  base::WeakPtrFactory<DisclaimerView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MagicBoostDisclaimerView> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::mahi
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_VIEWS_MAHI_MAGIC_BOOST_DISCLAIMER_VIEW_H_
+#endif  // CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_DISCLAIMER_VIEW_H_
