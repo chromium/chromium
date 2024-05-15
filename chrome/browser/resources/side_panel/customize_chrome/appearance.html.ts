@@ -1,9 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {AppearanceElement} from './appearance.js';
+
+export function getHtml(this: AppearanceElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <customize-chrome-theme-snapshot id="themeSnapshot"
     @edit-theme-click="${this.onEditThemeClicked_}"
     ?hidden="${!this.showThemeSnapshot_}">
 </customize-chrome-theme-snapshot>
 <customize-chrome-hover-button id="thirdPartyLinkButton" class="theme-button"
-    ?hidden="${!this.thirdPartyThemeId_}" @click="${this.onThirdPartyLinkButtonClick_}"
+    ?hidden="${!this.thirdPartyThemeId_}"
+    @click="${this.onThirdPartyLinkButtonClick_}"
     label="${this.thirdPartyThemeName_}"
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
@@ -59,3 +71,6 @@ ${this.showManagedDialog_ ? html`
       body="$i18n{managedColorsBody}">
   </managed-dialog>
 ` : ''}
+<!--_html_template_end_-->`;
+  // clang-format on
+}

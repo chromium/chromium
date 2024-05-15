@@ -14,24 +14,22 @@ build_webui("build") {
   extra_grdp_deps = [ "icons:build_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/icons/resources.grdp" ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "appearance.ts",
-    "categories.ts",
-    "check_mark_wrapper.ts",
-    "customize_toolbar/toolbar.ts",
-  ]
-
   non_web_component_files = [
+    "appearance.html.ts",
+    "appearance.ts",
+    "app.html.ts",
+    "app.ts",
     "button_label.html.ts",
     "button_label.ts",
     "cards.html.ts",
     "cards.ts",
+    "categories.html.ts",
+    "categories.ts",
+    "check_mark_wrapper.html.ts",
+    "check_mark_wrapper.ts",
     "chrome_cart_proxy.ts",
     "common.ts",
     "customize_chrome_api_proxy.ts",
-    "customize_toolbar/customize_toolbar_api_proxy.ts",
     "hover_button.html.ts",
     "hover_button.ts",
     "shortcuts.html.ts",
@@ -40,6 +38,11 @@ build_webui("build") {
     "theme_snapshot.html.ts",
     "theme_snapshot.ts",
     "themes.ts",
+    "window_proxy.ts",
+
+    "customize_toolbar/customize_toolbar_api_proxy.ts",
+    "customize_toolbar/toolbar.html.ts",
+    "customize_toolbar/toolbar.ts",
     "wallpaper_search/combobox/customize_chrome_combobox.html.ts",
     "wallpaper_search/combobox/customize_chrome_combobox.ts",
     "wallpaper_search/wallpaper_search.html.ts",
@@ -47,7 +50,6 @@ build_webui("build") {
     "wallpaper_search/wallpaper_search_tile.html.ts",
     "wallpaper_search/wallpaper_search_tile.ts",
     "wallpaper_search/wallpaper_search.ts",
-    "window_proxy.ts",
   ]
 
   css_files = [
@@ -77,8 +79,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom-webui.ts",
   ]
-
-  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_deps = [
