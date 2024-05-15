@@ -35,6 +35,7 @@ suite('WelcomeFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     fragment = document.createElement('privacy-guide-welcome-fragment');
     document.body.appendChild(fragment);
     return flushTasks();
@@ -67,6 +68,7 @@ suite('MsbbFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
@@ -158,6 +160,7 @@ suite('HistorySyncFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
@@ -405,6 +408,7 @@ suite('SafeBrowsingFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
@@ -698,6 +702,7 @@ suite('CookiesFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
@@ -823,6 +828,7 @@ suite('CompletionFragment', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     openWindowProxy = new TestOpenWindowProxy();
@@ -941,6 +947,7 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
 
@@ -989,6 +996,7 @@ suite(
       setup(function() {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+        assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
         fragment = document.createElement('privacy-guide-completion-fragment');
         document.body.appendChild(fragment);
 
@@ -1023,6 +1031,7 @@ suite('CompletionFragmentWithoutTrackingProtection', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
     fragment = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(fragment);
 

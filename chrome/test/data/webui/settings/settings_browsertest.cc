@@ -831,7 +831,8 @@ class SettingsPrivacyGuideFragmentsTest : public SettingsBrowserTest {
  protected:
   SettingsPrivacyGuideFragmentsTest() {
     scoped_feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd,
+        {features::kPrivacyGuideForceAvailable,
+         content_settings::features::kTrackingProtection3pcd,
          privacy_sandbox::kTrackingProtectionSettingsLaunch},
         {});
   }
