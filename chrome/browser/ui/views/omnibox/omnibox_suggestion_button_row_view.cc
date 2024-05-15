@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -29,7 +28,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_utils.h"
