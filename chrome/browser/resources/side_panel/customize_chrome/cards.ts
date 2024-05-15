@@ -19,6 +19,12 @@ import {CustomizeChromeAction, recordCustomizeChromeAction} from './common.js';
 import type {CustomizeChromePageHandlerInterface, ModuleSettings} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
+export interface CardsElement {
+  $: {
+    showToggleContainer: HTMLElement,
+  };
+}
+
 /*
  * Element that lets the user configure module status and settings. From a UI
  * standpoint, we refer to modules as cards.
@@ -136,25 +142,42 @@ export class CardsElement extends CrLitElement {
     }
   }
 
-  protected onShowChange_(e: CustomEvent<boolean>) {
+  private setShow_(show: boolean) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_CARDS_TOGGLE_CLICKED);
-    this.show_ = e.detail;
+    this.show_ = show;
     this.pageHandler_.setModulesVisible(this.show_);
   }
 
-  protected onCardStatusChange_(e: CustomEvent<boolean>) {
-    const index = Number((e.target as HTMLElement).dataset['index']);
+  protected onShowChange_(e: CustomEvent<boolean>) {
+    this.setShow_(e.detail);
+  }
+
+  protected onShowToggleClick_() {
+    this.setShow_(!this.show_);
+  }
+
+  private setModuleStatus(index: number, enabled: boolean) {
     const module = this.modules_[index]!;
-    const checked = e.detail;
-    module.enabled = checked;
+    module.enabled = enabled;
     this.requestUpdate();
     const id = module.id;
-    this.pageHandler_.setModuleDisabled(id, !checked);
-    const metricBase = `NewTabPage.Modules.${checked ? 'Enabled' : 'Disabled'}`;
+    this.pageHandler_.setModuleDisabled(id, !enabled);
+    const metricBase = `NewTabPage.Modules.${enabled ? 'Enabled' : 'Disabled'}`;
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(metricBase, id);
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         `${metricBase}.Customize`, id);
+  }
+
+  protected onCardCheckboxChange_(e: CustomEvent<boolean>) {
+    const index = Number((e.target as HTMLElement).dataset['index']);
+    this.setModuleStatus(index, /*checked= */ e.detail);
+  }
+
+  protected onCardClick_(e: Event) {
+    const index = Number((e.target as HTMLElement).dataset['index']);
+    const module = this.modules_[index]!;
+    this.setModuleStatus(index, !module.enabled);
   }
 
   protected showDiscountOptionCheckbox_(id: string, checked: boolean): boolean {
@@ -172,17 +195,33 @@ export class CardsElement extends CrLitElement {
         loadTimeData.getBoolean('showCartInQuestModuleSetting');
   }
 
-  protected onDiscountCheckboxChange_(e: CustomEvent<boolean>) {
-    this.discountCheckbox_ = e.detail;
+  private setCartCardStatus(enabled: boolean) {
+    this.cartOptionCheckbox_ = enabled;
+    this.pageHandler_.setModuleDisabled(
+        'chrome_cart', !this.cartOptionCheckbox_);
+  }
+
+  protected onCartCheckboxChange_(e: CustomEvent<boolean>) {
+    this.setCartCardStatus(/*checked= */ e.detail);
+  }
+
+  protected onCartCardClick_() {
+    this.setCartCardStatus(!this.cartOptionCheckbox_);
+  }
+
+  private setDiscountCardStatus(enabled: boolean) {
+    this.discountCheckbox_ = enabled;
     if (this.discountCheckboxEligible_) {
       ChromeCartProxy.getHandler().setDiscountEnabled(this.discountCheckbox_);
     }
   }
 
-  protected onCartCheckboxChange_(e: CustomEvent<boolean>) {
-    this.cartOptionCheckbox_ = e.detail;
-    this.pageHandler_.setModuleDisabled(
-        'chrome_cart', !this.cartOptionCheckbox_);
+  protected onDiscountCheckboxChange_(e: CustomEvent<boolean>) {
+    this.setDiscountCardStatus(/*checked= */ e.detail);
+  }
+
+  protected onDiscountCardClick_() {
+    this.setDiscountCardStatus(!this.discountCheckbox_);
   }
 }
 

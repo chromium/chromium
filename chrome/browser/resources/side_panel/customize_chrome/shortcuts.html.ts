@@ -8,20 +8,20 @@ import type {ShortcutsElement} from './shortcuts.js';
 
 export function getHtml(this: ShortcutsElement) {
   return html`<!--_html_template_start_-->
-<div id="showShortcutsToggleContainer" class="sp-card-content">
-  <div id="showShortcutsToggleTitle">$i18n{showShortcutsToggle}</div>
-  <cr-toggle id="showShortcutsToggle" title="$i18n{showShortcutsToggle}"
-      ?checked="${this.show_}" @change="${this.onShowShortcutsToggleChange_}">
+<div id="showToggleContainer" class="sp-card-content"
+    @click="${this.onShowToggleClick_}">
+  <div id="showTitle">$i18n{showShortcutsToggle}</div>
+  <cr-toggle id="showToggle" title="$i18n{showShortcutsToggle}"
+      ?checked="${this.show_}" @change="${this.onShowToggleChange_}">
   </cr-toggle>
 </div>
 <div id="options">
   <cr-collapse ?opened="${this.show_}" ?no-animation="${!this.initialized_}">
     <hr class="sp-hr">
-    <cr-radio-group id="shortcutsRadioSelection" ?disabled="${!this.show_}"
-        .selected="${this.shortcutsRadioSelection_}"
-        @selected-changed="${this.onShortcutsRadioSelectionChanged_}"
-        nested-selectable>
-      <div class="option">
+    <cr-radio-group id="radioSelection" ?disabled="${!this.show_}"
+        .selected="${this.radioSelection_}" nested-selectable>
+      <div class="option" id="customLinksContainer"
+          @click="${this.onCustomLinksClick_}">
         <customize-chrome-button-label label="$i18n{myShortcuts}"
             label-description="$i18n{shortcutsCurated}">
         </customize-chrome-button-label>
@@ -33,7 +33,8 @@ export function getHtml(this: ShortcutsElement) {
           <span class="button-aria-describedby">$i18n{shortcutsCurated}</span>
         </cr-radio-button>
       </div>
-      <div class="option">
+      <div class="option" id="mostVisitedContainer"
+          @click="${this.onMostVisitedClick_}">
         <customize-chrome-button-label label="$i18n{mostVisited}"
             label-description="$i18n{shortcutsSuggested}">
         </customize-chrome-button-label>

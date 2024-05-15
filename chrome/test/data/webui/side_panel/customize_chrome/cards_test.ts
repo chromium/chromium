@@ -20,7 +20,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, installMock} from './test_support.js';
+import {$$, assertNotStyle, assertStyle, installMock} from './test_support.js';
 
 suite('CardsTest', () => {
   let customizeCards: CardsElement;
@@ -134,6 +134,30 @@ suite('CardsTest', () => {
     });
 
     test(
+        `toggling 'Show cards' ${toggleState} via its container works`,
+        async () => {
+          await setupTest(
+              [
+                {id: 'foo', name: 'foo name', enabled: true},
+                {id: 'bar', name: 'bar name', enabled: false},
+              ],
+              /*modulesManaged=*/ false,
+              /*modulesVisible=*/ visible);
+
+          assertEquals(visible, getCollapseElement().opened);
+          customizeCards.$.showToggleContainer.click();
+          await callbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          // Assert.
+          assertEquals(!visible, getToggleElement().checked);
+          assertEquals(!visible, getCollapseElement().opened);
+          const cards = getCardsMap();
+          assertCardCheckedStatus(cards, 'foo name', true);
+          assertCardCheckedStatus(cards, 'bar name', false);
+        });
+
+    test(
         `Policy disables actionable elements when cards visibility is ${
             visible}`,
         async () => {
@@ -160,7 +184,7 @@ suite('CardsTest', () => {
         });
   });
 
-  test(`cards can be disabled and enabled`, async () => {
+  test(`cards can be disabled/enabled via their checkbox`, async () => {
     // Arrange & Act.
     await setupTest(
         [
@@ -175,6 +199,44 @@ suite('CardsTest', () => {
 
     // Act.
     fooCheckbox.click();
+    await fooCheckbox.updateComplete;
+
+    // Assert.
+    assertDeepEquals(['foo', true], handler.getArgs('setModuleDisabled')[0]);
+    assertCardCheckedStatus(cards, 'foo name', false);
+    assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.Disabled.Customize', 'foo'));
+
+    // Act.
+    fooCheckbox.click();
+    await fooCheckbox.updateComplete;
+
+    // Assert.
+    assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
+    assertCardCheckedStatus(cards, 'foo name', true);
+    assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.Enabled.Customize', 'foo'));
+  });
+
+  test(`cards can be disabled/enabled via their label`, async () => {
+    // Arrange & Act.
+    await setupTest(
+        [
+          {id: 'foo', name: 'foo name', enabled: true},
+        ],
+        /*modulesManaged=*/ false,
+        /*modulesVisible=*/ true);
+
+    const cards = getCardsMap();
+    const fooCard = cards.get('foo name')!;
+    assertTrue(!!fooCard);
+    const fooCheckbox = cards.get('foo name')!.querySelector('cr-checkbox');
+    assertTrue(!!fooCheckbox);
+
+    // Act.
+    (fooCard as HTMLElement).click();
     await fooCheckbox.updateComplete;
 
     // Assert.
@@ -260,6 +322,35 @@ suite('CardsTest', () => {
       assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
     });
 
+    test(`discount card sets discount status`, async () => {
+      cartHandler.reset();
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: true}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: true}));
+
+      await setupTest(
+          [
+            {id: 'chrome_cart', name: 'Chrome Cart', enabled: true},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Act.
+      const discountCard = $$<HTMLElement>(customizeCards, '#discountCard')!;
+      const discountCheckbox = $$<CrCheckboxElement>(
+          customizeCards, '#discountCard .card-checkbox')!;
+      assertTrue(discountCheckbox.checked);
+      discountCard.click();
+      await discountCheckbox.updateComplete;
+
+      // Assert.
+      assertEquals(1, cartHandler.getCallCount('setDiscountEnabled'));
+      assertDeepEquals(false, cartHandler.getArgs('setDiscountEnabled')[0]);
+      assertFalse(discountCheckbox.checked);
+    });
+
     test(`Unchecking cart card hides discount option`, async () => {
       // Arrange.
       cartHandler.setResultFor(
@@ -341,6 +432,47 @@ suite('CardsTest', () => {
 
     suiteSetup(() => {
       cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
+    });
+
+    test(`cart card sets cart status`, async () => {
+      // Arrange.
+      cartHandler.setResultFor(
+          'getDiscountToggleVisible', Promise.resolve({toggleVisible: false}));
+      cartHandler.setResultFor(
+          'getDiscountEnabled', Promise.resolve({enabled: false}));
+      cartHandler.setResultFor(
+          'getCartFeatureEnabled', Promise.resolve({enabled: true}));
+      loadTimeData.overrideValues({'showCartInQuestModuleSetting': true});
+
+      await setupTest(
+          [
+            {id: 'history_clusters', name: 'History Cluster', enabled: true},
+          ],
+          /*modulesManaged=*/ false,
+          /*modulesVisible=*/ true);
+
+      // Act.
+      const cartCard = $$<HTMLElement>(customizeCards, '#cartCard')!;
+      const cartCheckbox =
+          $$<CrCheckboxElement>(customizeCards, '#cartCard .card-checkbox')!;
+      cartCard.click();
+      await cartCheckbox.updateComplete;
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('setModuleDisabled'));
+      assertDeepEquals(
+          'chrome_cart', handler.getArgs('setModuleDisabled')[0][0]);
+      assertDeepEquals(true, handler.getArgs('setModuleDisabled')[0][1]);
+
+      // Act.
+      cartCard.click();
+      await cartCheckbox.updateComplete;
+
+      // Assert.
+      assertEquals(2, handler.getCallCount('setModuleDisabled'));
+      assertDeepEquals(
+          'chrome_cart', handler.getArgs('setModuleDisabled')[1][0]);
+      assertDeepEquals(false, handler.getArgs('setModuleDisabled')[1][1]);
     });
 
     [true, false].forEach(visible => {

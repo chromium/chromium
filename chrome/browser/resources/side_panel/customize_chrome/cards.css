@@ -18,6 +18,16 @@
   padding: var(--sp-card-padding);
 }
 
+#showToggleContainer:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+#showToggleContainer:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
 #showToggleTitle {
   flex-grow: 1;
 }
@@ -33,6 +43,16 @@
   margin: 0;
   padding: var(--sp-card-padding);
   padding-inline-start: 32px;
+}
+
+.card:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+.card:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
 }
 
 .card-name {

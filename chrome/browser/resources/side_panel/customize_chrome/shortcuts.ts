@@ -23,10 +23,13 @@ import {getHtml} from './shortcuts.html.js';
 
 export interface ShortcutsElement {
   $: {
-    showShortcutsToggle: CrToggleElement,
-    shortcutsRadioSelection: CrRadioGroupElement,
+    showToggleContainer: HTMLElement,
+    showToggle: CrToggleElement,
+    radioSelection: CrRadioGroupElement,
+    customLinksContainer: HTMLElement,
     customLinksButton: CrRadioButtonElement,
     mostVisitedButton: CrRadioButtonElement,
+    mostVisitedContainer: HTMLElement,
   };
 }
 
@@ -46,16 +49,16 @@ export class ShortcutsElement extends CrLitElement {
   static override get properties() {
     return {
       customLinksEnabled_: {type: Boolean},
-      shortcutsRadioSelection_: {type: String},
-      show_: {type: Boolean},
       initialized_: {type: Boolean},
+      radioSelection_: {type: String},
+      show_: {type: Boolean},
     };
   }
 
   private customLinksEnabled_: boolean = false;
-  protected shortcutsRadioSelection_: string|undefined = undefined;
-  protected show_: boolean = false;
   protected initialized_: boolean = false;
+  protected radioSelection_: string|undefined = undefined;
+  protected show_: boolean = false;
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 
@@ -93,7 +96,7 @@ export class ShortcutsElement extends CrLitElement {
         changedProperties as Map<PropertyKey, unknown>;
 
     if (changedPrivateProperties.has('customLinksEnabled_')) {
-      this.shortcutsRadioSelection_ =
+      this.radioSelection_ =
           this.customLinksEnabled_ ? 'customLinksOption' : 'mostVisitedOption';
     }
   }
@@ -103,19 +106,37 @@ export class ShortcutsElement extends CrLitElement {
         this.customLinksEnabled_, /* shortcutsVisible= */ this.show_);
   }
 
-  protected onShortcutsRadioSelectionChanged_(e: CustomEvent<{value: string}>) {
-    if (e.detail.value === this.shortcutsRadioSelection_) {
-      return;
-    }
-    this.customLinksEnabled_ = e.detail.value === 'customLinksOption';
+  private setShow_(show: boolean) {
+    recordCustomizeChromeAction(
+        CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED);
+    this.show_ = show;
     this.setMostVisitedSettings_();
   }
 
-  protected onShowShortcutsToggleChange_(e: CustomEvent<boolean>) {
+  protected onShowToggleChange_(e: CustomEvent<boolean>) {
+    this.setShow_(e.detail);
+  }
+
+  protected onShowToggleClick_() {
+    this.setShow_(!this.show_);
+  }
+
+  private setCustomLinksEnabled_(option: string) {
+    if (this.radioSelection_ === option) {
+      return;
+    }
     recordCustomizeChromeAction(
         CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED);
-    this.show_ = e.detail;
+    this.customLinksEnabled_ = option === 'customLinksOption';
     this.setMostVisitedSettings_();
+  }
+
+  protected onCustomLinksClick_() {
+    this.setCustomLinksEnabled_('customLinksOption');
+  }
+
+  protected onMostVisitedClick_() {
+    this.setCustomLinksEnabled_('mostVisitedOption');
   }
 }
 

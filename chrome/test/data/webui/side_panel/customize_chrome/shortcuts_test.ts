@@ -54,21 +54,20 @@ suite('ShortcutsTest', () => {
   }
 
   function assertShown(shown: boolean) {
-    assertEquals(
-        shown, customizeShortcutsElement.$.showShortcutsToggle.checked);
+    assertEquals(shown, customizeShortcutsElement.$.showToggle.checked);
   }
 
   function assertCustomLinksEnabled() {
     assertEquals(
         'customLinksOption',
-        customizeShortcutsElement.$.shortcutsRadioSelection.selected);
+        customizeShortcutsElement.$.radioSelection.selected);
     assertShown(true);
   }
 
   function assertUseMostVisited() {
     assertEquals(
         'mostVisitedOption',
-        customizeShortcutsElement.$.shortcutsRadioSelection.selected);
+        customizeShortcutsElement.$.radioSelection.selected);
     assertShown(true);
   }
 
@@ -76,13 +75,13 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ false);
     assertShown(false);
-    customizeShortcutsElement.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showToggle.click();
     assertCustomLinksEnabled();
     customizeShortcutsElement.$.mostVisitedButton.click();
     assertUseMostVisited();
-    customizeShortcutsElement.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showToggle.click();
     assertShown(false);
-    customizeShortcutsElement.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showToggle.click();
     assertUseMostVisited();
   });
 
@@ -90,7 +89,7 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    customizeShortcutsElement.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showToggle.click();
     const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     const selector =
         customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
@@ -105,7 +104,7 @@ suite('ShortcutsTest', () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
     const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
-    customizeShortcutsElement.$.showShortcutsToggle.click();
+    customizeShortcutsElement.$.showToggle.click();
     const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
     const selector =
         customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
@@ -116,7 +115,33 @@ suite('ShortcutsTest', () => {
     assertFalse(shortcutsVisible);
   });
 
-  test('enable custom links calls setMostVisitedSettings', async () => {
+  test('clicking toggle title calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ false);
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    customizeShortcutsElement.$.showToggleContainer.click();
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    const selector =
+        customizeShortcutsElement.shadowRoot!.querySelector('cr-collapse');
+
+    assertTrue(!!selector);
+    assertEquals(true, selector.opened);
+    assertFalse(customLinksEnabled);
+    assertTrue(shortcutsVisible);
+  });
+
+  test('clicking custom links label calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
+    assertUseMostVisited();
+    customizeShortcutsElement.$.customLinksContainer.click();
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    assertTrue(customLinksEnabled);
+    assertTrue(shortcutsVisible);
+  });
+
+  test('enabling custom links calls setMostVisitedSettings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ false, /* shortcutsVisible= */ true);
     assertUseMostVisited();
@@ -127,7 +152,18 @@ suite('ShortcutsTest', () => {
     assertTrue(shortcutsVisible);
   });
 
-  test('enable most visited calls setMostVisitedSettings', async () => {
+  test('clicking most visited label calls setMostVisitedSettings', async () => {
+    await setInitialSettings(
+        /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
+    assertCustomLinksEnabled();
+    customizeShortcutsElement.$.mostVisitedContainer.click();
+    const setSettingsCalled = handler.whenCalled('setMostVisitedSettings');
+    const [customLinksEnabled, shortcutsVisible] = await setSettingsCalled;
+    assertFalse(customLinksEnabled);
+    assertTrue(shortcutsVisible);
+  });
+
+  test('enabling most visited calls setMostVisitedSettings', async () => {
     await setInitialSettings(
         /* customLinksEnabled= */ true, /* shortcutsVisible= */ true);
     assertCustomLinksEnabled();
@@ -167,7 +203,7 @@ suite('ShortcutsTest', () => {
 
   suite('Metrics', () => {
     test('Clicking show shortcuts toggle sets metric', async () => {
-      customizeShortcutsElement.$.showShortcutsToggle.click();
+      customizeShortcutsElement.$.showToggle.click();
       await callbackRouterRemote.$.flushForTesting();
       await microtasksFinished();
 
@@ -175,6 +211,17 @@ suite('ShortcutsTest', () => {
           1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
       assertEquals(
           1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED));
+
+      customizeShortcutsElement.$.showToggleContainer.click();
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          2,
           metrics.count(
               'NewTabPage.CustomizeChromeSidePanelAction',
               CustomizeChromeAction.SHOW_SHORTCUTS_TOGGLE_CLICKED));

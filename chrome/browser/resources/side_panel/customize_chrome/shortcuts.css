@@ -9,7 +9,7 @@
  * #include=sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
-#showShortcutsToggleContainer {
+ #showToggleContainer {
   align-items: center;
   display: flex;
   justify-content: space-between;
@@ -17,7 +17,17 @@
   padding: var(--sp-card-padding);
 }
 
-#showShortcutsToggleTitle {
+#showToggleContainer:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+#showToggleContainer:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
+#showToggleTitle {
   font-size: inherit;
   line-height: inherit;
 }
@@ -45,6 +55,16 @@ cr-radio-group {
   gap: 16px;
   padding: var(--sp-card-padding);
   padding-inline-start: 32px;
+}
+
+.option:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+.option:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
 }
 
 /**
