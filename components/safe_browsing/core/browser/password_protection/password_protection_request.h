@@ -277,7 +277,7 @@ class PasswordProtectionRequest
       password_protection_service_;
 
   // The outcome of the password protection request.
-  RequestOutcome request_outcome_;
+  RequestOutcome request_outcome_ = RequestOutcome::UNKNOWN;
 
   // If we haven't receive response after this period of time, we cancel this
   // request.
