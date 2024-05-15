@@ -38,8 +38,6 @@ class FastPairHandshakeImpl : public FastPairHandshake {
       base::TimeTicks decrypt_start_time,
       const std::optional<DecryptedResponse>& response);
 
-  base::TimeTicks encryptor_create_start_time_;
-
   base::WeakPtrFactory<FastPairHandshakeImpl> weak_ptr_factory_{this};
 };
 
