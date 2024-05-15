@@ -99,7 +99,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
       },
 
       /**
-       * Sublabel for the My Files section, later it will be updated with the
+       * Sublabel for the MyFiles section, later it will be updated with the
        * calculated size.
        */
       myFilesSizeSubLabel_: {
@@ -206,7 +206,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   /**
-   * Handler for tapping the "My files" item.
+   * Handler for tapping the MyFiles item.
    */
   private onMyFilesClick_(): void {
     if (this.localUserFilesAllowed_(
@@ -273,7 +273,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   /**
-   * @param size Formatted string representing the size of My files.
+   * @param size Formatted string representing the size of MyFiles.
    */
   private handleMyFilesSizeChanged_(size: string): void {
     this.myFilesSizeSubLabel_ = size;

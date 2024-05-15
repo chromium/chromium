@@ -61,7 +61,7 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
                          holding_space_metrics::EventSource event_source,
                          SuccessCallback callback) = 0;
 
-  // Attempts to open the My Files folder.
+  // Attempts to open the MyFiles folder.
   // Success is returned via the supplied `callback`.
   virtual void OpenMyFiles(SuccessCallback callback) = 0;
 

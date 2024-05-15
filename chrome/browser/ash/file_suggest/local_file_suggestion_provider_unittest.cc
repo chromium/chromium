@@ -164,7 +164,7 @@ class LocalFileSuggestionProviderTrashTest
         profile_->GetPath().Append(file_manager::trash::kTrashFolderName);
     ASSERT_TRUE(base::CreateDirectory(trash_folder_));
 
-    // Ensure the My files and Downloads mount points are appropriately mocked
+    // Ensure the MyFiles and Downloads mount points are appropriately mocked
     // to allow the trash locations to be parented at the test directory.
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile_),

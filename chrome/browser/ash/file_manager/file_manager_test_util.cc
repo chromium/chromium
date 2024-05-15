@@ -116,7 +116,7 @@ std::vector<storage::FileSystemURL> CopyTestFilesIntoMyFiles(
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(base::PathExists(file_path));
     }
-    // Copy the file into My Files.
+    // Copy the file into MyFiles.
     folder.Add({file_path});
   }
 

@@ -56,7 +56,7 @@ void RequestFileAccessForSystem(
   }
 }
 
-// Returns true if `file_path` is in My Files directory.
+// Returns true if `file_path` is in MyFiles directory.
 bool IsInLocalFileSystem(const base::FilePath& file_path) {
   base::FilePath my_files_folder;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_folder);

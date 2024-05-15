@@ -1010,7 +1010,7 @@ namespace autotestPrivate {
         VoidCallback callback);
 
     // Launches Files app directly to absolutePath, if the path does not
-    // exist, it will launch to the default opening location (i.e. My files).
+    // exist, it will launch to the default opening location (i.e. MyFiles).
     // If the supplied path is a file (and it exists) it will open Files app
     // to the parent folder instead.
     static void launchFilesAppToPath(

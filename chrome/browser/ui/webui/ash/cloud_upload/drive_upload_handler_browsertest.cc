@@ -120,7 +120,7 @@ class DriveUploadHandlerTest
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   }
 
-  // Creates mount point for My files and registers local filesystem.
+  // Creates mount point for MyFiles and registers local filesystem.
   void SetUpMyFiles() {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFiles) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
-  // Define the source file as a test docx file within My files.
+  // Define the source file as a test docx file within MyFiles.
   const std::string test_file_name = "text.docx";
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, my_files_dir_);
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromReadOnlyFileSystem) {
   SetUpObservers();
   SetUpReadOnlyLocation();
   SetUpDrive();
-  // Define the source file as a test docx file within My files.
+  // Define the source file as a test docx file within MyFiles.
   const std::string test_file_name = "text.docx";
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, read_only_dir_);
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFails) {
   SetUpObservers();
   SetUpMyFiles();
   SetUpDrive();
-  // Define the source file as a test docx file within My files.
+  // Define the source file as a test docx file within MyFiles.
   const std::string test_file_name = "text.docx";
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, my_files_dir_);
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest, UploadFromMyFilesNoConnection) {
   SetUpDrive();
   SetDriveConnectionStatusForTesting(ConnectionStatus::kNoNetwork);
 
-  // Define the source file as a test docx file within My files.
+  // Define the source file as a test docx file within MyFiles.
   const std::string test_file_name = "text.docx";
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, my_files_dir_);
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
   SetUpMyFiles();
   SetUpDrive();
 
-  // Define the source file as a test docx file within My files.
+  // Define the source file as a test docx file within MyFiles.
   const std::string test_file_name = "text.docx";
   FileSystemURL source_file_url =
       SetUpSourceFile(test_file_name, my_files_dir_);

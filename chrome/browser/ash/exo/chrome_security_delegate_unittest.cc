@@ -86,7 +86,7 @@ class ChromeSecurityDelegateTest : public testing::Test {
                                 "testuser", "/home/testuser",
                                 "PLACEHOLDER_IP"));
 
-    // Register my files and crostini.
+    // Register MyFiles and Crostini.
     mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
     // Downloads-test%40example.com-hash
     myfiles_mount_name_ =

@@ -320,7 +320,7 @@ class SystemInfoCardProviderTest : public testing::Test {
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
 
-    // Create and register My files directory.
+    // Create and register MyFiles directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
     // profile's temporary location instead of $HOME/Downloads.
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
@@ -853,7 +853,7 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
   const int kAndroidPathBytes = 15271;
   const int kDownloadsPathBytes = 56758;
 
-  // Add files in My files and android files.
+  // Add files in MyFiles and Android files.
   AddFile("random.bin", kMountPathBytes, mount_path);          // ~7.9 KB
   AddFile("tall.pdf", kAndroidPathBytes, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with

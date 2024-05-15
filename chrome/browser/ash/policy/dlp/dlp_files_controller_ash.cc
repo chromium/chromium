@@ -256,7 +256,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
     return;
   }
 
-  // If the destination file path is in My Files, all files transfers should be
+  // If the destination file path is in MyFiles, all files transfers should be
   // allowed.
   if (IsInLocalFileSystem(destination.path())) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());

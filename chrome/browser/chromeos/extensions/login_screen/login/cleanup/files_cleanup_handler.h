@@ -14,7 +14,7 @@ class Profile;
 
 namespace chromeos {
 
-// A cleanup handler which clears the profile's My Files and Downloads
+// A cleanup handler which clears the profile's MyFiles and Downloads
 // directories.
 class FilesCleanupHandler : public CleanupHandler {
  public:

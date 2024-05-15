@@ -296,7 +296,7 @@ class FileSearchProviderTrashTest : public FileSearchProviderTest {
   void SetUp() override {
     FileSearchProviderTest::SetUp();
 
-    // Ensure the My files and Downloads mount points are appropriately mocked
+    // Ensure the MyFiles and Downloads mount points are appropriately mocked
     // to allow the trash locations to be parented at the test directory.
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile_.get()),

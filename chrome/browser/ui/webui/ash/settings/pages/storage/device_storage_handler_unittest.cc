@@ -147,7 +147,7 @@ class StorageHandlerTest : public testing::Test {
     other_users_size_test_api_ =
         std::make_unique<OtherUsersSizeTestAPI>(handler_);
 
-    // Create and register My files directory.
+    // Create and register MyFiles directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
     // profile's temporary location instead of $HOME/Downloads.
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
@@ -447,7 +447,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
       storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       android_files_path));
 
-  // Add files in My files and android files.
+  // Add files in MyFiles and Android files.
   AddFile("random.bin", 8092, my_files_path);      // ~7.9 KB
   AddFile("tall.pdf", 15271, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with
@@ -455,7 +455,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
   AddFile("video.ogv", 56758, downloads_path);  // ~55.4 KB
   AddFile("video.ogv", 56758, android_files_download_path);
 
-  // Calculate My files size.
+  // Calculate MyFiles size.
   my_files_size_test_api_->StartCalculation();
   task_environment_.RunUntilIdle();
 
@@ -569,7 +569,7 @@ TEST_F(StorageHandlerTest, CrostiniSize) {
 TEST_F(StorageHandlerTest, SystemSize) {
   // The "System" row on the storage page displays the difference between the
   // total amount of used space and the sum of the sizes of the different
-  // storage items of the storage page (My files, Browsing data, apps etc...)
+  // storage items of the storage page (MyFiles, Browsing data, apps etc...)
   // This test simulates callbacks from each one of these storage items; the
   // calculation of the "System" size should only happen when all of the other
   // storage items have been calculated.
@@ -599,7 +599,7 @@ TEST_F(StorageHandlerTest, SystemSize) {
   // Expect no system size callback until every other item has been updated.
   ASSERT_FALSE(GetWebUICallbackMessage("storage-system-size-changed"));
 
-  // Simulate my files size callback.
+  // Simulate MyFiles size callback.
   my_files_size_test_api_->SimulateOnGetTotalBytes(400 * GB);
   callback = GetWebUICallbackMessage("storage-my-files-size-changed");
   ASSERT_TRUE(callback) << "No 'storage-my-files-size-changed' callback";

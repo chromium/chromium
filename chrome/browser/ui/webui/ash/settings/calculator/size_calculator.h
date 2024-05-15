@@ -179,7 +179,7 @@ class MyFilesSizeCalculator : public SizeCalculator {
   // SizeCalculator:
   void PerformCalculation() override;
 
-  // Updates the size of My Files and Play files.
+  // Updates the size of MyFiles and Play files.
   void OnGetMyFilesSize(int64_t total_bytes);
 
   raw_ptr<Profile> profile_;

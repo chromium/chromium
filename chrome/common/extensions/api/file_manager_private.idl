@@ -1803,7 +1803,7 @@ interface Functions {
   static void searchDriveMetadata(SearchMetadataParams searchParams,
                                   SearchDriveMetadataCallback callback);
 
-  // Search files in My Files.
+  // Search files in MyFiles.
   [nocompile, doesNotSupportPromises]
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);

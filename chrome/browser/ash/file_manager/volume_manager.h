@@ -365,9 +365,9 @@ class VolumeManager : public KeyedService,
   // revokes the arc volumes.
   void UnsubscribeAndUnmountArc();
 
-  // Mounts local folders (My Files, Play and Linux files).
+  // Mounts local folders (MyFiles, Play and Linux files).
   void OnLocalUserFilesEnabled();
-  // Unmounts local folders (My Files, Play and Linux files).
+  // Unmounts local folders (MyFiles, Play and Linux files).
   void OnLocalUserFilesDisabled();
 
   static int counter_;

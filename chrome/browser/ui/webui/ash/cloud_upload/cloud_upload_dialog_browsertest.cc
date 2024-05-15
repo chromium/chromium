@@ -1642,7 +1642,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  // Creates mount point for My files and registers local filesystem.
+  // Creates mount point for MyFiles and registers local filesystem.
   void SetUpMyFiles() {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;

@@ -41,7 +41,7 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
 
-    // Register my files and crostini.
+    // Register MyFiles and Crostini.
     mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
     // For example, "Downloads-test%40example.com-hash"
     myfiles_mount_name_ =

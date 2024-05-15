@@ -39,7 +39,7 @@ struct ImageInfo;
 // task runner.
 // The worker supports on-device Optical Character Recognition (OCR) and
 // Image Content-based Annotation (ICA) via DLCs.
-// TODO(b/260646344): Revisit the use of a FilePathWatcher for My Files
+// TODO(b/260646344): Revisit the use of a FilePathWatcher for MyFiles
 //  if needed. (It may hit the folder limit.)
 class ImageAnnotationWorker {
  public:

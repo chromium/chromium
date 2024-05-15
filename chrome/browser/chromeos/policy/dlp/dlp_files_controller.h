@@ -176,7 +176,7 @@ class DlpFilesController {
                                    std::vector<base::FilePath> blocked_files,
                                    dlp::FileAction action) = 0;
 
-  // Returns true if `file_path` is in My Files directory.
+  // Returns true if `file_path` is in MyFiles directory.
   virtual bool IsInLocalFileSystem(const base::FilePath& file_path) = 0;
 
   // Checks whether pasting or dropping the given `files` to `destination` is

@@ -59,19 +59,19 @@ void GetFreeDiskSpaceBlocking(const base::FilePath& mount_path,
   }
 }
 
-// Computes the size of My Files and Play files.
+// Computes the size of MyFiles and Play files.
 int64_t ComputeLocalFilesSize(const base::FilePath& my_files_path,
                               const base::FilePath& android_files_path) {
   int64_t size = 0;
 
-  // Compute directory size of My Files.
+  // Compute directory size of MyFiles.
   size += base::ComputeDirectorySize(my_files_path);
 
   // Compute directory size of Play Files.
   size += base::ComputeDirectorySize(android_files_path);
 
   // Remove size of Download. If Android is enabled, the size of the Download
-  // folder is counted in both My Files and Play files. If Android is disabled,
+  // folder is counted in both MyFiles and Play files. If Android is disabled,
   // the Download folder doesn't exist and the returned size is 0.
   const base::FilePath download_files_path =
       android_files_path.AppendASCII("Download");

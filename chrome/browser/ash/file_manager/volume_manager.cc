@@ -322,7 +322,7 @@ void VolumeManager::Initialize() {
 
   local_user_files_allowed_ = policy::local_user_files::LocalUserFilesAllowed();
   if (local_user_files_allowed_) {
-    // Add local folders - My Files and ARC if enabled.
+    // Add local folders - MyFiles and ARC if enabled.
     OnLocalUserFilesEnabled();
   }
 

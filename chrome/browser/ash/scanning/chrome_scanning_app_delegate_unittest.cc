@@ -106,7 +106,7 @@ class ChromeScanningAppDelegateTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-// Validates that the correct My Files path is returned.
+// Validates that the correct MyFiles path is returned.
 TEST_F(ChromeScanningAppDelegateTest, GetMyFilesPath) {
   EXPECT_EQ(my_files_path_, chrome_scanning_app_delegate_->GetMyFilesPath());
 }

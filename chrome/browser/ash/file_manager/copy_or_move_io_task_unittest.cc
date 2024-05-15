@@ -802,7 +802,7 @@ TEST_F(CopyOrMoveIsCrossFileSystemTest, SameVolumeNotDownloads) {
 
 TEST_F(CopyOrMoveIsCrossFileSystemTest, MyFilesToMyFiles) {
   // Downloads is intentionally misspelled in these 2 test cases. These paths
-  // should be interpreted as regular "My files" paths.
+  // should be interpreted as regular MyFiles paths.
   base::FilePath source_path = downloads_volume_path_.Append("a.txt");
   base::FilePath destination_path =
       downloads_volume_path_.Append("Download/a.txt");
