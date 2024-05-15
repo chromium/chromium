@@ -203,6 +203,7 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
  public:
   VideoCaptureDeviceFuchsiaTest() {
     test_context_.AddService("fuchsia.sysmem.Allocator");
+    test_context_.AddService("fuchsia.sysmem2.Allocator");
   }
 
   ~VideoCaptureDeviceFuchsiaTest() override {

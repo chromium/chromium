@@ -64,6 +64,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.sysmem2.Allocator",
       ],
       // TODO(crbug.com/42050582): Make required when `--use-context-provider`.
       availability: "optional",
@@ -216,6 +217,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.sysmem2.Allocator",
       ],
       from: "parent",
       to: "#realm_builder",

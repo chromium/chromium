@@ -99,6 +99,7 @@ void AddVulkanRoutesFromParent(RealmBuilder& realm_builder,
   ChildRef child_ref{std::string_view(child_name.data(), child_name.size())};
   realm_builder.AddRoute(
       Route{.capabilities = {Protocol{"fuchsia.sysmem.Allocator"},
+                             Protocol{"fuchsia.sysmem2.Allocator"},
                              Protocol{"fuchsia.tracing.provider.Registry"},
                              Protocol{"fuchsia.vulkan.loader.Loader"}},
             .source = ParentRef{},

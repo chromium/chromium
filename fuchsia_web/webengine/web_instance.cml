@@ -29,6 +29,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.sysmem2.Allocator",
       ],
     },
     {

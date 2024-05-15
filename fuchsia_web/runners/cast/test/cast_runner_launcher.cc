@@ -140,6 +140,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{fuchsia::memorypressure::Provider::Name_},
               Protocol{"fuchsia.process.Launcher"},
               Protocol{"fuchsia.sysmem.Allocator"},
+              Protocol{"fuchsia.sysmem2.Allocator"},
 
               // CastRunner sets ContextFeatureFlags::NETWORK by default.
               Protocol{fuchsia::net::interfaces::State::Name_},
