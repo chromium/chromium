@@ -7091,6 +7091,57 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
         }
       })
 
+  def testCloseWithUserPromptOpened(self):
+    connection = self.createWebSocketConnection()
+    connection.SetTimeout(60)  # 1 min as the test is likely to timeout
+    response = connection.SendCommand(self.createSessionNewCommand())
+    context1 = connection.SendCommand({
+        'method': 'browsingContext.create',
+        'params': {
+            'type': 'tab'
+        }
+    })
+    context_id1 = context1["context"]
+    context2 = connection.SendCommand({
+        'method': 'browsingContext.create',
+        'params': {
+            'type': 'tab'
+        }
+    })
+    context_id2 = context2["context"]
+
+    url = "data:text/html,<script>alert('Blocking')</script>"
+
+    connection.SendCommand({
+        'method': 'browsingContext.navigate',
+        'params': {
+            'url': url,
+            'context': context_id1
+        }
+    })
+    connection.SendCommand({
+        'method': 'browsingContext.navigate',
+        'params': {
+            'url': url,
+            'context': context_id2
+        }
+    })
+
+    connection.SendCommand({
+        'method': 'browsingContext.close',
+        'params': {
+            'context': context_id1
+        }
+    })
+
+    # Should be able to make futher calls to BiDi
+    connection.SendCommand({
+          'method': 'browsingContext.getTree',
+          'params': {
+          }
+      })
+
+
 class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def setUp(self):
