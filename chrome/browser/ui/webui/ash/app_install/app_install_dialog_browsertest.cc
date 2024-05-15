@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -57,9 +59,7 @@ class AppInstallDialogBrowserTest : public InProcessBrowserTest {
  public:
   AppInstallDialogBrowserTest() {
     feature_list_.InitWithFeatures(
-        {chromeos::features::kCrosWebAppInstallDialog,
-         chromeos::features::kCrosOmniboxInstallDialog},
-        {});
+        {chromeos::features::kCrosWebAppInstallDialog}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -152,9 +152,23 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
       (GURL(chrome::kChromeUIAppInstallDialogURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  web_app::CreateWebAppFromCurrentWebContents(
-      browser(), web_app::WebAppInstallFlow::kCreateShortcut);
+  base::WeakPtr<AppInstallDialog> dialog_handle =
+      AppInstallDialog::CreateDialog();
 
+  base::test::TestFuture<bool> dialog_accepted_future;
+
+  dialog_handle->ShowApp(
+      browser()->profile(),
+      /*parent=*/browser()->window()->GetNativeWindow(),
+      apps::PackageId(apps::PackageType::kWeb, app_url.spec()),
+      /*app_name=*/"Test app",
+      /*app_url=*/app_url,
+      /*app_description=*/"",
+      /*icon_url=*/GURL(),
+      /*icon_width=*/0,
+      /*is_icon_maskable=*/false,
+      /*screenshots=*/{},
+      /*dialog_accepted_callback=*/dialog_accepted_future.GetCallback());
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
@@ -171,6 +185,13 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
   while (GetActionButton(web_contents) != "Installing")
     ;
   EXPECT_TRUE(base::StartsWith(GetTitle(web_contents), "Installing app"));
+
+  // Check the dialog_accepted callback was run.
+  EXPECT_TRUE(dialog_accepted_future.Get<bool>());
+
+  // Install the app.
+  web_app::InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+  dialog_handle->SetInstallSucceeded();
 
   // Wait for the button text to say "Open app", which means it knows the app
   // was installed successfully.

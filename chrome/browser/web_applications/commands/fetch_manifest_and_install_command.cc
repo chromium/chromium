@@ -52,7 +52,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -700,21 +699,9 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   const bool can_reparent_tab = app_lock_->install_finalizer().CanReparentTab(
       app_id, is_shortcut_created);
 
-  bool should_reparent_tab = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // All calls to this command in ash (and lacros soon) come from the ChromeOS
-  // install dialog, which should never reparent the tab.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosOmniboxInstallDialog)) {
-    should_reparent_tab = false;
-  }
-#endif
-  if (install_surface_ == webapps::WebappInstallSource::DEVTOOLS) {
-    should_reparent_tab = false;
-  }
-
-  if (should_reparent_tab && can_reparent_tab &&
-      (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser)) {
+  if (can_reparent_tab &&
+      (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser) &&
+      (install_surface_ != webapps::WebappInstallSource::DEVTOOLS)) {
     app_lock_->install_finalizer().ReparentTab(app_id, is_shortcut_created,
                                                web_contents_.get());
   }

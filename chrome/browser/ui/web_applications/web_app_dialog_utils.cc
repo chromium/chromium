@@ -44,12 +44,6 @@
 #include "components/metrics/structured/structured_metrics_client.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "ui/base/webui/web_ui_util.h"
-#endif
-
 namespace web_app {
 
 namespace {
@@ -57,79 +51,6 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Returns the first icon larger than `kIconSize` from `manifest_icons`. If none
-// exist, returns the largest icon. Returns an empty IconInfo if there are no
-// icons.
-// TODO(crbug.com/40283709): This function assumes manifest_icons is sorted,
-// which it may not be. Icon purpose also needs to be considered.
-apps::IconInfo GetIcon(const std::vector<apps::IconInfo>& manifest_icons) {
-  for (const auto& icon_info : manifest_icons) {
-    if (icon_info.square_size_px.value_or(0) > ash::app_install::kIconSize) {
-      return icon_info;
-    }
-  }
-  return apps::IconInfo();
-}
-
-void OnManifestFetchedShowCrosDialog(
-    Profile* profile,
-    base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle,
-    std::vector<webapps::Screenshot> screenshots,
-    content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebAppInstallInfo> web_app_info,
-    WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
-  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-
-  apps::IconInfo icon = GetIcon(web_app_info->manifest_icons);
-
-  std::vector<ash::app_install::mojom::ScreenshotPtr> dialog_screenshots;
-  for (const auto& screenshot : screenshots) {
-    auto dialog_screenshot = ash::app_install::mojom::Screenshot::New();
-    dialog_screenshot->url = GURL(webui::GetBitmapDataUrl(screenshot.image));
-    dialog_screenshot->size =
-        gfx::Size(screenshot.image.width(), screenshot.image.height());
-    dialog_screenshots.push_back(std::move(dialog_screenshot));
-  }
-
-  dialog_handle->ShowApp(
-      profile, initiator_web_contents->GetTopLevelNativeWindow(),
-      apps::PackageId(apps::PackageType::kWeb,
-                      web_app_info->manifest_id.spec()),
-      base::UTF16ToUTF8(web_app_info->title),
-      web_app_info->start_url.GetWithEmptyPath(),
-      base::UTF16ToUTF8(web_app_info->description), icon.url,
-      icon.square_size_px.value_or(0),
-      icon.purpose == apps::IconInfo::Purpose::kMaskable,
-      std::move(dialog_screenshots),
-      base::BindOnce(
-          [](std::unique_ptr<WebAppInstallInfo> web_app_info,
-             WebAppInstallationAcceptanceCallback web_app_acceptance_callback,
-             bool dialog_accepted) {
-            std::move(web_app_acceptance_callback)
-                .Run(dialog_accepted, std::move(web_app_info));
-          },
-          std::move(web_app_info), std::move(web_app_acceptance_callback)));
-}
-
-void OnWebAppInstalledFromCrosDialog(
-    base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle,
-    WebAppInstalledCallback installed_callback,
-    const webapps::AppId& app_id,
-    webapps::InstallResultCode code) {
-  if (webapps::IsSuccess(code)) {
-    dialog_handle->SetInstallSucceeded();
-  } else {
-    // If we receive an error code, there's a chance the dialog was never shown,
-    // so we need to clean it up to avoid a memory leak.
-    dialog_handle->CleanUpDialogIfNotShown();
-    // TODO(b/40283709): Pass a callback to retry the install.
-    dialog_handle->SetInstallFailed(base::DoNothing());
-  }
-  std::move(installed_callback).Run(app_id, code);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void OnWebAppInstallShowInstallDialog(
     WebAppInstallFlow flow,
@@ -284,26 +205,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
           ? FallbackBehavior::kAllowFallbackDataAlways
           : FallbackBehavior::kUseFallbackInfoWhenNotInstallable;
 
-  // TODO(b/307145346): Eventually, this should also be primary install for
-  // Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosOmniboxInstallDialog)) {
-    base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle =
-        ash::app_install::AppInstallDialog::CreateDialog();
-    provider->scheduler().FetchManifestAndInstall(
-        install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, browser->profile(),
-                       dialog_handle,
-                       data.has_value() ? std::move(data->screenshots)
-                                        : std::vector<webapps::Screenshot>()),
-        base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
-                       std::move(callback)),
-        fallback_behavior);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
@@ -351,27 +252,6 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
       install_source == webapps::WebappInstallSource::ML_PROMOTION
           ? FallbackBehavior::kUseFallbackInfoWhenNotInstallable
           : FallbackBehavior::kCraftedManifestOnly;
-
-  // TODO(b/307145346): Eventually, this should also be primary install for
-  // Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrosOmniboxInstallDialog)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    base::WeakPtr<ash::app_install::AppInstallDialog> dialog_handle =
-        ash::app_install::AppInstallDialog::CreateDialog();
-    provider->scheduler().FetchManifestAndInstall(
-        install_source, web_contents->GetWeakPtr(),
-        base::BindOnce(OnManifestFetchedShowCrosDialog, profile, dialog_handle,
-                       data.has_value() ? std::move(data->screenshots)
-                                        : std::vector<webapps::Screenshot>()),
-        base::BindOnce(OnWebAppInstalledFromCrosDialog, dialog_handle,
-                       std::move(installed_callback)),
-        fallback_behavior);
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),

@@ -120,12 +120,6 @@ BASE_FEATURE(kCrosShortstand,
              "CrosShortstand",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the more detailed, OS-level dialog for web app installs from the
-// omnibox.
-BASE_FEATURE(kCrosOmniboxInstallDialog,
-             "CrosOmniboxInstallDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the more detailed, OS-level dialog for web app installs.
 BASE_FEATURE(kCrosWebAppInstallDialog,
              "CrosWebAppInstallDialog",

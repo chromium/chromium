@@ -1660,11 +1660,6 @@
     "expiry_milestone": 129
   },
   {
-    "name": "cros-omnibox-install-dialog",
-    "owners": [ "loubrett@google.com", "cros-apps-platform-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "cros-privacy-hub-app-permissions",
     "owners": [ "cros-privacy-features-dev@google.com" ],
     "expiry_milestone": 128
