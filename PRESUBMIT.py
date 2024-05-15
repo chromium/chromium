@@ -1862,7 +1862,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       explanation = (
         'Do not directly use ContentSettingsType::TRACKING_PROTECTION to check '
         'for tracking protection exceptions. Instead rely on the '
-        'privacy_sandbox::TrackingProtectionSettings API.'
+        'privacy_sandbox::TrackingProtectionSettings API.',
       ),
       treat_as_error = False,
       excluded_paths = (
