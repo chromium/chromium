@@ -329,6 +329,19 @@ These browser's actions/shortcuts are specific to Chrome. They are different
 from the behavior specified by the web-platform, such as using executing
 `window.open()` or opening a link with the `target=_blank` attribute.
 
+<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"</a>
+### What is the threat model for Chrome for Testing?
+
+[Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) is a
+distribution of current and older versions of Chrome. It does not auto-update.
+Therefore, it may lack recent fixes for security bugs. Security bugs can more
+easily be exploited once their fixes are [published in the main Chromium source
+code repository](updates.md) and so it is unsafe to use Chrome for Testing to
+access any untrusted website.  You should use Chrome for Testing only for
+browser automation and testing purposes, consuming only trustworthy content.
+`chrome-headless-shell` also lacks auto-updates and so, for the same reason,
+should only be used to consume trusted content.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
