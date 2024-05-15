@@ -14,7 +14,7 @@ namespace views {
 
 FocusManagerEventHandler::FocusManagerEventHandler(Widget* widget,
                                                    aura::Window* window)
-    : widget_(widget), window_(window) {
+    : widget_(widget->GetWeakPtr()), window_(window) {
   DCHECK(window_);
   window_->AddPreTargetHandler(this);
 }
