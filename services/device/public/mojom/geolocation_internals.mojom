@@ -134,6 +134,16 @@ struct NetworkLocationResponse {
   double? accuracy;
 };
 
+// Determines which type of location provider LocationProviderManager should
+// create and use for geolocation.
+enum LocationProviderManagerMode {
+  kNetworkOnly,
+  kPlatformOnly,
+  kCustomOnly,
+  kHybridPlatform,
+  kHybridFallbackNetwork,
+};
+
 // Interface for chrome://location-internals to be notified when the debug data
 // is updated.
 interface GeolocationInternalsObserver {

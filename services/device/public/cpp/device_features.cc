@@ -17,16 +17,6 @@ BASE_FEATURE(kComputePressureBreakCalibrationMitigation,
 BASE_FEATURE(kGenericSensorExtraClasses,
              "GenericSensorExtraClasses",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables usage of the Windows.Devices.Geolocation WinRT API for the
-// LocationProvider instead of the NetworkLocationProvider on Windows.
-BASE_FEATURE(kWinrtGeolocationImplementation,
-             "WinrtGeolocationImplementation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Enables usage of the CoreLocation API for LocationProvider instead of
-// NetworkLocationProvider for macOS or iOS.
-BASE_FEATURE(kMacCoreLocationBackend,
-             "MacCoreLocationBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable serial communication for SPP devices.
 BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
              "EnableBluetoothSerialPortProfileInSerialApi",
@@ -41,5 +31,28 @@ BASE_FEATURE(kGeolocationDiagnosticsObserver,
 BASE_FEATURE(kSerialPortConnected,
              "SerialPortConnected",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables usage of the location provider manager to select between
+// the operating system's location API or our network-based provider
+// as the source of location data for Geolocation API.
+BASE_FEATURE(kLocationProviderManager,
+             "LocationProviderManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
+    location_provider_manager_mode_options[] = {
+        {device::mojom::LocationProviderManagerMode::kNetworkOnly,
+         "NetworkOnly"},
+        {device::mojom::LocationProviderManagerMode::kPlatformOnly,
+         "PlatformOnly"},
+        {device::mojom::LocationProviderManagerMode::kHybridPlatform,
+         "HybridPlatform"},
+};
+
+const base::FeatureParam<device::mojom::LocationProviderManagerMode>
+    kLocationProviderManagerParam{
+        &kLocationProviderManager, "LocationProviderManagerMode",
+        device::mojom::LocationProviderManagerMode::kNetworkOnly,
+        &location_provider_manager_mode_options};
 
 }  // namespace features

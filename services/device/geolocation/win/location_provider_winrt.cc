@@ -18,6 +18,7 @@
 #include "base/win/core_winrt_util.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
+#include "services/device/public/mojom/geolocation_internals.mojom-shared.h"
 
 namespace device {
 
@@ -455,8 +456,10 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
 }
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
-  if (!base::FeatureList::IsEnabled(
-          features::kWinrtGeolocationImplementation) ||
+  // TODO(crbug.com/333294295): Move this logic into LocationProviderManager to
+  // enable mode-based selection of location providers.
+  if (features::kLocationProviderManagerParam.Get() !=
+          device::mojom::LocationProviderManagerMode::kPlatformOnly ||
       !IsSystemLocationSettingEnabled()) {
     return nullptr;
   }

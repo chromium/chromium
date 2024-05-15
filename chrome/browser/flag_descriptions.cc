@@ -1159,21 +1159,10 @@ const char kAccessibilitySelectToSpeakShortcutDescription[] =
     "This option enables the keyboard shortcut to enable or activate Select to "
     "Speak.";
 
-const char kMacCoreLocationBackendName[] = "Core Location Backend";
-const char kMacCoreLocationBackendDescription[] =
-    "Enables usage of the Core Location APIs as the backend for Geolocation "
-    "API";
-
 const char kNewMacNotificationAPIName[] =
     "Determines which notification API to use on macOS devices";
 const char kNewMacNotificationAPIDescription[] =
     "Enables the usage of Apple's new notification API";
-
-const char kWinrtGeolocationImplementationName[] =
-    "WinRT Geolocation Implementation";
-const char kWinrtGeolocationImplementationDescription[] =
-    "Enables usage of the Windows.Devices.Geolocation WinRT APIs on Windows "
-    "for geolocation";
 
 const char kEnableFencedFramesName[] = "Enable the <fencedframe> element.";
 const char kEnableFencedFramesDescription[] =
@@ -5488,6 +5477,13 @@ const char kUseAdHocSigningForWebAppShimsDescription[] =
 // Windows and Mac -------------------------------------------------------------
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+const char kLocationProviderManagerName[] =
+    "Enable location provider manager for Geolocation API";
+const char kLocationProviderManagerDescription[] =
+    "Enables usage of the location provider manager to select between "
+    "the operating system's location API or the network-based provider "
+    "as the data source for Geolocation API.";
 
 const char kUseAngleName[] = "Choose ANGLE graphics backend";
 const char kUseAngleDefault[] = "Default";

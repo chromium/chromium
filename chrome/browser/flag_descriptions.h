@@ -692,14 +692,8 @@ extern const char kAccessibilitySelectToSpeakShortcutDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
-extern const char kMacCoreLocationBackendName[];
-extern const char kMacCoreLocationBackendDescription[];
-
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
-
-extern const char kWinrtGeolocationImplementationName[];
-extern const char kWinrtGeolocationImplementationDescription[];
 
 extern const char kEnableGenericSensorExtraClassesName[];
 extern const char kEnableGenericSensorExtraClassesDescription[];
@@ -3189,6 +3183,9 @@ extern const char kUseAdHocSigningForWebAppShimsDescription[];
 // Windows and Mac ------------------------------------------------------------
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+extern const char kLocationProviderManagerName[];
+extern const char kLocationProviderManagerDescription[];
 
 extern const char kUseAngleName[];
 

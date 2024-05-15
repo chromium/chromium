@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Security/Security.h>
-
 #include "services/device/geolocation/core_location_provider.h"
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/mojom/geolocation_internals.mojom-shared.h"
 
 namespace device {
 
@@ -83,7 +82,10 @@ void CoreLocationProvider::OnPositionError(
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider(
     SystemGeolocationSource& system_geolocation_source) {
-  if (!base::FeatureList::IsEnabled(features::kMacCoreLocationBackend)) {
+  // TODO(crbug.com/333294295): Move this logic into LocationProviderManager to
+  // enable mode-based selection of location providers.
+  if (features::kLocationProviderManagerParam.Get() !=
+      device::mojom::LocationProviderManagerMode::kPlatformOnly) {
     return nullptr;
   }
 

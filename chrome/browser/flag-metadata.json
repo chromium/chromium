@@ -2559,11 +2559,6 @@
     "expiry_milestone": 85
   },
   {
-    "name": "enable-core-location-backend",
-    "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-cros-autocorrect-by-default",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130
@@ -3330,6 +3325,11 @@
   {"name": "enable-live-caption-multilang",
    "owners": ["evliu@google.com", "robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 140
+  },
+  {
+    "name": "enable-location-provider-manager",
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "enable-lock-screen-notification",
@@ -4196,11 +4196,6 @@
     // when Chrome removes support for versions of Windows that ship with
     // XInput. See https://crbug.com/1499321.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-winrt-geolocation-implementation",
-    "owners": [ "pelavall@microsoft.com", "deviceapi-team@google.com" ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-zero-copy",
