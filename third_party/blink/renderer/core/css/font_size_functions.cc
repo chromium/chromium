@@ -199,14 +199,14 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
                                           medium_size);
 }
 
-static float AspectValue(const SimpleFontData& font_data,
-                         FontSizeAdjust::Metric metric,
-                         float computed_size) {
+static std::optional<float> AspectValue(const SimpleFontData& font_data,
+                                        FontSizeAdjust::Metric metric,
+                                        float computed_size) {
   DCHECK(computed_size);
   const FontMetrics& font_metrics = font_data.GetFontMetrics();
   // FIXME: The behavior for missing metrics has yet to be defined.
   // https://github.com/w3c/csswg-drafts/issues/6384
-  float aspect_value = 1.0;
+  std::optional<float> aspect_value = 1.0;
   switch (metric) {
     case FontSizeAdjust::Metric::kCapHeight:
       if (font_metrics.CapHeight() > 0) {
@@ -219,11 +219,18 @@ static float AspectValue(const SimpleFontData& font_data,
       }
       break;
     case FontSizeAdjust::Metric::kIcWidth:
-      if (const std::optional<float> size =
+      if (const std::optional<float>& size =
               font_data.IdeographicAdvanceWidth()) {
         aspect_value = *size / computed_size;
       }
       break;
+    case FontSizeAdjust::Metric::kIcHeight: {
+      const std::optional<float>& size = font_data.IdeographicAdvanceHeight();
+      aspect_value = font_data.HasVerticalMetrics()
+                         ? std::make_optional<float>(*size / computed_size)
+                         : std::nullopt;
+      break;
+    }
     case FontSizeAdjust::Metric::kExHeight:
     default:
       if (font_metrics.HasXHeight()) {
@@ -240,7 +247,13 @@ std::optional<float> FontSizeFunctions::FontAspectValue(
   if (!font_data || !computed_size) {
     return std::nullopt;
   }
-  return AspectValue(*font_data, metric, computed_size);
+
+  std::optional<float> aspect_value =
+      AspectValue(*font_data, metric, computed_size);
+  if (!aspect_value || !aspect_value.value()) {
+    return std::nullopt;
+  }
+  return aspect_value;
 }
 
 std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
@@ -254,12 +267,12 @@ std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     return std::nullopt;
   }
 
-  float aspect_value =
+  std::optional<float> aspect_value =
       AspectValue(*font_data, size_adjust.GetMetric(), computed_size);
-  if (!aspect_value) {
+  if (!aspect_value || !aspect_value.value()) {
     return std::nullopt;
   }
-  return (size_adjust.Value() / aspect_value) * computed_size;
+  return (size_adjust.Value() / aspect_value.value()) * computed_size;
 }
 
 }  // namespace blink

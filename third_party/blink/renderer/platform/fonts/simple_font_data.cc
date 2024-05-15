@@ -406,13 +406,29 @@ LayoutUnit SimpleFontData::VerticalPosition(
   return LayoutUnit();
 }
 
-std::optional<float> SimpleFontData::IdeographicAdvanceWidth() const {
+const std::optional<float>& SimpleFontData::IdeographicAdvanceWidth() const {
   std::call_once(ideographic_advance_width_once_, [this] {
+    // Use the advance of the CJK water character U+6C34 as the approximated
+    // advance of fullwidth ideographic characters, as specified at
+    // https://drafts.csswg.org/css-values-4/#ic.
     if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
       ideographic_advance_width_ = WidthForGlyph(cjk_water_glyph);
     }
   });
   return ideographic_advance_width_;
+}
+
+const std::optional<float>& SimpleFontData::IdeographicAdvanceHeight() const {
+  std::call_once(ideographic_advance_height_once_, [this] {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+      const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
+      const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
+      has_vertical_metrics_ = vertical_data.HasVerticalMetrics();
+      ideographic_advance_height_ =
+          vertical_data.AdvanceHeight(cjk_water_glyph);
+    }
+  });
+  return ideographic_advance_height_;
 }
 
 const std::optional<float>& SimpleFontData::IdeographicInlineSize() const {
@@ -425,18 +441,8 @@ const std::optional<float>& SimpleFontData::IdeographicInlineSize() const {
       return;
     }
 
-    // Use the advance of the CJK water character U+6C34 as the approximated
-    // advance of fullwidth ideographic characters, as specified at
-    // https://drafts.csswg.org/css-values-4/#ic.
-    const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
-    if (!cjk_water_glyph) {
-      return;
-    }
-
     // Compute vertical advance if the orientation is `kVerticalUpright`.
-    const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
-    const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
-    ideographic_inline_size_ = vertical_data.AdvanceHeight(cjk_water_glyph);
+    ideographic_inline_size_ = IdeographicAdvanceHeight();
   });
   return ideographic_inline_size_;
 }

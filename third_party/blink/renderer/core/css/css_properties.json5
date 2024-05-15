@@ -1296,7 +1296,7 @@
       name_for_methods: "SizeAdjust",
       converter: "ConvertFontSizeAdjust",
       priority: 1,
-      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width", "from-font"],
+      keywords: ["none", "ex-height", "cap-height", "ch-width", "ic-width", "ic-height", "from-font"],
       typedom_types: ["Keyword", "Number"],
       valid_for_first_letter: true,
       valid_for_first_line: true,

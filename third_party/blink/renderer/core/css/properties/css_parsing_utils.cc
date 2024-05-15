@@ -8252,7 +8252,8 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
 
   CSSIdentifierValue* font_metric =
       ConsumeIdent<CSSValueID::kExHeight, CSSValueID::kCapHeight,
-                   CSSValueID::kChWidth, CSSValueID::kIcWidth>(range);
+                   CSSValueID::kChWidth, CSSValueID::kIcWidth,
+                   CSSValueID::kIcHeight>(range);
 
   CSSValue* value = css_parsing_utils::ConsumeNumber(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative);

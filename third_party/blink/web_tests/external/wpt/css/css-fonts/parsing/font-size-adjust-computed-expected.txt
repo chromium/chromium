@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] Property font-size-adjust value 'ic-height 1.1'
-  assert_true: 'ic-height 1.1' is a supported value for font-size-adjust. expected true got false
 [FAIL] Property font-size-adjust value 'ic-height from-font'
-  assert_true: 'ic-height from-font' is a supported value for font-size-adjust. expected true got false
+  assert_equals: expected "ic-height 1" but got "none"
 Harness: the test ran to completion.
 

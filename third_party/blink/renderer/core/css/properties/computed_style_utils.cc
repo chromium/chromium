@@ -1066,7 +1066,8 @@ CSSPrimitiveValue* ComputedStyleUtils::ValueForFontSize(
 
 CSSValue* ComputedStyleUtils::ValueForFontSizeAdjust(
     const ComputedStyle& style) {
-  if (!style.HasFontSizeAdjust()) {
+  if (!style.HasFontSizeAdjust() ||
+      style.FontSizeAdjust().Value() == FontSizeAdjust::kFontSizeAdjustNone) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 

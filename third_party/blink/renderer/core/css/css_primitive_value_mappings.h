@@ -859,6 +859,9 @@ inline CSSIdentifierValue::CSSIdentifierValue(
     case FontSizeAdjust::Metric::kIcWidth:
       value_id_ = CSSValueID::kIcWidth;
       return;
+    case FontSizeAdjust::Metric::kIcHeight:
+      value_id_ = CSSValueID::kIcHeight;
+      return;
   }
 
   NOTREACHED_IN_MIGRATION();
@@ -876,6 +879,8 @@ inline FontSizeAdjust::Metric CSSIdentifierValue::ConvertTo() const {
       return FontSizeAdjust::Metric::kChWidth;
     case CSSValueID::kIcWidth:
       return FontSizeAdjust::Metric::kIcWidth;
+    case CSSValueID::kIcHeight:
+      return FontSizeAdjust::Metric::kIcHeight;
     default:
       break;
   }
