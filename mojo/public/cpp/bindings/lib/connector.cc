@@ -314,17 +314,22 @@ bool Connector::PrefersSerializedMessages() {
 }
 
 bool Connector::Accept(Message* message) {
+  MojoResult result = AcceptAndGetResult(message);
+  return result == MOJO_RESULT_OK;
+}
+
+MojoResult Connector::AcceptAndGetResult(Message* message) {
   if (!lock_ && task_runner_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (TS_UNCHECKED_READ(error_)) {
-    return false;
+    return MOJO_RESULT_UNKNOWN;
   }
 
   internal::MayAutoLock locker(&lock_);
 
   if (!message_pipe_.is_valid() || drop_writes_)
-    return true;
+    return MOJO_RESULT_OK;
 
 #if defined(ENABLE_IPC_FUZZER)
   if (message_dumper_ && message->is_serialized()) {
@@ -359,6 +364,7 @@ bool Connector::Accept(Message* message) {
       // from the caller since we'd like them to continue consuming any backlog
       // of incoming messages before regarding the message pipe as closed.
       drop_writes_ = true;
+      rv = MOJO_RESULT_OK;
       break;
     case MOJO_RESULT_BUSY:
       // We'd get a "busy" result if one of the message's handles is:
@@ -372,13 +378,13 @@ bool Connector::Accept(Message* message) {
       // crbug.com/389666, etc. are resolved, this will make tests fail quickly
       // rather than hanging.)
       CHECK(false) << "Race condition or other bug detected";
-      return false;
+      break;
     default:
       // This particular write was rejected, presumably because of bad input.
       // The pipe is not necessarily in a bad state.
-      return false;
+      break;
   }
-  return true;
+  return rv;
 }
 
 void Connector::AllowWokenUpBySyncWatchOnSameThread() {

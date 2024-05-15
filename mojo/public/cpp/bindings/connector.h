@@ -19,6 +19,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
@@ -202,6 +203,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   // MessageReceiver implementation:
   bool PrefersSerializedMessages() override;
   bool Accept(Message* message) override;
+
+  MojoResult AcceptAndGetResult(Message* message);
 
   MessagePipeHandle handle() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
