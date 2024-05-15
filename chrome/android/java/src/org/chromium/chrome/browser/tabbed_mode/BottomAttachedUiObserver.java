@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
-import android.content.Context;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 
 /**
  * An observer class that listens for changes in UI components that are attached to the bottom of
@@ -31,7 +31,8 @@ public class BottomAttachedUiObserver
         implements BrowserControlsStateProvider.Observer,
                 SnackbarStateProvider.Observer,
                 OverlayPanelStateProvider.Observer,
-                BottomSheetObserver {
+                BottomSheetObserver,
+                InsetObserver.WindowInsetObserver {
     /**
      * An observer to be notified of changes to what kind of UI is currently bordering the bottom of
      * the screen.
@@ -40,6 +41,7 @@ public class BottomAttachedUiObserver
         void onBottomAttachedColorChanged(@Nullable @ColorInt Integer color);
     }
 
+    private boolean mBottomNavbarPresent;
     private final ObserverList<Observer> mObservers;
     private @Nullable @ColorInt Integer mBottomAttachedColor;
 
@@ -61,10 +63,11 @@ public class BottomAttachedUiObserver
     private boolean mOverlayPanelVisible;
     private boolean mOverlayPanelPeeked;
 
+    private final InsetObserver mInsetObserver;
+
     /**
      * Build the observer that listens to changes in the UI bordering the bottom.
      *
-     * @param context The {@link Context} for accessing resources (e.g. color).
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
      * @param snackbarStateProvider Supplies a {@link SnackbarStateProvider} to watch for snackbars
@@ -73,12 +76,14 @@ public class BottomAttachedUiObserver
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     public BottomAttachedUiObserver(
             BrowserControlsStateProvider browserControlsStateProvider,
             SnackbarStateProvider snackbarStateProvider,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            InsetObserver insetObserver) {
         mObservers = new ObserverList<>();
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -89,6 +94,10 @@ public class BottomAttachedUiObserver
 
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(this);
+
+        mInsetObserver = insetObserver;
+        mInsetObserver.addObserver(this);
+        checkIfBottomNavbarIsPresent();
 
         contextualSearchManagerSupplier.addObserver(
                 (manager) -> {
@@ -134,12 +143,15 @@ public class BottomAttachedUiObserver
         if (mSnackbarStateProvider != null) {
             mSnackbarStateProvider.removeObserver(this);
         }
+        if (mInsetObserver != null) {
+            mInsetObserver.removeObserver(this);
+        }
     }
 
     private void updateBottomAttachedColor() {
         @Nullable
         @ColorInt
-        Integer bottomAttachedColor = calculateBottomAttachedColor();
+        Integer bottomAttachedColor = mBottomNavbarPresent ? calculateBottomAttachedColor() : null;
         if (mBottomAttachedColor == null && bottomAttachedColor == null) {
             return;
         }
@@ -261,4 +273,28 @@ public class BottomAttachedUiObserver
 
     @Override
     public void onSheetStateChanged(int newState, int reason) {}
+
+    // InsetObserver.WindowInsetObserver
+
+    @Override
+    public void onInsetChanged(int left, int top, int right, int bottom) {
+        checkIfBottomNavbarIsPresent();
+    }
+
+    /**
+     * Observe for changes to the navbar insets - in some situations, the presence of the navbar at
+     * the bottom may change (e.g. the 3-button navbar may move from the bottom to the left or right
+     * after an orientation change).
+     */
+    private void checkIfBottomNavbarIsPresent() {
+        WindowInsetsCompat windowInsets = mInsetObserver.getLastRawWindowInsets();
+        if (windowInsets != null) {
+            boolean bottomNavbarPresent =
+                    windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom > 0;
+            if (mBottomNavbarPresent != bottomNavbarPresent) {
+                mBottomNavbarPresent = bottomNavbarPresent;
+                updateBottomAttachedColor();
+            }
+        }
+    }
 }

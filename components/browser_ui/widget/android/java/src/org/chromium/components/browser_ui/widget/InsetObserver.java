@@ -347,6 +347,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         updateCurrentSafeArea();
     }
 
+    /**
+     * Sets the initial raw window insets for a testing environment. Note - if using mocks, please
+     * mock the #getInsets() method to return some valid insets.
+     */
     public static void setInitialRawWindowInsetsForTesting(WindowInsetsCompat windowInsets) {
         sInitialRawWindowInsetsForTesting = windowInsets;
         ResettersForTesting.register(() -> sInitialRawWindowInsetsForTesting = null);

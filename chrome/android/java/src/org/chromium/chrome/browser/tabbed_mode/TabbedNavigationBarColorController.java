@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObse
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
@@ -79,7 +80,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeController mEdgeToEdgeController;
     @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
-    private final BottomAttachedUiObserver mBottomAttachedUiObserver;
+    private @Nullable final BottomAttachedUiObserver mBottomAttachedUiObserver;
 
     private @Nullable Tab mActiveTab;
     private TabObserver mTabObserver;
@@ -108,6 +109,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
      *     changes to the bottom sheet.
+     * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
      */
     TabbedNavigationBarColorController(
             Window window,
@@ -118,18 +120,22 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            InsetObserver insetObserver) {
         this(
                 window,
                 tabModelSelector,
                 layoutManagerSupplier,
                 fullscreenManager,
                 edgeToEdgeControllerSupplier,
-                new BottomAttachedUiObserver(
-                        browserControlsStateProvider,
-                        snackbarManagerSupplier.get(),
-                        contextualSearchManagerSupplier,
-                        bottomSheetController));
+                ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()
+                        ? new BottomAttachedUiObserver(
+                                browserControlsStateProvider,
+                                snackbarManagerSupplier.get(),
+                                contextualSearchManagerSupplier,
+                                bottomSheetController,
+                                insetObserver)
+                        : null);
     }
 
     @VisibleForTesting
@@ -139,7 +145,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BottomAttachedUiObserver bottomAttachedUiObserver) {
+            @Nullable BottomAttachedUiObserver bottomAttachedUiObserver) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mWindow = window;
@@ -151,7 +157,9 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
                 mContext.getResources().getBoolean(R.bool.window_light_navigation_bar);
 
         mBottomAttachedUiObserver = bottomAttachedUiObserver;
-        mBottomAttachedUiObserver.addObserver(this);
+        if (mBottomAttachedUiObserver != null) {
+            mBottomAttachedUiObserver.addObserver(this);
+        }
 
         mTabModelSelector = tabModelSelector;
         mTabModelSelectorObserver =
