@@ -140,7 +140,13 @@ things:
        clang/utils/creduce-clang-crash.py --llvm-bin bin \
            angle_deqp_gtest-d421b0.sh angle_deqp_gtest-d421b0.cpp
 
-   Attach the reproducer to the llvm bug you filed in the previous step.
+   Attach the reproducer to the llvm bug you filed in the previous step. You can
+   disable Creduce's renaming passes with the options
+   `--remove-pass pass_clang rename-fun --remove-pass pass_clang rename-param
+   --remove-pass pass_clang rename-var --remove-pass pass_clang rename-class
+   --remove-pass pass_clang rename-cxx-method --remove-pass pass_clex
+   rename-toks` which makes it easier for the author to reason about and to
+   further reduce it manually.
 
    If you need to do something the wrapper doesn't support,
    follow the [official CReduce docs](https://embed.cs.utah.edu/creduce/using/)
