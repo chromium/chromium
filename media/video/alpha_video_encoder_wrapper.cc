@@ -152,20 +152,19 @@ void AlphaVideoEncoderWrapper::Encode(scoped_refptr<VideoFrame> frame,
       alpha_frame, encode_options,
       base::BindOnce(done_callback, weak_factory_.GetWeakPtr()));
 
-  if (!encode_status_.has_value() || !yuv_output_.has_value() ||
-      !alpha_output_.has_value()) {
+  if (!yuv_output_.has_value() || !alpha_output_.has_value()) {
     // This wrapper can only work with synchronous encoders that are completely
     // done encoding by the time Encode() completed.
     // So if we don't have the status and outputs it's time to give up.
     CHECK(encode_status_.has_value());
-    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedEncode);
+    std::move(done_cb).Run(*encode_status_);
     return;
   }
 
   if (encode_status_->is_ok()) {
     if (yuv_output_->key_frame && !alpha_output_->key_frame) {
       // Alpha keyframe must always go with YUV keyframe.
-      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderFailedEncode);
+      std::move(done_cb).Run(EncoderStatus::Codes::kEncoderIllegalState);
       return;
     }
 
