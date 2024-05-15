@@ -350,85 +350,6 @@ TEST_F(URLUtilTest, TestEncodeURIComponent) {
   }
 }
 
-TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
-  // This tests non-standard (in the sense that IsStandard() == false)
-  // hierarchical schemes.
-  struct ResolveRelativeCase {
-    const char* base;
-    const char* rel;
-    bool is_valid;
-    const char* out;
-  } resolve_non_standard_cases[] = {
-      // Resolving a relative path against a non-hierarchical URL should fail.
-      {"scheme:opaque_data", "/path", false, ""},
-      // Resolving a relative path against a non-standard authority-based base
-      // URL doesn't alter the authority section.
-      {"scheme://Authority/", "../path", true, "scheme://Authority/path"},
-      // A non-standard hierarchical base is resolved with path URL
-      // canonicalization rules.
-      {"data:/Blah:Blah/", "file.html", true, "data:/Blah:Blah/file.html"},
-      {"data:/Path/../part/part2", "file.html", true,
-       "data:/Path/../part/file.html"},
-      {"data://text/html,payload", "//user:pass@host:33////payload22", true,
-       "data://user:pass@host:33////payload22"},
-      // Path URL canonicalization rules also apply to non-standard authority-
-      // based URLs.
-      {"custom://Authority/", "file.html", true,
-       "custom://Authority/file.html"},
-      {"custom://Authority/", "other://Auth/", true, "other://Auth/"},
-      {"custom://Authority/", "../../file.html", true,
-       "custom://Authority/file.html"},
-      {"custom://Authority/path/", "file.html", true,
-       "custom://Authority/path/file.html"},
-      {"custom://Authority:NoCanon/path/", "file.html", true,
-       "custom://Authority:NoCanon/path/file.html"},
-      // A path with an authority section gets canonicalized under standard URL
-      // rules, even though the base was non-standard.
-      {"content://content.Provider/", "//other.Provider", true,
-       "content://other.provider/"},
-      // Resolving an absolute URL doesn't cause canonicalization of the
-      // result.
-      {"about:blank", "custom://Authority", true, "custom://Authority"},
-      // Fragment URLs can be resolved against a non-standard base.
-      {"scheme://Authority/path", "#fragment", true,
-       "scheme://Authority/path#fragment"},
-      {"scheme://Authority/", "#fragment", true,
-       "scheme://Authority/#fragment"},
-      // Test resolving a fragment (only) against any kind of base-URL.
-      {"about:blank", "#id42", true, "about:blank#id42"},
-      {"about:blank", " #id42", true, "about:blank#id42"},
-      {"about:blank#oldfrag", "#newfrag", true, "about:blank#newfrag"},
-      {"about:blank", " #id:42", true, "about:blank#id:42"},
-      // A surprising side effect of allowing fragments to resolve against
-      // any URL scheme is we might break javascript: URLs by doing so...
-      {"javascript:alert('foo#bar')", "#badfrag", true,
-       "javascript:alert('foo#badfrag"},
-  };
-
-  for (const auto& test : resolve_non_standard_cases) {
-    SCOPED_TRACE(testing::Message()
-                 << "base: " << test.base << ", rel: " << test.rel);
-
-    Parsed base_parsed =
-        url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()
-            ? ParseNonSpecialURL(test.base)
-            : ParsePathURL(test.base, /*trim_path_end=*/true);
-
-    std::string resolved;
-    StdStringCanonOutput output(&resolved);
-    Parsed resolved_parsed;
-    bool valid =
-        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
-                        strlen(test.rel), nullptr, &output, &resolved_parsed);
-    output.Complete();
-
-    EXPECT_EQ(test.is_valid, valid);
-    if (test.is_valid && valid) {
-      EXPECT_EQ(test.out, resolved);
-    }
-  }
-}
-
 TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
   struct ResolveRelativeCase {
     const char* base;
@@ -759,6 +680,85 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
+  // This tests non-standard (in the sense that IsStandard() == false)
+  // hierarchical schemes.
+  struct ResolveRelativeCase {
+    const char* base;
+    const char* rel;
+    bool is_valid;
+    const char* out;
+  } resolve_non_standard_cases[] = {
+      // Resolving a relative path against a non-hierarchical URL should fail.
+      {"scheme:opaque_data", "/path", false, ""},
+      // Resolving a relative path against a non-standard authority-based base
+      // URL doesn't alter the authority section.
+      {"scheme://Authority/", "../path", true, "scheme://Authority/path"},
+      // A non-standard hierarchical base is resolved with path URL
+      // canonicalization rules.
+      {"data:/Blah:Blah/", "file.html", true, "data:/Blah:Blah/file.html"},
+      {"data:/Path/../part/part2", "file.html", true,
+       "data:/Path/../part/file.html"},
+      {"data://text/html,payload", "//user:pass@host:33////payload22", true,
+       "data://user:pass@host:33////payload22"},
+      // Path URL canonicalization rules also apply to non-standard authority-
+      // based URLs.
+      {"custom://Authority/", "file.html", true,
+       "custom://Authority/file.html"},
+      {"custom://Authority/", "other://Auth/", true, "other://Auth/"},
+      {"custom://Authority/", "../../file.html", true,
+       "custom://Authority/file.html"},
+      {"custom://Authority/path/", "file.html", true,
+       "custom://Authority/path/file.html"},
+      {"custom://Authority:NoCanon/path/", "file.html", true,
+       "custom://Authority:NoCanon/path/file.html"},
+      // A path with an authority section gets canonicalized under standard URL
+      // rules, even though the base was non-standard.
+      {"content://content.Provider/", "//other.Provider", true,
+       "content://other.provider/"},
+      // Resolving an absolute URL doesn't cause canonicalization of the
+      // result.
+      {"about:blank", "custom://Authority", true, "custom://Authority"},
+      // Fragment URLs can be resolved against a non-standard base.
+      {"scheme://Authority/path", "#fragment", true,
+       "scheme://Authority/path#fragment"},
+      {"scheme://Authority/", "#fragment", true,
+       "scheme://Authority/#fragment"},
+      // Test resolving a fragment (only) against any kind of base-URL.
+      {"about:blank", "#id42", true, "about:blank#id42"},
+      {"about:blank", " #id42", true, "about:blank#id42"},
+      {"about:blank#oldfrag", "#newfrag", true, "about:blank#newfrag"},
+      {"about:blank", " #id:42", true, "about:blank#id:42"},
+      // A surprising side effect of allowing fragments to resolve against
+      // any URL scheme is we might break javascript: URLs by doing so...
+      {"javascript:alert('foo#bar')", "#badfrag", true,
+       "javascript:alert('foo#badfrag"},
+  };
+
+  for (const auto& test : resolve_non_standard_cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "base: " << test.base << ", rel: " << test.rel);
+
+    Parsed base_parsed =
+        url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()
+            ? ParseNonSpecialURL(test.base)
+            : ParsePathURL(test.base, /*trim_path_end=*/true);
+
+    std::string resolved;
+    StdStringCanonOutput output(&resolved);
+    Parsed resolved_parsed;
+    bool valid =
+        ResolveRelative(test.base, strlen(test.base), base_parsed, test.rel,
+                        strlen(test.rel), nullptr, &output, &resolved_parsed);
+    output.Complete();
+
+    EXPECT_EQ(test.is_valid, valid);
+    if (test.is_valid && valid) {
+      EXPECT_EQ(test.out, resolved);
+    }
+  }
+}
 
 TEST_P(URLUtilTypedTest, TestNoRefComponent) {
   // This test was originally written before full support for non-special URLs
