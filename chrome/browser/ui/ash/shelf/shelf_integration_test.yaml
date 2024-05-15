@@ -15,5 +15,5 @@ criteria: |
   Integration test that opens and closes ChromeOS app shelf.
 cases:
   - id: "OpenCloseSwitchApps"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
 ...

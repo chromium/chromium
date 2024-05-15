@@ -15,7 +15,7 @@ criteria: |
   Crosier Bluetooth test.
 cases:
   - id: "ToggleBluetoothFromQuickSettings"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
   - id: "ToggleBluetoothFromOsSettings"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
 ...

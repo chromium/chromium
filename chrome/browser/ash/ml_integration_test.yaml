@@ -15,5 +15,5 @@ criteria: |
   Test that the ml-service daemon can be started and an ML model can be loaded
 cases:
   - id: "Bootstrap"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
 ...

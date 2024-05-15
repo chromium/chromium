@@ -16,5 +16,5 @@ criteria: |
   Ash's importer of these metrics.
 cases:
   - id: "SyncHistograms"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
 ...

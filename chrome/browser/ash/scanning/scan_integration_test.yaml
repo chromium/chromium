@@ -15,5 +15,5 @@ criteria: |
   Perform a scan and verify the expected output using a golden file
 cases:
   - id: "ScanWithDefaultSettings"
-    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+    tags: ["crosier:crosierdemosuite"]
 ...
