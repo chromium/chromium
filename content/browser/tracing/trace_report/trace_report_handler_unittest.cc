@@ -8,6 +8,7 @@
 #include "base/token.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
+#include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -38,6 +39,67 @@ class FakeTraceUploadList : public TraceUploadList {
               (override));
 };
 
+class FakeBackgroundTracingManager : public BackgroundTracingManager {
+  MOCK_METHOD(void, SetReceiveCallback, (ReceiveCallback), (override));
+  MOCK_METHOD(bool,
+              SetActiveScenario,
+              (std::unique_ptr<BackgroundTracingConfig>, DataFiltering),
+              (override));
+  MOCK_METHOD(bool,
+              InitializePerfettoTriggerRules,
+              (const perfetto::protos::gen::TracingTriggerRulesConfig&),
+              (override));
+  MOCK_METHOD(bool,
+              InitializeFieldScenarios,
+              (const perfetto::protos::gen::ChromeFieldTracingConfig&,
+               DataFiltering),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              AddPresetScenarios,
+              (const perfetto::protos::gen::ChromeFieldTracingConfig&,
+               DataFiltering),
+              (override));
+  MOCK_METHOD((std::vector<std::pair<std::string, std::string>>),
+              GetAllPresetScenarios,
+              (),
+              (const override));
+  MOCK_METHOD(bool,
+              SetEnabledScenarios,
+              (std::vector<std::string> enabled_preset_scenario_hashes),
+              (override));
+  MOCK_METHOD(std::vector<std::string>,
+              GetEnabledScenarios,
+              (),
+              (const override));
+  MOCK_METHOD(bool, HasActiveScenario, (), (override));
+  MOCK_METHOD(bool, HasTraceToUpload, (), (override));
+  MOCK_METHOD(void,
+              DeleteTracesInDateRange,
+              (base::Time, base::Time),
+              (override));
+  MOCK_METHOD(void,
+              GetTraceToUpload,
+              (base::OnceCallback<void(std::optional<std::string>,
+                                       std::optional<std::string>)>),
+              (override));
+  MOCK_METHOD(std::unique_ptr<BackgroundTracingConfig>,
+              GetBackgroundTracingConfig,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              SetSystemProfileRecorder,
+              (base::RepeatingCallback<std::string()>),
+              (override));
+  MOCK_METHOD(void, AbortScenarioForTesting, (), (override));
+  MOCK_METHOD(void,
+              SaveTraceForTesting,
+              (std::string&&,
+               const std::string&,
+               const std::string&,
+               const base::Token&),
+              (override));
+};
+
 class MockTracePage : public trace_report::mojom::Page {
  public:
   MockTracePage() = default;
@@ -62,12 +124,15 @@ class TraceReportHandlerTest : public testing::Test {
     EXPECT_CALL(fake_trace_upload_list_, OpenDatabaseIfExists());
     handler_ = std::make_unique<TraceReportHandler>(
         mojo::PendingReceiver<trace_report::mojom::PageHandler>(),
-        mock_page_.BindAndGetRemote(), fake_trace_upload_list_);
+        mock_page_.BindAndGetRemote(), fake_trace_upload_list_,
+        fake_background_tracing_manager_);
   }
 
  protected:
   BrowserTaskEnvironment task_environment_;
   testing::StrictMock<FakeTraceUploadList> fake_trace_upload_list_;
+  testing::StrictMock<FakeBackgroundTracingManager>
+      fake_background_tracing_manager_;
   testing::NiceMock<MockTracePage> mock_page_;
   std::unique_ptr<TraceReportHandler> handler_;
 };
