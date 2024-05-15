@@ -533,10 +533,7 @@ class CORE_EXPORT StyleRuleLayerStatement : public StyleRuleBase {
   Vector<LayerName> names_;
 };
 
-// TODO(sesse): When we get CSSOM support for page margin rules, consider
-// whether this should be a StyleRuleGroup or not. (The page margin rules
-// are not strictly selectors, though.)
-class StyleRulePage : public StyleRuleBase {
+class StyleRulePage : public StyleRuleGroup {
  public:
   StyleRulePage(CSSSelectorList* selector_list,
                 CSSPropertyValueSet* properties,
@@ -558,20 +555,12 @@ class StyleRulePage : public StyleRuleBase {
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
   const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
 
-  const HeapVector<Member<StyleRuleBase>, 4>& ChildRules() const {
-    return child_rules_;
-  }
-  HeapVector<Member<StyleRuleBase>, 4>& ChildRules() { return child_rules_; }
-
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   Member<CSSPropertyValueSet> properties_;  // Cannot be null.
   Member<const CascadeLayer> layer_;
   Member<CSSSelectorList> selector_list_;
-
-  // Page margin rules (e.g. @top-left).
-  HeapVector<Member<StyleRuleBase>, 4> child_rules_;
 };
 
 class StyleRulePageMargin : public StyleRuleBase {
