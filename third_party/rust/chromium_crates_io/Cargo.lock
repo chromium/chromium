@@ -80,6 +80,7 @@ dependencies = [
  "hex-literal",
  "itertools",
  "lazy_static",
+ "libc",
  "log",
  "nom",
  "proc-macro2",
