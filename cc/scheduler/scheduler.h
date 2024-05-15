@@ -15,6 +15,7 @@
 #include "base/timer/timer.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/submit_info.h"
 #include "cc/scheduler/begin_frame_tracker.h"
 #include "cc/scheduler/draw_result.h"
 #include "cc/scheduler/scheduler_settings.h"
@@ -179,10 +180,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
 
   // Drawing should result in submitting a CompositorFrame to the
   // LayerTreeFrameSink and then calling this.
-  void DidSubmitCompositorFrame(uint32_t frame_token,
-                                base::TimeTicks submit_time,
-                                EventMetricsSet events_metrics,
-                                bool has_missing_content);
+  void DidSubmitCompositorFrame(SubmitInfo& submit_info);
   // The LayerTreeFrameSink acks when it is ready for a new frame which
   // should result in this getting called to unblock the next draw.
   void DidReceiveCompositorFrameAck();

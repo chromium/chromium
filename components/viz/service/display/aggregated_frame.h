@@ -31,11 +31,6 @@ class VIZ_SERVICE_EXPORT AggregatedFrame {
   void AsValueInto(base::trace_event::TracedValue* value) const;
   std::string ToString() const;
 
-  // The visible height of the top-controls. If the value is not set, then the
-  // visible height should be the same as in the latest submitted frame with a
-  // value set.
-  std::optional<float> top_controls_visible_height;
-
   // A list of latency info used for this frame.
   std::vector<ui::LatencyInfo> latency_info;
 

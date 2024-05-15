@@ -57,16 +57,14 @@ scoped_refptr<base::SequencedTaskRunner> CreateLatencyTracerRunner() {
 
 void ReportLatency(const gfx::SwapTimings& timings,
                    ui::LatencyTracker* tracker,
-                   std::vector<ui::LatencyInfo> latency_info,
-                   bool top_controls_visible_height_changed) {
+                   std::vector<ui::LatencyInfo> latency_info) {
   for (auto& latency : latency_info) {
     latency.AddLatencyNumberWithTimestamp(
         ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, timings.swap_start);
     latency.AddLatencyNumberWithTimestamp(
         ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, timings.swap_end);
   }
-  tracker->OnGpuSwapBuffersCompleted(std::move(latency_info),
-                                     top_controls_visible_height_changed);
+  tracker->OnGpuSwapBuffersCompleted(std::move(latency_info));
 }
 
 }  // namespace
@@ -257,12 +255,10 @@ void SkiaOutputDevice::FinishSwapBuffers(
     latency_tracker_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&ReportLatency, params.swap_response.timings,
-                       latency_tracker_.get(), std::move(frame.latency_info),
-                       frame.top_controls_visible_height_changed));
+                       latency_tracker_.get(), std::move(frame.latency_info)));
   } else {
     ReportLatency(params.swap_response.timings, latency_tracker_.get(),
-                  std::move(frame.latency_info),
-                  frame.top_controls_visible_height_changed);
+                  std::move(frame.latency_info));
   }
 
   pending_swaps_.pop();

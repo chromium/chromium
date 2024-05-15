@@ -167,8 +167,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Called when the page has just entered BFCache.
   void DidEnterBackForwardCache();
 
-  void SetTopControlsVisibleHeight(float height);
-
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
 
   viz::SurfaceId GetCurrentSurfaceIdForTesting() const;
@@ -215,8 +213,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
   raw_ptr<WindowAndroidCompositor> registered_parent_compositor_ = nullptr;
   raw_ptr<Client> client_;
-
-  float top_controls_visible_height_ = 0.f;
 
   scoped_refptr<cc::slim::SurfaceLayer> content_layer_;
 

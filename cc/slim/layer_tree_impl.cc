@@ -183,15 +183,6 @@ void LayerTreeImpl::ReleaseDeferBeginFrame() {
   UpdateNeedsBeginFrame();
 }
 
-void LayerTreeImpl::UpdateTopControlsVisibleHeight(float height) {
-  if (top_controls_visible_height_ &&
-      top_controls_visible_height_.value() == height) {
-    return;
-  }
-  top_controls_visible_height_ = height;
-  SetNeedsDraw();
-}
-
 void LayerTreeImpl::SetNeedsAnimate() {
   SetClientNeedsOneBeginFrame();
 }
@@ -489,8 +480,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
   for (const auto& [range, range_counts] : referenced_surfaces_) {
     out_frame.metadata.referenced_surfaces.emplace_back(range);
   }
-  out_frame.metadata.top_controls_visible_height = top_controls_visible_height_;
-  top_controls_visible_height_.reset();
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
   FrameData frame_data(out_frame, out_hit_test_region_list.regions);

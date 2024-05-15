@@ -253,12 +253,9 @@ void CompositorFrameReportingController::DidActivate() {
 }
 
 void CompositorFrameReportingController::DidSubmitCompositorFrame(
-    uint32_t frame_token,
-    base::TimeTicks submit_time,
+    SubmitInfo& submit_info,
     const viz::BeginFrameId& current_frame_id,
-    const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics,
-    bool has_missing_content) {
+    const viz::BeginFrameId& last_activated_frame_id) {
   bool is_activated_frame_new =
       (last_activated_frame_id != last_submitted_frame_id_);
 
@@ -326,7 +323,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   }
 
 #if DCHECK_IS_ON()
-  if (!events_metrics.main_event_metrics.empty()) {
+  if (!submit_info.events_metrics.main_event_metrics.empty()) {
     DCHECK(main_reporter);
   }
 
@@ -341,29 +338,33 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   // When |impl_reporter| does not exist, but there are still impl-side metrics,
   // merge the main and impl metrics and pass the combined vector into
   // |main_reporter|.
-  if (!impl_reporter && !events_metrics.impl_event_metrics.empty()) {
+  if (!impl_reporter &&
+      !submit_info.events_metrics.impl_event_metrics.empty()) {
     DCHECK(main_reporter);
     // If there are impl events, there must be a reporter with
     // |current_frame_id|.
     DCHECK_EQ(main_reporter->frame_id(), current_frame_id);
-    events_metrics.main_event_metrics.reserve(
-        events_metrics.main_event_metrics.size() +
-        events_metrics.impl_event_metrics.size());
-    events_metrics.main_event_metrics.insert(
-        events_metrics.main_event_metrics.end(),
-        std::make_move_iterator(events_metrics.impl_event_metrics.begin()),
-        std::make_move_iterator(events_metrics.impl_event_metrics.end()));
+    submit_info.events_metrics.main_event_metrics.reserve(
+        submit_info.events_metrics.main_event_metrics.size() +
+        submit_info.events_metrics.impl_event_metrics.size());
+    submit_info.events_metrics.main_event_metrics.insert(
+        submit_info.events_metrics.main_event_metrics.end(),
+        std::make_move_iterator(
+            submit_info.events_metrics.impl_event_metrics.begin()),
+        std::make_move_iterator(
+            submit_info.events_metrics.impl_event_metrics.end()));
   }
 
   if (main_reporter) {
     main_reporter->StartStage(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
-        submit_time);
+        submit_info.time);
     main_reporter->AddEventsMetrics(
-        std::move(events_metrics.main_event_metrics));
-    main_reporter->set_has_missing_content(has_missing_content);
+        std::move(submit_info.events_metrics.main_event_metrics));
+    main_reporter->set_has_missing_content(submit_info.has_missing_content);
     main_reporter->set_reporter_type_to_main();
-    submitted_compositor_frames_.emplace_back(frame_token,
+    main_reporter->set_top_controls_moved(submit_info.top_controls_moved);
+    submitted_compositor_frames_.emplace_back(submit_info.frame_token,
                                               std::move(main_reporter));
   }
 
@@ -371,14 +372,15 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->EnableCompositorOnlyReporting();
     impl_reporter->StartStage(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
-        submit_time);
+        submit_info.time);
     impl_reporter->AddEventsMetrics(
-        std::move(events_metrics.impl_event_metrics));
-    impl_reporter->set_has_missing_content(has_missing_content);
+        std::move(submit_info.events_metrics.impl_event_metrics));
+    impl_reporter->set_has_missing_content(submit_info.has_missing_content);
     impl_reporter->set_is_accompanied_by_main_thread_update(
         is_activated_frame_new);
     impl_reporter->set_reporter_type_to_impl();
-    submitted_compositor_frames_.emplace_back(frame_token,
+    impl_reporter->set_top_controls_moved(submit_info.top_controls_moved);
+    submitted_compositor_frames_.emplace_back(submit_info.frame_token,
                                               std::move(impl_reporter));
   }
 }

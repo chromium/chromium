@@ -1971,11 +1971,6 @@ void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                 metadata.local_surface_id);
 
-  if (delegated_frame_host_) {
-    delegated_frame_host_->SetTopControlsVisibleHeight(
-        metadata.top_controls_height * metadata.top_controls_shown_ratio);
-  }
-
   if (using_browser_compositor_) {
     ui::WindowAndroid* window = view_.GetWindowAndroid();
     if (!window) {

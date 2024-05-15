@@ -197,8 +197,7 @@ LatencyTracker::LatencyTracker() = default;
 LatencyTracker::~LatencyTracker() = default;
 
 void LatencyTracker::OnGpuSwapBuffersCompleted(
-    std::vector<ui::LatencyInfo> latency_info,
-    bool top_controls_visible_height_changed) {
+    std::vector<ui::LatencyInfo> latency_info) {
   // ReportJankyFrame has to process latency infos in increasing trace_id
   // order, so it can compare the current frame to previous one. Therefore, the
   // vector is sorted here before passing it down the call chain.
@@ -233,8 +232,7 @@ void LatencyTracker::OnGpuSwapBuffersCompleted(
         source_event_type == ui::SourceEventType::TOUCHPAD ||
         source_event_type == ui::SourceEventType::SCROLLBAR) {
       ComputeEndToEndLatencyHistograms(gpu_swap_begin_timestamp,
-                                       gpu_swap_end_timestamp, latency,
-                                       top_controls_visible_height_changed);
+                                       gpu_swap_end_timestamp, latency);
     }
   }
 }
@@ -391,8 +389,7 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
 void LatencyTracker::ComputeEndToEndLatencyHistograms(
     base::TimeTicks gpu_swap_begin_timestamp,
     base::TimeTicks gpu_swap_end_timestamp,
-    const ui::LatencyInfo& latency,
-    bool top_controls_visible_height_changed) {
+    const ui::LatencyInfo& latency) {
   DCHECK_AND_RETURN_ON_FAIL(!latency.coalesced());
 
   base::TimeTicks original_timestamp;
@@ -447,20 +444,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
       // swap. First scroll events are excluded from this metric.
       UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
           "TimeToScrollUpdateSwapBegin4", scroll_type, input_modality,
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    }
-
-    // Also report the latency metric separately for the scrolls that caused the
-    // top-controls to scroll and the ones that didn't.
-    if (top_controls_visible_height_changed) {
-      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
-          "TimeToScrollUpdateSwapBegin4.TopControlsMoved", scroll_type,
-          input_modality,
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    } else {
-      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
-          "TimeToScrollUpdateSwapBegin4.NoTopControlsMoved", scroll_type,
-          input_modality,
           ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
     }
 

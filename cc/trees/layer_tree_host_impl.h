@@ -479,10 +479,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // If there is no damage, returns `std::nullopt`; otherwise, returns
   // information about the submitted frame including submit time and a set of
   // `EventMetrics` for the frame.
-  struct SubmitInfo {
-    base::TimeTicks time;
-    EventMetricsSet events_metrics;
-  };
   virtual std::optional<SubmitInfo> DrawLayers(FrameData* frame);
 
   // Must be called if and only if PrepareToDraw was called.
@@ -1328,6 +1324,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;
+
+  float top_controls_visible_height_ = 0.f;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

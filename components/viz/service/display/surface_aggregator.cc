@@ -2327,9 +2327,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
       });
 
   AggregatedFrame frame;
-  frame.top_controls_visible_height =
-      root_surface_frame.metadata.top_controls_visible_height;
-
   dest_pass_list_ = &frame.render_pass_list;
   surface_damage_rect_list_ = &frame.surface_damage_rect_list_;
 

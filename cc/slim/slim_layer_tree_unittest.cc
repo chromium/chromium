@@ -98,8 +98,6 @@ TEST_F(SlimLayerTreeTest, SmokeTest) {
 
   layer_tree_->set_display_transform_hint(
       gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL);
-
-  layer_tree_->UpdateTopControlsVisibleHeight(20.0f);
 }
 
 TEST_F(SlimLayerTreeTest, InitAndReleaseFrameSink) {

@@ -384,6 +384,10 @@ class CC_EXPORT CompositorFrameReporter {
     has_missing_content_ = has_missing_content;
   }
 
+  void set_top_controls_moved(bool top_controls_moved) {
+    top_controls_moved_ = top_controls_moved;
+  }
+
   void SetPartialUpdateDecider(CompositorFrameReporter* decider);
 
   size_t partial_update_dependents_size_for_testing() const {
@@ -575,6 +579,8 @@ class CC_EXPORT CompositorFrameReporter {
   // Indicates whether the submitted frame had any missing content (i.e. content
   // with checkerboarding).
   bool has_missing_content_ = false;
+
+  bool top_controls_moved_ = false;
 
   // Indicates whether the frame is forked (i.e. a PipelineReporter event starts
   // at the same frame sequence as another PipelineReporter).

@@ -26,9 +26,7 @@ class LatencyTracker {
   // Terminates latency tracking for events that triggered rendering, also
   // performing relevant UMA latency reporting.
   // Called when GPU buffers swap completes.
-  void OnGpuSwapBuffersCompleted(
-      std::vector<LatencyInfo> latency_info,
-      bool top_controls_visible_height_changed = false);
+  void OnGpuSwapBuffersCompleted(std::vector<LatencyInfo> latency_info);
 
  private:
   enum class InputMetricEvent {
@@ -93,8 +91,7 @@ class LatencyTracker {
   void ComputeEndToEndLatencyHistograms(
       base::TimeTicks gpu_swap_begin_timestamp,
       base::TimeTicks gpu_swap_end_timestamp,
-      const LatencyInfo& latency,
-      bool top_controls_visible_height_changed);
+      const LatencyInfo& latency);
 
   void EmitLatencyHistograms(base::TimeTicks gpu_swap_begin_timestamp,
                              base::TimeTicks gpu_swap_end_timestamp,

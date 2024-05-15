@@ -540,16 +540,6 @@ void DelegatedFrameHostAndroid::DidEnterBackForwardCache() {
   }
 }
 
-void DelegatedFrameHostAndroid::SetTopControlsVisibleHeight(float height) {
-  if (top_controls_visible_height_ == height)
-    return;
-  if (!content_layer_ || !content_layer_->layer_tree()) {
-    return;
-  }
-  top_controls_visible_height_ = height;
-  content_layer_->layer_tree()->UpdateTopControlsVisibleHeight(height);
-}
-
 void DelegatedFrameHostAndroid::
     PostRequestSuccessfulPresentationTimeForNextFrame(
         blink::mojom::RecordContentToVisibleTimeRequestPtr

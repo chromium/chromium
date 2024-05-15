@@ -70,7 +70,6 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   void RequestCopyOfOutput(
       std::unique_ptr<viz::CopyOutputRequest> request) override;
   base::OnceClosure DeferBeginFrame() override;
-  void UpdateTopControlsVisibleHeight(float height) override;
   void SetNeedsAnimate() override;
   void MaybeCompositeNow() override;
   const scoped_refptr<Layer>& root() const override;
@@ -211,7 +210,6 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   gfx::Rect device_viewport_rect_;
   float device_scale_factor_ = 1.0f;
   SkColor4f background_color_ = SkColors::kWhite;
-  std::optional<float> top_controls_visible_height_;
   SurfaceRangesAndCounts referenced_surfaces_;
   viz::FrameTokenGenerator next_frame_token_;
   gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;

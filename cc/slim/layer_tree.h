@@ -146,9 +146,6 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
   // moved out of slim.
   virtual void MaybeCompositeNow() = 0;
 
-  // Set the top controls visual height for the next frame submitted.
-  virtual void UpdateTopControlsVisibleHeight(float height) = 0;
-
   virtual std::unique_ptr<ScopedKeepSurfaceAlive> CreateScopedKeepSurfaceAlive(
       const viz::SurfaceId& surface_id) = 0;
 

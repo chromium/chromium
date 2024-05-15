@@ -2537,8 +2537,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   return metadata;
 }
 
-std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
-    FrameData* frame) {
+std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
   ResetRequiresHighResToDraw();
@@ -2567,6 +2566,13 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
   auto compositor_frame = GenerateCompositorFrame(frame);
   const auto frame_token = compositor_frame.metadata.frame_token;
   frame->frame_token = frame_token;
+  bool top_controls_moved = false;
+  float current_top_controls =
+      compositor_frame.metadata.top_controls_visible_height.value_or(0.f);
+  if (current_top_controls != top_controls_visible_height_) {
+    top_controls_moved = true;
+    top_controls_visible_height_ = current_top_controls;
+  }
 #if DCHECK_IS_ON()
   const viz::BeginFrameId begin_frame_ack_frame_id =
       compositor_frame.metadata.begin_frame_ack.frame_id;
@@ -2655,7 +2661,8 @@ std::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
   }
 
-  return SubmitInfo{submit_time, std::move(events_metrics)};
+  return SubmitInfo{frame_token, submit_time, frame->has_missing_content,
+                    top_controls_moved, std::move(events_metrics)};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(

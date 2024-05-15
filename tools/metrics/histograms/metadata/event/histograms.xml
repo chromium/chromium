@@ -1184,6 +1184,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="EventLatency.{ScrollEventType}.{TopControls}"
+    units="microseconds" expires_after="2024-09-22">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks total latency of {ScrollEventType}, from when the user input causing
+    the event is performed generated until the frame caused by the event is
+    submitted by the GPU service and presented successfully on the screen.
+
+    This is reported for {TopControls}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="ScrollEventType" variants="ScrollEventType"/>
+  <token key="TopControls">
+    <variant name="TopControlsDidNotMove"
+        summary="when Android Top Controls did not move during the scroll.
+                 This is subsampled at a rate of 1:1000 as there is
+                 significantly higher volume of these scrolls."/>
+    <variant name="TopControlsMoved"
+        summary="when the Android Top Controls moved during the scroll.
+                 Reported for all such scrolls."/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

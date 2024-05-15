@@ -923,13 +923,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     swap_frame_data.seq =
         current_surface_id_.local_surface_id().parent_sequence_number();
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;
-    if (frame.top_controls_visible_height.has_value()) {
-      swap_frame_data.top_controls_visible_height_changed =
-          last_top_controls_visible_height_ !=
-          *frame.top_controls_visible_height;
-      last_top_controls_visible_height_ = *frame.top_controls_visible_height;
-    }
-
     swap_frame_data.swap_trace_id = swapped_trace_id_;
 
     TRACE_EVENT(

@@ -42,7 +42,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   std::vector<gfx::Rect> content_bounds;
   std::vector<ui::LatencyInfo> latency_info;
   std::optional<int64_t> choreographer_vsync_id;
-  bool top_controls_visible_height_changed = false;
   // FrameData for GLSurface.
   gfx::FrameData data;
   // Metadata containing information to draw a delegated ink trail using
