@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.url.GURL;
 
 /** Sends notification for information update of Data Sharing service to user. */
 public class DataSharingNotificationManager {
@@ -39,15 +40,26 @@ public class DataSharingNotificationManager {
             // Launch tab switcher view.
             // TODO(b/329155961): Introduce a custom action for all notifications launching from
             // Data Sharing Service.
-            Intent launch_intent = new Intent(Intent.ACTION_VIEW);
-            launch_intent.addCategory(Intent.CATEGORY_DEFAULT);
-            launch_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            launch_intent.setClassName(
-                    context, BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME);
-            launch_intent.putExtra(DATA_SHARING_EXTRA, true);
-            IntentUtils.addTrustedIntentExtras(launch_intent);
-            IntentUtils.safeStartActivity(context, launch_intent);
+            Intent invitation_intent = createInvitationIntent(context, GURL.emptyGURL());
+            IntentUtils.safeStartActivity(context, invitation_intent);
         }
+    }
+
+    /**
+     * Create an intent to launch the invitation flow.
+     *
+     * @param context The {@link Context} to use.
+     * @param url The URL associated with the invitation.
+     * @return The {@link Intent} to launch the invitation flow.
+     */
+    public static Intent createInvitationIntent(Context context, GURL url) {
+        Intent launch_intent = new Intent(Intent.ACTION_VIEW);
+        launch_intent.addCategory(Intent.CATEGORY_DEFAULT);
+        launch_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        launch_intent.setClassName(context, BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME);
+        launch_intent.putExtra(DATA_SHARING_EXTRA, url.getSpec());
+        IntentUtils.addTrustedIntentExtras(launch_intent);
+        return launch_intent;
     }
 
     @VisibleForTesting

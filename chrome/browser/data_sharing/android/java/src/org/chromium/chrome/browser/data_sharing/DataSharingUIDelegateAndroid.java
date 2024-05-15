@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,8 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
@@ -22,12 +25,16 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
+/**
+ * Implementation of {@link DataSharingUIDelegate} that implements some methods while delegating
+ * some to the internal delegate.
+ */
 class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
 
-    private final DataSharingUIDelegate mDelegate;
+    private final DataSharingUIDelegate mInternalDelegate;
 
     DataSharingUIDelegateAndroid(Profile profile) {
-        mDelegate = new DataSharingUIDelegateImpl(profile);
+        mInternalDelegate = new DataSharingUIDelegateImpl(profile);
     }
 
     @CalledByNative
@@ -41,7 +48,7 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
             MemberPickerConfig config) {
-        mDelegate.showMemberPicker(activity, view, memberResult, config);
+        mInternalDelegate.showMemberPicker(activity, view, memberResult, config);
     }
 
     @Override
@@ -50,7 +57,7 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
             MemberPickerConfig config) {
-        mDelegate.showFullPicker(activity, view, memberResult, config);
+        mInternalDelegate.showFullPicker(activity, view, memberResult, config);
     }
 
     @Override
@@ -60,7 +67,7 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             List<String> emails,
             Callback<Boolean> success,
             AvatarConfig config) {
-        mDelegate.showAvatars(context, views, emails, success, config);
+        mInternalDelegate.showAvatars(context, views, emails, success, config);
     }
 
     @Override
@@ -70,12 +77,15 @@ class DataSharingUIDelegateAndroid implements DataSharingUIDelegate {
             String groupId,
             String tokenSecret,
             GroupMemberConfig config) {
-        mDelegate.createGroupMemberListView(activity, view, groupId, tokenSecret, config);
+        mInternalDelegate.createGroupMemberListView(activity, view, groupId, tokenSecret, config);
     }
 
     @Override
     @CalledByNative
     public void handleShareURLIntercepted(GURL url) {
-        // TODO(haileywang): Implement redirecting to the recipient/inviter flow.
+        Context context = ContextUtils.getApplicationContext();
+        Intent invitation_intent =
+                DataSharingNotificationManager.createInvitationIntent(context, url);
+        IntentUtils.safeStartActivity(context, invitation_intent);
     }
 }

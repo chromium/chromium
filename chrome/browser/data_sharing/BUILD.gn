@@ -17,6 +17,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":java",
       ":ui_delegate_java",
       "//base:base_java",
       "//build/android:build_java",
@@ -65,6 +66,7 @@ if (is_android) {
       "//third_party/android_sdk:android_window_extensions_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_no_recycler_view_java",
+      "//url:url_java",
     ]
 
     public_deps = [ ":ui_delegate_java" ]
