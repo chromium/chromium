@@ -14744,8 +14744,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240502",
+                    "name": "Both",
                     "enable_features": [
+                        "IsTrimMemoryBackgroundCritical",
                         "OnPreFreezeMemoryTrim"
                     ]
                 }
