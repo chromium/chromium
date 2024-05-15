@@ -28,6 +28,7 @@
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -521,9 +522,8 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
   std::optional<FilteringSubdomainConflictType> conflict_type = std::nullopt;
 
   // Records the conflict metrics when the current scope exits.
-  base::ScopedClosureRunner histogram_recorder(base::BindOnce(
-      [](const FilteringBehavior& result,
-         const std::optional<FilteringSubdomainConflictType>& conflict_type) {
+  absl::Cleanup histogram_recorder =
+      [&result, &conflict_type] {
         if (result != FilteringBehavior::kInvalid) {
           // Record the potential conflict and its type.
           bool conflict = conflict_type.has_value();
@@ -535,8 +535,7 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(const GURL& url) {
                 conflict_type.value());
           }
         }
-      },
-      std::cref(result), std::cref(conflict_type)));
+      };
 
   // Check manual overrides for the exact URL.
   auto url_it = url_map_.find(url_matcher::util::Normalize(url));
