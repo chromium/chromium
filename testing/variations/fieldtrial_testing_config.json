@@ -1225,21 +1225,6 @@
             ]
         }
     ],
-    "AuthenticateUsingNewWindowsHelloApi": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AuthenticateUsingNewWindowsHelloApi"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutoDisableAccessibility": [
         {
             "platforms": [

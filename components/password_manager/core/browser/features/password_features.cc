@@ -17,7 +17,7 @@ BASE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender,
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kAuthenticateUsingNewWindowsHelloApi,
              "AuthenticateUsingNewWindowsHelloApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kBiometricTouchToFill,
