@@ -591,6 +591,15 @@ void LensOverlayController::IssueTextSelectionRequestForTesting(
                             selection_end_index);
 }
 
+void LensOverlayController::IssueTranslateSelectionRequestForTesting(
+    const std::string& text_query,
+    const std::string& content_language,
+    int selection_start_index,
+    int selection_end_index) {
+  IssueTranslateSelectionRequest(text_query, content_language,
+                                 selection_start_index, selection_end_index);
+}
+
 content::WebContents*
 LensOverlayController::GetSidePanelWebContentsForTesting() {
   if (!results_side_panel_coordinator_) {
@@ -1182,6 +1191,29 @@ void LensOverlayController::IssueTextSelectionRequest(const std::string& query,
                                                       int selection_start_index,
                                                       int selection_end_index) {
   initialization_data_->additional_search_query_params_.clear();
+
+  IssueTextSelectionRequestInner(query, selection_start_index,
+                                 selection_end_index);
+}
+
+void LensOverlayController::IssueTranslateSelectionRequest(
+    const std::string& query,
+    const std::string& content_language,
+    int selection_start_index,
+    int selection_end_index) {
+  initialization_data_->additional_search_query_params_.clear();
+  lens::AppendTranslateParamsToMap(
+      initialization_data_->additional_search_query_params_, query,
+      content_language);
+
+  IssueTextSelectionRequestInner(query, selection_start_index,
+                                 selection_end_index);
+}
+
+void LensOverlayController::IssueTextSelectionRequestInner(
+    const std::string& query,
+    int selection_start_index,
+    int selection_end_index) {
   initialization_data_->selected_region_.reset();
   thumbnail_uri_.clear();
   initialization_data_->selected_text_ =

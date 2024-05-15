@@ -43,8 +43,6 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("initialToastMessage",
                                   IDS_LENS_OVERLAY_INITIAL_TOAST_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
-  html_source->AddLocalizedString("translateSuffix",
-                                  IDS_LENS_OVERLAY_TRANSLATE_SUFFIX);
 
   // Add finch flags
   html_source->AddString(

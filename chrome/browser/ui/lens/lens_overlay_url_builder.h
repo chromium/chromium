@@ -13,6 +13,10 @@
 #include "url/gurl.h"
 
 namespace lens {
+void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
+                                const std::string& query,
+                                const std::string& content_language);
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify);
 
 GURL AppendSearchContextParamToURL(const GURL& url_to_modify,

@@ -24,6 +24,7 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
       'feedbackRequestedByOverlay',
       'issueLensRequest',
       'issueTextSelectionRequest',
+      'issueTranslateSelectionRequest',
     ]);
   }
 
@@ -57,6 +58,10 @@ export class TestLensOverlayPageHandler extends TestBrowserProxy implements
 
   issueTextSelectionRequest(query: string) {
     this.methodCalled('issueTextSelectionRequest', query);
+  }
+
+  issueTranslateSelectionRequest(query: string) {
+    this.methodCalled('issueTranslateSelectionRequest', query);
   }
 }
 

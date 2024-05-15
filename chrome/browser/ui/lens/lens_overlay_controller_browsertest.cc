@@ -100,6 +100,24 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
+constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
+    "(function() {const root = "
+    "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot; "
+    "const iframeSrcLoaded = "
+    "  root.getElementById('results').src.includes('q=' + $1);"
+    "const tlitetxtPresent = "
+    "  root.getElementById('results').src.includes('tlitetxt=' + $1);"
+    "const ctxslTransPresent = "
+    "  root.getElementById('results').src.includes('ctxsl_trans=1');"
+    "const tliteslPresent = "
+    "  root.getElementById('results').src.includes('tlitesl=' + $2);"
+    "const tlitetlPresent = "
+    "  root.getElementById('results').src.includes('tlitetl=en-US');"
+    "const searchboxInputLoaded = "
+    "  root.getElementById('realbox').shadowRoot.getElementById('input').value "
+    "  === $1; return iframeSrcLoaded && tlitetxtPresent && ctxslTransPresent "
+    "&& tliteslPresent & tlitetlPresent && searchboxInputLoaded;})();";
+
 constexpr char kCheckSidePanelThumbnailShownScript[] =
     "(function() {const appRoot = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
@@ -977,6 +995,58 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
            content::EvalJs(controller->GetSidePanelWebContentsForTesting(),
                            content::JsReplace(
                                kCheckSidePanelResultsLoadedScript, text_query));
+  }));
+}
+
+// TODO(b/335028577): Test flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowSidePanelAfterTranslateSelectionRequest \
+  DISABLED_ShowSidePanelAfterTranslateSelectionRequest
+#else
+#define MAYBE_ShowSidePanelAfterTranslateSelectionRequest \
+  ShowSidePanelAfterTranslateSelectionRequest
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_ShowSidePanelAfterTranslateSelectionRequest) {
+  WaitForPaint();
+
+  std::string text_query = "Manzanas";
+  std::string content_language = "es";
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUI(InvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  controller->IssueTranslateSelectionRequestForTesting(
+      text_query, content_language,
+      /*selection_start_index=*/0,
+      /*selection_end_index=*/0);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* coordinator =
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults)));
+
+  // Verify that the side panel displays our query.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return true ==
+           content::EvalJs(
+               controller->GetSidePanelWebContentsForTesting(),
+               content::JsReplace(kCheckSidePanelTranslateResultsLoadedScript,
+                                  text_query, content_language));
   }));
 }
 

@@ -134,6 +134,8 @@ export class TextLayerElement extends PolymerElement {
   private lines: Line[];
   // The paragraphs received from OnTextReceived.
   private paragraphs: Paragraph[];
+  // The content language received from OnTextReceived.
+  private contentLanguage: string;
   private listenerIds: number[];
 
   override connectedCallback() {
@@ -216,6 +218,7 @@ export class TextLayerElement extends PolymerElement {
           composed: true,
           detail: {
             text: highlightedText,
+            contentLanguage: this.contentLanguage,
             left: containingRect.left,
             right: containingRect.right,
             top: containingRect.top,
@@ -253,6 +256,7 @@ export class TextLayerElement extends PolymerElement {
     this.paragraphNumbers = [];
     this.lines = [];
     this.paragraphs = [];
+    this.contentLanguage = text.contentLanguage ?? '';
     let lineNumber = 0;
     let paragraphNumber = 0;
 

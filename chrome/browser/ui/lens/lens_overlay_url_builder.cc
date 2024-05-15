@@ -49,6 +49,13 @@ inline constexpr char kLensModeParameterTextValue[] = "text";
 inline constexpr char kLensModeParameterUnimodalValue[] = "un";
 inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
 
+// Parameters to trigger the Translation One-box.
+inline constexpr char kCtxslTransParameterKey[] = "ctxsl_trans";
+inline constexpr char kCtxslTransParameterValue[] = "1";
+inline constexpr char kTliteSourceLanguageParameterKey[] = "tlitesl";
+inline constexpr char kTliteTargetLanguageParameterKey[] = "tlitetl";
+inline constexpr char kTliteQueryParameterKey[] = "tlitetxt";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -62,6 +69,16 @@ GURL AppendUrlParamsFromMap(
 }
 
 }  // namespace
+
+void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
+                                const std::string& query,
+                                const std::string& content_language) {
+  params[kCtxslTransParameterKey] = kCtxslTransParameterValue;
+  params[kTliteQueryParameterKey] = query;
+  params[kTliteSourceLanguageParameterKey] = content_language;
+  params[kTliteTargetLanguageParameterKey] =
+      g_browser_process->GetApplicationLocale();
+}
 
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   GURL new_url = url_to_modify;

@@ -345,6 +345,13 @@ class LensOverlayController : public LensSearchboxClient,
                                            int selection_start_index,
                                            int selection_end_index);
 
+  // Testing function to issue a translate request.
+  void IssueTranslateSelectionRequestForTesting(
+      const std::string& text_query,
+      const std::string& content_language,
+      int selection_start_index,
+      int selection_end_index);
+
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
@@ -570,8 +577,18 @@ class LensOverlayController : public LensSearchboxClient,
   void IssueTextSelectionRequest(const std::string& text_query,
                                  int selection_start_index,
                                  int selection_end_index) override;
+  void IssueTranslateSelectionRequest(const std::string& text_query,
+                                      const std::string& content_language,
+                                      int selection_start_index,
+                                      int selection_end_index) override;
   // lens::mojom::LensSidePanelPageHandler overrides.
   void CloseRequestedBySidePanelEscapeKeyPress() override;
+
+  // Performs shared logic for IssueTextSelectionRequest() and
+  // IssueTranslateSelectionRequest().
+  void IssueTextSelectionRequestInner(const std::string& text_query,
+                                      int selection_start_index,
+                                      int selection_end_index);
 
   // Closes search bubble.
   void CloseSearchBubble() override;

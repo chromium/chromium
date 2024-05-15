@@ -40,6 +40,8 @@ export interface CursorData {
 export interface TextContextMenuData {
   // The text selection that the context menu commands will act on.
   text: string;
+  // Dominant content language of the text. Language code is CLDR/BCP-47.
+  contentLanguage: string;
   // The left-most position of the selected text.
   left: number;
   // The right-most position of the selected text.
@@ -118,6 +120,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private contextMenuX: number;
   private contextMenuY: number;
   private highlightedText: string = '';
+  private contentLanguage: string = '';
   private textSelectionStartIndex: number = -1;
   private textSelectionEndIndex: number = -1;
   // The data URI of the current overlay screenshot.
@@ -171,6 +174,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
           this.contextMenuX = e.detail.left;
           this.contextMenuY = e.detail.bottom;
           this.highlightedText = e.detail.text;
+          this.contentLanguage = e.detail.contentLanguage;
           this.textSelectionStartIndex = e.detail.selectionStartIndex;
           this.textSelectionEndIndex = e.detail.selectionEndIndex;
         });
@@ -526,8 +530,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   }
 
   private handleTranslate() {
-    BrowserProxyImpl.getInstance().handler.issueTextSelectionRequest(
-        '"' + this.highlightedText + '" ' + this.i18n('translateSuffix'),
+    BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
+        this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
   }
 
