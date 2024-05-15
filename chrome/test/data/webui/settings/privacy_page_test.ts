@@ -87,6 +87,8 @@ suite('PrivacyPage', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
@@ -95,7 +97,6 @@ suite('PrivacyPage', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -306,9 +307,11 @@ suite(`PrivacySandbox`, function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -363,6 +366,7 @@ suite(`CertificateManagementV2`, function() {
     loadTimeData.overrideValues({
       enableCertManagementUIV2: false,
     });
+    resetRouterForTesting();
 
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -371,6 +375,7 @@ suite(`CertificateManagementV2`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -425,6 +430,7 @@ suite(`CookiesSubpage`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -466,9 +472,11 @@ suite(`TrackingProtectionSubpage`, function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -534,6 +542,7 @@ suite(`PrivacySandbox4EnabledButRestricted`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -577,6 +586,7 @@ suite(`PrivacySandbox4EnabledButRestrictedWithNotice`, function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -631,9 +641,12 @@ suite('PrivacyGuideRow', function() {
   setup(function() {
     loadTimeData.overrideValues({showPrivacyGuide: true});
     resetRouterForTesting();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -720,12 +733,14 @@ suite('PrivacyPageSound', function() {
 
   setup(() => {
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: true});
+    resetRouterForTesting();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SOUND);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     document.body.appendChild(page);
     return flushTasks();
@@ -776,6 +791,7 @@ suite('PrivacyPageSound', function() {
     assertFalse(getToggleElement().hidden);
 
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: false});
+    resetRouterForTesting();
 
     page.remove();
     page = document.createElement('settings-privacy-page');
@@ -818,9 +834,11 @@ suite('HappinessTrackingSurveys', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.setInstance(testHatsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -872,10 +890,11 @@ suite('NotificationPermissionReview', function() {
   }];
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(function() {
@@ -953,10 +972,11 @@ suite('NotificationPermissionReviewSafetyHubDisabled', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
     siteSettingsBrowserProxy = new TestSafetyHubBrowserProxy();
     SafetyHubBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(function() {
@@ -1035,6 +1055,8 @@ suite('EnableWebBluetoothNewPermissionsBackend', function() {
   });
 
   setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.setInstance(
         testClearBrowsingDataBrowserProxy);
@@ -1045,7 +1067,6 @@ suite('EnableWebBluetoothNewPermissionsBackend', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-privacy-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
