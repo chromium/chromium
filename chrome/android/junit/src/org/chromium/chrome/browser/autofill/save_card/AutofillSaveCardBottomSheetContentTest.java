@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,16 +29,31 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveCardBottomSheetContentTest {
+    private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING
+        = "robolectric.useRealScrolling";
+
     private View mContentView;
     private ScrollView mScrollView;
     private AutofillSaveCardBottomSheetContent mContent;
+    private boolean mIsRealScrollingEnabled;
 
     @Before
     public void setUp() {
+        mIsRealScrollingEnabled = Boolean.parseBoolean(
+            System.getProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING));
+        // Disable Robolectric's real scrolling for legacy compatibility.
+        // We need to remove it after migrating tests to real scrolling.
+        System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING, "false");
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mContentView = new View(activity);
         mScrollView = new ScrollView(activity);
         mContent = new AutofillSaveCardBottomSheetContent(mContentView, mScrollView);
+    }
+
+    @After
+    public void tearDown() {
+        System.setProperty(PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING,
+            mIsRealScrollingEnabled ? "true" : "false");
     }
 
     @Test

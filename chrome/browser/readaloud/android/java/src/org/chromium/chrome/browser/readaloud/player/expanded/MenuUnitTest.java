@@ -192,7 +192,7 @@ public class MenuUnitTest {
         AccessibilityDelegate accessibilityDelegate = layout.getAccessibilityDelegate();
         assertNotNull(accessibilityDelegate);
 
-        AccessibilityEvent event = new AccessibilityEvent();
+        AccessibilityEvent event = AccessibilityEvent.obtain();
         event.setAction(AccessibilityEvent.TYPE_VIEW_CLICKED);
 
         item.setValue(true);
@@ -205,7 +205,7 @@ public class MenuUnitTest {
 
         // tests if onInitializeAccessibilityNodeInfo is properly setting the event's checked state
         // to match the button's checked state and the same for checkable state
-        AccessibilityNodeInfo info = new AccessibilityNodeInfo();
+        AccessibilityNodeInfo info = AccessibilityNodeInfo.obtain();
 
         item.setValue(true);
         item.setItemEnabled(true);

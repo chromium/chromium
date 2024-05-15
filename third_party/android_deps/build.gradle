@@ -196,7 +196,7 @@ dependencies {
     androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
 
     // Use testCompile to have is_robolectric = true set on targets.
-    testCompile "org.robolectric:robolectric:4.11.1"
+    testCompile "org.robolectric:robolectric:4.12.1"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

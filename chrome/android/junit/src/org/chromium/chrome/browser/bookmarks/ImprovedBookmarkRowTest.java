@@ -72,7 +72,7 @@ public class ImprovedBookmarkRowTest {
     @Mock Runnable mOpenBookmarkCallback;
     @Mock LazyOneshotSupplier<Drawable> mMockDrawableSupplier;
 
-    @Spy ImageView mStartImageView;
+    ImageView mStartImageView;
     @Spy ViewPropertyAnimator mStartImageViewAnimator;
 
     @Captor ArgumentCaptor<Callback<Drawable>> mDrawableCallbackCaptor;
@@ -87,7 +87,6 @@ public class ImprovedBookmarkRowTest {
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-        doReturn(mStartImageViewAnimator).when(mStartImageView).animate();
         mStartImageView =
                 spy(
                         new ImageView(mActivity) {
