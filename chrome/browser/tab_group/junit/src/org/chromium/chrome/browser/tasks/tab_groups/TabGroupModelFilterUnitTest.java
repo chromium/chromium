@@ -1005,7 +1005,7 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, false);
 
-        verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab2, POSITION2);
+        verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(mTab2, POSITION3);
         verify(mTabGroupModelFilterObserver).didChangeGroupRootId(TAB2_ID, TAB3_ID);
         assertThat(mTab3.getRootId(), equalTo(TAB3_ID));
         assertThat(mTab2.getRootId(), equalTo(TAB2_ID));
