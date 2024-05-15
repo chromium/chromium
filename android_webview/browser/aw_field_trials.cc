@@ -18,6 +18,7 @@
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
@@ -81,11 +82,13 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       net::features::kThirdPartyStoragePartitioning);
 
-  // TODO(crbug.com/323992884): Re-enable support for partitioning Blob URLs
-  // once a fix is in place for WebViews becoming unresponsive when an attempt
-  // to register a Blob URL is made after WebView destruction.
-  aw_feature_overrides.DisableFeature(
-      net::features::kSupportPartitionedBlobUrl);
+  if (!base::FeatureList::IsEnabled(
+          mojo::features::kMojoFixAssociatedHandleLeak)) {
+    // Disable support for partitioning blob URLs if the bug fix that prevents
+    // blob URL creation from hanging under certain conditions isn't enabled.
+    aw_feature_overrides.DisableFeature(
+        net::features::kSupportPartitionedBlobUrl);
+  }
 
   // Disable the passthrough on WebView.
   aw_feature_overrides.DisableFeature(
