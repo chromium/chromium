@@ -337,6 +337,7 @@ enum {
   kAccessibilityReadAnythingLanguagesEnabled = 100278,
   kKeyboardDefaultSplitModifierSettings = 100279,
   kDisplayAmbientLightSensorLastEnabled = 100280,
+  kAccessibilityMainNodeAnnotationsEnabled = 100281,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1156,6 +1157,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
     {prefs::kAccessibilityPdfOcrAlwaysActive,
      {syncable_prefs_ids::kAccessibilityPdfOcrAlwaysActive, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kAccessibilityMainNodeAnnotationsEnabled,
+     {syncable_prefs_ids::kAccessibilityMainNodeAnnotationsEnabled,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kBrowserColorScheme,
      {syncable_prefs_ids::kBrowserColorScheme, syncer::PREFERENCES,

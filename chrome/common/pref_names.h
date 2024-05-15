@@ -1422,6 +1422,10 @@ inline constexpr char kOverscrollHistoryNavigationEnabled[] =
 inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =
     "settings.a11y.pdf_ocr_always_active";
 
+// Whether main node annotations are enabled.
+inline constexpr char kAccessibilityMainNodeAnnotationsEnabled[] =
+    "settings.a11y.enable_main_node_annotations";
+
 // Pref indicating the page colors option the user wants. Page colors is an
 // accessibility feature that simulates forced colors mode at the browser level.
 inline constexpr char kPageColors[] = "settings.a11y.page_colors";
