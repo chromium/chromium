@@ -114,7 +114,7 @@ void DocumentPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
 void DocumentPictureInPictureWindowControllerImpl::OnWindowDestroyed(
     bool should_pause_video) {
   // We instead watch for the WebContents.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 WebContents* DocumentPictureInPictureWindowControllerImpl::GetWebContents() {
@@ -255,7 +255,7 @@ void DocumentPictureInPictureWindowControllerImpl::ChildContentsObserver::
   // should only ever be one PiP window and the duplicated window bypasses some
   // of the controller logic here. This is a regression check for
   // https://crbug.com/1413919.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace content

@@ -106,7 +106,7 @@ ui::TextInputClient* TestRenderWidgetHostView::GetTextInputClient() {
 #if !BUILDFLAG(IS_IOS)
   return &text_input_client_;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }

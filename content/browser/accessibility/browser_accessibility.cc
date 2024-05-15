@@ -72,7 +72,7 @@ BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
 #if DCHECK_IS_ON()
   if (++browser_accessibility_count > kDumpBrowserAccessibilityLeakNumObjects &&
       !has_dumped_possible_leak) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     has_dumped_possible_leak = true;
   }
 #endif
@@ -901,7 +901,7 @@ BrowserAccessibility::GetUIADirectChildrenInRange(
     ui::AXPlatformNodeDelegate* end) {
   // This method is only called on Windows. Other platforms should not call it.
   // The BrowserAccessibilityWin subclass overrides this method.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {};
 }
 
@@ -1954,7 +1954,7 @@ void BrowserAccessibility::MergeSpellingAndGrammarIntoTextAttributes(
     int start_offset,
     ui::TextAttributeMap* text_attributes) {
   if (!text_attributes) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

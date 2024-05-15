@@ -355,7 +355,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStart(
   // FrameSinkVideoCaptureDevice does not use a
   // VideoCaptureDevice::Client. Instead, it provides frames to a
   // VideoFrameReceiver directly.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FrameSinkVideoCaptureDevice::RestartCapturerIfNeeded() {

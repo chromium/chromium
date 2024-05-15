@@ -168,7 +168,7 @@ bool Zygote::ProcessRequests() {
     }
   }
   // The loop should not be exited unless a request was successfully processed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -276,13 +276,13 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
         // HandleForkRequest (e.g., if ReadArgsAndFork fails during depickling)
         // could leave this command pending on the socket.
         LOG(ERROR) << "Unexpected real PID message from browser";
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       case kZygoteCommandReinitializeLogging:
         HandleReinitializeLoggingRequest(iter, std::move(fds));
         return false;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -302,7 +302,7 @@ void Zygote::HandleReapRequest(int fd, base::PickleIterator iter) {
   ZygoteProcessInfo child_info;
   if (!GetProcessInfo(child, &child_info)) {
     LOG(ERROR) << "Child not found!";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   child_info.time_of_reap_request = base::TimeTicks::Now();
@@ -330,7 +330,7 @@ bool Zygote::GetTerminationStatus(base::ProcessHandle real_pid,
   ZygoteProcessInfo child_info;
   if (!GetProcessInfo(real_pid, &child_info)) {
     LOG(ERROR) << "Zygote::GetTerminationStatus for unknown PID " << real_pid;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // We know about |real_pid|.
@@ -385,7 +385,7 @@ void Zygote::HandleGetTerminationStatus(int fd, base::PickleIterator iter) {
   if (!got_termination_status) {
     // Assume that if we can't find the child in the sandbox, then
     // it terminated normally.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
     exit_code = RESULT_CODE_NORMAL_EXIT;
   }
@@ -542,7 +542,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
   // Now set-up this process to be tracked by the Zygote.
   if (base::Contains(process_info_map_, real_pid)) {
     LOG(ERROR) << "Already tracking PID " << real_pid;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   process_info_map_[real_pid].internal_pid = pid;
   process_info_map_[real_pid].started_from_helper = helper;
@@ -713,7 +713,7 @@ void Zygote::HandleReinitializeLoggingRequest(base::PickleIterator iter,
   }
 #else
   // This method should only be used in ChromeOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

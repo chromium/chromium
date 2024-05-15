@@ -92,7 +92,7 @@ DevToolsNetworkResourceLoader::Create(
 }
 
 void DevToolsNetworkResourceLoader::OnRetry(base::OnceClosure start_retry) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DevToolsNetworkResourceLoader::DownloadAsStream() {

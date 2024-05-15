@@ -182,7 +182,7 @@ VideoCaptureController::BufferContext::CloneBufferHandle() {
     return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
         buffer_handle_->get_gpu_memory_buffer_handle().Clone());
   } else {
-    NOTREACHED() << "Unexpected video buffer handle type";
+    NOTREACHED_IN_MIGRATION() << "Unexpected video buffer handle type";
     return media::mojom::VideoBufferHandlePtr();
   }
 }
@@ -517,8 +517,8 @@ void VideoCaptureController::MakeClientUseBufferContext(
                       frame_context->buffer_context_id())) {
     client->buffers_in_use.push_back(frame_context->buffer_context_id());
   } else {
-    NOTREACHED() << "Unexpected duplicate buffer: "
-                 << frame_context->buffer_context_id();
+    NOTREACHED_IN_MIGRATION() << "Unexpected duplicate buffer: "
+                              << frame_context->buffer_context_id();
   }
   frame_context->IncreaseConsumerCount();
 }

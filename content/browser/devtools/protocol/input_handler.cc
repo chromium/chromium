@@ -1235,7 +1235,7 @@ void InputHandler::ImeSetComposition(
   // Currently no DevTools target for Prerender.
   if (host_->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   // Portal cannot be focused.
   if (web_contents_->IsPortal()) {
@@ -1854,7 +1854,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return action_params;

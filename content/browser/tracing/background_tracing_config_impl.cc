@@ -68,7 +68,7 @@ std::string BackgroundTracingConfigImpl::CategoryPresetToString(
     case BackgroundTracingConfigImpl::CUSTOM_TRACE_CONFIG:
       return kConfigCustomConfig;
     case BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -356,7 +356,7 @@ TraceConfig BackgroundTracingConfigImpl::GetConfigForCategoryPreset(
       return config;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return TraceConfig();
   }
 }

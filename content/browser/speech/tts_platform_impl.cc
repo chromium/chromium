@@ -30,7 +30,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
   // trying to do TTS on a platform where the content client implementation
   // is not provided, that's probably not intended. It's not important
   // if this is hit in something like a content-only unit test.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #else
   return TtsPlatformImpl::GetInstance();

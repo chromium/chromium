@@ -47,7 +47,7 @@ PreloadingPredictor GetPredictorForPreloadingTriggerType(
       // for embedder trigger code-path (while you might want to be specific
       // about the `PreloadingPredictor` more than just "embedder").
       // Revisit if needed.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   NOTREACHED_NORETURN();
 }

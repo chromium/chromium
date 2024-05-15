@@ -344,7 +344,7 @@ void WorkerScriptFetcher::CreateAndStart(
           static_cast<int>(blink::mojom::ResourceType::kSharedWorker);
       break;
     default:
-      NOTREACHED() << static_cast<int>(request_destination);
+      NOTREACHED_IN_MIGRATION() << static_cast<int>(request_destination);
       break;
   }
 
@@ -717,13 +717,13 @@ void WorkerScriptFetcher::OnReceiveRedirect(
 void WorkerScriptFetcher::OnUploadProgress(int64_t current_position,
                                            int64_t total_size,
                                            OnUploadProgressCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerScriptFetcher::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kWorkerScriptFetcher);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WorkerScriptFetcher::OnComplete(

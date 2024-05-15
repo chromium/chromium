@@ -139,7 +139,7 @@ void PepperAudioOutputHost::OnOpenComplete(
   base::SyncSocket scoped_socket(std::move(socket_handle));
 
   if (!open_context_.is_valid()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -18,7 +18,7 @@ bool PrefetchProbeResultIsSuccess(PrefetchProbeResult result) {
     case PrefetchProbeResult::kDNSProbeFailure:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

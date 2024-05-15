@@ -143,7 +143,7 @@ void BrowserPpapiHostImpl::AddInstance(
     instance_map_[instance] =
         std::make_unique<InstanceData>(renderer_instance_data);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -164,7 +164,7 @@ void BrowserPpapiHostImpl::DeleteInstance(PP_Instance instance) {
 
     instance_map_.erase(it);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

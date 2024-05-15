@@ -130,7 +130,7 @@ std::string_view ReportingDestinationAsString(
     case blink::FencedFrame::ReportingDestination::kDirectSeller:
       return "DirectSeller";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::string_view InvokingAPIAsString(
@@ -141,7 +141,7 @@ std::string_view InvokingAPIAsString(
     case PrivacySandboxInvokingAPI::kSharedStorage:
       return "Shared Storage";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::string AutomaticBeaconTypeAsString(

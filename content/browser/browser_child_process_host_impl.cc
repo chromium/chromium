@@ -115,7 +115,7 @@ memory_instrumentation::mojom::ProcessType GetCoordinatorClientProcessType(
     case PROCESS_TYPE_PPAPI_BROKER:
       return memory_instrumentation::mojom::ProcessType::PLUGIN;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return memory_instrumentation::mojom::ProcessType::OTHER;
   }
 }
@@ -529,7 +529,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
       case base::TERMINATION_STATUS_LAUNCH_FAILED: {
         // This is handled in OnProcessLaunchFailed.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
       case base::TERMINATION_STATUS_NORMAL_TERMINATION: {
@@ -547,7 +547,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
 #endif  // BUILDFLAG(IS_WIN)
       case base::TERMINATION_STATUS_MAX_ENUM: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
     }

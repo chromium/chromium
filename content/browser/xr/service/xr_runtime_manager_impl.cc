@@ -448,7 +448,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 #else
     // MakeXrCompatible is not yet supported on other platforms so
     // IsInitializedOnCompatibleAdapter should have returned true.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 

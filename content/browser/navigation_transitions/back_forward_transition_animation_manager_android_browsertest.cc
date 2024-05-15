@@ -154,7 +154,7 @@ SkColor4f GetScrimForGestureProgress(GestureType gesture) {
       break;
     case GestureType::kCancel:
     case GestureType::kInvoke:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return scrim;

@@ -161,7 +161,7 @@ void IndexedDBTombstoneSweeper::RecordUMAStats(
         uma_size_label.append("TimeoutReached");
         break;
       case StopReason::METADATA_ERROR:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case StopReason::FORCE_CLOSE:
         uma_count_label.append("ForceClose");
@@ -187,11 +187,11 @@ void IndexedDBTombstoneSweeper::RecordUMAStats(
         uma_size_label.append("Complete");
         break;
       case Status::SWEEPING:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // Some stats are only recorded for completed runs.

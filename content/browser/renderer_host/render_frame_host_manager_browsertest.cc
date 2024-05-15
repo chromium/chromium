@@ -5479,7 +5479,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange")
       return blink::mojom::SuddenTerminationDisablerType::
           kVisibilityChangeHandler;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
   }
 
@@ -5496,7 +5496,7 @@ class RenderFrameHostManagerUnloadBrowserTest
     if (event_name == "visibilitychange") {
       return {"window", "document"};
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return {};
   }
 

@@ -35,43 +35,43 @@ HRESULT MockDirectManipulationContent::GetContentTransform(float* transforms,
 
 // Other Overrides
 HRESULT MockDirectManipulationContent::GetContentRect(RECT* contentSize) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT
 MockDirectManipulationContent::SetContentRect(const RECT* contentSize) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetViewport(REFIID riid, void** object) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetTag(REFIID riid,
                                               void** object,
                                               UINT32* id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::SetTag(IUnknown* object, UINT32 id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetOutputTransform(float* matrix,
                                                           DWORD point_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT
 MockDirectManipulationContent::SyncContentTransform(const float* matrix,
                                                     DWORD point_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 

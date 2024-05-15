@@ -71,7 +71,7 @@ const CGFloat kToolBarHeight = 44;
       style = UIDatePickerStyleInline;
       break;
     default:
-      NOTREACHED() << "Invalid type for a DateTimeChooser.";
+      NOTREACHED_IN_MIGRATION() << "Invalid type for a DateTimeChooser.";
       break;
   }
 

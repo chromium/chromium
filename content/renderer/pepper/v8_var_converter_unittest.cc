@@ -61,7 +61,7 @@ namespace {
 
 void FromV8ValueComplete(const ScopedPPVar& scoped_var,
                          bool success) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 class MockResourceConverter : public content::ResourceConverter {

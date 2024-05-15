@@ -46,7 +46,7 @@ const char* TypeToString(blink::mojom::MediaStreamType type) {
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
       return "DISPLAY_AUDIO_CAPTURE";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }

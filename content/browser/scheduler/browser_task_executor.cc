@@ -52,7 +52,7 @@ scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForAndroidMainThread(
       traits = {base::TaskPriority::USER_BLOCKING};
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return g_browser_task_executor->GetUIThreadTaskRunner(traits);
 }
@@ -76,7 +76,7 @@ BaseBrowserTaskExecutor::GetTaskRunner(BrowserThread::ID identifier,
     case BrowserThread::IO:
       return browser_io_thread_handle_->GetBrowserTaskRunner(queue_type);
     case BrowserThread::ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -243,7 +243,7 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
       break;
     }
     case BrowserThread::ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   run_loop.Run();

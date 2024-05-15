@@ -61,7 +61,7 @@ bool MakeUITouchEventsFromWebTouchEvents(
       type = ui::ET_TOUCH_CANCELLED;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

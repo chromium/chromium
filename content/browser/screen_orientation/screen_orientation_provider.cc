@@ -217,7 +217,7 @@ ScreenOrientationProvider::GetNaturalLockType() const {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return device::mojom::ScreenOrientationLockType::DEFAULT;
 }
 
@@ -232,7 +232,7 @@ bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
 
   if (lock == device::mojom::ScreenOrientationLockType::NATURAL ||
       lock == device::mojom::ScreenOrientationLockType::DEFAULT) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return LockMatchesOrientation(lock, screen_info.orientation_type);
 }

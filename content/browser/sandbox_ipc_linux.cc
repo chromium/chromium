@@ -95,11 +95,11 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   if (len == -1) {
     // TODO: should send an error reply, or the sender might block forever.
     if (errno == EMSGSIZE) {
-      NOTREACHED() << "Sandbox host message is larger than "
-                      "kMaxSandboxIPCMessagePayloadSize";
+      NOTREACHED_IN_MIGRATION() << "Sandbox host message is larger than "
+                                   "kMaxSandboxIPCMessagePayloadSize";
     } else {
       PLOG(ERROR) << "Recvmsg failed";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return;
   }
@@ -124,7 +124,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
     HandleMakeSharedMemorySegment(fd, iter, fds);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SandboxIPCHandler::HandleMakeSharedMemorySegment(

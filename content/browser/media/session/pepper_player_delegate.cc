@@ -78,7 +78,7 @@ void PepperPlayerDelegate::OnEnterPictureInPicture(int player_id) {
 void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
                                             const std::string& raw_device_id) {
   // Pepper player cannot change audio sinks. Do nothing.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PepperPlayerDelegate::OnSetMute(int player_id, bool mute) {}

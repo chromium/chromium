@@ -366,16 +366,16 @@ bool TouchSelectionControllerClientAura::SupportsAnimation() const {
 
 bool TouchSelectionControllerClientAura::InternalClient::SupportsAnimation()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void TouchSelectionControllerClientAura::SetNeedsAnimate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::InternalClient::SetNeedsAnimate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::MoveCaret(
@@ -464,7 +464,7 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
 
 void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
@@ -474,7 +474,7 @@ void TouchSelectionControllerClientAura::OnDragUpdate(
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
@@ -490,7 +490,7 @@ void TouchSelectionControllerClientAura::DidScroll() {}
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -568,7 +568,7 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -140,7 +140,7 @@ void PepperPlatformVideoCapture::OnStateUpdate(blink::VideoCaptureState state) {
       handler_->OnError();
       break;
     default:
-      NOTREACHED() << "Unexpected state: " << state << ".";
+      NOTREACHED_IN_MIGRATION() << "Unexpected state: " << state << ".";
   }
 }
 

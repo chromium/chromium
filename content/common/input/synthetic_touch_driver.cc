@@ -165,7 +165,7 @@ int SyntheticTouchDriver::GetIndexFromMap(int value) const {
       return it->first;
     }
   }
-  NOTREACHED() << "Failed to find the value.";
+  NOTREACHED_IN_MIGRATION() << "Failed to find the value.";
   return -1;
 }
 

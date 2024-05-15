@@ -1872,7 +1872,7 @@ const char* AttestationConveyancePreferenceToString(
     case AttestationConveyancePreference::ENTERPRISE:
       return "enterprise";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -5105,7 +5105,7 @@ class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     virtual_device_factory_->SetCtap2Config(config);
@@ -5217,7 +5217,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
                       break;
 
                     default:
-                      NOTREACHED();
+                      NOTREACHED_IN_MIGRATION();
                   }
 
                   MakeCredentialResult result =
@@ -5247,7 +5247,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredential) {
                       break;
 
                     default:
-                      NOTREACHED();
+                      NOTREACHED_IN_MIGRATION();
                   }
                 }
               }
@@ -5627,7 +5627,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
                 break;
 
               default:
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
             }
 
             GetAssertionResult result = AuthenticatorGetAssertion(
@@ -5652,7 +5652,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertion) {
                 break;
 
               default:
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
             }
           }
         }
@@ -7613,7 +7613,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
 
         switch (test.resulting_policy) {
           case UNSPECIFIED:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
           case NONE:
             EXPECT_EQ(device::CredProtect::kUVOptional, result);
@@ -7634,7 +7634,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
         EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR, status);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

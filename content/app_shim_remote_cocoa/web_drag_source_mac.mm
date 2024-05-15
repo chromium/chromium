@@ -316,7 +316,7 @@
   }
 
   // Oops! Unknown drag pasteboard type.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return [NSData data];
 }
 

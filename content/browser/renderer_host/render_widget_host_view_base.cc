@@ -145,7 +145,8 @@ void RenderWidgetHostViewBase::SelectionBoundsChanged(
         this, anchor_rect, anchor_dir, focus_rect, focus_dir, bounding_box,
         is_anchor_first);
 #else
-  NOTREACHED() << "Selection bounds should be routed through the compositor.";
+  NOTREACHED_IN_MIGRATION()
+      << "Selection bounds should be routed through the compositor.";
 #endif
 }
 
@@ -202,7 +203,7 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     return;
 
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "RenderWidgetHostViewAndroid::CopyFromSurface calls "
          "DelegatedFrameHostAndroid::CopyFromCompositingSurface directly, "
          "and popups are not supported.";
@@ -462,18 +463,18 @@ void RenderWidgetHostViewBase::ForwardTouchpadZoomEventIfNecessary(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
 bool RenderWidgetHostViewBase::HasFallbackSurface() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 viz::SurfaceId RenderWidgetHostViewBase::GetFallbackSurfaceIdForTesting()
     const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return viz::SurfaceId();
 }
 
@@ -813,7 +814,7 @@ bool RenderWidgetHostViewBase::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

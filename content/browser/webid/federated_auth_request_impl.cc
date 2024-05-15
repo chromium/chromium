@@ -888,7 +888,7 @@ void FederatedAuthRequestImpl::RequestToken(
       // Intentional fall-through.
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -1361,7 +1361,8 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
   // trigger the callback.
   if (!disconnect_request_ &&
       status == blink::mojom::DisconnectStatus::kSuccess) {
-    NOTREACHED() << "The successful disconnect request is nowhere to be found";
+    NOTREACHED_IN_MIGRATION()
+        << "The successful disconnect request is nowhere to be found";
     return;
   }
   std::move(callback).Run(status);
@@ -2539,7 +2540,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
-      NOTREACHED() << "kEmptyListError is undefined for CompleteTokenRequest";
+      NOTREACHED_IN_MIGRATION()
+          << "kEmptyListError is undefined for CompleteTokenRequest";
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
@@ -2826,7 +2828,8 @@ void FederatedAuthRequestImpl::CompleteUserInfoRequest(
   // callback.
   if (it == user_info_requests_.end() &&
       status == blink::mojom::RequestUserInfoStatus::kSuccess) {
-    NOTREACHED() << "The successful user info request is nowhere to be found";
+    NOTREACHED_IN_MIGRATION()
+        << "The successful user info request is nowhere to be found";
     return;
   }
   std::move(callback).Run(status, std::move(user_info));

@@ -979,7 +979,8 @@ void BrowserAccessibilityManager::Scroll(const BrowserAccessibility& node,
     case ax::mojom::Action::kScrollRight:
       break;
     default:
-      NOTREACHED() << "Cannot call Scroll with action=" << scroll_action;
+      NOTREACHED_IN_MIGRATION()
+          << "Cannot call Scroll with action=" << scroll_action;
   }
   ui::AXActionData action_data;
   action_data.action = scroll_action;
@@ -1907,7 +1908,7 @@ BrowserAccessibilityManager::RetargetBrowserAccessibilityForEvents(
     // ClusterFuzz was able to come up with a reliably-reproducible test case
     // which can be seen in https://crbug.com/1362230. This needs to be
     // investigated further.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   return GetFromAXNode(RetargetForEvents(node->node(), event_type));

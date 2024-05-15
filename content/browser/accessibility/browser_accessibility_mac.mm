@@ -61,8 +61,9 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // could have never called this method without a platform node having been
   // created.
   if (!platform_node_) {
-    NOTREACHED() << "No platform node exists, so there should not be any "
-                    "native wrapper to replace.";
+    NOTREACHED_IN_MIGRATION()
+        << "No platform node exists, so there should not be any "
+           "native wrapper to replace.";
     return;
   }
 
@@ -74,7 +75,8 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // We should have never called this method if a native wrapper has not been
   // created, but keep a null check just in case.
   if (!old_native_obj) {
-    NOTREACHED() << "No native wrapper exists, so there is nothing to replace.";
+    NOTREACHED_IN_MIGRATION()
+        << "No native wrapper exists, so there is nothing to replace.";
     return;
   }
 

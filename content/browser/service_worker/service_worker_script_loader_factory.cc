@@ -128,7 +128,7 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
         case ServiceWorkerSingleScriptUpdateChecker::Result::kNotCompared:
           // This is invalid, as scripts in compared script info must have been
           // compared.
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return;
       }
     }

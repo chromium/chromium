@@ -62,7 +62,7 @@ PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
       return EmbeddedPermissionControlResult::kDismissed;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return EmbeddedPermissionControlResult::kNotSupported;
 }
 

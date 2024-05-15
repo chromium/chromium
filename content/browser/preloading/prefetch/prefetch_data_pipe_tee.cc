@@ -153,7 +153,7 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
         break;
       case State::kSizeExceededNoTarget:
       case State::kLoaded:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     source_->EndReadData(num_bytes);
@@ -171,7 +171,7 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
         break;
       case State::kSizeExceededNoTarget:
       case State::kLoaded:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else if (rv != MOJO_RESULT_SHOULD_WAIT) {
@@ -250,7 +250,7 @@ void PrefetchDataPipeTee::OnDataWritten(ProducerPair target,
       }
       break;
     case State::kSizeExceededNoTarget:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

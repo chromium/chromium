@@ -210,11 +210,11 @@ class ServiceWorkerRegistrationTest : public testing::Test {
 
     void OnRegistrationFailed(
         ServiceWorkerRegistration* registration) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     void OnUpdateFound(ServiceWorkerRegistration* registration) override {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     void Reset() {

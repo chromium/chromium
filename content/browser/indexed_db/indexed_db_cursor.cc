@@ -315,7 +315,7 @@ leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     size_estimate += cursor_->key().size_estimate();
     size_estimate += cursor_->primary_key().size_estimate();

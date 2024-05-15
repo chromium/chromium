@@ -767,7 +767,7 @@ WebTestBluetoothAdapterProvider::GetDisconnectingHealthThermometer(
         .WillByDefault(
             Invoke([](const std::vector<uint8_t>&, base::OnceClosure&,
                       BluetoothRemoteGattDescriptor::ErrorCallback&) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
 
     auto no_read_descriptor = std::make_unique<NiceMockBluetoothGattDescriptor>(
@@ -783,7 +783,7 @@ WebTestBluetoothAdapterProvider::GetDisconnectingHealthThermometer(
     ON_CALL(*no_read_descriptor, ReadRemoteDescriptor_(_))
         .WillByDefault(
             Invoke([](BluetoothRemoteGattDescriptor::ValueCallback&) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
 
     // Add it here with full permission as the blocklist should prevent us from
@@ -1501,7 +1501,7 @@ WebTestBluetoothAdapterProvider::GetBlocklistTestService(
   ON_CALL(*blocklist_exclude_reads_characteristic, ReadRemoteCharacteristic_(_))
       .WillByDefault(
           Invoke([](BluetoothRemoteGattCharacteristic::ValueCallback&) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }));
 
   // Write response.
@@ -1537,7 +1537,7 @@ WebTestBluetoothAdapterProvider::GetDeviceInformationService(
   ON_CALL(*serial_number_string, ReadRemoteCharacteristic_(_))
       .WillByDefault(
           Invoke([](BluetoothRemoteGattCharacteristic::ValueCallback&) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }));
 
   device_information->AddMockCharacteristic(std::move(serial_number_string));
@@ -1602,7 +1602,7 @@ WebTestBluetoothAdapterProvider::GetGenericAccessService(
             [](const std::vector<uint8_t>&,
                BluetoothRemoteGattCharacteristic::WriteType, base::OnceClosure&,
                BluetoothRemoteGattCharacteristic::ErrorCallback&) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
 
     // Crash if WriteRemoteCharacteristic called. Not using GoogleMock's Expect
@@ -1613,7 +1613,7 @@ WebTestBluetoothAdapterProvider::GetGenericAccessService(
         .WillByDefault(
             Invoke([](const std::vector<uint8_t>&, base::OnceClosure&,
                       BluetoothRemoteGattCharacteristic::ErrorCallback&) {
-              NOTREACHED();
+              NOTREACHED_IN_MIGRATION();
             }));
 
     generic_access->AddMockCharacteristic(std::move(peripheral_privacy_flag));

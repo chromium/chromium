@@ -151,7 +151,7 @@ static UMAGATTOperationOutcome TranslateCacheQueryOutcomeToGATTOperationOutcome(
     case CacheQueryOutcome::SUCCESS:
     case CacheQueryOutcome::BAD_RENDERER:
       // No need to record a success or renderer crash.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return UMAGATTOperationOutcome::kNotSupported;
     case CacheQueryOutcome::NO_DEVICE:
       return UMAGATTOperationOutcome::kNoDevice;

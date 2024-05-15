@@ -140,7 +140,7 @@ SignedExchangeLoader::~SignedExchangeLoader() = default;
 
 void SignedExchangeLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangeLoader::OnReceiveResponse(
@@ -149,7 +149,7 @@ void SignedExchangeLoader::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangeLoader::OnReceiveRedirect(
@@ -157,7 +157,7 @@ void SignedExchangeLoader::OnReceiveRedirect(
     network::mojom::URLResponseHeadPtr response_head) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangeLoader::OnUploadProgress(
@@ -166,7 +166,7 @@ void SignedExchangeLoader::OnUploadProgress(
     OnUploadProgressCallback ack_callback) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangeLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
@@ -190,7 +190,7 @@ void SignedExchangeLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangeLoader::SetPriority(net::RequestPriority priority,

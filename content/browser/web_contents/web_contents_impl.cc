@@ -961,7 +961,7 @@ WebContentsImpl::WebContentsTreeNode::DetachInnerWebContents(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -1103,7 +1103,7 @@ class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
             << "WebContents (for more info see https://crbug.com/1376879#c44); "
             << "creator = " << creator;
       } else {
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "BrowserContext is getting destroyed without first closing all "
             << "WebContents (for more info see https://crbug.com/1376879#c44); "
             << "creator = " << creator;
@@ -2532,11 +2532,11 @@ bool WebContentsImpl::IsCrashed() {
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return false;
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -3146,7 +3146,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
     prefs.autoplay_policy =
         blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   prefs.dont_send_key_events_to_javascript =
@@ -3667,7 +3667,7 @@ void WebContentsImpl::OnWebContentsDestroyed(WebContentsImpl* web_contents) {
     pending_contents_.erase(iter);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebContentsImpl::OnRenderWidgetHostDestroyed(
@@ -4480,7 +4480,7 @@ bool WebContentsImpl::RequestKeyboardLock(
                         "esc_key_locked", esc_key_locked);
   DCHECK(render_widget_host);
   if (WebContentsImpl::FromRenderWidgetHostImpl(render_widget_host) != this) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -6173,7 +6173,7 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   }
   if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
       this) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // KeyboardLock is only supported when called by the top-level browsing
@@ -6284,7 +6284,7 @@ void WebContentsImpl::Find(int request_id,
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Find");
   // Cowardly refuse to search for no text.
   if (search_text.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -9555,7 +9555,7 @@ gfx::Size WebContentsImpl::GetSize() {
   return view_android->bounds().size();
 #elif BUILDFLAG(IS_IOS)
   // TODO(crbug.com/40254930): Implement me.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Size();
 #endif
 }

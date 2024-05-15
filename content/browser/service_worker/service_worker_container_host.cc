@@ -54,7 +54,7 @@ ServiceWorkerMetrics::EventType PurposeToEventType(
     case blink::mojom::ControllerServiceWorkerPurpose::FETCH_SUB_RESOURCE:
       return ServiceWorkerMetrics::EventType::FETCH_SUB_RESOURCE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ServiceWorkerMetrics::EventType::UNKNOWN;
 }
 
@@ -1608,7 +1608,7 @@ void ServiceWorkerClient::TransitionToClientPhase(ClientPhase new_phase) {
       DCHECK_EQ(new_phase, ClientPhase::kExecutionReady);
       break;
     case ClientPhase::kExecutionReady:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   client_phase_ = new_phase;
@@ -2315,7 +2315,7 @@ void ServiceWorkerContainerHostForClient::DispatchExtendableMessageEvent(
 
     // Web workers don't yet have access to ServiceWorker objects, so they
     // can't postMessage to one (https://crbug.com/371690).
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

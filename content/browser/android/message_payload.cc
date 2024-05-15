@@ -109,7 +109,8 @@ blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
     case MessagePayloadType::kInvalid:
       break;
   }
-  NOTREACHED() << "Unsupported or invalid Java MessagePayload type.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported or invalid Java MessagePayload type.";
   return std::u16string();
 }
 

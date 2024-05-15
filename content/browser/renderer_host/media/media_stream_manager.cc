@@ -186,7 +186,7 @@ MediaStreamType ConvertToMediaStreamType(MediaDeviceType type) {
     case MediaDeviceType::kMediaVideoInput:
       return MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return MediaStreamType::NO_SERVICE;
@@ -201,7 +201,7 @@ const char* DeviceTypeToString(MediaDeviceType type) {
     case MediaDeviceType::kMediaVideoInput:
       return "DEVICE_VIDEO_INPUT";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -219,7 +219,7 @@ const char* RequestTypeToString(blink::MediaStreamRequestType type) {
     case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
       return "MEDIA_OPEN_DEVICE_PEPPER_ONLY";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -251,7 +251,7 @@ const char* StreamTypeToString(blink::mojom::MediaStreamType type) {
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
       return "NUM_MEDIA_TYPES";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -273,7 +273,7 @@ const char* RequestStateToString(MediaRequestState state) {
     case MEDIA_REQUEST_STATE_ERROR:
       return "STATE_ERROR";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -316,7 +316,7 @@ const char* RequestResultToString(
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       return "NUM_MEDIA_REQUEST_RESULTS";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "INVALID";
 }
@@ -837,7 +837,7 @@ class MediaStreamManager::DeviceRequest {
   // an internal callback in those subclasses).
   virtual void PanTiltZoomPermissionChecked(const std::string& label,
                                             bool pan_tilt_zoom_allowed) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // TODO(crbug.com/40247147): Combine FinalizeRequest and
@@ -848,7 +848,7 @@ class MediaStreamManager::DeviceRequest {
   virtual void FinalizeMediaAccessRequest(
       const std::string& label,
       const blink::mojom::StreamDevicesSet&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   virtual void FinalizeRequestFailed(MediaStreamRequestResult result) = 0;
@@ -2117,7 +2117,7 @@ void MediaStreamManager::OpenDevice(
     controls.video.stream_type = type;
     controls.video.device_ids.push_back(device_id);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   auto request = std::make_unique<OpenDeviceRequest>(
       render_frame_host_id, requester_id, page_request_id, controls,
@@ -2227,7 +2227,7 @@ bool MediaStreamManager::GetEligibleCaptureDeviceids(
                                   request->stream_controls().video, devices,
                                   device_ids);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -3203,7 +3203,7 @@ void MediaStreamManager::FinalizeRequestFailed(
       return;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -3396,7 +3396,7 @@ void MediaStreamManager::HandleRequestDone(const std::string& label,
       OnStreamStarted(label);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -3868,7 +3868,7 @@ void MediaStreamManager::NotifyDevicesChanged(
       media_observer->OnVideoCaptureDevicesChanged();
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

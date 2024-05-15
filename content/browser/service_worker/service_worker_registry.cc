@@ -1139,7 +1139,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   else if (version->status() == ServiceWorkerVersion::INSTALLED)
     registration->SetWaitingVersion(version);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   registration->EnableNavigationPreload(data.navigation_preload_state->enabled);
   registration->SetNavigationPreloadHeader(

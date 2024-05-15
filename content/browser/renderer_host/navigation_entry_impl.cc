@@ -150,7 +150,7 @@ void RecursivelyGenerateFrameState(
   blink::ExplodedPageState exploded_page_state;
   if (!blink::DecodePageState(node->frame_entry->page_state().ToEncodedData(),
                               &exploded_page_state)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   blink::ExplodedFrameState frame_state = exploded_page_state.top;

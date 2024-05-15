@@ -99,7 +99,7 @@ PpapiPluginProcessHost* PpapiPluginProcessHost::CreatePluginHost(
   if (plugin_host->Init(info))
     return plugin_host;
 
-  NOTREACHED();  // Init is not expected to fail.
+  NOTREACHED_IN_MIGRATION();  // Init is not expected to fail.
   return nullptr;
 }
 

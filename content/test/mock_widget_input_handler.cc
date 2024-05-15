@@ -114,7 +114,7 @@ void MockWidgetInputHandler::DispatchNonBlockingEvent(
 
 void MockWidgetInputHandler::WaitForInputProcessed(
     WaitForInputProcessedCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 MockWidgetInputHandler::MessageVector

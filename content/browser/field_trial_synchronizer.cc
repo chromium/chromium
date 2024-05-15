@@ -152,7 +152,7 @@ void FieldTrialSynchronizer::VariationIdsHeaderUpdated() {
 }
 
 FieldTrialSynchronizer::~FieldTrialSynchronizer() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace content

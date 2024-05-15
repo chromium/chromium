@@ -1200,7 +1200,7 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       break;
     default:
       required_state = blink::WebTouchPoint::State::kStateUndefined;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -2009,7 +2009,7 @@ void RenderWidgetHostViewAura::OnCaptureLost() {
 }
 
 void RenderWidgetHostViewAura::OnPaint(const ui::PaintContext& context) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
@@ -2237,7 +2237,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
   }
 
   if (window_ != lost_focus) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

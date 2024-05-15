@@ -51,7 +51,7 @@ DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
     return DevToolsURLLoaderInterceptor::kRequest;
   if (stage == Fetch::RequestStageEnum::Response)
     return DevToolsURLLoaderInterceptor::kResponse;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DevToolsURLLoaderInterceptor::kRequest;
 }
 

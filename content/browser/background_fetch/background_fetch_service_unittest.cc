@@ -683,7 +683,7 @@ TEST_F(BackgroundFetchServiceTest, FetchSuccessEventDispatch) {
         EXPECT_FALSE(ContainsHeader(fetches[i]->response->headers, "X-Cat"));
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     // TODO(peter): change-detector tests for unsupported properties.
@@ -787,7 +787,7 @@ TEST_F(BackgroundFetchServiceTest, FetchFailEventDispatch) {
         EXPECT_FALSE(fetches[i]->response);
         continue;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     EXPECT_TRUE(fetches[i]->response->headers.empty());

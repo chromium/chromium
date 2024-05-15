@@ -1189,7 +1189,7 @@ gfx::Size RenderWidgetHostViewAndroid::GetVisibleViewportSize() {
 }
 
 void RenderWidgetHostViewAndroid::SetInsets(const gfx::Insets& insets) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gfx::Size RenderWidgetHostViewAndroid::GetCompositorViewportPixelSize() {

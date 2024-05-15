@@ -406,7 +406,7 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
           browser_system_media_controls_->SetIsStopEnabled(should_enable);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -448,7 +448,7 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
           smc->SetIsStopEnabled(should_enable);
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

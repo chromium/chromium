@@ -100,7 +100,7 @@ const char* PushUnregistrationStatusToString(
     case blink::mojom::PushUnregistrationStatus::NETWORK_ERROR:
       return "Unregistration failed - could not connect to push server";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -591,7 +591,7 @@ void PushMessagingManager::DidUnregister(
                                   unregistration_status)) /* error_message */);
       break;
     case blink::mojom::PushUnregistrationStatus::NETWORK_ERROR:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   RecordUnregistrationStatus(unregistration_status);

@@ -64,12 +64,12 @@ blink::WebSandboxSupport* PpapiBlinkPlatformImpl::GetSandboxSupport() {
 
 uint64_t PpapiBlinkPlatformImpl::VisitedLinkHash(
     std::string_view canonical_url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool PpapiBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

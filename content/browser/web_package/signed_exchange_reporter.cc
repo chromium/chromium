@@ -88,7 +88,7 @@ const char* GetResultTypeString(SignedExchangeLoadResult result) {
     case SignedExchangeLoadResult::kPKPViolationError:
       return kSXGResultCertVerificationError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSXGResultFailed;
 }
 

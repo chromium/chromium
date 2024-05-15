@@ -1271,7 +1271,7 @@ class BackForwardCacheStillNavigatingBrowserTest
   std::string GetMainFramePath() {
     switch (GetParam()) {
       case TestFrameType::kMainFrame:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return "";
       case TestFrameType::kSubFrame:
         return "/back_forward_cache/controllable_subframe.html";

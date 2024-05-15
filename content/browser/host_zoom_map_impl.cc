@@ -644,10 +644,10 @@ JNI_HostZoomMapImpl_GetAllHostZoomLevels(
         break;
       }
       case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

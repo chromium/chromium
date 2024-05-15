@@ -688,7 +688,7 @@ IndexedDBConnectionCoordinator::ExecuteTask(bool has_connections) {
 
   switch (request->state()) {
     case RequestState::kNotStarted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return {ExecuteTaskResult::kError, leveldb::Status::OK()};
     case RequestState::kPendingNoConnections:
     case RequestState::kPendingLocks:
@@ -720,7 +720,7 @@ IndexedDBConnectionCoordinator::ExecuteTask(bool has_connections) {
       return {ExecuteTaskResult::kError, status};
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 size_t IndexedDBConnectionCoordinator::ActiveOpenDeleteCount() const {

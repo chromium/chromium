@@ -473,7 +473,7 @@ RendererEvictionReasonToNotRestoredReason(
       return BackForwardCacheMetrics::NotRestoredReason::
           kBroadcastChannelOnMessage;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return BackForwardCacheMetrics::NotRestoredReason::kUnknown;
 }
 
@@ -896,7 +896,7 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
           FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
   }
   // All cases should've been handled by the switch case above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
 }
 
@@ -1904,7 +1904,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
         // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a
         // new browser test for it.
         base::debug::DumpWithoutCrashing();
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -2631,7 +2631,7 @@ RenderFrameHostImpl::CreateSubresourceLoaderFactoriesForInitialEmptyDocument() {
     case RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted:
     case RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers:
       // A newly-created frame shouldn't be in any of the states above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case RenderFrameHostImpl::LifecycleStateImpl::kSpeculative:
       // No subresource requests should be initiated in the speculative frame.
@@ -2927,7 +2927,7 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
   // `this` is an `IPC::Listener`, but there is no path by which `this` would
   // receive associated interface requests through this method. Associated
   // interface requests come in through `GetAssociatedInterface()`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::string RenderFrameHostImpl::ToDebugString() {
@@ -5248,7 +5248,7 @@ RenderWidgetHostImpl* RenderFrameHostImpl::GetRenderWidgetHost() {
     frame = frame->GetParent();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -5355,7 +5355,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
   // If this RenderFrameHost is already pending deletion, it must have already
   // gone through this, therefore just return.
   if (IsPendingDeletion()) {
-    NOTREACHED() << "RFH should be in default state when calling Unload.";
+    NOTREACHED_IN_MIGRATION()
+        << "RFH should be in default state when calling Unload.";
     return;
   }
 
@@ -6524,7 +6525,7 @@ WebUI* RenderFrameHostImpl::GetWebUI() {
 void RenderFrameHostImpl::AllowBindings(int bindings_flags) {
   // Never grant any bindings to browser plugin guests.
   if (GetProcess()->IsForGuestsOnly()) {
-    NOTREACHED() << "Never grant bindings to a guest process.";
+    NOTREACHED_IN_MIGRATION() << "Never grant bindings to a guest process.";
     return;
   }
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::AllowBindings",
@@ -10873,9 +10874,9 @@ void RenderFrameHostImpl::CommitNavigation(
     // the key does not exceed the 40 character limit.
     SCOPED_CRASH_KEY_BOOL("CommitNavigation", "is_outermost_frame",
                           IsOutermostMainFrame());
-    NOTREACHED() << "Commiting in incompatible process for URL: "
-                 << process_lock.lock_url() << " lock vs "
-                 << common_params->url.DeprecatedGetOriginAsURL();
+    NOTREACHED_IN_MIGRATION() << "Commiting in incompatible process for URL: "
+                              << process_lock.lock_url() << " lock vs "
+                              << common_params->url.DeprecatedGetOriginAsURL();
     base::debug::DumpWithoutCrashing();
   }
 
@@ -11778,7 +11779,7 @@ RenderFrameHost::LifecycleState RenderFrameHostImpl::GetLifecycleStateFromImpl(
     case LifecycleStateImpl::kSpeculative:
       // TODO(crbug.com/40171294): Ensure that Speculative
       // RenderFrameHosts are not exposed to embedders.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return LifecycleState::kPendingCommit;
     case LifecycleStateImpl::kPendingCommit:
       return LifecycleState::kPendingCommit;
@@ -11842,7 +11843,8 @@ FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
     return parent_->child_at(i + relative_offset);
   }
 
-  NOTREACHED() << "FrameTreeNode not found in its parent's children.";
+  NOTREACHED_IN_MIGRATION()
+      << "FrameTreeNode not found in its parent's children.";
   return nullptr;
 }
 
@@ -16613,7 +16615,7 @@ void RenderFrameHostImpl::AssertFrameWasCommitted() const {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   base::debug::DumpWithoutCrashing();
 }
 

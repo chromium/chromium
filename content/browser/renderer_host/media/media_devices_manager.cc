@@ -80,7 +80,7 @@ const char* DeviceTypeToString(MediaDeviceType device_type) {
     case MediaDeviceType::kMediaAudioOuput:
       return "AUDIO_OUTPUT";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "UNKNOWN";
 }
@@ -1006,7 +1006,7 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
       EnumerateAudioDevices(false /* is_input */);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1198,7 +1198,7 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
           is_ready = false;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
   return is_ready;

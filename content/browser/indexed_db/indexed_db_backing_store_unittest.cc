@@ -95,12 +95,12 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   void RegisterFromDataItem(mojo::PendingReceiver<::blink::mojom::Blob> blob,
                             const std::string& uuid,
                             storage::mojom::BlobDataItemPtr item) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RegisterFromMemory(mojo::PendingReceiver<::blink::mojom::Blob> blob,
                           const std::string& uuid,
                           ::mojo_base::BigBuffer data) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void WriteBlobToFile(mojo::PendingRemote<::blink::mojom::Blob> blob,
                        const base::FilePath& path,
@@ -179,7 +179,7 @@ class MockFileSystemAccessContext
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<::blink::mojom::FileSystemAccessTransferToken>
           token) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void Clone(mojo::PendingReceiver<::storage::mojom::FileSystemAccessContext>
@@ -643,7 +643,7 @@ BlobWriteCallback CreateBlobWriteCallback(
          storage::mojom::WriteBlobToFileResult error) {
         switch (result) {
           case BlobWriteResult::kFailure:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
           case BlobWriteResult::kRunPhaseTwoAsync:
           case BlobWriteResult::kRunPhaseTwoAndReturnResult:

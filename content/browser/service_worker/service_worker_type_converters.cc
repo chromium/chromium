@@ -29,7 +29,7 @@ TypeConverter<blink::mojom::ServiceWorkerState,
     case content::ServiceWorkerVersion::REDUNDANT:
       return blink::mojom::ServiceWorkerState::kRedundant;
   }
-  NOTREACHED() << status;
+  NOTREACHED_IN_MIGRATION() << status;
   return blink::mojom::ServiceWorkerState::kParsed;
 }
 

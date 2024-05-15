@@ -756,7 +756,7 @@ std::string ReferrerPolicyToString(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return "strict-origin-when-cross-origin";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -3611,7 +3611,7 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
         run_loop_disable_log_.Quit();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     return;
   }

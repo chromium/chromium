@@ -177,7 +177,7 @@ AndroidBatteryMetrics::AndroidBatteryMetrics()
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
   // Never called, this is a no-destruct singleton.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AndroidBatteryMetrics::InitializeOnSequence() {

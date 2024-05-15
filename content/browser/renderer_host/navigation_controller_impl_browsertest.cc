@@ -173,7 +173,7 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
 #if BUILDFLAG(IS_ANDROID)
       shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
     } else {
       shell()->LoadDataWithBaseURL(history_url, data, base_url);
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest,
     shell()->LoadDataAsStringWithBaseURL(supplied_history_url, data,
                                          supplied_base_url);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     shell()->LoadDataWithBaseURL(supplied_history_url, data, supplied_base_url);
@@ -1508,7 +1508,7 @@ IN_PROC_BROWSER_TEST_P(LoadDataWithBaseURLBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
     shell()->LoadDataAsStringWithBaseURL(history_url, data, base_url);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   } else {
     shell()->LoadDataWithBaseURL(history_url, data, base_url);

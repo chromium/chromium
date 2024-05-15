@@ -61,14 +61,14 @@ class FakeBlob final : public blink::mojom::Blob {
   }
   void AsDataPipeGetter(
       mojo::PendingReceiver<network::mojom::DataPipeGetter>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadRange(
       uint64_t offset,
       uint64_t length,
       mojo::ScopedDataPipeProducerHandle handle,
       mojo::PendingRemote<blink::mojom::BlobReaderClient> client) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadAll(
       mojo::ScopedDataPipeProducerHandle handle,
@@ -85,7 +85,7 @@ class FakeBlob final : public blink::mojom::Blob {
             const std::string& method,
             const net::HttpRequestHeaders&,
             mojo::PendingRemote<network::mojom::URLLoaderClient>) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ReadSideData(ReadSideDataCallback callback) override {
     std::move(callback).Run(side_data_);
@@ -94,7 +94,7 @@ class FakeBlob final : public blink::mojom::Blob {
     std::move(callback).Run(body_.size(), std::nullopt);
   }
   void GetInternalUUID(GetInternalUUIDCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojo::ReceiverSet<blink::mojom::Blob> receivers_;
@@ -244,7 +244,7 @@ class FakeControllerServiceWorker
       // Copy the content to |out_string|.
       mojo::BlockingCopyToString(std::move(consumer_handle), out_string);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -72,7 +72,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnTransferSizeUpdated(
@@ -437,7 +437,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
       return;
     default:
       SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", read_result);
-      NOTREACHED() << "ReadData result:" << read_result;
+      NOTREACHED_IN_MIGRATION() << "ReadData result:" << read_result;
       return;
   }
 }

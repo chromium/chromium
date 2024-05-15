@@ -128,7 +128,7 @@ void SyntheticGestureTargetMac::DispatchWebGestureEventToPlatform(
         return;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }

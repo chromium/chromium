@@ -62,8 +62,8 @@ int ToGestureEventType(WebInputEvent::Type type) {
       return ui::GESTURE_EVENT_TYPE_PINCH_BY;
     case WebInputEvent::Type::kGestureTwoFingerTap:
     default:
-      NOTREACHED() << "Invalid source gesture type: "
-                   << WebInputEvent::GetName(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid source gesture type: " << WebInputEvent::GetName(type);
       return -1;
   }
 }

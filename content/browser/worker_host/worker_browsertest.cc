@@ -116,7 +116,7 @@ class WorkerTest : public ContentBrowserTest,
             {});
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

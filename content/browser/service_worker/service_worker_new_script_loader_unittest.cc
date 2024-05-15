@@ -415,7 +415,7 @@ class BodyDataPipeTestURLLoaderFactory final
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojo::ScopedDataPipeProducerHandle body_producer_;

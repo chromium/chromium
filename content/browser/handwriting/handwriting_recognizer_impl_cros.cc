@@ -107,7 +107,7 @@ void OnModelBinding(
   switch (result) {
     case LoadHandwritingModelResult::OK:
       // Handled above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case LoadHandwritingModelResult::FEATURE_NOT_SUPPORTED_ERROR:
     case LoadHandwritingModelResult::LANGUAGE_NOT_SUPPORTED_ERROR:

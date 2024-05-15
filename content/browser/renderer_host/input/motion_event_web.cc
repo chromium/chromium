@@ -44,7 +44,7 @@ ui::MotionEvent::Action GetActionFrom(const WebTouchEvent& event) {
     default:
       break;
   };
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Unable to derive a valid MotionEvent::Action from the WebTouchEvent.";
   return ui::MotionEvent::Action::CANCEL;
 }
@@ -214,7 +214,7 @@ ui::MotionEvent::ToolType MotionEventWeb::GetToolType(
     case WebPointerProperties::PointerType::kTouch:
       return ToolType::FINGER;
   }
-  NOTREACHED() << "Unexpected pointerType";
+  NOTREACHED_IN_MIGRATION() << "Unexpected pointerType";
   return ToolType::UNKNOWN;
 }
 

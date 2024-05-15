@@ -82,14 +82,14 @@ SignedExchangePrefetchHandler::TakePrefetchedSignedExchangeCacheEntry() {
 
 void SignedExchangePrefetchHandler::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangePrefetchHandler::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangePrefetchHandler::OnReceiveRedirect(
@@ -102,14 +102,14 @@ void SignedExchangePrefetchHandler::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     base::OnceCallback<void()> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangePrefetchHandler::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kSignedExchangePrefetchHandler);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SignedExchangePrefetchHandler::OnComplete(

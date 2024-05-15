@@ -921,7 +921,7 @@ void PageHandler::OnDownloadUpdated(download::DownloadItem* item) {
       state = Page::DownloadProgress::StateEnum::Canceled;
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   frontend_->DownloadProgress(item->GetGuid(), item->GetTotalBytes(),
                               item->GetReceivedBytes(), state);
@@ -1704,7 +1704,7 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
@@ -1813,7 +1813,7 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::IndexedDBEvent;
     case WebSchedulerTrackedFeature::kDummy:
       // This is a test only reason and should never be called.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Dummy;
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
@@ -1855,10 +1855,10 @@ DisableForRenderFrameHostReasonToProtocol(
     BackForwardCache::DisabledReason reason) {
   switch (reason.source) {
     case BackForwardCache::DisabledSource::kLegacy:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case BackForwardCache::DisabledSource::kTesting:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case BackForwardCache::DisabledSource::kContent:
       switch (
@@ -2000,7 +2000,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case Reason::kBlocklistedFeatures:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
   }
 }

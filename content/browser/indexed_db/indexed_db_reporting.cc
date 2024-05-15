@@ -95,7 +95,7 @@ void ReportInternalError(const char* type,
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s) {
   if (s.ok()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   enum {

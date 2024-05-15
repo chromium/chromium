@@ -76,7 +76,7 @@ PepperTCPServerSocketMessageFilter::PepperTCPServerSocketMessageFilter(
   DCHECK(ppapi_host_);
   if (!host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                           &render_frame_id_)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

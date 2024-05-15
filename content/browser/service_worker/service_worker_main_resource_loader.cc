@@ -657,7 +657,7 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
       case FetchResponseFrom::kNoResponseYet:
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       case FetchResponseFrom::kAutoPreloadHandlingFallback:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case FetchResponseFrom::kServiceWorker:
         RecordTimingMetricsForFetchHandlerHandledCase();
@@ -1548,7 +1548,7 @@ void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {
 #if DCHECK_IS_ON()
   switch (new_status) {
     case Status::kNotStarted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Status::kStarted:
       DCHECK_EQ(status_, Status::kNotStarted);

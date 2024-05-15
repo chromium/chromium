@@ -136,7 +136,7 @@ std::string GetClockString() {
       return "WIN_ROLLOVER_PROTECTED_TIME_GET_TIME";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

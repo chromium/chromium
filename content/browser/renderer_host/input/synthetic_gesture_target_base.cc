@@ -124,7 +124,7 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
     }
     DispatchWebGestureEventToPlatform(web_fling, latency_info);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

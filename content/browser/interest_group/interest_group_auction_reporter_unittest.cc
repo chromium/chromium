@@ -410,17 +410,17 @@ class InterestGroupAuctionReporterTest
   // classes don't make network requests, but a real AuctionWorkletManager is
   // used, which expects most of these methods to return non-null objects.
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   void PreconnectSocket(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   RenderFrameHostImpl* GetFrame() override {
     return static_cast<RenderFrameHostImpl*>(main_rfh());

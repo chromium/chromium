@@ -127,7 +127,7 @@ void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
                                 : TAB_VIDEO_CAPTURER_CREATED_WITHOUT_AUDIO);
       break;
     case DesktopMediaID::TYPE_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -361,7 +361,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
     default:
-      NOTREACHED() << "unsupported stream type=" << stream_type;
+      NOTREACHED_IN_MIGRATION() << "unsupported stream type=" << stream_type;
       start_capture_closure =
           base::BindOnce(std::move(after_start_capture_callback), nullptr);
   }

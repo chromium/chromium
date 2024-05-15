@@ -178,7 +178,7 @@ void DownloadTestObserver::OnDownloadUpdated(download::DownloadItem* download) {
         break;
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

@@ -102,7 +102,8 @@ bool DomAutomationController::SendMsg(const gin::Arguments& args) {
     value =
         conv.FromV8Value(args.PeekNext(), args.isolate()->GetCurrentContext());
   } else {
-    NOTREACHED() << "No arguments passed to domAutomationController.send";
+    NOTREACHED_IN_MIGRATION()
+        << "No arguments passed to domAutomationController.send";
     return false;
   }
 

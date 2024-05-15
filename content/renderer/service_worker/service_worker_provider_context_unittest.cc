@@ -78,10 +78,10 @@ class MockServiceWorkerObjectHost
   // Implements blink::mojom::ServiceWorkerObjectHost.
   void PostMessageToServiceWorker(
       ::blink::TransferableMessage message) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void TerminateForTesting(TerminateForTestingCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   const int64_t version_id_;

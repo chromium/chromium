@@ -82,7 +82,7 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
   switch (initiator_lock_compatibility) {
     case network::InitiatorLockCompatibility::kBrowserProcess:
       // kBrowserProcess cannot happen outside of NetworkService.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
 
     case network::InitiatorLockCompatibility::kNoLock:
@@ -90,7 +90,7 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
       // Only browser-initiated navigations can specify no initiator and we only
       // expect subresource requests (i.e. non-navigations) to go through
       // SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
 
     case network::InitiatorLockCompatibility::kCompatibleLock:
@@ -100,13 +100,13 @@ bool IsValidRequestInitiator(const network::ResourceRequest& request,
       // This branch indicates that either 1) the CreateLoaderAndStart IPC was
       // forged by a malicious/compromised renderer process or 2) there are
       // renderer-side bugs.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
   // Failing safely for an unrecognied `network::InitiatorLockCompatibility`
   // enum value.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -165,7 +165,7 @@ class RedirectResponseURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {
@@ -310,7 +310,7 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {
@@ -430,7 +430,7 @@ class SubresourceSignedExchangeURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     if (!IsValidRequestInitiator(request, request_initiator_origin_lock_)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       network::debug::ScopedResourceRequestCrashKeys request_crash_keys(
           request);
       network::debug::ScopedRequestInitiatorOriginLockCrashKey lock_crash_keys(

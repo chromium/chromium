@@ -4832,8 +4832,8 @@ bool InterestGroupStorage::InitializeSchema() {
     return transaction.Commit();
   }
 
-  NOTREACHED();  // Only versions 6 up to the current version should have passed
-                 // RazeIfIncompatible.
+  NOTREACHED_IN_MIGRATION();  // Only versions 6 up to the current version
+                              // should have passed RazeIfIncompatible.
   return false;
 }
 
@@ -4971,7 +4971,8 @@ void InterestGroupStorage::ReportUpdateFailed(
     bool parse_failure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    NOTREACHED();  // We already fetched interest groups to update...
+    NOTREACHED_IN_MIGRATION();  // We already fetched interest groups to
+                                // update...
     return;
   }
 

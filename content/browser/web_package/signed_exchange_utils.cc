@@ -195,11 +195,11 @@ SignedExchangeLoadResult GetLoadResultFromSignatureVerifierResult(
         kErrInvalidSignatureIntegrity_deprecated:
     case SignedExchangeSignatureVerifier::Result::
         kErrInvalidTimestamp_deprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SignedExchangeLoadResult::kSignatureVerificationError;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SignedExchangeLoadResult::kSignatureVerificationError;
 }
 

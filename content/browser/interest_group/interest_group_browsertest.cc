@@ -644,7 +644,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleWellKnownRequest(
     response->set_content(
         R"({"joinAdInterestGroup" : true, "leaveAdInterestGroup" : true})");
   } else {
-    NOTREACHED() << "Unexpected host_header: " << host_header->second;
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected host_header: " << host_header->second;
   }
   return response;
 }

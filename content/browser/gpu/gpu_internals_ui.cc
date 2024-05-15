@@ -433,7 +433,7 @@ const char* D3dFeatureLevelToString(D3D_FEATURE_LEVEL level) {
     case D3D_FEATURE_LEVEL_12_2:
       return "12_2";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -447,7 +447,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
     case gpu::HasDiscreteGpu::kYes:
       return "yes";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -607,7 +607,7 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
     case gpu::VVCPROFILE_MAIN16_444_STILL_PICTURE:
       return "vvc profile main16 444 stillpicture";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

@@ -589,7 +589,7 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
               << "Cannot lock an already used process to " << lock_to_set;
         }
       } else {
-        NOTREACHED() << "Unexpected lock type.";
+        NOTREACHED_IN_MIGRATION() << "Unexpected lock type.";
       }
     }
 
@@ -809,7 +809,7 @@ bool ChildProcessSecurityPolicyImpl::IsolatedOriginEntry::MatchesProfile(
   } else if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     return resource_context_ == browser_or_resource_context.ToResourceContext();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -873,7 +873,7 @@ void ChildProcessSecurityPolicyImpl::Add(int child_id,
   DCHECK_NE(child_id, ChildProcessHost::kInvalidUniqueID);
   base::AutoLock lock(lock_);
   if (base::Contains(security_state_, child_id)) {
-    NOTREACHED() << "Add child process at most once.";
+    NOTREACHED_IN_MIGRATION() << "Add child process at most once.";
     return;
   }
 
@@ -1431,7 +1431,7 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
 
       default:
         // Fail safe - deny access.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
     }
   }

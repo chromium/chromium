@@ -791,7 +791,7 @@ bool DecodeIDBKeyPath(std::string_view* slice, IndexedDBKeyPath* value) {
       return true;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -859,7 +859,7 @@ bool ConsumeEncodedIDBKey(std::string_view* slice) {
       slice->remove_prefix(sizeof(double));
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -891,7 +891,7 @@ static blink::mojom::IDBKeyType KeyTypeByteToKeyType(unsigned char type) {
       return blink::mojom::IDBKeyType::Min;
   }
 
-  NOTREACHED() << "Got invalid type " << type;
+  NOTREACHED_IN_MIGRATION() << "Got invalid type " << type;
   return blink::mojom::IDBKeyType::Invalid;
 }
 
@@ -1035,7 +1035,7 @@ int CompareEncodedIDBKeys(std::string_view* slice_a,
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -1069,7 +1069,7 @@ int CompareSuffix(std::string_view* a,
                   std::string_view* b,
                   bool only_compare_index_keys,
                   bool* ok) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -1282,7 +1282,7 @@ int Compare(std::string_view a,
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   *ok = false;
   return 0;
 }
@@ -1742,7 +1742,7 @@ KeyPrefix::Type KeyPrefix::type() const {
   if (index_id_ >= kMinimumIndexId)
     return INDEX_DATA;
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return INVALID_TYPE;
 }
 

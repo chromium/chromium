@@ -153,7 +153,7 @@ int GestureSourceTypeAsInt(content::mojom::GestureSourceType type) {
     case content::mojom::GestureSourceType::kPenInput:
       return 3;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -368,7 +368,7 @@ int ToKeyModifiers(std::string_view key) {
     return blink::WebInputEvent::kNumLockOn;
   if (key == "AltGraph")
     return blink::WebInputEvent::kAltGrKey;
-  NOTREACHED() << "invalid key modifier";
+  NOTREACHED_IN_MIGRATION() << "invalid key modifier";
   return 0;
 }
 
@@ -383,7 +383,7 @@ int ToButtonModifiers(std::string_view button) {
     return blink::WebMouseEvent::kBackButtonDown;
   if (button == "Forward")
     return blink::WebMouseEvent::kForwardButtonDown;
-  NOTREACHED() << "invalid button modifier";
+  NOTREACHED_IN_MIGRATION() << "invalid button modifier";
   return 0;
 }
 

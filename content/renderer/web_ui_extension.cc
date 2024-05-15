@@ -155,7 +155,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
     // so check that the frame is still valid to avoid dereferencing a stale
     // pointer.
     if (frame != blink::WebLocalFrame::FrameForCurrentContext()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

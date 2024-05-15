@@ -1338,7 +1338,7 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         default:
           LOG(ERROR)
               << "Invalid readback response value: " << readback_result_;
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
       // clang-format on
     } while (readback_result_ != READBACK_SUCCESS &&

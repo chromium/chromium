@@ -84,18 +84,18 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
           host,
       mojo::PendingAssociatedReceiver<blink::mojom::SynchronousCompositor>
           compositor_request) override {
-    NOTREACHED() << "Input request on unbound interface";
+    NOTREACHED_IN_MIGRATION() << "Input request on unbound interface";
   }
 #endif
   void GetFrameWidgetInputHandler(
       mojo::PendingAssociatedReceiver<blink::mojom::FrameWidgetInputHandler>
           request) override {
-    NOTREACHED() << "Input request on unbound interface";
+    NOTREACHED_IN_MIGRATION() << "Input request on unbound interface";
   }
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override {
-    NOTREACHED() << "Input request on unbound interface";
+    NOTREACHED_IN_MIGRATION() << "Input request on unbound interface";
   }
 };
 

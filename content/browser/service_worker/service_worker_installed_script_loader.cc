@@ -96,7 +96,7 @@ void ServiceWorkerInstalledScriptLoader::OnFinished(FinishedReason reason) {
       net_error = net::ERR_FAILED;
       break;
     case FinishedReason::kNotFinished:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   client_->OnComplete(network::URLLoaderCompletionStatus(net_error));
@@ -109,7 +109,7 @@ void ServiceWorkerInstalledScriptLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {
   // This class never returns a redirect response to its client, so should never
   // be asked to follow one.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServiceWorkerInstalledScriptLoader::SetPriority(

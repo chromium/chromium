@@ -587,7 +587,7 @@ void MHTMLGenerationManager::Job::MarkAsFinished() {
   // writer_.reset() does not correctly stop OnConnectionError
   // notifications for the case described in https://crbug.com/612098.
   if (is_finished_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   is_finished_ = true;

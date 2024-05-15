@@ -132,7 +132,7 @@ std::unique_ptr<TypedArraySerializer> TypedArraySerializer::Create(
   } else if (typed_array->IsFloat64Array()) {
     return TypedArraySerializerImpl<double, double>::Create(typed_array);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

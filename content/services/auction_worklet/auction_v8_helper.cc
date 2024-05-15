@@ -118,7 +118,7 @@ class TrivialSerializerDelegate : public v8::ValueSerializer::Delegate {
   ~TrivialSerializerDelegate() override = default;
 
   void ThrowDataCloneError(v8::Local<v8::String> message) override {
-    NOTREACHED();  // Should not have any weird types in our usage.
+    NOTREACHED_IN_MIGRATION();  // Should not have any weird types in our usage.
   }
 };
 

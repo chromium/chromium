@@ -224,11 +224,11 @@ std::unique_ptr<RenderProcess> RenderProcessImpl::Create() {
 }
 
 void RenderProcessImpl::AddRefProcess() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderProcessImpl::ReleaseProcess() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace content

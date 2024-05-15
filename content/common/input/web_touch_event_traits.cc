@@ -61,7 +61,7 @@ void WebTouchEventTraits::ResetTypeAndTouchStates(WebInputEvent::Type type,
       newState = WebTouchPoint::State::kStateCancelled;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   for (size_t i = 0; i < event->touches_length; ++i)

@@ -67,7 +67,7 @@ void SaveItem::UpdateSize(int64_t bytes_so_far) {
 // complete.
 void SaveItem::Update(int64_t bytes_so_far) {
   if (state_ != IN_PROGRESS) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   UpdateSize(bytes_so_far);

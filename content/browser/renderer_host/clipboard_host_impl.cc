@@ -795,7 +795,7 @@ void ClipboardHostImpl::OnCopyAllowedResult(
     clipboard_writer_->WritePickledData(
         pickle, ui::ClipboardFormatType::WebCustomDataType());
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (pending_commit_write_) {

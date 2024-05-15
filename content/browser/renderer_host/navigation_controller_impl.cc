@@ -163,7 +163,7 @@ bool ShouldOverrideUserAgent(
     case NavigationController::UA_OVERRIDE_FALSE:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -462,7 +462,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
   FrameNavigationEntry* frame_entry =
       entry->GetFrameEntry(request->frame_tree_node());
   if (!frame_entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -475,7 +475,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
                 frame_entry->redirect_chain()[i]);
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 #endif  // DCHECK_IS_ON()
@@ -1350,7 +1350,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
       break;
     case LOAD_TYPE_DATA:
       if (!params.url.SchemeIs(url::kDataScheme)) {
-        NOTREACHED() << "Data load must use data scheme.";
+        NOTREACHED_IN_MIGRATION() << "Data load must use data scheme.";
         return nullptr;
       }
       break;
@@ -1609,7 +1609,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
       }
       break;
     case NAVIGATION_TYPE_UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

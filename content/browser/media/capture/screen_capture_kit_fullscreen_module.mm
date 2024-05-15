@@ -278,7 +278,7 @@ SCWindow* ScreenCaptureKitFullscreenModule::GetFullscreenWindow(
         case Mode::kLibreOffice:
         // TODO(crbug.com/40233195): Implement support for LibreOffice.
         case Mode::kUnsupported:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }

@@ -319,7 +319,7 @@ std::string GetDisconnectConsoleErrorMessage(
     FedCmDisconnectStatus disconnect_status_for_metrics) {
   switch (disconnect_status_for_metrics) {
     case FedCmDisconnectStatus::kSuccess: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
     }
     case FedCmDisconnectStatus::kTooManyRequests: {

@@ -73,10 +73,10 @@ std::string NameForClient(PrefetchCanaryChecker::CheckType name) {
     case PrefetchCanaryChecker::CheckType::kDNS:
       return "DNS";
     default:
-      NOTREACHED() << static_cast<int>(name);
+      NOTREACHED_IN_MIGRATION() << static_cast<int>(name);
       return std::string();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

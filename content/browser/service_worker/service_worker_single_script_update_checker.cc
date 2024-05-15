@@ -309,7 +309,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback ack_callback) {
   // The network request for update checking shouldn't have upload data.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
@@ -350,7 +350,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
         ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted;
     switch (header_writer_state_) {
       case ServiceWorkerUpdatedScriptLoader::WriterState::kNotStarted:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Response header should be received before OnComplete()";
         break;
       case ServiceWorkerUpdatedScriptLoader::WriterState::kWriting:
@@ -547,7 +547,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
       network_watcher_.ArmOrNotify();
       return;
   }
-  NOTREACHED() << static_cast<int>(result);
+  NOTREACHED_IN_MIGRATION() << static_cast<int>(result);
 }
 
 // |pending_buffer| is a buffer keeping a Mojo data pipe which is going to be

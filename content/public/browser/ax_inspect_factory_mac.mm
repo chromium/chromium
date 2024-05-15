@@ -35,7 +35,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kMac:
       return std::make_unique<ui::AXTreeFormatterMac>();
     default:
-      NOTREACHED() << "Unsupported API type " << type;
+      NOTREACHED_IN_MIGRATION() << "Unsupported API type " << type;
   }
   return nullptr;
 }
@@ -55,7 +55,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     case ui::AXApiType::kMac:
       return std::make_unique<ui::AXEventRecorderMac>(pid, selector);
     default:
-      NOTREACHED() << "Unsupported API type " << type;
+      NOTREACHED_IN_MIGRATION() << "Unsupported API type " << type;
   }
   return nullptr;
 }

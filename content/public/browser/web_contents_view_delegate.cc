@@ -33,7 +33,7 @@ void WebContentsViewDelegate::DismissContextMenu() {}
 
 void WebContentsViewDelegate::ExecuteCommandForTesting(int command_id,
                                                        int event_flags) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebContentsViewDelegate::StoreFocus() {

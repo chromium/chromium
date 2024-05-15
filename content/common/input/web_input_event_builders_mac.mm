@@ -150,7 +150,7 @@ void SetWebEventLocationFromEventInView(blink::WebMouseEvent* result,
 #if DCHECK_IS_ON()
     if (@available(macOS 10.15.1, *)) { /* nop */
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 #endif
     result->movement_x = CGEventGetIntegerValueField(
@@ -678,7 +678,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
       state = blink::WebTouchPoint::State::kStateMoved;
       break;
     default:
-      NOTREACHED() << "Invalid types for touch events." << type;
+      NOTREACHED_IN_MIGRATION() << "Invalid types for touch events." << type;
   }
 
   blink::WebTouchEvent result(event_type, ModifiersFromEvent(event),

@@ -75,7 +75,7 @@ const char kDNSCanaryCheckAddress[] = "http://testdnscanarycheck.com";
 const char kTLSCanaryCheckAddress[] = "http://testtlscanarycheck.com";
 
 void UnreachableFallback(ResponseHeadUpdateParams) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // "arg" type is `url::Origin`.

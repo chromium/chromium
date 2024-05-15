@@ -61,7 +61,7 @@ std::string IdlConvert::Status::ConvertToErrorString(
     v8::Isolate* isolate) const {
   switch (type()) {
     case Type::kSuccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
     case Type::kTimeout:
       return absl::get<Timeout>(value_).timeout_message;

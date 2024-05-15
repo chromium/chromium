@@ -1943,7 +1943,7 @@ void BuildAndReportBrowserInitiatedIssue(
     issue = BuildAttributionReportingIssue(
         info->details->attribution_reporting_issue_details);
   } else {
-    NOTREACHED() << "Unsupported type of browser-initiated issue";
+    NOTREACHED_IN_MIGRATION() << "Unsupported type of browser-initiated issue";
   }
   ReportBrowserInitiatedIssue(frame, issue.get());
 }

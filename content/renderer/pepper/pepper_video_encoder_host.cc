@@ -103,7 +103,7 @@ PP_VideoProfile PP_FromMediaVideoProfile(media::VideoCodecProfile profile) {
     case media::VP9PROFILE_PROFILE0:
       return PP_VIDEOPROFILE_VP9_ANY;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return static_cast<PP_VideoProfile>(-1);
   }
 }
@@ -454,7 +454,7 @@ void PepperVideoEncoderHost::AllocateVideoFrames() {
   // Frames have already been allocated.
   if (buffer_manager_.number_of_buffers() > 0) {
     SendGetFramesErrorReply(PP_ERROR_FAILED);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

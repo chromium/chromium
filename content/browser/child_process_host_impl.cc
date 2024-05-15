@@ -104,7 +104,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
       child_base_name +=
           GetContentClient()->browser()->GetChildProcessSuffix(flags);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     child_path = child_path.Append(child_base_name + ".app")

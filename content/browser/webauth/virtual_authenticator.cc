@@ -158,7 +158,7 @@ VirtualAuthenticator::ConstructDevice() {
       return std::make_unique<device::VirtualCtap2Device>(state_, config);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::make_unique<device::VirtualU2fDevice>(state_);
   }
 }

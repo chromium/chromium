@@ -130,10 +130,10 @@ Network::CertificateTransparencyCompliance SerializeCTPolicyCompliance(
         CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
       return Network::CertificateTransparencyComplianceEnum::Unknown;
     case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return Network::CertificateTransparencyComplianceEnum::Unknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Network::CertificateTransparencyComplianceEnum::Unknown;
 }
 
@@ -538,7 +538,7 @@ String resourcePriority(net::RequestPriority priority) {
     case net::HIGHEST:
       return Network::ResourcePriorityEnum::VeryHigh;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Network::ResourcePriorityEnum::Medium;
 }
 
@@ -564,7 +564,7 @@ String referrerPolicy(network::mojom::ReferrerPolicy referrer_policy) {
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return Network::Request::ReferrerPolicyEnum::StrictOriginWhenCrossOrigin;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Network::Request::ReferrerPolicyEnum::NoReferrerWhenDowngrade;
 }
 
@@ -740,7 +740,7 @@ String SignedExchangeErrorErrorFieldToString(SignedExchangeError::Field field) {
     case SignedExchangeError::Field::kSignatureTimestamps:
       return Network::SignedExchangeErrorFieldEnum::SignatureTimestamps;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -2180,12 +2180,12 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
     case blink::ResourceRequestBlockedReason::kConversionRequest:
       // This is actually never reached, as the conversion request
       // is marked as successful and no blocking reason is reported.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return protocol::Network::BlockedReasonEnum::Other;
     case blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
       return protocol::Network::BlockedReasonEnum::Other;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return protocol::Network::BlockedReasonEnum::Other;
 }
 
@@ -2210,7 +2210,7 @@ Maybe<String> GetBlockedReasonFor(
       case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
         return {protocol::Network::BlockedReasonEnum::CorpNotSameSite};
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   if (status.error_code != net::ERR_BLOCKED_BY_CLIENT &&
       status.error_code != net::ERR_BLOCKED_BY_RESPONSE)

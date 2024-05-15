@@ -38,7 +38,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:
-      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported API type " << static_cast<std::string>(type);
   }
   return nullptr;
 }
@@ -54,7 +55,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   // using an inspection tool, e.g. chrome://accessibility.
   ui::AXTreeManager::AlwaysFailFast();
 
-  NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported API type " << static_cast<std::string>(type);
   return nullptr;
 }
 

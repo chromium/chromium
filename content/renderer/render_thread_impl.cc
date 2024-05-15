@@ -1306,7 +1306,7 @@ void RenderThreadImpl::OnProcessFinalRelease() {
   // caused race conditions, where the browser process was reusing renderer
   // processes that were shutting down.
   // See https://crbug.com/535246 or https://crbug.com/873541/#c8.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
@@ -1479,7 +1479,7 @@ void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
     main_thread_scheduler_->ResumeTimersForAndroidWebView();
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -1499,7 +1499,7 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 #if BUILDFLAG(IS_APPLE)
   is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
@@ -1511,7 +1511,7 @@ void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -1538,7 +1538,7 @@ void RenderThreadImpl::PurgePluginListCache(bool reload_pages) {
   for (auto& observer : observers_)
     observer.PluginListChanged();
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

@@ -70,11 +70,12 @@ WebTouchPoint::State ToWebTouchPointState(
       return WebTouchPoint::State::kStateStationary;
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Invalid SyntheticPointerActionParams::PointerActionType.";
       return WebTouchPoint::State::kStateUndefined;
   }
-  NOTREACHED() << "Invalid SyntheticPointerActionParams::PointerActionType.";
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid SyntheticPointerActionParams::PointerActionType.";
   return WebTouchPoint::State::kStateUndefined;
 }
 
@@ -92,11 +93,12 @@ WebInputEvent::Type ToWebMouseEventType(
     case SyntheticPointerActionParams::PointerActionType::CANCEL:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Invalid SyntheticPointerActionParams::PointerActionType.";
       return WebInputEvent::Type::kUndefined;
   }
-  NOTREACHED() << "Invalid SyntheticPointerActionParams::PointerActionType.";
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid SyntheticPointerActionParams::PointerActionType.";
   return WebInputEvent::Type::kUndefined;
 }
 
@@ -440,7 +442,7 @@ class MockSyntheticTouchscreenPinchTouchTarget
       case ZOOM_DIRECTION_UNKNOWN:
         return 1.0f;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0.0f;
     }
   }

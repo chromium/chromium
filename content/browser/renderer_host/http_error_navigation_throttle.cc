@@ -85,7 +85,7 @@ void HttpErrorNavigationThrottle::OnBodyReadable(MojoResult) {
       body_consumer_watcher_.ArmOrNotify();
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

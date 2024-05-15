@@ -42,7 +42,7 @@ PPB_ImageData_Impl::PPB_ImageData_Impl(PP_Instance instance,
       return;
       // No default: so that we get a compiler warning if any types are added.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 PPB_ImageData_Impl::PPB_ImageData_Impl(PP_Instance instance, ForTest)

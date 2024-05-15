@@ -59,7 +59,7 @@ Button ToSyntheticMouseButton(int button) {
     return Button::BACK;
   if (button == 4)
     return Button::FORWARD;
-  NOTREACHED() << "Unexpected button";
+  NOTREACHED_IN_MIGRATION() << "Unexpected button";
   return Button();
 }
 
@@ -425,7 +425,7 @@ bool ActionsParser::ParseAction(
   } else if (source_type == "none") {
     return ParseNullAction(action, subtype, param_list);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return false;
 }

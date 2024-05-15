@@ -267,7 +267,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       id = IDC_NAV_STOP;
       break;
     default:
-      NOTREACHED() << "Unknown UI control";
+      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
       return;
   }
   [[shell_data.delegate.window.contentView viewWithTag:id]

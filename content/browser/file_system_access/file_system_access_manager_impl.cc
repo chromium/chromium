@@ -251,7 +251,7 @@ ui::SelectFileDialog::Type GetSelectFileDialogType(
         kDirectoryPickerOptions:
       return ui::SelectFileDialog::SELECT_FOLDER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::SelectFileDialog::SELECT_NONE;
 }
 
@@ -892,7 +892,7 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
       data.mutable_sandboxed()->set_bucket_id(url.bucket()->id.value());
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   std::string value;
@@ -1036,7 +1036,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       break;
     }
     case FileSystemAccessHandleData::DATA_NOT_SET:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

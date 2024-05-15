@@ -162,7 +162,8 @@ void RenderAccessibilityImpl::NotifyAccessibilityModeChange(
 
   if (old_mode == mode) {
     DCHECK(ax_context_);
-    NOTREACHED() << "Do not call AccessibilityModeChanged unless it changes.";
+    NOTREACHED_IN_MIGRATION()
+        << "Do not call AccessibilityModeChanged unless it changes.";
     return;
   }
 
@@ -371,7 +372,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kHitTest:
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case ax::mojom::Action::kGetTextLocation:
       break;

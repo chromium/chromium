@@ -173,7 +173,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGestureFlingStart:
       // Fling controller processes FlingStart event, and we should never get
       // it here.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case WebInputEvent::Type::kGestureScrollEnd:

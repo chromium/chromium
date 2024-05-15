@@ -696,7 +696,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
       GetContentClient()->GetDataResourceBytes(kCcompressedProtocolJSON);

@@ -149,7 +149,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
   switch (gpu_mode) {
     // TODO(rivr): Add separate histograms for the different hardware modes.
     case gpu::GpuMode::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     case gpu::GpuMode::HARDWARE_GL:
     case gpu::GpuMode::HARDWARE_GRAPHITE:
@@ -224,11 +224,11 @@ GpuTerminationStatus ConvertToGpuTerminationStatus(
     case base::TERMINATION_STATUS_OOM:
       return GpuTerminationStatus::OOM;
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return GpuTerminationStatus::MAX_ENUM;
       // Do not add default.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GpuTerminationStatus::ABNORMAL_TERMINATION;
 }
 
@@ -890,7 +890,7 @@ GpuProcessHost::~GpuProcessHost() {
         break;
 #endif
       case base::TERMINATION_STATUS_MAX_ENUM:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(

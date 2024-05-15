@@ -45,7 +45,7 @@ std::string SharedStorageOperationTypeToString(OperationType operation_type) {
     case OperationType::kClear:
       return "Clear";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "None";
 }
@@ -73,7 +73,7 @@ std::string SharedStorageOperationResultToString(OperationResult result) {
     case OperationResult::kExpired:
       return "Expired";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "None";
 }

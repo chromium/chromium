@@ -734,7 +734,7 @@ void FindRequestManager::SendFindRequest(const FindRequest& request,
 
 void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
   if (request_id == kInvalidId) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

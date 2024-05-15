@@ -8,7 +8,7 @@ namespace content {
 
 std::unique_ptr<WebContents> BrowserPluginGuestDelegate::CreateNewGuestWindow(
     const WebContents::CreateParams& create_params) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -22,7 +22,7 @@ RenderFrameHost* BrowserPluginGuestDelegate::GetProspectiveOuterDocument() {
 
 base::WeakPtr<BrowserPluginGuestDelegate>
 BrowserPluginGuestDelegate::GetGuestDelegateWeakPtr() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

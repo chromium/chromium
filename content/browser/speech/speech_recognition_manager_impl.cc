@@ -741,9 +741,9 @@ void SpeechRecognitionManagerImpl::SessionDelete(Session* session) {
 
 void SpeechRecognitionManagerImpl::NotFeasible(const Session& session,
                                                FSMEvent event) {
-  NOTREACHED() << "Unfeasible event " << event
-               << " in state " << GetSessionState(session.id)
-               << " for session " << session.id;
+  NOTREACHED_IN_MIGRATION()
+      << "Unfeasible event " << event << " in state "
+      << GetSessionState(session.id) << " for session " << session.id;
 }
 
 int SpeechRecognitionManagerImpl::GetNextSessionID() {

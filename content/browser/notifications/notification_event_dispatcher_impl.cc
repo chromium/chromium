@@ -82,7 +82,7 @@ PersistentNotificationStatus ConvertServiceWorkerStatus(
     case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       return PersistentNotificationStatus::kServiceWorkerError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PersistentNotificationStatus::kServiceWorkerError;
 }
 
@@ -152,7 +152,7 @@ void DispatchNotificationEventOnRegistration(
       status = PersistentNotificationStatus::kServiceWorkerError;
       break;
     case blink::ServiceWorkerStatusCode::kOk:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -459,7 +459,7 @@ bool NotificationEventDispatcherImpl::
         return true;
       }
       case RenderProcessHost::NotificationServiceCreatorType::kServiceWorker: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
     }

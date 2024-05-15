@@ -73,7 +73,7 @@ GURL WebTestDevToolsBindings::MapTestURLIfNeeded(const GURL& test_url,
 
   base::FilePath dir_exe;
   if (!base::PathService::Get(base::DIR_EXE, &dir_exe)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return GURL();
   }
 #if BUILDFLAG(IS_MAC)

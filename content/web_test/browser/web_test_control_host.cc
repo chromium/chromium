@@ -1377,7 +1377,7 @@ void WebTestControlHost::ReportResults() {
   else if (renderer_dump_result_->layout)
     OnTextDump(*renderer_dump_result_->layout);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   // Use the browser-generated |pixel_dump_| if present, else use the
   // renderer's.
@@ -1427,7 +1427,7 @@ void WebTestControlHost::OnImageDump(const std::string& actual_pixel_hash,
         pixel_format = gfx::PNGCodec::FORMAT_RGBA;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return;
     }
 
@@ -1534,7 +1534,7 @@ void WebTestControlHost::SetPermission(const std::string& name,
   } else if (name == "top-level-storage-access") {
     type = blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     type = blink::PermissionType::NOTIFICATIONS;
   }
 

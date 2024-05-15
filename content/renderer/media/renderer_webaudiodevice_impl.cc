@@ -94,7 +94,7 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
           hardware_capabilities.max_frames_per_buffer,
           media::limits::kMaxWebAudioBufferSize);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return 0;
 }

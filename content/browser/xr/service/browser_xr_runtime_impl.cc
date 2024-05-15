@@ -204,7 +204,7 @@ bool BrowserXRRuntimeImpl::SupportsCustomIPD() const {
 #endif
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
@@ -226,7 +226,7 @@ bool BrowserXRRuntimeImpl::SupportsNonEmulatedHeight() const {
 #endif  // ENABLE_OPENXR
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool BrowserXRRuntimeImpl::SupportsArBlendMode() {

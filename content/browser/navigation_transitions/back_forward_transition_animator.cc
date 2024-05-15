@@ -353,12 +353,12 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
     }
     case State::kWaitingForBeforeUnloadResponse:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "The start of the second navigation will always cancel the "
              "navigation that's waiting for the renderer's BeforeUnload ack.";
       break;
     case State::kAnimationFinished:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "No navigations can commit during the animator's destruction "
              "because the destruction is atomic.";
       break;
@@ -516,7 +516,7 @@ void BackForwardTransitionAnimator::OnAnimate(
       case State::kWaitingForBeforeUnloadResponse:
       case State::kWaitingForNewRendererToDraw:
       case State::kAnimationFinished:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
@@ -621,7 +621,7 @@ void BackForwardTransitionAnimator::OnFloatAnimated(
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
@@ -811,7 +811,7 @@ void BackForwardTransitionAnimator::ProcessState() {
         // `OnDidFinishNavigation()` has already notified the physics model to
         // switch to the cancel spring.
       } else {
-        NOTREACHED() << ToString(navigation_state_);
+        NOTREACHED_IN_MIGRATION() << ToString(navigation_state_);
       }
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());

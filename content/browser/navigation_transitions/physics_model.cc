@@ -437,23 +437,23 @@ void PhysicsModel::OnNavigationFinished(bool committed) {
     case NavigationState::kNotStarted:
     case NavigationState::kNeverStarted: {
       // A navigation needs to start first.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case NavigationState::kBeforeUnloadDispatched: {
       // Not reachable because the browser is waiting for the ack from the
       // renderer.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case NavigationState::kCancelled: {
       // A cancelled navigation should never commit.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
     case NavigationState::kCommitted: {
       // A navigation can only commit (finish) once.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     }
   }

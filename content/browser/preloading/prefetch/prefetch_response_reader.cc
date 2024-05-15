@@ -228,7 +228,7 @@ void PrefetchResponseReader::BindAndStart(
     case LoadState::kFailedRedirect:
       // `CreateRequestHandler()` shouldn't be called for these non-servable
       // states.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -483,7 +483,7 @@ void PrefetchResponseReader::FollowRedirect(
   // a redirect, then it will be interrupted before |FollowRedirect| is called,
   // and instead interceptors are given a chance to intercept the navigation to
   // the redirect.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrefetchResponseReader::SetPriority(net::RequestPriority priority,

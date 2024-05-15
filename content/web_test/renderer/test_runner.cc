@@ -1119,7 +1119,7 @@ void TestRunnerBindings::SetEffectiveConnectionType(
   else if (connection_type == "Type4G")
     web_type = blink::WebEffectiveConnectionType::kType4G;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   if (runner_)
     runner_->SetEffectiveConnectionType(web_type);
@@ -2584,7 +2584,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
       source.GetWebTestControlHostRemote()->Reload();
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -2906,7 +2906,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 
   return PrintFrameToBitmap(target_frame);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SkBitmap();
 #endif
 }

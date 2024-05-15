@@ -77,7 +77,7 @@ class TestAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_id) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void LoadSellerWorklet(
@@ -95,7 +95,7 @@ class TestAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_id) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   size_t NumReceivers() {

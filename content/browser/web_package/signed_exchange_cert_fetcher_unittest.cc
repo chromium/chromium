@@ -140,7 +140,7 @@ class URLLoaderFactoryForMockLoader final
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory)
       override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   mojo::Remote<network::mojom::URLLoaderClient>& client_remote() {

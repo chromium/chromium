@@ -198,7 +198,7 @@ void FileSystemAccessHandleBase::DidRequestPermission(
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FileSystemAccessHandleBase::DoMove(

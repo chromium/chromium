@@ -110,7 +110,7 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   // this. So we are temporarily using NOTREACHED in the hopes that ClusterFuzz
   // will lead to a reliably-reproducible test case.
   if (!node) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -156,7 +156,7 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return updated ? updated->node() : nullptr;
@@ -474,7 +474,7 @@ bool BrowserAccessibilityManagerAndroid::NextAtGranularity(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return true;
@@ -522,7 +522,7 @@ bool BrowserAccessibilityManagerAndroid::PreviousAtGranularity(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return true;

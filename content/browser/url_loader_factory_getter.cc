@@ -100,8 +100,9 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   // SharedURLLoaderFactory implementation:
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED() << "This isn't supported. If you need a SharedURLLoaderFactory"
-                    " on the UI thread, get it from StoragePartition.";
+    NOTREACHED_IN_MIGRATION()
+        << "This isn't supported. If you need a SharedURLLoaderFactory"
+           " on the UI thread, get it from StoragePartition.";
     return nullptr;
   }
 

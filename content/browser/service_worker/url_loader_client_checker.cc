@@ -37,7 +37,7 @@ void URLLoaderClientCheckedRemote::Proxy::OnTransferSizeUpdated(
 NOINLINE void URLLoaderClientCheckedRemote::Proxy::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code == net::OK && !on_receive_response_called_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     base::debug::DumpWithoutCrashing();
     NO_CODE_FOLDING();
   }

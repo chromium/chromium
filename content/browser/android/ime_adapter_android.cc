@@ -429,7 +429,7 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
               env->GetDirectBufferAddress(jgesture_data_byte_buffer.obj())),
           env->GetDirectBufferCapacity(jgesture_data_byte_buffer.obj()),
           &gesture_data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

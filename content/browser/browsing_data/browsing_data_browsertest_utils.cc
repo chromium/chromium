@@ -159,7 +159,7 @@ void SetResponseContent(const GURL& url,
     else if (path.Extension() == FILE_PATH_LITERAL(".html"))
       response->set_content_type("text/html");
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 
     response->set_content(base::as_string_view(buffer));
   }

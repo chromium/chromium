@@ -1151,7 +1151,7 @@ void AuthenticatorCommonImpl::GetAssertion(
   if (!payment_options.is_null() && options->allow_credentials.empty()) {
     CompleteGetAssertionRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   bool is_cross_origin_iframe = false;
@@ -2181,7 +2181,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
       case RequestExtension::kLargeBlobRead:
       case RequestExtension::kLargeBlobWrite:
       case RequestExtension::kGetCredBlob:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -2304,7 +2304,7 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
       case RequestExtension::kLargeBlobEnable:
       case RequestExtension::kCredBlob:
       case RequestExtension::kMinPINLength:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

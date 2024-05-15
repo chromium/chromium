@@ -234,7 +234,7 @@ bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
 void AuthenticatorRequestClientDelegate::CollectPIN(
     CollectPINOptions options,
     base::OnceCallback<void(std::u16string)> provide_pin_cb) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AuthenticatorRequestClientDelegate::StartBioEnrollment(

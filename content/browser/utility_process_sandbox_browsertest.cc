@@ -156,7 +156,7 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kGpu:
       case Sandbox::kRenderer:
       case Sandbox::kZygoteIntermediateSandbox:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

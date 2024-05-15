@@ -302,7 +302,7 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::DidStopPinch() {
       break;
     case PinchState::NONE:
     case PinchState::EXISTING_BUBBLING_TO_ROOT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -760,11 +760,12 @@ void RenderWidgetHostInputEventRouter::RouteGestureEvent(
 
   switch (event->SourceDevice()) {
     case blink::WebGestureDevice::kUninitialized:
-      NOTREACHED() << "Uninitialized device type is not allowed";
+      NOTREACHED_IN_MIGRATION() << "Uninitialized device type is not allowed";
       break;
     case blink::WebGestureDevice::kSyntheticAutoscroll:
-      NOTREACHED() << "Only target_viewport synthetic autoscrolls are "
-                      "currently supported";
+      NOTREACHED_IN_MIGRATION()
+          << "Only target_viewport synthetic autoscrolls are "
+             "currently supported";
       break;
     case blink::WebGestureDevice::kTouchpad:
       RouteTouchpadGestureEvent(root_view, event, latency);
@@ -773,7 +774,7 @@ void RenderWidgetHostInputEventRouter::RouteGestureEvent(
       RouteTouchscreenGestureEvent(root_view, event, latency);
       break;
     case blink::WebGestureDevice::kScrollbar:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "This gesture source is only ever generated inside the renderer "
              "and is designated for compositor threaded scrollbar scrolling. "
              "We should never see it in the browser.";
@@ -801,7 +802,7 @@ unsigned CountChangedTouchPoints(const blink::WebTouchEvent& event) {
     default:
       // We'll only ever call this method for TouchStart, TouchEnd
       // and TounchCancel events, so mark the rest as not-reached.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   for (unsigned i = 0; i < event.touches_length; ++i) {
     if (event.touches[i].state == required_state)
@@ -876,8 +877,9 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
 
   // Debugging for crbug.com/814674.
   if (touch_target_ && !IsViewInMap(touch_target_)) {
-    NOTREACHED() << "Touch events should not be routed to a destroyed target "
-                    "View.";
+    NOTREACHED_IN_MIGRATION()
+        << "Touch events should not be routed to a destroyed target "
+           "View.";
     touch_target_ = nullptr;
     base::debug::DumpWithoutCrashing();
   }
@@ -1278,7 +1280,7 @@ void RenderWidgetHostInputEventRouter::SendGestureScrollEnd(
           ui::ScrollGranularity::kScrollByPrecisePixel;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   view->ProcessGestureEvent(
       scroll_end,
@@ -1847,7 +1849,7 @@ RenderWidgetHostInputEventRouter::FindTargetSynchronously(
       return FindTouchpadGestureEventTarget(root_view, gesture_event);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RenderWidgetTargetResult();
 }
 
@@ -1924,7 +1926,7 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 TouchEmulator* RenderWidgetHostInputEventRouter::GetTouchEmulator() {

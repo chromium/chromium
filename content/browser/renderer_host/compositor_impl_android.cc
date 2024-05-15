@@ -863,7 +863,7 @@ void CompositorImpl::OnFatalOrSurfaceContextCreationFailure(
 }
 
 void CompositorImpl::OnFirstSurfaceActivation(const viz::SurfaceInfo& info) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void CompositorImpl::CacheBackBufferForCurrentSurface() {

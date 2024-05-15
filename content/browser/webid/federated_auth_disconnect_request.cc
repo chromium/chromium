@@ -88,7 +88,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       // Intentional fall-through.
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (error_disconnect_status) {

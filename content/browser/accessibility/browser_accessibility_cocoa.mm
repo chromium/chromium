@@ -1363,7 +1363,7 @@ bool content::IsNSRange(id value) {
     case ax::mojom::SortDirection::kOther:
       return NSAccessibilityUnknownSortDirectionValue;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return nil;

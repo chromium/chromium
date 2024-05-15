@@ -803,7 +803,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -819,7 +819,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -1176,7 +1176,7 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(callback));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   run_loop.Run();
 }

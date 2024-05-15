@@ -146,10 +146,10 @@ const std::string GetMimeTypeForSaveType(SavePageType save_type) {
       return "multipart/related";
     case SAVE_PAGE_TYPE_UNKNOWN:
     case SAVE_PAGE_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 WebContents* GetWebContents(Page* page) {
@@ -330,7 +330,7 @@ bool SavePackage::Init(
   BrowserContext* browser_context =
       page_->GetMainDocument().GetBrowserContext();
   if (!browser_context) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

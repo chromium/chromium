@@ -1056,7 +1056,7 @@ void ContentBrowserClient::CreateWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   // NOTREACHED because WillInterceptWebSocket returns false.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ContentBrowserClient::WillCreateWebTransport(

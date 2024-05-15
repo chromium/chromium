@@ -80,7 +80,7 @@ void MakeServableStreamingURLLoaderForTest(
           &on_response_complete_loop),
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }),
       base::BindOnce(&PrefetchContainer::OnReceivedHead,
                      prefetch_container->GetWeakPtr()),
@@ -123,7 +123,7 @@ MakeManuallyServableStreamingURLLoaderForTest(
                      prefetch_container->GetWeakPtr()),
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }),
       base::BindOnce(&PrefetchContainer::OnReceivedHead,
                      prefetch_container->GetWeakPtr()),
@@ -254,12 +254,12 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       &test_url_loader_factory, *original_request, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return std::optional<PrefetchErrorOnResponseReceived>();
       }),
       base::BindOnce(
           [](const network::URLLoaderCompletionStatus& completion_status) {
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
                                             &redirect_info, &redirect_head),
@@ -322,7 +322,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
           base::BindRepeating(
               [](const net::RedirectInfo& redirect_info,
                  network::mojom::URLResponseHeadPtr response_head) {
-                NOTREACHED();
+                NOTREACHED_IN_MIGRATION();
               }),
           base::BindOnce(&PrefetchContainer::OnReceivedHead,
                          prefetch_container->GetWeakPtr()),
@@ -368,7 +368,7 @@ void PrefetchTestURLLoaderClient::DisconnectMojoPipes() {
 
 void PrefetchTestURLLoaderClient::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrefetchTestURLLoaderClient::OnReceiveResponse(
@@ -402,7 +402,7 @@ void PrefetchTestURLLoaderClient::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     OnUploadProgressCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrefetchTestURLLoaderClient::OnTransferSizeUpdated(

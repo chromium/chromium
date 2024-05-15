@@ -692,7 +692,7 @@ WebFrameLoadType NavigationTypeToLoadType(
                  : WebFrameLoadType::kStandard;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebFrameLoadType::kStandard;
   }
 }
@@ -1177,7 +1177,7 @@ perfetto::protos::pbzero::FrameDeleteIntention FrameDeleteIntentionToProto(
           FRAME_DELETE_INTENTION_SPECULATIVE_MAIN_FRAME_FOR_NAVIGATION_CANCELLED;
   }
   // All cases should've been handled by the switch case above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ProtoLevel::FRAME_DELETE_INTENTION_NOT_MAIN_FRAME;
 }
 
@@ -1255,7 +1255,7 @@ WindowOpenDisposition NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   }
-  NOTREACHED() << "Unexpected WebNavigationPolicy";
+  NOTREACHED_IN_MIGRATION() << "Unexpected WebNavigationPolicy";
   return WindowOpenDisposition::IGNORE_ACTION;
 }
 

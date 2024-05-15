@@ -70,7 +70,7 @@ struct ParamTraits<gfx::NativeWindow> {
       memcpy(r, data, sizeof(gfx::NativeWindow));
     } else {
       result = false;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     return result;
 #endif

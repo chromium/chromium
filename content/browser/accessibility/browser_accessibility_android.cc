@@ -258,7 +258,7 @@ bool BrowserAccessibilityAndroid::IsEnabled() const {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -1447,7 +1447,7 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
       x = std::clamp(x_initial + page_x, x_min, x_max);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   manager()->SetScrollOffset(*this, gfx::Point(x, y));
@@ -1710,7 +1710,7 @@ void BrowserAccessibilityAndroid::GetGranularityBoundaries(
       GetWordBoundaries(starts, ends, offset);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

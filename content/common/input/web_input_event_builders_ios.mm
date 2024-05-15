@@ -92,7 +92,7 @@ blink::WebTouchPoint::State ToWebTouchPointState(UITouch* event,
     case UITouchPhaseStationary:
       return blink::WebTouchPoint::State::kStateStationary;
   }
-  NOTREACHED() << "Invalid MotionEvent::Action.";
+  NOTREACHED_IN_MIGRATION() << "Invalid MotionEvent::Action.";
   return blink::WebTouchPoint::State::kStateUndefined;
 }
 

@@ -175,7 +175,7 @@ void AudioOutputStreamBroker::ObserverBindingLost(
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "ObserverBindingLost", this,
                                       "reset reason", reason);
   if (reason > static_cast<uint32_t>(DisconnectReason::kMaxValue))
-    NOTREACHED() << "Invalid reason: " << reason;
+    NOTREACHED_IN_MIGRATION() << "Invalid reason: " << reason;
 
   DisconnectReason reason_enum = static_cast<DisconnectReason>(reason);
 

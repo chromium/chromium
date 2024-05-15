@@ -255,7 +255,7 @@ base::Value::Dict AccessibilityTreeFormatterBlink::BuildTree(
 
 base::Value::Dict AccessibilityTreeFormatterBlink::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::Value::Dict();
 }
 
@@ -794,7 +794,7 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
             &line);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

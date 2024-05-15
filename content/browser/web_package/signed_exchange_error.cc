@@ -37,10 +37,10 @@ SignedExchangeError::GetFieldFromSignatureVerifierResult(
         kErrInvalidSignatureIntegrity_deprecated:
     case SignedExchangeSignatureVerifier::Result::
         kErrInvalidTimestamp_deprecated:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

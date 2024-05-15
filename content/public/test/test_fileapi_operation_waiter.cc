@@ -26,7 +26,7 @@ void TestFileapiOperationWaiter::ResultsRetrieved(
     bool has_more) {
   // blink::mojom::FileSystemManager::ReadDirectory isn't being called by tests
   // right now, so this callback shouldn't be called.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestFileapiOperationWaiter::ErrorOccurred(base::File::Error error_code) {

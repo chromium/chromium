@@ -341,7 +341,7 @@ void FlingController::GenerateAndSendFlingProgressEvents(
       break;
     case blink::WebGestureDevice::kUninitialized:
     case blink::WebGestureDevice::kScrollbar:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Fling controller doesn't handle flings with source device:"
           << static_cast<int>(current_fling_parameters_.source_device);
   }
@@ -362,7 +362,7 @@ void FlingController::GenerateAndSendFlingEndEvents(
       break;
     case blink::WebGestureDevice::kUninitialized:
     case blink::WebGestureDevice::kScrollbar:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Fling controller doesn't handle flings with source device:"
           << static_cast<int>(current_fling_parameters_.source_device);
   }

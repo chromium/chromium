@@ -383,7 +383,7 @@ void TouchEmulator::OnGestureEvent(const ui::GestureEventData& gesture) {
 
   switch (gesture_event.GetType()) {
     case WebInputEvent::Type::kUndefined:
-      NOTREACHED() << "Undefined WebInputEvent type";
+      NOTREACHED_IN_MIGRATION() << "Undefined WebInputEvent type";
       // Bail without sending the junk event to the client.
       return;
 
@@ -565,8 +565,8 @@ void TouchEmulator::FillTouchEventAndPoint(const WebMouseEvent& mouse_event,
       break;
     default:
       eventType = WebInputEvent::Type::kUndefined;
-      NOTREACHED() << "Invalid event for touch emulation: "
-                   << mouse_event.GetType();
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid event for touch emulation: " << mouse_event.GetType();
   }
   touch_event_.touches_length = 1;
   touch_event_.SetModifiers(ModifiersWithoutMouseButtons(mouse_event));

@@ -281,7 +281,7 @@ void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

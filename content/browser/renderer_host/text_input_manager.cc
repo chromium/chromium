@@ -35,7 +35,7 @@ bool ShouldUpdateTextInputState(const ui::mojom::TextInputState& old_state,
   // the state. So the new state is always different.
   return true;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 #endif
 }

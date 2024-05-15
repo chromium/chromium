@@ -89,7 +89,7 @@ MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
     case MediaStreamType::DEVICE_VIDEO_CAPTURE:
       return MediaDeviceType::kMediaVideoInput;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return MediaDeviceType::kNumMediaDeviceTypes;

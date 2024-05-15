@@ -96,7 +96,7 @@ DatabaseStatus ToDatabaseStatus(blink::ServiceWorkerStatusCode status) {
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DatabaseStatus::kFailed;
 }
 
@@ -122,7 +122,7 @@ bool ToBackgroundFetchRegistration(
       registration_data->result = blink::mojom::BackgroundFetchResult::SUCCESS;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   bool did_convert = MojoFailureReasonFromRegistrationProto(
@@ -214,7 +214,7 @@ GURL RemoveUniqueParamFromCacheURL(const GURL& url,
   else if (split.size() == 2u)
     replacements.SetQueryStr(split[0]);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
   return url.ReplaceComponents(replacements);
 }

@@ -100,7 +100,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     host_->SetSandboxType(
         sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges);
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif
   }
 

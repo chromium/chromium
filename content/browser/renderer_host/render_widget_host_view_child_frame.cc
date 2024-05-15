@@ -154,7 +154,7 @@ void RenderWidgetHostViewChildFrame::UpdateIntrinsicSizingInfo(
 std::unique_ptr<SyntheticGestureTarget>
 RenderWidgetHostViewChildFrame::CreateSyntheticGestureTarget() {
   // Sythetic gestures should be sent to the root view.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -168,7 +168,7 @@ void RenderWidgetHostViewChildFrame::OnManagerWillDestroy(
 }
 
 void RenderWidgetHostViewChildFrame::InitAsChild(gfx::NativeView parent_view) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::SetSize(const gfx::Size& size) {
@@ -299,7 +299,7 @@ gfx::NativeView RenderWidgetHostViewChildFrame::GetNativeView() {
 
 gfx::NativeViewAccessible
 RenderWidgetHostViewChildFrame::GetNativeViewAccessible() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -327,29 +327,29 @@ void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
 
 std::optional<DisplayFeature>
 RenderWidgetHostViewChildFrame::GetDisplayFeature() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
 void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
     const DisplayFeature*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
@@ -367,7 +367,7 @@ void RenderWidgetHostViewChildFrame::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
     const gfx::Rect& bounds,
     const gfx::Rect& anchor_rect) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::UpdateCursor(const ui::Cursor& cursor) {
@@ -598,7 +598,7 @@ void RenderWidgetHostViewChildFrame::ForwardTouchpadZoomEventIfNecessary(
     blink::mojom::InputEventResultState ack_result) {
   // ACKs of synthetic wheel events for touchpad pinch or double tap are
   // processed in the root RWHV.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void RenderWidgetHostViewChildFrame::SetParentFrameSinkId(
@@ -633,7 +633,7 @@ void RenderWidgetHostViewChildFrame::TransformPointToRootSurface(
     gfx::PointF* point) {
   // This function is called by RenderWidgetHostInputEventRouter only for
   // root-views.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -868,7 +868,7 @@ bool RenderWidgetHostViewChildFrame::IsRenderWidgetHostViewChildFrame() {
 void RenderWidgetHostViewChildFrame::
     InvalidateLocalSurfaceIdAndAllocationGroup() {
   // This should only be handled by the top frame.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1003,7 +1003,7 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
     if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchscreen) {
       return blink::mojom::InputEventResultState::kConsumed;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (input_event.GetType() == blink::WebInputEvent::Type::kGestureFlingStart) {

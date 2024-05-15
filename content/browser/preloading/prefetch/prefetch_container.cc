@@ -104,7 +104,7 @@ PrefetchStatus PrefetchStatusFromIneligibleReason(
     case PreloadingEligibility::kEligible:
     default:
       // Other ineligible cases are not used in `PrefetchService`.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PrefetchStatus::kPrefetchIneligiblePreloadingDisabled;
   }
 }
@@ -670,7 +670,7 @@ PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
 void PrefetchContainer::SetLoadState(LoadState new_load_state) {
   switch (new_load_state) {
     case LoadState::kNotStarted:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case LoadState::kEligible:

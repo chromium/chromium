@@ -3134,7 +3134,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     } else if (bidder1_seller == kComponentSeller2) {
       component2_buyers.push_back(kBidder1);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     if (bidder2_seller == kComponentSeller1) {
@@ -3142,7 +3142,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     } else if (bidder2_seller == kComponentSeller2) {
       component2_buyers.push_back(kBidder2);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     component_auctions_.emplace_back(CreateAuctionConfig(
@@ -18224,7 +18224,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   /*highest_scoring_other_bid=*/ModeBid(3), ModeCurrency(),
                   /*made_highest_scoring_other_bid=*/false)));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -18477,7 +18477,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
                   /*made_highest_scoring_other_bid=*/true)));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -18720,7 +18720,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                   /*highest_scoring_other_bid=*/ModeBid(2), ModeCurrency(),
                   /*made_highest_scoring_other_bid=*/false)));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -21848,7 +21848,7 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
                     "commonid1/true"));
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
         }
       }
     }

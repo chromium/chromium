@@ -194,7 +194,7 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
     case Reason::kUnknown:
       return ProtoEnum::UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ProtoEnum::UNKNOWN;
 }
 

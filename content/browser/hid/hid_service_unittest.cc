@@ -278,7 +278,7 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         }
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 

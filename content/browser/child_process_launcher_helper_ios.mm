@@ -387,7 +387,7 @@ base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   // Not used yet (until required files are described in the service manifest on
   // iOS).
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::File();
 }
 

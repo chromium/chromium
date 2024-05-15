@@ -57,7 +57,7 @@ void CachedNavigationURLLoader::Start() {
   // Respond with a fake response.
   switch (loader_type_) {
     case LoaderType::kRegular:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case LoaderType::kNoopForBackForwardCache:
       // We use PostTask here to mimic the flow of a normal navigation.
@@ -86,7 +86,7 @@ void CachedNavigationURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool CachedNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
