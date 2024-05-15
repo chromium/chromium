@@ -126,6 +126,18 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
+                       ShowWhileCannotFitInWebContents) {
+  browser()->tab_strip_model()->GetActiveWebContents()->Resize(
+      gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10, /*height=*/10));
+
+  Show();
+  // Since Show() was called while the web contents is too small, the dialog
+  // should have been created, but should not be visible.
+  ASSERT_TRUE(GetDialog());
+  EXPECT_FALSE(GetDialog()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        ModalDialogThenShowThenCloseModalDialog) {
   PreShow();
   delegate_->SetAccountSelectedCallback(base::BindOnce(

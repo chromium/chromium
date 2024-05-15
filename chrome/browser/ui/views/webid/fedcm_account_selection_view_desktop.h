@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
-#include "chrome/browser/ui/webid/account_selection_view.h"
-
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/widget/widget_observer.h"
@@ -117,6 +117,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionBubbleView::Observer:
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;

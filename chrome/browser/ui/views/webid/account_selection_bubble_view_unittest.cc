@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
@@ -64,11 +65,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                        : std::make_optional<std::u16string>(kIframeETLDPlusOne);
     dialog_ = new AccountSelectionBubbleView(
         kTopFrameETLDPlusOne, iframe_etld_plus_one, title,
-        blink::mojom::RpContext::kSignIn,
-        /*web_contents=*/nullptr, anchor_widget_->GetContentsView(),
-        shared_url_loader_factory(),
+        blink::mojom::RpContext::kSignIn, test_web_contents_.get(),
+        anchor_widget_->GetContentsView(), shared_url_loader_factory(),
         /*observer=*/nullptr, /*widget_observer=*/nullptr);
-    views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
   void CreateAndShowSingleAccountPicker(
@@ -397,14 +396,18 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
     feature_list_.InitAndEnableFeature(features::kFedCm);
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    delegate_ = std::make_unique<FakeDelegate>(test_web_contents_.get());
+    // The x, y coordinates shouldn't matter but the width and height are set to
+    // an arbitrary number that is large enough to fit the bubble to ensure that
+    // the bubble is not hidden because the web contents is too small.
+    test_web_contents_->Resize(
+        gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/1000, /*height=*/1000));
     test_shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    ChromeViewsTestBase::SetUp();
   }
 
   void TearDown() override {
@@ -420,6 +423,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     return test_shared_url_loader_factory_;
   }
 
+  content::WebContents* web_contents() { return test_web_contents_.get(); }
+
   raw_ptr<AccountSelectionBubbleView, DanglingUntriaged> dialog_;
 
  private:
@@ -431,7 +436,6 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   std::unique_ptr<views::Widget> anchor_widget_;
 
-  std::unique_ptr<FakeDelegate> delegate_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1270,4 +1274,38 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   /*expect_idp_brand_icon_in_header=*/true,
                   /*error_code=*/"error_we_dont_support",
                   GURL(u"https://idp-example.com/more-details"));
+}
+
+// Tests that CanFitInWebContents returns true when the web contents is large
+// enough to fit the bubble and bubble bounds computed are contained within the
+// web contents' bounds.
+TEST_F(AccountSelectionBubbleViewTest, WebContentsLargeEnoughToFitDialog) {
+  TestSingleAccount(kTitleSignIn, /*expected_subtitle=*/std::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
+  EXPECT_TRUE(dialog()->CanFitInWebContents());
+  EXPECT_TRUE(
+      web_contents()->GetViewBounds().Contains(dialog_->GetBubbleBounds()));
+}
+
+// Tests that CanFitInWebContents returns false when the web contents is too
+// small to fit the bubble. We do not test GetBubbleBounds here because the
+// bubble would be hidden so GetBubbleBounds is not relevant.
+TEST_F(AccountSelectionBubbleViewTest, WebContentsTooSmallToFitDialog) {
+  TestSingleAccount(kTitleSignIn, /*expected_subtitle=*/std::nullopt,
+                    /*expect_idp_brand_icon_in_header=*/true);
+
+  // Web contents is too small, vertically.
+  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/1000,
+                                   /*height=*/10));
+  EXPECT_FALSE(dialog()->CanFitInWebContents());
+
+  // Web contents is too small, horizontally.
+  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
+                                   /*height=*/1000));
+  EXPECT_FALSE(dialog()->CanFitInWebContents());
+
+  // Web contents is too small, both vertically and horizontally.
+  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
+                                   /*height=*/10));
+  EXPECT_FALSE(dialog()->CanFitInWebContents());
 }

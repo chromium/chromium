@@ -147,8 +147,12 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   base::WeakPtr<views::Widget> GetDialogWidget() override {
     return dialog_widget_->GetWeakPtr();
   }
+  void UpdateDialogPosition() override { dialog_position_updated_ = true; }
+  bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
 
   bool show_back_button_{false};
+  bool dialog_position_updated_{false};
+  bool can_fit_in_web_contents_{true};
   std::optional<SheetType> sheet_type_;
   std::vector<std::string> account_ids_;
   raw_ptr<views::Widget> dialog_widget_;
@@ -2298,4 +2302,114 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   });
   Show(*controller, idp_data.accounts, SignInMode::kExplicit,
        blink::mojom::RpMode::kButton);
+}
+
+// Tests that resizing web contents would update the dialog visibility depending
+// on whether the dialog can fit within the web contents.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ResizeWebContentsChangesDialogVisibility) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate that the web contents is too small to fit the dialog, hiding the
+  // dialog.
+  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate that the web contents is big enough to fit the dialog, showing the
+  // dialog.
+  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
+// Tests that resizing web contents in different web contents visibility
+// scenarios would update the dialog visibility correctly depending on whether
+// the dialog can fit within the web contents or whether the web contents where
+// the dialog is contained is visible.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ResizeWebContentsWithWindowVisibilityChanges) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+
+  // Emulate user changing tabs, hiding the dialog.
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user resizing the window, making the web contents too small to fit
+  // the dialog. The dialog should remain hidden.
+  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user changing back to the tab containing the dialog. The dialog
+  // should remain hidden because the web contents is still too small to fit the
+  // dialog.
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user resizing the window, making the web contents is big enough to
+  // fit the dialog. The dialog should now be visible.
+  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate user resizing the window, making the web contents too small to fit
+  // the dialog. The dialog should be hidden.
+  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user changing tabs, the dialog should remain hidden.
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user resizing the window, making the web contents big enough to fit
+  // the dialog. The dialog should remain hidden because the user is on a
+  // different tab.
+  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->FrameSizeChanged(/*render_frame_host=*/nullptr,
+                               /*frame_size=*/gfx::Size());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user changing back to the tab containing the dialog. The dialog
+  // should now be visible.
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
+// Tests that changing visibility from hidden to visible, also updates the
+// dialog position. This is needed in case the web contents was resized while
+// hidden.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       VisibilityChangesUpdatesDialogPosition) {
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts, SignInMode::kExplicit);
+
+  // Emulate user changing tabs, hiding the dialog.
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_FALSE(account_selection_view_->dialog_position_updated_);
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user changing back to the tab containing the dialog, updating the
+  // dialog position.
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
 }

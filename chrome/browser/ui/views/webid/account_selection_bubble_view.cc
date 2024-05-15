@@ -16,6 +16,7 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/browser/ui/views/webid/webid_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,6 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -228,10 +230,10 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     views::WidgetObserver* widget_observer)
     : views::BubbleDialogDelegateView(
           anchor_view,
-          // Note that BOTTOM_RIGHT means the bubble's bottom and right are
-          // anchored to the `anchor_view`, which effectively means the bubble
-          // will be on top of the `anchor_view`, aligned on its right side.
-          views::BubbleBorder::Arrow::BOTTOM_RIGHT,
+          // Note that TOP_RIGHT means the bubble's top and right are anchored
+          // to the `anchor_view`. The final bubble positioning will be computed
+          // in GetBubbleBounds.
+          views::BubbleBorder::Arrow::TOP_RIGHT,
           views::BubbleBorder::DIALOG_SHADOW,
           /*autosize=*/true),
       AccountSelectionViewBase(web_contents,
@@ -577,19 +579,27 @@ std::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
   return base::UTF16ToUTF8(subtitle_label_->GetText());
 }
 
+void AccountSelectionBubbleView::UpdateDialogPosition() {
+  dialog_widget_->SetBounds(GetBubbleBounds());
+}
+
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
-  // The bubble initially looks like this relative to the contents_web_view:
-  //                        |--------|
-  //                        |        |
-  //                        | bubble |
-  //                        |        |
+  // Since the top right corner of the bubble is set as the arrow in the ctor,
+  // the top right corner of the bubble will be anchored to the origin, which we
+  // set to be the top right corner of the web contents container.
   //       |-------------------------|
+  //       |                |        |
+  //       |                | bubble |
+  //       |                |        |
+  //       |                |--------|
   //       |                         |
-  //       | contents_web_view       |
+  //       |   contents_web_view     |
   //       |          ...            |
   //       |-------------------------|
-  // Thus, we need to move the bubble to the left by kRightMargin and down by
-  // the size of the bubble plus kTopMargin in order to achieve what we want:
+  // We also need to inset the web contents bounds by kTopMargin at the top and
+  // kRightMargin either at the left or right, depending on whether RTL is
+  // enabled, in order to leave some space between the bubble and the edges of
+  // the web contents.
   //       |-------------------------|
   //       |               kTopMargin|
   //       |         |--------|      |
@@ -601,11 +611,21 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
   //       |          ...            |
   //       |-------------------------|
   // In the RTL case, the bubble is aligned towards the left side of the screen
-  // and hence the x-axis offset needs to be in the opposite direction.
-  return views::BubbleDialogDelegateView::GetBubbleBounds() +
-         gfx::Vector2d(base::i18n::IsRTL() ? kRightMargin : -kRightMargin,
-                       GetWidget()->client_view()->GetPreferredSize().height() +
-                           kTopMargin);
+  // and the horizontal inset would apply to the left of the bubble.
+  gfx::Rect bubble_bounds = views::BubbleDialogDelegateView::GetBubbleBounds();
+  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
+  if (base::i18n::IsRTL()) {
+    web_contents_bounds.Inset(gfx::Insets::TLBR(
+        /*top=*/kTopMargin, /*left=*/kRightMargin, /*bottom=*/0, /*right=*/0));
+    bubble_bounds.set_origin(web_contents_->GetViewBounds().origin());
+  } else {
+    web_contents_bounds.Inset(gfx::Insets::TLBR(
+        /*top=*/kTopMargin, /*left=*/0, /*bottom=*/0, /*right=*/kRightMargin));
+    bubble_bounds.set_origin(web_contents_->GetViewBounds().top_right());
+  }
+  bubble_bounds.AdjustToFit(web_contents_bounds);
+
+  return bubble_bounds;
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(

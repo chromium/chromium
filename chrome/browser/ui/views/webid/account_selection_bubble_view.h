@@ -87,10 +87,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void CloseDialog() override;
 
+  void UpdateDialogPosition() override;
+
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
+                           WebContentsLargeEnoughToFitDialog);
+
+  // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;
 
   // Returns a View containing the logo of the identity provider. Creates the

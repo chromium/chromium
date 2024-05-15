@@ -82,6 +82,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   void CloseDialog() override;
 
+  void UpdateDialogPosition() override;
+
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 
@@ -134,9 +136,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Adds a progress bar at the top of the modal dialog.
   void AddProgressBar();
-
-  // Resizes the modal dialog to the size of its contents.
-  void UpdateModalPositionAndTitle();
 
   // Removes all child views and dangling pointers.
   void RemoveNonHeaderChildViews();

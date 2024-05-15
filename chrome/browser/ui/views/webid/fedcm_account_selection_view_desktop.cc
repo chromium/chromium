@@ -63,6 +63,7 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
+  input_protector_->VisibilityChanged(true);
   // An active widget would steal the focus when displayed, this would lead
   // to some unexpected consequences. e.g.
   //   1. links/buttons from the web contents area would require two clicks,
@@ -273,8 +274,8 @@ void FedCmAccountSelectionView::Show(
        *popup_window_state_ ==
            PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp)) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (is_web_contents_visible_) {
-      input_protector_->VisibilityChanged(true);
+    if (is_web_contents_visible_ &&
+        account_selection_view_->CanFitInWebContents()) {
       ShowDialogWidget();
       if (accounts_displayed_callback_) {
         std::move(accounts_displayed_callback_).Run();
@@ -370,8 +371,8 @@ void FedCmAccountSelectionView::ShowFailureDialog(
 
   if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (is_web_contents_visible_) {
-      input_protector_->VisibilityChanged(true);
+    if (is_web_contents_visible_ &&
+        account_selection_view_->CanFitInWebContents()) {
       ShowDialogWidget();
     }
   }
@@ -439,9 +440,9 @@ void FedCmAccountSelectionView::ShowErrorDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (is_web_contents_visible_) {
+  if (is_web_contents_visible_ &&
+      account_selection_view_->CanFitInWebContents()) {
     ShowDialogWidget();
-    input_protector_->VisibilityChanged(true);
   }
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
@@ -487,8 +488,7 @@ void FedCmAccountSelectionView::ShowLoadingDialog(
   }
 
   if (create_view && is_web_contents_visible_) {
-    GetDialogWidget()->Show();
-    input_protector_->VisibilityChanged(true);
+    ShowDialogWidget();
   }
   // Else:
   // The dialog is not guaranteed to be shown. The dialog will be hidden if the
@@ -530,15 +530,20 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
     return;
   }
 
-  if (is_web_contents_visible_) {
-    GetDialogWidget()->Show();
+  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
+  // cannot fit in web contents.
+  if (is_web_contents_visible_ &&
+      (account_selection_view_->CanFitInWebContents() ||
+       GetDialogType() == DialogType::MODAL)) {
+    // We need to update the dialog's position in case the window was resized
+    // while it was not visible. The dialog position is already being updated
+    // automatically if the window was resized while it is visible.
+    account_selection_view_->UpdateDialogPosition();
+    ShowDialogWidget();
     if (accounts_displayed_callback_) {
       std::move(accounts_displayed_callback_).Run();
     }
     GetDialogWidget()->widget_delegate()->SetCanActivate(true);
-    // This will protect against potentially unintentional inputs that happen
-    // right after the dialog becomes visible again.
-    input_protector_->VisibilityChanged(true);
   } else {
     // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
     // Make the views::Widget non-activatable while it is hidden to prevent the
@@ -1009,4 +1014,27 @@ bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
                            state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
                            state_ == State::SINGLE_ACCOUNT_PICKER ||
                            state_ == State::MULTI_ACCOUNT_PICKER);
+}
+
+void FedCmAccountSelectionView::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  // TODO(crbug.com/340368623): Figure out what to do when FrameSizeChanged is
+  // called on the button flow modal.
+  if (!GetDialogWidget() || GetDialogType() == DialogType::MODAL) {
+    return;
+  }
+
+  if (account_selection_view_->CanFitInWebContents()) {
+    if (!GetDialogWidget()->IsVisible() && is_web_contents_visible_) {
+      account_selection_view_->UpdateDialogPosition();
+      ShowDialogWidget();
+    }
+    return;
+  }
+
+  if (GetDialogWidget()->IsVisible()) {
+    GetDialogWidget()->Hide();
+    input_protector_->VisibilityChanged(false);
+  }
 }

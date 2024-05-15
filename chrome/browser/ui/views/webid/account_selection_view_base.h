@@ -312,6 +312,15 @@ class AccountSelectionViewBase {
   // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
+  // Updates the position of the dialog. Used when the contents of the dialog
+  // has changed or when the widget which the dialog is anchored on has been
+  // resized.
+  virtual void UpdateDialogPosition() = 0;
+
+  // Whether the dialog can fit in the web contents at its preferred size.
+  // Virtual for testing purposes.
+  virtual bool CanFitInWebContents();
+
  protected:
   void SetLabelProperties(views::Label* label);
 
