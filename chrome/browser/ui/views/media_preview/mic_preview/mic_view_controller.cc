@@ -15,17 +15,14 @@
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace {
 
 const ui::ImageModel GetMicImageModel() {
-  const int icon_size = features::IsChromeRefresh2023() ? 20 : 18;
-  const auto& icon = features::IsChromeRefresh2023()
-                         ? vector_icons::kMicChromeRefreshIcon
-                         : vector_icons::kMicIcon;
+  const int icon_size = 20;
+  const auto& icon = vector_icons::kMicChromeRefreshIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, icon_size);
 }
 
