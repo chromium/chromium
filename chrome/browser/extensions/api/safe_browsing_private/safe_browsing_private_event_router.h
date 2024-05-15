@@ -70,9 +70,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyContentSize[];
   static const char kKeyTrigger[];
   static const char kKeyEventResult[];
-  static const char kKeyMalwareFamily[];
-  static const char kKeyMalwareCategory[];
-  static const char kKeyEvidenceLockerFilePath[];
   static const char kKeyScanId[];
   static const char kKeyIsFederated[];
   static const char kKeyFederatedOrigin[];
@@ -307,9 +304,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& trigger,
       const int64_t content_size,
       safe_browsing::EventResult event_result,
-      const std::string& malware_family,
-      const std::string& malware_category,
-      const std::string& evidence_locker_filepath,
       const std::string& scan_id,
       const std::string& content_transfer_method);
 

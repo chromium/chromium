@@ -258,12 +258,6 @@ const char SafeBrowsingPrivateEventRouter::kKeyContentType[] = "contentType";
 const char SafeBrowsingPrivateEventRouter::kKeyContentSize[] = "contentSize";
 const char SafeBrowsingPrivateEventRouter::kKeyTrigger[] = "trigger";
 const char SafeBrowsingPrivateEventRouter::kKeyEventResult[] = "eventResult";
-const char SafeBrowsingPrivateEventRouter::kKeyMalwareFamily[] =
-    "malwareFamily";
-const char SafeBrowsingPrivateEventRouter::kKeyMalwareCategory[] =
-    "malwareCategory";
-const char SafeBrowsingPrivateEventRouter::kKeyEvidenceLockerFilePath[] =
-    "evidenceLockerFilepath";
 const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
 const char SafeBrowsingPrivateEventRouter::kKeyIsFederated[] = "isFederated";
 const char SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin[] =
@@ -567,8 +561,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     OnDangerousDeepScanningResult(
         url, tab_url, source, destination, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
-        mime_type, trigger, content_size, event_result, result.malware_family(),
-        result.malware_category(), result.evidence_locker_filepath(), scan_id,
+        mime_type, trigger, content_size, event_result, scan_id,
         content_transfer_method);
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, tab_url, source, destination, file_name,
@@ -590,9 +583,6 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const std::string& trigger,
     const int64_t content_size,
     safe_browsing::EventResult event_result,
-    const std::string& malware_family,
-    const std::string& malware_category,
-    const std::string& evidence_locker_filepath,
     const std::string& scan_id,
     const std::string& content_transfer_method) {
   std::optional<enterprise_connectors::ReportingSettings> settings =
@@ -623,15 +613,6 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,
             event_result == safe_browsing::EventResult::BYPASSED);
-  if (!malware_family.empty()) {
-    event.Set(kKeyMalwareFamily, malware_family);
-  }
-  if (!malware_category.empty()) {
-    event.Set(kKeyMalwareCategory, malware_category);
-  }
-  if (!evidence_locker_filepath.empty()) {
-    event.Set(kKeyEvidenceLockerFilePath, evidence_locker_filepath);
-  }
   // The scan ID can be empty when the reported dangerous download is from a
   // Safe Browsing verdict.
   if (!scan_id.empty()) {
@@ -687,9 +668,6 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(event_result));
   event.Set(kKeyClickedThrough,
             event_result == safe_browsing::EventResult::BYPASSED);
-  if (!result.evidence_locker_filepath().empty()) {
-    event.Set(kKeyEvidenceLockerFilePath, result.evidence_locker_filepath());
-  }
   event.Set(kKeyScanId, scan_id);
   if (!content_transfer_method.empty()) {
     event.Set(kKeyContentTransferMethod, content_transfer_method);
@@ -743,9 +721,6 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   event.Set(kKeyEventResult, safe_browsing::EventResultToString(
                                  safe_browsing::EventResult::BYPASSED));
   event.Set(kKeyClickedThrough, true);
-  if (!result.evidence_locker_filepath().empty()) {
-    event.Set(kKeyEvidenceLockerFilePath, result.evidence_locker_filepath());
-  }
   event.Set(kKeyScanId, scan_id);
   if (user_justification) {
     event.Set(kKeyUserJustification, *user_justification);
