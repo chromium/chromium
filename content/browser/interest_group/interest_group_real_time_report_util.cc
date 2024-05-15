@@ -33,7 +33,8 @@ std::vector<uint8_t> Rappor(std::optional<int32_t> maybe_bucket,
                             int num_buckets) {
   std::vector<uint8_t> histogram(num_buckets, 0);
   if (maybe_bucket.has_value()) {
-    // Browser side that collects contributions should guarantee this.
+    // Browser side that receives contributions from worklets should have
+    // guaranteed this.
     CHECK_GE(*maybe_bucket, 0);
     CHECK_LT(*maybe_bucket, num_buckets);
     histogram[*maybe_bucket] = 1;
@@ -56,7 +57,8 @@ std::optional<int32_t> SampleContributions(
   }
   double priority_weight_sum = 0.0;
   for (const auto& contribution : contributions) {
-    // Browser side that collects contributions should guarantee this.
+    // Browser side that receives contributions from worklets should have
+    // guaranteed this.
     CHECK(contribution->priority_weight > 0);
     priority_weight_sum += contribution->priority_weight;
   }
@@ -99,6 +101,23 @@ CalculateRealTimeReportingHistograms(
 
 GURL GetRealTimeReportDestination(const url::Origin& origin) {
   return origin.GetURL().Resolve(kRealTimeReportPath);
+}
+
+bool HasValidRealTimeBucket(
+    const auction_worklet::mojom::RealTimeReportingContributionPtr&
+        contribution) {
+  return contribution->bucket >= 0 &&
+         contribution->bucket <
+             blink::features::kFledgeRealTimeReportingNumBuckets.Get();
+}
+
+bool HasValidRealTimePriorityWeight(
+    const auction_worklet::mojom::RealTimeReportingContributionPtr&
+        contribution) {
+  // WebIDL of priority weight was (restricted) double, which does not allow
+  // NaN or infinite. But a compromised worklet can still send these values.
+  return contribution->priority_weight > 0 &&
+         std::isfinite(contribution->priority_weight);
 }
 
 }  // namespace content

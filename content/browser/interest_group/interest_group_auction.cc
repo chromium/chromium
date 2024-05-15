@@ -1962,22 +1962,33 @@ class InterestGroupAuction::BuyerHelper
           std::move_iterator(non_kanon_pa_requests.end()));
     }
 
-    // Only keep real time reporting contributions when the buyer is opted-in.
-    // TODO(qingxinwu): Validate received real time reporting message, and
-    // report bad message if invalid.
     if (base::FeatureList::IsEnabled(
             blink::features::kFledgeRealTimeReporting) &&
-        auction_->config_->non_shared_params.per_buyer_real_time_reporting_types
-            .has_value() &&
-        auction_->config_->non_shared_params.per_buyer_real_time_reporting_types
-                .value()
-                .find(interest_group.owner) !=
-            auction_->config_->non_shared_params
-                .per_buyer_real_time_reporting_types.value()
-                .end()) {
-      RealTimeReportingContributions& real_time_contributions_for_origin =
-          state->real_time_contributions[interest_group.owner];
-      if (!real_time_contributions.empty()) {
+        !real_time_contributions.empty()) {
+      if (!base::ranges::all_of(real_time_contributions,
+                                HasValidRealTimeBucket)) {
+        mojo_bids.clear();
+        real_time_contributions.clear();
+        generate_bid_client_receiver_set_.ReportBadMessage(
+            "Invalid real time reporting bucket");
+      } else if (!base::ranges::all_of(real_time_contributions,
+                                       HasValidRealTimePriorityWeight)) {
+        mojo_bids.clear();
+        real_time_contributions.clear();
+        generate_bid_client_receiver_set_.ReportBadMessage(
+            "Invalid real time reporting priority weight");
+      } else if (auction_->config_->non_shared_params
+                     .per_buyer_real_time_reporting_types.has_value() &&
+                 auction_->config_->non_shared_params
+                         .per_buyer_real_time_reporting_types.value()
+                         .find(interest_group.owner) !=
+                     auction_->config_->non_shared_params
+                         .per_buyer_real_time_reporting_types.value()
+                         .end()) {
+        // Only keep real time reporting contributions when the buyer is
+        // opted-in.
+        RealTimeReportingContributions& real_time_contributions_for_origin =
+            state->real_time_contributions[interest_group.owner];
         real_time_contributions_for_origin.insert(
             real_time_contributions_for_origin.end(),
             std::move_iterator(real_time_contributions.begin()),
@@ -4630,7 +4641,8 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     std::optional<double> bid_in_seller_currency,
     const std::optional<GURL>& debug_loss_report_url,
     const std::optional<GURL>& debug_win_report_url,
-    const PrivateAggregationRequests& pa_requests) {
+    const PrivateAggregationRequests& pa_requests,
+    const RealTimeReportingContributions& real_time_contributions) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   // If `debug_loss_report_url` or `debug_win_report_url` is not a valid HTTPS
   // URL, the auction should fail because the worklet is compromised.
@@ -4699,6 +4711,18 @@ bool InterestGroupAuction::ValidateScoreBidCompleteResult(
     return false;
   }
 
+  if (!base::ranges::all_of(real_time_contributions, HasValidRealTimeBucket)) {
+    score_ad_receivers_.ReportBadMessage("Invalid real time reporting bucket");
+    return false;
+  }
+
+  if (!base::ranges::all_of(real_time_contributions,
+                            HasValidRealTimePriorityWeight)) {
+    score_ad_receivers_.ReportBadMessage(
+        "Invalid real time reporting priority weight");
+    return false;
+  }
+
   return true;
 }
 
@@ -4723,7 +4747,7 @@ void InterestGroupAuction::OnScoreAdComplete(
   if (!ValidateScoreBidCompleteResult(
           score, component_auction_modified_bid_params.get(),
           bid_in_seller_currency, debug_loss_report_url, debug_win_report_url,
-          pa_requests)) {
+          pa_requests, real_time_contributions)) {
     OnBiddingAndScoringComplete(AuctionResult::kBadMojoMessage);
     return;
   }

@@ -223,4 +223,52 @@ TEST_F(InterestGroupRealTimeReportUtilTest, GetRealTimeReportDestination) {
                 url::Origin::Create(GURL("https://a.test/"))));
 }
 
+TEST_F(InterestGroupRealTimeReportUtilTest, HasValidRealTimeBucket) {
+  const struct {
+    int32_t bucket;
+    bool expected_is_valid;
+  } kTestCases[] = {
+      {0, true},
+      {1, true},
+      {blink::features::kFledgeRealTimeReportingNumBuckets.Get() - 1, true},
+      {blink::features::kFledgeRealTimeReportingNumBuckets.Get(), false},
+      {-1, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.bucket);
+    EXPECT_EQ(test_case.expected_is_valid,
+              HasValidRealTimeBucket(
+                  auction_worklet::mojom::RealTimeReportingContribution::New(
+                      /*bucket=*/test_case.bucket, /*priority_weight=*/1,
+                      /*latency_threshold=*/std::nullopt)));
+  }
+}
+
+TEST_F(InterestGroupRealTimeReportUtilTest, HasValidRealTimePriorityWeight) {
+  const struct {
+    double priority_weight;
+    bool expected_is_valid;
+  } kTestCases[] = {
+      {1, true},
+      {2.2, true},
+      {std::numeric_limits<double>::max(), true},
+      {0, false},
+      {-1, false},
+      {-1.5, false},
+      {std::numeric_limits<double>::quiet_NaN(), false},
+      {std::numeric_limits<double>::infinity(), false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.priority_weight);
+    EXPECT_EQ(
+        test_case.expected_is_valid,
+        HasValidRealTimePriorityWeight(
+            auction_worklet::mojom::RealTimeReportingContribution::New(
+                /*bucket=*/1, /*priority_weight=*/test_case.priority_weight,
+                /*latency_threshold=*/std::nullopt)));
+  }
+}
+
 }  // namespace content

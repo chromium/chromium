@@ -1026,7 +1026,8 @@ class CONTENT_EXPORT InterestGroupAuction
       std::optional<double> bid_in_seller_currency,
       const std::optional<GURL>& debug_loss_report_url,
       const std::optional<GURL>& debug_win_report_url,
-      const PrivateAggregationRequests& pa_requests);
+      const PrivateAggregationRequests& pa_requests,
+      const RealTimeReportingContributions& real_time_contributions);
 
   // auction_worklet::mojom::ScoreAdClient implementation:
   void OnScoreAdComplete(
