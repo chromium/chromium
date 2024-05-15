@@ -327,6 +327,12 @@ impl Fixed {
     }
 }
 
+impl From<i32> for Fixed {
+    fn from(value: i32) -> Self {
+        Self::from_i32(value)
+    }
+}
+
 impl F26Dot6 {
     /// Creates a 26.6 fixed point value from a 32 bit integer.
     #[inline(always)]

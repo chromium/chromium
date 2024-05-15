@@ -597,6 +597,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.4.2 -> 0.4.3"
 notes = "Reviewed in https://crrev.com/c/5362378. No new use of unsafe."
 
+[[audits.font-types]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.5.2 -> 0.5.3"
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
