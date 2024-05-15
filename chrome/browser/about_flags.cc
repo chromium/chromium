@@ -11133,7 +11133,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefitsSync)},
 
     {"linked-services-setting", flag_descriptions::kLinkedServicesSettingName,
-     flag_descriptions::kLinkedServicesSettingDescription, kOsDesktop,
+     flag_descriptions::kLinkedServicesSettingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kLinkedServicesSetting)},
 
 #if BUILDFLAG(IS_CHROMEOS)
