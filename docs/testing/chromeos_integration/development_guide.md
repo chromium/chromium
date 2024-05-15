@@ -28,6 +28,13 @@ Each Crosier test being added should include test metadata in `yaml` format.
 See [Crosier metadata guide](https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/chromeos_integration/crosier_metadata.md)
 for more information on how to add it.
 
+## Debugging Crosier tests
+
+Debugging a Crosier test is like debugging any Chrome test on device. Following
+developer library resources are available:
+
+https://www.chromium.org/chromium-os/developer-library/guides/#debugging
+
 ## Continuous builders
 Currently the test binary runs against both Ash and Lacros on CI only.
 
