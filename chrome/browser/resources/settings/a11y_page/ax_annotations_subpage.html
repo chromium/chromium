@@ -1,0 +1,19 @@
+<style include="settings-shared"></style>
+<template is="dom-if" if="[[showPdfOcrToggle_]]">
+    <settings-toggle-button id="pdfOcrToggle"
+        class="hr"
+        pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
+        label="$i18n{pdfOcrTitle}"
+        sub-label="[[getPdfOcrToggleSublabel_(
+            screenAIStatus_, screenAIProgress_)]]">
+    </settings-toggle-button>
+</template>
+<template is="dom-if" if="[[showMainNodeAnnotationsToggle_]]">
+    <settings-toggle-button id="mainNodeAnnotationsToggle"
+        class="hr"
+        pref="{{prefs.settings.a11y.enable_main_node_annotations}}"
+        label="$i18n{mainNodeAnnotationsTitle}"
+        sub-label="[[getMainNodeAnnotationsToggleSublabel_(
+            screenAIStatus_, screenAIProgress_)]]">
+    </settings-toggle-button>
+</template>

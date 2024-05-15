@@ -19,7 +19,7 @@ import '../settings_page/settings_subpage.js';
 // </if>
 
 // <if expr="is_win or is_linux or is_macosx">
-import './pdf_ocr_toggle.js';
+import './ax_annotations_subpage.js';
 // </if>
 
 // <if expr="is_win or is_macosx">
@@ -110,11 +110,11 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
       // <if expr="is_win or is_linux or is_macosx">
       /**
-       * Whether to show the PDF OCR toggle.
+       * Whether to show the AxAnnotations subpage.
        */
-      showPdfOcrToggle_: {
+      showAxAnnotationsSubpage_: {
         type: Boolean,
-        computed: 'computeShowPdfOcrToggle_(hasScreenReader_)',
+        computed: 'computeShowAxAnnotationsSubpage_(hasScreenReader_)',
       },
       // </if>
 
@@ -173,7 +173,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   private hasScreenReader_: boolean;
   private showOverscrollHistoryNavigationToggle_: boolean;
   // <if expr="is_win or is_linux or is_macosx">
-  private showPdfOcrToggle_: boolean;
+  private showAxAnnotationsSubpage_: boolean;
   // </if>
 
   override connectedCallback() {
@@ -207,14 +207,17 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
 
   // <if expr="is_win or is_linux or is_macosx">
   /**
-   * Return whether to show the PDF OCR toggle button based on:
-   *    1. The PDF OCR feature flag is enabled.
+   * Return whether to show the AxAnnotations subpage based on:
+   *    1. If any annotation's feature flag is enabled.
    *    2. Whether a screen reader is enabled.
-   * Note: on ChromeOS, the PDF OCR toggle is shown on a different settings
-   * page; i.e. Settings > Accessibility > Text-to-Speech.
+   * Note: on ChromeOS, the AxAnnotations subpage is shown on a different
+   * settings page; i.e. Settings > Accessibility > Text-to-Speech.
    */
-  private computeShowPdfOcrToggle_(): boolean {
-    return loadTimeData.getBoolean('pdfOcrEnabled') && this.hasScreenReader_;
+  private computeShowAxAnnotationsSubpage_(): boolean {
+    const anyAxAnnotationsFeatureEnabled =
+        loadTimeData.getBoolean('pdfOcrEnabled') ||
+        loadTimeData.getBoolean('mainNodeAnnotationsEnabled');
+    return anyAxAnnotationsFeatureEnabled && this.hasScreenReader_;
   }
   // </if>
 

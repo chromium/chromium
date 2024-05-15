@@ -77,6 +77,12 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillSection) {
   RunTest("settings/autofill_section_test.js", "mocha.run()");
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SettingsTest, AxAnnotationsSubpage) {
+  RunTest("settings/ax_annotations_subpage_test.js", "mocha.run()");
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, BatteryPage) {
   RunTest("settings/battery_page_test.js", "mocha.run()");
 }
@@ -242,12 +248,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionEditCreditCardLink) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionIban) {
   RunTest("settings/payments_section_iban_test.js", "mocha.run()");
 }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SettingsTest, PdfOcrToggle) {
-  RunTest("settings/pdf_ocr_toggle_test.js", "mocha.run()");
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PeoplePage) {
   RunTest("settings/people_page_test.js", "mocha.run()");

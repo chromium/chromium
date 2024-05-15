@@ -538,6 +538,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kString;
 #endif
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  (*s_allowlist)[::prefs::kAccessibilityMainNodeAnnotationsEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kAccessibilityPdfOcrAlwaysActive] =
       settings_api::PrefType::kBoolean;
 #endif

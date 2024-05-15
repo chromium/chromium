@@ -24,9 +24,9 @@ namespace {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kWebUIListenerCall[] = "cr.webUIListenerCallback";
-const char kPdfOcrDownloadingProgressChangedEventName[] =
-    "pdf-ocr-downloading-progress-changed";
-const char kPdfOcrStateChangedEventName[] = "pdf-ocr-state-changed";
+const char kScreenAIDownloadingProgressChangedEventName[] =
+    "screen-ai-downloading-progress-changed";
+const char kScreenAIStateChangedEventName[] = "screen-ai-state-changed";
 
 class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
  public:
@@ -65,16 +65,16 @@ class TestAccessibilityMainHandler : public AccessibilityMainHandler {
 }  // namespace
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-class AccessibilityMainHandlerPdfOcrTest : public testing::Test {
+class AccessibilityMainHandlerScreenAITest : public testing::Test {
  public:
-  AccessibilityMainHandlerPdfOcrTest() : features_({features::kPdfOcr}) {}
+  AccessibilityMainHandlerScreenAITest() : features_({features::kPdfOcr}) {}
 
-  AccessibilityMainHandlerPdfOcrTest(
-      const AccessibilityMainHandlerPdfOcrTest&) = delete;
-  AccessibilityMainHandlerPdfOcrTest& operator=(
-      const AccessibilityMainHandlerPdfOcrTest&) = delete;
+  AccessibilityMainHandlerScreenAITest(
+      const AccessibilityMainHandlerScreenAITest&) = delete;
+  AccessibilityMainHandlerScreenAITest& operator=(
+      const AccessibilityMainHandlerScreenAITest&) = delete;
 
-  ~AccessibilityMainHandlerPdfOcrTest() override = default;
+  ~AccessibilityMainHandlerScreenAITest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -138,18 +138,19 @@ class AccessibilityMainHandlerPdfOcrTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIDownloadingState) {
+TEST_F(AccessibilityMainHandlerScreenAITest,
+       MessageForScreenAIDownloadingState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
       screen_ai::ScreenAIInstallState::State::kDownloading;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerPdfOcrTest,
+TEST_F(AccessibilityMainHandlerScreenAITest,
        MessageForScreenAIDownloadingProgress) {
   // State needs to be `kDownloading` before updating the download progress.
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
@@ -157,7 +158,7 @@ TEST_F(AccessibilityMainHandlerPdfOcrTest,
   screen_ai::ScreenAIInstallState::State state =
       screen_ai::ScreenAIInstallState::State::kDownloading;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/++call_data_count_before_call);
 
@@ -166,35 +167,36 @@ TEST_F(AccessibilityMainHandlerPdfOcrTest,
   // `progress` is expected to be converted into percentage in a message.
   const int expected_progress_in_percentage = progress * 100;
   ExpectCallToWebUI(kWebUIListenerCall,
-                    kPdfOcrDownloadingProgressChangedEventName,
+                    kScreenAIDownloadingProgressChangedEventName,
                     /*expected_arg=*/expected_progress_in_percentage,
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerPdfOcrTest, MessageForScreenAIDownloadedState) {
+TEST_F(AccessibilityMainHandlerScreenAITest,
+       MessageForScreenAIDownloadedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
       screen_ai::ScreenAIInstallState::State::kDownloaded;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerPdfOcrTest,
+TEST_F(AccessibilityMainHandlerScreenAITest,
        MessageForScreenAIDownloadFailedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
   screen_ai::ScreenAIInstallState::State state =
       screen_ai::ScreenAIInstallState::State::kDownloadFailed;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/call_data_count_before_call + 1u);
 }
 
-TEST_F(AccessibilityMainHandlerPdfOcrTest,
+TEST_F(AccessibilityMainHandlerScreenAITest,
        MessageForScreenAINotDownloadedState) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
@@ -202,13 +204,13 @@ TEST_F(AccessibilityMainHandlerPdfOcrTest,
   screen_ai::ScreenAIInstallState::State state =
       screen_ai::ScreenAIInstallState::State::kDownloadFailed;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/++call_data_count_before_call);
 
   state = screen_ai::ScreenAIInstallState::State::kNotDownloaded;
   SimulateSetState(state);
-  ExpectCallToWebUI(kWebUIListenerCall, kPdfOcrStateChangedEventName,
+  ExpectCallToWebUI(kWebUIListenerCall, kScreenAIStateChangedEventName,
                     /*expected_arg=*/static_cast<int>(state),
                     /*call_count=*/call_data_count_before_call + 1u);
 }

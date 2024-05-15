@@ -216,6 +216,24 @@
   <message name="IDS_SETTINGS_ACCESSIBLE_IMAGE_LABELS_SUBTITLE" desc="Subtitle for screen reader image labels feature.">
     If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.
   </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_COMPLETE" desc="Success message when it has downloaded main node annotation files." translateable="false">
+    Main node annotation files downloaded
+  </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_ERROR" desc="Generic error message when it fails to download main node annotation files." translateable="false">
+    Can't download main node annotation files. Try again later.
+  </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOAD_PROGRESS" desc="Download progress indicator after main node annotation is enabled. The user needs to download certain files for the feature to work." translateable="false">
+    Downloading main node annotation files… <ph name="PERCENT">$1<ex>17</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_DOWNLOADING" desc="Generic message when it has started downloading main node annotation files." translateable="false">
+    Downloading main node annotation files
+  </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_TITLE" desc="Description for screen reader main node annotations feature." translateable="false">
+    Annotate main node
+  </message>
+  <message name="IDS_SETTINGS_MAIN_NODE_ANNOTATIONS_SUBTITLE" desc="Subtitle for screen reader main node annotation feature." translateable="false">
+    Identify the main landmark in web pages for assistive technology
+  </message>
   <message name="IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE" desc="Success message when it has downloaded PDF OCR files.">
     Text recognition files downloaded
   </message>

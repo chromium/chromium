@@ -57,7 +57,7 @@ void AccessibilityMainHandler::OnJavascriptAllowed() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  if (features::IsPdfOcrEnabled()) {
+  if (features::IsPdfOcrEnabled() || features::IsMainNodeAnnotationsEnabled()) {
     CHECK(!component_ready_observer_.IsObserving());
     component_ready_observer_.Observe(
         screen_ai::ScreenAIInstallState::GetInstance());
@@ -71,7 +71,7 @@ void AccessibilityMainHandler::OnJavascriptDisallowed() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  if (features::IsPdfOcrEnabled()) {
+  if (features::IsPdfOcrEnabled() || features::IsMainNodeAnnotationsEnabled()) {
     component_ready_observer_.Reset();
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -82,14 +82,14 @@ void AccessibilityMainHandler::DownloadProgressChanged(double progress) {
   CHECK_GE(progress, 0.0);
   CHECK_LE(progress, 1.0);
   const int progress_num = progress * 100;
-  FireWebUIListener("pdf-ocr-downloading-progress-changed",
+  FireWebUIListener("screen-ai-downloading-progress-changed",
                     base::Value(progress_num));
 }
 
 void AccessibilityMainHandler::StateChanged(
     screen_ai::ScreenAIInstallState::State state) {
   base::Value state_value = base::Value(static_cast<int>(state));
-  FireWebUIListener("pdf-ocr-state-changed", state_value);
+  FireWebUIListener("screen-ai-state-changed", state_value);
 }
 
 void AccessibilityMainHandler::HandleGetScreenAIInstallState(

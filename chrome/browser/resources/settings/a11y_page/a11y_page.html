@@ -57,9 +57,11 @@
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
 <if expr="is_win or is_linux or is_macosx">
-        <template is="dom-if" if="[[showPdfOcrToggle_]]">
-          <settings-pdf-ocr-toggle id="pdfOcrToggle" prefs="{{prefs}}">
-          </settings-pdf-ocr-toggle>
+        <template is="dom-if" if="[[showAxAnnotationsSubpage_]]">
+          <settings-ax-annotations-subpage
+              id="AxAnnotationsSubpage"
+              prefs="{{prefs}}">
+          </settings-ax-annotations-subpage>
         </template>
 </if>
 <if expr="is_win or is_linux">
