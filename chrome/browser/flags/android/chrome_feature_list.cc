@@ -355,6 +355,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kPersistentSearchEngineChoiceImport,
     &switches::kSearchEnginePromoDialogRewrite,
     &switches::kSeedAccountsRevamp,
+    &syncer::kEnablePasswordsAccountStorageForNonSyncingUsers,
     &syncer::kReplaceSyncPromosWithSignInPromos,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
