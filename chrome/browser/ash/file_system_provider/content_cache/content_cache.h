@@ -68,7 +68,7 @@ class ContentCache {
 
   // Reads and writes are performed in "chunks". An attempt is made to re-use
   // open file descriptors to avoid opening/closing them on every chunk request.
-  // This requires any N requests of `StartReadBytes` or `StartWriteBytes` to be
+  // This requires any N requests of `ReadBytes` or `WriteBytes` to be
   // followed by a `CloseFile` to ensure any open file descriptors are properly
   // cleaned up.
   virtual void CloseFile(const OpenedCloudFile& file) = 0;

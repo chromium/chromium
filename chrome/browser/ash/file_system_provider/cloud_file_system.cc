@@ -244,9 +244,6 @@ AbortCallback CloudFileSystem::ReadFile(int file_handle,
                                   callback);
   }
 
-  // Attempt to read the file from the content cache, in the event
-  // `StartReadBytes` succeeds, an actual read of the underlying FD will be
-  // kicked off, for the purposes of this method it has finished successfully.
   const OpenedCloudFile& opened_cloud_file = it->second;
   scoped_refptr<net::IOBuffer> buffer_ref = base::WrapRefCounted(buffer);
   content_cache_->ReadBytes(

@@ -327,7 +327,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/1, /*has_more=*/false,
                                    base::File::FILE_OK));
 
-  // Expect that `StartWriteBytes` should not be called.
+  // Expect that `WriteBytes` should not be called.
   EXPECT_CALL(*mock_content_cache, WriteBytes(_, _, _, _, _)).Times(0);
 
   ReadFileSuccessfully(*cloud_file_system, file_handle, buffer);
@@ -407,7 +407,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
   scoped_refptr<net::IOBuffer> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(1);
 
-  // Neither the `StartReadBytes` nor the `StartWriteBytes` should be called.
+  // Neither the `ReadBytes` nor the `WriteBytes` should be called.
   EXPECT_CALL(*mock_content_cache, ReadBytes(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_content_cache, WriteBytes(_, _, _, _, _)).Times(0);
 
@@ -442,7 +442,7 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
       .WillOnce(RunOnceCallback<4>(/*bytes_read=*/-1, /*has_more=*/false,
                                    base::File::FILE_ERROR_NOT_FOUND));
 
-  // Assert that `StartWriteBytes` never gets called as the underlying FSP
+  // Assert that `WriteBytes` never gets called as the underlying FSP
   // should respond with a `base::File::FILE_ERROR_INVALID_OPERATION` due to the
   // file not existing between the `OpenFile` and the `ReadFile`.
   EXPECT_CALL(*mock_content_cache, WriteBytes(_, _, _, _, _)).Times(0);
