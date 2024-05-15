@@ -273,6 +273,29 @@ TEST_P(IndexStorageTest, GetTermIdsForUrl) {
   EXPECT_TRUE(storage_->GetTermIdsForUrl(foo_url_id).empty());
 }
 
+TEST_P(IndexStorageTest, CatastrophicError) {
+  if (GetParam() == StorageType::RAM) {
+    return;
+  }
+  base::FilePath db_path = temp_dir_.GetPath().Append("CatastrophicError.db");
+  auto db_under_test = std::make_unique<SqlStorage>(db_path, "test_uma_tag");
+
+  // Initialize the database and store token "foo" in it. Check that we can
+  // retrieve.
+  ASSERT_TRUE(db_under_test->Init());
+  EXPECT_EQ(db_under_test->GetOrCreateTokenId("foo"), 1);
+  EXPECT_EQ(db_under_test->GetTokenId("foo"), 1);
+
+  // Drop the token table to cause a catastrophic error.
+  ASSERT_TRUE(
+      db_under_test->GetDbForTests()->Execute("DROP TABLE token_table"));
+
+  // Expect the db to recover but not to have any data.
+  EXPECT_EQ(db_under_test->GetTokenId("foo"), -1);
+  // Test that the sql storage works after a recovery.
+  EXPECT_EQ(db_under_test->GetOrCreateTokenId("foo"), 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(Sql,
                          IndexStorageTest,
                          testing::ValuesIn<StorageType>({StorageType::SQL}));

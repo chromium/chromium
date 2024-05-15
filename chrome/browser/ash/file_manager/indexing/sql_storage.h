@@ -122,9 +122,18 @@ class SqlStorage : public IndexStorage {
   void DeleteTermIdsForUrl(const std::set<int64_t>& term_ids,
                            int64_t url_id) override;
 
+  // Access to the actual SQL database. Tests only.
+  sql::Database* GetDbForTests() { return &db_; }
+
  private:
   // Error callback set on the database.
   void OnErrorCallback(int error, sql::Statement* stmt);
+
+  // Executes the code that initializes all tables owned by this storage.
+  bool InitTables();
+
+  // Resets the database to empty state. Only call after catastrophic error.s
+  void Restart();
 
   // The User Metric Analysis (uma) tag for recording events related to SQL
   // storage.

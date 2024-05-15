@@ -18,8 +18,9 @@ enum class DbOperationStatus {
   kDirectoryCreateError,
   kOpenDbError,
   kTableInitError,
+  kDatabaseRazed,
 
-  kMaxValue = kTableInitError,
+  kMaxValue = kDatabaseRazed,
 };
 
 SqlStorage::SqlStorage(base::FilePath db_path, const std::string& uma_tag)
@@ -66,6 +67,16 @@ bool SqlStorage::Init() {
                                              base::Unretained(this)));
 
   // Initialize all tables owned by SqlStorage.
+  if (!InitTables()) {
+    return false;
+  }
+
+  // Record successful operation and let the world know.
+  base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenOk);
+  return true;
+}
+
+bool SqlStorage::InitTables() {
   if (!token_table_.Init()) {
     LOG(ERROR) << "Failed to initialize token_table";
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
@@ -91,9 +102,6 @@ bool SqlStorage::Init() {
     base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kTableInitError);
     return false;
   }
-
-  // Record successful operation and let the world know.
-  base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kOpenOk);
   return true;
 }
 
@@ -112,7 +120,19 @@ void SqlStorage::OnErrorCallback(int error, sql::Statement* stmt) {
   }
   if (sql::IsErrorCatastrophic(error)) {
     LOG(ERROR) << "Database error is catastrophic.";
-    db_.Poison();
+    Restart();
+  }
+}
+
+void SqlStorage::Restart() {
+  LOG(ERROR) << "Attempting to raze the database.";
+  if (!db_.Raze()) {
+    LOG(ERROR) << "Failed to raze the database.";
+    return;
+  }
+  base::UmaHistogramEnumeration(uma_tag_, DbOperationStatus::kDatabaseRazed);
+  if (InitTables()) {
+    LOG(ERROR) << "Failed to re-initialize db tables after Raze";
   }
 }
 
