@@ -23,8 +23,6 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -69,16 +67,6 @@ std::optional<KioskApp> ChromeAppById(const KioskChromeAppManager& manager,
       manager_app.name, manager_app.icon);
 }
 
-std::optional<KioskApp> ArcAppById(const ArcKioskAppManager& manager,
-                                   const AccountId& account_id) {
-  const ArcKioskAppData* data = manager.GetAppByAccountId(account_id);
-  if (!data) {
-    return std::nullopt;
-  }
-  return KioskApp(KioskAppId::ForArcApp(account_id), data->name(),
-                  data->icon());
-}
-
 }  // namespace
 
 KioskControllerImpl::KioskControllerImpl(
@@ -100,10 +88,6 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
         KioskAppId::ForChromeApp(chrome_app.app_id, chrome_app.account_id),
         chrome_app.name, chrome_app.icon);
   }
-  for (const KioskAppManagerBase::App& arc_app : arc_app_manager_.GetApps()) {
-    apps.emplace_back(KioskAppId::ForArcApp(arc_app.account_id), arc_app.name,
-                      arc_app.icon);
-  }
   return apps;
 }
 
@@ -115,7 +99,7 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
     case KioskAppType::kChromeApp:
       return ChromeAppById(chrome_app_manager_, app_id.app_id.value());
     case KioskAppType::kArcApp:
-      return ArcAppById(arc_app_manager_, app_id.account_id);
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -127,10 +111,6 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
     std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
     CHECK(!chrome_app_id.empty());
     return ChromeAppById(chrome_app_manager_, chrome_app_id);
-  } else if (const auto& arc_account_id =
-                 arc_app_manager_.GetAutoLaunchAccountId();
-             arc_account_id.is_valid()) {
-    return ArcAppById(arc_app_manager_, arc_account_id);
   }
   return std::nullopt;
 }
@@ -141,8 +121,6 @@ void KioskControllerImpl::InitializeKioskSystemSession(
     const std::optional<std::string>& app_name) {
   CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
-  CHECK_NE(kiosk_app_id.type, KioskAppType::kArcApp)
-      << "KioskSystemSession should not be created in ARC Kiosk";
 
   system_session_.emplace(profile, kiosk_app_id, app_name);
 
@@ -228,7 +206,7 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(::switches::kForceAppMode);
-  // This happens in Web and Arc kiosks.
+  // This happens in Web kiosks.
   if (!kiosk_app_id.empty()) {
     command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);
   }

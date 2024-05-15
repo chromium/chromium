@@ -35,7 +35,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
@@ -128,39 +127,6 @@ void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
       break;
   }
 }
-// This is a not-owning wrapper around ArcKioskAppService which allows to be
-// plugged into a unique_ptr safely.
-// TODO(apotapchuk): Remove this when ARC kiosk is fully deprecated.
-class ArcKioskAppServiceWrapper : public KioskAppLauncher {
- public:
-  ArcKioskAppServiceWrapper(ArcKioskAppService* service,
-                            KioskAppLauncher::NetworkDelegate* delegate)
-      : service_(service) {
-    service_->SetNetworkDelegate(delegate);
-  }
-
-  ~ArcKioskAppServiceWrapper() override {
-    service_->SetNetworkDelegate(nullptr);
-  }
-
-  // `KioskAppLauncher`:
-  void AddObserver(KioskAppLauncher::Observer* observer) override {
-    service_->AddObserver(observer);
-  }
-  void RemoveObserver(KioskAppLauncher::Observer* observer) override {
-    service_->RemoveObserver(observer);
-  }
-  void Initialize() override { service_->Initialize(); }
-  void ContinueWithNetworkReady() override {
-    service_->ContinueWithNetworkReady();
-  }
-  void LaunchApp() override { service_->LaunchApp(); }
-
- private:
-  // `service_` is externally owned and it's the caller's responsibility to
-  // ensure that it outlives this wrapper.
-  const raw_ptr<ArcKioskAppService> service_;
-};
 
 std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     Profile* profile,
@@ -168,10 +134,7 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     KioskAppLauncher::NetworkDelegate* network_delegate) {
   switch (kiosk_app_id.type) {
     case KioskAppType::kArcApp:
-      // ArcKioskAppService lifetime is bound to the profile, therefore
-      // wrap it into a separate object.
-      return std::make_unique<ArcKioskAppServiceWrapper>(
-          ArcKioskAppService::Get(profile), network_delegate);
+      NOTREACHED_NORETURN();
     case KioskAppType::kChromeApp:
       return std::make_unique<StartupAppLauncher>(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,

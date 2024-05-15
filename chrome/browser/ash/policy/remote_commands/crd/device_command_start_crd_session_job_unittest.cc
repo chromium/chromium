@@ -17,7 +17,6 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
@@ -70,11 +69,9 @@ constexpr char kHistogramDurationTemplate[] =
 // Created for session type logged to UMA.
 const char* SessionTypeToUmaString(TestSessionType session_type) {
   switch (session_type) {
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
     case TestSessionType::kManuallyLaunchedWebKioskSession:
     case TestSessionType::kManuallyLaunchedKioskSession:
       return "ManuallyLaunchedKioskSession";
-    case TestSessionType::kAutoLaunchedArcKioskSession:
     case TestSessionType::kAutoLaunchedWebKioskSession:
     case TestSessionType::kAutoLaunchedKioskSession:
       return "AutoLaunchedKioskSession";
@@ -132,10 +129,8 @@ test::NetworkBuilder CreateNetwork(NetworkType type = NetworkType::kWiFi) {
 // Returns true if the given session type supports a 'remote support' session.
 bool SupportsRemoteSupport(TestSessionType user_session_type) {
   switch (user_session_type) {
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
     case TestSessionType::kManuallyLaunchedWebKioskSession:
     case TestSessionType::kManuallyLaunchedKioskSession:
-    case TestSessionType::kAutoLaunchedArcKioskSession:
     case TestSessionType::kAutoLaunchedWebKioskSession:
     case TestSessionType::kAutoLaunchedKioskSession:
     case TestSessionType::kManagedGuestSession:
@@ -155,10 +150,8 @@ bool SupportsRemoteAccess(TestSessionType user_session_type) {
     case TestSessionType::kNoSession:
       return true;
 
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
     case TestSessionType::kManuallyLaunchedWebKioskSession:
     case TestSessionType::kManuallyLaunchedKioskSession:
-    case TestSessionType::kAutoLaunchedArcKioskSession:
     case TestSessionType::kAutoLaunchedWebKioskSession:
     case TestSessionType::kAutoLaunchedKioskSession:
     case TestSessionType::kManagedGuestSession:
@@ -172,10 +165,8 @@ bool SupportsRemoteAccess(TestSessionType user_session_type) {
 // Returns true if the given session type is a kiosk session.
 bool IsKioskSession(TestSessionType user_session_type) {
   switch (user_session_type) {
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
     case TestSessionType::kManuallyLaunchedWebKioskSession:
     case TestSessionType::kManuallyLaunchedKioskSession:
-    case TestSessionType::kAutoLaunchedArcKioskSession:
     case TestSessionType::kAutoLaunchedWebKioskSession:
     case TestSessionType::kAutoLaunchedKioskSession:
       return true;
@@ -221,7 +212,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
-    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
   }
@@ -229,7 +219,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   void TearDown() override {
     kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
-    arc_kiosk_app_manager_.reset();
 
     profile_ = nullptr;
 
@@ -331,7 +320,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
  private:
-  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
@@ -409,10 +397,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   bool is_supported = [&]() {
     switch (user_session_type) {
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
@@ -591,10 +577,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   bool terminate_upon_input = [&]() {
     switch (user_session_type) {
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
         return true;
@@ -656,10 +640,8 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   bool show_confirmation_dialog = [&]() {
     switch (user_session_type) {
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
         return false;
@@ -953,10 +935,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
       case TestSessionType::kNoSession:
         return true;
 
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
@@ -1294,10 +1274,8 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandStartCrdSessionJobTestParameterized,
-    ::testing::Values(TestSessionType::kManuallyLaunchedArcKioskSession,
-                      TestSessionType::kManuallyLaunchedWebKioskSession,
+    ::testing::Values(TestSessionType::kManuallyLaunchedWebKioskSession,
                       TestSessionType::kManuallyLaunchedKioskSession,
-                      TestSessionType::kAutoLaunchedArcKioskSession,
                       TestSessionType::kAutoLaunchedWebKioskSession,
                       TestSessionType::kAutoLaunchedKioskSession,
                       TestSessionType::kManagedGuestSession,
@@ -1309,10 +1287,8 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-    ::testing::Values(TestSessionType::kManuallyLaunchedArcKioskSession,
-                      TestSessionType::kManuallyLaunchedWebKioskSession,
+    ::testing::Values(TestSessionType::kManuallyLaunchedWebKioskSession,
                       TestSessionType::kManuallyLaunchedKioskSession,
-                      TestSessionType::kAutoLaunchedArcKioskSession,
                       TestSessionType::kAutoLaunchedWebKioskSession,
                       TestSessionType::kAutoLaunchedKioskSession,
                       TestSessionType::kManagedGuestSession,

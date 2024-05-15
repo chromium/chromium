@@ -345,7 +345,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
@@ -1060,6 +1059,7 @@ constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
 // Deprecated 05/2024.
 // A preference to keep track of the device registered time.
 constexpr char kDeviceRegisteredTime[] = "DeviceRegisteredTime";
+constexpr char kArcKioskDictionaryName[] = "arc-kiosk";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1209,6 +1209,7 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 05/2024.
   registry->RegisterTimePref(kDeviceRegisteredTime, base::Time());
+  registry->RegisterDictionaryPref(kArcKioskDictionaryName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 04/2024.
@@ -1705,7 +1706,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   arc::prefs::RegisterLocalStatePrefs(registry);
   ChromeOSMetricsProvider::RegisterPrefs(registry);
-  ash::ArcKioskAppManager::RegisterPrefs(registry);
   ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
   ash::carrier_lock::CarrierLockManager::RegisterLocalPrefs(registry);
   ash::cert_provisioning::RegisterLocalStatePrefs(registry);
@@ -2468,6 +2468,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 05/2024.
   local_state->ClearPref(kDeviceRegisteredTime);
+  local_state->ClearPref(kArcKioskDictionaryName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 04/2024 .

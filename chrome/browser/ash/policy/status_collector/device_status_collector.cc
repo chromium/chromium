@@ -45,7 +45,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"

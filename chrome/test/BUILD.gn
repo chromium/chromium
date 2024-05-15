@@ -4495,7 +4495,6 @@ if (!is_android) {
         "../browser/ash/app_list/search/test/search_results_changed_waiter.h",
         "../browser/ash/app_list/search/test/test_continue_files_search_provider.cc",
         "../browser/ash/app_list/search/test/test_continue_files_search_provider.h",
-        "../browser/ash/app_mode/arc/arc_kiosk_app_manager_browsertest.cc",
         "../browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller_browsertest.cc",
         "../browser/ash/app_mode/kiosk_app_update_service_browsertest.cc",
         "../browser/ash/app_mode/kiosk_chrome_app_manager_browsertest.cc",

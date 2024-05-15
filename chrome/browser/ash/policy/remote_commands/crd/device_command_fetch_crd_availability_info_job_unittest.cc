@@ -14,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
@@ -109,7 +108,6 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
     ASSERT_TRUE(profile_manager_.SetUp());
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
-    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
   }
@@ -117,7 +115,6 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
   void TearDown() override {
     kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
-    arc_kiosk_app_manager_.reset();
     DeviceSettingsTestBase::TearDown();
   }
 
@@ -175,7 +172,6 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
   }
 
  private:
-  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
@@ -272,11 +268,9 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
   UserSessionType expected = [&]() {
     switch (session_type) {
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
         return UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION;
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
         return UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION;
@@ -314,10 +308,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
       case TestSessionType::kNoSession:
         return ToList({CrdSessionType::REMOTE_ACCESS_SESSION});
 
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
@@ -377,10 +369,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
         return CrdSessionAvailability::
             UNAVAILABLE_UNSUPPORTED_USER_SESSION_TYPE;
 
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
@@ -411,10 +401,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 
       case TestSessionType::kGuestSession:
       case TestSessionType::kUnaffiliatedUserSession:
-      case TestSessionType::kManuallyLaunchedArcKioskSession:
       case TestSessionType::kManuallyLaunchedWebKioskSession:
       case TestSessionType::kManuallyLaunchedKioskSession:
-      case TestSessionType::kAutoLaunchedArcKioskSession:
       case TestSessionType::kAutoLaunchedWebKioskSession:
       case TestSessionType::kAutoLaunchedKioskSession:
       case TestSessionType::kManagedGuestSession:
@@ -431,10 +419,8 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
 INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
-    ::testing::Values(TestSessionType::kManuallyLaunchedArcKioskSession,
-                      TestSessionType::kManuallyLaunchedWebKioskSession,
+    ::testing::Values(TestSessionType::kManuallyLaunchedWebKioskSession,
                       TestSessionType::kManuallyLaunchedKioskSession,
-                      TestSessionType::kAutoLaunchedArcKioskSession,
                       TestSessionType::kAutoLaunchedWebKioskSession,
                       TestSessionType::kAutoLaunchedKioskSession,
                       TestSessionType::kManagedGuestSession,

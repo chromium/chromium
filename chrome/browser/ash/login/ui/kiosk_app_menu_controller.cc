@@ -11,8 +11,6 @@
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_data.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -78,7 +76,6 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 
 KioskAppMenuController::KioskAppMenuController() {
   kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
-  kiosk_observations_.AddObservation(ArcKioskAppManager::Get());
   kiosk_observations_.AddObservation(WebKioskAppManager::Get());
 }
 

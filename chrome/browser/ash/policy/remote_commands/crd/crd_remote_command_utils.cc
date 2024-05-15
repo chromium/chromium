@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
@@ -36,9 +35,6 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
     const user_manager::UserManager& user_manager) {
   if (user_manager.IsLoggedInAsKioskApp()) {
     return ash::KioskChromeAppManager::Get();
-  }
-  if (user_manager.IsLoggedInAsArcKioskApp()) {
-    return ash::ArcKioskAppManager::Get();
   }
   if (user_manager.IsLoggedInAsWebKioskApp()) {
     return ash::WebKioskAppManager::Get();

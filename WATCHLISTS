@@ -169,11 +169,6 @@
       'filepath': 'chrome/browser/ash/arc/input_method_manager/'\
                   '|components/arc/ime/'
     },
-    'arc_kiosk': {
-      'filepath': 'chrome/browser/ash/app_mode/arc/'\
-                  '|components/arc/kiosk/'\
-                  '|arc_kiosk'
-    },
     'arc_mojom': {
       'filepath': 'components/arc/mojom/',
     },
@@ -2518,7 +2513,6 @@
     'arc_fileapi': ['alanding+watch@chromium.org',
                     'djacobo+watch@chromium.org'],
     'arc_ime': ['yhanada+watch@chromium.org'],
-    'arc_kiosk': ['poromov+watch@chromium.org'],
     'arc_mojom': ['hashimoto+watch@chromium.org'],
     'arc_nearby_share': ['alanding+watch@chromium.org',
                          'jackshira+watch-nearby-arc@google.com',

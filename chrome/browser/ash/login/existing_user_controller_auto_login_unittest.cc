@@ -7,7 +7,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/ui/mock_login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -51,7 +50,6 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   }
 
   void SetUp() override {
-    arc_kiosk_app_manager_ = std::make_unique<ArcKioskAppManager>();
     existing_user_controller_ = std::make_unique<ExistingUserController>();
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
 
@@ -144,7 +142,6 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   ScopedCrosSettingsTestHelper settings_helper_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
 
   session_manager::SessionManager session_manager_;
 

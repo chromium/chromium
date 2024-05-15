@@ -13,7 +13,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -72,7 +71,6 @@ class KioskControllerImpl : public KioskController,
 
   WebKioskAppManager web_app_manager_;
   KioskChromeAppManager chrome_app_manager_;
-  ArcKioskAppManager arc_app_manager_;
 
   // Created once the Kiosk session launch starts. Only not null during the
   // kiosk launch.

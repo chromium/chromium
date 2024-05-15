@@ -74,7 +74,6 @@
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
-#include "chrome/browser/ash/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_bridge.h"
 #include "chrome/browser/ash/arc/net/browser_url_opener_impl.h"
@@ -283,7 +282,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   } else {
     ArcKeymasterBridge::GetForBrowserContext(profile);
   }
-  ArcKioskBridge::GetForBrowserContext(profile);
   ArcMediaSessionBridge::GetForBrowserContext(profile);
   {
     auto* metrics_service = ArcMetricsService::GetForBrowserContext(profile);
@@ -472,7 +470,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   } else {
     ArcKeymasterBridge::EnsureFactoryBuilt();
   }
-  ArcKioskBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
   ArcMemoryBridge::EnsureFactoryBuilt();
   ArcMemoryPressureBridge::EnsureFactoryBuilt();

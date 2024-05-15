@@ -21,7 +21,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
@@ -99,7 +98,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
-    arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
 
@@ -117,7 +115,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
     kiosk_chrome_app_manager_.reset();
     web_kiosk_app_manager_.reset();
-    arc_kiosk_app_manager_.reset();
 
     ash::DebugDaemonClient::Shutdown();
     DeviceSettingsTestBase::TearDown();
@@ -146,7 +143,6 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
  protected:
   // App manager instances for testing kiosk sessions.
-  std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 
@@ -344,13 +340,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DeviceCommandFetchSupportPacketTestParameterized,
     ::testing::Values(
-        test::SessionInfo{TestSessionType::kManuallyLaunchedArcKioskSession,
-                          /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kManuallyLaunchedWebKioskSession,
                           /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kManuallyLaunchedKioskSession,
-                          /*pii_allowed=*/true},
-        test::SessionInfo{TestSessionType::kAutoLaunchedArcKioskSession,
                           /*pii_allowed=*/true},
         test::SessionInfo{TestSessionType::kAutoLaunchedWebKioskSession,
                           /*pii_allowed=*/true},
