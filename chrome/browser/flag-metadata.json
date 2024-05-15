@@ -2096,13 +2096,13 @@
   },
   {
     "name": "draw-cutout-edge-to-edge",
-    "owners": ["donnd@chromium.org", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 125
+    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org" ],
+    "expiry_milestone": 135
   },
   {
     "name": "draw-edge-to-edge",
-    "owners": ["donnd@chromium.org", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 125
+    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 135
   },
   {
     "name": "draw-immediately-when-interactive",
@@ -2116,8 +2116,8 @@
   },
   {
     "name": "draw-native-edge-to-edge",
-    "owners": ["donnd@chromium.org", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 125
+    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 135
   },
   {
     "name": "draw-predicted-ink-point",
@@ -2126,8 +2126,8 @@
   },
   {
     "name": "draw-web-edge-to-edge",
-    "owners": ["donnd@chromium.org", "twellington@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 125
+    "owners": ["twellington@chromium.org", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 135
   },
   {
     "name": "drive-fs-mirroring",
