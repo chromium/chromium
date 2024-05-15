@@ -169,7 +169,7 @@ class SyncEngineImplTest : public testing::Test {
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
-        std::move(sync_task_runner), sync_transport_data_cleared_cb_.Get());
+        std::move(sync_task_runner));
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -278,8 +278,6 @@ class SyncEngineImplTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   NiceMock<MockSyncEngineHost> mock_host_;
-  NiceMock<base::MockCallback<base::RepeatingClosure>>
-      sync_transport_data_cleared_cb_;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -300,7 +298,6 @@ TEST_F(SyncEngineImplTest, InitShutdownWithStopSync) {
   EXPECT_EQ(ControlTypes(), fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 
-  EXPECT_CALL(sync_transport_data_cleared_cb_, Run()).Times(0);
   ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 }
 
@@ -309,7 +306,6 @@ TEST_F(SyncEngineImplTest, InitShutdownWithDisableSync) {
   EXPECT_EQ(ControlTypes(), fake_manager_->GetAndResetDownloadedTypes());
   EXPECT_EQ(ControlTypes(), fake_manager_->InitialSyncEndedTypes());
 
-  EXPECT_CALL(sync_transport_data_cleared_cb_, Run());
   ShutdownBackend(ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA);
 }
 
@@ -644,7 +640,6 @@ TEST_F(SyncEngineImplTest, ShouldLoadSyncDataUponInitialization) {
   transport_data_prefs.SetBirthday(kTestBirthday);
   transport_data_prefs.SetGaiaId(kTestGaiaId);
 
-  EXPECT_CALL(sync_transport_data_cleared_cb_, Run()).Times(0);
   InitializeBackend();
 
   EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
@@ -661,7 +656,6 @@ TEST_F(SyncEngineImplTest,
   transport_data_prefs.SetBirthday(kTestBirthday);
   transport_data_prefs.SetGaiaId("corrupt_gaia_id");
 
-  EXPECT_CALL(sync_transport_data_cleared_cb_, Run());
   InitializeBackend();
 
   EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());

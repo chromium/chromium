@@ -68,12 +68,6 @@ class SyncClient {
   // Returns whether custom passphrase is allowed for the current user.
   virtual bool IsCustomPassphraseAllowed() = 0;
 
-  // Notifies the client that local sync metadata in preferences has been
-  // cleared.
-  // TODO(crbug.com/40724759): Replace this mechanism with a more universal one,
-  // e.g. using SyncServiceObserver.
-  virtual void OnLocalSyncTransportDataCleared() = 0;
-
   // Necessary but not sufficient condition for password sync to be enabled,
   // i.e. it influences the value of SyncUserSettings::GetSelectedTypes().
   // TODO(crbug.com/328190573): Remove this and SetPasswordSyncAllowedChangeCb()

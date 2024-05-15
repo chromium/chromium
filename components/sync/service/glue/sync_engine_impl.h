@@ -48,8 +48,7 @@ class SyncEngineImpl : public SyncEngine,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
                  std::unique_ptr<SyncTransportDataPrefs> prefs,
                  const base::FilePath& sync_data_folder,
-                 scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
-                 const base::RepeatingClosure& sync_transport_data_cleared_cb);
+                 scoped_refptr<base::SequencedTaskRunner> sync_task_runner);
 
   SyncEngineImpl(const SyncEngineImpl&) = delete;
   SyncEngineImpl& operator=(const SyncEngineImpl&) = delete;
@@ -156,10 +155,6 @@ class SyncEngineImpl : public SyncEngine,
   // Sets the last synced time to the current time.
   void UpdateLastSyncedTime();
 
-  // Helper function that clears SyncTransportDataPrefs and also notifies
-  // upper layers via |sync_transport_data_cleared_cb_|.
-  void ClearLocalTransportDataAndNotify();
-
   // Updates the current state of standalone invalidations. Note that the
   // invalidations can be handled even if the invalidation service is not fully
   // initialized yet (e.g. while processing the incoming queue of messages
@@ -176,8 +171,6 @@ class SyncEngineImpl : public SyncEngine,
   const std::string name_;
 
   const std::unique_ptr<SyncTransportDataPrefs> prefs_;
-
-  const base::RepeatingClosure sync_transport_data_cleared_cb_;
 
   // Our backend, which communicates directly to the syncapi. Use refptr instead
   // of WeakHandle because |backend_| is created on UI loop but released on

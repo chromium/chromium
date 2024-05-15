@@ -207,11 +207,6 @@ bool WebViewSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-void WebViewSyncClient::OnLocalSyncTransportDataCleared() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  metrics::ClearDemographicsPrefs(pref_service_);
-}
-
 bool WebViewSyncClient::IsPasswordSyncAllowed() {
   return true;
 }

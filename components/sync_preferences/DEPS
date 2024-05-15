@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+components/metrics/demographics",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/pref_registry",

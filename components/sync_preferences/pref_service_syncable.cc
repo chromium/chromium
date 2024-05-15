@@ -11,7 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/demographics/user_demographics.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "components/prefs/overlay_user_pref_store.h"
@@ -19,6 +21,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_preferences/dual_layer_user_pref_store.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
@@ -29,6 +32,42 @@
 #endif
 
 namespace sync_preferences {
+
+class PrefServiceSyncable::DemographicsPrefsClearer
+    : public syncer::SyncServiceObserver {
+ public:
+  DemographicsPrefsClearer(PrefService* pref_service,
+                           syncer::SyncService* sync_service)
+      : pref_service_(pref_service) {
+    if (sync_service) {
+      sync_observation_.Observe(sync_service);
+    }
+  }
+
+  void OnStateChanged(syncer::SyncService* sync) override {
+    switch (sync->GetTransportState()) {
+      case syncer::SyncService::TransportState::DISABLED:
+        metrics::ClearDemographicsPrefs(pref_service_);
+        break;
+      case syncer::SyncService::TransportState::PAUSED:
+      case syncer::SyncService::TransportState::START_DEFERRED:
+      case syncer::SyncService::TransportState::INITIALIZING:
+      case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
+      case syncer::SyncService::TransportState::CONFIGURING:
+      case syncer::SyncService::TransportState::ACTIVE:
+        break;
+    }
+  }
+
+  void OnSyncShutdown(syncer::SyncService* sync) override {
+    sync_observation_.Reset();
+  }
+
+ private:
+  const raw_ptr<PrefService> pref_service_;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
+};
 
 PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
@@ -289,6 +328,8 @@ void PrefServiceSyncable::OnSyncServiceInitialized(
   if (dual_layer_user_prefs_) {
     dual_layer_user_prefs_->OnSyncServiceInitialized(sync_service);
   }
+  demographics_prefs_clearer_ =
+      std::make_unique<DemographicsPrefsClearer>(this, sync_service);
 }
 
 }  // namespace sync_preferences

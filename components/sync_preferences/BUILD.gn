@@ -28,6 +28,7 @@ static_library("sync_preferences") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/metrics/demographics",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",

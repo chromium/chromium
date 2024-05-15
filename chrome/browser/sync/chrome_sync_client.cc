@@ -65,7 +65,6 @@
 #include "components/data_sharing/public/features.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/metrics/demographics/user_demographics.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
@@ -775,10 +774,6 @@ bool ChromeSyncClient::IsCustomPassphraseAllowed() {
     return supervised_user_settings_service->IsCustomPassphraseAllowed();
   }
   return true;
-}
-
-void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
-  metrics::ClearDemographicsPrefs(profile_->GetPrefs());
 }
 
 bool ChromeSyncClient::IsPasswordSyncAllowed() {

@@ -105,12 +105,10 @@ SyncEngineImpl::SyncEngineImpl(
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
     std::unique_ptr<SyncTransportDataPrefs> prefs,
     const base::FilePath& sync_data_folder,
-    scoped_refptr<base::SequencedTaskRunner> sync_task_runner,
-    const base::RepeatingClosure& sync_transport_data_cleared_cb)
+    scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
     : sync_task_runner_(std::move(sync_task_runner)),
       name_(name),
       prefs_(std::move(prefs)),
-      sync_transport_data_cleared_cb_(sync_transport_data_cleared_cb),
       sync_invalidations_service_(sync_invalidations_service),
       active_devices_provider_(std::move(active_devices_provider)),
       engine_created_time_for_metrics_(base::TimeTicks::Now()) {
@@ -137,7 +135,7 @@ void SyncEngineImpl::Initialize(InitParams params) {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    ClearLocalTransportDataAndNotify();
+    prefs_->ClearAll();
     prefs_->SetCacheGuid(GenerateCacheGUID());
     prefs_->SetGaiaId(params.authenticated_account_info.gaia);
   }
@@ -296,7 +294,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    ClearLocalTransportDataAndNotify();
+    prefs_->ClearAll();
   }
 }
 
@@ -600,11 +598,6 @@ void SyncEngineImpl::OnActiveDevicesChanged() {
 
 void SyncEngineImpl::UpdateLastSyncedTime() {
   prefs_->SetLastSyncedTime(base::Time::Now());
-}
-
-void SyncEngineImpl::ClearLocalTransportDataAndNotify() {
-  prefs_->ClearAll();
-  sync_transport_data_cleared_cb_.Run();
 }
 
 void SyncEngineImpl::UpdateStandaloneInvalidationsState() {

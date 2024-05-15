@@ -623,9 +623,7 @@ SyncApiComponentFactoryImpl::CreateSyncEngine(
       std::make_unique<syncer::SyncTransportDataPrefs>(
           sync_client_->GetPrefService()),
       sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
-      engines_and_directory_deletion_thread_,
-      base::BindRepeating(&syncer::SyncClient::OnLocalSyncTransportDataCleared,
-                          base::Unretained(sync_client_)));
+      engines_and_directory_deletion_thread_);
 }
 
 bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync() {
@@ -654,7 +652,6 @@ void SyncApiComponentFactoryImpl::ClearAllTransportData() {
   }
 
   sync_transport_data_prefs.ClearAll();
-  sync_client_->OnLocalSyncTransportDataCleared();
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>
