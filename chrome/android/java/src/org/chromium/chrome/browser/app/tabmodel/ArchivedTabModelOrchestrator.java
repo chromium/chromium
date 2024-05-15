@@ -13,6 +13,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -46,6 +48,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
     public static final String ARCHIVED_TAB_SELECTOR_UNIQUE_TAG = "archived";
+
+    /** Observer for the ArchivedTabModelOrchestrator class. */
+    public interface Observer {
+        /**
+         * Called when the archived {@link TabModel} is created.
+         *
+         * @param TabModel The {@link TabModel} that was created.
+         */
+        public void onTabModelCreated(TabModel archivedTabModel);
+    }
 
     private static ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;
 
@@ -67,6 +79,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // multiple places simultaneously.
     private final TabCreatorManager mArchivedTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     private TaskRunner mTaskRunner;
     private WindowAndroid mWindow;
@@ -140,6 +153,16 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         super.destroy();
     }
 
+    /** Adds an observer. */
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /** Removes an observer. */
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
     /**
      * Creates and initiailzes the class and fields, this must be called in the UI thread and can be
      * expensive therefore it should be called from DeferredStartupHandler. Although the lifecycle
@@ -190,6 +213,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         loadState(/* ignoreIncognitoFiles= */ true, /* onStandardActiveIndexRead= */ null);
         restoreTabs(/* setActiveTab= */ false);
         mInitCalled = true;
+
+        for (Observer observer : mObservers) {
+            observer.onTabModelCreated(mTabModelSelector.getModel(/* incognito= */ false));
+        }
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */
