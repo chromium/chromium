@@ -192,15 +192,15 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
       this};
 };
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       FUEBubbleShownOnPress) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_FUEBubbleShownOnPress DISABLED_FUEBubbleShownOnPress
+#else
+#define MAYBE_FUEBubbleShownOnPress FUEBubbleShownOnPress
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_FUEBubbleShownOnPress) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   RunTestSequence(
       InstrumentTab(kShoppingTab),
@@ -218,16 +218,18 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 }
 
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct \
+  DISABLED_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct
+#else
+#define MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct \
+  PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(
     PriceTrackingIconViewInteractiveTest,
-    PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
-#if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+    MAYBE_PriceTrackingBubbleShownOnPress_BeforeFUEOnTrackedProduct) {
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble));
   bookmarks::BookmarkModel* bookmark_model =
@@ -263,15 +265,17 @@ IN_PROC_BROWSER_TEST_F(
             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       PriceTrackingBubbleShownOnPress_AfterFUE) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE \
+  DISABLED_PriceTrackingBubbleShownOnPress_AfterFUE
+#else
+#define MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE \
+  PriceTrackingBubbleShownOnPress_AfterFUE
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_PriceTrackingBubbleShownOnPress_AfterFUE) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -292,15 +296,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       BubbleCanBeReshowOnPress) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_BubbleCanBeReshowOnPress DISABLED_BubbleCanBeReshowOnPress
+#else
+#define MAYBE_BubbleCanBeReshowOnPress BubbleCanBeReshowOnPress
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_BubbleCanBeReshowOnPress) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
 
   RunTestSequence(
@@ -383,15 +387,16 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                 })));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       CreateBookmarkOnPressIfNotExist) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_CreateBookmarkOnPressIfNotExist \
+  DISABLED_CreateBookmarkOnPressIfNotExist
+#else
+#define MAYBE_CreateBookmarkOnPressIfNotExist CreateBookmarkOnPressIfNotExist
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_CreateBookmarkOnPressIfNotExist) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -409,15 +414,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
   EXPECT_TRUE(bookmarks::IsBookmarkedByUser(bookmark_model, shopping_url));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       RecordOmniboxChipClicked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordOmniboxChipClicked DISABLED_RecordOmniboxChipClicked
+#else
+#define MAYBE_RecordOmniboxChipClicked RecordOmniboxChipClicked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_RecordOmniboxChipClicked) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester.GetActionCount(
@@ -434,15 +439,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       RecordOmniboxChipTracked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordOmniboxChipTracked DISABLED_RecordOmniboxChipTracked
+#else
+#define MAYBE_RecordOmniboxChipTracked RecordOmniboxChipTracked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_RecordOmniboxChipTracked) {
   base::UserActionTester user_action_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
@@ -470,15 +475,17 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       NoRecordOmniboxChipTracked_ForTrackedProduct) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct \
+  DISABLED_NoRecordOmniboxChipTracked_ForTrackedProduct
+#else
+#define MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct \
+  NoRecordOmniboxChipTracked_ForTrackedProduct
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_NoRecordOmniboxChipTracked_ForTrackedProduct) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(true);
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -499,15 +506,17 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
             0);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
-                       NoRecordOmniboxChipTracked_ForFUEFlow) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow \
+  DISABLED_NoRecordOmniboxChipTracked_ForFUEFlow
+#else
+#define MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow \
+  NoRecordOmniboxChipTracked_ForFUEFlow
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       MAYBE_NoRecordOmniboxChipTracked_ForFUEFlow) {
   base::UserActionTester user_action_tester;
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester.GetActionCount(
@@ -622,15 +631,15 @@ class PriceTrackingBubbleInteractiveTest
   base::UserActionTester user_action_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordFirstRunBubbleShown) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordFirstRunBubbleShown DISABLED_RecordFirstRunBubbleShown
+#else
+#define MAYBE_RecordFirstRunBubbleShown RecordFirstRunBubbleShown
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordFirstRunBubbleShown) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   EXPECT_EQ(user_action_tester_.GetActionCount(
                 "Commerce.PriceTracking.FirstRunBubbleShown"),
@@ -649,15 +658,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordConfirmationShown) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordConfirmationShown DISABLED_RecordConfirmationShown
+#else
+#define MAYBE_RecordConfirmationShown RecordConfirmationShown
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordConfirmationShown) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -677,15 +686,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
-                       RecordConfirmationUntracked) {
+// TODO(crbug.com/41494779): Test is failing on Mac under ChromeRefresh2023
+// flags. Evaluate, fix, and remove the skip.
 #if BUILDFLAG(IS_MAC)
-  // TODO (crbug/1521812): Test is failing on Mac under ChromeRefresh2023 flags.
-  //                       Evaluate, fix, and remove the skip.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-#endif
+#define MAYBE_RecordConfirmationUntracked DISABLED_RecordConfirmationUntracked
+#else
+#define MAYBE_RecordConfirmationUntracked RecordConfirmationUntracked
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       MAYBE_RecordConfirmationUntracked) {
   mock_shopping_service_->SetIsSubscribedCallbackValue(false);
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kShouldShowPriceTrackFUEBubble, false);
