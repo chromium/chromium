@@ -274,14 +274,14 @@ We can quickly get OS-specific coverage result with the local changes:
 
 * macOS/Linux
 ```
-gn gen out/coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_goma=true symbol_level=2"
+gn gen out/coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_remoteexec=true symbol_level=2"
 
 vpython3 tools/code_coverage/coverage.py  updater_tests -b out/coverage -o out/report -c 'out/coverage/updater_tests' -f chrome/updater
 ```
 
 * Windows
 ```
-gn gen out\coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_goma=true symbol_level=2"
+gn gen out\coverage --args="use_clang_coverage=true is_component_build=false is_chrome_branded=true is_debug=true use_debug_fission=true use_remoteexec=true symbol_level=2"
 
 vpython3 tools\code_coverage\coverage.py updater_tests -b out\coverage -o out\report -c out\coverage\updater_tests.exe  -f chrome/updater
 ```
