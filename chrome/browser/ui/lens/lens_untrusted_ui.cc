@@ -52,6 +52,9 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       lens::features::GetLensOverlayResultsSearchLoadingURL());
   html_source->AddBoolean("enableDebuggingMode",
                           lens::features::IsLensOverlayDebuggingEnabled());
+  html_source->AddBoolean(
+      "enablePreciseHighlight",
+      lens::features::IsLensOverlayPreciseHighlightEnabled());
   html_source->AddBoolean("enableShimmer",
                           lens::features::IsLensOverlayShimmerEnabled());
   html_source->AddBoolean(
