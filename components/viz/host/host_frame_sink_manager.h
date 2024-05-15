@@ -201,8 +201,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
                            std::unique_ptr<CopyOutputRequest> request,
                            bool capture_exact_surface_id = false);
 
-  using ScreenshotDestinationReadyCallback =
-      base::OnceCallback<void(const SkBitmap& copy_output)>;
+  using ScreenshotDestinationReadyCallback = base::OnceCallback<void(
+      const blink::SameDocNavigationScreenshotDestinationToken&
+          destination_token,
+      SkBitmap copy_output)>;
   // Sets the callback which is invoked when a `CopyOutputResult` associated
   // with `destination_token` is received by the host/browser process from the
   // Viz process. Must be called once per `destination_token`.
@@ -258,9 +260,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token);
   bool HasUnclaimedViewTransitionResourcesForTest();
-
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size);
 
   const DebugRendererSettings& debug_renderer_settings() const {
     return debug_renderer_settings_;

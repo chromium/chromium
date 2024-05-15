@@ -126,7 +126,6 @@
 #include "content/browser/renderer_host/navigation_metrics_utils.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_state_keep_alive.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -13967,14 +13966,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_associated_data_->owned_page()->set_last_main_document_source_id(
         ukm::ConvertToSourceId(navigation_request->GetNavigationId(),
                                ukm::SourceIdType::NAVIGATION_ID));
-  }
-
-  if (is_same_document_navigation &&
-      same_document_params->navigation_entry_screenshot_destination
-          .has_value()) {
-    NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
-        *(navigation_request.get()),
-        same_document_params->navigation_entry_screenshot_destination.value());
   }
 
   // TODO(crbug.com/40150370): Do not pass |params| to DidNavigate().

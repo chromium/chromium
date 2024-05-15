@@ -312,9 +312,7 @@ void HostFrameSinkManager::InvalidateCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken&
         destination_token) {
   auto it = screenshot_destinations_.find(destination_token);
-  if (it == screenshot_destinations_.end()) {
-    return;
-  }
+  CHECK(it != screenshot_destinations_.end());
   screenshot_destinations_.erase(it);
 }
 
@@ -447,10 +445,11 @@ void HostFrameSinkManager::OnScreenshotCaptured(
   if (it == screenshot_destinations_.end()) {
     return;
   }
-  auto callback = std::move(it->second);
+  SkBitmap immutable =
+      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap();
+  immutable.setImmutable();
+  std::move(it->second).Run(destination_token, std::move(immutable));
   screenshot_destinations_.erase(it);
-  std::move(callback).Run(
-      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap());
 }
 
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
@@ -517,12 +516,6 @@ bool HostFrameSinkManager::HasUnclaimedViewTransitionResourcesForTest() {
   frame_sink_manager_->HasUnclaimedViewTransitionResourcesForTest(
       &has_resources);
   return has_resources;
-}
-
-void HostFrameSinkManager::SetSameDocNavigationScreenshotSizeForTesting(
-    const gfx::Size& result_size) {
-  frame_sink_manager_->SetSameDocNavigationScreenshotSizeForTesting(  // IN-TEST
-      result_size);
 }
 
 HostFrameSinkManager::FrameSinkData::FrameSinkData() = default;

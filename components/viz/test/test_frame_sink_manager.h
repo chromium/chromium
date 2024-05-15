@@ -84,9 +84,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const blink::ViewTransitionToken& transition_token) override {}
   void HasUnclaimedViewTransitionResourcesForTest(
       HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size,
-      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override {}
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

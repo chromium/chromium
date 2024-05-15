@@ -4,9 +4,6 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
-#include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -58,34 +55,30 @@ void InvokeTestCallback(int index, const SkBitmap bitmap, bool requested) {
   GetTestScreenshotCallback().Run(index, test_copy, requested);
 }
 
-// Returns the first entry that matches `destination_token`. Returns null if no
-// match is found.
-NavigationEntryImpl* GetEntryForToken(
-    NavigationControllerImpl* controller,
-    const blink::SameDocNavigationScreenshotDestinationToken&
-        destination_token) {
-  for (int i = 0; i < controller->GetEntryCount(); ++i) {
-    if (auto* entry = controller->GetEntryAtIndex(i);
-        entry->same_document_navigation_entry_screenshot_token() ==
-        destination_token) {
-      return entry;
-    }
-  }
-  return nullptr;
-}
-
-void CacheScreenshotImpl(NavigationControllerImpl& controller,
-                         NavigationEntryImpl& entry,
+void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
+                         int navigation_entry_id,
                          const SkBitmap& bitmap) {
-  auto navigation_entry_id = entry.GetUniqueID();
+  if (!controller) {
+    // The tab was destroyed by the time we receive the bitmap from the GPU.
+    return;
+  }
+
+  NavigationEntryImpl* entry =
+      controller->GetEntryWithUniqueID(navigation_entry_id);
+  if (!entry) {
+    // The entry was deleted by the time we received the bitmap from the GPU.
+    // This can happen by clearing the session history, or when the
+    // `NavigationEntry` was replaced or deleted, etc.
+    return;
+  }
 
   if (GetTestScreenshotCallback()) {
     InvokeTestCallback(
-        controller.GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
+        controller->GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
         true);
   }
 
-  if (&entry == controller.GetLastCommittedEntry()) {
+  if (entry == controller->GetLastCommittedEntry()) {
     // TODO(crbug.com/40278616): We shouldn't cache the screenshot into
     // the navigation entry if the entry is re-navigated after we send out the
     // copy request. See the two cases below.
@@ -107,7 +100,7 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
   if (bitmap.drawsNothing()) {
     // The GPU is not able to produce a valid bitmap. This is an error case.
     LOG(ERROR) << "Cannot generate a valid bitmap for entry "
-               << entry.GetUniqueID() << " url " << entry.GetURL();
+               << entry->GetUniqueID() << " url " << entry->GetURL();
     return;
   }
 
@@ -115,29 +108,23 @@ void CacheScreenshotImpl(NavigationControllerImpl& controller,
   immutable_copy.setImmutable();
 
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
-      immutable_copy, entry.GetUniqueID());
+      immutable_copy, entry->GetUniqueID());
   NavigationEntryScreenshotCache* cache =
-      controller.GetNavigationEntryScreenshotCache();
-  cache->SetScreenshot(&entry, std::move(screenshot));
+      controller->GetNavigationEntryScreenshotCache();
+  cache->SetScreenshot(entry, std::move(screenshot));
 }
 
-void CacheScreenshotForCrossDocNavigations(
-    base::WeakPtr<NavigationControllerImpl> controller,
-    int navigation_entry_id,
-    const SkBitmap& bitmap) {
-  if (!controller) {
-    // The tab was destroyed by the time we receive the bitmap from the GPU.
-    return;
-  }
-  NavigationEntryImpl* entry =
-      controller->GetEntryWithUniqueID(navigation_entry_id);
-  if (!entry) {
-    // The entry was deleted by the time we received the bitmap from the GPU.
-    // This can happen by clearing the session history, or when the
-    // `NavigationEntry` was replaced or deleted, etc.
-    return;
-  }
-  CacheScreenshotImpl(*controller, *entry, bitmap);
+void CacheScreenshot(base::WeakPtr<NavigationControllerImpl> controller,
+                     int navigation_entry_id,
+                     const SkBitmap& bitmap) {
+  // `CacheScreenshot`, as the callback for `CopyFromExactSurface`, is not
+  // guaranteed to be executed on the same thread that it was submitted from
+  // (browser's UI thread). Since `NavigationEntryScreenshotCache` can only be
+  // accessed from the browser's UI thread, we explicitly post the caching task
+  // onto the UI thread. See https://crbug.com/1217049 for more context.
+  GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+      ->PostTask(FROM_HERE, base::BindOnce(&CacheScreenshotImpl, controller,
+                                           navigation_entry_id, bitmap));
 }
 
 // We only want to capture screenshots for navigation entries reachable via
@@ -216,8 +203,21 @@ ShouldCapture ShouldCaptureForWorkInProgressConditions(
 // be loaded might have different contents than when the screenshot was taken in
 // a previous load. A new screenshot should be taken when navigating away from
 // this entry again.
-void RemoveScreenshotFromDestination(NavigationControllerImpl& nav_controller,
-                                     NavigationEntry* destination_entry) {
+void RemoveScreenshotFromDestination(
+    const NavigationRequest& navigation_request) {
+  NavigationEntry* destination_entry = navigation_request.GetNavigationEntry();
+
+  if (!destination_entry) {
+    // We don't always have a destination entry (e.g., a new (non-history)
+    // subframe navigation). However if this is a session history navigation, we
+    // most-likely have a destination entry to navigate toward, from which we
+    // need to purge any existing screenshot.
+    return;
+  }
+
+  NavigationControllerImpl& nav_controller =
+      navigation_request.frame_tree_node()->navigator().controller();
+
   if (!nav_controller.frame_tree().is_primary()) {
     // Navigations in the non-primary FrameTree can still have a destination
     // entry (e.g., Prerender's initial document-fetch request will create a
@@ -237,34 +237,6 @@ void RemoveScreenshotFromDestination(NavigationControllerImpl& nav_controller,
     CHECK(successfully_removed);
   }
 }
-
-void CacheScreenshotForSameDocNavigations(
-    base::WeakPtr<NavigationControllerImpl> controller,
-    int navigation_entry_id,
-    const SkBitmap& bitmap) {
-  CHECK(AreBackForwardTransitionsEnabled());
-
-  if (!controller) {
-    // The tab was destroyed by the time we receive the bitmap from the GPU.
-    return;
-  }
-
-  auto* destination_entry =
-      controller->GetEntryWithUniqueID(navigation_entry_id);
-
-  if (!destination_entry) {
-    // The entry was deleted by the time we received the bitmap from the GPU.
-    // This can happen by clearing the session history, or when the
-    // `NavigationEntry` was replaced or deleted, etc.
-    return;
-  }
-
-  CacheScreenshotImpl(*controller, *destination_entry, bitmap);
-
-  destination_entry->SetSameDocumentNavigationEntryScreenshotToken(
-      std::nullopt);
-}
-
 }  // namespace
 
 void NavigationTransitionUtils::SetCapturedScreenshotSizeForTesting(
@@ -285,14 +257,11 @@ void NavigationTransitionUtils::SetNavScreenshotCallbackForTesting(
   GetTestScreenshotCallback() = std::move(screenshot_callback);
 }
 
-void NavigationTransitionUtils::
-    CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
-        const NavigationRequest& navigation_request) {
+void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
+    const NavigationRequest& navigation_request) {
   if (!AreBackForwardTransitionsEnabled()) {
     return;
   }
-
-  CHECK(!navigation_request.IsSameDocument());
 
   // The current conditions for whether to capture a screenshot depend on
   // `NavigationRequest::GetRenderFrameHost()`, so for now we should only get
@@ -305,22 +274,11 @@ void NavigationTransitionUtils::
   // `is_same_rfh_or_early_commit`.
   CHECK(navigation_request.HasRenderFrameHost());
 
-  auto* destination_entry = navigation_request.GetNavigationEntry();
-  if (!destination_entry) {
-    // We don't always have a destination entry (e.g., a new (non-history)
-    // subframe navigation). However if this is a session history navigation, we
-    // most-likely have a destination entry to navigate toward, from which we
-    // need to purge any existing screenshot.
-    return;
-  }
-
   // Remove the screenshot from the destination before checking the conditions.
   // We might not capture for this navigation due to some conditions, but the
   // navigation still continues (to commit/finish), for which we need to remove
   // the screenshot from the destination entry.
-  RemoveScreenshotFromDestination(
-      navigation_request.frame_tree_node()->frame_tree().controller(),
-      destination_entry);
+  RemoveScreenshotFromDestination(navigation_request);
   if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
     if (GetTestScreenshotCallback()) {
       InvokeTestCallbackForNoScreenshot(navigation_request);
@@ -349,8 +307,7 @@ void NavigationTransitionUtils::
   bool copied_via_delegate =
       navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
           base::BindOnce(
-              &CacheScreenshotForCrossDocNavigations,
-              nav_controller.GetWeakPtr(),
+              &CacheScreenshot, nav_controller.GetWeakPtr(),
               nav_controller.GetLastCommittedEntry()->GetUniqueID()));
 
   if (!copied_via_delegate &&
@@ -382,63 +339,10 @@ void NavigationTransitionUtils::
 
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
-      base::BindOnce(&CacheScreenshotForCrossDocNavigations,
-                     nav_controller.GetWeakPtr(),
+      base::BindOnce(&CacheScreenshot, nav_controller.GetWeakPtr(),
                      nav_controller.GetLastCommittedEntry()->GetUniqueID()));
 
   ++g_num_copy_requests_issued_for_testing;
-}
-
-void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
-    const NavigationRequest& navigation_request,
-    const blink::SameDocNavigationScreenshotDestinationToken&
-        destination_token) {
-  if (!AreBackForwardTransitionsEnabled()) {
-    // The source of this call is from the renderer. We can't always trust the
-    // renderer thus fail safely.
-    return;
-  }
-  NavigationControllerImpl& nav_controller =
-      navigation_request.frame_tree_node()->navigator().controller();
-  if (GetEntryForToken(&nav_controller, destination_token)) {
-    // Again, can't always trust the renderer to send a non-duplicated token.
-    return;
-  }
-
-  CHECK(navigation_request.IsSameDocument());
-
-  if (auto* destination_entry = navigation_request.GetNavigationEntry()) {
-    RemoveScreenshotFromDestination(nav_controller, destination_entry);
-  } else {
-    // All renderer-initiated same-document navigations will not have a
-    // destination entry (see
-    // `NavigationRequest::CreateForSynchronousRendererCommit`).
-  }
-
-  if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
-    return;
-  }
-
-  // NOTE: `destination_token` is to set on the last committed entry (the
-  // screenshot's destination), instead of the destination entry of this
-  // `navigation_request` (`navigation_request.GetNavigationEntry()`).
-
-  // We won't reach here if the renderer hasn't requested a CopyOutputRequest,
-  // since the token in the DidCommitSameDocNavigation message will be nullopt.
-  ++g_num_copy_requests_issued_for_testing;
-
-  // `blink::SameDocNavigationScreenshotDestinationToken` is guaranteed
-  // non-empty.
-  nav_controller.GetLastCommittedEntry()
-      ->SetSameDocumentNavigationEntryScreenshotToken(destination_token);
-
-  CHECK(GetHostFrameSinkManager());
-
-  GetHostFrameSinkManager()->SetOnCopyOutputReadyCallback(
-      destination_token,
-      base::BindOnce(&CacheScreenshotForSameDocNavigations,
-                     nav_controller.GetWeakPtr(),
-                     nav_controller.GetLastCommittedEntry()->GetUniqueID()));
 }
 
 }  // namespace content

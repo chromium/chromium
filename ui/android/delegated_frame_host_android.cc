@@ -21,7 +21,6 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -161,8 +160,25 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
   request->set_result_task_runner(
       base::SequencedTaskRunner::GetCurrentDefault());
 
-  viz::SetCopyOutoutRequestResultSize(request.get(), src_subrect, output_size,
-                                      surface_size_in_pixels_);
+  if (!src_subrect.IsEmpty())
+    request->set_area(src_subrect);
+  if (!output_size.IsEmpty()) {
+    // The CopyOutputRequest API does not allow fixing the output size. Instead
+    // we have the set area and scale in such a way that it would result in the
+    // desired output size.
+    if (!request->has_area())
+      request->set_area(gfx::Rect(surface_size_in_pixels_));
+    request->set_result_selection(gfx::Rect(output_size));
+    const gfx::Rect& area = request->area();
+    // Viz would normally return an empty result for an empty area.
+    // However, this guard here is still necessary to protect against setting
+    // an illegal scaling ratio.
+    if (area.IsEmpty())
+      return;
+    request->SetScaleRatio(
+        gfx::Vector2d(area.width(), area.height()),
+        gfx::Vector2d(output_size.width(), output_size.height()));
+  }
 
   host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
                                                 capture_exact_surface_id);

@@ -5840,7 +5840,6 @@ data/cacheable.svg
 data/cacheable.svg.mock-http-headers
 data/cacheable2.js
 data/cacheable2.js.mock-http-headers
-data/changing_color.html
 data/click-nocontent-link.html
 data/click-noreferrer-links.html
 data/client_redirect.html
