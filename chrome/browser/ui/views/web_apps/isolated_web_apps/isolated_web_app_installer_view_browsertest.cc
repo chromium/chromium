@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +35,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -150,9 +150,9 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
     // is more predictable than activated dialog.
     widget->Deactivate();
     widget->GetFocusManager()->ClearFocus();
-    base::ScopedClosureRunner unblock_close(
-        base::BindOnce(&views::Widget::SetBlockCloseForTesting,
-                       base::Unretained(widget), false));
+    absl::Cleanup unblock_close = [widget] {
+      widget->SetBlockCloseForTesting(false);
+    };
 
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
     const std::string screenshot_name =

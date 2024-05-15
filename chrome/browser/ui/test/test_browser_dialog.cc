@@ -26,8 +26,8 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
@@ -122,9 +122,9 @@ bool TestBrowserDialog::VerifyUi() {
   bool is_active = dialog_widget->IsActive();
   dialog_widget->Deactivate();
   dialog_widget->GetFocusManager()->ClearFocus();
-  base::ScopedClosureRunner unblock_close(
-      base::BindOnce(&views::Widget::SetBlockCloseForTesting,
-                     base::Unretained(dialog_widget), false));
+  absl::Cleanup unblock_close = [dialog_widget] {
+    dialog_widget->SetBlockCloseForTesting(false);
+  };
 
   auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
   const std::string screenshot_name = base::StrCat(
