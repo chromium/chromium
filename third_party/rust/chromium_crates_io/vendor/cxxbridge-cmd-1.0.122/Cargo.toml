@@ -13,11 +13,17 @@
 edition = "2021"
 rust-version = "1.56"
 name = "cxxbridge-cmd"
-version = "1.0.121"
+version = "1.0.122"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = false
 exclude = ["build.rs"]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
 homepage = "https://cxx.rs"
+readme = false
 keywords = ["ffi"]
 categories = [
     "development-tools::build-utils",

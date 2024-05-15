@@ -1113,10 +1113,10 @@ fn write_rust_function_shim_impl(
     }
     write!(out, ")");
     if !indirect_return {
-        if let Some(ret) = &sig.ret {
-            if let Type::RustBox(_) | Type::UniquePtr(_) | Type::Str(_) | Type::SliceRef(_) = ret {
-                write!(out, ")");
-            }
+        if let Some(Type::RustBox(_) | Type::UniquePtr(_) | Type::Str(_) | Type::SliceRef(_)) =
+            &sig.ret
+        {
+            write!(out, ")");
         }
     }
     writeln!(out, ";");
