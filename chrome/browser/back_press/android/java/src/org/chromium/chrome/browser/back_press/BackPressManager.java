@@ -131,6 +131,10 @@ public class BackPressManager implements Destroyable {
             };
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
+    static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
+            "Android.BackPress.Intercept.CustomTab.SameTask";
+    static final String HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK =
+            "Android.BackPress.Intercept.CustomTab.SeparateTask";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
@@ -181,6 +185,19 @@ public class BackPressManager implements Destroyable {
     public static void record(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
+    }
+
+    /**
+     * Record when the back press is consumed by a custom tab.
+     *
+     * @param type The {@link Type} which consumes the back press event.
+     * @param separateTask Whether the custom tab runs in a separate task.
+     */
+    public static void recordForCustomTab(@Type int type, boolean separateTask) {
+        RecordHistogram.recordEnumeratedHistogram(
+                separateTask ? HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK : HISTOGRAM_CUSTOM_TAB_SAME_TASK,
+                sMetricsMap.get(type),
+                sMetricsMaxValue);
     }
 
     /**
@@ -399,4 +416,11 @@ public class BackPressManager implements Destroyable {
         return HISTOGRAM;
     }
 
+    public static String getCustomTabSameTaskHistogramForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SAME_TASK;
+    }
+
+    public static String getCustomTabSeparateTaskHistogramForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK;
+    }
 }

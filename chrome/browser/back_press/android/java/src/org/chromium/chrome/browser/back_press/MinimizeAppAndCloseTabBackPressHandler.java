@@ -38,6 +38,10 @@ import java.util.function.Predicate;
 public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler, Destroyable {
     private static final String TAG = "MinimizeAppCloseTab";
     static final String HISTOGRAM = "Android.BackPress.MinimizeAppAndCloseTab";
+    static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
+            "Android.BackPress.MinimizeAppAndCloseTab.CustomTab.SameTask";
+    static final String HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK =
+            "Android.BackPress.MinimizeAppAndCloseTab.CustomTab.SeparateTask";
 
     // A conditionally enabled supplier, whose value is false only when minimizing app without
     // closing tabs in the 'system back' arm.
@@ -79,6 +83,20 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     public static void record(@MinimizeAppAndCloseTabType int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM, type, MinimizeAppAndCloseTabType.NUM_TYPES);
+    }
+
+    /**
+     * Record metrics of how back press is finally consumed by the custom tab.
+     *
+     * @param type The action we do when back press is consumed.
+     * @param separateTask Whether the custom tab runs in a separate task.
+     */
+    public static void recordForCustomTab(
+            @MinimizeAppAndCloseTabType int type, boolean separateTask) {
+        RecordHistogram.recordEnumeratedHistogram(
+                separateTask ? HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK : HISTOGRAM_CUSTOM_TAB_SAME_TASK,
+                type,
+                MinimizeAppAndCloseTabType.NUM_TYPES);
     }
 
     public static void assertOnLastBackPress(
@@ -272,5 +290,13 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
 
     public static String getHistogramNameForTesting() {
         return HISTOGRAM;
+    }
+
+    public static String getCustomTabSameTaskHistogramNameForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SAME_TASK;
+    }
+
+    public static String getCustomTabSeparateTaskHistogramNameForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK;
     }
 }

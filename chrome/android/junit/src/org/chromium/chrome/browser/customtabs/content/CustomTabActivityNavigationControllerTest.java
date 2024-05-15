@@ -111,6 +111,16 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .expectNoRecords(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSeparateTaskHistogramNameForTesting())
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(
+                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
+                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
@@ -132,6 +142,16 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
+                        .expectNoRecords(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSeparateTaskHistogramNameForTesting())
+                        .expectIntRecord(
+                                MinimizeAppAndCloseTabBackPressHandler
+                                        .getCustomTabSameTaskHistogramNameForTesting(),
+                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
+                        .expectNoRecords(
+                                BackPressManager.getCustomTabSeparateTaskHistogramForTesting())
+                        .expectNoRecords(BackPressManager.getCustomTabSameTaskHistogramForTesting())
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);

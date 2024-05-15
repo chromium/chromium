@@ -657,6 +657,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BackPress.Intercept.CustomTab{Task}"
+    enum="BackPressConsumer" expires_after="2025-05-15">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Recorded when a custom tabs feature intercepted the system's back press
+    gesture {Task}.
+  </summary>
+  <token key="Task">
+    <variant name=".SameTask" summary="custom tab is from the same task."/>
+    <variant name=".SeparateTask"
+        summary="custom tab is from a separate task."/>
+  </token>
+</histogram>
+
 <histogram name="Android.BackPress.Intercept{Direction}"
     enum="BackPressConsumer" expires_after="2024-09-15">
   <owner>lazzzis@chromium.org</owner>
@@ -680,6 +695,21 @@ chromium-metrics-reviews@google.com.
     Records that the back press causes the app to be minimized or the current
     tab to be closed.
   </summary>
+</histogram>
+
+<histogram name="Android.BackPress.MinimizeAppAndCloseTab.CustomTab.{Task}"
+    enum="MinimizeAppAndCloseTabType" expires_after="2025-05-15">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Records that the custom tabs back press causes the app to be minimized or
+    the current tab to be closed {Task}.
+  </summary>
+  <token key="Task">
+    <variant name=".SameTask" summary="custom tab is from the same task."/>
+    <variant name=".SeparateTask"
+        summary="custom tab is from a separate task."/>
+  </token>
 </histogram>
 
 <histogram name="Android.BackPress.SecondaryActivity" enum="SecondaryActivity"

@@ -245,6 +245,11 @@ public class CustomTabActivityNavigationController
     public boolean navigateOnBack() {
         if (!mChromeBrowserInitializer.isFullBrowserInitialized()) return false;
 
+        boolean separateTask =
+                (mIntentDataProvider.getIntent().getFlags()
+                                & (Intent.FLAG_ACTIVITY_NEW_TASK
+                                        | Intent.FLAG_ACTIVITY_NEW_DOCUMENT))
+                        != 0;
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
         if (!BackPressManager.isEnabled()) {
@@ -255,17 +260,23 @@ public class CustomTabActivityNavigationController
                 RenderFrameHost focusedFrame = webContents.getFocusedFrame();
                 if (focusedFrame != null && focusedFrame.signalCloseWatcherIfActive()) {
                     BackPressManager.record(BackPressHandler.Type.CLOSE_WATCHER);
+                    BackPressManager.recordForCustomTab(
+                            BackPressHandler.Type.CLOSE_WATCHER, separateTask);
                     return true;
                 }
             }
 
             if (mToolbarManager != null && mToolbarManager.back()) {
                 BackPressManager.record(BackPressHandler.Type.TAB_HISTORY);
+                BackPressManager.recordForCustomTab(
+                        BackPressHandler.Type.TAB_HISTORY, separateTask);
                 return true;
             }
             // If enabled, BackPressManager will record this internally. Otherwise, this should
             // be recorded manually.
             BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+            BackPressManager.recordForCustomTab(
+                    BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB, separateTask);
         } else if (BackPressManager.correctTabNavigationOnFallback()) {
             if (mTabProvider.getTab().canGoBack()) {
                 return false;
@@ -274,29 +285,35 @@ public class CustomTabActivityNavigationController
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_BEFORE_UNLOAD)
                 && mTabController.onlyOneTabRemaining()) {
-            finishActivity();
+            finishActivity(separateTask);
             return true;
         }
 
         if (mTabController.dispatchBeforeUnloadIfNeeded()) {
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
+            MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
+                    MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
             return true;
         }
         if (mTabController.onlyOneTabRemaining()) {
-            finishActivity();
+            finishActivity(separateTask);
         } else {
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.CLOSE_TAB);
+            MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
+                    MinimizeAppAndCloseTabType.CLOSE_TAB, separateTask);
             mTabController.closeTab();
         }
 
         return true;
     }
 
-    private void finishActivity() {
+    private void finishActivity(boolean separateTask) {
         // If we're closing the last tab and it doesn't have beforeunload, just finish the Activity
         // manually. If we had called mTabController.closeTab() and waited for the Activity to close
         // as a result we would have a visual glitch: https://crbug.com/1087108.
         MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
+        MinimizeAppAndCloseTabBackPressHandler.recordForCustomTab(
+                MinimizeAppAndCloseTabType.MINIMIZE_APP, separateTask);
         finish(USER_NAVIGATION);
     }
 
