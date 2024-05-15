@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_action_button.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -46,7 +47,8 @@ DeskActionButton::DeskActionButton(const std::u16string& tooltip,
       std::make_unique<views::CircleHighlightPathGenerator>(
           -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
   if (desk_action_view_->mini_view()->owner_bar()->type() ==
-      DeskBarViewBase::Type::kOverview) {
+          DeskBarViewBase::Type::kOverview &&
+      !features::IsOverviewNewFocusEnabled()) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskActionButton>(view);

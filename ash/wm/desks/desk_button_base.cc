@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desk_button_base.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/wm_constants.h"
@@ -53,7 +54,8 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
-  if (bar_view_->type() == DeskBarViewBase::Type::kOverview) {
+  if (bar_view_->type() == DeskBarViewBase::Type::kOverview &&
+      !features::IsOverviewNewFocusEnabled()) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) {
           const auto* v = views::AsViewClass<DeskButtonBase>(view);

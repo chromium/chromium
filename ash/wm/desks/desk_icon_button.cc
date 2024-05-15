@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/color_util.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -80,6 +81,9 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
           if (v->is_focused()) {
             return true;
           }
+          if (v->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+            return true;
+          }
           if (v->state_ != State::kActive) {
             return false;
           }
@@ -150,18 +154,24 @@ gfx::Size DeskIconButton::CalculatePreferredSize(
 }
 
 void DeskIconButton::UpdateFocusState() {
-  std::optional<ui::ColorId> new_focus_color_id;
+  auto get_focus_color = [this]() -> std::optional<ui::ColorId> {
+    if (is_focused()) {
+      return ui::kColorAshFocusRing;
+    }
+    if (HasFocus() && features::IsOverviewNewFocusEnabled()) {
+      return ui::kColorAshFocusRing;
+    }
+    if (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
+        IsPointOnButton(bar_view_->last_dragged_item_screen_location())) {
+      return ui::kColorAshFocusRing;
+    }
+    if (state_ == State::kActive && paint_as_active_) {
+      return cros_tokens::kCrosSysTertiary;
+    }
+    return std::nullopt;
+  };
 
-  if (is_focused() ||
-      (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
-       IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
-    new_focus_color_id = ui::kColorAshFocusRing;
-  } else if (state_ == State::kActive && paint_as_active_) {
-    new_focus_color_id = cros_tokens::kCrosSysTertiary;
-  } else {
-    new_focus_color_id = std::nullopt;
-  }
-
+  std::optional<ui::ColorId> new_focus_color_id = get_focus_color();
   if (focus_color_id_ == new_focus_color_id) {
     return;
   }

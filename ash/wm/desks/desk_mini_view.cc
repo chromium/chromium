@@ -5,6 +5,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "ash/accelerators/keyboard_code_util.h"
 #include "ash/accessibility/accessibility_controller.h"
@@ -144,8 +145,13 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
         switch (mini_view->owner_bar()->type()) {
           case DeskBarViewBase::Type::kOverview:
             // Show focus ring for the overview bar when:
-            //   1) it's focused via the customized focus cycler;
+            //   1a) it's focused via the customized focus cycler;
             if (desk_preview->is_focused()) {
+              return true;
+            }
+            //   1b) it's focused via focus manager;
+            if (desk_preview->HasFocus() &&
+                features::IsOverviewNewFocusEnabled()) {
               return true;
             }
             //   2) dragging an overview item over this mini view;
@@ -275,28 +281,46 @@ bool DeskMiniView::IsDeskNameBeingModified() const {
 void DeskMiniView::UpdateDeskButtonVisibility() {
   CHECK(desk_);
 
-  // TODO(b/326124631): Refactor code below.
-  auto* controller = DesksController::Get();
+  auto get_visible = [this]() -> bool {
+    if (!DesksController::Get()->CanRemoveDesks()) {
+      return false;
+    }
+    if (owner_bar_->dragged_item_over_bar()) {
+      return false;
+    }
+    // Don't show desk buttons when hovered while the dragged window.
+    if (owner_bar_->IsDraggingDesk()) {
+      return false;
+    }
+    if (force_show_desk_buttons_) {
+      return true;
+    }
+    // For switch access, setting desk buttons to visible allows users to
+    // navigate to it.
+    if (Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {
+      return true;
+    }
+    if (IsMouseHovered()) {
+      return true;
+    }
 
-  bool desk_profile_button_has_focus =
-      desk_profile_button_ && desk_profile_button_->HasFocus();
-  bool desk_profile_button_is_focused =
-      desk_profile_button_ && desk_profile_button_->is_focused();
-  // Don't show desk buttons when hovered while the dragged window is on
-  // the desk bar view.
-  // For switch access, setting desk buttons to visible allows users to
-  // navigate to it.
-  const bool visible =
-      controller->CanRemoveDesks() && !owner_bar_->dragged_item_over_bar() &&
-      !owner_bar_->IsDraggingDesk() &&
-      (IsMouseHovered() || force_show_desk_buttons_ ||
-       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
-       (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-        (desk_preview_->HasFocus() || desk_profile_button_has_focus ||
-         desk_action_view_->ChildHasFocus())) ||
-       (owner_bar_->type() == DeskBarViewBase::Type::kOverview &&
-        (desk_preview_->is_focused() || desk_profile_button_is_focused ||
-         desk_action_view_->ChildHasFocus())));
+    switch (owner_bar_->type()) {
+      case DeskBarViewBase::Type::kDeskButton: {
+        if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
+          return true;
+        }
+        return desk_profile_button_ && desk_profile_button_->HasFocus();
+      }
+      case DeskBarViewBase::Type::kOverview: {
+        if (desk_preview_->is_focused() || desk_action_view_->ChildHasFocus()) {
+          return true;
+        }
+        return desk_profile_button_ && desk_profile_button_->is_focused();
+      }
+    }
+  };
+
+  const bool visible = get_visible();
 
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
@@ -311,7 +335,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // bar. Update the shortcut label to show the desk number for the shortcut.
   if (!desk_->is_desk_being_removed() &&
       owner_bar_->type() == DeskBarViewBase::Type::kDeskButton) {
-    const int desk_index = controller->GetDeskIndex(desk_);
+    const int desk_index = DesksController::Get()->GetDeskIndex(desk_);
     desk_shortcut_view_->SetVisible(visible &&
                                     desk_index < kDeskBarMaxDeskShortcut);
     desk_shortcut_label_->SetText(base::NumberToString16(desk_index + 1));
@@ -342,27 +366,33 @@ std::optional<ui::ColorId> DeskMiniView::GetFocusColor() const {
   const ui::ColorId active_desk_color_id = cros_tokens::kCrosSysTertiary;
 
   switch (owner_bar_->type()) {
-    case DeskBarViewBase::Type::kOverview:
-      if ((owner_bar_->dragged_item_over_bar() &&
-           IsPointOnMiniView(
-               owner_bar_->last_dragged_item_screen_location())) ||
-          desk_preview_->is_focused()) {
+    case DeskBarViewBase::Type::kOverview: {
+      if (owner_bar_->dragged_item_over_bar() &&
+          IsPointOnMiniView(owner_bar_->last_dragged_item_screen_location())) {
         return focused_desk_color_id;
-      } else if (desk_->is_active() && owner_bar_->overview_grid() &&
-                 !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
+      }
+      if (desk_preview_->is_focused()) {
+        return focused_desk_color_id;
+      }
+      if (desk_preview_->HasFocus() && features::IsOverviewNewFocusEnabled()) {
+        return focused_desk_color_id;
+      }
+      if (desk_->is_active() && owner_bar_->overview_grid() &&
+          !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
         return active_desk_color_id;
       }
-      break;
-    case DeskBarViewBase::Type::kDeskButton:
+      return std::nullopt;
+    }
+    case DeskBarViewBase::Type::kDeskButton: {
       if (desk_preview_->HasFocus()) {
         return focused_desk_color_id;
-      } else if (desk_->is_active()) {
+      }
+      if (desk_->is_active()) {
         return active_desk_color_id;
       }
-      break;
+      return std::nullopt;
+    }
   }
-
-  return std::nullopt;
 }
 
 void DeskMiniView::UpdateFocusColor() {
