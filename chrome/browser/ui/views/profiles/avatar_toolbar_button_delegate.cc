@@ -54,6 +54,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1422,7 +1423,9 @@ void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin) &&
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+      profile_->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin) &&
       account_info == identity_manager_->GetPrimaryAccountInfo(
                           signin::ConsentLevel::kSignin) &&
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
