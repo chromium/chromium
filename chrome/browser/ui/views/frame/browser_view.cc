@@ -442,20 +442,13 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
   return false;
 }
 
+bool IsManagedGuestSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-// Returns whether immmersive fullscreen should replace fullscreen. This
-// should only occur for "browser-fullscreen" for tabbed-typed windows (not
-// for tab-fullscreen and not for app/popup type windows).
-bool ShouldUseImmersiveFullscreenForUrl(const GURL& url) {
-  // Kiosk mode needs the whole screen.
-  if (chrome::IsRunningInAppMode()) {
-    return false;
-  }
-  // An empty URL signifies browser fullscreen. Immersive is used for browser
-  // fullscreen only.
-  return url.is_empty();
-}
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
 #endif
+}
 
 // Overlay view that owns TopContainerView in some cases (such as during
 // immersive fullscreen reveal).
@@ -1948,7 +1941,7 @@ void BrowserView::EnterFullscreen(const GURL& url,
     // Nothing to do.
     return;
   }
-  ProcessFullscreen(true, display_id);
+  ProcessFullscreen(true, url, display_id);
 }
 
 void BrowserView::ExitFullscreen() {
@@ -1958,7 +1951,7 @@ void BrowserView::ExitFullscreen() {
   if (IsForceFullscreen())
     return;
 
-  ProcessFullscreen(false, display::kInvalidDisplayId);
+  ProcessFullscreen(false, GURL(), display::kInvalidDisplayId);
 }
 
 void BrowserView::UpdateExclusiveAccessBubble(
@@ -1968,21 +1961,23 @@ void BrowserView::UpdateExclusiveAccessBubble(
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
 
+  // Immersive mode allows the toolbar to be shown, so do not show the bubble.
+  // However, do show the bubble in a managed guest session (see
+  // crbug.com/741069).
+  bool immersive_not_public = ShouldUseImmersiveFullscreenForUrl(params.url) &&
+                              !IsManagedGuestSession();
+
   // Whether we should remove the bubble if it exists, or not show the bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.
   bool should_close_bubble = is_trusted_pinned;
   if (!params.has_download) {
-    // ...TYPE_NONE indicates deleting the bubble, except when used with
-    // download.
-    should_close_bubble |= params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
-#if BUILDFLAG(IS_CHROMEOS)
-    // Immersive mode allows the toolbar to be shown, so do not show the bubble.
-    // However, do show the bubble in a managed guest session (see
-    // crbug.com/741069).
-    // Immersive mode logic for downloads is handled by the download controller.
-    should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.url) &&
-                           !chromeos::IsManagedGuestSession();
-#endif
+    should_close_bubble = should_close_bubble ||
+                          // ...TYPE_NONE indicates deleting the bubble, except
+                          // when used with download.
+                          params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE ||
+                          // Immersive mode logic for downloads is handled by
+                          // the download controller.
+                          immersive_not_public;
   }
 
   if (should_close_bubble) {
@@ -2064,31 +2059,10 @@ void BrowserView::FullscreenStateChanging() {
     return;
   }
 
-  ProcessFullscreen(IsFullscreen(), display::kInvalidDisplayId);
+  ProcessFullscreen(IsFullscreen(), GURL(), display::kInvalidDisplayId);
 }
 
 void BrowserView::FullscreenStateChanged() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
-    // Never use immersive in locked fullscreen as it allows the user to exit
-    // the locked mode.
-    immersive_mode_controller_->SetEnabled(false);
-  } else {
-    // Enable immersive before the browser refreshes its list of enabled
-    // commands.
-    bool should_stay_immersive =
-        !IsFullscreen() &&
-        immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
-    GURL url = IsFullscreen() ? GetExclusiveAccessManager()
-                                    ->fullscreen_controller()
-                                    ->GetURLForExclusiveAccessBubble()
-                              : GURL();
-    if (ShouldUseImmersiveFullscreenForUrl(url) && !should_stay_immersive) {
-      immersive_mode_controller_->SetEnabled(IsFullscreen());
-    }
-  }
-#endif
-
 #if BUILDFLAG(IS_MAC)
   if (AppUsesWindowControlsOverlay()) {
     UpdateWindowControlsOverlayEnabled();
@@ -4783,6 +4757,7 @@ void BrowserView::UpdateUIForContents(WebContents* contents) {
 }
 
 void BrowserView::ProcessFullscreen(bool fullscreen,
+                                    const GURL& url,
                                     const int64_t display_id) {
   if (in_process_fullscreen_)
     return;
@@ -4819,6 +4794,19 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
 
   // TODO(b/40276379): Move this out from ProcessFullscreen.
   RequestFullscreen(fullscreen, display_id);
+
+  // Enable immersive before the browser refreshes its list of enabled commands.
+  const bool should_stay_in_immersive =
+      !fullscreen &&
+      immersive_mode_controller_->ShouldStayImmersiveAfterExitingFullscreen();
+  // Never use immersive in locked fullscreen as it allows the user to exit the
+  // locked mode.
+  if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
+    immersive_mode_controller_->SetEnabled(false);
+  } else if (ShouldUseImmersiveFullscreenForUrl(url) &&
+             !should_stay_in_immersive) {
+    immersive_mode_controller_->SetEnabled(fullscreen);
+  }
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // On Mac platforms, FullscreenStateChanged() is invoked from
@@ -4899,6 +4887,20 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+}
+
+bool BrowserView::ShouldUseImmersiveFullscreenForUrl(const GURL& url) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Kiosk mode needs the whole screen.
+  if (chrome::IsRunningInAppMode())
+    return false;
+  // An empty URL signifies browser fullscreen. Immersive is used for browser
+  // fullscreen only.
+  return url.is_empty();
+#else
+  // No immersive except in Chrome OS.
+  return false;
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
