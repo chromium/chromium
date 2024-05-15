@@ -9,9 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/vr_browser_renderer_thread.h"
-#endif  // BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/test/xr_browser_test.h"
 
 namespace vr {
@@ -93,31 +91,19 @@ void UiUtils::WatchElementForVisibilityStatusForTesting(
 }
 
 void UiUtils::DisableOverlayForTesting() {
-#if BUILDFLAG(IS_WIN)
   VRBrowserRendererThread::DisableOverlayForTesting();
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 VRBrowserRendererThread* UiUtils::GetRendererThread() {
-#if BUILDFLAG(IS_WIN)
   return VRBrowserRendererThread::GetInstanceForTesting();
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 BrowserRenderer* UiUtils::GetBrowserRenderer() {
-#if BUILDFLAG(IS_WIN)
   auto* renderer_thread = GetRendererThread();
   if (renderer_thread == nullptr)
     return nullptr;
   return static_cast<VRBrowserRendererThread*>(renderer_thread)
       ->GetBrowserRendererForTesting();
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace vr

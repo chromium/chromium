@@ -58,8 +58,7 @@
 
 #define DEFINE_INCOGNITO_BROWSER_TEST_(test_class, test_name)               \
   IN_PROC_BROWSER_TEST_F(test_class, test_name##Incognito) {                \
-    auto* browser = CreateIncognitoBrowser();                               \
-    SetBrowser(browser);                                                    \
+    SetIncognito();                                                         \
     MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread(this); \
   }
 

@@ -14,9 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -24,6 +22,11 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#endif
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else  // !IS_ANDROID
+#include "chrome/test/base/in_process_browser_test.h"
 #endif
 
 namespace content {
@@ -37,7 +40,7 @@ namespace vr {
 // //chrome/android/javatests/src/.../browser/vr/XrTestFramework.java
 // This must be subclassed for different XR features to handle the differences
 // between APIs and different usecases of the same API.
-class XrBrowserTestBase : public InProcessBrowserTest {
+class XrBrowserTestBase : public PlatformBrowserTest {
  public:
   static constexpr base::TimeDelta kPollCheckIntervalShort =
       base::Milliseconds(50);
@@ -148,16 +151,10 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // JavaScript errors were encountered.
   void AssertNoJavaScriptErrors(content::WebContents* web_contents);
 
-  Browser* browser() {
-    return browser_ == nullptr ? InProcessBrowserTest::browser()
-                               : browser_.get();
-  }
+  void SetIncognito();
 
-  void SetBrowser(Browser* browser) { browser_ = browser; }
-
-  Browser* CreateIncognitoBrowser(Profile* profile = nullptr) {
-    return InProcessBrowserTest::CreateIncognitoBrowser(profile);
-  }
+  void OpenNewTab(const std::string& url);
+  void OpenNewTab(const std::string& url, bool incognito);
 
   // Convenience function for running RunJavaScriptOrFail with the return value
   // of GetCurrentWebContents.
@@ -230,11 +227,11 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // HTML files, initializing and starting the server if necessary.
   net::EmbeddedTestServer* GetEmbeddedServer();
 
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;
   bool javascript_failed_ = false;
+  bool incognito_ = false;
 };
 
 }  // namespace vr

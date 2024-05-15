@@ -477,11 +477,13 @@ XrResult xrEnumerateInstanceExtensionProperties(
   RETURN_IF(properties == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrExtensionProperties is nullptr");
   for (uint32_t i = 0; i < OpenXrTestHelper::kNumExtensionsSupported; i++) {
+    size_t dest_size = std::size(properties[i].extensionName);
+    DCHECK(dest_size > 0);
     properties[i].type = XR_TYPE_EXTENSION_PROPERTIES;
-    errno_t error = strcpy_s(properties[i].extensionName,
-                             std::size(properties[i].extensionName),
-                             OpenXrTestHelper::kExtensions[i]);
-    DCHECK(error == 0);
+    size_t copy_length =
+        base::strlcpy(properties[i].extensionName,
+                      OpenXrTestHelper::kExtensions[i], dest_size);
+    DCHECK(copy_length < dest_size);
     properties[i].extensionVersion = 1;
   }
 
@@ -1020,8 +1022,9 @@ XrResult xrPathToString(XrInstance instance,
   RETURN_IF(
       buffer_capacity_input <= path_string.size(), XR_ERROR_SIZE_INSUFFICIENT,
       "xrPathToString inputsize is not large enough to hold the output string");
-  errno_t error = strcpy_s(buffer, *buffer_count_output, path_string.data());
-  DCHECK_EQ(error, 0);
+  size_t copied_size =
+      base::strlcpy(buffer, path_string.data(), *buffer_count_output);
+  DCHECK_LT(copied_size, *buffer_count_output);
 
   return XR_SUCCESS;
 }
