@@ -6627,7 +6627,7 @@ CSSBracketedValueList* ConsumeGridLineNames<CSSParserTokenStream>(
     return nullptr;
   }
   {
-    CSSParserTokenStream::RestoringBlockGuard savepoint(stream, stream.Save());
+    CSSParserTokenStream::RestoringBlockGuard savepoint(stream);
     stream.ConsumeWhitespace();
 
     if (!line_names) {

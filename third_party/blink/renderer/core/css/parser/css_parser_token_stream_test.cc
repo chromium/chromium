@@ -542,7 +542,7 @@ TEST(CSSParserTokenStreamTest, BoundaryRestoringBlockGuard) {
 
     {
       stream.EnsureLookAhead();
-      CSSParserTokenStream::RestoringBlockGuard guard(stream, stream.Save());
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
       // Consume rest of block.
       CSSParserTokenRange range = stream.ConsumeUntilPeekedTypeIs<>();
       // The boundary does not apply within blocks.
@@ -869,7 +869,11 @@ class TestStream {
 
  public:
   explicit TestStream(String input)
-      : input_(input), tokenizer_(input_), stream_(tokenizer_) {}
+      : input_(input), tokenizer_(input_), stream_(tokenizer_) {
+    stream_.EnsureLookAhead();
+  }
+
+  void EnsureLookahead() { stream_.EnsureLookAhead(); }
 
   const CSSParserToken& Peek() { return stream_.Peek(); }
 
@@ -893,26 +897,47 @@ class TestStream {
 
  private:
   friend class TestRestoringBlockGuard;
+  friend class TestBlockGuard;
+  friend class TestBoundary;
   String input_;
   CSSTokenizer tokenizer_;
   CSSParserTokenStream stream_;
 };
+
+// The following various Test* classes only exist to accept
+// a TestStream instead of a CSSParserTokenStream.
 
 class TestRestoringBlockGuard {
   STACK_ALLOCATED();
 
  public:
   explicit TestRestoringBlockGuard(TestStream& stream)
-      : guard_(stream.stream_, Save(stream.stream_)) {}
+      : guard_(stream.stream_) {}
   bool Release() { return guard_.Release(); }
 
  private:
-  static CSSParserTokenStream::State Save(CSSParserTokenStream& stream) {
-    stream.EnsureLookAhead();
-    return stream.Save();
-  }
-
   CSSParserTokenStream::RestoringBlockGuard guard_;
+};
+
+class TestBlockGuard {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TestBlockGuard(TestStream& stream) : guard_(stream.stream_) {}
+
+ private:
+  CSSParserTokenStream::BlockGuard guard_;
+};
+
+class TestBoundary {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TestBoundary(TestStream& stream, CSSParserTokenType boundary_type)
+      : boundary_(stream.stream_, boundary_type) {}
+
+ private:
+  CSSParserTokenStream::Boundary boundary_;
 };
 
 class RestoringBlockGuardTest : public testing::Test {};
@@ -922,11 +947,15 @@ TEST_F(RestoringBlockGuardTest, Restore) {
   EXPECT_TRUE(stream.ConsumeTokens("a b c "));
 
   // Restore immediately after guard.
-  { TestRestoringBlockGuard guard(stream); }
+  {
+    stream.EnsureLookahead();
+    TestRestoringBlockGuard guard(stream);
+  }
   EXPECT_EQ(kLeftParenthesisToken, stream.Peek().GetType());
 
   // Restore after consuming one token.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_TRUE(stream.ConsumeTokens("d"));
   }
@@ -934,6 +963,7 @@ TEST_F(RestoringBlockGuardTest, Restore) {
 
   // Restore in the middle.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_TRUE(stream.ConsumeTokens("d e"));
   }
@@ -941,6 +971,7 @@ TEST_F(RestoringBlockGuardTest, Restore) {
 
   // Restore with one token left.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_TRUE(stream.ConsumeTokens("d e "));
   }
@@ -948,6 +979,7 @@ TEST_F(RestoringBlockGuardTest, Restore) {
 
   // Restore at the end (of the block).
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_TRUE(stream.ConsumeTokens("d e f"));
     EXPECT_TRUE(stream.AtEnd());
@@ -961,9 +993,11 @@ TEST_F(RestoringBlockGuardTest, NestedRestore) {
 
   // Restore immediately after inner guard.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard outer_guard(stream);  // [
     EXPECT_TRUE(stream.ConsumeTokens("c "));
     {
+      stream.EnsureLookahead();
       TestRestoringBlockGuard inner_guard(stream);  // (
     }
     EXPECT_EQ(kLeftParenthesisToken, stream.Peek().GetType());
@@ -972,9 +1006,11 @@ TEST_F(RestoringBlockGuardTest, NestedRestore) {
 
   // Restore in the middle of inner block.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard outer_guard(stream);  // [
     EXPECT_TRUE(stream.ConsumeTokens("c "));
     {
+      stream.EnsureLookahead();
       TestRestoringBlockGuard inner_guard(stream);  // (
       EXPECT_TRUE(stream.ConsumeTokens("d "));
     }
@@ -984,9 +1020,11 @@ TEST_F(RestoringBlockGuardTest, NestedRestore) {
 
   // Restore at the end of inner block.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard outer_guard(stream);  // [
     EXPECT_TRUE(stream.ConsumeTokens("c "));
     {
+      stream.EnsureLookahead();
       TestRestoringBlockGuard inner_guard(stream);  // (
       EXPECT_TRUE(stream.ConsumeTokens("d e f"));
     }
@@ -1001,6 +1039,7 @@ TEST_F(RestoringBlockGuardTest, Release) {
 
   // Cannot release unless we're AtEnd.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_FALSE(guard.Release());
     stream.ConsumeTokens("d");
@@ -1013,6 +1052,7 @@ TEST_F(RestoringBlockGuardTest, Release) {
 
   // Same again, except this time with a Release after consuming 'f'.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_FALSE(guard.Release());
     stream.ConsumeTokens("d");
@@ -1030,6 +1070,7 @@ TEST_F(RestoringBlockGuardTest, ReleaseEOF) {
   EXPECT_TRUE(stream.ConsumeTokens("a b c "));
 
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);
     EXPECT_FALSE(guard.Release());
     stream.ConsumeTokens("d e f");
@@ -1045,10 +1086,12 @@ TEST_F(RestoringBlockGuardTest, NestedRelease) {
 
   // Inner guard released, but outer guard is not.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard outer_guard(stream);  // [
     EXPECT_TRUE(stream.ConsumeTokens("c "));
     EXPECT_FALSE(outer_guard.Release());
     {
+      stream.EnsureLookahead();
       TestRestoringBlockGuard inner_guard(stream);  // (
       EXPECT_FALSE(inner_guard.Release());
       EXPECT_TRUE(stream.ConsumeTokens("d e f"));
@@ -1060,10 +1103,12 @@ TEST_F(RestoringBlockGuardTest, NestedRelease) {
 
   // Both guards released.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard outer_guard(stream);  // [
     EXPECT_TRUE(stream.ConsumeTokens("c "));
     EXPECT_FALSE(outer_guard.Release());
     {
+      stream.EnsureLookahead();
       TestRestoringBlockGuard inner_guard(stream);  // (
       EXPECT_FALSE(inner_guard.Release());
       EXPECT_TRUE(stream.ConsumeTokens("d e f"));
@@ -1082,12 +1127,14 @@ TEST_F(RestoringBlockGuardTest, BlockStack) {
 
   // Start consuming the block, but abort (restart).
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);  // (
   }
   EXPECT_EQ(kLeftParenthesisToken, stream.Peek().GetType());
 
   // Now fully consume the block.
   {
+    stream.EnsureLookahead();
     TestRestoringBlockGuard guard(stream);  // (
     EXPECT_TRUE(stream.ConsumeTokens("b c"));
     EXPECT_TRUE(guard.Release());
@@ -1098,6 +1145,33 @@ TEST_F(RestoringBlockGuardTest, BlockStack) {
   // the final ")" will incorrectly appear as kBlockEnd.
   EXPECT_EQ(stream.Peek().GetType(), kRightParenthesisToken);
   EXPECT_EQ(stream.Peek().GetBlockType(), CSSParserToken::kNotBlock);
+}
+
+TEST_F(RestoringBlockGuardTest, RestoreDuringBoundary) {
+  TestStream stream("a (b c ; d e) f; g h");
+  EXPECT_TRUE(stream.ConsumeTokens("a "));
+
+  TestBoundary boundary(stream, kSemicolonToken);
+
+  {
+    stream.EnsureLookahead();
+    TestRestoringBlockGuard guard(stream);
+    // The outer boundary should not apply here, hence we should be able
+    // to consume the inner kSemicolonToken.
+    EXPECT_TRUE(stream.ConsumeTokens("b c ; d"));
+
+    // We didn't consume everything in the block, so we should restore
+    // `guard` goes out of scope.
+  }
+
+  EXPECT_EQ(kLeftParenthesisToken, stream.Peek().GetType());
+  // Skip past the block.
+  { TestBlockGuard block_guard(stream); }
+  EXPECT_TRUE(stream.ConsumeTokens(" f"));
+
+  // We're at the outer kSemicolonToken, which is considered to be AtEnd
+  // due to the boundary.
+  EXPECT_TRUE(stream.AtEnd());
 }
 
 }  // namespace

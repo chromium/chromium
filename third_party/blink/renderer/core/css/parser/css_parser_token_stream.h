@@ -480,12 +480,21 @@ class CORE_EXPORT CSSParserTokenStream {
   class RestoringBlockGuard {
     STACK_ALLOCATED();
 
+    // Outer boundaries do not "inherit" into the block. They will be restored
+    // in the destructor.
+    static uint64_t ResetStreamBoundaries(CSSParserTokenStream& stream) {
+      uint64_t original = stream.boundaries_;
+      stream.boundaries_ = FlagForTokenType(kEOFToken);
+      return original;
+    }
+
    public:
-    RestoringBlockGuard(CSSParserTokenStream& stream, State state)
-        : stream_(stream), boundaries_(stream.boundaries_), state_(state) {
+    explicit RestoringBlockGuard(CSSParserTokenStream& stream)
+        : stream_(stream),
+          boundaries_(ResetStreamBoundaries(stream)),
+          state_(stream.Save()) {
       const CSSParserToken next = stream.ConsumeInternal();
       DCHECK_EQ(next.GetBlockType(), CSSParserToken::kBlockStart);
-      stream.boundaries_ = FlagForTokenType(kEOFToken);
     }
 
     // Attempts to release the guard. If the guard could not be released
