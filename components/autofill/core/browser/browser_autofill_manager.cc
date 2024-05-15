@@ -2612,9 +2612,9 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       got_autofillable_form ? context->focused_field->Type().GetStorableType()
                             : UNKNOWN_TYPE,
       trigger_source);
-  // If the feature is enabled and this is a mixed content form, we show a
-  // warning message and don't offer autofill. The warning is shown even if
-  // there are no autofill suggestions available.
+  // If this is a mixed content form, we show a warning message and don't offer
+  // autofill. The warning is shown even if there are no autofill suggestions
+  // available.
   if (IsFormMixedContent(client(), form) &&
       client().GetPrefs()->FindPreference(
           ::prefs::kMixedFormsWarningsEnabled) &&
