@@ -20,6 +20,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_entry_v2.html.js';
+import type {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 export interface CertificateEntryV2Element {
@@ -48,17 +49,19 @@ export class CertificateEntryV2Element extends PolymerElement {
 
   static get properties() {
     return {
+      certSource: Number,
       sha256hashHex: String,
       displayName: String,
     };
   }
 
+  certSource: CertificateSource;
   sha256hashHex: string;
   displayName: string;
 
   private onViewCertificate_() {
     CertificatesV2BrowserProxy.getInstance().handler.viewCertificate(
-        this.sha256hashHex);
+        this.certSource, this.sha256hashHex);
   }
 
   private onCopyHash_() {

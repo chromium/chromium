@@ -23,25 +23,31 @@ interface CertificateManagerPageHandlerFactory {
     pending_receiver<CertificateManagerPageHandler> handler);
 };
 
+enum CertificateSource {
+  // An invalid source. Defined as value 0 so that if there is a bug in the
+  // typescript or html and it "helpfully" gets silently converted to a 0, it
+  // will cause an error rather than silently using the first source.
+  kInvalid=0,
+
+  // Trusted certs from the Chrome Root Store.
+  kChromeRootStore,
+
+  // Client certificates from the platform store.
+  kPlatformClientCert,
+
+  // Enterprise provisioned client certificates. Only enabled on platforms
+  // where that feature is available.
+  [EnableIf=enable_provisioned_client_certs]
+  kProvisionedClientCert,
+};
 
 // Calls from TS -> C++  (Renderer -> Browser).
 interface CertificateManagerPageHandler {
-  // Get the trusted certs from the Chrome Root Store.
-  GetChromeRootStoreCerts() => (array<SummaryCertInfo> crs_cert_infos);
-
-  // Get client certificates from the platform store.
-  GetPlatformClientCerts() => (array<SummaryCertInfo> certs);
-
-  // Get enterprise provisioned client certificates. Only enabled on platforms
-  // where that feature is available.
-  [EnableIf=enable_provisioned_client_certs]
-  GetProvisionedClientCerts() => (array<SummaryCertInfo> certs);
+  // Get the list of certificates from a given source.
+  GetCertificates(CertificateSource source) => (array<SummaryCertInfo> certs);
 
   // Open the view certificate dialog for a specific certificate.
-  // TODO(crbug.com/40928765): this only works for CRS certs currently; will
-  // have to consider if this should also be used for other certs or if other
-  // calls should be added for certs from other sources.
-  ViewCertificate(string sha256_hash_hex);
+  ViewCertificate(CertificateSource source, string sha256_hash_hex);
 
   // Export all the certificates trusted through the Chrome Root Store.
   ExportChromeRootStore();

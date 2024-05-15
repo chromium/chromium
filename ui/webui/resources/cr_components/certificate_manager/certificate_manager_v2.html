@@ -28,7 +28,9 @@
       <div id="provisioned-client-certs">
         From your administrator
         <template is="dom-repeat" items="[[provisionedClientCerts_]]">
-          <certificate-entry-v2 display-name="[[item.displayName]]"
+          <certificate-entry-v2
+              cert-source="[[certificateSourceEnum_.kProvisionedClientCert]]"
+              display-name="[[item.displayName]]"
               sha256hash-hex="[[item.sha256hashHex]]"
               on-hash-copied="onHashCopied_">
           </certificate-entry-v2>
@@ -39,7 +41,9 @@
     <div id="platform-client-certs">
       Client certificates from platform
       <template is="dom-repeat" items="[[platformClientCerts_]]">
-        <certificate-entry-v2 display-name="[[item.displayName]]"
+        <certificate-entry-v2
+            cert-source="[[certificateSourceEnum_.kPlatformClientCert]]"
+            display-name="[[item.displayName]]"
             sha256hash-hex="[[item.sha256hashHex]]"
             on-hash-copied="onHashCopied_">
         </certificate-entry-v2>
@@ -62,7 +66,9 @@
     </cr-expand-button>
     <cr-collapse id="crsCerts" opened="[[crsTrustedCertsOpened_]]">
       <template is="dom-repeat" items="[[crsCertificates_]]">
-        <certificate-entry-v2 display-name="[[item.displayName]]"
+        <certificate-entry-v2
+            cert-source="[[certificateSourceEnum_.kChromeRootStore]]"
+            display-name="[[item.displayName]]"
             sha256hash-hex="[[item.sha256hashHex]]"
             on-hash-copied="onHashCopied_">
         </certificate-entry-v2>

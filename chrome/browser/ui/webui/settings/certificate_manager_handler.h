@@ -4,6 +4,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CERTIFICATE_MANAGER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CERTIFICATE_MANAGER_HANDLER_H_
 
+#include <array>
+
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom.h"
@@ -17,6 +20,16 @@ class WebContents;
 class CertificateManagerPageHandler
     : public certificate_manager_v2::mojom::CertificateManagerPageHandler {
  public:
+  class CertSource {
+   public:
+    virtual ~CertSource();
+    virtual void GetCertificateInfos(
+        CertificateManagerPageHandler::GetCertificatesCallback callback) = 0;
+    virtual void ViewCertificate(
+        const std::string& sha256_hex_hash,
+        base::WeakPtr<content::WebContents> web_contents) = 0;
+  };
+
   explicit CertificateManagerPageHandler(
       mojo::PendingRemote<certificate_manager_v2::mojom::CertificateManagerPage>
           pending_client,
@@ -32,23 +45,35 @@ class CertificateManagerPageHandler
 
   ~CertificateManagerPageHandler() override;
 
-  void GetChromeRootStoreCerts(
-      GetChromeRootStoreCertsCallback callback) override;
-  void ViewCertificate(const std::string& sha256_hex_hash) override;
-  void GetPlatformClientCerts(GetPlatformClientCertsCallback callback) override;
+  void GetCertificates(
+      certificate_manager_v2::mojom::CertificateSource source_id,
+      GetCertificatesCallback callback) override;
+  void ViewCertificate(
+      certificate_manager_v2::mojom::CertificateSource source_id,
+      const std::string& sha256hash_hex) override;
   void ExportChromeRootStore() override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  void GetProvisionedClientCerts(
-      GetProvisionedClientCertsCallback callback) override;
-#endif
 
  private:
+  // Returns a reference to the CertSource object corresponding to `source`.
+  // Will always return a valid object, or will fail with a CHECK if `source`
+  // is invalid. If `source` is an optional cert source type that is not
+  // enabled on the current runtime, it may return a dummy CertSource that
+  // always returns an empty list of certificates.
+  CertSource& GetCertSource(
+      certificate_manager_v2::mojom::CertificateSource source);
+
   mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
       remote_client_;
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPageHandler>
       handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
+
+  std::array<
+      std::unique_ptr<CertSource>,
+      1 + static_cast<unsigned>(
+              certificate_manager_v2::mojom::CertificateSource::kMaxValue)>
+      cert_source_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CERTIFICATE_MANAGER_HANDLER_H_

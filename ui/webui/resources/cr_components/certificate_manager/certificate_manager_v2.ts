@@ -24,6 +24,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
+import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
 
 export interface CertificateManagerV2Element {
@@ -58,6 +59,11 @@ export class CertificateManagerV2Element extends PolymerElement {
       // <if expr="is_win or is_macosx">
       provisionedClientCerts_: Array,
       // </if>
+
+      certificateSourceEnum_: {
+        type: Object,
+        value: CertificateSource,
+      },
     };
   }
 
@@ -76,19 +82,19 @@ export class CertificateManagerV2Element extends PolymerElement {
   override ready() {
     super.ready();
     const proxy = CertificatesV2BrowserProxy.getInstance();
-    proxy.handler.getChromeRootStoreCerts().then(
-        (results: {crsCertInfos: SummaryCertInfo[]}) => {
-          this.crsCertificates_ = results.crsCertInfos;
+    proxy.handler.getCertificates(CertificateSource.kChromeRootStore)
+        .then((results: {certs: SummaryCertInfo[]}) => {
+          this.crsCertificates_ = results.certs;
         });
 
-    proxy.handler.getPlatformClientCerts().then(
-        (results: {certs: SummaryCertInfo[]}) => {
+    proxy.handler.getCertificates(CertificateSource.kPlatformClientCert)
+        .then((results: {certs: SummaryCertInfo[]}) => {
           this.platformClientCerts_ = results.certs;
         });
 
     // <if expr="is_win or is_macosx">
-    proxy.handler.getProvisionedClientCerts().then(
-        (results: {certs: SummaryCertInfo[]}) => {
+    proxy.handler.getCertificates(CertificateSource.kProvisionedClientCert)
+        .then((results: {certs: SummaryCertInfo[]}) => {
           this.provisionedClientCerts_ = results.certs;
         });
     // </if>
