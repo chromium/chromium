@@ -130,7 +130,7 @@ TEST(CdmRegistrationTest, ChooseBundledCdm) {
 
   // With no Component Updated Widevine CDM (i.e. no hint file), it should
   // select the bundled CDM, if it exists.
-  auto cdms = GetSoftwareSecureWidevineForTesting();
+  auto cdms = GetSoftwareSecureWidevine();
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
   EXPECT_EQ(cdms.size(), 1u);
   EXPECT_EQ(cdms[0].version, bundled_version);
@@ -152,7 +152,7 @@ TEST(CdmRegistrationTest, ChooseComponentUpdatedCdm) {
   // Now create a downloaded Widevine CDM with a higher version.
   CreateFakeComponentUpdatedWidevine(component_updated_version, std::nullopt);
 
-  auto cdms = GetSoftwareSecureWidevineForTesting();
+  auto cdms = GetSoftwareSecureWidevine();
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   // Component Updated CDM has the higher version so it should be chosen.
   EXPECT_EQ(cdms.size(), 1u);
@@ -185,7 +185,7 @@ TEST(CdmRegistrationTest, ChooseDowngradedCdm) {
   CreateFakeComponentUpdatedWidevine(component_updated_version,
                                      bundled_version);
 
-  auto cdms = GetSoftwareSecureWidevineForTesting();
+  auto cdms = GetSoftwareSecureWidevine();
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   // Even though the Component Updated CDM has the lower version, it should be
   // chosen. Doesn't matter if there is a bundled CDM or not.
@@ -234,7 +234,7 @@ TEST(CdmRegistrationTest, ChooseCorrectCdm) {
     CreateFakeComponentUpdatedWidevine(versions[c.hinted],
                                        versions[c.last_bundled]);
 
-    auto cdms = GetSoftwareSecureWidevineForTesting();
+    auto cdms = GetSoftwareSecureWidevine();
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
     EXPECT_EQ(cdms.size(), 1u);
     EXPECT_EQ(cdms[0].version, versions[c.selected]);

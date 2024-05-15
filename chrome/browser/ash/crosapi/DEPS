@@ -128,6 +128,7 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/common/logging_chrome.h",
+  "+chrome/common/media",
   "+chrome/common/pref_names.h",
   "+chrome/common/printing",
   "+chrome/common/ref_counted_util.h",

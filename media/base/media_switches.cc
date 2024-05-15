@@ -926,6 +926,13 @@ BASE_FEATURE(kOnDeviceWebSpeech,
              "OnDeviceWebSpeech",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables Lacros Chrome to use the Ash Chrome Widevine CDM.
+BASE_FEATURE(kLacrosUseAshWidevine,
+             "LacrosUseAshWidevine",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Enables the Live Caption feature on supported devices.
 BASE_FEATURE(kLiveCaption, "LiveCaption", base::FEATURE_ENABLED_BY_DEFAULT);
 
