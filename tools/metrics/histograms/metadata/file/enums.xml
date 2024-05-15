@@ -443,6 +443,7 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="THROTTLING_APPLICATION"/>
   <int value="41" label="THROTTLING_UNKNOWN"/>
   <int value="42" label="FROZEN_ACCOUNT"/>
+  <int value="43" label="HTTP_PRECONDITION_FAILED"/>
 </enum>
 
 <enum name="FileSystemProviderMountType">
