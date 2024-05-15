@@ -435,9 +435,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 
   // WebAssembly features.
 
-  SetV8FlagsIfOverridden(features::kWebAssemblyTailCall,
-                         "--experimental-wasm-return-call",
-                         "--no-experimental-wasm-return-call");
   SetV8FlagsIfOverridden(features::kWebAssemblyInlining,
                          "--experimental-wasm-inlining",
                          "--no-experimental-wasm-inlining");

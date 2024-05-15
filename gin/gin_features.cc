@@ -278,12 +278,6 @@ BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
 
 // WebAssembly features.
 
-// Enable support for the WebAssembly tail-call proposal:
-// https://github.com/WebAssembly/tail-call.
-BASE_FEATURE(kWebAssemblyTailCall,
-             "WebAssemblyTailCall",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable WebAssembly inlining (not user visible).
 BASE_FEATURE(kWebAssemblyInlining,
              "WebAssemblyInlining",
