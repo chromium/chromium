@@ -105,6 +105,7 @@ class GattService : public mojom::GattService,
 
   base::OnceCallback<void(device::BluetoothUUID)> on_gatt_service_invalidated_;
   const device::BluetoothUUID service_id_;
+  std::string gatt_service_identifier_;
   std::set<device::BluetoothUUID> characteristic_uuids_;
   mojo::Remote<mojom::GattServiceObserver> observer_remote_;
   scoped_refptr<device::BluetoothAdapter> adapter_;

@@ -55,13 +55,12 @@ GattService::GattService(
   observer_remote_.set_disconnect_handler(
       base::BindOnce(&GattService::OnMojoDisconnect, base::Unretained(this)));
 
-  // Since a `GattService` corresponding to `service_id` is being created
-  // here, one by this `service_id` should not exist yet.
-  CHECK(!adapter_->GetGattService(service_id.value()));
-  adapter_->CreateLocalGattService(
-      /*uuid=*/service_id,
-      /*is_primary=*/true,
-      /*delegate=*/this);
+  gatt_service_identifier_ = adapter_
+                                 ->CreateLocalGattService(
+                                     /*uuid=*/service_id,
+                                     /*is_primary=*/true,
+                                     /*delegate=*/this)
+                                 ->GetIdentifier();
 }
 
 GattService::~GattService() = default;
@@ -72,23 +71,10 @@ void GattService::CreateCharacteristic(
     const device::BluetoothGattCharacteristic::Properties& properties,
     CreateCharacteristicCallback callback) {
   device::BluetoothLocalGattService* service =
-      adapter_->GetGattService(service_id_.value());
+      adapter_->GetGattService(gatt_service_identifier_);
   if (!service) {
     LOG(WARNING) << __func__ << ": expected local GATT service at service id = "
                  << service_id_.canonical_value() << " does not exist.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  // Check if the GATT characteristic already exists. If so, it is expected
-  // to be in `characteristic_uuids_` since only this class should be creating
-  // GATT characteristics tied to `service_id_`.
-  auto* characteristic =
-      service->GetCharacteristic(characteristic_uuid.value());
-  if (characteristic) {
-    CHECK(base::Contains(characteristic_uuids_, characteristic_uuid));
-    LOG(WARNING) << __func__ << ": characteristic at uuid = "
-                 << characteristic_uuid.canonical_value() << " already exists.";
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -113,7 +99,7 @@ void GattService::CreateCharacteristic(
 
 void GattService::Register(RegisterCallback callback) {
   device::BluetoothLocalGattService* service =
-      adapter_->GetGattService(service_id_.value());
+      adapter_->GetGattService(gatt_service_identifier_);
   if (!service) {
     LOG(WARNING) << __func__ << ": local GATT service destroyed.";
     std::move(callback).Run(
@@ -220,7 +206,7 @@ void GattService::OnLocalCharacteristicReadResponse(
 
 void GattService::OnMojoDisconnect() {
   device::BluetoothLocalGattService* service =
-      adapter_->GetGattService(service_id_.value());
+      adapter_->GetGattService(gatt_service_identifier_);
   if (!service) {
     LOG(WARNING) << __func__ << ": local GATT service does not exist.";
   } else {

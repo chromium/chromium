@@ -219,23 +219,6 @@ TEST_F(GattServiceTest, CreateCharacteristic_SuccessIfCreated) {
                            /*expected_success=*/true);
 }
 
-TEST_F(GattServiceTest, CreateCharacteristic_FailureIfAlreadyExists) {
-  // Create the characteristic the first time.
-  CallCreateCharacteristic(/*gatt_service_exists=*/true,
-                           /*expected_success=*/true);
-
-  // Expect failure on another call because it already exists.
-  base::test::TestFuture<bool> future;
-  remote_->CreateCharacteristic(
-      /*characteristic_uuid=*/device::BluetoothUUID(kCharacteristicUuid),
-      /*permissions=*/
-      device::BluetoothGattCharacteristic::Permission::PERMISSION_READ,
-      /*properties=*/
-      device::BluetoothGattCharacteristic::Property::PROPERTY_READ,
-      future.GetCallback());
-  EXPECT_FALSE(future.Take());
-}
-
 TEST_F(GattServiceTest,
        CreateCharacteristic_Success_MultiplePermissionsAndProperties) {
   device::BluetoothGattCharacteristic::Permissions permissions =
