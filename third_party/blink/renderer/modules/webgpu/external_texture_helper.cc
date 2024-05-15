@@ -39,6 +39,20 @@ wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
   }
   NOTREACHED_IN_MIGRATION();
 }
+
+// TODO(crbug.com/40227105): Support HDR color space and color range in
+// generated wgsl shader to enable all color space for zero-copy path.
+bool DstColorSpaceSupportedByZeroCopy(
+    PredefinedColorSpace dst_predefined_color_space) {
+  switch (dst_predefined_color_space) {
+    case PredefinedColorSpace::kSRGB:
+    case PredefinedColorSpace::kP3:
+      return true;
+    default:
+      break;
+  }
+  return false;
+}
 }  // namespace
 
 std::array<float, 12> GetYUVToRGBMatrix(gfx::ColorSpace color_space,
@@ -193,11 +207,13 @@ ExternalTextureSource GetExternalTextureSourceFromVideoFrame(
 
 ExternalTexture CreateExternalTexture(
     GPUDevice* device,
-    gfx::ColorSpace src_color_space,
-    gfx::ColorSpace dst_color_space,
+    PredefinedColorSpace dst_predefined_color_space,
     scoped_refptr<media::VideoFrame> media_video_frame,
     media::PaintCanvasVideoRenderer* video_renderer) {
   DCHECK(media_video_frame);
+  gfx::ColorSpace src_color_space = media_video_frame->ColorSpace();
+  gfx::ColorSpace dst_color_space =
+      PredefinedColorSpaceToGfxColorSpace(dst_predefined_color_space);
 
   // It should be very rare that a frame didn't get a valid colorspace through
   // the guessing process:
@@ -245,7 +261,9 @@ ExternalTexture CreateExternalTexture(
       (media_video_frame->HasTextures() &&
        (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
        device_support_zero_copy &&
-       media_video_frame->metadata().is_webgpu_compatible);
+       media_video_frame->metadata().is_webgpu_compatible &&
+       DstColorSpaceSupportedByZeroCopy(dst_predefined_color_space));
+
   TRACE_EVENT_INSTANT2(TRACE_DISABLED_BY_DEFAULT("webgpu"),
                        "CreateExternalTexture", TRACE_EVENT_SCOPE_THREAD,
                        "zero_copy", !!zero_copy, "video_frame",

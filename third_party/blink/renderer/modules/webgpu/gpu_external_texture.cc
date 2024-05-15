@@ -192,18 +192,6 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     ExceptionState& exception_state) {
   CHECK(media_video_frame);
 
-  switch (webgpu_desc->colorSpace().AsEnum()) {
-    case V8PredefinedColorSpace::Enum::kSRGB:
-    case V8PredefinedColorSpace::Enum::kDisplayP3:
-      break;
-    default:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "Requested colorSpace '" + webgpu_desc->colorSpace().AsString() +
-              "' is not implemented. Use 'srgb' or 'display-p3'.");
-      return nullptr;
-  }
-
   PredefinedColorSpace dst_predefined_color_space;
   if (!ValidateAndConvertColorSpace(webgpu_desc->colorSpace(),
                                     dst_predefined_color_space,
@@ -211,12 +199,9 @@ GPUExternalTexture* GPUExternalTexture::CreateImpl(
     return nullptr;
   }
 
-  gfx::ColorSpace dst_color_space =
-      PredefinedColorSpaceToGfxColorSpace(dst_predefined_color_space);
-
   ExternalTexture external_texture =
-      CreateExternalTexture(cache->device(), media_video_frame->ColorSpace(),
-                            dst_color_space, media_video_frame, video_renderer);
+      CreateExternalTexture(cache->device(), dst_predefined_color_space,
+                            media_video_frame, video_renderer);
 
   if (external_texture.wgpu_external_texture == nullptr ||
       external_texture.mailbox_texture == nullptr) {

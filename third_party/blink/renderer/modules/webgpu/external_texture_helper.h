@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 namespace gfx {
 class ColorSpace;
@@ -64,8 +65,7 @@ ExternalTextureSource GetExternalTextureSourceFromVideoFrame(
 
 ExternalTexture CreateExternalTexture(
     GPUDevice* device,
-    gfx::ColorSpace src_color_space,
-    gfx::ColorSpace dst_color_space,
+    PredefinedColorSpace dst_predefined_color_space,
     scoped_refptr<media::VideoFrame> media_video_frame,
     media::PaintCanvasVideoRenderer* video_renderer);
 }  // namespace blink
