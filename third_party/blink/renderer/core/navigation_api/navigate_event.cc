@@ -268,7 +268,8 @@ void NavigateEvent::CommitNow() {
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
       state_object, dispatch_params_->frame_load_type,
       dispatch_params_->is_browser_initiated,
-      dispatch_params_->is_synchronously_committed_same_document);
+      dispatch_params_->is_synchronously_committed_same_document,
+      dispatch_params_->soft_navigation_heuristics_task_id);
 }
 
 void NavigateEvent::React(ScriptState* script_state) {

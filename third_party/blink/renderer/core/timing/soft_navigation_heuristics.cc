@@ -147,7 +147,7 @@ void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteraction(
   // For all interactions which included a URL modification, log the
   // criteria which were not met. Note that we assume here that an ancestor
   // task was found when the URL change was made.
-  if (context.HasURLChange()) {
+  if (!context.Url().empty()) {
     if (!context.HasMainModification()) {
       if (!paint_conditions_met_) {
         base::UmaHistogramEnumeration(
@@ -181,7 +181,6 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   potential_soft_navigations_.clear();
   last_detected_soft_navigation_ = nullptr;
   active_interaction_context_ = nullptr;
-  uncommitted_same_document_navigation_context_ = nullptr;
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   did_commit_previous_paints_ = false;
   paint_conditions_met_ = false;
@@ -213,37 +212,43 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() {
   return context;
 }
 
-void SoftNavigationHeuristics::SameDocumentNavigationStarted() {
-  uncommitted_same_document_navigation_context_ =
-      GetSoftNavigationContextForCurrentTask();
-  if (uncommitted_same_document_navigation_context_) {
-    uncommitted_same_document_navigation_context_->MarkURLChange();
-    EmitSoftNavigationEntryIfAllConditionsMet(
-        uncommitted_same_document_navigation_context_);
+std::optional<scheduler::TaskAttributionId>
+SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
+  auto* tracker = scheduler::TaskAttributionTracker::From(
+      GetSupplementable()->GetIsolate());
+  // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
+  // is enabled.
+  if (!tracker) {
+    return std::nullopt;
+  }
+  scheduler::TaskAttributionInfo* task_state = tracker->RunningTask();
+  SoftNavigationContext* context =
+      task_state ? task_state->GetSoftNavigationContext() : nullptr;
+  TRACE_EVENT1("scheduler",
+               "SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted",
+               "has_context", !!context);
+  if (context) {
+    tracker->AddSameDocumentNavigationTask(task_state);
+  }
+  return context ? std::optional<scheduler::TaskAttributionId>(task_state->Id())
+                 : std::nullopt;
+}
+
+void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
+    const String& url,
+    SoftNavigationContext* context) {
+  TRACE_EVENT2("scheduler",
+               "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
+               "url", url, "has_context", !!context);
+  if (context) {
+    if (potential_soft_navigations_.Contains(context)) {
+      context->SetUrl(url);
+      EmitSoftNavigationEntryIfAllConditionsMet(context);
+    }
   } else {
     base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
                                   SoftNavigationOutcome::kNoAncestorTask);
   }
-  TRACE_EVENT1("scheduler",
-               "SoftNavigationHeuristics::SameDocumentNavigationStarted",
-               "descendant", !!uncommitted_same_document_navigation_context_);
-}
-
-void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
-    const String& url) {
-  SoftNavigationContext* context =
-      uncommitted_same_document_navigation_context_.Get();
-  uncommitted_same_document_navigation_context_ = nullptr;
-  if (!context) {
-    return;
-  }
-  // This is overriding the URL, which is required to support history
-  // modifications inside a popstate event.
-  context->SetUrl(url);
-  EmitSoftNavigationEntryIfAllConditionsMet(context);
-  TRACE_EVENT1("scheduler",
-               "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
-               "url", url);
 }
 
 bool SoftNavigationHeuristics::ModifiedDOM() {
@@ -445,7 +450,6 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
   visitor->Trace(last_detected_soft_navigation_);
   visitor->Trace(active_interaction_context_);
-  visitor->Trace(uncommitted_same_document_navigation_context_);
   // Register a custom weak callback, which runs after processing weakness for
   // the container. This allows us to observe the collection becoming empty
   // without needing to observe individual element disposal.
@@ -477,10 +481,6 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   // navigation.
   initial_interaction_encountered_ = true;
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
-
-  if (CurrentEventParameters().type == EventScope::Type::kNavigate) {
-    SameDocumentNavigationStarted();
-  }
 }
 
 void SoftNavigationHeuristics::ProcessCustomWeakness(

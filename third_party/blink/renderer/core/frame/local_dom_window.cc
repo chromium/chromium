@@ -915,11 +915,6 @@ void LocalDOMWindow::DispatchPagehideEvent(
 
 void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
                                             const String& new_url) {
-  DCHECK(GetFrame());
-  if (SoftNavigationHeuristics* heuristics =
-          SoftNavigationHeuristics::From(*this)) {
-    heuristics->SameDocumentNavigationStarted();
-  }
   // https://html.spec.whatwg.org/C/#history-traversal
   EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url),
                      TaskType::kDOMManipulation);

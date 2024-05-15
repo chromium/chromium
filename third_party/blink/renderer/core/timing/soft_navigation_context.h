@@ -27,22 +27,18 @@ class CORE_EXPORT SoftNavigationContext
   const String& Url() const { return url_; }
   void SetUrl(const String& url);
 
-  void MarkURLChange() { has_url_change_ = true; }
-  bool HasURLChange() const { return has_url_change_; }
-
   void MarkMainModification() { has_main_modification_ = true; }
   bool HasMainModification() const { return has_main_modification_; }
 
   void Trace(Visitor*) const {}
 
   bool IsSoftNavigation() const {
-    return has_main_modification_ && has_url_change_ && !url_.empty();
+    return has_main_modification_ && !url_.empty();
   }
 
  private:
   base::TimeTicks user_interaction_timestamp_;
   String url_;
-  bool has_url_change_ = false;
   bool has_main_modification_ = false;
 };
 

@@ -627,23 +627,17 @@ NavigationResult* NavigationApi::traverseTo(ScriptState* script_state,
                                                        key);
   upcoming_traverse_api_method_trackers_.insert(key, api_method_tracker);
   LocalFrame* frame = window_->GetFrame();
-  scheduler::TaskAttributionInfo* task = nullptr;
-  if (frame->IsOutermostMainFrame()) {
+  std::optional<scheduler::TaskAttributionId> soft_navigation_task_id;
+  if (script_state->World().IsMainWorld() && frame->IsOutermostMainFrame()) {
     if (SoftNavigationHeuristics* heuristics =
             SoftNavigationHeuristics::From(*window_)) {
-      heuristics->SameDocumentNavigationStarted();
-      auto* tracker =
-          scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-      if (tracker && script_state->World().IsMainWorld()) {
-        task = tracker->RunningTask();
-        tracker->AddSameDocumentNavigationTask(task);
-      }
+      soft_navigation_task_id =
+          heuristics->AsyncSameDocumentNavigationStarted();
     }
   }
   frame->GetLocalFrameHostRemote().NavigateToNavigationApiKey(
       key, LocalFrame::HasTransientUserActivation(frame),
-      task ? std::optional<scheduler::TaskAttributionId>(task->Id())
-           : std::nullopt);
+      soft_navigation_task_id);
   return api_method_tracker->GetNavigationResult();
 }
 

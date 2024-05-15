@@ -9,8 +9,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
@@ -243,6 +245,9 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
       scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
   ASSERT_TRUE(tracker);
 
+  auto* context = tracker->RunningTask()->GetSoftNavigationContext();
+  ASSERT_TRUE(context);
+
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
@@ -250,8 +255,7 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
   }
 
   // Simulate default action link navigation after the click event.
-  heuristics->SameDocumentNavigationStarted();
-  heuristics->SameDocumentNavigationCommitted("foo");
+  heuristics->SameDocumentNavigationCommitted("foo", context);
   {
     SoftNavigationHeuristics::EventScope inner_event_scope(
         heuristics->CreateEventScope(
@@ -308,6 +312,113 @@ TEST_F(SoftNavigationHeuristicsTest,
   std::optional<TaskScope> task_scope =
       tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
   EXPECT_TRUE(IsDocumentTrackingSoftNavigations());
+}
+
+TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+  EXPECT_EQ(heuristics->SoftNavigationCount(), 0u);
+
+  auto* tracker = scheduler::TaskAttributionTracker::From(
+      GetScriptStateForTest()->GetIsolate());
+  ASSERT_TRUE(tracker);
+
+  auto* script_state = GetScriptStateForTest();
+  scheduler::TaskAttributionInfo* task_state = nullptr;
+  SoftNavigationContext* context = nullptr;
+
+  {
+    SoftNavigationHeuristics::EventScope event_scope(
+        heuristics->CreateEventScope(
+            SoftNavigationHeuristics::EventScope::Type::kClick,
+            /*is_new_interaction=*/true, script_state));
+    {
+      std::optional<TaskScope> task_scope =
+          tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
+      task_state = tracker->RunningTask();
+      ASSERT_TRUE(task_state);
+      context = task_state->GetSoftNavigationContext();
+      ASSERT_TRUE(context);
+
+      heuristics->SameDocumentNavigationCommitted("foo.html", context);
+      heuristics->ModifiedDOM();
+    }
+  }
+  EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
+
+  {
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, task_state);
+    heuristics->SameDocumentNavigationCommitted("bar.html", context);
+    heuristics->ModifiedDOM();
+  }
+  EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
+}
+
+TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+  EXPECT_EQ(heuristics->SoftNavigationCount(), 0u);
+
+  auto* tracker = scheduler::TaskAttributionTracker::From(
+      GetScriptStateForTest()->GetIsolate());
+  ASSERT_TRUE(tracker);
+
+  auto* script_state = GetScriptStateForTest();
+  scheduler::TaskAttributionInfo* task_state = nullptr;
+  SoftNavigationContext* context = nullptr;
+
+  {
+    SoftNavigationHeuristics::EventScope event_scope(
+        heuristics->CreateEventScope(
+            SoftNavigationHeuristics::EventScope::Type::kClick,
+            /*is_new_interaction=*/true, script_state));
+    task_state = tracker->RunningTask();
+    ASSERT_TRUE(task_state);
+    context = task_state->GetSoftNavigationContext();
+    ASSERT_TRUE(context);
+  }
+
+  // Simulate starting a same-document navigation in a JavaScript task
+  // associated with `context`.
+  std::optional<scheduler::TaskAttributionId> navigation_task_id;
+  {
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, task_state);
+    navigation_task_id = heuristics->AsyncSameDocumentNavigationStarted();
+  }
+  ASSERT_TRUE(navigation_task_id);
+
+  // Simulate committing the same-document navigation asynchronously.
+  task_state = tracker->CommitSameDocumentNavigation(*navigation_task_id);
+  ASSERT_TRUE(task_state);
+  EXPECT_EQ(task_state->GetSoftNavigationContext(), context);
+
+  EXPECT_TRUE(context->Url().empty());
+  heuristics->SameDocumentNavigationCommitted("foo.html", context);
+  EXPECT_FALSE(context->Url().empty());
+}
+
+TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+  EXPECT_EQ(heuristics->SoftNavigationCount(), 0u);
+
+  auto* tracker = scheduler::TaskAttributionTracker::From(
+      GetScriptStateForTest()->GetIsolate());
+  ASSERT_TRUE(tracker);
+
+  // Simulate starting a same-document navigation in a JavaScript task that
+  // isn't associated with a `SoftNavigationContext`
+  std::optional<scheduler::TaskAttributionId> navigation_task_id;
+  {
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(GetScriptStateForTest(),
+                                                 /*task_state=*/nullptr);
+    navigation_task_id = heuristics->AsyncSameDocumentNavigationStarted();
+  }
+  EXPECT_FALSE(navigation_task_id);
+
+  // Simulate committing the same-document navigation asynchronously without a
+  // `SoftNavigationContext`. This shouldn't crash.
+  heuristics->SameDocumentNavigationCommitted("foo.html", /*context=*/nullptr);
 }
 
 }  // namespace blink

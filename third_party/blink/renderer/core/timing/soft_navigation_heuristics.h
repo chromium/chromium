@@ -104,8 +104,15 @@ class CORE_EXPORT SoftNavigationHeuristics
   void Dispose();
 
   // The class's API.
-  void SameDocumentNavigationStarted();
-  void SameDocumentNavigationCommitted(const String& url);
+
+  // Returns an id to be used for retrieving the associated task state during
+  // commit, or nullopt if no `SoftNavigationContext` is associated with the
+  // navigation.
+  std::optional<scheduler::TaskAttributionId>
+  AsyncSameDocumentNavigationStarted();
+
+  void SameDocumentNavigationCommitted(const String& url,
+                                       SoftNavigationContext*);
   bool ModifiedDOM();
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
@@ -184,17 +191,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // type is click or navigate. For keyboard events, which have multiple related
   // events, this remains alive until the next interaction.
   Member<SoftNavigationContext> active_interaction_context_;
-
-  // The `SoftNavigationContext` associated with an active uncommitted same
-  // document navigation. This set when `SameDocumentNavigationStarted()` is
-  // called, and it's cleared when the navigation commits, the heuristic is
-  // reset, or indirectly via GC when the navigation is cancelled and any
-  // references in propagated tasks are released.
-  //
-  // TODO(crbug.com/40942324): consider removing this and plumbing it through
-  // `SameDocumentNavigationCommitted()`.
-  WeakMember<SoftNavigationContext>
-      uncommitted_same_document_navigation_context_;
 
   // The last soft navigation detected, which could be pending (not emitted)
   // until `paint_conditions_met_` is true.

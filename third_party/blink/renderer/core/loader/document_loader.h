@@ -45,6 +45,7 @@
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-blink-forward.h"
@@ -119,9 +120,6 @@ class SubresourceFilter;
 class WebServiceWorkerNetworkProvider;
 struct JavaScriptFrameworkDetectionResult;
 
-namespace scheduler {
-class TaskAttributionId;
-}  // namespace scheduler
 namespace mojom {
 enum class CommitResult : int32_t;
 }  // namespace mojom
@@ -245,7 +243,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    scoped_refptr<SerializedScriptValue>,
                                    WebFrameLoadType,
                                    bool is_browser_initiated = false,
-                                   bool is_synchronously_committed = true);
+                                   bool is_synchronously_committed = true,
+                                   std::optional<scheduler::TaskAttributionId>
+                                       soft_navigation_heuristics_task_id =
+                                           std::nullopt);
 
   // |is_synchronously_committed| is described in comment for
   // CommitSameDocumentNavigation.
