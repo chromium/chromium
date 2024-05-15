@@ -3322,8 +3322,9 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
 void DocumentLoader::RecordConsoleMessagesForCommit() {
   if (was_blocked_by_document_policy_) {
-    // TODO(chenleihu): Add which document policy violated in error string,
-    // instead of just displaying serialized required document policy.
+    // TODO(https://crbug.com/340616797): Add which document policy violated in
+    // error string, instead of just displaying serialized required document
+    // policy.
     ConsoleError(
         "Refused to display '" + response_.CurrentRequestUrl().ElidedString() +
         "' because it violates the following document policy "
