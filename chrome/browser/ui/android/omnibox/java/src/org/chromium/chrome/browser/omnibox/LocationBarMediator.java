@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -99,7 +100,8 @@ class LocationBarMediator
                 OnKeyListener,
                 ComponentCallbacks,
                 TemplateUrlService.TemplateUrlServiceObserver,
-                BackPressHandler {
+                BackPressHandler,
+                PauseResumeWithNativeObserver {
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -1600,6 +1602,24 @@ class LocationBarMediator
                 mWindowAndroid,
                 new LensIntentParams.Builder(lensEntryPoint, mLocationBarDataProvider.isIncognito())
                         .build());
+    }
+
+    // PauseResumeWithNativeObserver impl.
+    @Override
+    public void onResumeWithNative() {
+        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
+                && mProfileSupplier.hasValue()
+                && mTemplateUrlServiceSupplier.hasValue()) {
+            GeolocationHeader.primeLocationForGeoHeaderIfEnabled(
+                    mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+        }
+    }
+
+    @Override
+    public void onPauseWithNative() {
+        if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled()) {
+            GeolocationHeader.stopListeningForLocationUpdates();
+        }
     }
 
     /** Updates the tints of UI buttons. */

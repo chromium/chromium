@@ -227,6 +227,7 @@ public class LocationBarCoordinator
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
+        mActivityLifecycleDispatcher.register(mLocationBarMediator);
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         mUrlCoordinator =
