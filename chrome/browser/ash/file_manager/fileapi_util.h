@@ -22,11 +22,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-class Profile;
-
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
-}
+}  // namespace content
 
 namespace storage {
 class FileSystemContext;
@@ -100,36 +99,38 @@ bool IsFileManagerURL(const GURL& source_url);
 // method that should be used only if you are ABSOLUTELY CERTAIN that you are
 // performing some functions on the behalf of the Files app yet your code does
 // not readily have access to the system File Manager ID or URL.
-storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile);
+storage::FileSystemContext* GetFileManagerFileSystemContext(
+    content::BrowserContext* browser_context);
 
-// Returns a file system context associated with the given profile and the
-// source URL. The source URL is the URL that identifies the application, such
-// as chrome-extension://<extension-id>/ or chrome://<app-id>/. In private APIs
-// it is available as source_url(). You can also use GetFileManagerURL with this
-// call.
+// Returns a file system context associated with the given browser_context and
+// the source URL. The source URL is the URL that identifies the application,
+// such as chrome-extension://<extension-id>/ or chrome://<app-id>/. In private
+// APIs it is available as source_url(). You can also use GetFileManagerURL
+// with this call.
 storage::FileSystemContext* GetFileSystemContextForSourceURL(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const GURL& source_url);
 
-// Returns a file system context associated with the given profile and the
-// render view host.
+// Returns a file system context associated with the given browser_context and
+// the render view host.
 storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host);
 
 // Converts AbsolutePath (e.g., "/media/removable/foo" or
 // "/home/chronos/u-xxx/Downloads") into filesystem URL. Returns false
 // if |absolute_path| is not managed by the external filesystem provider.
-bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
-                                            const base::FilePath& absolute_path,
-                                            const GURL& source_url,
-                                            GURL* url);
+bool ConvertAbsoluteFilePathToFileSystemUrl(
+    content::BrowserContext* browser_context,
+    const base::FilePath& absolute_path,
+    const GURL& source_url,
+    GURL* url);
 
 // Converts AbsolutePath into RelativeFileSystemPath (e.g.,
 // "/media/removable/foo/bar" => "removable/foo/bar".) Returns false if
 // |absolute_path| is not managed by the external filesystem provider.
 bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const GURL& source_url,
     const base::FilePath& absolute_path,
     base::FilePath* relative_path);

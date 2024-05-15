@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -56,20 +55,20 @@ GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {
       base::EscapePath(virtual_path.AsUTF8Unsafe()).c_str()));
 }
 
-GURL CreateExternalFileURLFromPath(Profile* profile,
+GURL CreateExternalFileURLFromPath(content::BrowserContext* browser_context,
                                    const base::FilePath& path,
                                    bool force) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL raw_file_system_url;
   if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          profile, path, file_manager::util::GetFileManagerURL(),
+          browser_context, path, file_manager::util::GetFileManagerURL(),
           &raw_file_system_url)) {
     return GURL();
   }
 
   const storage::FileSystemURL file_system_url =
-      file_manager::util::GetFileManagerFileSystemContext(profile)
+      file_manager::util::GetFileManagerFileSystemContext(browser_context)
           ->CrackURLInFirstPartyContext(raw_file_system_url);
   if (!file_system_url.is_valid())
     return GURL();

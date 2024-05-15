@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -532,34 +531,36 @@ bool IsFileManagerURL(const GURL& source_url) {
   return GetFileManagerURL() == source_url.DeprecatedGetOriginAsURL();
 }
 
-storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile) {
-  return GetFileSystemContextForSourceURL(profile, GetFileManagerURL());
+storage::FileSystemContext* GetFileManagerFileSystemContext(
+    content::BrowserContext* browser_context) {
+  return GetFileSystemContextForSourceURL(browser_context, GetFileManagerURL());
 }
 
 storage::FileSystemContext* GetFileSystemContextForSourceURL(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const GURL& source_url) {
   content::StoragePartition* const partition =
       content::HasWebUIScheme(source_url)
-          ? profile->GetDefaultStoragePartition()
+          ? browser_context->GetDefaultStoragePartition()
           : extensions::util::GetStoragePartitionForExtensionId(
-                source_url.host(), profile);
+                source_url.host(), browser_context);
   return partition->GetFileSystemContext();
 }
 
 storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetStoragePartition()->GetFileSystemContext();
 }
 
-bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
-                                            const base::FilePath& absolute_path,
-                                            const GURL& source_url,
-                                            GURL* url) {
+bool ConvertAbsoluteFilePathToFileSystemUrl(
+    content::BrowserContext* browser_context,
+    const base::FilePath& absolute_path,
+    const GURL& source_url,
+    GURL* url) {
   base::FilePath relative_path;
   if (!ConvertAbsoluteFilePathToRelativeFileSystemPath(
-          profile, source_url, absolute_path, &relative_path)) {
+          browser_context, source_url, absolute_path, &relative_path)) {
     return false;
   }
   *url = ConvertRelativeFilePathToFileSystemUrl(relative_path, source_url);
@@ -567,12 +568,12 @@ bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
 }
 
 bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const GURL& source_url,
     const base::FilePath& absolute_path,
     base::FilePath* virtual_path) {
   auto* backend = ash::FileSystemBackend::Get(
-      *GetFileSystemContextForSourceURL(profile, source_url));
+      *GetFileSystemContextForSourceURL(browser_context, source_url));
   if (!backend) {
     return false;
   }
