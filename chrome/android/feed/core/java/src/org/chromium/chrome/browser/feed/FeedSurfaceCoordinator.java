@@ -848,14 +848,13 @@ public class FeedSurfaceCoordinator
                                 (resId) -> {
                                     return AppCompatResources.getDrawable(mActivity, resId);
                                 }));
+            }
+            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
+                view.setBackground(
+                        AppCompatResources.getDrawable(
+                                mActivity, R.drawable.home_surface_background));
             } else {
-                if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-                    view.setBackground(
-                            AppCompatResources.getDrawable(
-                                    mActivity, R.drawable.home_surface_background));
-                } else {
-                    view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
-                }
+                view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
             }
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
