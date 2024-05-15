@@ -32,7 +32,8 @@ class BubbleSignInPromoSignInButtonView : public views::View {
   // |callback| is called every time the user interacts with this button.
   explicit BubbleSignInPromoSignInButtonView(
       views::Button::PressedCallback callback,
-      ui::ButtonStyle button_style);
+      ui::ButtonStyle button_style,
+      std::u16string button_text);
 
   // Add a callback function to the sign in button.
   void AddCallbackToSignInButton(views::MdTextButton* text_button,
@@ -44,6 +45,7 @@ class BubbleSignInPromoSignInButtonView : public views::View {
                                     const gfx::Image& account_icon,
                                     views::Button::PressedCallback callback,
                                     signin_metrics::AccessPoint access_point,
+                                    std::u16string button_text,
                                     bool use_account_name_as_title = false);
   BubbleSignInPromoSignInButtonView(const BubbleSignInPromoSignInButtonView&) =
       delete;

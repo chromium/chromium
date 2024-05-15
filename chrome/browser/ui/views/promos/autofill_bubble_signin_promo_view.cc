@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/metrics/user_metrics.h"
-#include "build/buildflag.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
@@ -78,9 +77,7 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
       std::make_unique<AutofillBubbleSignInPromoView::DiceSigninPromoDelegate>(
           &controller_);
 
-  // Set prefs to record the bubbles appearance and set the text to be shown.
-  // TODO(crbug.com/319411728): Add the correct strings per type.
-  int message_resource_id = IDS_PASSWORD_MANAGER_DICE_PROMO_SIGNIN_MESSAGE;
+  // Set prefs to record the bubbles appearance.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account =
@@ -104,9 +101,7 @@ AutofillBubbleSignInPromoView::AutofillBubbleSignInPromoView(
 
   AddChildView(new BubbleSignInPromoView(
       profile, dice_sign_in_promo_delegate_.get(),
-      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
-      message_resource_id, ui::ButtonStyle::kDefault,
-      views::style::STYLE_PRIMARY));
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE));
 }
 
 void AutofillBubbleSignInPromoView::RecordSignInPromoDismissed(

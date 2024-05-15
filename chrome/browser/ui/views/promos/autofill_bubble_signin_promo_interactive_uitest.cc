@@ -22,6 +22,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -73,6 +74,9 @@ class AutofillBubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
   // Returns true if there is a primary account without a refresh token in
   // persistent error state.
   bool IsSignedIn();
+
+  // Add additional account info for pixel tests.
+  void ExtendAccountInfo(AccountInfo& info);
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return url_loader_factory_helper_.test_url_loader_factory();
@@ -128,6 +132,13 @@ bool AutofillBubbleSignInPromoInteractiveUITest::IsSignedIn() {
                  signin::ConsentLevel::kSignin));
 }
 
+void AutofillBubbleSignInPromoInteractiveUITest::ExtendAccountInfo(
+    AccountInfo& info) {
+  info.given_name = "FirstName";
+  info.full_name = "FirstName LastName";
+  signin::UpdateAccountInfoForAccount(identity_manager(), info);
+}
+
 IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        SignInPromoNoAccountPresent) {
   // Set up password and password stores.
@@ -148,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5231400"),
+                 "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
@@ -187,12 +198,13 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
                        SignInPromoWithWebSignedInAccount) {
   // Sign in with an account, but only on the web. The primary account is not
   // set.
-  signin::MakeAccountAvailable(
+  AccountInfo info = signin::MakeAccountAvailable(
       identity_manager(),
       signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
           .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
           .Build("test@email.com"));
+  ExtendAccountInfo(info);
 
   // Set up password and password stores.
   GetController()->OnPasswordSubmitted(CreateFormManager(
@@ -216,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5231400"),
+                 "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
@@ -248,6 +260,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
   // state. This simulates the "sign in paused" state.
   AccountInfo info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager(), info.account_id,
       GoogleServiceAuthError(
@@ -271,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(AutofillBubbleSignInPromoInteractiveUITest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
       Screenshot(PasswordSaveUpdateView::kPasswordBubble, std::string(),
-                 "5231400"),
+                 "5455375"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),

@@ -264,10 +264,7 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   SetShowIcon(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   GetBubbleFrameView()->SetFootnoteView(nullptr);
-
-  // TODO(crbug/319411476): Should be changed to the correct string, moved
-  // inside the AutofillBubbleSignInPromoView and depending on autofill type.
-  SetTitle(IDS_PASSWORD_GENERATION_HELP_TEXT_TRUSTED_ADVICE);
+  SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
   // Show the sign in promo.
   auto sign_in_promo = std::make_unique<AutofillBubbleSignInPromoView>(
