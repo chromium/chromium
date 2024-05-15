@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -53,6 +54,13 @@ TEST_F(ChromeWeblocFileTest, LoadFromFile_ValidFile) {
             shortcut->target_url());
   EXPECT_EQ(base::FilePath("DefaultName"),
             shortcut->profile_path_name().path());
+
+  // Verify that the shortcut matchers work correctly as well.
+  EXPECT_THAT(file_path, IsShortcutForUrl(
+                             GURL("https://www.example.com:123/foo/bar#bla")));
+  EXPECT_THAT(file_path,
+              IsShortcutForProfile(FILE_PATH_LITERAL("DefaultName")));
+  EXPECT_THAT(file_path, IsShortcutWithTitle(u"test"));
 }
 
 TEST_F(ChromeWeblocFileTest, LoadFromFile_FileDoesNotExist) {

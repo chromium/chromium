@@ -144,6 +144,15 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
                            : ShortcutCreatorResult::kSuccess;
 }
 
+namespace {
+LinuxXdgWrapper* g_xdg_wrapper_override = nullptr;
+}
+
+void SetDefaultXdgWrapperForTesting(LinuxXdgWrapper* xdg_wrapper) {
+  CHECK_NE(xdg_wrapper != nullptr, g_xdg_wrapper_override != nullptr);
+  g_xdg_wrapper_override = xdg_wrapper;
+}
+
 void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
                                  ShortcutCreatorCallback complete) {
   CHECK(shortcut_metadata.IsValid());
@@ -155,7 +164,7 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   ShortcutCreatorResult result = CreateShortcutOnLinuxDesktop(
       base::UTF16ToUTF8(shortcut_metadata.shortcut_title),
       shortcut_metadata.shortcut_url, *image, shortcut_metadata.profile_path,
-      wrapper_impl);
+      g_xdg_wrapper_override ? *g_xdg_wrapper_override : wrapper_impl);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(complete), result));
 }

@@ -43,6 +43,14 @@ ShortcutCreatorResult CreateShortcutOnLinuxDesktop(
     const base::FilePath& profile_path,
     LinuxXdgWrapper& xdg_wrapper);
 
+// Overrides the LinuxXdgWrapper implementation used by the linux implementation
+// of `CreateShortcutOnDesktop` (i.e. the LinuxXdgWrapper that gets passed by
+// default to `CreateShortcutOnLinuxDesktop()`). Call with null to reset back to
+// the default behavior.
+// Consider using `ShortcutCreationTestSupport` rather than calling this method
+// directly.
+void SetDefaultXdgWrapperForTesting(LinuxXdgWrapper* xdg_wrapper);
+
 }  // namespace shortcuts
 
 #endif  // CHROME_BROWSER_SHORTCUTS_SHORTCUT_CREATOR_LINUX_H_

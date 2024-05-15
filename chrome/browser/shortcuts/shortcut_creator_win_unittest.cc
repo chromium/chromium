@@ -21,6 +21,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
+#include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
@@ -89,6 +90,11 @@ void ShortcutCreatorWinTest::VerifyShortcut() const {
   ASSERT_TRUE(base::PathExists(shortcut_path));
   base::win::ValidateShortcut(shortcut_path, properties);
   // TODO(b/333024272): Verify images in .ico file are correct.
+
+  // Verify that the shortcut matchers work correctly as well.
+  EXPECT_THAT(shortcut_path, IsShortcutForUrl(kUrl));
+  EXPECT_THAT(shortcut_path, IsShortcutForProfile(default_profile_path()));
+  EXPECT_THAT(shortcut_path, IsShortcutWithTitle(kShortcutName));
 }
 
 TEST_F(ShortcutCreatorWinTest, ShortcutCreated) {

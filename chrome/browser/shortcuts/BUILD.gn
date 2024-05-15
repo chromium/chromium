@@ -90,20 +90,37 @@ source_set("shortcuts") {
 source_set("test_support") {
   testonly = true
 
-  public = [ "image_test_utils.h" ]
+  public = [
+    "image_test_utils.h",
+    "shortcut_creation_test_support.h",
+  ]
   sources = [ "image_test_utils.cc" ]
   public_deps = [
     ":shortcuts",
     "//base",
     "//base/test:test_support",
     "//skia",
+    "//url",
   ]
   deps = [ "//ui/gfx/codec" ]
 
   if (is_linux) {
-    public += [ "shortcut_creator_linux_test_support.h" ]
-    sources += [ "shortcut_creator_linux_test_support.cc" ]
-    deps += []
+    public += [
+      "fake_linux_xdg_wrapper.h",
+      "shortcut_creation_test_support_linux.h",
+    ]
+    sources += [
+      "fake_linux_xdg_wrapper.cc",
+      "shortcut_creation_test_support_linux.cc",
+    ]
+    deps += [ "//chrome/browser" ]
+  }
+  if (is_mac) {
+    sources += [ "shortcut_creation_test_support_mac.mm" ]
+  }
+  if (is_win) {
+    sources += [ "shortcut_creation_test_support_win.cc" ]
+    deps += [ "//chrome/browser" ]
   }
 }
 
@@ -176,6 +193,9 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    sources += [ "shortcut_creator_linux_unittest.cc" ]
+    sources += [
+      "shortcut_creation_test_support_linux_unittest.cc",
+      "shortcut_creator_linux_unittest.cc",
+    ]
   }
 }

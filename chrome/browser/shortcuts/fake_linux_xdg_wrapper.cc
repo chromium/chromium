@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/shortcuts/shortcut_creator_linux_test_support.h"
+#include "chrome/browser/shortcuts/fake_linux_xdg_wrapper.h"
 
 #include <stdlib.h>
 
@@ -10,10 +10,10 @@
 
 namespace shortcuts {
 
-ShortcutCreatorLinuxTestSupport::ShortcutCreatorLinuxTestSupport() = default;
-ShortcutCreatorLinuxTestSupport::~ShortcutCreatorLinuxTestSupport() = default;
+FakeLinuxXdgWrapper::FakeLinuxXdgWrapper() = default;
+FakeLinuxXdgWrapper::~FakeLinuxXdgWrapper() = default;
 
-int ShortcutCreatorLinuxTestSupport::XdgDesktopMenuInstall(
+int FakeLinuxXdgWrapper::XdgDesktopMenuInstall(
     const base::FilePath& desktop_file) {
   installs_.push_back(desktop_file);
   return EXIT_SUCCESS;
