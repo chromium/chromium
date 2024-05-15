@@ -34,6 +34,7 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.settings.AttributionBehavior;
 import org.chromium.android_webview.settings.ForceDarkBehavior;
 import org.chromium.android_webview.settings.ForceDarkMode;
+import org.chromium.android_webview.settings.PreloadingAllowedFlags;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -171,6 +172,10 @@ public class AwSettings {
     private boolean mEnableSupportedHardwareAcceleratedFeatures;
     private int mMixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
     private int mAttributionBehavior = AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
+
+    @PreloadingAllowedFlags
+    private int mPreloadingAllowedFlags = PreloadingAllowedFlags.PRELOADING_DISABLED;
+
     private boolean mCSSHexAlphaColorEnabled;
     private boolean mScrollTopLeftInteropEnabled;
     private boolean mWillSuppressErrorPage;
@@ -304,6 +309,10 @@ public class AwSettings {
         void updateAllowFileAccessLocked() {
             runOnUiThreadBlockingAndLocked(() -> updateAllowFileAccessOnUiThreadLocked());
         }
+
+        void updatePreloadingAllowedLocked() {
+            runOnUiThreadBlockingAndLocked(() -> updatePreloadingAllowedOnUiThreadLocked());
+        }
     }
 
     interface ZoomSupportChangeListener {
@@ -379,6 +388,7 @@ public class AwSettings {
                 mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
             }
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
+            mPreloadingAllowedFlags = PreloadingAllowedFlags.PRELOADING_DISABLED;
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }
@@ -1754,6 +1764,23 @@ public class AwSettings {
         }
     }
 
+    public void setPreloadingAllowed(@PreloadingAllowedFlags int flags) {
+        synchronized (mAwSettingsLock) {
+            if (mPreloadingAllowedFlags != flags) {
+                mPreloadingAllowedFlags = flags;
+                mEventHandler.updatePreloadingAllowedLocked();
+            }
+        }
+    }
+
+    @CalledByNative
+    @PreloadingAllowedFlags
+    public int getPreloadingAllowed() {
+        synchronized (mAwSettingsLock) {
+            return mPreloadingAllowedFlags;
+        }
+    }
+
     @ForceDarkMode
     public int getForceDarkMode() {
         synchronized (mAwSettingsLock) {
@@ -2046,6 +2073,14 @@ public class AwSettings {
         }
     }
 
+    private void updatePreloadingAllowedOnUiThreadLocked() {
+        assert mEventHandler.mHandler != null;
+        ThreadUtils.assertOnUiThread();
+        if (mNativeAwSettings != 0) {
+            AwSettingsJni.get().updatePreloadingAllowedLocked(mNativeAwSettings, AwSettings.this);
+        }
+    }
+
     public void setEnterpriseAuthenticationAppLinkPolicyEnabled(boolean enabled) {
         synchronized (mAwSettingsLock) {
             mEventHandler.runOnUiThreadBlockingAndLocked(
@@ -2152,6 +2187,8 @@ public class AwSettings {
         void updateCookiePolicyLocked(long nativeAwSettings, AwSettings caller);
 
         void updateAllowFileAccessLocked(long nativeAwSettings, AwSettings caller);
+
+        void updatePreloadingAllowedLocked(long nativeAwSettings, AwSettings caller);
 
         boolean isForceDarkApplied(long nativeAwSettings, AwSettings caller);
 

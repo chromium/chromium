@@ -345,9 +345,11 @@ bool AwWebContentsDelegate::IsBackForwardCacheSupported() {
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
     content::WebContents& web_contents) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
+  if (aw_settings->IsPrerender2Allowed()) {
     return content::PreloadingEligibility::kEligible;
   }
+
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 

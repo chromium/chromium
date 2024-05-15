@@ -140,6 +140,10 @@ AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
   return attribution_behavior_;
 }
 
+bool AwSettings::IsPrerender2Allowed() {
+  return (preloading_allowed_flags_ & PRERENDER_ENABLED);
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -215,6 +219,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
   UpdateAttributionBehaviorLocked(env, obj);
+  UpdatePreloadingAllowedLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -424,6 +429,31 @@ void AwSettings::UpdateAttributionBehaviorLocked(
       (previous == AwSettings::AttributionBehavior::DISABLED ||
        attribution_behavior_ == AwSettings::AttributionBehavior::DISABLED)) {
     web_contents()->UpdateAttributionSupportRenderer();
+  }
+}
+
+void AwSettings::UpdatePreloadingAllowedLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  PreloadingAllowedFlags previous = preloading_allowed_flags_;
+  preloading_allowed_flags_ = static_cast<PreloadingAllowedFlags>(
+      Java_AwSettings_getPreloadingAllowed(env, obj));
+  if (previous == preloading_allowed_flags_) {
+    return;
+  }
+
+  if (!web_contents()) {
+    // No need to cancel preloading entries if the WebContents that host them
+    // doesn't exist.
+    return;
+  }
+
+  // TODO(crbug.com/339561855): Clear navigational prefetches when
+  // preloading is disabled.
+
+  if ((previous & AwSettings::PRERENDER_ENABLED) &&
+      !(preloading_allowed_flags_ & AwSettings::PRERENDER_ENABLED)) {
+    web_contents()->CancelAllPrerendering();
   }
 }
 

@@ -26,7 +26,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.settings.PreloadingAllowedFlags;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -141,7 +141,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
         mPageUrl = mTestServer.getURL(INITIAL_URL);
         mPrerenderingUrl = mTestServer.getURL(PRERENDER_URL);
+    }
 
+    public void setPreloadingAllowed(@PreloadingAllowedFlags int allowed) {
+        mActivityTestRule.runOnUiThread(
+                () -> mAwContents.getSettings().setPreloadingAllowed(allowed));
+    }
+
+    public void loadInitialPage() throws Exception {
         // Load an initial page that will be triggering speculation rules prerendering.
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mPageUrl);
@@ -277,9 +284,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSpeculationRulesPrerenderingRendererInitiatedActivation() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -295,9 +304,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSpeculationRulesPrerenderingEmbedderInitiatedActivation() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         injectSpeculationRulesAndWait(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -313,9 +324,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testAwContentsIoThreadClientHandleFrameTreeSwapForward() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
         String url2 = mTestServer.getURL(PRERENDER_URL);
         String url3 = mTestServer.getURL(INITIAL_URL.concat("?q=3"));
@@ -361,9 +374,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testAwContentsIoThreadClientHandleFrameTreeSwapBack() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         String url1 = mTestServer.getURL(INITIAL_URL.concat("?q=1"));
         String url2 = mTestServer.getURL(PRERENDER_URL);
         String url4 = mTestServer.getURL(INITIAL_URL.concat("?q=4"));
@@ -417,9 +432,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingAndShouldInterceptRequest() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         final TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
         int currentShouldInterceptRequestCallCount = shouldInterceptRequestHelper.getCallCount();
@@ -446,9 +463,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingWithCustomResponse() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         final TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
 
@@ -481,9 +500,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingAndShouldOverrideUrlLoading() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         final TestAwContentsClient.ShouldOverrideUrlLoadingHelper shouldOverrideUrlLoadingHelper =
                 mContentsClient.getShouldOverrideUrlLoadingHelper();
         int currentShouldOverrideUrlLoadingCallCount =
@@ -514,9 +535,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testRedirectedPrerenderingAndShouldOverrideUrlLoading() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         final TestAwContentsClient.ShouldOverrideUrlLoadingHelper shouldOverrideUrlLoadingHelper =
                 mContentsClient.getShouldOverrideUrlLoadingHelper();
         int currentShouldOverrideUrlLoadingCallCount =
@@ -572,9 +595,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testSubframeOfPrerenderedPageAndShouldInterceptRequest() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         String subframeUrl1 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=1");
         String subframeUrl2 = mTestServer.getURL("/android_webview/test/data/hello_world.html?q=2");
         String prerenderUrl =
@@ -634,9 +659,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPostMessageDuringPrerendering() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         injectSpeculationRules(mPrerenderingUrl);
 
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -674,9 +701,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingCanceledWhenAddingJSInterface() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -704,9 +733,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingCanceledWhenRemovingJSInterface() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -738,9 +769,11 @@ public class AwPrerenderTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_PRERENDER2})
     @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
     public void testPrerenderingCanceledWhenAddingWebMessageListener() throws Throwable {
+        setPreloadingAllowed(PreloadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -755,6 +788,28 @@ public class AwPrerenderTest extends AwParameterizedTest {
         TestWebMessageListener listener = new TestWebMessageListener();
         TestWebMessageListener.addWebMessageListenerOnUiThread(
                 mAwContents, "awMessagePort", new String[] {"*"}, listener);
+
+        // Wait until prerendering is canceled for the listener addition.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPreloadingDisabled() throws Throwable {
+        // Do not `setPreloadingAllowed()`.
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /* kPreloadingUnsupportedByWebContents */ 62)
+                        .build();
+
+        // Start prerendering.
+        injectSpeculationRules(mPrerenderingUrl);
 
         // Wait until prerendering is canceled for the listener addition.
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();

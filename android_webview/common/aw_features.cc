@@ -158,11 +158,6 @@ BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
              "WebViewUseMetricsUploadServiceOnlySdkRuntime",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables prerender2 on WebView (https://crbug.com/1517472).
-BASE_FEATURE(kWebViewPrerender2,
-             "WebViewPrerender2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Propagate Android's network change notification signals to the networking
 // stack. This only propagates the following notifications:
 // * OnNetworkConnected

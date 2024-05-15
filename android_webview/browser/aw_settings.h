@@ -37,6 +37,12 @@ class AwSettings : public content::WebContentsObserver {
     PREFER_MEDIA_QUERY_OVER_FORCE_DARK = 2,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
+  enum PreloadingAllowedFlags {
+    PRELOADING_DISABLED = 0,
+    PRERENDER_ENABLED = 1,
+  };
+
   enum RequestedWithHeaderMode {
     NO_HEADER = 0,
     APP_PACKAGE_NAME = 1,
@@ -77,6 +83,7 @@ class AwSettings : public content::WebContentsObserver {
   bool GetAllowThirdPartyCookies();
   MixedContentMode GetMixedContentMode();
   AttributionBehavior GetAttributionBehavior();
+  bool IsPrerender2Allowed();
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -120,6 +127,9 @@ class AwSettings : public content::WebContentsObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   void UpdateAttributionBehaviorLocked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  void UpdatePreloadingAllowedLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
@@ -168,6 +178,8 @@ class AwSettings : public content::WebContentsObserver {
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
   AttributionBehavior attribution_behavior_;
+  PreloadingAllowedFlags preloading_allowed_flags_{
+      PreloadingAllowedFlags::PRELOADING_DISABLED};
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
