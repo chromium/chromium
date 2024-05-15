@@ -15,61 +15,62 @@ namespace ash::system {
 
 // Activation date key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kActivateDateKey[];
+inline constexpr char kActivateDateKey[] = "ActivateDate";
 
 // The key that will be present in VPD if the device was enrolled in a domain
 // that blocks dev mode.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kBlockDevModeKey[];
+inline constexpr char kBlockDevModeKey[] = "block_devmode";
 // The key that will be present in VPD if the device ever was enrolled.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kCheckEnrollmentKey[];
+inline constexpr char kCheckEnrollmentKey[] = "check_enrollment";
 
 // The key and values present in VPD to indicate if RLZ ping should be sent.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kShouldSendRlzPingKey[];
+inline constexpr char kShouldSendRlzPingKey[] = "should_send_rlz_ping";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kShouldSendRlzPingValueFalse[];
+inline constexpr char kShouldSendRlzPingValueFalse[] = "0";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kShouldSendRlzPingValueTrue[];
+inline constexpr char kShouldSendRlzPingValueTrue[] = "1";
 
 // The key present in VPD that indicates the date after which the RLZ ping is
 // allowed to be sent. It is in the format of "yyyy-mm-dd".
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kRlzEmbargoEndDateKey[];
+inline constexpr char kRlzEmbargoEndDateKey[] = "rlz_embargo_end_date";
 
 // The key present in VPD that indicates the date after which enterprise
 // management pings are allowed to be sent. It is in the format of "yyyy-mm-dd".
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kEnterpriseManagementEmbargoEndDateKey[];
+inline constexpr char kEnterpriseManagementEmbargoEndDateKey[] =
+    "enterprise_management_embargo_end_date";
 
 // Customization ID key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kCustomizationIdKey[];
+inline constexpr char kCustomizationIdKey[] = "customization_id";
 
 // Developer switch value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kDevSwitchBootKey[];
+inline constexpr char kDevSwitchBootKey[] = "devsw_boot";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kDevSwitchBootValueDev[];
+inline constexpr char kDevSwitchBootValueDev[] = "1";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kDevSwitchBootValueVerified[];
+inline constexpr char kDevSwitchBootValueVerified[] = "0";
 
 // Dock MAC address key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kDockMacAddressKey[];
+inline constexpr char kDockMacAddressKey[] = "dock_mac";
 
 // Ethernet MAC address key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kEthernetMacAddressKey[];
+inline constexpr char kEthernetMacAddressKey[] = "ethernet_mac0";
 
 // Firmware write protect switch value.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareWriteProtectCurrentKey[];
+inline constexpr char kFirmwareWriteProtectCurrentKey[] = "wpsw_cur";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareWriteProtectCurrentValueOn[];
+inline constexpr char kFirmwareWriteProtectCurrentValueOn[] = "1";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareWriteProtectCurrentValueOff[];
+inline constexpr char kFirmwareWriteProtectCurrentValueOff[] = "0";
 
 // Firmware type and associated values. The values are from crossystem output
 // for the mainfw_type key. Normal and developer correspond to Chrome OS
@@ -77,111 +78,115 @@ extern const char kFirmwareWriteProtectCurrentValueOff[];
 // machine doesn't run on Chrome OS firmware. See crossystem source for more
 // details.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareTypeKey[];
+inline constexpr char kFirmwareTypeKey[] = "mainfw_type";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareTypeValueDeveloper[];
+inline constexpr char kFirmwareTypeValueDeveloper[] = "developer";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareTypeValueNonchrome[];
+inline constexpr char kFirmwareTypeValueNonchrome[] = "nonchrome";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFirmwareTypeValueNormal[];
+inline constexpr char kFirmwareTypeValueNormal[] = "normal";
 
 // HWID key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kHardwareClassKey[];
+inline constexpr char kHardwareClassKey[] = "hardware_class";
 
 // Key/values reporting if Chrome OS is running in a VM or not. These values are
 // read from crossystem output. See crossystem source for VM detection logic.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) extern const char kIsVmKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kIsVmValueFalse[];
+inline constexpr char kIsVmKey[] = "is_vm";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kIsVmValueTrue[];
+inline constexpr char kIsVmValueFalse[] = "0";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+inline constexpr char kIsVmValueTrue[] = "1";
 
 // Key/values reporting if ChromeOS is running in debug mode or not. These
 // values are read from crossystem output. See crossystem source for cros_debug
 // detection logic.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kIsCrosDebugKey[];
+inline constexpr char kIsCrosDebugKey[] = "is_cros_debug";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kIsCrosDebugValueFalse[];
+inline constexpr char kIsCrosDebugValueFalse[] = "0";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kIsCrosDebugValueTrue[];
+inline constexpr char kIsCrosDebugValueTrue[] = "1";
 
 // Manufacture date key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kManufactureDateKey[];
+inline constexpr char kManufactureDateKey[] = "mfg_date";
 
 // OEM customization flag that permits exiting enterprise enrollment flow in
 // OOBE when 'oem_enterprise_managed' flag is set.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOemCanExitEnterpriseEnrollmentKey[];
+inline constexpr char kOemCanExitEnterpriseEnrollmentKey[] =
+    "oem_can_exit_enrollment";
 
 // OEM customization directive that specified intended device purpose.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOemDeviceRequisitionKey[];
+inline constexpr char kOemDeviceRequisitionKey[] = "oem_device_requisition";
 
 // OEM customization flag that enforces enterprise enrollment flow in OOBE.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOemIsEnterpriseManagedKey[];
+inline constexpr char kOemIsEnterpriseManagedKey[] = "oem_enterprise_managed";
 
 // OEM customization flag that specifies if OOBE flow should be enhanced for
 // keyboard driven control.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOemKeyboardDrivenOobeKey[];
+inline constexpr char kOemKeyboardDrivenOobeKey[] = "oem_keyboard_driven_oobe";
 
 // Offer coupon code key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOffersCouponCodeKey[];
+inline constexpr char kOffersCouponCodeKey[] = "ubind_attribute";
 
 // Offer group key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kOffersGroupCodeKey[];
+inline constexpr char kOffersGroupCodeKey[] = "gbind_attribute";
 
 // Release Brand Code key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kRlzBrandCodeKey[];
+inline constexpr char kRlzBrandCodeKey[] = "rlz_brand_code";
 
 // Regional data
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) extern const char kRegionKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kInitialLocaleKey[];
+inline constexpr char kRegionKey[] = "region";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kInitialTimezoneKey[];
+inline constexpr char kInitialLocaleKey[] = "initial_locale";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kKeyboardLayoutKey[];
+inline constexpr char kInitialTimezoneKey[] = "initial_timezone";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kKeyboardMechanicalLayoutKey[];
+inline constexpr char kKeyboardLayoutKey[] = "keyboard_layout";
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+inline constexpr char kKeyboardMechanicalLayoutKey[] =
+    "keyboard_mechanical_layout";
 
 // The key that will be present in RO VPD to indicate what identifier is used
 // for attestation-based registration of a device.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kAttestedDeviceIdKey[];
+inline constexpr char kAttestedDeviceIdKey[] = "attested_device_id";
 
 // Serial number key (legacy VPD devices). In most cases,
 // GetEnterpriseMachineID() is the appropriate way to obtain the serial number.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kLegacySerialNumberKey[];
+inline constexpr char kLegacySerialNumberKey[] = "Product_S/N";
 
 // Serial number key (VPD v2+ devices, Samsung: caroline and later). In most
 // cases, GetEnterpriseMachineID() is the appropriate way to obtain the serial
 // number.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kSerialNumberKey[];
+inline constexpr char kSerialNumberKey[] = "serial_number";
 
 // Serial number key for Flex devices. In most cases, GetEnterpriseMachineID()
 // is the appropriate way to obtain the serial number.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kFlexIdKey[];
+inline constexpr char kFlexIdKey[] = "flex_id";
 
 // Display Profiles key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kDisplayProfilesKey[];
+inline constexpr char kDisplayProfilesKey[] = "display_profiles";
 
 // Machine model and oem names.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kMachineModelName[];
+inline constexpr char kMachineModelName[] = "model_name";
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kMachineOemName[];
+inline constexpr char kMachineOemName[] = "oem_name";
 
 // This interface provides access to Chrome OS statistics.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProvider {
