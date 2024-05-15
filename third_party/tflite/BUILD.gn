@@ -279,6 +279,9 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/kernel_utils.h",
     "src/tensorflow/lite/kernels/internal/max.h",
     "src/tensorflow/lite/kernels/internal/min.h",
+    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
+    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
+    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
     "src/tensorflow/lite/kernels/internal/optimized/batch_matmul.h",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.cc",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.h",
@@ -450,9 +453,6 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/gather_nd.cc",
     "src/tensorflow/lite/kernels/hashtable_lookup.cc",
     "src/tensorflow/lite/kernels/if.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
-    "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
     "src/tensorflow/lite/kernels/kernel_util.cc",
     "src/tensorflow/lite/kernels/kernel_util.h",
     "src/tensorflow/lite/kernels/l2norm.cc",
@@ -833,8 +833,8 @@ executable("tflite_benchmark") {
     "src/tensorflow/lite/tools/utils.h",
   ]
   deps = [
-    ":tflite",
-    ":tflite_builtin_op_resolver",
+    ":tflite_standalone",
+    ":tflite_builtin_op_resolver_standalone",
     "//third_party/abseil-cpp:absl",
     "//third_party/ruy",
   ]
