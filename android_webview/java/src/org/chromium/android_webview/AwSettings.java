@@ -380,13 +380,8 @@ public class AwSettings {
             mAllowFileUrlAccess =
                     ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
                             < Build.VERSION_CODES.R;
-            if (AwFeatureMap.isEnabled(
-                    AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
-                mRequestedWithHeaderAllowedOriginRules =
-                        ManifestMetadataUtil.getXRequestedWithAllowList();
-            } else {
-                mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
-            }
+            mRequestedWithHeaderAllowedOriginRules =
+                    ManifestMetadataUtil.getXRequestedWithAllowList();
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
             mPreloadingAllowedFlags = PreloadingAllowedFlags.PRELOADING_DISABLED;
         }

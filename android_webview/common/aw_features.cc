@@ -194,12 +194,6 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
     &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
 
-// Control whether WebView will attempt to read the XRW header allow-list from
-// the manifest.
-BASE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList,
-             "WebViewXRequestedWithHeaderManifestAllowList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables image drage out for Webview.
 BASE_FEATURE(kWebViewImageDrag,
              "WebViewImageDrag",

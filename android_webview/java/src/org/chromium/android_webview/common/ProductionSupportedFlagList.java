@@ -438,10 +438,6 @@ public final class ProductionSupportedFlagList {
                         + "to those that have been allow-listed through the appropriate "
                         + "developer API."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST,
-                "Enables support for providing an allow-list for the X-Requested-Header "
-                        + "through AndroidManifest.xml meta-data."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
                 "Enables reduce webview user-agent android version and device model."),
         Flag.baseFeature(
@@ -994,9 +990,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.STATIC_ANIMATION_OPTIMIZATION,
                 "Optimize handling of static properties during animations."),
         Flag.baseFeature("LazyBindJsInjection"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_MUTE_AUDIO,
-                "Enables WebView audio to be muted."),
+        Flag.baseFeature(AwFeatures.WEBVIEW_MUTE_AUDIO, "Enables WebView audio to be muted."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

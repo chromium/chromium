@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.webkit.WebSettings;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -64,13 +63,8 @@ public class AwServiceWorkerSettings {
             // hitting assets in the application context.
             mBlockSpecialFileUrls = ContextUtils.isSdkSandboxProcess();
 
-            if (AwFeatureMap.isEnabled(
-                    AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_MANIFEST_ALLOW_LIST)) {
-                mRequestedWithHeaderAllowedOriginRules =
-                        ManifestMetadataUtil.getXRequestedWithAllowList();
-            } else {
-                mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
-            }
+            mRequestedWithHeaderAllowedOriginRules =
+                    ManifestMetadataUtil.getXRequestedWithAllowList();
         }
     }
 

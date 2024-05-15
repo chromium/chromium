@@ -3957,7 +3957,6 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderManifestAllowList"})
     public void testXRequestedWithAllowListSetByManifest() throws Throwable {
         final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
         try (var a = ManifestMetadataUtil.setXRequestedWithAllowListScopedForTesting(allowList)) {
