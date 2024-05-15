@@ -241,7 +241,7 @@ is_asan = true
 is_component_build = true
 is_debug = false
 optimize_for_fuzzing = true
-use_goma = true
+use_remoteexec = true
 use_libfuzzer = true
 ```
 
@@ -553,7 +553,7 @@ is_asan = true
 is_component_build = true
 is_debug = false
 optimize_for_fuzzing = true
-use_goma = true
+use_remoteexec = true
 use_libfuzzer = true
 ```
 
@@ -585,7 +585,7 @@ enable_mojom_fuzzer = true
 is_component_build = false
 is_debug = false
 use_clang_coverage = true
-use_goma = true
+use_remoteexec = true
 use_libfuzzer = true
 ```
 
