@@ -2301,10 +2301,7 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    # TODO(crbug.com/40886566): Enable sheriff once tests are stable
-    sheriff_rotations = args.ignore_default(None),
-    # TODO(crbug.com/40886566): Enable tree_closing once compile are stable
-    #tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|x64",
         short_name = "13",
