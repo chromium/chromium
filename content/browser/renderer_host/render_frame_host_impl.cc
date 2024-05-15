@@ -4407,7 +4407,6 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
   // net::features::ThirdPartyStoragePartitioning.
   if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
           .IsDisableThirdPartyStoragePartitioningEnabledForThirdParty(
-              main_frame_for_storage_partitioning->GetLastCommittedOrigin(),
               third_party_origins)) {
     return false;
   }
