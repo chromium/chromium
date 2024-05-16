@@ -396,6 +396,11 @@ async function main(options) {
   fs.unlinkSync(symbolsArchiveFile);
 }
 
+function buildIdToBuildIdSubset(buildId) {
+  const buildIdParts = buildId.split("-");
+  return `${buildIdParts[2]}-${buildIdParts[3]}-${buildIdParts[4]}`;
+}
+
 function buildkiteStuff(
   downloadUris,
   platform,
@@ -412,7 +417,7 @@ function buildkiteStuff(
     .map((uri) => `* [${path.basename(uri)}](${uri})`)
     .join("\n");
 
-  let markdownMessage = `# ${platform} (${arch}) links\n\n${markdownDownloadList}\n`;
+  let buildsMessage = `# ${platform} (${arch}) links\n\n${markdownDownloadList}\n`;
   if (platform === "linux") {
     // Linux is usually the first. Let's prefix it with relevant Admin App link.
     const buildPattern = buildId.substring(buildId.indexOf("-"));
@@ -422,12 +427,29 @@ function buildkiteStuff(
       `# Admin App Crash Triage\n` +
       `* [Fatals](${aaCrashTriageLink})\n` +
       `* [Commands](${aaCommandCrashTriageLink})\n`;
-    markdownMessage = aaCrashTriageMessage + markdownMessage;
+    buildsMessage = aaCrashTriageMessage + buildsMessage;
   }
 
   spawnChecked(
     "buildkite-agent",
-    ["annotate", "--append", "--style", "info", markdownMessage],
+    ["annotate", "--append", "--style", "info", buildsMessage],
+    {
+      stdio: "inherit",
+    }
+  );
+
+  const buildIdSubset = buildIdToBuildIdSubset(buildId);
+  const buildIdMessage = `# Build ID subset \n\n_Copy this when you're releasing this build and the release pipeline asks you for the build ID subset_\n\n\`${buildIdSubset}\`\n`;
+  spawnChecked(
+    "buildkite-agent",
+    [
+      "annotate",
+      "--context",
+      "build-id-subset",
+      "--style",
+      "info",
+      buildIdMessage,
+    ],
     {
       stdio: "inherit",
     }
