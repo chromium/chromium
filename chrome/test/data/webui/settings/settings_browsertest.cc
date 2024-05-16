@@ -859,13 +859,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbFragment) {
           "runMochaSuite('MsbbFragment')");
 }
 
-// TODO(crbug.com/339681742): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncFragment DISABLED_HistorySyncFragment
-#else
-#define MAYBE_HistorySyncFragment HistorySyncFragment
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_HistorySyncFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('HistorySyncFragment')");
 }
