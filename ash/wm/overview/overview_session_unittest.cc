@@ -3757,6 +3757,75 @@ TEST_P(OverviewSessionTest,
   EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 }
 
+// Verify the following behavior when dragging an `OverviewItem` to the new desk
+// button on a different display:
+// 1. The new desk button on the target display changes to
+// `DeskIconButton::State::kActive`.
+// 2. New desk buttons on other displays remain in
+// `DeskIconButton::State::kExpanded`.
+// 3. Upon dropping the OverviewItem, all new desk buttons (including the target
+// display) are restored to `DeskIconButton::State::kExpanded` state.
+TEST_P(OverviewSessionTest, NewDeskButtonStateUpdateOnMultiDisplay) {
+  auto skip_scale_up_new_desk_button_duration = OverviewWindowDragController::
+      SkipNewDeskButtonScaleUpDurationForTesting();
+
+  UpdateDisplay("800x700,801+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  const gfx::Point point_in_display1(502, 300);
+  ASSERT_TRUE(displays[0].bounds().Contains(point_in_display1));
+  ASSERT_FALSE(displays[1].bounds().Contains(point_in_display1));
+
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(10, 10, 200, 100));
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  ASSERT_TRUE(IsWindowInItsCorrespondingOverviewGrid(window.get()));
+
+  // Verify that the new desk buttons on both displays have
+  // `DeskIconButton::State::kZero` state initially.
+  const auto& grids = GetOverviewSession()->grid_list();
+  ASSERT_EQ(2u, grids.size());
+  auto* grid0 = grids[0].get();
+  ASSERT_TRUE(grid0);
+  auto* desks_bar_view0 = grid0->desks_bar_view();
+  const DeskIconButton* new_desk_button0 = desks_bar_view0->new_desk_button();
+  ASSERT_TRUE(new_desk_button0);
+  ASSERT_TRUE(new_desk_button0->GetVisible());
+  ASSERT_EQ(DeskIconButton::State::kZero, new_desk_button0->state());
+
+  auto* grid1 = grids[1].get();
+  ASSERT_TRUE(grid1);
+  auto* desks_bar_view1 = grid1->desks_bar_view();
+  const DeskIconButton* new_desk_button1 = desks_bar_view1->new_desk_button();
+  ASSERT_TRUE(new_desk_button1);
+  ASSERT_TRUE(new_desk_button1->GetVisible());
+  ASSERT_EQ(DeskIconButton::State::kZero, new_desk_button1->state());
+
+  OverviewItemBase* overview_item = GetOverviewItemForWindow(window.get());
+  ASSERT_TRUE(overview_item);
+
+  // Drag the `overview_item` to new desk button on display #2 w/o releasing the
+  // mouse. Verify that the new desk button on display #2 turns into
+  // `DeskIconButton::State::kActive` state.
+  auto* event_generator = GetEventGenerator();
+  DragItemToPoint(overview_item,
+                  new_desk_button1->GetBoundsInScreen().CenterPoint(),
+                  event_generator, /*by_touch_gestures=*/false, /*drop=*/false);
+  EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button0->state());
+  EXPECT_EQ(DeskIconButton::State::kActive, new_desk_button1->state());
+
+  // Drag the `overview_item` back to display #1 w/o and drop. Verify that the
+  // new desk buttons on all displays are restored to
+  // `DeskIconButton::State::kExpanded` state.
+  DragItemToPoint(overview_item, point_in_display1, event_generator,
+                  /*by_touch_gestures=*/false, /*drop=*/true);
+  EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button0->state());
+  EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button1->state());
+}
+
 // Verify that when an overview item is moved to a different display, it
 // is properly removed from the original grid and displayed in the new one with
 // no crash. See original crash reported at http://b/320479135.
@@ -3779,7 +3848,7 @@ TEST_P(OverviewSessionTest,
 
   const auto& grids = GetOverviewSession()->grid_list();
   ASSERT_EQ(2u, grids.size());
-  auto grid0 = grids[0].get();
+  auto* grid0 = grids[0].get();
   ASSERT_TRUE(grid0);
   const auto& overview_items = grid0->window_list();
   ASSERT_EQ(overview_items.size(), 1u);
