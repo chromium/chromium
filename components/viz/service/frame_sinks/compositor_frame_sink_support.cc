@@ -30,6 +30,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
+#include "components/viz/common/viz_utils.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_counter.h"
@@ -924,6 +925,15 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
               &RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback,
               frame_sink_manager_->GetWeakPtr(), surface_info.id(),
               frame.metadata.screenshot_destination.value()));
+      if (const auto& size_for_testing =
+              frame_sink_manager_
+                  ->copy_output_request_result_size_for_testing();  // IN-TEST
+          UNLIKELY(!size_for_testing.IsEmpty())) {
+        SetCopyOutoutRequestResultSize(copy_request.get(), gfx::Rect(),
+                                       size_for_testing,
+                                       prev_surface->size_in_pixels());
+      }
+
       copy_request->set_result_task_runner(
           base::SequencedTaskRunner::GetCurrentDefault());
 

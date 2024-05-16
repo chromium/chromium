@@ -509,6 +509,15 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     return initial_navigation_entry_state_;
   }
 
+  void SetSameDocumentNavigationEntryScreenshotToken(
+      const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
+          token);
+
+  const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
+  same_document_navigation_entry_screenshot_token() const {
+    return same_document_navigation_entry_screenshot_token_;
+  }
+
  private:
   std::unique_ptr<NavigationEntryImpl> CloneAndReplaceInternal(
       scoped_refptr<FrameNavigationEntry> frame_entry,
@@ -647,6 +656,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // See comment for the enum for explanation.
   InitialNavigationEntryState initial_navigation_entry_state_ =
       InitialNavigationEntryState::kNonInitial;
+
+  // Used to map a screenshot for the last frame of this navigation entry
+  // captured in Viz and sent back to the browser process. The token is set when
+  // `DidCommitSameDocumentNavigation` is received in the browser process from
+  // the renderer; and reset when its corresponding screenshot is received by
+  // the browser process from Viz.
+  std::optional<blink::SameDocNavigationScreenshotDestinationToken>
+      same_document_navigation_entry_screenshot_token_;
 };
 
 }  // namespace content

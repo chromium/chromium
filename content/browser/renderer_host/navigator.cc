@@ -505,8 +505,11 @@ void Navigator::DidNavigate(
   // TODO(crbug.com/40278956): Move this into
   // `RenderFrameHostManager::CommitPending` to accommodate both regular
   // navigations and early-commit.
-  NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
-      *navigation_request);
+  if (!was_within_same_document) {
+    NavigationTransitionUtils::
+        CaptureNavigationEntryScreenshotForCrossDocumentNavigations(
+            *navigation_request);
+  }
 
   if (ui::PageTransitionIsMainFrame(params.transition)) {
     // Run tasks that must execute just before the commit.
