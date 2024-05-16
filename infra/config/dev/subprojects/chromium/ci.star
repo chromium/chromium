@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "siso")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/gn_args.star", "gn_args")
 
@@ -86,8 +86,8 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
         resultdb_bigquery_exports = resultdb_bigquery_exports,
-        reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-        reclient_jobs = reclient.jobs.DEFAULT,
+        siso_project = siso.project.DEFAULT_TRUSTED,
+        siso_remote_jobs = siso.remote_jobs.DEFAULT,
         resultdb_index_by_timestamp = True,
         **kwargs
     )

@@ -66,8 +66,7 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-trusted-test",
-    "remote_jobs": 250
+    "project": "rbe-chromium-trusted-test"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

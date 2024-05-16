@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "os", "sheriff_rotations", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -25,12 +25,11 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     notifies = ["chromium.linux"],
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 consoles.console_view(
@@ -152,7 +151,7 @@ ci.builder(
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 6 * time.hour,
     notifies = ["Deterministic Linux", "close-on-any-step-failure"],
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -171,7 +170,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     execution_timeout = 7 * time.hour,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -199,7 +198,7 @@ ci.builder(
     ),
     main_console_view = None,
     notifies = args.ignore_default([]),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -276,7 +275,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -318,7 +317,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -576,7 +575,7 @@ ci.builder(
         short_name = "nsl",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -606,7 +605,7 @@ ci.builder(
         short_name = "bfc",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -640,7 +639,7 @@ ci.builder(
         short_name = "trc",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(

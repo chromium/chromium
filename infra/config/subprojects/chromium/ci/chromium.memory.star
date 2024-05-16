@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "os", "sheriff_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -25,12 +25,11 @@ ci.defaults.set(
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 consoles.console_view(
@@ -116,7 +115,7 @@ linux_memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_instance = None,
+    siso_project = None,
 )
 
 linux_memory_builder(
@@ -267,7 +266,7 @@ linux_memory_builder(
         category = "cros|asan",
         short_name = "tst",
     ),
-    reclient_instance = None,
+    siso_project = None,
 )
 
 linux_memory_builder(
@@ -340,7 +339,7 @@ linux_memory_builder(
         short_name = "tst",
     ),
     execution_timeout = 4 * time.hour,
-    reclient_instance = None,
+    siso_project = None,
 )
 
 linux_memory_builder(
@@ -407,7 +406,7 @@ linux_memory_builder(
         category = "linux|msan",
         short_name = "tst",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 linux_memory_builder(
@@ -516,7 +515,7 @@ linux_memory_builder(
         short_name = "tst",
     ),
     cq_mirrors_console_view = "mirrors",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -545,7 +544,7 @@ ci.builder(
         category = "mac",
         short_name = "tst",
     ),
-    reclient_instance = None,
+    siso_project = None,
 )
 
 ci.builder(
@@ -720,7 +719,7 @@ ci.builder(
         category = "linux|ubsan",
         short_name = "vpt",
     ),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -761,7 +760,7 @@ ci.builder(
     # This builder is normally using 2.5 hours to run with a cached builder. And
     # 1.5 hours additional setup time without cache, https://crbug.com/1311134.
     execution_timeout = 5 * time.hour,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(

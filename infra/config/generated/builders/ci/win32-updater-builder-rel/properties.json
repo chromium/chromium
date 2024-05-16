@@ -77,7 +77,6 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 80,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },

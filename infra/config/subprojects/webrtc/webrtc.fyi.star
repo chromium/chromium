@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "siso")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/xcode.star", "xcode")
 
@@ -47,10 +47,10 @@ defaults.set(
     cpu = cpu.X86_64,
     build_numbers = True,
     execution_timeout = 2 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # Builders are defined in lexicographic order by name

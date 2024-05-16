@@ -393,9 +393,6 @@ def _orchestrator_builder(
         * cores: The orchestrator_cores module-level default.
         * executable: "recipe:chromium/orchestrator"
         * os: os.LINUX_DEFAULT
-        * reclient_instance: The orchestrator_reclient_instance module-level
-          default. (The reclient property is forwarded on to the compilator at
-          run-time).
         * service_account: "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com"
         * ssd: None
     """
@@ -468,7 +465,7 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("executable", "recipe:chromium/compilator")
     kwargs.setdefault("ssd", True)
 
-    kwargs["reclient_instance"] = None
+    kwargs["siso_project"] = None
     kwargs["siso_enabled"] = False
     kwargs["test_presentation"] = resultdb.test_presentation()
 

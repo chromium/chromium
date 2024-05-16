@@ -4,7 +4,6 @@
       "RBE_experimental_exit_on_stuck_actions": "true"
     },
     "instance": "rbe-chromium-untrusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },

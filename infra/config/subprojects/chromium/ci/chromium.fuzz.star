@@ -5,7 +5,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "os", "sheriff_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -21,12 +21,11 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     notifies = ["chromesec-lkgr-failures"],
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -97,7 +96,7 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -178,7 +177,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -260,7 +259,7 @@ ci.builder(
         category = "linux asan",
         short_name = "med",
     ),
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -404,7 +403,7 @@ ci.builder(
         category = "cros asan",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -444,7 +443,7 @@ ci.builder(
         short_name = "org",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -484,7 +483,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -613,7 +612,7 @@ ci.builder(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -652,7 +651,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -687,7 +686,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -724,7 +723,7 @@ ci.builder(
         short_name = "vpt",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = 250,
+    siso_remote_jobs = 250,
 )
 
 ci.builder(
@@ -767,7 +766,7 @@ ci.builder(
         short_name = "rel",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -812,7 +811,7 @@ ci.builder(
         short_name = "med",
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -840,7 +839,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 6 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -896,7 +895,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -925,7 +924,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -953,7 +952,7 @@ ci.builder(
         short_name = "linux-msan",
     ),
     contact_team_email = "chrome-deet-core@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -983,7 +982,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 5 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -1065,7 +1064,7 @@ ci.builder(
         short_name = "linux32",
     ),
     contact_team_email = "chrome-deet-core@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -1093,7 +1092,7 @@ ci.builder(
         short_name = "arm",
     ),
     contact_team_email = "v8-infra@google.com",
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -1179,5 +1178,5 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )

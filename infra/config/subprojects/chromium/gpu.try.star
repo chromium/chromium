@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "cpu", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/gn_args.star", "gn_args")
 
@@ -20,9 +20,9 @@ try_.defaults.set(
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
     expiration_timeout = 2 * time.hour,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
     subproject_list_view = "luci.chromium.try",
     task_template_canary_percentage = 5,
 )
@@ -44,7 +44,7 @@ def gpu_android_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.android",
         builderless = True,
-        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -156,7 +156,7 @@ def gpu_chromeos_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.chromiumos",
         builderless = True,
-        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -185,7 +185,7 @@ def gpu_linux_builder(*, name, **kwargs):
         name = name,
         builder_group = "tryserver.chromium.linux",
         builderless = True,
-        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )
@@ -386,7 +386,7 @@ gpu_mac_builder(
     ],
     gn_args = "ci/GPU FYI Mac arm64 Builder",
     pool = "luci.chromium.gpu.mac.arm64.apple.m1.try",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 gpu_mac_builder(
@@ -501,7 +501,7 @@ gpu_mac_builder(
     ],
     gn_args = "ci/GPU Mac Builder (dbg)",
     pool = "luci.chromium.gpu.mac.mini.intel.try",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 def gpu_win_builder(*, name, **kwargs):
@@ -510,7 +510,7 @@ def gpu_win_builder(*, name, **kwargs):
         builder_group = "tryserver.chromium.win",
         builderless = True,
         os = os.WINDOWS_ANY,
-        reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+        siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
         ssd = None,
         **kwargs
     )

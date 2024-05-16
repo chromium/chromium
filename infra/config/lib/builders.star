@@ -95,14 +95,14 @@ os = struct(
     WINDOWS_ANY = os_enum(os_category.WINDOWS, "Windows"),
 )
 
-reclient = struct(
-    instance = struct(
+siso = struct(
+    project = struct(
         DEFAULT_TRUSTED = "rbe-chromium-trusted",
         TEST_TRUSTED = "rbe-chromium-trusted-test",
         DEFAULT_UNTRUSTED = "rbe-chromium-untrusted",
         TEST_UNTRUSTED = "rbe-chromium-untrusted-test",
     ),
-    jobs = struct(
+    remote_jobs = struct(
         DEFAULT = 250,
         LOW_JOBS_FOR_CI = 80,
         HIGH_JOBS_FOR_CI = 500,
@@ -238,7 +238,6 @@ _VALID_REPROXY_ENV_PREFIX_LIST = ["RBE_", "GLOG_", "GOMA_"]
 
 def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_service, publish_trace, cache_silo, ensure_verified, bootstrap_env, scandeps_server, disable_bq_upload):
     reclient = {}
-    instance = defaults.get_value("reclient_instance", instance)
     if not instance:
         return None
     reclient["instance"] = instance
@@ -346,7 +345,6 @@ defaults = args.defaults(
     resultdb_enable = True,
     resultdb_bigquery_exports = [],
     resultdb_index_by_timestamp = False,
-    reclient_instance = None,
     reclient_service = None,
     reclient_jobs = None,
     reclient_rewrapper_env = None,
@@ -358,6 +356,7 @@ defaults = args.defaults(
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
     siso_enabled = None,
+    siso_project = None,
     siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
@@ -370,7 +369,7 @@ defaults = args.defaults(
     shadow_free_space = args.COMPUTE,  # None will clear the non-shadow dimension, so use args.COMPUTE as the default
     shadow_pool = None,
     shadow_service_account = None,
-    shadow_reclient_instance = None,
+    shadow_siso_project = None,
 
     # Provide vars for bucket and executable so users don't have to
     # unnecessarily make wrapper functions
@@ -422,7 +421,6 @@ def builder(
         resultdb_enable = args.DEFAULT,
         resultdb_bigquery_exports = args.DEFAULT,
         resultdb_index_by_timestamp = args.DEFAULT,
-        reclient_instance = args.DEFAULT,
         reclient_service = args.DEFAULT,
         reclient_jobs = args.DEFAULT,
         reclient_rewrapper_env = args.DEFAULT,
@@ -434,6 +432,7 @@ def builder(
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
         siso_enabled = args.DEFAULT,
+        siso_project = args.DEFAULT,
         siso_configs = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
@@ -445,7 +444,7 @@ def builder(
         shadow_free_space = args.DEFAULT,
         shadow_pool = args.DEFAULT,
         shadow_service_account = args.DEFAULT,
-        shadow_reclient_instance = args.DEFAULT,
+        shadow_siso_project = args.DEFAULT,
         gn_args = None,
         targets = None,
         targets_settings = None,
@@ -607,8 +606,6 @@ def builder(
             timestamp, i.e. for purposes of retrieving a test's history. If
             false, the results will not be searchable by timestamp on ResultDB's
             test history api.
-        reclient_instance: a string indicating the GCP project hosting the RBE
-            instance for re-client to use.
         reclient_service: a string indicating the RBE service to dial via gRPC.
             By default, this is "remotebuildexecution.googleapis.com:443" (set
             in the reclient recipe module). Has no effect if reclient_instance
@@ -636,6 +633,8 @@ def builder(
             BigQuery after each build
         siso_enabled: If True, $build/siso properties will be set, and Siso will
             be used at compile step.
+        siso_project: a string indicating the GCP project hosting the RBE
+            instance and Cloud logging/trace/profile for Siso to use.
         siso_configs: a list of siso configs to enable. available values are defined in
             //build/config/siso/config.star.
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
@@ -659,10 +658,10 @@ def builder(
             set to use this alternate pool instead.
         shadow_service_account: If set, then led builds created for this builder
             will use this service account instead.
-        shadow_reclient_instance: If set, then led builds for this builder will
-            use this as the reclient instance instead of reclient_instance. The
-            other reclient_* values will continue to be used for the shadow
-            build.
+        shadow_siso_project: If set, then led builds for this builder will
+            use the RBE and other cloud instances of this project instead of the
+            ones of siso_project. The other reclient, siso values will continue
+            to be used for the shadow build.
         gn_args: If set, the GN args config to use for the builder. It can be
             set to the name of a predeclared config or an unnamed
             gn_args.config declaration for an unphased config. A builder can use
@@ -812,8 +811,10 @@ def builder(
     if reclient_scandeps_server == args.COMPUTE:
         reclient_scandeps_server = True
 
+    rbe_project = defaults.get_value("siso_project", siso_project)
+    shadow_rbe_project = defaults.get_value("shadow_siso_project", shadow_siso_project)
     reclient = _reclient_property(
-        instance = reclient_instance,
+        instance = rbe_project,
         service = reclient_service,
         jobs = reclient_jobs,
         rewrapper_env = reclient_rewrapper_env,
@@ -825,12 +826,9 @@ def builder(
         ensure_verified = reclient_ensure_verified,
         disable_bq_upload = reclient_disable_bq_upload,
     )
-    rbe_project = None
-    shadow_rbe_project = None
     if reclient != None:
         properties["$build/reclient"] = reclient
-        rbe_project = reclient["instance"]
-        shadow_reclient_instance = defaults.get_value("shadow_reclient_instance", shadow_reclient_instance)
+        shadow_reclient_instance = shadow_rbe_project
         shadow_reclient = _reclient_property(
             instance = shadow_reclient_instance,
             service = reclient_service,

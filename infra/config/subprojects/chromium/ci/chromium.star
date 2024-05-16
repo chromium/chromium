@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "cpu", "os", "sheriff_rotations", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -27,12 +27,11 @@ ci.defaults.set(
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -106,8 +105,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -164,8 +162,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -211,8 +208,7 @@ ci.builder(
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -292,8 +288,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -345,8 +340,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -406,8 +400,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -467,8 +460,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -529,8 +521,7 @@ ci.builder(
             ],
         },
     },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -856,8 +847,7 @@ ci.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/40735404) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -950,6 +940,5 @@ ci.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/40735404) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )

@@ -1,7 +1,6 @@
 {
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
   },
@@ -13,6 +12,6 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "project": "rbe-chromium-untrusted",
-    "remote_jobs": 500
+    "remote_jobs": 250
   }
 }

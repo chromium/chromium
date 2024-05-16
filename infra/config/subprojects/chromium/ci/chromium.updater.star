@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient")
+load("//lib/builders.star", "builders", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -19,12 +19,11 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -591,8 +590,7 @@ ci.builder(
         category = "debug|win (64)",
         short_name = "bld",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -628,8 +626,7 @@ ci.builder(
         short_name = "bld",
     ),
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT * 2,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -661,8 +658,7 @@ ci.builder(
         category = "release|win (64)",
         short_name = "bld",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -695,8 +691,7 @@ ci.builder(
         category = "release|win (32)",
         short_name = "bld",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.thin_tester(

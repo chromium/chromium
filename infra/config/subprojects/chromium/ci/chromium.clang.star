@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "cpu", "os", "sheriff_rotations", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -37,13 +37,11 @@ ci.defaults.set(
     properties = {
         "perf_dashboard_machine_group": "ChromiumClang",
     },
-    # TODO: b/335361392 - Rename reclient_instance to rbe_project or siso_project.
-    # This is used by Siso to upload Cloud logging/trace/profiler even without remote execution.
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_configs = ["builder", "clang-tot"],
     siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
 )
 
 consoles.console_view(
@@ -153,7 +151,7 @@ ci.builder(
     contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
     siso_configs = ["builder"],  # disable clang_tot config to use remote execution.
-    siso_remote_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(

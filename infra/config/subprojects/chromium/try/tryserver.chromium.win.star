@@ -6,7 +6,7 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_url.star", "linkify_builder")
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -22,11 +22,11 @@ try_.defaults.set(
     compilator_cores = 16,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
-    orchestrator_siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -70,7 +70,7 @@ try_.builder(
     cores = 16,
     ssd = True,
     execution_timeout = 9 * time.hour,
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -111,7 +111,7 @@ try_.builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(),
 )
 
@@ -193,7 +193,7 @@ try_.builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
@@ -240,7 +240,7 @@ try_.builder(
     cores = 32,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
-    reclient_instance = None,
+    siso_project = None,
 )
 
 try_.builder(
@@ -250,7 +250,7 @@ try_.builder(
     cores = 32,
     os = os.WINDOWS_ANY,
     execution_timeout = 6 * time.hour,
-    reclient_instance = None,
+    siso_project = None,
 )
 
 try_.builder(
@@ -380,7 +380,7 @@ try_.builder(
     os = os.WINDOWS_10,
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     tryjob = try_.job(
         # TODO(crbug.com/40847153) Remove once cancelling doesn't wipe
         # out builder cache
@@ -409,7 +409,7 @@ try_.builder(
     contact_team_email = "chrome-desktop-engprod@google.com",
     # Enable when stable.
     # main_list_view = "try",
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(

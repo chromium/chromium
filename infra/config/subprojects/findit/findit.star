@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "reclient")
+load("//lib/builders.star", "builder", "defaults", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
@@ -75,14 +75,14 @@ defaults.set(
 builder(
     name = "gofindit-culprit-verification",
     executable = "recipe:gofindit/chromium/single_revision",
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # Builder to run a test for a single revision.
 builder(
     name = "test-single-revision",
     executable = "recipe:gofindit/chromium/test_single_revision",
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient")
+load("//lib/builders.star", "builders", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -21,12 +21,11 @@ ci.defaults.set(
     execution_timeout = 10 * time.hour,
     health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 consoles.console_view(
@@ -179,7 +178,7 @@ ci.builder(
         short_name = "lnx",
     ),
     notifies = ["annotator-rel"],
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -254,7 +253,7 @@ ci.builder(
         short_name = "rel",
     ),
     execution_timeout = 3 * time.hour,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -314,7 +313,7 @@ ci.builder(
         short_name = "VF",
     ),
     notifies = ["linux-blink-fyi-bots"],
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -520,7 +519,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -571,7 +570,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "linux",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -1063,7 +1062,7 @@ ci.builder(
         short_name = "win",
     ),
     notifies = ["chrometto-sheriff"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 fyi_reclient_comparison_builder(
@@ -1102,8 +1101,8 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1122,8 +1121,8 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android (reproxy cache) - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1159,8 +1158,8 @@ fyi_mac_reclient_comparison_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1197,8 +1196,8 @@ fyi_mac_reclient_comparison_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1236,8 +1235,8 @@ fyi_mac_reclient_comparison_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_cache_silo = "Comparison Mac - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1269,9 +1268,9 @@ fyi_reclient_comparison_builder(
         short_name = "re",
     ),
     reclient_cache_silo = "Comparison Windows 8 cores - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = 80,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
+    siso_remote_jobs = 80,
 )
 
 fyi_reclient_comparison_builder(
@@ -1304,8 +1303,8 @@ fyi_reclient_comparison_builder(
     ),
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_reclient_comparison_builder(
@@ -1342,8 +1341,8 @@ fyi_reclient_comparison_builder(
     ),
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1378,8 +1377,8 @@ fyi_mac_reclient_comparison_builder(
     ),
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison ios - cache siloed",
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_TRUSTED,
     xcode = xcode.xcode_default,
 )
 
@@ -1398,10 +1397,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 15 * time.hour,
     reclient_cache_silo = "Comparison Android CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
     siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1424,9 +1423,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_cache_silo = "Comparison Mac CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 150,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = 150,
 )
 
 fyi_reclient_comparison_builder(
@@ -1445,10 +1444,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 6 * time.hour,
     reclient_cache_silo = "Comparison Windows CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
     siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 fyi_reclient_comparison_builder(
@@ -1467,10 +1466,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Simple Chrome CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
     siso_enabled = True,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
 )
 
 fyi_mac_reclient_comparison_builder(
@@ -1490,9 +1489,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     ),
     execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison ios CQ - cache siloed",
-    reclient_instance = reclient.instance.TEST_UNTRUSTED,
-    reclient_jobs = 150,
-    shadow_reclient_instance = reclient.instance.TEST_UNTRUSTED,
+    shadow_siso_project = siso.project.TEST_UNTRUSTED,
+    siso_project = siso.project.TEST_UNTRUSTED,
+    siso_remote_jobs = 150,
     xcode = xcode.xcode_default,
 )
 
@@ -1527,14 +1526,14 @@ ci.builder(
         "RBE_clang_depscan_archive": "true",
     },
     reclient_ensure_verified = True,
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
         "RBE_num_local_reruns": "1",
         "RBE_num_remote_reruns": "1",
     },
-    shadow_reclient_instance = None,
+    shadow_siso_project = None,
+    siso_project = siso.project.TEST_TRUSTED,
+    siso_remote_jobs = None,
 )
 
 ci.builder(
@@ -1571,9 +1570,9 @@ ci.builder(
         category = "win",
         short_name = "re",
     ),
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
-    shadow_reclient_instance = None,
+    shadow_siso_project = None,
+    siso_project = siso.project.TEST_TRUSTED,
+    siso_remote_jobs = None,
 )
 
 ci.builder(
@@ -1608,14 +1607,14 @@ ci.builder(
         short_name = "re",
     ),
     reclient_ensure_verified = True,
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
         "RBE_num_local_reruns": "1",
         "RBE_num_remote_reruns": "1",
     },
-    shadow_reclient_instance = None,
+    shadow_siso_project = None,
+    siso_project = siso.project.TEST_TRUSTED,
+    siso_remote_jobs = None,
 )
 
 # TODO(crbug.com/40201781): remove this after the migration.
@@ -1658,14 +1657,14 @@ fyi_mac_builder(
     ),
     execution_timeout = 16 * time.hour,
     reclient_ensure_verified = True,
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
     reclient_rewrapper_env = {
         "RBE_compare": "true",
         "RBE_num_local_reruns": "1",
         "RBE_num_remote_reruns": "1",
     },
-    shadow_reclient_instance = None,
+    shadow_siso_project = None,
+    siso_project = siso.project.TEST_TRUSTED,
+    siso_remote_jobs = None,
 )
 
 ci.builder(
@@ -1697,8 +1696,8 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "lacros rel",
     ),
-    reclient_jobs = None,
     reclient_rewrapper_env = {"RBE_cache_silo": "linux-lacros-builder-rel (reclient)"},
+    siso_remote_jobs = None,
 )
 
 fyi_ios_builder(
@@ -2140,7 +2139,7 @@ ci.builder(
         category = "win10",
     ),
     notifies = ["Win 10 Fast Ring"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -2245,7 +2244,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win32|arm64",
     ),
-    reclient_jobs = 150,
+    siso_remote_jobs = 150,
 )
 
 ci.builder(
@@ -2277,7 +2276,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win",
     ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -2307,7 +2306,7 @@ ci.builder(
     ),
     execution_timeout = 16 * time.hour,
     notifies = ["annotator-rel"],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 # TODO(crbug.com/324461153) remove this builder once dangling check is on CQ.
@@ -2350,5 +2349,5 @@ ci.builder(
         category = "lacros",
     ),
     contact_team_email = "chrome-desktop-engprod@google.com",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )

@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.memory.fyi builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "reclient")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -19,12 +19,11 @@ ci.defaults.set(
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
-    siso_remote_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
 consoles.console_view(
@@ -72,7 +71,7 @@ ci.builder(
     health_spec = modified_default({
         "Low Value": blank_low_value_thresholds,
     }),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # TODO(crbug.com/40248746): Remove this builder after burning down failures
@@ -109,7 +108,7 @@ ci.builder(
     health_spec = modified_default({
         "Low Value": blank_low_value_thresholds,
     }),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # TODO(crbug.com/40223516): Remove this builder after burning down failures
@@ -154,7 +153,7 @@ ci.builder(
     health_spec = modified_default({
         "Low Value": blank_low_value_thresholds,
     }),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -194,5 +193,5 @@ ci.builder(
     health_spec = modified_default({
         "Low Value": blank_low_value_thresholds,
     }),
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
