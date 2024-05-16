@@ -73,9 +73,11 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
 // Static.
 std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     TextureOwner* texture_owner,
-    viz::VulkanContextProvider* vulkan_context_provider) {
-  if (!vulkan_context_provider)
+    viz::VulkanContextProvider* vulkan_context_provider,
+    DawnContextProvider* dawn_context_provider) {
+  if (!vulkan_context_provider && !dawn_context_provider) {
     return std::nullopt;
+  }
 
   // Get AHardwareBuffer from the latest frame.
   auto scoped_hardware_buffer = texture_owner->GetAHardwareBuffer();
@@ -83,18 +85,26 @@ std::optional<VulkanYCbCrInfo> AndroidVideoImageBacking::GetYcbcrInfo(
     return std::nullopt;
 
   DCHECK(scoped_hardware_buffer->buffer());
-  VulkanImplementation* vk_implementation =
-      vulkan_context_provider->GetVulkanImplementation();
-  VkDevice vk_device =
-      vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
 
-  VulkanYCbCrInfo ycbcr_info;
-  if (!vk_implementation->GetSamplerYcbcrConversionInfo(
-          vk_device, scoped_hardware_buffer->TakeBuffer(), &ycbcr_info)) {
-    LOG(ERROR) << "Failed to get the ycbcr info.";
-    return std::nullopt;
+  if (vulkan_context_provider) {
+    CHECK(!dawn_context_provider);
+
+    VulkanImplementation* vk_implementation =
+        vulkan_context_provider->GetVulkanImplementation();
+    VkDevice vk_device =
+        vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
+
+    VulkanYCbCrInfo ycbcr_info;
+    if (!vk_implementation->GetSamplerYcbcrConversionInfo(
+            vk_device, scoped_hardware_buffer->TakeBuffer(), &ycbcr_info)) {
+      LOG(ERROR) << "Failed to get the ycbcr info.";
+      return std::nullopt;
+    }
+    return std::optional<VulkanYCbCrInfo>(ycbcr_info);
   }
-  return std::optional<VulkanYCbCrInfo>(ycbcr_info);
+
+  // TODO(crbug.com/41488897): Get the YCbCr info from Dawn.
+  return std::nullopt;
 }
 
 std::unique_ptr<AbstractTextureAndroid>

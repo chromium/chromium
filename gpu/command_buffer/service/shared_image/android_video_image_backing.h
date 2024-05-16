@@ -17,6 +17,7 @@ class VulkanContextProvider;
 }  // namespace viz
 
 namespace gpu {
+class DawnContextProvider;
 struct Mailbox;
 struct VulkanYCbCrInfo;
 class AbstractTextureAndroid;
@@ -39,11 +40,12 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<RefCountedLock> drdc_lock);
 
-  // Returns ycbcr information. This is only valid in vulkan context and
-  // nullopt for other context.
+  // Returns ycbcr information. This is only valid in vulkan/dawn contexts and
+  // nullopt for other contexts.
   static std::optional<VulkanYCbCrInfo> GetYcbcrInfo(
       TextureOwner* texture_owner,
-      viz::VulkanContextProvider* vulkan_context_provider);
+      viz::VulkanContextProvider* vulkan_context_provider,
+      DawnContextProvider* dawn_context_provider);
 
   ~AndroidVideoImageBacking() override;
 

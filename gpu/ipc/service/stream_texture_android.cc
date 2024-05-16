@@ -194,11 +194,14 @@ void StreamTexture::OnFrameAvailable() {
 
     auto mailbox = CreateSharedImage(coded_size);
     viz::VulkanContextProvider* vulkan_context_provider = nullptr;
+    DawnContextProvider* dawn_context_provider = nullptr;
     if (context_state_->GrContextIsVulkan()) {
       vulkan_context_provider = context_state_->vk_context_provider();
+    } else if (context_state_->IsGraphiteDawnVulkan()) {
+      dawn_context_provider = context_state_->dawn_context_provider();
     }
     auto ycbcr_info = AndroidVideoImageBacking::GetYcbcrInfo(
-        texture_owner_.get(), vulkan_context_provider);
+        texture_owner_.get(), vulkan_context_provider, dawn_context_provider);
 
     client_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
                                       ycbcr_info);

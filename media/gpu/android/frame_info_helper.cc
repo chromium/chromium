@@ -77,6 +77,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
           DCHECK(shared_context_);
           if (shared_context_->GrContextIsVulkan()) {
             vulkan_context_provider_ = shared_context_->vk_context_provider();
+          } else if (shared_context_->IsGraphiteDawnVulkan()) {
+            dawn_context_provider_ = shared_context_->dawn_context_provider();
           }
         }
       }
@@ -108,7 +110,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
           info->coded_size = coded_size;
           info->visible_rect = visible_rect;
           info->ycbcr_info = gpu::AndroidVideoImageBacking::GetYcbcrInfo(
-              texture_owner.get(), vulkan_context_provider_);
+              texture_owner.get(), vulkan_context_provider_,
+              dawn_context_provider_);
         }
       }
       std::move(cb).Run(std::move(buffer_renderer), info);
@@ -183,9 +186,10 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     };
 
     // Note that |shared_context_| is to just keep ref on it until
-    // |vulkan_context_provider_| raw_ptr is being used.
+    // context provider raw_ptrs are being used.
     scoped_refptr<gpu::SharedContextState> shared_context_;
     raw_ptr<viz::VulkanContextProvider> vulkan_context_provider_ = nullptr;
+    raw_ptr<gpu::DawnContextProvider> dawn_context_provider_ = nullptr;
     scoped_refptr<FrameInfoHelperHolder> frame_info_helper_holder_;
   };
 
