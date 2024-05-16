@@ -76,7 +76,7 @@ void NotifyPasswordAutofillSuggestionUsed(
 void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
   if (IsPromoInterestEventMigrationDone() && tracker) {
     tracker->NotifyEvent(
-        feature_engagement::events::kAllTabsPromoConditionsMet);
+        feature_engagement::events::kStaySafePromoConditionsMet);
   }
 
   // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
