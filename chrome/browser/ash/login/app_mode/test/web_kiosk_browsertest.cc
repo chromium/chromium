@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -96,6 +97,26 @@ bool InstallKioskWebAppInProvider(Profile& profile) {
         return webapps::IsSuccess(result.code);
       }).Then(success_future.GetCallback()));
   return success_future.Wait();
+}
+
+Browser::CreateParams CreateNewBrowserParams(Browser* initial_kiosk_browser,
+                                             bool is_popup_browser) {
+  return is_popup_browser
+             ? Browser::CreateParams::CreateForAppPopup(
+                   initial_kiosk_browser->app_name(), /*trusted_source=*/true,
+                   /*window_bounds=*/gfx::Rect(),
+                   initial_kiosk_browser->profile(),
+                   /*user_gesture=*/true)
+             : Browser::CreateParams(initial_kiosk_browser->profile(),
+                                     /*user_gesture=*/true);
+}
+
+Browser* OpenNewBrowser(Browser* initial_kiosk_browser, bool is_popup_browser) {
+  Browser::CreateParams params =
+      CreateNewBrowserParams(initial_kiosk_browser, is_popup_browser);
+  Browser* new_browser = Browser::Create(params);
+  new_browser->window()->Show();
+  return new_browser;
 }
 
 class WebKioskTest : public WebKioskBaseTest {
@@ -359,6 +380,74 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   // not be terminated.
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_FALSE(session->is_shutting_down());
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest,
+                       NewPopupBrowserInKioskNotAllowedByDefault) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* initial_browser = BrowserList::GetInstance()->get(0);
+  EXPECT_FALSE(initial_browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kNewWindowsInKioskAllowed));
+
+  Browser* new_popup_browser =
+      OpenNewBrowser(initial_browser, /*is_popup_browser=*/true);
+
+  TestBrowserClosedWaiter browser_closed_waiter{new_popup_browser};
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest,
+                       NewRegularBrowserInKioskNotAllowedByDefault) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* initial_browser = BrowserList::GetInstance()->get(0);
+  EXPECT_FALSE(initial_browser->profile()->GetPrefs()->GetBoolean(
+      prefs::kNewWindowsInKioskAllowed));
+
+  Browser* new_browser =
+      OpenNewBrowser(initial_browser, /*is_popup_browser=*/false);
+
+  TestBrowserClosedWaiter browser_closed_waiter{new_browser};
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest, NewPopupBrowserInKioskAllowedByPolicy) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* initial_browser = BrowserList::GetInstance()->get(0);
+  KioskSystemSession* session = KioskController::Get().GetKioskSystemSession();
+
+  initial_browser->profile()->GetPrefs()->SetBoolean(
+      prefs::kNewWindowsInKioskAllowed, true);
+  Browser* new_popup_browser =
+      OpenNewBrowser(initial_browser, /*is_popup_browser=*/true);
+
+  EXPECT_FALSE(DidSessionCloseNewWindow(session));
+  ASSERT_NE(new_popup_browser, nullptr);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest,
+                       NewRegularBrowserInKioskNotAllowedEvenByPolicy) {
+  InitializeRegularOnlineKiosk();
+  // The initial browser should exist in the web kiosk session.
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  Browser* initial_browser = BrowserList::GetInstance()->get(0);
+
+  initial_browser->profile()->GetPrefs()->SetBoolean(
+      prefs::kNewWindowsInKioskAllowed, true);
+  Browser* new_browser =
+      OpenNewBrowser(initial_browser, /*is_popup_browser=*/false);
+
+  TestBrowserClosedWaiter browser_closed_waiter{new_browser};
+  ASSERT_TRUE(browser_closed_waiter.WaitUntilClosed());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
 }
 
 }  // namespace
