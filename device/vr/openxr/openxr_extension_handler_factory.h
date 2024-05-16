@@ -22,6 +22,7 @@ enum class OpenXrHandednessType;
 class OpenXRSceneUnderstandingManager;
 class OpenXrStageBoundsProvider;
 class OpenXrUnboundedSpaceProvider;
+class OpenXrLightEstimator;
 
 // The goal of this class is to serve as a base class for factories of our
 // various "OpenXrExtensionHandlers". Note that there is no base class for the
@@ -77,6 +78,11 @@ class OpenXrExtensionHandlerFactory {
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       OpenXrHandednessType type) const;
+
+  virtual std::unique_ptr<OpenXrLightEstimator> CreateLightEstimator(
+      const OpenXrExtensionHelper& extenion_helper,
+      XrSession session,
+      XrSpace local_space) const;
 
   virtual std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,

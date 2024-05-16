@@ -16,6 +16,7 @@
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
+#include "device/vr/openxr/openxr_light_estimator.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
@@ -105,6 +106,8 @@ class OpenXrApiWrapper {
       device::mojom::XRSessionMode session_mode);
 
   OpenXrAnchorManager* GetOrCreateAnchorManager(
+      const OpenXrExtensionHelper& extension_helper);
+  OpenXrLightEstimator* GetOrCreateLightEstimator(
       const OpenXrExtensionHelper& extension_helper);
   OpenXRSceneUnderstandingManager* GetOrCreateSceneUnderstandingManager(
       const OpenXrExtensionHelper& extension_helper);
@@ -219,6 +222,7 @@ class OpenXrApiWrapper {
       secondary_view_configs_;
 
   std::unique_ptr<OpenXrAnchorManager> anchor_manager_;
+  std::unique_ptr<OpenXrLightEstimator> light_estimator_;
   std::unique_ptr<OpenXrStageBoundsProvider> bounds_provider_;
   std::unique_ptr<OpenXRSceneUnderstandingManager> scene_understanding_manager_;
   std::unique_ptr<OpenXrUnboundedSpaceProvider> unbounded_space_provider_;

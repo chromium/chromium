@@ -441,6 +441,16 @@ OpenXrAnchorManager* OpenXrApiWrapper::GetOrCreateAnchorManager(
   return anchor_manager_.get();
 }
 
+OpenXrLightEstimator* OpenXrApiWrapper::GetOrCreateLightEstimator(
+    const OpenXrExtensionHelper& extension_helper) {
+  if (session_ && !light_estimator_) {
+    light_estimator_ =
+        extension_helper.CreateLightEstimator(session_, local_space_);
+  }
+
+  return light_estimator_.get();
+}
+
 bool OpenXrApiWrapper::UpdateAndGetSessionEnded() {
   // Ensure we have the latest state from the OpenXR runtime.
   if (XR_FAILED(ProcessEvents())) {

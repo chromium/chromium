@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
+#include "device/vr/openxr/openxr_light_estimator.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
@@ -73,6 +74,10 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrRaycastANDROID);
 
   OPENXR_DECLARE_FN(xrCreateAnchorSpaceANDROID);
+
+  OPENXR_DECLARE_FN(xrCreateLightEstimatorANDROID);
+  OPENXR_DECLARE_FN(xrDestroyLightEstimatorANDROID);
+  OPENXR_DECLARE_FN(xrGetLightEstimateANDROID);
 #endif
 };
 // Ensure that we don't export our helper macro.
@@ -125,6 +130,10 @@ class OpenXrExtensionHelper {
   std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
       XrSession session,
       OpenXrHandednessType handedness) const;
+
+  std::unique_ptr<OpenXrLightEstimator> CreateLightEstimator(
+      XrSession session,
+      XrSpace base_space) const;
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(XrSession session, XrSpace base_space) const;

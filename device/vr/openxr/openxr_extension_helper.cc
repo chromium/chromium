@@ -135,6 +135,10 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   OPENXR_LOAD_FN(xrRaycastANDROID);
 
   OPENXR_LOAD_FN(xrCreateAnchorSpaceANDROID);
+
+  OPENXR_LOAD_FN(xrCreateLightEstimatorANDROID);
+  OPENXR_LOAD_FN(xrDestroyLightEstimatorANDROID);
+  OPENXR_LOAD_FN(xrGetLightEstimateANDROID);
 #endif
 }
 
@@ -145,6 +149,7 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
     case device::mojom::XRSessionFeature::ANCHORS:
     case device::mojom::XRSessionFeature::HAND_INPUT:
     case device::mojom::XRSessionFeature::HIT_TEST:
+    case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
       return base::ranges::any_of(
           GetExtensionHandlerFactories(),
@@ -187,6 +192,17 @@ std::unique_ptr<OpenXrHandTracker> OpenXrExtensionHelper::CreateHandTracker(
       [this, session,
        handedness](const OpenXrExtensionHandlerFactory& factory) {
         return factory.CreateHandTracker(*this, session, handedness);
+      });
+}
+
+std::unique_ptr<OpenXrLightEstimator>
+OpenXrExtensionHelper::CreateLightEstimator(XrSession session,
+                                            XrSpace base_space) const {
+  return CreateExtensionHandler<OpenXrLightEstimator>(
+      ExtensionEnumeration(),
+      [this, session,
+       base_space](const OpenXrExtensionHandlerFactory& factory) {
+        return factory.CreateLightEstimator(*this, session, base_space);
       });
 }
 

@@ -87,6 +87,8 @@ OpenXrDevice::OpenXrDevice(
   if (device::features::IsOpenXrArEnabled()) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::HIT_TEST);
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::LIGHT_ESTIMATION);
   }
 
   SetDeviceData(std::move(device_data));

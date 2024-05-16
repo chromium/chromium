@@ -35,6 +35,14 @@ OpenXrExtensionHandlerFactory::CreateHandTracker(
   return nullptr;
 }
 
+std::unique_ptr<OpenXrLightEstimator>
+OpenXrExtensionHandlerFactory::CreateLightEstimator(
+    const OpenXrExtensionHelper& extenion_helper,
+    XrSession session,
+    XrSpace local_space) const {
+  return nullptr;
+}
+
 std::unique_ptr<OpenXRSceneUnderstandingManager>
 OpenXrExtensionHandlerFactory::CreateSceneUnderstandingManager(
     const OpenXrExtensionHelper& extension_helper,

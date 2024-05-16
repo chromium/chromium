@@ -661,6 +661,16 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
             openxr_->GetPredictedDisplayTime());
       }
     }
+
+    if (IsFeatureEnabled(device::mojom::XRSessionFeature::LIGHT_ESTIMATION)) {
+      OpenXrLightEstimator* light_estimator =
+          openxr_->GetOrCreateLightEstimator(*extension_helper_);
+
+      if (light_estimator) {
+        frame_data->light_estimation_data = light_estimator->GetLightEstimate(
+            openxr_->GetPredictedDisplayTime());
+      }
+    }
   }
 
   if (IsFeatureEnabled(device::mojom::XRSessionFeature::HIT_TEST) &&
