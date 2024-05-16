@@ -7,6 +7,6 @@
   <app appid='ngjobkbdodapjbbncmagbccommkggmnj'>
     <updatecheck
         codebase='http://mock.http/extensions/signin_screen_manual_test_extension/extension_signed_by_webstore.crx'
-        version='2.0' />
+        version='3.0' />
    </app>
 </gupdate>

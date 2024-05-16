@@ -71,7 +71,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/scoped_test_nss_db.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -638,22 +637,20 @@ class PolicyProvidedCertsForSigninExtensionTest
     signin_profile_ = GetInitialProfile();
     ASSERT_TRUE(ash::ProfileHelper::IsSigninProfile(signin_profile_));
 
-    extensions::ExtensionHostTestHelper extension_1_observer(
-        signin_profile_, kSigninScreenExtension1);
-    extension_1_observer.RestrictToType(
-        extensions::mojom::ViewType::kExtensionBackgroundPage);
-    extensions::ExtensionHostTestHelper extension_2_observer(
-        signin_profile_, kSigninScreenExtension2);
-    extension_2_observer.RestrictToType(
-        extensions::mojom::ViewType::kExtensionBackgroundPage);
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(signin_profile_);
+    extensions::TestExtensionRegistryObserver extension_1_observer(
+        extension_registry, kSigninScreenExtension1);
+    extensions::TestExtensionRegistryObserver extension_2_observer(
+        extension_registry, kSigninScreenExtension2);
 
     AddExtensionForForceInstallation(kSigninScreenExtension1,
                                      kSigninScreenExtension1UpdateManifestPath);
     AddExtensionForForceInstallation(kSigninScreenExtension2,
                                      kSigninScreenExtension2UpdateManifestPath);
 
-    extension_1_observer.WaitForHostCompletedFirstLoad();
-    extension_2_observer.WaitForHostCompletedFirstLoad();
+    extension_1_observer.WaitForExtensionLoaded();
+    extension_2_observer.WaitForExtensionLoaded();
   }
 
   content::StoragePartition* GetStoragePartitionForSigninExtension(

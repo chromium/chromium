@@ -30,7 +30,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -321,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kAllowlistedExtensionCrxPath),
-      ExtensionForceInstallMixin::WaitMode::kBackgroundPageFirstLoad));
+      ExtensionForceInstallMixin::WaitMode::kLoad));
 
   content::StoragePartition* storage_partition_for_app =
       extensions::util::GetStoragePartitionForExtensionId(
