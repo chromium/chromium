@@ -93,14 +93,6 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
-# Trace tests don't support OS-specific tests, so windows-only test is skipped.
-crbug.com/337737554 [ mac ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
-crbug.com/337737554 [ linux ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
-crbug.com/337737554 [ android ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
-crbug.com/337737554 [ fuchsia ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
-crbug.com/337737554 [ chromeos ] TraceTest_MediaFoundationD3D11VideoCapture [ Skip ]
-
-
 # Require page actions - which are only supported in pixel tests.
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
@@ -110,23 +102,6 @@ crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
 # pixel tests so they're being skipped in this test suite.
 crbug.com/974077 TraceTest_Video_Context_Loss_MP4 [ Skip ]
 crbug.com/974077 TraceTest_Video_Context_Loss_VP9 [ Skip ]
-
-# Skip on platforms where DirectComposition isn't supported
-crbug.com/867136 [ mac ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ linux ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ android ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ chromeos ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ fuchsia ] VideoPathTraceTest_* [ Skip ]
-crbug.com/867136 [ mac ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/867136 [ linux ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/867136 [ android ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/867136 [ chromeos ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/867136 [ fuchsia ] OverlayModeTraceTest_* [ Skip ]
-crbug.com/1009860 [ mac ] SwapChainTraceTest_* [ Skip ]
-crbug.com/1009860 [ linux ] SwapChainTraceTest_* [ Skip ]
-crbug.com/1009860 [ android ] SwapChainTraceTest_* [ Skip ]
-crbug.com/1009860 [ chromeos ] SwapChainTraceTest_* [ Skip ]
-crbug.com/1009860 [ fuchsia ] SwapChainTraceTest_* [ Skip ]
 
 # Playing videos not supported in Fuchsia emulators.
 crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video* [ Skip ]

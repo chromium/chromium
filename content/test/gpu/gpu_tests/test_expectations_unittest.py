@@ -16,6 +16,8 @@ from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_integration_test
 from gpu_tests import pixel_test_pages
+from gpu_tests import trace_integration_test as trace_it
+from gpu_tests import trace_test_pages
 from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
 from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
 from gpu_tests import webgl_test_util
@@ -201,15 +203,34 @@ class GpuTestExpectationsValidation(unittest.TestCase):
   # certain platforms.
   def testForBrokenPixelTestExpectations(self) -> None:
     pixel_test_names = []
-    for _, method in inspect.getmembers(
-        pixel_test_pages.PixelTestPages, predicate=inspect.isfunction):
+    for _, method in inspect.getmembers(pixel_test_pages.PixelTestPages,
+                                        predicate=inspect.isfunction):
       pixel_test_names.extend([
-          p.name for p in method(pixel_integration_test.PixelIntegrationTest.
-                                 test_base_name)
+          p.name for p in method(
+              pixel_integration_test.PixelIntegrationTest.test_base_name)
       ])
     CheckTestExpectationsAreForExistingTests(
         self, pixel_integration_test.PixelIntegrationTest,
         gpu_helper.GetMockArgs(), pixel_test_names)
+
+  # Trace tests are handled separately since some tests are only generated on
+  # certain platforms.
+  def testForBrokenTraceTestExpectations(self):
+    generator_functions = []
+    for _, method in inspect.getmembers(trace_test_pages.TraceTestPages,
+                                        predicate=inspect.isfunction):
+      generator_functions.append(method)
+
+    trace_test_names = []
+    # This results in a set of tests which is a superset of actual tests that
+    # can be generated.
+    for prefix in trace_it.TraceIntegrationTest.known_test_prefixes:
+      for method in generator_functions:
+        trace_test_names.extend([p.name for p in method(prefix)])
+    CheckTestExpectationsAreForExistingTests(self,
+                                             trace_it.TraceIntegrationTest,
+                                             gpu_helper.GetMockArgs(),
+                                             trace_test_names)
 
   # WebGL tests are handled separately since test case generation varies
   # depending on inputs.
@@ -231,9 +252,9 @@ class GpuTestExpectationsValidation(unittest.TestCase):
     options = gpu_helper.GetMockArgs()
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
-        # Pixel and WebGL are handled in dedicated unittests.
-        if (test_case.Name() not in ('pixel', 'webgl1_conformance',
-                                     'webgl2_conformance')
+        # Pixel, trace, and WebGL are handled in dedicated unittests.
+        if (test_case.Name() not in ('pixel', 'trace_test',
+                                     'webgl1_conformance', 'webgl2_conformance')
             and test_case.ExpectationsFiles()):
           CheckTestExpectationsAreForExistingTests(self, test_case, options)
 

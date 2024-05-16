@@ -20,7 +20,7 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import overlay_support
-from gpu_tests import pixel_test_pages
+from gpu_tests import trace_test_pages
 from gpu_tests.util import host_information
 
 import gpu_path_util
@@ -241,6 +241,19 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   Also tests that GPU Device traces show up on devices that support them."""
 
+  # All known prefixes used in GenerateGpuTests(). Necessary in order for the
+  # unittests to work properly since some tests are normally only generated on
+  # specific platforms.
+  known_test_prefixes = frozenset([
+      'OverlayModeTraceTest',
+      'SwapChainTraceTest',
+      'TraceTest',
+      'VideoPathTraceTest',
+      'WebGPUCachingTraceTest',
+      'WebGLCanvasCaptureTraceTest',
+      'WebGPUTraceTest',
+  ])
+
   @classmethod
   def Name(cls) -> str:
     return 'trace_test'
@@ -280,7 +293,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Include the device level trace tests, even though they're
     # currently skipped on all platforms, to give a hint that they
     # should perhaps be enabled in the future.
-    namespace = pixel_test_pages.PixelTestPages
+    namespace = trace_test_pages.TraceTestPages
     for p in namespace.DefaultPages('TraceTest'):
       yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
           _TraceTestArguments(
@@ -289,50 +302,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               test_harness_script=webgl_test_harness_script,
               finish_js_condition='domAutomationController._finished',
               success_eval_func='CheckGLCategory',
-              other_args=p.other_args)
-      ])
-    for p in namespace.DirectCompositionPages('VideoPathTraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category=cls._DisabledByDefaultTraceCategory('gpu.service'),
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckVideoPath',
-              other_args=p.other_args)
-      ])
-    for p in namespace.LowLatencyPages('SwapChainTraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category='gpu',
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckSwapChainPath',
-              other_args=p.other_args)
-      ])
-    # The increased swap count is necessary for tests to consistently pass on
-    # NVIDIA since overlays can take ~35 frames to take effect. See
-    # crbug.com/1505609.
-    for p in namespace.DirectCompositionPages('OverlayModeTraceTest',
-                                              swap_count=60):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category=cls._DisabledByDefaultTraceCategory('gpu.service'),
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckOverlayMode',
-              other_args=p.other_args)
-      ])
-    for p in namespace.RootSwapChainPages('SwapChainTraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category='gpu',
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckSwapChainHasAlpha',
               other_args=p.other_args)
       ])
 
@@ -358,238 +327,116 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               other_args=p.other_args)
       ])
 
-    #TODO(crbug.com/337737554): skip these tests on non-windows.
-    for p in namespace.MediaFoundationD3D11VideoCapturePages('TraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category='gpu,' +
-              cls._DisabledByDefaultTraceCategory('video_and_image_capture'),
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckMediaFoundationD3D11VideoCapture',
-              other_args=p.other_args)
-      ])
+    if host_information.IsWindows():
+      for p in namespace.DirectCompositionPages('VideoPathTraceTest'):
+        yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+            _TraceTestArguments(
+                browser_args=p.browser_args,
+                category=cls._DisabledByDefaultTraceCategory('gpu.service'),
+                test_harness_script=basic_test_harness_script,
+                finish_js_condition='domAutomationController._finished',
+                success_eval_func='CheckVideoPath',
+                other_args=p.other_args)
+        ])
+      # The increased swap count is necessary for tests to consistently pass on
+      # NVIDIA since overlays can take ~35 frames to take effect. See
+      # crbug.com/1505609.
+      for p in namespace.DirectCompositionPages('OverlayModeTraceTest',
+                                                swap_count=60):
+        yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+            _TraceTestArguments(
+                browser_args=p.browser_args,
+                category=cls._DisabledByDefaultTraceCategory('gpu.service'),
+                test_harness_script=basic_test_harness_script,
+                finish_js_condition='domAutomationController._finished',
+                success_eval_func='CheckOverlayMode',
+                other_args=p.other_args)
+        ])
+      for p in namespace.LowLatencyPages('SwapChainTraceTest'):
+        yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+            _TraceTestArguments(
+                browser_args=p.browser_args,
+                category='gpu',
+                test_harness_script=basic_test_harness_script,
+                finish_js_condition='domAutomationController._finished',
+                success_eval_func='CheckSwapChainPath',
+                other_args=p.other_args)
+        ])
+      for p in namespace.RootSwapChainPages('SwapChainTraceTest'):
+        yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+            _TraceTestArguments(
+                browser_args=p.browser_args,
+                category='gpu',
+                test_harness_script=basic_test_harness_script,
+                finish_js_condition='domAutomationController._finished',
+                success_eval_func='CheckSwapChainHasAlpha',
+                other_args=p.other_args)
+        ])
+      for p in namespace.MediaFoundationD3D11VideoCapturePages('TraceTest'):
+        yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
+            _TraceTestArguments(
+                browser_args=p.browser_args,
+                category='gpu,' +
+                cls._DisabledByDefaultTraceCategory('video_and_image_capture'),
+                test_harness_script=basic_test_harness_script,
+                finish_js_condition='domAutomationController._finished',
+                success_eval_func='CheckMediaFoundationD3D11VideoCapture',
+                other_args=p.other_args)
+        ])
 
-    ############################################################################
-    # WebGPU caching trace tests
-    #
-    # The following tests are caching tests that do not render to canvas and so
-    # are not a part of the pixel tests suite. Each tuple represents:
-    #   (test_name, first_load_url, cache_pages)
-    #
-    # test_name: Name of the test.
-    # first_load_url: The first URL that is loaded and when cache entries should
-    #   be written. This URL determines the number of expected cache entries to
-    #   expect in following loads.
-    # cache_pages: List of URLs that should be both re-navigated and/or
-    #   reloaded in a restarted browser to expect some cache condition.
-    webgpu_cache_test_browser_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
-        cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
-        '--enable-features=WebGPUBlobCache',
-    ]
-    # For the tests to run properly on Linux, we need additional args.
-    if host_information.IsLinux():
-      webgpu_cache_test_browser_args += ['--enable-features=Vulkan']
-
-    # WebGPU load and reload caching tests.
-    #   These tests load the |first_load_url|, records the number of cache
-    #   entries written, then both re-navigates and restarts the browser for
-    #   each subsequence |cache_pages| and verifies that the number of cache
-    #   hits is at least equal to the number of cache entries written before.
-    webgpu_caching_tests: List[Tuple[str, str, List[str]]] = [
-        ('RenderPipelineMainThread', 'webgpu-caching.html?testId=render-test', [
-            'webgpu-caching.html?testId=render-test',
-            'webgpu-caching.html?testId=render-test-async',
-            'webgpu-caching.html?testId=render-test&worker=true',
-            'webgpu-caching.html?testId=render-test-async&worker=true'
-        ]),
-        ('RenderPipelineMainThreadAsync',
-         'webgpu-caching.html?testId=render-test-async', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('RenderPipelineWorker',
-         'webgpu-caching.html?testId=render-test&worker=true', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('RenderPipelineWorkerAsync',
-         'webgpu-caching.html?testId=render-test-async&worker=true', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('RenderPipelineCrossOriginCacheHits',
-         'webgpu-caching.html?testId=render-test&hostname=localhost', [
-             'webgpu-caching.html?testId=render-test&hostname=localhost',
-             'webgpu-caching.html?testId=render-test-async&hostname=localhost',
-             'webgpu-caching.html?testId=render-test&worker=true' +
-             '&hostname=localhost',
-             'webgpu-caching.html?testId=render-test-async&worker=true' +
-             '&hostname=localhost'
-         ]),
-        ('ComputePipelineMainThread', 'webgpu-caching.html?testId=compute-test',
-         [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-        ('ComputePipelineMainThreadAsync',
-         'webgpu-caching.html?testId=compute-test-async', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-        ('ComputePipelineWorker',
-         'webgpu-caching.html?testId=compute-test&worker=true', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-        ('ComputePipelineWorkerAsync',
-         'webgpu-caching.html?testId=compute-test-async&worker=true', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-        ('ComputePipelineCrossOriginCacheHits',
-         'webgpu-caching.html?testId=compute-test&hostname=localhost', [
-             'webgpu-caching.html?testId=compute-test&hostname=localhost',
-             'webgpu-caching.html?testId=compute-test-async&hostname=localhost',
-             'webgpu-caching.html?testId=compute-test&worker=true' +
-             '&hostname=localhost',
-             'webgpu-caching.html?testId=compute-test-async&worker=true' +
-             '&hostname=localhost'
-         ]),
-    ]
-    for (name, first_load_page, cache_pages) in webgpu_caching_tests:
-      yield ('WebGPUCachingTraceTest_' + name,
-             posixpath.join(gpu_data_relative_path, first_load_page), [
+    for test in namespace.WebGpuLoadReloadCachingTests(
+        'WebGPUCachingTraceTest'):
+      yield (test.name,
+             posixpath.join(gpu_data_relative_path, test.first_load_page), [
                  _CacheTraceTestArguments(
-                     browser_args=webgpu_cache_test_browser_args,
+                     browser_args=test.browser_args,
                      category='gpu',
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUFirstLoadCache',
                      cache_eval_func='CheckWebGPUCacheHits',
-                     cache_pages=cache_pages)
+                     cache_pages=test.cache_pages,
+                 )
              ])
-
-    # WebGPU incognito mode caching tests
-    #   These tests load the |first_load_url| (which runs the same WebGPU code
-    #   multiple times) in incognito mode, verifies that the pages had some
-    #   in-memory cache hits, then both re-navigates and restarts the browser
-    #   for each subsequence |cache_pages| and verifies that the number of
-    #   cache hits is 0 since the in-memory cache should be purged.
-    webgpu_incognito_caching_tests: List[Tuple[str, str, List[str]]] = [
-        ('RenderPipelineIncognito',
-         'webgpu-caching.html?testId=render-test&runs=2', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('ComputePipelineIncognito',
-         'webgpu-caching.html?testId=compute-test&runs=2', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-    ]
-    for (name, first_load_page, cache_pages) in webgpu_incognito_caching_tests:
-      yield ('WebGPUCachingTraceTest_' + name,
-             posixpath.join(gpu_data_relative_path, first_load_page), [
+    for test in namespace.WebGpuIncognitoCachingTests('WebGPUCachingTraceTest'):
+      yield (test.name,
+             posixpath.join(gpu_data_relative_path, test.first_load_page), [
                  _CacheTraceTestArguments(
-                     browser_args=webgpu_cache_test_browser_args +
-                     ['--incognito'],
+                     browser_args=test.browser_args,
                      category='gpu',
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUCacheHits',
                      cache_eval_func='CheckNoWebGPUCacheHits',
-                     cache_pages=cache_pages)
+                     cache_pages=test.cache_pages)
              ])
-
-    # WebGPU different origin caching tests
-    #   These tests load the |first_load_url| on the default origin, making sure
-    #   that the load populates on-disk entries. The tests then restart the
-    #   browser for subsequent |cache_pages| on localhost origin and
-    #   verifies that there are no cache hits.
-    webgpu_origin_caching_tests: List[Tuple[str, str, List[str]]] = [
-        ('RenderPipelineDifferentOrigins',
-         'webgpu-caching.html?testId=render-test', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('ComputePipelineDifferentOrigins',
-         'webgpu-caching.html?testId=compute-test', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-    ]
-    for (name, first_load_page, cache_pages) in webgpu_origin_caching_tests:
-      yield ('WebGPUCachingTraceTest_' + name,
-             posixpath.join(gpu_data_relative_path, first_load_page), [
+    for test in namespace.WebGpuDifferentOriginCachingTests(
+        'WebGPUCachingTraceTest'):
+      yield (test.name,
+             posixpath.join(gpu_data_relative_path, test.first_load_page), [
                  _CacheTraceTestArguments(
-                     browser_args=webgpu_cache_test_browser_args,
+                     browser_args=test.browser_args,
                      category='gpu',
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUFirstLoadCache',
                      cache_eval_func='CheckNoWebGPUCacheHits',
-                     cache_pages=cache_pages,
+                     cache_pages=test.cache_pages,
                      cache_page_origin=_TraceTestOrigin.LOCALHOST,
                      test_renavigation=False)
              ])
-
-    # WebGPU cross origin cache miss tests.
-    #   These tests load the |first_load_url| and ensure that the load
-    #   populates on-disk entries. The tests then restart the browser for
-    #   subsequent |cache_hit_pages| which are pages that should not generate
-    #   cache hits because they're cross-origin with respect to the initial
-    #   page, and hence should have different isolation keys.
-    webgpu_xorigin_cache_miss_tests: List[Tuple[str, str, List[str]]] = [
-        ('RenderPipelineCrossOriginsCacheMisses',
-         'webgpu-caching.html?testId=render-test&hostname=localhost', [
-             'webgpu-caching.html?testId=render-test',
-             'webgpu-caching.html?testId=render-test-async',
-             'webgpu-caching.html?testId=render-test&worker=true',
-             'webgpu-caching.html?testId=render-test-async&worker=true'
-         ]),
-        ('ComputePipelineCrossOriginsCacheMisses',
-         'webgpu-caching.html?testId=compute-test&hostname=localhost', [
-             'webgpu-caching.html?testId=compute-test',
-             'webgpu-caching.html?testId=compute-test-async',
-             'webgpu-caching.html?testId=compute-test&worker=true',
-             'webgpu-caching.html?testId=compute-test-async&worker=true'
-         ]),
-    ]
-    for (name, first_load_page, cache_pages) in webgpu_xorigin_cache_miss_tests:
-      yield ('WebGPUCachingTraceTest_' + name,
-             posixpath.join(gpu_data_relative_path, first_load_page), [
+    for test in namespace.WebGpuCrossOriginCacheMissTests(
+        'WebGPUCachingTraceTest'):
+      yield (test.name,
+             posixpath.join(gpu_data_relative_path, test.first_load_page), [
                  _CacheTraceTestArguments(
-                     browser_args=webgpu_cache_test_browser_args,
+                     browser_args=test.browser_args,
                      category='gpu',
                      test_harness_script=basic_test_harness_script,
                      finish_js_condition='domAutomationController._finished',
                      first_load_eval_func='CheckWebGPUFirstLoadCache',
                      cache_eval_func='CheckNoWebGPUCacheHits',
-                     cache_pages=cache_pages,
+                     cache_pages=test.cache_pages,
                      test_renavigation=False)
              ])
 

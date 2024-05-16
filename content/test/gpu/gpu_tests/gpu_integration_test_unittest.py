@@ -25,6 +25,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
+from gpu_tests import trace_integration_test as trace_it
 from gpu_tests import webgl1_conformance_integration_test as webgl1_cit
 from gpu_tests import webgl2_conformance_integration_test as webgl2_cit
 
@@ -411,6 +412,15 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       os.environ['WAYLAND_DISPLAY'] = 'wayland-0'
       tags = gpu_integration_test.GpuIntegrationTest.GetPlatformTags(browser)
       self.assertIn('display-server-wayland', tags)
+
+  def testTraceTestPrefixesInSync(self):
+    """Verifies that the trace test known prefix list is in sync."""
+    test_cases = list(
+        trace_it.TraceIntegrationTest.GenerateTestCases__RunGpuTest(
+            mock.MagicMock()))
+    valid_prefixes = tuple(trace_it.TraceIntegrationTest.known_test_prefixes)
+    for test_name, _ in test_cases:
+      self.assertTrue(test_name.startswith(valid_prefixes))
 
   def testSimpleIntegrationTest(self) -> None:
     test_args = _IntegrationTestArgs('simple_integration_unittest')

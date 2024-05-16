@@ -570,7 +570,8 @@ class PixelTestPages():
     ]
 
   @staticmethod
-  def WebGPUPages(base_name):
+  def WebGPUPages(base_name) -> List[PixelTestPage]:
+
     class Mode(Enum):
       WEBGPU_DEFAULT = 0
       WEBGPU_SWIFTSHADER = 1
@@ -675,7 +676,7 @@ class PixelTestPages():
             webgpu_pages_helper(base_name, mode=Mode.VULKAN_SWIFTSHADER))
 
   @staticmethod
-  def WebGPUCanvasCapturePages(base_name):
+  def WebGPUCanvasCapturePages(base_name) -> List[PixelTestPage]:
     webgpu_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
         cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
     ]
@@ -1579,7 +1580,7 @@ class PixelTestPages():
 
   # This should only be used with the cast_streaming suite.
   @staticmethod
-  def CastStreamingReceiverPages(base_name):
+  def CastStreamingReceiverPages(base_name) -> List[PixelTestPage]:
     return [
         PixelTestPage('receiver.html',
                       base_name + '_VP8_1Frame',
