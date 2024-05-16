@@ -29,7 +29,7 @@ namespace media {
 // error of the frame size prediction for the previously encoded frames,
 // and the HRD buffer fullness.
 //
-// The QP values used for encoding the inter prediced frames (P frames) are
+// The QP values used for encoding the inter predicted frames (P frames) are
 // estimated from the statistics of the previous frames and the expected frame
 // size. The estimation engine holds the short-term and long-term statistics for
 // each temporal layer. The QP is further modified according to the HRD buffer
@@ -89,6 +89,9 @@ class MEDIA_GPU_EXPORT H264RateController {
 
     uint32_t min_qp() const { return min_qp_; }
     uint32_t max_qp() const { return max_qp_; }
+
+    int undershoot_delta_qp() const { return undershoot_delta_qp_; }
+    void update_undershoot_delta_qp(int qp) { undershoot_delta_qp_ = qp; }
 
     // Returns true if the HRD buffer for the temporal layer is full.
     bool is_buffer_full() const { return hrd_buffer_.frame_overshooting(); }
@@ -150,8 +153,16 @@ class MEDIA_GPU_EXPORT H264RateController {
     float GetFrameRateMean() const;
 
     // Estimates the expected frame size for the next P frame using the
-    // short-term statistics from the preceding frames.
+    // short-term and long-term statistics from the preceding frames.
     size_t EstimateShortTermFrameSize(uint32_t qp, uint32_t qp_prev) const;
+    size_t EstimateLongTermFrameSize(uint32_t qp, uint32_t qp_prev) const;
+
+    // Estimates the expected QP for the next P frame using the short-term and
+    // long-term statistics from the preceding frames.
+    uint32_t EstimateShortTermQP(size_t target_frame_bytes,
+                                 uint32_t qp_prev) const;
+    uint32_t EstimateLongTermQP(size_t target_frame_bytes,
+                                uint32_t qp_prev) const;
 
     // Returns the standard deviation of the estimated size error for the
     // previous frames. The filter window matches the size of the long-term
@@ -190,6 +201,9 @@ class MEDIA_GPU_EXPORT H264RateController {
     // Minimum and maximum QPs for the layer.
     uint32_t min_qp_ = 0;
     uint32_t max_qp_ = 0;
+
+    // An undershoot in QP estimation below the minimum QP.
+    int undershoot_delta_qp_ = 0;
 
     // Frame type of last non-dropped frame.
     FrameType last_frame_type_ = FrameType::kPFrame;
@@ -254,6 +268,11 @@ class MEDIA_GPU_EXPORT H264RateController {
     return *temporal_layers_[index];
   }
 
+  float target_fps_for_testing() const { return target_fps_; }
+
+  // The rate controller restarts the estimation from the initial state.
+  void reset_frame_number() { frame_number_ = -1; }
+
   // The method estimates the QP parameter for the next intra encoded frame
   // based on the current buffer fullness. It uses a rate-distortion model
   // that assumes the following:
@@ -279,12 +298,54 @@ class MEDIA_GPU_EXPORT H264RateController {
   // bpp = a * (mad / q_step)^m, and q_step is
   //
   // q_step = mad / ( (bpp/a)^(1/m) )
+  //
+  // The QP for the frame encoding is obtained from the q_step using the
+  // formula:
+  //   qp = 6 * log2(q_step * 8 / 5)
+  //
+  // For the first intra encoded frame, the minimum value of the QP is limited
+  // to 34.
+  //
+  // The QP is further modified using the following rules:
+  //   1. When the HRD buffer is full, the QP for the current frame equals to
+  //        curr_qp = last_base_layer_qp + 2
+  //          - when curr_qp <= last_base_layer_qp + 2
+  //        curr_qp = (curr_qp + last_base_layer_qp + 2) / 2
+  //          - when curr_qp > last_base_layer_qp + 2
+  //   2. When the previous frame is a P frame
+  //        min_qp_offset_for_idr = -3
+  //        max_qp_offset_for_idr = 16 - 2 / 3 * base_layer_frame_rate
+  //        last_frame_qp = max(long_term_qp, last_base_layer_qp)
+  //      The lower and upper limits for intra frame QP are:
+  //        qp_min = last_frame_qp + min_qp_offset_for_idr
+  //        qp_max = last_frame_qp + max_qp_offset_for_idr
+  //   3. When the previous frame is an IDR frame
+  //      The limiting values for the QP are:
+  //        qp_min = last_base_layer_qp - 1
+  //        qp_max = last_base_layer_qp + 3
   void EstimateIntraFrameQP(base::TimeDelta frame_timestamp);
 
   // Estimates Quantization Parameter for inter encoded frames. The estimation
   // procedure has the following steps:
   //
-  // 1. Calculate the target frame size for the current frame
+  // 1. Estimate long-term QP based on stats from the previous frames
+  //   The long-term QP is derived from the target frame size, the QP from the
+  //   previous frame, and the long-term QP stats. The target frame size
+  //   represents available budget per frame, which depends on the average
+  //   bitrate and the current framerate.
+  //   After long-term QP estimation, the QP parameter is used to predict the
+  //   size of the next encoded frame. If the frame size doesn't satisfy the
+  //   bitrate requirements for the current layer, the method makes up to ten
+  //   attempts to find the correct QP by increasing the QP value by one in
+  //   each iteration.
+  //
+  // 2. Calculate QP in fixed delta QP mode for the enhanced layer
+  //    When the fixed delta QP mode is enabled, the QP for the enhancement
+  //    layer is a fixed difference to the base layer's QP. The QP value is
+  //    obtained using the statistical model if buffer overrun is detected for
+  //    the current layer.
+  //
+  // 3. Calculate the target frame size for the current frame
   //   To calculate the target frame size, we first obtain the following
   //   parameters:
   //     - frame_size_long_term - the estimated frame size based on long-term
@@ -355,26 +416,84 @@ class MEDIA_GPU_EXPORT H264RateController {
   //    frame_size_error is obtained from the stats of the difference between
   //    the predicted and the actual frame size.
   //
-  // 2. Estimate long-term QP based on stats.
+  // 4. Calculate the current QP from the target frame size and the short-term
+  //   stats
+  //   The short-term frame size estimator component calculates the QP based on
+  //   the target frame size and the QP value used for encoding of the previous
+  //   frame.
   //
-  // 3. Calculate the current QP from the target frame size and the
-  //    long-term QP.
+  // 5. Clip the current QP to fulfill the HRD buffer fullness requirements
+  //   In the final step, the upper and lower bounds for the QP value are
+  //   determined.
+  //   The initial values for the QP limits are obtained through the following
+  //   calculations:
+  //   - base layer
+  //     qp_min = last_base_layer_qp - 1 if FPS >= 3
+  //     qp_min = last_base_layer_qp - 2 if FPS < 3
+  //     qp_max = max(last_base_layer_qp + 3,
+  //                  (base_layer_qp_min + base_layer_qp_max) / 2)
+  //   - enhancement layers
+  //     qp_min = last_base_layer_qp
+  //     qp_max = last_base_layer_qp + 6
   //
-  // 4. Clip the current QP to fulfill the HRD buffer fullness requirements.
+  //   The min_qp is further adjusted to align with the HRD buffer fullness
+  //   requirements when two temporal layers are encoded.
+  //   If the rate controller is not in fixed delta QP mode and the enhancement
+  //   layer's buffer exceeds 60% capacity, with a QP difference between the
+  //   base and enhancement layers greater than 6, and an increment in the
+  //   enhancement layer's QP is observed, the QP clipping process shifts to
+  //   Limit Base QP mode. Here, the base layer's minimum QP value is adjusted
+  //   based on the enhancement layer's buffer fullness, adhering to these
+  //   rules:
+  //   - buffer_fullness > 95% -> base_layer_min_qp = enhance_layer_qp - 2
+  //   - buffer_fullness > 90% -> base_layer_min_qp = enhance_layer_qp - 3
+  //   - buffer_fullness > 80% -> base_layer_min_qp = enhance_layer_qp - 4
+  //   - buffer_fullness > 70% -> base_layer_min_qp = enhance_layer_qp - 5
+  //   - otherwise             -> base_layer_min_qp = enhance_layer_qp - 6
+  //   The QP clipping reverts to normal mode once the enhancement layer's
+  //   buffer fullness drops below 35% and a QP decrease is detected in the
+  //   enhancement layer.
+  //   In fixed delta QP mode, when the QP difference between the enhancement
+  //   and the base layer exceeds 4, the the min_qp for the base layer is
+  //   computed with the following expression:
+  //     qp_min = last_enhance_layer_qp - 4.
+  //   A QP difference greater than 4 indicates that the frame's QP in the
+  //   enhancement layer has been elevated beyond the upper limit due to HRD
+  //   buffer overflow.
+  //
+  //   If an HRD buffer overflow is detected in the current layer, the min_qp is
+  //   set to the last QP value used for that layer incremented by 2.
+  //
+  //   The minimum value of max_qp is limited to 28.
+  //
+  //   When an HRD buffer overflow occurs, the frame's timestamp is captured in
+  //   the `last_ts_overshooting_frame_` variable. For each 33 milliseconds that
+  //   pass following this timestamp, both the min_qp and max_qp are increased
+  //   by 1.
   void EstimateInterFrameQP(size_t temporal_id,
                             base::TimeDelta frame_timestamp);
 
-  // Adds the encoded bytes the HRD buffers and updates the layer data.
+  // The method executes the following operations:
+  // - appends the lengths of the encoded bytes to the HRD buffers,
+  // - updates the layer data,
+  // - adjusts the target frames per second following the encoding of the first
+  //   frame.
   void FinishIntraFrame(size_t access_unit_bytes,
                         base::TimeDelta frame_timestamp);
 
-  // The encoded frame size is used to update the HRD buffers. Other layer data
-  // is updated. The frame size estimators update their short-term and
-  // long-term stats with the frame size. The frame size estimation error
-  // is computed and added to the error stats.
+  // The method passes through the following steps:
+  // - updates the HRD buffers, the short-term and long-term frame size
+  //   estimators, with the size of the encoded frame,
+  // - calculates the frame size estimation error and adds it to the error
+  //   stats,
+  // - updates additional layer data.
   void FinishInterFrame(size_t temporal_id,
                         size_t access_unit_bytes,
                         base::TimeDelta frame_timestamp);
+
+  // Updates the frame size. The frame size is used in QP estimation for intra
+  // encoded frames.
+  void UpdateFrameSize(const gfx::Size& frame_size);
 
   // The array passed as a parameter stores the HRD buffer fullness for each
   // temporal layer as a percentage of the HRD buffer size.
@@ -386,12 +505,17 @@ class MEDIA_GPU_EXPORT H264RateController {
   // last frame type for the current layer are updated. The method updates all
   // HRD buffers for the layers that depend on the current layer.
   void FinishLayerData(size_t temporal_id,
+                       FrameType frame_type,
                        size_t frame_bytes,
                        base::TimeDelta frame_timestamp);
 
   // Updates the timestamp of the previous frame for the current layer.
   void FinishLayerPreviousFrameTimestamp(size_t temporal_id,
                                          base::TimeDelta frame_timestamp);
+
+  // Captures the timestamp of the frame if HRD buffer overflow occurred.
+  void SetLastTsOvershootingFrame(size_t temporal_id,
+                                  base::TimeDelta frame_timestamp);
 
   // The method calculates the target bytes for the intra encoded frame, which
   // are used to estimate the QP value. The target bytes depend on the remaining
@@ -407,6 +531,21 @@ class MEDIA_GPU_EXPORT H264RateController {
                                      int buffer_level_current,
                                      base::TimeDelta frame_timestamp) const;
 
+  // Estimates the QP for the current frame based on the target frame size.
+  uint32_t GetInterFrameShortTermQP(size_t temporal_id,
+                                    size_t frame_size_target);
+
+  // The method estimates the QP for the current frame based on the target frame
+  // size and the long-term QP. The QP is clipped to fulfill the HRD buffer
+  // fullness requirements.
+  uint32_t GetInterFrameLongTermQP(size_t temporal_id);
+
+  // Applying the constraints to the final QP value based on the HRD buffer
+  // fullness.
+  uint32_t ClipInterFrameQP(uint32_t curr_qp,
+                            size_t temporal_id,
+                            base::TimeDelta picture_timestamp);
+
   // Returns target FPS extracted from layer settings.
   float GetTargetFps(ControllerSettings settings) const;
 
@@ -414,13 +553,19 @@ class MEDIA_GPU_EXPORT H264RateController {
   std::vector<std::unique_ptr<Layer>> temporal_layers_;
 
   // FPS that the rate controller recommends.
-  const float target_fps_;
+  float target_fps_;
+
+  // Maximum source frame rate.
+  const float frame_rate_max_;
 
   // Frame size of the video stream.
-  const gfx::Size frame_size_;
+  gfx::Size frame_size_;
 
   // Indicates whether the Fixed Delta QP mode is enabled.
   const bool fixed_delta_qp_;
+
+  // Indicates base QP should be raised due to upper layer HRD constraints.
+  bool limit_base_qp_ = false;
 
   // Number of temporal layers.
   const size_t num_temporal_layers_;
@@ -431,11 +576,15 @@ class MEDIA_GPU_EXPORT H264RateController {
   // Video content type: camera or display.
   const VideoEncodeAccelerator::Config::ContentType content_type_;
 
-  // Timestamp of the latest frame which overshoots buffer.
+  // Timestamp of the latest IDR frame.
   base::TimeDelta last_idr_timestamp_;
 
-  // Current frame number.
-  int frame_number_ = 0;
+  // Timestamp of the latest frame which overshoots buffer.
+  base::TimeDelta last_ts_overshooting_frame_ = base::TimeDelta::Max();
+
+  // Current frame number. The initial value is -1. It is incremented by 1 with
+  // every call to QP estimation method for the video frames.
+  int frame_number_ = -1;
 };
 
 }  // namespace media

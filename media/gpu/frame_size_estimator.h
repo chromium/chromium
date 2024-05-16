@@ -60,6 +60,11 @@ class MEDIA_GPU_EXPORT FrameSizeEstimator {
   // instead.
   size_t Estimate(uint32_t qp, uint32_t qp_prev) const;
 
+  // The Inverse Estimate is a reverse operation in frame size estimation where
+  // the QP value of the current frame is evaluated from the stats of the
+  // previously encoded frames and the encoded frame size.
+  uint32_t InverseEstimate(size_t target_frame_bytes, uint32_t qp_prev) const;
+
   // Updates the frame size estimator state with the real encoded frame size and
   // with the parameters used for video frame encoding.
   void Update(size_t frame_bytes,

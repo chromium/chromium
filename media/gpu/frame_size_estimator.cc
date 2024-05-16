@@ -46,6 +46,23 @@ size_t FrameSizeEstimator::Estimate(uint32_t qp, uint32_t qp_prev) const {
   return static_cast<size_t>(std::max(pred_frame_byte, 0.0f));
 }
 
+uint32_t FrameSizeEstimator::InverseEstimate(size_t target_frame_bytes,
+                                             uint32_t qp_prev) const {
+  // The minimum target frame size is set to 20% of the target frame size.
+  constexpr float kMinTargetBytesMultiplier = 0.2f;
+
+  float frame_bytes = static_cast<float>(target_frame_bytes);
+
+  frame_bytes -= size_correction_stats_.mean();
+  frame_bytes =
+      std::max(frame_bytes, target_frame_bytes * kMinTargetBytesMultiplier);
+
+  const float qp_size = qp_size_stats_.mean();
+  const float q_step_prev = h264_rate_control_util::QP2QStepSize(qp_prev);
+  float q_step_base_square = q_step_prev * qp_size / frame_bytes;
+  return h264_rate_control_util::QStepSize2QP(sqrtf(q_step_base_square));
+}
+
 void FrameSizeEstimator::Update(size_t frame_bytes,
                                 uint32_t qp,
                                 uint32_t qp_prev,
