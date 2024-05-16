@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -18,13 +19,18 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace chromeos {
 
 namespace {
+
+// Widget constants
+constexpr char kWidgetName[] = "MagicBoostOptInWidget";
 
 // Card constants
 constexpr gfx::Insets kInteriorMargin = gfx::Insets(16);
@@ -57,6 +63,13 @@ const std::u16string body_text =
 const std::u16string secondary_button_text = u"No thanks";
 const std::u16string primary_button_text = u"Try it";
 
+// Placeholder callbacks
+// TODO(b/340940507): Implement button callbacks.
+base::RepeatingClosure primary_callback =
+    base::BindRepeating([]() { LOG(ERROR) << "Primary button pressed"; });
+base::RepeatingClosure secondary_callback =
+    base::BindRepeating([]() { LOG(ERROR) << "Secondary button pressed"; });
+
 // Font lists
 const gfx::FontList body_text_font_list =
     gfx::FontList({"Google Sans", "Roboto"},
@@ -74,14 +87,15 @@ const gfx::FontList title_text_font_list =
 // MagicBoostOptInCard --------------------------------------------------------
 
 MagicBoostOptInCard::MagicBoostOptInCard() {
-  SetOrientation(views::LayoutOrientation::kVertical);
-  SetInteriorMargin(kInteriorMargin);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(kInteriorMargin)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(kBetweenContentsAndButtonsSpacing, 0))
+      .SetCollapseMargins(true)
+      .SetIgnoreDefaultMainAxisMargins(true);
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
-  SetDefault(views::kMarginsKey,
-             gfx::Insets::VH(kBetweenContentsAndButtonsSpacing, 0));
-  SetCollapseMargins(true);
-  SetIgnoreDefaultMainAxisMargins(true);
 
   // Painted to layer so view can be semi-transparent and set rounded corners.
   SetPaintToLayer();
@@ -171,17 +185,58 @@ MagicBoostOptInCard::MagicBoostOptInCard() {
           .SetPreferredSize(gfx::Size(image_and_text_container->width(),
                                       kButtonsContainerHeight))
           .AddChildren(views::Builder<views::MdTextButton>()
+                           .CopyAddressTo(&secondary_button_)
                            .SetText(secondary_button_text)
                            .SetAccessibleName(secondary_button_text)
-                           .SetStyle(ui::ButtonStyle::kText),
+                           .SetStyle(ui::ButtonStyle::kText)
+                           .SetCallback(std::move(secondary_callback)),
                        views::Builder<views::MdTextButton>()
                            .SetText(primary_button_text)
                            .SetAccessibleName(primary_button_text)
-                           .SetStyle(ui::ButtonStyle::kProminent))
+                           .SetStyle(ui::ButtonStyle::kProminent)
+                           .SetCallback(std::move(primary_callback)))
           .Build());
 }
 
 MagicBoostOptInCard::~MagicBoostOptInCard() = default;
+
+// static
+views::UniqueWidgetPtr MagicBoostOptInCard::CreateWidget(
+    const gfx::Rect& anchor_view_bounds) {
+  views::Widget::InitParams params;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.shadow_elevation = 2;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.name = GetWidgetName();
+
+  views::UniqueWidgetPtr widget =
+      std::make_unique<views::Widget>(std::move(params));
+  MagicBoostOptInCard* magic_boost_opt_in_card =
+      widget->SetContentsView(std::make_unique<MagicBoostOptInCard>());
+  magic_boost_opt_in_card->UpdateWidgetBounds(anchor_view_bounds);
+
+  return widget;
+}
+
+// static
+const char* MagicBoostOptInCard::GetWidgetName() {
+  return kWidgetName;
+}
+
+void MagicBoostOptInCard::UpdateWidgetBounds(
+    const gfx::Rect& anchor_view_bounds) {
+  // TODO(b/318733414): Move `GetEditorMenuBounds` to a common place to use.
+  GetWidget()->SetBounds(
+      editor_menu::GetEditorMenuBounds(anchor_view_bounds, this));
+}
+
+void MagicBoostOptInCard::RequestFocus() {
+  views::View::RequestFocus();
+  secondary_button_->RequestFocus();
+}
 
 BEGIN_METADATA(MagicBoostOptInCard)
 END_METADATA
