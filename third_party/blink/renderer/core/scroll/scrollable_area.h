@@ -190,6 +190,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual bool SnapContainerDataNeedsUpdate() const { return false; }
   virtual void SetSnapContainerDataNeedsUpdate(bool) {}
   void SnapAfterScrollbarScrolling(ScrollbarOrientation);
+  virtual void UpdateFocusDataForSnapAreas() {}
 
   // SnapAtCurrentPosition(), SnapForEndPosition(), SnapForDirection(), and
   // SnapForEndAndDirection() return true if snapping was performed, and false

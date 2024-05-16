@@ -6644,14 +6644,14 @@ void Element::SetHasFocusWithinUpToAncestor(bool flag,
     // container needs to know which one of its descendants newly gained or lost
     // focus even if its own HasFocusWithin state has not changed.
     if (element != this && need_snap_container_search) {
-      if (const auto* box = element->GetLayoutBoxForScrolling()) {
+      if (const LayoutBox* box = element->GetLayoutBoxForScrolling()) {
         if (box->Style() && !box->Style()->GetScrollSnapType().is_none) {
-          if (GetDocument().GetFrame() && GetDocument().GetFrame()->View()) {
-            // Tag the enclosing snap container for an update so it can be
-            // updated with focus information.
-            GetDocument().GetFrame()->View()->AddPendingSnapUpdate(
-                box->GetScrollableArea());
-          }
+          // TODO(crbug.com/340983092): We should be able to just call
+          // LocalFrameView::AddPendingSnapUpdate, but that results in a snap
+          // which cancels ongoing scroll animations.
+          // UpdateFocusDataForSnapAreas should be considered a temporary
+          // workaround until the linked bug is addressed.
+          box->GetScrollableArea()->UpdateFocusDataForSnapAreas();
         }
       }
     }

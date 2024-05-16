@@ -374,6 +374,10 @@ class CC_EXPORT SnapContainerData {
   bool SetTargetSnapAreaElementIds(TargetSnapAreaElementIds ids);
 
   void AddSnapAreaData(SnapAreaData snap_area_data);
+  void UpdateSnapAreaFocus(size_t index, bool has_focus_within) {
+    DCHECK(index < snap_area_list_.size());
+    snap_area_list_[index].has_focus_within = has_focus_within;
+  }
   size_t size() const { return snap_area_list_.size(); }
   const SnapAreaData& at(size_t index) const { return snap_area_list_[index]; }
 

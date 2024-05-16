@@ -1909,6 +1909,33 @@ bool PaintLayerScrollableArea::SetTargetSnapAreaElementIds(
   return false;
 }
 
+void PaintLayerScrollableArea::UpdateFocusDataForSnapAreas() {
+  LayoutBox* layout_box = GetLayoutBox();
+  if (!layout_box) {
+    return;
+  }
+  if (!RareData() || !RareData()->snap_container_data_) {
+    return;
+  }
+  std::optional<cc::SnapContainerData>& container_data =
+      RareData()->snap_container_data_;
+  std::map<cc::ElementId, size_t> id_to_index;
+  for (size_t i = 0; i < container_data->size(); i++) {
+    id_to_index.emplace(container_data->at(i).element_id, i);
+  }
+
+  for (auto& fragment : layout_box->PhysicalFragments()) {
+    if (auto* snap_areas = fragment.SnapAreas()) {
+      for (const LayoutBox* snap_area : *snap_areas) {
+        cc::ElementId element_id = CompositorElementIdFromDOMNodeId(
+            snap_area->GetNode()->GetDomNodeId());
+        container_data->UpdateSnapAreaFocus(
+            id_to_index.at(element_id), snap_area->GetNode()->HasFocusWithin());
+      }
+    }
+  }
+}
+
 std::optional<cc::TargetSnapAreaElementIds>
 PaintLayerScrollableArea::GetSnapchangingTargetIds() const {
   return RareData() ? RareData()->snapchanging_target_ids_ : std::nullopt;
