@@ -87,11 +87,10 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
 
     static final int DEFAULT_TRIGGER_DELAY_MS = (int) DateUtils.MINUTE_IN_MILLIS;
     private static final float MINIMUM_CONFIDENCE = 0.5f;
-    static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END =
-            "page_insights_can_autotrigger_after_end";
-    static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_WHILE_IN_MOTION =
-            "page_insights_can_autotrigger_while_in_motion";
-    static final String PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION =
+    static final String PAGE_INSIGHTS_PEEK_DELAY_PARAM = "page_insights_peek_delay";
+    static final String PAGE_INSIGHTS_CAN_PEEK_WHILE_IN_MOTION_PARAM =
+            "page_insights_can_peek_while_in_motion";
+    static final String PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION_PARAM =
             "page_insights_can_return_to_peek_after_expansion";
     private static final List<Integer> USER_DISMISSAL_REASONS =
             Arrays.asList(
@@ -149,6 +148,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
     private final Supplier<Profile> mProfileSupplier;
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
     private final boolean mIsAccessibilityEnabled;
+    private final boolean mCanAutoTrigger;
     private final boolean mCanAutoTriggerWhileInMotion;
     private final boolean mCanReturnToPeekAfterExpansion;
     @Nullable private final ObservableSupplier<Boolean> mInMotionSupplier;
@@ -252,6 +252,7 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             ApplicationViewportInsetSupplier appViewportInsetSupplier,
             PageInsightsIntentParams intentParams,
             BooleanSupplier isPageInsightsEnabledSupplier,
+            BooleanSupplier isGoogleBottomBarEnabledSupplier,
             PageInsightsCoordinator.ConfigProvider pageInsightsConfigProvider) {
         mContext = context;
         mTabObservable = tabObservable;
@@ -311,24 +312,28 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
                                 shareDelegateSupplier,
                                 this::changeToChildPage,
                                 PageInsightsMediator::logPageInsightsEvent));
+        mCanAutoTrigger =
+                ChromeFeatureList.sCctPageInsightsHubPeek.isEnabled()
+                        && !intentParams.getShouldDisablePeek()
+                        && !isGoogleBottomBarEnabledSupplier.getAsBoolean();
         mAutoTriggerDelayMs =
                 intentParams.hasAutoTriggerDelayMs()
                         ? intentParams.getAutoTriggerDelayMs()
                         : ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                                PAGE_INSIGHTS_PEEK_DELAY_PARAM,
                                 DEFAULT_TRIGGER_DELAY_MS);
         mCanAutoTriggerWhileInMotion =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                        PAGE_INSIGHTS_CAN_AUTOTRIGGER_WHILE_IN_MOTION,
+                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                        PAGE_INSIGHTS_CAN_PEEK_WHILE_IN_MOTION_PARAM,
                         false);
         mCanReturnToPeekAfterExpansion =
                 intentParams.hasCanReturnToPeekAfterExpansion()
                         ? intentParams.getCanReturnToPeekAfterExpansion()
                         : ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
+                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION_PARAM,
                                 false);
         onTab(tabObservable.get());
         tabObservable.addObserver(this::onTab);
@@ -454,7 +459,9 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
         if (mSheetContent == mSheetController.getCurrentSheetContent()) {
             mSheetController.hideContent(mSheetContent, true);
         }
-        delayStartAutoTrigger(mAutoTriggerDelayMs);
+        if (mCanAutoTrigger) {
+            delayStartAutoTrigger(mAutoTriggerDelayMs);
+        }
     }
 
     private void delayStartAutoTrigger(long delayMs) {

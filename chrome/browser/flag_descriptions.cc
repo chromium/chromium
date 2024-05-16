@@ -4018,6 +4018,10 @@ const char kCCTPageInsightsHubName[] = "Page Insights Hub";
 const char kCCTPageInsightsHubDescription[] =
     "Show Page Insights Hub on Chrome Custom Tabs.";
 
+const char kCCTPageInsightsHubPeekName[] = "Page Insights Hub Peek";
+const char kCCTPageInsightsHubPeekDescription[] =
+    "Enable peek for Page Insights Hub on Chrome Custom Tabs.";
+
 const char kCCTPageInsightsHubBetterScrollName[] =
     "Page Insights Hub Scroll improvement";
 const char kCCTPageInsightsHubBetterScrollDescription[] =

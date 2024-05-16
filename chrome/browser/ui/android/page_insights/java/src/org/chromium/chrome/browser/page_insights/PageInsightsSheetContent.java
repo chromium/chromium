@@ -37,18 +37,11 @@ import java.util.Date;
 public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayoutChangeListener {
 
     @VisibleForTesting
-    static final String PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM = "page_insights_full_height_ratio";
-
-    @VisibleForTesting
     static final String PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM = "page_insights_peek_height_ratio";
 
     @VisibleForTesting
     static final String PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM =
             "page_insights_peek_with_privacy_height_ratio";
-
-    @VisibleForTesting
-    static final String PAGE_INSIGHTS_ALT_PRIVACY_NOTICE_URL_PARAM =
-            "page_insights_alt_privacy_notice_url";
 
     interface OnBottomSheetTouchHandler {
         /** Returns true if the tap has been handled. */
@@ -64,7 +57,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
     }
 
     /** Ratio of the height when in full mode. */
-    static final float DEFAULT_FULL_HEIGHT_RATIO = 0.9f;
+    static final float FULL_HEIGHT_RATIO = 0.9f;
 
     /** Ratio of the height when in peek mode and privacy notice is not showing. */
     @VisibleForTesting static final float DEFAULT_PEEK_HEIGHT_RATIO = 0.201f;
@@ -80,7 +73,6 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
 
     private final OnBackPressHandler mOnBackPressHandler;
     private final ObservableSupplierImpl<Boolean> mWillHandleBackPressSupplier;
-    private final float mFullHeightRatio;
     private final float mPeekHeightRatio;
     private final float mPeekWithPrivacyHeightRatio;
 
@@ -114,18 +106,12 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
             OnBackPressHandler onBackPressHandler,
             ObservableSupplierImpl<Boolean> willHandleBackPressSupplier,
             OnBottomSheetTouchHandler onBottomSheetTouchHandler) {
-        mFullHeightRatio =
-                (float)
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                                PAGE_INSIGHTS_FULL_HEIGHT_RATIO_PARAM,
-                                DEFAULT_FULL_HEIGHT_RATIO);
         mPeekHeightRatio =
                 intentParams.hasPeekHeightRatio()
                         ? intentParams.getPeekHeightRatio()
                         : (float)
                                 ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
                                         PAGE_INSIGHTS_PEEK_HEIGHT_RATIO_PARAM,
                                         DEFAULT_PEEK_HEIGHT_RATIO);
         mPeekWithPrivacyHeightRatio =
@@ -133,7 +119,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
                         ? intentParams.getPeekWithNoticeHeightRatio()
                         : (float)
                                 ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                                        ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
                                         PAGE_INSIGHTS_PEEK_WITH_PRIVACY_HEIGHT_RATIO_PARAM,
                                         DEFAULT_PEEK_WITH_PRIVACY_HEIGHT_RATIO);
         mLayoutView = layoutView;
@@ -398,7 +384,7 @@ public class PageInsightsSheetContent implements BottomSheetContent, View.OnLayo
         // sizing ourselves, here in Java. :(
         // TODO(b/306894418): See if this issue can be fixed or avoided.
         float contentHeight =
-                (mFullScreenHeight * mFullHeightRatio)
+                (mFullScreenHeight * FULL_HEIGHT_RATIO)
                         - mContext.getResources()
                                 .getDimensionPixelSize(R.dimen.page_insights_toolbar_height);
         int contentWidth =

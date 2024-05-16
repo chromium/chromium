@@ -241,6 +241,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_NESTED_SECURITY_ICON = "CCTNestedSecurityIcon";
     public static final String CCT_INTENT_FEATURE_OVERRIDES = "CCTIntentFeatureOverrides";
     public static final String CCT_PAGE_INSIGHTS_HUB = "CCTPageInsightsHub";
+    public static final String CCT_PAGE_INSIGHTS_HUB_PEEK = "CCTPageInsightsHubPeek";
     public static final String CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL =
             "CCTPageInsightsHubBetterScroll";
 
@@ -803,6 +804,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
+    public static final MutableFlagWithSafeDefault sCctPageInsightsHubPeek =
+            newMutableFlagWithSafeDefault(CCT_PAGE_INSIGHTS_HUB_PEEK, true);
     public static final MutableFlagWithSafeDefault sPageInsightsResizeInSync =
             newMutableFlagWithSafeDefault(CCT_PAGE_INSIGHTS_HUB_BETTER_SCROLL, false);
     public static final MutableFlagWithSafeDefault sQuickDeleteForAndroid =

@@ -24,8 +24,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.DEFAULT_TRIGGER_DELAY_MS;
-import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END;
-import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION;
+import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION_PARAM;
+import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_PEEK_DELAY_PARAM;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
@@ -123,6 +123,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link PageInsightsMediator}. */
 @LooperMode(Mode.PAUSED)
@@ -161,6 +162,7 @@ public class PageInsightsMediatorTest {
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private BackPressManager mBackPressManager;
     @Mock private BackPressHandler mBackPressHandler;
+    @Mock private BooleanSupplier mIsGoogleBottomBarEnabled;
     @Mock private PageInsightsCoordinator.ConfigProvider mPageInsightsConfigProvider;
     @Mock private NavigationHandle mNavigationHandle;
     @Mock private ObservableSupplier<Boolean> mInMotionSupplier;
@@ -229,6 +231,7 @@ public class PageInsightsMediatorTest {
                                 .setShouldXsurfaceLog(true)
                                 .build());
         when(mInMotionSupplier.get()).thenReturn(false);
+        when(mIsGoogleBottomBarEnabled.getAsBoolean()).thenReturn(false);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }
 
@@ -239,8 +242,8 @@ public class PageInsightsMediatorTest {
     private void createMediator(int triggerDelayMs) {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                PAGE_INSIGHTS_PEEK_DELAY_PARAM,
                 String.valueOf(triggerDelayMs));
         createMediator(testValues, PageInsightsIntentParams.getDefaultInstance());
     }
@@ -250,8 +253,8 @@ public class PageInsightsMediatorTest {
             TestValues furtherTestValues,
             PageInsightsIntentParams intentParams) {
         furtherTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END,
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                PAGE_INSIGHTS_PEEK_DELAY_PARAM,
                 String.valueOf(triggerDelayMs));
         createMediator(furtherTestValues, intentParams);
     }
@@ -277,6 +280,7 @@ public class PageInsightsMediatorTest {
                         mAppInsetSupplier,
                         intentParams,
                         () -> true,
+                        mIsGoogleBottomBarEnabled,
                         mPageInsightsConfigProvider);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
         verify(mInMotionSupplier).addObserver(mInMotionCallback.capture());
@@ -347,7 +351,65 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
-    public void testAutoTrigger_shouldNotAutoTrigger_doesNotTrigger() {
+    public void testAutoTrigger_peekDisabledByFinch_doesNotTrigger() {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK, false);
+        createMediator(
+                SHORT_TRIGGER_DELAY_MS, testValues, PageInsightsIntentParams.getDefaultInstance());
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
+
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verifyNoMoreInteractions(mOptimizationGuideBridge);
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_peekDisabledByIntentParam_doesNotTrigger() {
+        createMediator(
+                SHORT_TRIGGER_DELAY_MS,
+                new TestValues(),
+                PageInsightsIntentParams.newBuilder().setShouldDisablePeek(true).build());
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
+
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verifyNoMoreInteractions(mOptimizationGuideBridge);
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_googleBottomBarEnabled_doesNotTrigger() {
+        when(mIsGoogleBottomBarEnabled.getAsBoolean()).thenReturn(true);
+        createMediator(SHORT_TRIGGER_DELAY_MS);
+        View feedView = new View(ContextUtils.getApplicationContext());
+        when(mSurfaceRenderer.render(eq(TEST_FEED_ELEMENTS_OUTPUT), any())).thenReturn(feedView);
+        when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+
+        mMediator.onPageLoadStarted(mTab, null);
+        mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);
+        mShadowLooper.idleFor(2500, TimeUnit.MILLISECONDS);
+        runAllAsyncTasks();
+
+        verify(mBottomSheetController, never()).requestShowContent(any(), anyBoolean());
+        verifyNoMoreInteractions(mOptimizationGuideBridge);
+    }
+
+    @Test
+    @MediumTest
+    public void testAutoTrigger_configStatesShouldNotAutoTrigger_doesNotTrigger() {
         when(mPageInsightsConfigProvider.get(
                         new PageInsightsConfigRequest(
                                 mNavigationHandle, mLastCommittedNavigationEntry, true)))
@@ -680,8 +742,8 @@ public class PageInsightsMediatorTest {
             testExpandAfterAutoTrigger_canReturnToPeekAfterExpansionFromFlag_peekEnabledSwipeDisabled() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
-                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION,
+                ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
+                PAGE_INSIGHTS_CAN_RETURN_TO_PEEK_AFTER_EXPANSION_PARAM,
                 "true");
         createMediator(
                 SHORT_TRIGGER_DELAY_MS, testValues, PageInsightsIntentParams.getDefaultInstance());

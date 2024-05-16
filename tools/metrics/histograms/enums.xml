@@ -19068,6 +19068,7 @@ from previous Chrome versions.
   <int value="-979034258" label="disable-ntp-other-sessions-menu"/>
   <int value="-978514039" label="SiteSearchSettingsPolicy:disabled"/>
   <int value="-977770313" label="AndroidSurfaceControl:enabled"/>
+  <int value="-977655711" label="CCTPageInsightsHubPeek:disabled"/>
   <int value="-977476498" label="disable-eol-notification"/>
   <int value="-976421766" label="AutofillEnableManualFallbackIPH:enabled"/>
   <int value="-975787829" label="AutofillProfileServerValidation:enabled"/>
@@ -25667,6 +25668,7 @@ from previous Chrome versions.
   <int value="1919380242" label="ReduceAcceptLanguage:disabled"/>
   <int value="1919786756" label="FedCmDisconnect:disabled"/>
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
+  <int value="1920780354" label="CCTPageInsightsHubPeek:enabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
   <int value="1921543515" label="ExoLockNotification:enabled"/>

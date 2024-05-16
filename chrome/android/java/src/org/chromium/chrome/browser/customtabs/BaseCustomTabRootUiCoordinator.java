@@ -424,6 +424,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         mWindowAndroid.getApplicationBottomInsetSupplier(),
                         getPageInsightsIntentParams(),
                         this::isPageInsightsHubEnabled,
+                        this::isGoogleBottomBarEnabled,
                         this::getPageInsightsConfig);
 
         if (mContextualSearchManagerSupplier.get() != null) {
@@ -461,16 +462,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             BrowserServicesIntentDataProvider intentDataProvider,
             ObservableSupplier<Profile> profileSupplier,
             PageInsightsConfigRequest request) {
-        PageInsightsConfig pageInsightsConfig =
-                CustomTabsConnection.getInstance()
-                        .getPageInsightsConfig(request, intentDataProvider, profileSupplier);
-
-        // When GoogleBottomBar is enabled, Page Insights shouldn't peek
-        return isGoogleBottomBarEnabled(intentDataProvider)
-                ? PageInsightsConfig.newBuilder(pageInsightsConfig)
-                        .setShouldAutoTrigger(false)
-                        .build()
-                : pageInsightsConfig;
+        return CustomTabsConnection.getInstance()
+                .getPageInsightsConfig(request, intentDataProvider, profileSupplier);
     }
 
     private PageInsightsIntentParams getPageInsightsIntentParams() {
@@ -488,9 +481,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     // Google Bottom bar
-    private @Nullable GoogleBottomBarCoordinator maybeCreateGoogleBottomBarComponents(
-            BrowserServicesIntentDataProvider intentDataProvider) {
-        if (!isGoogleBottomBarEnabled(intentDataProvider)) {
+    private @Nullable GoogleBottomBarCoordinator maybeCreateGoogleBottomBarComponents() {
+        if (!isGoogleBottomBarEnabled()) {
             return null;
         }
 
@@ -500,16 +492,19 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mShareDelegateSupplier,
                 this::getPageInsightsCoordinator,
                 CustomTabsConnection.getInstance()
-                        .getGoogleBottomBarIntentParams(intentDataProvider),
-                intentDataProvider.getCustomButtonsOnGoogleBottomBar());
+                        .getGoogleBottomBarIntentParams(mIntentDataProvider.get()),
+                mIntentDataProvider.get().getCustomButtonsOnGoogleBottomBar());
     }
 
     public @Nullable GoogleBottomBarCoordinator getGoogleBottomBarCoordinator() {
         if (mGoogleBottomBarCoordinator == null) {
-            mGoogleBottomBarCoordinator =
-                    maybeCreateGoogleBottomBarComponents(mIntentDataProvider.get());
+            mGoogleBottomBarCoordinator = maybeCreateGoogleBottomBarComponents();
         }
         return mGoogleBottomBarCoordinator;
+    }
+
+    private boolean isGoogleBottomBarEnabled() {
+        return isGoogleBottomBarEnabled(mIntentDataProvider.get());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

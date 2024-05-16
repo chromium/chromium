@@ -15,4 +15,5 @@ message PageInsightsIntentParams {
   optional float peek_with_notice_height_ratio = 2;
   optional bool can_return_to_peek_after_expansion = 3;
   optional int32 auto_trigger_delay_ms = 4;
+  optional bool should_disable_peek = 5;
 }

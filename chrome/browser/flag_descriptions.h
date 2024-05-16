@@ -2361,6 +2361,9 @@ extern const char kCCTNestedSecurityIconDescription[];
 extern const char kCCTPageInsightsHubName[];
 extern const char kCCTPageInsightsHubDescription[];
 
+extern const char kCCTPageInsightsHubPeekName[];
+extern const char kCCTPageInsightsHubPeekDescription[];
+
 extern const char kCCTPageInsightsHubBetterScrollName[];
 extern const char kCCTPageInsightsHubBetterScrollDescription[];
 

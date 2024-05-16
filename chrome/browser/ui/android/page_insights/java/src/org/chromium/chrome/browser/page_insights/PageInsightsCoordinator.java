@@ -71,6 +71,7 @@ public class PageInsightsCoordinator {
      * @param appViewportInsetSupplier App-wide viewport inset supplier.
      * @param intentParams params specified in the custom tabs intent
      * @param isPageInsightsEnabledSupplier Supplier of the feature enablement status.
+     * @param isGoogleBottomBarEnabledSupplier Supplier of whether Google Bottom Bar is enabled.
      * @param pageInsightsConfigProvider provider of {@link PageInsightsConfig}.
      */
     public PageInsightsCoordinator(
@@ -89,6 +90,7 @@ public class PageInsightsCoordinator {
             ApplicationViewportInsetSupplier appViewportInsetSupplier,
             PageInsightsIntentParams intentParams,
             BooleanSupplier isPageInsightsEnabledSupplier,
+            BooleanSupplier isGoogleBottomBarEnabledSupplier,
             ConfigProvider pageInsightsConfigProvider) {
         mContext = context;
         mTabProvider = tabProvider;
@@ -114,6 +116,7 @@ public class PageInsightsCoordinator {
                         appViewportInsetSupplier,
                         intentParams,
                         isPageInsightsEnabledSupplier,
+                        isGoogleBottomBarEnabledSupplier,
                         pageInsightsConfigProvider);
     }
 
