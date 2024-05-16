@@ -762,7 +762,6 @@ crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/t
 ## Linux NVIDIA ##
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
-crbug.com/1502174 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/textures/video/tex-2d-rg16f-rg-float.html [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
