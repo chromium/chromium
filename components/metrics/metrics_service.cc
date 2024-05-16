@@ -139,6 +139,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/metrics/user_metrics.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -697,8 +698,9 @@ void MetricsService::SetUserLogStore(
 }
 
 void MetricsService::UnsetUserLogStore() {
-  if (!log_store()->has_alternate_ongoing_log_store())
+  if (!log_store()->has_alternate_ongoing_log_store()) {
     return;
+  }
 
   if (state_ >= SENDING_LOGS) {
     PushPendingLogsToPersistentStorage(
@@ -723,9 +725,10 @@ void MetricsService::UnsetUserLogStore() {
       /*required_flags=*/base::Histogram::kUmaTargetedHistogramFlag,
       &histogram_snapshot_manager);
 
-  // Discard the current log and don't store it.
+  // Discard the current log, don't store it and stop recording.
   CHECK(current_log_);
   current_log_.reset();
+  DisableRecording();
 
   log_store()->UnsetAlternateOngoingLogStore();
   RecordUserLogStoreState(kUnsetPreSendLogsState);
@@ -891,6 +894,7 @@ void MetricsService::InitializeMetricsState() {
 
 void MetricsService::OnUserAction(const std::string& action,
                                   base::TimeTicks action_time) {
+  CHECK(current_log_);
   current_log_->RecordUserAction(action, action_time);
   HandleIdleSinceLastTransmission(false);
 }

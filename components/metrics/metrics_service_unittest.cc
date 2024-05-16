@@ -89,8 +89,9 @@ bool IsFieldTrialPresent(const SystemProfileProto& proto,
       variations::MakeActiveGroupId(trial_name, group_name);
 
   for (const auto& trial : proto.field_trial()) {
-    if (trial.name_id() == id.name && trial.group_id() == id.group)
+    if (trial.name_id() == id.name && trial.group_id() == id.group) {
       return true;
+    }
   }
   return false;
 }
@@ -273,8 +274,9 @@ class MetricsServiceTest : public testing::Test {
       const base::StatisticsRecorder::Histograms& histograms,
       uint64_t name_hash) {
     for (const base::HistogramBase* histogram : histograms) {
-      if (name_hash == base::HashMetricName(histogram->histogram_name()))
+      if (name_hash == base::HashMetricName(histogram->histogram_name())) {
         return histogram;
+      }
     }
     return nullptr;
   }
@@ -1650,6 +1652,31 @@ TEST_P(MetricsServiceTestWithFeatures,
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.Before.Histogram");
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.After.Histogram");
 }
+
+TEST_P(MetricsServiceTestWithFeatures,
+       UnsettingLogStoreShouldDisableRecording) {
+  EnableMetricsReporting();
+  TestMetricsServiceClient client;
+  TestMetricsService service(GetMetricsStateManager(), &client,
+                             GetLocalState());
+
+  service.InitializeMetricsRecordingState();
+  // Start() will register the service to start recording.
+  service.Start();
+  ASSERT_TRUE(service.recording_active());
+
+  // Register, set and unset a log store.
+  // This will clear the log file and thus should also stop recording.
+  std::unique_ptr<TestUnsentLogStore> alternate_ongoing_log_store =
+      InitializeTestLogStoreAndGet();
+  service.SetUserLogStore(std::move(alternate_ongoing_log_store));
+  service.UnsetUserLogStore();
+  ASSERT_FALSE(service.recording_active());
+
+  // This should not crash.
+  base::RecordAction(base::UserMetricsAction("TestAction"));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace metrics
