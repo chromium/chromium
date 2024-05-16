@@ -129,6 +129,12 @@ platforms have different sampling rates for metrics reporting, and so on. The
 data would be much easier to make sense of if it included a baseline: how often
 is the button shown?
 
+There is another problem with using another histogram as a comparison point.
+Google systems for processing UMA data attempt to exclude data that this is
+deemed unreliable or somehow anomalous. It's possible that it may exclude data
+from a client for one histogram and not exclude data from that client for the
+other.
+
 If only a few buckets are emitted to, consider using a [sparse
 histogram](#When-To-Use-Sparse-Histograms).
 
