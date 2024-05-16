@@ -118,6 +118,10 @@ tast_disabled_tests_from_chrome_all = [
   "login.ChangePassword.consumer_update",
   "login.ChangePassword.no_consumer_update",
 
+  # b/336585651
+  "ui.ChromeCrashEarly.loose@reven-vmtest",
+  "ui.ChromeCrashEarly.strict@reven-vmtest",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
