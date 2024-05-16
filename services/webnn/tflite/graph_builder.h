@@ -209,7 +209,10 @@ class GraphBuilder final {
   base::expected<OperatorOffset, std::string> SerializeSlice(
       const mojom::Slice& slice);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
-  OperatorOffset SerializeSoftplus(const mojom::Softplus& softplus);
+  base::expected<OperatorOffset, std::string> SerializeSoftplus(
+      const mojom::Softplus& softplus);
+  base::expected<OperatorOffset, std::string> SerializeSoftsign(
+      const mojom::Softsign& softsign);
   base::expected<OperatorOffset, std::string> SerializeSplit(
       const mojom::Split& split);
   OperatorOffset SerializeTan(const mojom::ElementWiseUnary& tan);
