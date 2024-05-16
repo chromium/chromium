@@ -1091,9 +1091,9 @@ auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
 
 auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
     -> base::expected<OperatorOffset, std::string> {
-  // The WebNN indices must be one of type uint32 or int64, but TFLite indices
-  // need int32 or int64 type, so a cast operation need to be inserted before
-  // Gather if indices data type is uint32.
+  // The WebNN indices must be one of type uint32, int32, int64, but TFLite
+  // indices need int32 or int64 type, so a cast operation need to be inserted
+  // before Gather if indices data type is uint32.
   int32_t indices_tensor_index =
       operand_to_index_map_.at(gather.indices_operand_id);
   const mojom::Operand& indices_operand = GetOperand(gather.indices_operand_id);
@@ -1108,7 +1108,8 @@ auto GraphBuilder::SerializeGather(const mojom::Gather& gather)
         /*input_tensor_type=*/::tflite::TensorType_UINT32, indices_tensor_index,
         /*output_tensor_type=*/::tflite::TensorType_INT64));
   } else {
-    CHECK_EQ(indices_operand.data_type, mojom::Operand::DataType::kInt64);
+    CHECK(indices_operand.data_type == mojom::Operand::DataType::kInt64 ||
+          indices_operand.data_type == mojom::Operand::DataType::kInt32);
   }
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32

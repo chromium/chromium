@@ -70,7 +70,7 @@ static constexpr DataTypeConstraintSet kFloat16To32Int8To32 = {
 
 static constexpr DataTypeConstraintSet kGatherOperatorIndexDataTypes = {
     Operand::DataType::kInt32, Operand::DataType::kUint32,
-    Operand::DataType::kInt64, Operand::DataType::kUint64};
+    Operand::DataType::kInt64};
 
 }  // namespace DataTypeConstraint
 
