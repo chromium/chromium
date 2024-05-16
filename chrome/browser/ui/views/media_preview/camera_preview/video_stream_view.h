@@ -38,12 +38,12 @@ class VideoStreamView : public views::View, public viz::ContextLostObserver {
   int GetHeightForWidth(int w) const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& /*available_size*/) const override;
-  void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
-  const float targeted_aspect_ratio_;
+  float current_aspect_ratio_;
+  bool has_updated_preferred_size_ = false;
   const int rounded_radius_;
-  SkColor preview_base_color_;
   media::PaintCanvasVideoRenderer video_renderer_;
   scoped_refptr<media::VideoFrame> latest_frame_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
