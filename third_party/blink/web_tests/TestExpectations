@@ -7424,3 +7424,6 @@ crbug.com/335895982 [ Linux ] virtual/gethtml-disabled/external/wpt/shadow-dom/d
 
 # Gardener 2024-05-15
 b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failure Pass Timeout ]
+
+#Loading bug triage 2024-05-16
+crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
