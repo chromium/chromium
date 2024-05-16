@@ -128,8 +128,15 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
 }
 
+// TODO(b/341091285): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TriggerEntryPointWithNavigation \
+  DISABLED_TriggerEntryPointWithNavigation
+#else
+#define MAYBE_TriggerEntryPointWithNavigation TriggerEntryPointWithNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
-                       TriggerEntryPointWithNavigation) {
+                       MAYBE_TriggerEntryPointWithNavigation) {
   // Mock EntryPointInfo returned by ShoppingService.
   std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
   auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
