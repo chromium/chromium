@@ -5281,6 +5281,7 @@
         'test': 'webview_instrumentation_test_apk',
         'args': [
           '--disable-field-trial-config',
+          '--use-apk-under-test-flags-file',
         ],
         'swarming': {
           'shards': 12,

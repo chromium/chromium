@@ -190,6 +190,7 @@
       {
         "args": [
           "--disable-field-trial-config",
+          "--use-apk-under-test-flags-file",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

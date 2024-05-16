@@ -5061,6 +5061,11 @@ targets.legacy_basic_suite(
     name = "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
     tests = {
         "webview_instrumentation_test_apk_no_field_trial": targets.legacy_test_config(
+            # TODO(b/40282232): Make the target infer the correct flag file
+            # from the build config.
+            args = [
+                "--use-apk-under-test-flags-file",
+            ],
             swarming = targets.swarming(
                 shards = 12,
             ),
