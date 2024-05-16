@@ -8797,6 +8797,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "web-authentication-enclave-authenticator",
+    "owners": [ "kenrb@chromium.org", "chrome-webauthn@google.com" ],
+    "expiry_milestone": 129
+  },
+  {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
     // This flag lets end users enroll security keys with an enterprise that

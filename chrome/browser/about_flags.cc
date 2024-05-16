@@ -3851,6 +3851,14 @@ const FeatureEntry::FeatureVariation kLocationProviderManagerVariations[] = {
      std::size(kLocationProviderManagerModeHybridPlatform), nullptr}};
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const FeatureEntry::FeatureParam kWebAuthnEnclaveAuthenticatorEnabledParam = {
+    device::kWebAuthnGpmPinFeatureParameterName, "true"};
+const FeatureEntry::FeatureVariation kWebAuthnEnclaveAuthenticatorVariations[] =
+    {{"with GPM PIN enabled", &kWebAuthnEnclaveAuthenticatorEnabledParam, 1,
+      nullptr}};
+#endif
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11365,6 +11373,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      SINGLE_VALUE_TYPE(
          optimization_guide::switches::kEnableModelQualityDogfoodLogging)},
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    {"web-authentication-enclave-authenticator",
+     flag_descriptions::kWebAuthnEnclaveAuthenticatorName,
+     flag_descriptions::kWebAuthnEnclaveAuthenticatorDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnEnclaveAuthenticator,
+                                    kWebAuthnEnclaveAuthenticatorVariations,
+                                    "WebAuthenticationEnclaveAuthenticator")},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

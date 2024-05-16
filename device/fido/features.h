@@ -71,8 +71,9 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 
 // Enable use of Google Password Manager PIN.
+const char kWebAuthnGpmPinFeatureParameterName[] = "WebAuthenticationGpmPin";
 COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnGpmPin);
+extern const base::FeatureParam<bool> kWebAuthnGpmPin;
 
 // Filter a priori discovered credentials on google.com to those that have a
 // user id that starts with "GOOGLE_ACCOUNT:".

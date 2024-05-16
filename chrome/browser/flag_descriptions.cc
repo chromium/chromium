@@ -3637,6 +3637,14 @@ const char kWallpaperPerDeskName[] =
 const char kWallpaperPerDeskDescription[] =
     "Allow users to set different wallpapers on each of their active desks";
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const char kWebAuthnEnclaveAuthenticatorName[] =
+    "Enable the cloud enclave authenticator for GPM passkeys";
+const char kWebAuthnEnclaveAuthenticatorDescription[] =
+    "Allow users to create and use Google Password Manager passkeys using a "
+    "cloud-based authenticator service.";
+#endif
+
 const char kWebBluetoothName[] = "Web Bluetooth";
 const char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

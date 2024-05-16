@@ -794,8 +794,9 @@ class EnclaveAuthenticatorWithPinBrowserTest
     : public EnclaveAuthenticatorBrowserTest {
  public:
   EnclaveAuthenticatorWithPinBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnEnclaveAuthenticator, device::kWebAuthnGpmPin},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{device::kWebAuthnEnclaveAuthenticator,
+          {{device::kWebAuthnGpmPin.name, "true"}}}},
         /*disabled_features=*/{
             device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
   }
@@ -1687,10 +1688,10 @@ class EnclaveAuthenticatorWithoutPinBrowserTest
     : public EnclaveAuthenticatorBrowserTest {
  public:
   EnclaveAuthenticatorWithoutPinBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnEnclaveAuthenticator},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{device::kWebAuthnEnclaveAuthenticator,
+          {{device::kWebAuthnGpmPin.name, "false"}}}},
         /*disabled_features=*/{
-            device::kWebAuthnGpmPin,
             device::kWebAuthnUseInsecureSoftwareUnexportableKeys});
   }
 

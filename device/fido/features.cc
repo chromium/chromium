@@ -92,9 +92,9 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
-BASE_FEATURE(kWebAuthnGpmPin,
-             "WebAuthenticationGpmPin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kWebAuthnGpmPin{
+    &kWebAuthnEnclaveAuthenticator, kWebAuthnGpmPinFeatureParameterName,
+    /*default_value=*/false};
 
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.

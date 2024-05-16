@@ -2114,6 +2114,11 @@ extern const char kWallpaperGooglePhotosSharedAlbumsDescription[];
 extern const char kWallpaperPerDeskName[];
 extern const char kWallpaperPerDeskDescription[];
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+extern const char kWebAuthnEnclaveAuthenticatorName[];
+extern const char kWebAuthnEnclaveAuthenticatorDescription[];
+#endif
+
 extern const char kWebBluetoothName[];
 extern const char kWebBluetoothDescription[];
 

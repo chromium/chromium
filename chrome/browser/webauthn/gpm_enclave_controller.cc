@@ -449,7 +449,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnGpmPin) &&
+  if (device::kWebAuthnGpmPin.Get() &&
       request_type_ == device::FidoRequestType::kGetAssertion) {
     // For get() requests, progress the UI now because, with GPM PIN support,
     // we can handle the account in any state and we'll block the UI if needed
@@ -468,8 +468,7 @@ void GPMEnclaveController::OnUVCapabilityKnown(bool can_make_uv_keys) {
 
   can_make_uv_keys_ = can_make_uv_keys;
 
-  if (!can_make_uv_keys &&
-      !base::FeatureList::IsEnabled(device::kWebAuthnGpmPin)) {
+  if (!can_make_uv_keys && !device::kWebAuthnGpmPin.Get()) {
     // Without the ability to do user verification, we cannot enroll the current
     // device.
     account_state_ = AccountState::kNone;
@@ -559,7 +558,7 @@ void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
                   << ", has PIN: " << result.gpm_pin_metadata.has_value()
                   << ", iCloud Keychain keys: " << result.icloud_keys.size();
 
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnGpmPin) &&
+  if (!device::kWebAuthnGpmPin.Get() &&
       result.state == Result::State::kRecoverable &&
       !result.lskf_expiries.empty() &&
       base::ranges::all_of(result.lskf_expiries, ExpiryTooSoon)) {
@@ -596,7 +595,7 @@ void GPMEnclaveController::OnHaveAccountState(DownloadedAccountState result) {
   }
   security_domain_icloud_recovery_keys_ = std::move(result.icloud_keys);
 
-  if (base::FeatureList::IsEnabled(device::kWebAuthnGpmPin)) {
+  if (device::kWebAuthnGpmPin.Get()) {
     SetActive(account_state_ != AccountState::kNone);
   } else {
     SetActive(account_state_ == AccountState::kRecoverable);
