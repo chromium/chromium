@@ -76,7 +76,8 @@ export class Panel implements PanelInterface {
     document.addEventListener(
         'keydown', (event: KeyboardEvent) => this.onKeyDown_(event), false);
     document.addEventListener(
-        'mouseup', (event: MouseEvent) => this.onMouseUp_(event), false);
+        'mouseup', (event: MouseEvent) => this.menuManager_.onMouseUp(event),
+        false);
     window.addEventListener(
         'storage', (event: StorageEvent) => this.onStorageChanged_(event),
         false);
@@ -413,35 +414,6 @@ export class Panel implements PanelInterface {
     if (this.menuManager_.activeMenu) {
       this.menuManager_.activeMenu.advanceItemBy(delta);
     }
-  }
-
-  /**
-   * Called when the user releases the mouse button. If it's anywhere other
-   * than on the menus button, close the menus and return focus to the page,
-   * and if the mouse was released over a menu item, execute that item's
-   * callback.
-   */
-  private onMouseUp_(event: Event): void {
-    if (!this.menuManager_.activeMenu) {
-      return;
-    }
-
-    let target = event.target as HTMLElement | null;
-    while (target && !target.classList.contains('menu-item')) {
-      // Allow the user to click and release on the menu button and leave
-      // the menu button.
-      if (target.id === 'menus_button') {
-        return;
-      }
-
-      target = target.parentElement;
-    }
-
-    if (target && this.menuManager_.activeMenu) {
-      this.pendingCallback_ =
-          this.menuManager_.activeMenu.getCallbackForElement(target);
-    }
-    this.closeMenusAndRestoreFocus();
   }
 
   /**

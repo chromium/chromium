@@ -343,15 +343,16 @@ export class MenuManager {
     // commands for touch).
     const keymap = KeyMap.get();
 
-    const sortedBindings = keymap.bindings().slice();
+    // A shallow copy of the bindings is returned, so re-ordering the elements
+    // does not change the original.
+    const sortedBindings = keymap.bindings();
     for (const binding of sortedBindings) {
       const command = binding.command;
       const keySeq = binding.sequence;
       binding.keySeq = await KeyUtil.keySequenceToString(keySeq, true);
       const titleMsgId = CommandStore.messageForCommand(command);
       if (!titleMsgId) {
-        // Title messages are intentionally missing for some keyboard
-        // shortcuts.
+        // Title messages are intentionally missing for some keyboard shortcuts.
         if (!(command in COMMANDS_WITH_NO_MSG_ID) &&
             !MenuManager.disableMissingMsgsErrorsForTesting) {
           console.error('No localization for: ' + command);
@@ -368,9 +369,17 @@ export class MenuManager {
     return sortedBindings;
   }
 
+  makeBindingMap(sortedBindings: KeyBinding[]): Map<Command, KeyBinding> {
+    const bindingMap = new Map();
+    for (const binding of sortedBindings) {
+      bindingMap.set(binding.command, binding);
+    }
+    return bindingMap;
+  }
+
   makeCategoryMapping(
       actionsMenu: PanelMenu, chromevoxMenu: PanelMenu, jumpMenu: PanelMenu,
-      speechMenu: PanelMenu): Record<CommandCategory, PanelMenu | null> {
+      speechMenu: PanelMenu): Record<CommandCategory, PanelMenu|null> {
     return {
       [CommandCategory.ACTIONS]: actionsMenu,
       [CommandCategory.BRAILLE]: null,
@@ -387,12 +396,34 @@ export class MenuManager {
     };
   }
 
-  makeBindingMap(sortedBindings: KeyBinding[]): Map<Command, KeyBinding> {
-    const bindingMap = new Map();
-    for (const binding of sortedBindings) {
-      bindingMap.set(binding.command, binding);
+  /**
+   * Called when the user releases the mouse button. If it's anywhere other
+   * than on the menus button, close the menus and return focus to the page,
+   * and if the mouse was released over a menu item, execute that item's
+   * callback.
+   */
+  onMouseUp(event: MouseEvent): void {
+    if (!this.activeMenu_) {
+      return;
     }
-    return bindingMap;
+
+    let target: HTMLElement|null = event.target as HTMLElement;
+    while (target && !target.classList.contains('menu-item')) {
+      // Allow the user to click and release on the menu button and leave
+      // the menu button.
+      if (target.id === 'menus_button') {
+        return;
+      }
+
+      target = target.parentElement;
+    }
+
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (target && this.activeMenu_) {
+      PanelInterface.instance!.setPendingCallback(
+          this.activeMenu_.getCallbackForElement(target));
+    }
+    PanelInterface.instance!.closeMenusAndRestoreFocus();
   }
 
   /**
