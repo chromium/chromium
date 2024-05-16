@@ -121,6 +121,8 @@ void MessagePump::InitializeFeatures() {
   g_explicit_high_resolution_timer_win =
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
   MessagePumpWin::InitializeFeatures();
+#elif BUILDFLAG(IS_ANDROID)
+  MessagePumpAndroid::InitializeFeatures();
 #endif
 }
 
