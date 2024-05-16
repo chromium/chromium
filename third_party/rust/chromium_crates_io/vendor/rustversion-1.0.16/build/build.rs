@@ -73,6 +73,10 @@ fn main() {
         println!("cargo:rustc-cfg=cfg_macro_not_allowed");
     }
 
+    if version.minor >= 80 {
+        println!("cargo:rustc-check-cfg=cfg(cfg_macro_not_allowed)");
+    }
+
     let version = format!("{:#?}\n", version);
     let out_dir = env::var_os("OUT_DIR").expect("OUT_DIR not set");
     let out_file = Path::new(&out_dir).join("version.expr");
