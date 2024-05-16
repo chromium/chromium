@@ -98,6 +98,9 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
 
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_EQ(expected_action_token, request->response_details_->action_token_);
+
+  // Verify that the response is considered complete.
+  EXPECT_TRUE(request->IsResponseComplete());
 }
 
 TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
@@ -112,6 +115,9 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
 
   EXPECT_EQ("Something went wrong!",
             request->response_details_->error_message_.value());
+
+  // Verify that the response is considered incomplete.
+  EXPECT_FALSE(request->IsResponseComplete());
 }
 
 }  // namespace payments::facilitated

@@ -124,10 +124,12 @@ void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
 }
 
 bool FacilitatedPaymentsInitiatePaymentRequest::IsResponseComplete() {
-  return false;
+  return !response_details_->action_token_.empty();
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::RespondToDelegate(
-    autofill::AutofillClient::PaymentsRpcResult result) {}
+    autofill::AutofillClient::PaymentsRpcResult result) {
+  std::move(response_callback_).Run(result, std::move(response_details_));
+}
 
 }  // namespace payments::facilitated
