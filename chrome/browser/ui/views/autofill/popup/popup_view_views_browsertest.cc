@@ -18,7 +18,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -413,19 +412,6 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
   ShowAndVerifyUi(
       /*popup_has_parent=*/false,
       PopupViewSearchBarConfig{.enabled = true, .placeholder = u"Search"});
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       SearchBarViewNoSuggestionsFound) {
-  // This set imitates empty search result, it contains footer suggestions only.
-  controller().set_suggestions(
-      {SuggestionType::kSeparator, SuggestionType::kAutofillOptions});
-  ON_CALL(controller(), HasFilteredOutSuggestions).WillByDefault(Return(true));
-  ShowAndVerifyUi(
-      /*popup_has_parent=*/false,
-      PopupViewSearchBarConfig{.enabled = true,
-                               .placeholder = u"Search",
-                               .no_results_message = u"No suggestions"});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

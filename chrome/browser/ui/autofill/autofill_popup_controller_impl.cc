@@ -766,11 +766,6 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
   return view_ && view_->HandleKeyPressEvent(event);
 }
 
-bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
-  return filter_.has_value() &&
-         filtered_suggestions_.size() != non_filtered_suggestions_.size();
-}
-
 void AutofillPopupControllerImpl::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
   view_ = std::move(view);

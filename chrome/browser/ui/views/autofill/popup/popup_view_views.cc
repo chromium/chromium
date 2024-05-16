@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -143,9 +142,8 @@ PopupViewViews::PopupViewViews(
                                         : kDefaultSubPopupSides,
                     /*show_arrow_pointer=*/false),
       controller_(controller),
-      parent_(parent),
-      search_bar_config_({}) {
-  InitViews();
+      parent_(parent) {
+  InitViews({});
 }
 
 PopupViewViews::PopupViewViews(
@@ -157,9 +155,8 @@ PopupViewViews::PopupViewViews(
                     search_bar_config.enabled
                         ? views::Widget::InitParams::Activatable::kYes
                         : views::Widget::InitParams::Activatable::kDefault),
-      controller_(controller),
-      search_bar_config_(std::move(search_bar_config)) {
-  InitViews();
+      controller_(controller) {
+  InitViews(search_bar_config);
 }
 
 PopupViewViews::~PopupViewViews() = default;
@@ -825,14 +822,14 @@ bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
          absl::holds_alternative<PopupRowView*>(rows_[index]);
 }
 
-void PopupViewViews::InitViews() {
+void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  if (search_bar_config_.enabled) {
+  if (search_bar_config.enabled) {
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_.placeholder, *this));
+        search_bar_config.placeholder, *this));
     search_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets::VH(GetContentsVerticalPadding(), 0));
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
@@ -865,17 +862,8 @@ void PopupViewViews::CreateSuggestionViews() {
 
   rows_.reserve(kSuggestions.size());
   size_t current_line_number = 0u;
-
-  // No suggestions (or only footer ones, which are not filterable) with
-  // a non-empty filter query means that there are no results matching
-  // the query. Show a corresponding message.
-  if ((kSuggestions.empty() || IsFooterItem(kSuggestions, 0u)) && search_bar_ &&
-      controller_->HasFilteredOutSuggestions()) {
-    suggestions_container_->AddChildView(
-        std::make_unique<PopupNoSuggestionsView>(
-            search_bar_config_.no_results_message));
-  }
-
+  // TODO(b/325246516): Add "No suggestions found" label if there is a filter
+  // and there are only footer suggestions in the list.
   // Add the body rows, if there are any.
   if (!kSuggestions.empty() && !IsFooterItem(kSuggestions, 0u)) {
     // Create a container to wrap the "regular" (non-footer) rows.

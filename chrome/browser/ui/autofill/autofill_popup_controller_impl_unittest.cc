@@ -379,23 +379,6 @@ TEST_F(AutofillPopupControllerImplTest,
                           Field(&Suggestion::type, kClearForm)));
 }
 
-TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_HasFilteredOutSuggestions) {
-  using enum SuggestionType;
-
-  AutofillPopupController& controller = client().popup_controller(manager());
-  ShowSuggestions(manager(), {
-                                 Suggestion(u"abcd", kAddressEntry),
-                                 Suggestion(u"abxy", kAddressEntry),
-                             });
-
-  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
-  EXPECT_FALSE(controller.HasFilteredOutSuggestions());
-
-  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"abc"));
-  EXPECT_TRUE(controller.HasFilteredOutSuggestions());
-}
-
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {
   ShowSuggestions(manager(),
                   {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,

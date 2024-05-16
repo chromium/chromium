@@ -80,11 +80,6 @@ class AutofillPopupController : public AutofillSuggestionController {
   // e.g. `RemoveSuggestion()`) become invalid.
   virtual void SetFilter(std::optional<SuggestionFilter> filter) = 0;
 
-  // Returns whethere there is at least one suggestion filtered out. It implies
-  // that the filter is not empty, and if it's set to `nullopt`,
-  // `GetSuggestions()` will return more suggestions.
-  virtual bool HasFilteredOutSuggestions() const = 0;
-
   // Handles a key press event and returns whether the event should be swallowed
   // (meaning that no other handler, in particular not the default handler, can
   // process it).

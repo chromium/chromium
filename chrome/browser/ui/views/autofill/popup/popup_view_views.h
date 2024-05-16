@@ -59,7 +59,6 @@ struct PopupViewSearchBarConfig {
   // the search bar won't be displayed, and other settings become irrelevant.
   bool enabled = false;
   std::u16string placeholder;
-  std::u16string no_results_message;
 };
 
 // Views implementation for the autofill and password suggestion.
@@ -165,7 +164,7 @@ class PopupViewViews : public PopupBaseView,
   bool HasPopupRowViewAt(size_t index) const;
 
   // Instantiates the content of the popup.
-  void InitViews();
+  void InitViews(PopupViewSearchBarConfig search_bar_config);
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
@@ -259,7 +258,6 @@ class PopupViewViews : public PopupBaseView,
   std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
-  const PopupViewSearchBarConfig search_bar_config_;
   raw_ptr<PopupSearchBarView> search_bar_ = nullptr;
   raw_ptr<views::BoxLayoutView> suggestions_container_ = nullptr;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
