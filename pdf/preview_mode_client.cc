@@ -30,51 +30,51 @@ void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void PreviewModeClient::Invalidate(const gfx::Rect& rect) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::DidScroll(const gfx::Vector2d& point) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::ScrollToX(int x_in_screen_coords) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::ScrollToY(int y_in_screen_coords) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::ScrollBy(const gfx::Vector2d& scroll_delta) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::ScrollToPage(int page) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::NavigateTo(const std::string& url,
                                    WindowOpenDisposition disposition) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::UpdateCursor(ui::mojom::CursorType cursor_type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::UpdateTickMarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::NotifyNumberOfFindResultsChanged(int total,
                                                          bool final_result) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::NotifySelectedFindResultChanged(int current_find_index,
                                                         bool final_result) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::GetDocumentPassword(
@@ -83,22 +83,22 @@ void PreviewModeClient::GetDocumentPassword(
 }
 
 void PreviewModeClient::Alert(const std::string& message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PreviewModeClient::Confirm(const std::string& message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 std::string PreviewModeClient::Prompt(const std::string& question,
                                       const std::string& default_answer) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
 std::string PreviewModeClient::GetURL() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -107,21 +107,21 @@ void PreviewModeClient::Email(const std::string& to,
                               const std::string& bcc,
                               const std::string& subject,
                               const std::string& body) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::Print() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::SubmitForm(const std::string& url,
                                    const void* data,
                                    int length) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -133,7 +133,7 @@ std::vector<PDFEngine::Client::SearchStringResult>
 PreviewModeClient::SearchString(const char16_t* string,
                                 const char16_t* term,
                                 bool case_sensitive) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<SearchStringResult>();
 }
 
@@ -147,11 +147,11 @@ void PreviewModeClient::DocumentLoadFailed() {
 
 void PreviewModeClient::DocumentHasUnsupportedFeature(
     const std::string& feature) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PreviewModeClient::IsPrintPreview() const {
@@ -159,21 +159,21 @@ bool PreviewModeClient::IsPrintPreview() const {
 }
 
 SkColor PreviewModeClient::GetBackgroundColor() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SK_ColorTRANSPARENT;
 }
 
 void PreviewModeClient::SetSelectedText(const std::string& selected_text) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PreviewModeClient::SetLinkUnderCursor(
     const std::string& link_under_cursor) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PreviewModeClient::IsValidLink(const std::string& url) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

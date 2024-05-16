@@ -79,7 +79,7 @@ PP_Resource FileRefResource::CreateFileRef(
     if (enter.failed())
       return 0;
     if (enter.object()->GetType() != create_info.file_system_type) {
-      NOTREACHED() << "file system type mismatch with resource";
+      NOTREACHED_IN_MIGRATION() << "file system type mismatch with resource";
       return 0;
     }
   }

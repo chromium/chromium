@@ -31,7 +31,7 @@ bool CheckDerivationParameters(SymmetricKey::Algorithm algorithm,
       return key_size_in_bits % 8 == 0 && key_size_in_bits != 0;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -141,7 +141,7 @@ SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
     return SandboxedVfsFileType::kWal;
   }
 
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "Argument is not a file name buffer passed from SQLite to a VFS: "
       << full_path;
   return SandboxedVfsFileType::kDatabase;
@@ -217,7 +217,7 @@ int SandboxedVfs::Access(const char* full_path, int flags, int& result) {
       result = (access->can_read && access->can_write) ? 1 : 0;
       break;
     default:
-      NOTREACHED() << "Unsupported xAccess flags: " << flags;
+      NOTREACHED_IN_MIGRATION() << "Unsupported xAccess flags: " << flags;
       return SQLITE_ERROR;
   }
   return SQLITE_OK;

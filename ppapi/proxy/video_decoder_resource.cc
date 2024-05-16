@@ -427,7 +427,7 @@ void VideoDecoderResource::OnPluginMsgDecodeComplete(
     const ResourceMessageReplyParams& params,
     uint32_t shm_id) {
   if (shm_id >= shm_buffers_.size()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // Make the shm buffer available.

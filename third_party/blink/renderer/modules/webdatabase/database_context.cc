@@ -223,7 +223,7 @@ Database* DatabaseContext::OpenDatabaseInternal(
       return nullptr;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }
@@ -267,7 +267,7 @@ void DatabaseContext::ThrowExceptionForDatabaseError(
                                         error_message);
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

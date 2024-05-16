@@ -41,7 +41,7 @@ AwComponentInstallerPolicy::AwComponentInstallerPolicy() = default;
 
 void AwComponentInstallerPolicy::OnCustomUninstall() {
   // Uninstallation isn't supported in WebView.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Copy the components file from `install_dir` to the serving directory of the

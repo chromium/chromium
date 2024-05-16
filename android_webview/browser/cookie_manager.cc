@@ -190,7 +190,8 @@ namespace {
 base::FilePath GetPathInAppDirectory(std::string path) {
   base::FilePath result;
   if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &result)) {
-    NOTREACHED() << "Failed to get app data directory for Android WebView";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to get app data directory for Android WebView";
   }
   result = result.Append(FILE_PATH_LITERAL(path));
   return result;

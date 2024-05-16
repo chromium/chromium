@@ -118,7 +118,7 @@ bool FileSystemURL::TypeImpliesPathIsReal(FileSystemType type) {
 
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case kFileSystemTypeLocal:

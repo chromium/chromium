@@ -23,34 +23,34 @@ void FakeBlob::Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) {
 
 void FakeBlob::AsDataPipeGetter(
     mojo::PendingReceiver<network::mojom::DataPipeGetter>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::ReadRange(uint64_t offset,
                          uint64_t size,
                          mojo::ScopedDataPipeProducerHandle,
                          mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
                        mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,
                     const std::string& method,
                     const net::HttpRequestHeaders&,
                     mojo::PendingRemote<network::mojom::URLLoaderClient>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::ReadSideData(ReadSideDataCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakeBlob::GetInternalUUID(GetInternalUUIDCallback callback) {

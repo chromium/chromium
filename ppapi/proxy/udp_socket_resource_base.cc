@@ -117,7 +117,7 @@ int32_t UDPSocketResourceBase::SetOptionImpl(
       break;
     }
     default: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PP_ERROR_BADARGUMENT;
     }
   }

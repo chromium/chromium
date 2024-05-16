@@ -140,7 +140,7 @@ std::string SandboxFileSystemBackendDelegate::GetTypeString(
       return kSyncableDirectoryName;
     case kFileSystemTypeUnknown:
     default:
-      NOTREACHED() << "Unknown filesystem type requested:" << type;
+      NOTREACHED_IN_MIGRATION() << "Unknown filesystem type requested:" << type;
       return std::string();
   }
 }

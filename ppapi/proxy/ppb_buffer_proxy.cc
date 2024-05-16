@@ -57,7 +57,7 @@ void Buffer::Unmap() {
 }
 
 int32_t Buffer::GetSharedMemory(base::UnsafeSharedMemoryRegion** out_handle) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PP_ERROR_NOTSUPPORTED;
 }
 

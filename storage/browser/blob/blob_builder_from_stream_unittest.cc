@@ -83,7 +83,7 @@ class BlobBuilderFromStreamTestWithDelayedLimits
       case LengthHintTestType::kTooSmallSize:
         return actual_size / 2;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

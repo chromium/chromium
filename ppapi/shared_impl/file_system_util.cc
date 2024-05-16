@@ -28,7 +28,7 @@ std::string IsolatedFileSystemTypeToRootName(
     case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX:
       return "crxfs";
     default:
-      NOTREACHED() << type;
+      NOTREACHED_IN_MIGRATION() << type;
       return std::string();
   }
 }

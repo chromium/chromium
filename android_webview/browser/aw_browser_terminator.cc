@@ -112,7 +112,7 @@ void OnRenderProcessGone(
                      << " killing application.";
           kill(getpid(), SIGKILL);
         }
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case AwRenderProcessGoneDelegate::RenderProcessGoneResult::kHandled:
         // Don't log UMA yet. This WebView may be handled, but we need to wait

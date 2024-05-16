@@ -64,7 +64,7 @@ const char* GetCorporaString(FilesListCorpora corpora) {
     case FilesListCorpora::ALL_TEAM_DRIVES:
       return kCorporaAllTeamDrives;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kCorporaDefault;
 }
 

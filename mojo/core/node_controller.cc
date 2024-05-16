@@ -1447,7 +1447,7 @@ void NodeController::AttemptShutdownIfRequested() {
 void NodeController::ForceDisconnectProcessForTestingOnIOThread(
     base::ProcessId process_id) {
 #if BUILDFLAG(IS_NACL) || BUILDFLAG(IS_IOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
   RequestContext request_context;

@@ -24,7 +24,7 @@ struct EnumTraits<skia::mojom::TileMode, SkTileMode> {
       case SkTileMode::kDecal:
         return skia::mojom::TileMode::DECAL;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return skia::mojom::TileMode::DECAL;
   }
 

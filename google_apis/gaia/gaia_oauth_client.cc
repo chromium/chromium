@@ -614,7 +614,7 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
     }
 
     case NO_PENDING_REQUEST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

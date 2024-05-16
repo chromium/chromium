@@ -117,13 +117,13 @@ SkiaOutputSurfaceDependencyWebView::CreateGLSurface(
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CachePresenter(
     gl::Presenter* presenter) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::ScopedClosureRunner();
 }
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyWebView::CacheGLSurface(
     gl::GLSurface* surface) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::ScopedClosureRunner();
 }
 

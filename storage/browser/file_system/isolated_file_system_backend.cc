@@ -83,7 +83,7 @@ AsyncFileUtil* IsolatedFileSystemBackend::GetAsyncFileUtil(
     case kFileSystemTypeForTransientFile:
       return transient_file_util_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

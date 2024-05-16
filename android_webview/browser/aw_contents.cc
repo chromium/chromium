@@ -1295,7 +1295,7 @@ jint AwContents::GetEffectivePriority(JNIEnv* env) {
     case content::ChildProcessImportance::IMPORTANT:
       return static_cast<jint>(RendererPriority::HIGH);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

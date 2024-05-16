@@ -141,7 +141,7 @@ bool SandboxBPF::SupportsSeccompSandbox(SeccompLevel level) {
     case SeccompLevel::MULTI_THREADED:
       return KernelSupportsSeccompTsync();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

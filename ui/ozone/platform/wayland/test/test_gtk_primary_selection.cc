@@ -90,7 +90,7 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
   }
 
   void SendDndDropPerformed() override {
-    NOTREACHED() << "The interface does not support this method.";
+    NOTREACHED_IN_MIGRATION() << "The interface does not support this method.";
   }
 
   raw_ptr<TestSelectionSource> source = nullptr;

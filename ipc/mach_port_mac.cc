@@ -16,7 +16,7 @@ namespace IPC {
 void ParamTraits<MachPortMac>::Write(base::Pickle* m, const param_type& p) {
   if (!m->WriteAttachment(
           new IPC::internal::MachPortAttachmentMac(p.get_mach_port()))) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

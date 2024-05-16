@@ -70,7 +70,7 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
   // FileSystemQuotaUtil overrides.
   void DeleteCachedDefaultBucket(
       const blink::StorageKey& storage_key) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   base::File::Error DeleteBucketDataOnFileTaskRunner(
@@ -78,7 +78,7 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
       QuotaManagerProxy* proxy,
       const BucketLocator& bucket_locator,
       FileSystemType type) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return base::File::FILE_OK;
   }
 
@@ -89,13 +89,13 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
   scoped_refptr<QuotaReservation> CreateQuotaReservationOnFileTaskRunner(
       const blink::StorageKey& storage_key,
       FileSystemType type) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return scoped_refptr<QuotaReservation>();
   }
 
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::vector<blink::StorageKey>();
   }
 

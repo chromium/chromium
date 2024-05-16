@@ -28,7 +28,7 @@ PP_HostResolver_Private_Hint ConvertToHostResolverPrivateHint(
       private_hint.family = PP_NETADDRESSFAMILY_PRIVATE_IPV6;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       private_hint.family = PP_NETADDRESSFAMILY_PRIVATE_UNSPECIFIED;
   }
 

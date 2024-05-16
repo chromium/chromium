@@ -211,46 +211,46 @@ bool XPSModule::InitImpl() {
   g_open_provider_proc = reinterpret_cast<PTOpenProviderProc>(
       GetProcAddress(prntvpt_module, "PTOpenProvider"));
   if (!g_open_provider_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_get_print_capabilities_proc = reinterpret_cast<PTGetPrintCapabilitiesProc>(
       GetProcAddress(prntvpt_module, "PTGetPrintCapabilities"));
   if (!g_get_print_capabilities_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_convert_devmode_to_print_ticket_proc =
       reinterpret_cast<PTConvertDevModeToPrintTicketProc>(
           GetProcAddress(prntvpt_module, "PTConvertDevModeToPrintTicket"));
   if (!g_convert_devmode_to_print_ticket_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_convert_print_ticket_to_devmode_proc =
       reinterpret_cast<PTConvertPrintTicketToDevModeProc>(
           GetProcAddress(prntvpt_module, "PTConvertPrintTicketToDevMode"));
   if (!g_convert_print_ticket_to_devmode_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_merge_and_validate_print_ticket_proc =
       reinterpret_cast<PTMergeAndValidatePrintTicketProc>(
           GetProcAddress(prntvpt_module, "PTMergeAndValidatePrintTicket"));
   if (!g_merge_and_validate_print_ticket_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_release_memory_proc = reinterpret_cast<PTReleaseMemoryProc>(
       GetProcAddress(prntvpt_module, "PTReleaseMemory"));
   if (!g_release_memory_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   g_close_provider_proc = reinterpret_cast<PTCloseProviderProc>(
       GetProcAddress(prntvpt_module, "PTCloseProvider"));
   if (!g_close_provider_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   return true;
@@ -368,7 +368,7 @@ bool XPSPrintModule::InitImpl() {
   g_start_xps_print_job_proc = reinterpret_cast<StartXpsPrintJobProc>(
       GetProcAddress(xpsprint_module, "StartXpsPrintJob"));
   if (!g_start_xps_print_job_proc) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   return true;

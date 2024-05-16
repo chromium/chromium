@@ -149,7 +149,7 @@ CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
     case IPP_JOB_STOPPED:
       return CupsJob::STOPPED;
     default:
-      NOTREACHED() << "Unidentifed state " << state;
+      NOTREACHED_IN_MIGRATION() << "Unidentifed state " << state;
       break;
   }
 

@@ -28,7 +28,7 @@ const char* InvalidCredentialsReasonToString(
     case InvalidGaiaCredentialsReason::CREDENTIALS_MISSING:
       return "credentials missing";
     case InvalidGaiaCredentialsReason::NUM_REASONS:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -194,7 +194,7 @@ std::string GoogleServiceAuthError::ToString() const {
     case CHALLENGE_RESPONSE_REQUIRED:
       return "Service responded with a token binding challenge.";
     case NUM_STATES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }

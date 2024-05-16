@@ -335,7 +335,7 @@ std::string ConvertViewIntToViewString(unsigned long view_int) {
     case PDFDEST_VIEW_UNKNOWN_MODE:
       return "";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
 }
@@ -480,7 +480,7 @@ void ParamsTransformPageToScreen(unsigned long view_fit_type,
     case PDFDEST_VIEW_UNKNOWN_MODE:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -2301,7 +2301,7 @@ void PDFiumEngine::HandleAccessibilityAction(
       break;
     }
     case AccessibilityAction::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -22,7 +22,7 @@ bool MatchRealm(const std::string& realm, RealmRestriction restriction) {
     case ALLOW_ANY_REALM:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

@@ -74,7 +74,7 @@ class TestDemuxerStream : public media::DemuxerStream {
   }
   media::AudioDecoderConfig audio_decoder_config() override { return config_; }
   media::VideoDecoderConfig video_decoder_config() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return media::VideoDecoderConfig();
   }
   Type type() const override { return AUDIO; }

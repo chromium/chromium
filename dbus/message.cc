@@ -80,7 +80,7 @@ std::string Message::GetMessageTypeAsString() {
     case MESSAGE_ERROR:
       return "MESSAGE_ERROR";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

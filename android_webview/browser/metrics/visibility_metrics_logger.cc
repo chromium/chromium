@@ -48,7 +48,7 @@ const char* SchemeEnumToString(VisibilityMetricsLogger::Scheme scheme) {
     case VisibilityMetricsLogger::Scheme::kIntent:
       return "intent";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return "";
 }

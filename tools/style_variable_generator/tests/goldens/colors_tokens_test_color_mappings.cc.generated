@@ -80,7 +80,7 @@ std::string ColorIdName(ui::ColorId id) {
     case kCrosSysBlendABlend:
       return "--cros-sys-blend_a_blend";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 

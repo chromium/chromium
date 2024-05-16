@@ -61,7 +61,7 @@ void KernelVersionNumbers(int32_t* major_version,
                           int32_t* bugfix_version) {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     *major_version = 0;
     *minor_version = 0;
     *bugfix_version = 0;

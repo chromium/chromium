@@ -41,7 +41,7 @@ WebEngineAudioDeviceFactory::NewAudioRendererSink(
   switch (source_type) {
     case blink::WebAudioDeviceSourceType::kMediaElement:
       // MediaElement uses NewMixableSink().
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 
     case blink::WebAudioDeviceSourceType::kWebRtc:

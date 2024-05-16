@@ -226,7 +226,8 @@ struct Converter<std::vector<T> > {
       if (!result->CreateDataProperty(context, i, element)
                .To(&property_created) ||
           !property_created) {
-        NOTREACHED() << "CreateDataProperty should always succeed here.";
+        NOTREACHED_IN_MIGRATION()
+            << "CreateDataProperty should always succeed here.";
       }
     }
     return result;
@@ -276,7 +277,8 @@ struct Converter<v8::LocalVector<T>> {
       if (!result->CreateDataProperty(context, i, element)
                .To(&property_created) ||
           !property_created) {
-        NOTREACHED() << "CreateDataProperty should always succeed here.";
+        NOTREACHED_IN_MIGRATION()
+            << "CreateDataProperty should always succeed here.";
       }
     }
     return result;

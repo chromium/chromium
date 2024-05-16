@@ -99,7 +99,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
       case base::Value::Type::LIST:
         return mojo_base::mojom::ValueDataView::Tag::kListValue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return mojo_base::mojom::ValueDataView::Tag::kNullValue;
   }
 

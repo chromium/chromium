@@ -24,7 +24,7 @@ void ParamTraits<HandleWin>::Write(base::Pickle* m, const param_type& p) {
   scoped_refptr<IPC::internal::HandleAttachmentWin> attachment(
       new IPC::internal::HandleAttachmentWin(p.get_handle()));
   if (!m->WriteAttachment(std::move(attachment)))
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 // static

@@ -100,7 +100,7 @@ void PaintManager::SetTransform(float scale,
     return;
 
   if (scale <= 0.0f) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else {
     // translate_with_origin = origin - scale * origin - translate
     gfx::Vector2dF translate_with_origin = origin.OffsetFromOrigin();

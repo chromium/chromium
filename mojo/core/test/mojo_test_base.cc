@@ -53,7 +53,7 @@ int MojoTestBase::ClientController::WaitForShutdown() {
   int retval = helper_.WaitForChildShutdown();
   return retval;
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 1;
 #endif
 }

@@ -42,7 +42,7 @@ const char* CourgetteFlow::name(Group group) {
     case NEW:
       return "'new' input";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;
@@ -57,7 +57,7 @@ CourgetteFlow::Data* CourgetteFlow::data(Group group) {
     case NEW:
       return &data_new_;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;

@@ -70,7 +70,7 @@ TEST(CFGSupportTests, LongJmp) {
   }
   // Call another function to perform the longjmp.
   PerformLongJump();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Make sure Microsoft binaries compiled with CFG cannot call indirect pointers

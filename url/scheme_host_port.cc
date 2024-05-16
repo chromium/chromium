@@ -143,7 +143,7 @@ bool IsValidInput(const std::string_view& scheme,
       return false;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

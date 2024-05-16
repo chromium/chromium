@@ -99,7 +99,7 @@ struct ContextWithStyleScopeFrame {
         context.search_text_request_is_current = false;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

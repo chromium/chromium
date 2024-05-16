@@ -62,9 +62,9 @@ int ConvertBlobErrorToNetError(BlobStatus reason) {
     case BlobStatus::PENDING_TRANSPORT:
     case BlobStatus::PENDING_REFERENCED_BLOBS:
     case BlobStatus::PENDING_CONSTRUCTION:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net::ERR_FAILED;
 }
 }  // namespace
@@ -509,7 +509,7 @@ BlobReader::Status BlobReader::ReadItem() {
   if (item.type() == BlobDataItem::Type::kReadableDataHandle)
     return ReadReadableDataHandle(item, bytes_to_read);
   if (!IsFileType(item.type())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return ReportError(net::ERR_UNEXPECTED);
   }
   FileStreamReader* const reader =
@@ -751,7 +751,7 @@ std::unique_ptr<FileStreamReader> BlobReader::CreateFileStreamReader(
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

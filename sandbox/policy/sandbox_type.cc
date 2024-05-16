@@ -230,7 +230,7 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
   CHECK(false)
       << "Command line does not provide a valid sandbox configuration: "
       << command_line.GetCommandLineString();
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Sandbox::kNoSandbox;
 }
 
@@ -319,7 +319,7 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
 #endif
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -413,7 +413,7 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   CHECK(false)
       << "Command line does not provide a valid sandbox configuration: "
       << sandbox_string;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Sandbox::kUtility;
 }
 

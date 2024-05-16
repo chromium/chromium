@@ -52,7 +52,7 @@ struct EnumTraits<mojo_base::mojom::FileError, base::File::Error> {
       case base::File::FILE_ERROR_MAX:
         return mojo_base::mojom::FileError::FAILED;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return mojo_base::mojom::FileError::FAILED;
   }
 
@@ -111,7 +111,7 @@ struct EnumTraits<mojo_base::mojom::FileError, base::File::Error> {
         *out = base::File::FILE_ERROR_IO;
         return true;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

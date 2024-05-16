@@ -173,8 +173,8 @@ class EnterHostFromHostResourceForceCallback
 
   ~EnterHostFromHostResourceForceCallback() {
     if (needs_running_) {
-      NOTREACHED() << "Should always call SetResult except in the "
-                      "initialization failed case.";
+      NOTREACHED_IN_MIGRATION() << "Should always call SetResult except in the "
+                                   "initialization failed case.";
       RunCallback(PP_ERROR_FAILED);
     }
   }

@@ -156,7 +156,7 @@ class HeadlessProxyConfigMonitor
             net::ProxyConfigWithAnnotation::CreateDirect());
         break;
       case net::ProxyConfigService::CONFIG_PENDING:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

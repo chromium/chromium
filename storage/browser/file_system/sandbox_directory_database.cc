@@ -740,7 +740,7 @@ bool SandboxDirectoryDatabase::Init(RecoveryOption recovery_option) {
       return Init(FAIL_ON_CORRUPTION);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

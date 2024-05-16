@@ -59,7 +59,7 @@ class DataDocumentLoader : public DocumentLoader {
   // DocumentLoader:
   bool Init(std::unique_ptr<URLLoaderWrapper> loader,
             const std::string& url) override {
-    NOTREACHED() << "PDFiumDocument doesn't call this";
+    NOTREACHED_IN_MIGRATION() << "PDFiumDocument doesn't call this";
     return false;
   }
   bool GetBlock(uint32_t position, uint32_t size, void* buf) const override {

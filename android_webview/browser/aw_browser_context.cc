@@ -158,7 +158,8 @@ void MigrateProfileData(base::FilePath cache_path,
 base::FilePath BuildCachePath(const base::FilePath& relative_path) {
   FilePath cache_path;
   if (!base::PathService::Get(base::DIR_CACHE, &cache_path)) {
-    NOTREACHED() << "Failed to get app cache directory for Android WebView";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to get app cache directory for Android WebView";
   }
   return cache_path.Append(relative_path);
 }
@@ -686,7 +687,8 @@ base::FilePath AwBrowserContext::BuildStoragePath(
     const base::FilePath& relative_path) {
   base::FilePath user_data_dir;
   if (!base::PathService::Get(base::DIR_ANDROID_APP_DATA, &user_data_dir)) {
-    NOTREACHED() << "Failed to get app data directory for Android WebView";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to get app data directory for Android WebView";
   }
   return user_data_dir.Append(relative_path);
 }

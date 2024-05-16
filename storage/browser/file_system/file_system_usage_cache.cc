@@ -233,7 +233,7 @@ bool FileSystemUsageCache::Write(const base::FilePath& usage_file_path,
 base::File* FileSystemUsageCache::GetFile(const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_incognito_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   if (cache_files_.size() >= kMaxHandleCacheSize)

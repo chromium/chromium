@@ -29,7 +29,7 @@ TransmissiblePlatformHandle::TransmissiblePlatformHandle(PlatformHandle handle)
   // TransmissiblePlatformHandle is not used on Windows because there is no such
   // thing: handles are inlined as message data during driver object
   // serialization.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

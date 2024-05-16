@@ -89,7 +89,7 @@ int32_t UDPSocketFilter::RequestData(
   base::AutoLock acquire(lock_);
   auto it = queues_.find(resource);
   if (it == queues_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PP_ERROR_FAILED;
   }
   return it->second->RequestData(num_bytes, buffer, addr, callback);

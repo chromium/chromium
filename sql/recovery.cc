@@ -154,7 +154,7 @@ void Recovery::SetRecoveryFailed(Result failure_result,
   switch (failure_result) {
     case Result::kUnknown:
     case Result::kSuccess:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case Result::kFailedRecoveryInit:
     case Result::kFailedRecoveryRun:

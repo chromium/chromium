@@ -293,7 +293,7 @@ bool operator==(const BlobDataItem& a, const BlobDataItem& b) {
     case BlobDataItem::Type::kReadableDataHandle:
       return a.data_handle() == b.data_handle();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

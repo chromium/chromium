@@ -254,7 +254,7 @@ int HeadlessShellMain(content::ContentMainParams params) {
 
   if (!process_type.empty()) {
     HeadlessChildMain(std::move(params));
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
 #if BUILDFLAG(IS_MAC)

@@ -153,7 +153,7 @@ void RlzLibTestNoMachineStateHelper::Reset() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   rlz_lib::testing::SetRlzStoreDirectory(temp_dir_.GetPath());
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_POSIX)
 }
 

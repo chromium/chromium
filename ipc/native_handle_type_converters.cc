@@ -22,7 +22,7 @@ IPC::MessageAttachment::Type TypeConverter<
     case native::SerializedHandleType::FUCHSIA_HANDLE:
       return IPC::MessageAttachment::Type::FUCHSIA_HANDLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IPC::MessageAttachment::Type::MOJO_HANDLE;
 }
 
@@ -42,7 +42,7 @@ native::SerializedHandleType TypeConverter<
     case IPC::MessageAttachment::Type::FUCHSIA_HANDLE:
       return native::SerializedHandleType::FUCHSIA_HANDLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return native::SerializedHandleType::MOJO_HANDLE;
 }
 

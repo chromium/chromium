@@ -64,7 +64,7 @@ void FileWriterDelegate::Start(std::unique_ptr<BlobReader> blob_reader,
       // Do nothing.
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FileWriterDelegate::Start(mojo::ScopedDataPipeConsumerHandle data_pipe,
@@ -143,7 +143,7 @@ void FileWriterDelegate::Read() {
         // Do nothing.
         return;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -166,7 +166,7 @@ void FileWriterDelegate::Read() {
     return;
   }
   // Some unknown error, this shouldn't happen.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   OnReadError(base::File::FILE_ERROR_FAILED);
 }
 

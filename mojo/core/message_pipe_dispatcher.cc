@@ -158,7 +158,7 @@ MojoResult MessagePipeDispatcher::WriteMessage(
       return MOJO_RESULT_FAILED_PRECONDITION;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MOJO_RESULT_UNKNOWN;
   }
 
@@ -181,7 +181,7 @@ MojoResult MessagePipeDispatcher::ReadMessage(
         rv == ports::ERROR_PORT_STATE_UNEXPECTED)
       return MOJO_RESULT_INVALID_ARGUMENT;
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return MOJO_RESULT_UNKNOWN;
   }
 

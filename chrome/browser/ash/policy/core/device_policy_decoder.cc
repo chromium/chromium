@@ -111,7 +111,7 @@ std::optional<PolicyLevel> GetPolicyLevel(
     case em::PolicyOptions::UNSET:
       return std::nullopt;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

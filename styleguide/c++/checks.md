@@ -147,7 +147,7 @@ if (!foo) {
 //
 // Use CHECK(bar); instead.
 if (!bar) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 ```

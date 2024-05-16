@@ -78,7 +78,7 @@ bool ControlMessageHandler::Accept(Message* message) {
   if (message->header()->name == interface_control::kRunOrClosePipeMessageId)
     return RunOrClosePipe(message);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -91,7 +91,7 @@ bool ControlMessageHandler::AcceptWithResponder(
   if (message->header()->name == interface_control::kRunMessageId)
     return Run(message, std::move(responder));
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

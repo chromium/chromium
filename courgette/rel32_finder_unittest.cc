@@ -51,7 +51,7 @@ class Rel32FinderTestCase {
       finder_ = std::unique_ptr<Rel32Finder>(
           new Rel32FinderX86(relocs_start_rva_, relocs_end_rva_));
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

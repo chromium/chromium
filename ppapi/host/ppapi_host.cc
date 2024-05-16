@@ -148,7 +148,7 @@ int PpapiHost::AddPendingResourceHost(
     std::unique_ptr<ResourceHost> resource_host) {
   // The resource ID should not be assigned.
   if (!resource_host.get() || resource_host->pp_resource() != 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

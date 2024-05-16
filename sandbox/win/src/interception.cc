@@ -289,7 +289,7 @@ bool InterceptionManager::SetupInterceptionInfo(const InterceptionData& data,
 
   if ((dll_info->unload_module) && (data.function != kUnloadDLLDummyFunction)) {
     // Can't specify a dll for both patch and unload.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   FunctionInfo* function = reinterpret_cast<FunctionInfo*>(*buffer);

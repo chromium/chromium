@@ -131,11 +131,11 @@ bool EventFilter::IsEventAllowed(ui::EventType type) {
       return true;
 
     case ui::ET_UMA_DATA:
-      NOTREACHED();  // ChromeOS only.
+      NOTREACHED_IN_MIGRATION();  // ChromeOS only.
       break;
 
     case ui::ET_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
 
     case ui::ET_UNKNOWN:

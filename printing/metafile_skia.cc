@@ -289,19 +289,19 @@ unsigned int MetafileSkia::GetPageCount() const {
 }
 
 printing::NativeDrawingContext MetafileSkia::context() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 #if BUILDFLAG(IS_WIN)
 bool MetafileSkia::Playback(printing::NativeDrawingContext hdc,
                             const RECT* rect) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool MetafileSkia::SafePlayback(printing::NativeDrawingContext hdc) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

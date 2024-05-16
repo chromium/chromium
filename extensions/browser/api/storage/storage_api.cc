@@ -222,14 +222,14 @@ ExtensionFunction::ResponseValue SettingsFunction::RunWithStorage(
     ValueStore* storage) {
   // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
   // from all functions.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return BadMessage();
 }
 
 ExtensionFunction::ResponseValue SettingsFunction::RunInSession() {
   // TODO(crbug.com/40963428): Remove this when RunWithStorage has been removed
   // from all functions.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return BadMessage();
 }
 

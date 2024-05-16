@@ -384,7 +384,7 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::REQUEST_CANCELED:
       case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       case GoogleServiceAuthError::NUM_STATES:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return GoogleServiceAuthError::AuthErrorNone();
     }
   }

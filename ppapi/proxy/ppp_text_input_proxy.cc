@@ -22,7 +22,7 @@ void RequestSurroundingText(PP_Instance instance,
       proxy::HostDispatcher::GetForInstance(instance);
   if (!dispatcher) {
     // The dispatcher should always be valid.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

@@ -104,11 +104,11 @@ gpu::CommandBuffer::State Graphics3D::WaitForGetOffsetInRange(
 }
 
 void Graphics3D::EnsureWorkVisible() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Graphics3D::ResolveAndDetachFramebuffer() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 gpu::CommandBuffer* Graphics3D::GetCommandBuffer() {

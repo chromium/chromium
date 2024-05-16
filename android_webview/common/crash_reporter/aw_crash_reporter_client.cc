@@ -115,7 +115,7 @@ bool g_enabled;
 
 void EnableCrashReporter(const std::string& process_type) {
   if (g_enabled) {
-    NOTREACHED() << "EnableCrashReporter called more than once";
+    NOTREACHED_IN_MIGRATION() << "EnableCrashReporter called more than once";
     return;
   }
 

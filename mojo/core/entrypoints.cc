@@ -22,7 +22,8 @@ mojo::core::Core* g_core;
 extern "C" {
 
 MojoResult MojoInitializeImpl(const struct MojoInitializeOptions* options) {
-  NOTREACHED() << "Do not call MojoInitialize() as a Mojo Core embedder!";
+  NOTREACHED_IN_MIGRATION()
+      << "Do not call MojoInitialize() as a Mojo Core embedder!";
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 
@@ -354,7 +355,8 @@ MojoResult MojoQueryQuotaImpl(MojoHandle handle,
 }
 
 MojoResult MojoShutdownImpl(const MojoShutdownOptions* options) {
-  NOTREACHED() << "Do not call MojoShutdown() as a Mojo Core embedder!";
+  NOTREACHED_IN_MIGRATION()
+      << "Do not call MojoShutdown() as a Mojo Core embedder!";
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 

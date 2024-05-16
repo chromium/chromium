@@ -68,7 +68,7 @@ void TaskForwardingSequence::ScheduleOrRetainTask(
 // Should not be called because tasks aren't reposted to wait for sync tokens,
 // or for yielding execution since ShouldYield() returns false.
 void TaskForwardingSequence::ContinueTask(base::OnceClosure task) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Method to wrap scheduled task with the order number processing required for

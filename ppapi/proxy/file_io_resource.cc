@@ -133,7 +133,7 @@ int32_t FileIOResource::Open(PP_Resource file_ref,
   PPB_FileRef_API* file_ref_api = enter_file_ref.object();
   const FileRefCreateInfo& create_info = file_ref_api->GetCreateInfo();
   if (!FileSystemTypeIsValid(create_info.file_system_type)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PP_ERROR_FAILED;
   }
   int32_t rv = state_manager_.CheckOperationState(

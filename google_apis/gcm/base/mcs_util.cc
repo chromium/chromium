@@ -189,7 +189,7 @@ void SetPersistentId(const std::string& persistent_id,
         set_persistent_id(persistent_id);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 uint32_t GetLastStreamIdReceived(
@@ -237,7 +237,7 @@ void SetLastStreamIdReceived(uint32_t val,
         set_last_stream_id_received(val);
     return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool HasTTLExpired(const google::protobuf::MessageLite& protobuf,

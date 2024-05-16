@@ -95,7 +95,7 @@ bool BrokerProcess::ForkSignalBasedBroker(
                                       parent_pid);
   broker_host_signal_based.LoopAndHandleRequests();
   _exit(1);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

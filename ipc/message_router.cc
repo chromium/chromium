@@ -14,13 +14,13 @@ MessageRouter::MessageRouter() = default;
 MessageRouter::~MessageRouter() = default;
 
 bool MessageRouter::OnControlMessageReceived(const IPC::Message& msg) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "should override in subclass if you care about control messages";
   return false;
 }
 
 bool MessageRouter::Send(IPC::Message* msg) {
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
       << "should override in subclass if you care about sending messages";
   return false;
 }

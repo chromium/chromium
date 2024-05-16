@@ -181,7 +181,7 @@ void PpapiCommandBufferProxy::ForceLostContext(gpu::error::ContextLostReason) {
 }
 
 void PpapiCommandBufferProxy::SetLock(base::Lock*) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PpapiCommandBufferProxy::EnsureWorkVisible() {
@@ -216,44 +216,44 @@ uint64_t PpapiCommandBufferProxy::GenerateFenceSyncRelease() {
 }
 
 bool PpapiCommandBufferProxy::IsFenceSyncReleased(uint64_t release) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void PpapiCommandBufferProxy::SignalSyncToken(const gpu::SyncToken& sync_token,
                                               base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Pepper plugin does not expose or call WaitSyncTokenCHROMIUM.
 void PpapiCommandBufferProxy::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool PpapiCommandBufferProxy::CanWaitUnverifiedSyncToken(
     const gpu::SyncToken& sync_token) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void PpapiCommandBufferProxy::SignalQuery(uint32_t query,
                                           base::OnceClosure callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PpapiCommandBufferProxy::CancelAllQueries() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PpapiCommandBufferProxy::CreateGpuFence(uint32_t gpu_fence_id,
                                              ClientGpuFence source) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PpapiCommandBufferProxy::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PpapiCommandBufferProxy::SetGpuControlClient(gpu::GpuControlClient*) {

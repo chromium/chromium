@@ -127,7 +127,7 @@ OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
     case AW_DRAW_FN_OVERLAYS_MODE_ENABLED:
       return OverlaysParams::Mode::Enabled;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return OverlaysParams::Mode::Disabled;
   }
 }

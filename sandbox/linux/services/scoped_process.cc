@@ -53,7 +53,7 @@ ScopedProcess::ScopedProcess(base::OnceClosure child_callback)
     // Notify the parent that the closure has run.
     CHECK_EQ(1, HANDLE_EINTR(write(pipe_fds_[1], kSynchronisationChar, 1)));
     WaitForever();
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     _exit(1);
   }
 

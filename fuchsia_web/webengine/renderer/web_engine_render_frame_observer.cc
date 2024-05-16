@@ -27,7 +27,7 @@ WebEngineRenderFrameObserver::~WebEngineRenderFrameObserver() = default;
 void WebEngineRenderFrameObserver::OnDestruct() {
   // We should never hit this since we will have destroyed this observer
   // in WillDetach.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebEngineRenderFrameObserver::WillDetach(

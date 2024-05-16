@@ -343,7 +343,7 @@ mojom::ResultCode PrintBackendWin::EnumeratePrinters(
   auto printer_info_buffer = std::make_unique<BYTE[]>(bytes_needed);
   if (!EnumPrinters(kFlags, nullptr, kLevel, printer_info_buffer.get(),
                     bytes_needed, &bytes_needed, &count_returned)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
   }
 
@@ -451,7 +451,7 @@ mojom::ResultCode PrintBackendWin::GetPrinterSemanticCapsAndDefaults(
           caps.duplex_default = mojom::DuplexMode::kShortEdge;
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
 

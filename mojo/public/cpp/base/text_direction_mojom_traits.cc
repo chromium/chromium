@@ -18,7 +18,7 @@ EnumTraits<mojo_base::mojom::TextDirection, base::i18n::TextDirection>::ToMojom(
     case base::i18n::LEFT_TO_RIGHT:
       return mojo_base::mojom::TextDirection::LEFT_TO_RIGHT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojo_base::mojom::TextDirection::UNKNOWN_DIRECTION;
 }
 

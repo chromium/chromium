@@ -48,7 +48,7 @@ class ThreadSafeProxy : public mojo::ThreadSafeProxy {
       mojo::Message& message,
       std::unique_ptr<mojo::MessageReceiver> responder) override {
     // We don't bother supporting this because it's not used in practice.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

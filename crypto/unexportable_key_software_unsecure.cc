@@ -67,7 +67,7 @@ class SoftwareECDSA : public UnexportableSigningKey {
 
 #if BUILDFLAG(IS_MAC)
   SecKeyRef GetSecKeyRef() const override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 #endif  // BUILDFLAG(IS_MAC)

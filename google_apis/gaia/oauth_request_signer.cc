@@ -57,7 +57,7 @@ const std::string HttpMethodName(OAuthRequestSigner::HttpMethod method) {
     case OAuthRequestSigner::POST_METHOD:
       return "POST";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -71,7 +71,7 @@ const std::string SignatureMethodName(
     case OAuthRequestSigner::PLAINTEXT_SIGNATURE:
       return "PLAINTEXT";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -190,7 +190,7 @@ bool ParseQuery(const std::string& query,
       parameters[keyword] = value;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   *parameters_result = parameters;
   return true;
@@ -283,7 +283,7 @@ bool SignParameters(const GURL& request_base_url,
       is_signed = SignPlaintext(base, key, &signature);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   if (is_signed)
     (*parameters)[kOAuthSignatureLabel] = signature;
@@ -413,7 +413,7 @@ bool OAuthRequestSigner::SignURL(
         signed_text += BuildBaseStringParameters(parameters);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     *signed_text_return = signed_text;
   }

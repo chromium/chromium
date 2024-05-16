@@ -343,7 +343,7 @@ MojoResult MojoTrap::Arm(MojoTrapEvent* blocking_events,
     }
 
     if (result != IPCZ_RESULT_FAILED_PRECONDITION) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return result;
     }
 

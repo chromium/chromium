@@ -117,11 +117,11 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

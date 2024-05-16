@@ -1497,7 +1497,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       pdf_host_->SetPluginCanSave(true);
       SaveToBuffer(token);
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_INK)
       break;
     case SaveRequestType::kOriginal:
@@ -1693,7 +1693,7 @@ void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
         data_to_save = base::Value(std::move(data));
     }
 #else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(ENABLE_INK)
   }
 
@@ -1943,7 +1943,7 @@ void PdfViewWebPlugin::UpdateScaledValues() {
 
 void PdfViewWebPlugin::UpdateScale(float scale) {
   if (scale <= 0.0f) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

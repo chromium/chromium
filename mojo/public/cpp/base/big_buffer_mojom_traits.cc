@@ -48,7 +48,7 @@ UnionTraits<mojo_base::mojom::BigBufferDataView, mojo_base::BigBuffer>::GetTag(
       return mojo_base::mojom::BigBufferDataView::Tag::kInvalidBuffer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojo_base::mojom::BigBufferDataView::Tag::kBytes;
 }
 
@@ -113,7 +113,7 @@ mojo_base::mojom::BigBufferDataView::Tag UnionTraits<
       return mojo_base::mojom::BigBufferDataView::Tag::kInvalidBuffer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojo_base::mojom::BigBufferDataView::Tag::kBytes;
 }
 

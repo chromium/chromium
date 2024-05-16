@@ -355,7 +355,7 @@ bool SharedBufferDispatcher::EndSerialize(void* destination,
           MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 

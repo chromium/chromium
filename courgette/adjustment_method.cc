@@ -633,7 +633,7 @@ class GraphAdjuster : public AdjustmentMethod {
       prev = curr;
 
       if (curr->positions_.size() != curr->refs_)
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 

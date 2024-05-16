@@ -565,7 +565,7 @@ base::FilePath Database::DbPath() const {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(db_path);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::FilePath();
 #endif
 }
@@ -617,7 +617,7 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
     diagnostics->last_errno = last_errno;
   }
 #else
-  NOTREACHED();  // Add appropriate log info.
+  NOTREACHED_IN_MIGRATION();  // Add appropriate log info.
 #endif
 
   if (stmt) {

@@ -21,7 +21,7 @@ struct EnumTraits<skia::mojom::SurfaceOrigin, GrSurfaceOrigin> {
       case kBottomLeft_GrSurfaceOrigin:
         return skia::mojom::SurfaceOrigin::kBottomLeft;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   static bool FromMojom(skia::mojom::SurfaceOrigin origin,
@@ -37,7 +37,7 @@ struct EnumTraits<skia::mojom::SurfaceOrigin, GrSurfaceOrigin> {
 
     // Mojo has already validated that `origin` is a valid value, so it must be
     // covered by one of the cases above.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

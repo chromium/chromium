@@ -117,12 +117,12 @@ void FindHelper::NotifyResults(int active_ordinal,
 
   // Safeguard in case of errors to prevent reporting -1 to the API listeners.
   if (match_count == -1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     match_count = 0;
   }
 
   if (active_ordinal == -1) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     active_ordinal = 0;
   }
 

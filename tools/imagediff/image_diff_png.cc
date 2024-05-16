@@ -220,7 +220,7 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
         state->output_channels = 4;
         break;
       default:
-        NOTREACHED() << "Unknown output format";
+        NOTREACHED_IN_MIGRATION() << "Unknown output format";
         break;
     }
   } else if (channels == 4) {
@@ -238,11 +238,11 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
         state->output_channels = 4;
         break;
       default:
-        NOTREACHED() << "Unknown output format";
+        NOTREACHED_IN_MIGRATION() << "Unknown output format";
         break;
     }
   } else {
-    NOTREACHED() << "Unknown input channels";
+    NOTREACHED_IN_MIGRATION() << "Unknown input channels";
     longjmp(png_jmpbuf(png_ptr), 1);
   }
 
@@ -257,7 +257,7 @@ void DecodeRowCallback(png_struct* png_ptr, png_byte* new_row,
 
   DCHECK(pass == 0);
   if (static_cast<int>(row_num) > state->height) {
-    NOTREACHED() << "Invalid row";
+    NOTREACHED_IN_MIGRATION() << "Invalid row";
     return;
   }
 
@@ -572,7 +572,7 @@ bool EncodeWithCompressionLevel(const unsigned char* input, ColorFormat format,
       break;
 
     default:
-      NOTREACHED() << "Unknown pixel format";
+      NOTREACHED_IN_MIGRATION() << "Unknown pixel format";
       return false;
   }
 

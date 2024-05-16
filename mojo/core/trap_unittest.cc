@@ -113,7 +113,7 @@ class ThreadedRunner : public base::SimpleThread {
 };
 
 void ExpectNoNotification(const MojoTrapEvent* event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExpectOnlyCancel(const MojoTrapEvent* event) {
@@ -1922,7 +1922,7 @@ void DoRandomThing(MojoHandle* traps,
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

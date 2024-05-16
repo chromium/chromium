@@ -72,7 +72,7 @@ std::string GetCheckinRequestStatusString(CheckinRequestStatus status) {
       return "Failed: No headers";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Failed: Unknown reason";
 }
 

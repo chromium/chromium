@@ -33,15 +33,15 @@ ValidationContext::ValidationContext(const void* data,
   // uint32_t causes overflow.
   // They shouldn't happen but they do, set the corresponding range to empty.
   if (data_end_ < data_begin_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     data_end_ = data_begin_;
   }
   if (handle_end_ < num_handles) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     handle_end_ = 0;
   }
   if (associated_endpoint_handle_end_ < num_associated_endpoint_handles) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     associated_endpoint_handle_end_ = 0;
   }
 }

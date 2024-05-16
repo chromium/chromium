@@ -49,7 +49,7 @@ void AudioCallbackCombined::Run(void* sample_buffer,
   } else if (callback_1_0_) {
     callback_1_0_(sample_buffer, buffer_size_in_bytes, user_data);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -19,7 +19,7 @@ EnumTraits<mojo_base::mojom::MemoryPressureLevel,
     case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
       return mojo_base::mojom::MemoryPressureLevel::CRITICAL;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojo_base::mojom::MemoryPressureLevel::NONE;
 }
 

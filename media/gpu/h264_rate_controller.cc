@@ -83,7 +83,7 @@ float Fps2MaxQP(float fps) {
           kFPS2QPTradeoffs[i].qp, kFPS2QPTradeoffs[i + 1].qp);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0.0f;
 }
 
@@ -98,7 +98,7 @@ float MaxQP2Fps(int max_qp) {
       return kFPS2QPTradeoffs[i + 1].fps;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0.0f;
 }
 }  // namespace

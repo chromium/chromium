@@ -168,7 +168,7 @@ class Worker : public Listener, public Sender {
   }
 
   virtual void OnNestedTestMsg(Message* reply_msg) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   virtual SyncChannel* CreateChannel() {

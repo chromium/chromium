@@ -62,7 +62,7 @@ void NupParameters::SetParameters(int pages_per_sheet,
         landscape_ = true;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

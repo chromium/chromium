@@ -193,7 +193,7 @@ ssize_t BrokerSimpleMessage::RecvMsgWithFlagsMultipleFds(
         close(wire_fds[i]);
       }
       errno = EMSGSIZE;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return -1;
     }
 

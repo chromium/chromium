@@ -104,7 +104,7 @@ MojoResult GetMojoWriteResultForIpczPut(IpczResult result) {
 extern "C" {
 
 MojoResult MojoInitializeIpcz(const struct MojoInitializeOptions* options) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MOJO_RESULT_OK;
 }
 
@@ -729,7 +729,7 @@ MojoResult MojoUnwrapPlatformSharedMemoryRegionIpcz(
       break;
     default:
       *access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_READ_ONLY;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   std::ignore = ipcz_driver::SharedBuffer::Unbox(mojo_handle);
@@ -844,7 +844,7 @@ MojoResult MojoQueryQuotaIpcz(MojoHandle handle,
 }
 
 MojoResult MojoShutdownIpcz(const MojoShutdownOptions* options) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MOJO_RESULT_OK;
 }
 

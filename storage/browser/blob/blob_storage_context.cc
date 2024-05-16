@@ -540,7 +540,7 @@ void BlobStorageContext::FinishBuilding(BlobEntry* entry) {
         case BlobDataItem::Type::kBytesDescription:
         case BlobDataItem::Type::kFileFilesystem:
         case BlobDataItem::Type::kReadableDataHandle:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
       copy.dest_item->set_state(ShareableBlobDataItem::POPULATED_WITH_QUOTA);

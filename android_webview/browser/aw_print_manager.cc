@@ -136,7 +136,7 @@ void AwPrintManager::DidPrintDocument(
 
   const printing::mojom::DidPrintContentParams& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
-    NOTREACHED() << "invalid memory handle";
+    NOTREACHED_IN_MIGRATION() << "invalid memory handle";
     web_contents()->Stop();
     PdfWritingDone(0);
     std::move(callback).Run(false);
@@ -146,7 +146,7 @@ void AwPrintManager::DidPrintDocument(
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
       content.metafile_data_region);
   if (!data) {
-    NOTREACHED() << "couldn't map";
+    NOTREACHED_IN_MIGRATION() << "couldn't map";
     web_contents()->Stop();
     PdfWritingDone(0);
     std::move(callback).Run(false);

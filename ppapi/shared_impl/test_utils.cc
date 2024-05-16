@@ -201,7 +201,7 @@ bool Equals(const PP_Var& expected,
       return true;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

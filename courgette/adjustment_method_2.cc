@@ -464,7 +464,7 @@ bool Shingle::InterningLess::operator()(
     if (info_a->is_model_ > info_b->is_model_)
       return false;
     if (info_a != info_b) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
   return false;
@@ -1000,7 +1000,7 @@ class AssignmentProblem {
       LOG_ASSERT(n == 1);
     } else if (pattern->program_histogram_.empty() &&
                pattern->model_histogram_.empty()) {
-      NOTREACHED();  // Should not come back to life.
+      NOTREACHED_IN_MIGRATION();  // Should not come back to life.
     } else if (pattern->program_histogram_.empty()) {
       // Useless pattern.
     } else {

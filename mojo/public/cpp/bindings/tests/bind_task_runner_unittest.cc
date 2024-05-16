@@ -41,7 +41,7 @@ class TestTaskRunner : public base::SequencedTaskRunner {
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -175,7 +175,7 @@ class IntegerSenderConnectionImpl : public IntegerSenderConnection {
   }
 
   void AsyncGetSender(AsyncGetSenderCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   Receiver<IntegerSenderConnection>* receiver() { return &receiver_; }

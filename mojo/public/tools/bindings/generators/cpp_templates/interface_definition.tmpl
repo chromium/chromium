@@ -171,7 +171,7 @@ uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
 {%- for method in interface.methods %}
 {%-   if method.sync %}
 bool {{class_name}}::{{method.name}}({{interface_macros.declare_sync_method_params("", method)}}) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 {%-   endif %}

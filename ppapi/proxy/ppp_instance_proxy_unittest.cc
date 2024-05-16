@@ -73,7 +73,7 @@ PP_Bool HandleDocumentLoad(PP_Instance instance, PP_Resource url_loader) {
   // This one requires use of the PPB_URLLoader proxy and PPB_Core, plus a
   // resource tracker for the url_loader resource.
   // TODO(dmichael): Mock those out and test this function.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return PP_FALSE;
 }
 

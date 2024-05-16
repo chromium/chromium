@@ -39,7 +39,7 @@ PP_Bool ReserveInstanceID(PP_Module module, PP_Instance instance) {
   ModuleToDispatcherMap::const_iterator found =
       g_module_to_dispatcher->find(module);
   if (found == g_module_to_dispatcher->end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PP_TRUE;
   }
 

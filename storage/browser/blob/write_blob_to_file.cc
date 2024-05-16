@@ -126,7 +126,7 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

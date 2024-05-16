@@ -54,7 +54,7 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
   if (!print_dialog_) {
     // Can only get here if the renderer is sending bad messages.
     // http://crbug.com/341777
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     std::move(callback).Run(mojom::ResultCode::kFailed);
     return;
   }

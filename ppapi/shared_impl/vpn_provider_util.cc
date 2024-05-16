@@ -38,7 +38,7 @@ bool VpnProviderSharedBuffer::GetAvailable(uint32_t* id) {
 
 void VpnProviderSharedBuffer::SetAvailable(uint32_t id, bool value) {
   if (id >= capacity_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   available_[id] = value;
@@ -46,7 +46,7 @@ void VpnProviderSharedBuffer::SetAvailable(uint32_t id, bool value) {
 
 void* VpnProviderSharedBuffer::GetBuffer(uint32_t id) {
   if (id >= capacity_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   return shm_mapping_.GetMemoryAsSpan<char>()

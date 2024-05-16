@@ -117,7 +117,8 @@ base::Value::List FuchsiaModifiersToWebModifiers(
     } else if (modifier == fuchsia_ui_input3::Modifiers::kShift) {
       web_modifiers.Append("Shift");
     } else {
-      NOTREACHED() << static_cast<uint64_t>(modifier) << " has no web mapping";
+      NOTREACHED_IN_MIGRATION()
+          << static_cast<uint64_t>(modifier) << " has no web mapping";
     }
   }
   return web_modifiers;

@@ -398,7 +398,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
     if (!in_kiosk_mode) {
       LOG(ERROR) << "App with 'kiosk_only' attribute must be run in "
                  << " ChromeOS kiosk mode.";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }

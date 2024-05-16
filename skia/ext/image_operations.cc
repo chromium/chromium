@@ -123,7 +123,7 @@ class ResizeFilter {
         // each direction as the size of the window = 3 for Lanczos3.
         return 3.0f;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 1.0f;
     }
   }
@@ -153,7 +153,7 @@ class ResizeFilter {
       case ImageOperations::RESIZE_LANCZOS3:
         return EvalLanczos(3, pos);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return 0;
     }
   }

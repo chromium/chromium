@@ -38,7 +38,7 @@ int32_t UDPSocketPrivateResource::SetSocketFeature(
     case PP_UDPSOCKETFEATURE_PRIVATE_COUNT:
       return PP_ERROR_BADARGUMENT;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return PP_ERROR_BADARGUMENT;
   }
   int32_t result = SetOptionImpl(public_name, value,

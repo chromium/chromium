@@ -714,7 +714,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
 
   result = AddGenericConfig(config);
   if (result != SBOX_ALL_OK) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return result;
   }
 

@@ -104,7 +104,7 @@ class ThemeManagerTest : public WebEngineBrowserTest,
         return scheme;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return "";
   }
 

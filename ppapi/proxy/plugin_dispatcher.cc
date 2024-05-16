@@ -296,7 +296,7 @@ void PluginDispatcher::DidDestroyInstance(PP_Instance instance) {
       DCHECK(found->second == this);
       g_instance_to_plugin_dispatcher->erase(found);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

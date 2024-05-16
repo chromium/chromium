@@ -412,7 +412,7 @@ void WebEngineAudioRenderer::StopTicking() {
   switch (GetPlaybackState()) {
     case PlaybackState::kStopped:
     case PlaybackState::kPaused:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case PlaybackState::kStartPending: {

@@ -916,7 +916,7 @@ void DatabaseTracker::DeleteIncognitoDBDirectory() {
 void DatabaseTracker::Shutdown() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (shutting_down_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   shutting_down_ = true;

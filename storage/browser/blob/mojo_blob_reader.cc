@@ -79,7 +79,7 @@ void MojoBlobReader::Start() {
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MojoBlobReader::NotifyCompletedAndDeleteIfNeeded(int result) {

@@ -91,7 +91,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   bool is_pipe = IsPipe(mod_name);
   if (!PreProcessName(&mod_name)) {
     // The path to be added might contain a reparse point.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

@@ -27,7 +27,7 @@ PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
     case ThemeType::DARK:
       return PreferredColorScheme::kDark;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return kFallbackColorScheme;
   }
 }

@@ -124,7 +124,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
         return false;
       return Init(init_option, FAIL_ON_CORRUPTION);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

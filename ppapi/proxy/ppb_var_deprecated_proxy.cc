@@ -508,7 +508,7 @@ void PPB_Var_Deprecated_Proxy::OnMsgCreateObjectDeprecated(
 
 void PPB_Var_Deprecated_Proxy::SetAllowPluginReentrancy() {
   if (dispatcher()->IsPlugin())
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   else
     static_cast<HostDispatcher*>(dispatcher())->set_allow_plugin_reentrancy();
 }

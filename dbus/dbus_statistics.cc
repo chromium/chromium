@@ -80,7 +80,7 @@ class DBusStatistics {
     else if (type == TYPE_SENT_BLOCKING_METHOD_CALLS)
       ++stat->sent_blocking_method_calls;
     else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Look up the Stat entry in |stats_|. If |add_stat| is true, add a new entry

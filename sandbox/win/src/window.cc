@@ -139,7 +139,7 @@ ResultCode CreateAltDesktop(HWINSTA winsta, HDESK* desktop) {
 
 std::wstring GetFullDesktopName(HWINSTA winsta, HDESK desktop) {
   if (!desktop) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::wstring();
   }
 

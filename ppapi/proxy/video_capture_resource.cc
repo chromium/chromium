@@ -188,7 +188,7 @@ void VideoCaptureResource::OnPluginMsgOnStatus(
     case PP_VIDEO_CAPTURE_STATUS_STARTING:
     case PP_VIDEO_CAPTURE_STATUS_STOPPING:
       // Those states are not sent by the browser.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (ppp_video_capture_impl_) {

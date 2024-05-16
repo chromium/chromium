@@ -108,7 +108,7 @@ bool Emf::SafePlayback(HDC context) const {
   DCHECK(emf_ && !hdc_);
   XFORM base_matrix;
   if (!GetWorldTransform(context, &base_matrix)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
   Emf::EnumerationContext playback_context;
@@ -126,7 +126,7 @@ gfx::Rect Emf::GetPageBounds(unsigned int page_number) const {
   DCHECK_EQ(1U, page_number);
   ENHMETAHEADER header;
   if (GetEnhMetaFileHeader(emf_, sizeof(header), &header) != sizeof(header)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return gfx::Rect();
   }
   // Add 1 to right and bottom because it's inclusive rectangle.
@@ -306,7 +306,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
         const uint32_t* pixels =
             static_cast<const uint32_t*>(bitmap->getPixels());
         if (!pixels) {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return false;
         }
         BITMAPINFOHEADER bmi = {0};
@@ -390,7 +390,7 @@ Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
   items_.clear();
   if (!EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
                        reinterpret_cast<void*>(this), rect)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     items_.clear();
   }
   DCHECK_EQ(context_.hdc, context);

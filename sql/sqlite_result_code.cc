@@ -322,7 +322,8 @@ SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
       });
 
   if (mapping_it == base::ranges::end(kResultCodeMapping)) {
-    NOTREACHED() << "Unsupported SQLite result code: " << sqlite_result_code;
+    NOTREACHED_IN_MIGRATION()
+        << "Unsupported SQLite result code: " << sqlite_result_code;
     return kUnknownResultCodeMappingEntry;
   }
   return *mapping_it;

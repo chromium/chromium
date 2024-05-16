@@ -240,7 +240,7 @@ void URLLoaderResource::OnPluginMsgSendData(
   const char* data;
   size_t data_length;
   if (!iter.ReadData(&data, &data_length)) {
-    NOTREACHED() << "Expecting data";
+    NOTREACHED_IN_MIGRATION() << "Expecting data";
     return;
   }
 

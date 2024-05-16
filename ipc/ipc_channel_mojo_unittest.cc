@@ -1174,7 +1174,7 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void BindSync(
       mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient> receiver,
       BindSyncCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetReceiverWithQueuedSyncMessage(
@@ -1813,7 +1813,7 @@ class ListenerThatVerifiesPeerPid : public TestListenerBase {
   }
 
   bool OnMessageReceived(const IPC::Message& message) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
 };

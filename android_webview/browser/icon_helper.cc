@@ -109,7 +109,7 @@ void IconHelper::DidUpdateFaviconURL(
         // Silently ignore it. Only trigger a callback on valid icons.
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

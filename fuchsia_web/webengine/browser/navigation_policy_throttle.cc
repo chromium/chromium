@@ -74,7 +74,7 @@ void NavigationPolicyThrottle::OnRequestedNavigationEvaluated(
       // NavigationHandle that owns this NavigationThrottle.
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

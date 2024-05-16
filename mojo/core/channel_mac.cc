@@ -62,7 +62,7 @@ class ChannelMac : public Channel,
     } else if (channel_handle.is_mach_receive()) {
       receive_port_ = channel_handle.TakeMachReceiveRight();
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -212,7 +212,7 @@ class ChannelMac : public Channel,
       DCHECK(send_port_ == MACH_PORT_NULL);
       // Wait for the received message via the MessageLoop.
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     base::CurrentThread::Get()->AddDestructionObserver(this);
@@ -428,8 +428,8 @@ class ChannelMac : public Channel,
           break;
         }
         default:
-          NOTREACHED() << "Unsupported handle type "
-                       << static_cast<int>(handle.type());
+          NOTREACHED_IN_MIGRATION()
+              << "Unsupported handle type " << static_cast<int>(handle.type());
           OnWriteErrorLocked(Error::kDisconnected);
       }
     }

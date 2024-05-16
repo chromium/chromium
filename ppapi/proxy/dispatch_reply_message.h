@@ -169,18 +169,16 @@ void DispatchResourceReplyOrDefaultParams(
 // 0-parameter messages you need to use the _0 version below (since there are
 // no params in the message).
 #define PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL(msg_class, member_func) \
-    case msg_class::ID: { \
-      msg_class::Schema::Param p; \
-      if (msg_class::Read(&ipc_message__, &p)) { \
-        ppapi::proxy::DispatchResourceReply( \
-            this, \
-            &_IpcMessageHandlerClass::member_func, \
-            params, p); \
-      } else { \
-        NOTREACHED(); \
-      } \
-      break; \
-    }
+  case msg_class::ID: {                                             \
+    msg_class::Schema::Param p;                                     \
+    if (msg_class::Read(&ipc_message__, &p)) {                      \
+      ppapi::proxy::DispatchResourceReply(                          \
+          this, &_IpcMessageHandlerClass::member_func, params, p);  \
+    } else {                                                        \
+      NOTREACHED_IN_MIGRATION();                                    \
+    }                                                               \
+    break;                                                          \
+  }
 
 #define PPAPI_DISPATCH_PLUGIN_RESOURCE_CALL_0(msg_class, member_func) \
   case msg_class::ID: { \

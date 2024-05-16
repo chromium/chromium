@@ -241,7 +241,7 @@ std::shared_ptr<v8::TaskRunner> V8Platform::GetForegroundTaskRunner(
       // blink::scheduler::TaskPriority::kLowPriority
       return data->low_priority_task_runner();
     default:
-      NOTREACHED() << "Unsupported TaskPriority.";
+      NOTREACHED_IN_MIGRATION() << "Unsupported TaskPriority.";
       return data->task_runner();
   }
 }

@@ -168,7 +168,7 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
   bool AcceptWithResponder(
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
 
@@ -243,7 +243,7 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
   bool AcceptWithResponder(
       Message* message,
       std::unique_ptr<MessageReceiverWithStatus> responder) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
 

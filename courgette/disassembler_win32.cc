@@ -31,7 +31,7 @@ RVA DisassemblerWin32::FileOffsetToRVA(FileOffset file_offset) const {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kNoRVA;
 }
 
@@ -55,7 +55,7 @@ FileOffset DisassemblerWin32::RVAToFileOffset(RVA rva) const {
   if (rva == 0 || rva == 2)
     return static_cast<FileOffset>(rva);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kNoFileOffset;
 }
 
@@ -161,7 +161,7 @@ bool DisassemblerWin32::ParseHeader() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (size_of_image_ >= 0x80000000U)

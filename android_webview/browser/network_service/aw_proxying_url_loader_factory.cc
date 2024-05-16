@@ -552,7 +552,7 @@ void InterceptedRequest::InterceptResponseReceived(
         committed_mode = CommittedRequestedWithHeaderMode::kConstantWebview;
         break;
       default:
-        NOTREACHED()
+        NOTREACHED_IN_MIGRATION()
             << "Invalid enum value for AwSettings:RequestedWithHeaderMode: "
             << requested_with_header_mode;
     }

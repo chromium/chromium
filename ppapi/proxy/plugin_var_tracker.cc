@@ -111,7 +111,7 @@ void PluginVarTracker::StopTrackingObjectWithNoReference(
 
   VarMap::iterator found = GetLiveVar(plugin_var);
   if (found == live_vars_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -123,14 +123,14 @@ void PluginVarTracker::StopTrackingObjectWithNoReference(
 PP_Var PluginVarTracker::GetHostObject(const PP_Var& plugin_object) const {
   CheckThreadingPreconditions();
   if (plugin_object.type != PP_VARTYPE_OBJECT) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PP_MakeUndefined();
   }
 
   Var* var = GetVar(plugin_object);
   ProxyObjectVar* object = var->AsProxyObjectVar();
   if (!object) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PP_MakeUndefined();
   }
 
@@ -165,7 +165,7 @@ void PluginVarTracker::ReleaseHostObject(PluginDispatcher* dispatcher,
   HostVarToPluginVarMap::iterator found = host_var_to_plugin_var_.find(
       HostVar(dispatcher, static_cast<int32_t>(host_object.value.as_id)));
   if (found == host_var_to_plugin_var_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -185,8 +185,9 @@ PP_Var PluginVarTracker::MakeResourcePPVarFromMessage(
       PP_FileSystemType file_system_type;
       if (!UnpackMessage<PpapiPluginMsg_FileSystem_CreateFromPendingHost>(
                creation_message, &file_system_type)) {
-        NOTREACHED() << "Invalid message of type "
-                        "PpapiPluginMsg_FileSystem_CreateFromPendingHost";
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid message of type "
+               "PpapiPluginMsg_FileSystem_CreateFromPendingHost";
         return PP_MakeNull();
       }
       // Create a plugin-side resource and attach it to the host resource.
@@ -206,9 +207,9 @@ PP_Var PluginVarTracker::MakeResourcePPVarFromMessage(
       if (!UnpackMessage<
               PpapiPluginMsg_MediaStreamAudioTrack_CreateFromPendingHost>(
           creation_message, &track_id)) {
-        NOTREACHED() <<
-            "Invalid message of type "
-            "PpapiPluginMsg_MediaStreamAudioTrack_CreateFromPendingHost";
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid message of type "
+               "PpapiPluginMsg_MediaStreamAudioTrack_CreateFromPendingHost";
         return PP_MakeNull();
       }
       PP_Resource pp_resource =
@@ -224,9 +225,9 @@ PP_Var PluginVarTracker::MakeResourcePPVarFromMessage(
       if (!UnpackMessage<
               PpapiPluginMsg_MediaStreamVideoTrack_CreateFromPendingHost>(
           creation_message, &track_id)) {
-        NOTREACHED() <<
-            "Invalid message of type "
-            "PpapiPluginMsg_MediaStreamVideoTrack_CreateFromPendingHost";
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid message of type "
+               "PpapiPluginMsg_MediaStreamVideoTrack_CreateFromPendingHost";
         return PP_MakeNull();
       }
       PP_Resource pp_resource =
@@ -237,8 +238,8 @@ PP_Var PluginVarTracker::MakeResourcePPVarFromMessage(
       return MakeResourcePPVar(pp_resource);
     }
     default: {
-      NOTREACHED() << "Creation message has unexpected type "
-                   << creation_message.type();
+      NOTREACHED_IN_MIGRATION()
+          << "Creation message has unexpected type " << creation_message.type();
       return PP_MakeNull();
     }
   }
@@ -337,7 +338,7 @@ void PluginVarTracker::PluginImplementedObjectDestroyed(void* user_data) {
   UserDataToPluginImplementedVarMap::iterator found =
       user_data_to_plugin_.find(user_data);
   if (found == user_data_to_plugin_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   user_data_to_plugin_.erase(found);
@@ -378,7 +379,7 @@ int32_t PluginVarTracker::AddVarInternal(Var* var, AddVarRefMode mode) {
 void PluginVarTracker::TrackedObjectGettingOneRef(VarMap::const_iterator iter) {
   ProxyObjectVar* object = iter->second.var->AsProxyObjectVar();
   if (!object) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -396,7 +397,7 @@ void PluginVarTracker::TrackedObjectGettingOneRef(VarMap::const_iterator iter) {
 void PluginVarTracker::ObjectGettingZeroRef(VarMap::iterator iter) {
   ProxyObjectVar* object = iter->second.var->AsProxyObjectVar();
   if (!object) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -504,7 +505,7 @@ int PluginVarTracker::TrackSharedMemoryRegion(
     PP_Instance instance,
     base::UnsafeSharedMemoryRegion region,
     uint32_t size_in_bytes) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return -1;
 }
 
@@ -513,7 +514,7 @@ bool PluginVarTracker::StopTrackingSharedMemoryRegion(
     PP_Instance instance,
     base::UnsafeSharedMemoryRegion* region,
     uint32_t* size_in_bytes) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -169,7 +169,7 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
       job_settings.FindInt(kSettingPrinterType).value());
   if (printer_type == mojom::PrinterType::kPrivetDeprecated ||
       printer_type == mojom::PrinterType::kCloudDeprecated) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return OnError();
   }
 

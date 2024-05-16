@@ -46,7 +46,7 @@ bool GetPeerEuid(base::PlatformFile fd, uid_t* peer_euid) {
     return false;
   }
   if (static_cast<unsigned>(cred_len) < sizeof(cred)) {
-    NOTREACHED() << "Truncated ucred from SO_PEERCRED?";
+    NOTREACHED_IN_MIGRATION() << "Truncated ucred from SO_PEERCRED?";
     return false;
   }
   *peer_euid = cred.uid;
@@ -172,7 +172,7 @@ bool AcceptSocketConnection(base::PlatformFile server_fd,
   DCHECK_GE(server_fd, 0);
   connection_fd->reset();
 #if BUILDFLAG(IS_NACL)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #else
   base::ScopedFD accepted_handle(HANDLE_EINTR(accept(server_fd, nullptr, 0)));

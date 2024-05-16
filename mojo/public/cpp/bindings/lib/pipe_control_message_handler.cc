@@ -36,7 +36,7 @@ bool PipeControlMessageHandler::Accept(Message* message) {
   if (message->name() == pipe_control::kRunOrClosePipeMessageId)
     return RunOrClosePipe(message);
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
