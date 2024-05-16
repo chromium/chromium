@@ -270,13 +270,7 @@ int main(int argc, char** argv) {
         fuzzer->GetChromiumCommandLineArguments();
     chromium_arguments.insert(chromium_arguments.begin(), executable_name);
     chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process-tests"));
-#if BUILDFLAG(IS_CENTIPEDE)
-    // TODO(crbug.com/40051117): make libfuzzer compatible with single-process
-    // mode. As it stands, single-process mode works with centipede (and is
-    // probably desirable both in terms of fuzzing speed and correctly gathering
-    // coverage information) but not yet with libfuzzer.
     chromium_arguments.push_back(FILE_PATH_LITERAL("--single-process"));
-#endif  // BUILDFLAG(IS_CENTIPEDE)
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-sandbox"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-zygote"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));

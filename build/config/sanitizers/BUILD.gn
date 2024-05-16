@@ -14,6 +14,13 @@ if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
 }
 
+# libfuzzer can't cope with shared objects being unloaded, which sometimes
+# occurs for large fuzzers that involve our graphics stack. Shim out dlclose
+# so that this doesn't occur. At the moment we've only implemented this on Linux
+# since that's the only platform we use these large fuzzers - in the future
+# we could choose to do the same on Windows.
+use_dlcloseshim = use_libfuzzer && is_linux
+
 # Contains the dependencies needed for sanitizers to link into executables and
 # shared_libraries.
 group("deps") {
@@ -62,6 +69,9 @@ group("deps") {
     # the sanitizer coverage symbols, because we'll still be generating
     # .o files which depend on them.
     deps += [ "//third_party/fuzztest:centipede_weak_sancov_stubs" ]
+  }
+  if (use_dlcloseshim) {
+    deps += [ ":dlclose_shim" ]
   }
 }
 
@@ -170,6 +180,10 @@ static_library("options_sources") {
   }
 }
 
+source_set("dlclose_shim") {
+  sources = [ "//build/sanitizers/dlcloseshim.c" ]
+}
+
 # Applies linker flags necessary when either :deps or :default_sanitizer_flags
 # are used.
 config("default_sanitizer_ldflags") {
@@ -268,6 +282,9 @@ config("default_sanitizer_ldflags") {
       # Don't do it.
       ldflags = [ "/INCREMENTAL:NO" ]
     }
+  }
+  if (use_dlcloseshim) {
+    ldflags += [ "-Wl,-wrap,dlclose" ]
   }
 }
 
