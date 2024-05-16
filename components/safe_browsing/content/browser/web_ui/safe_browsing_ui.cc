@@ -826,7 +826,7 @@ std::string SerializeReportType(ClientPhishingRequest::ReportType report_type) {
     case ClientPhishingRequest::FULL_REPORT:
       return "FULL_REPORT";
     case ClientPhishingRequest::SAMPLE_REPORT:
-      return "SAMPE_REPORT";
+      return "SAMPLE_REPORT";
   }
   return "UNKNOWN_ENUM_SPECIFIED";
 }
