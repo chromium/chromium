@@ -242,7 +242,8 @@ class CORE_EXPORT LineBreaker {
       LayoutUnit ruby_size,
       bool is_continuation,
       LineInfo& line_info);
-  bool CanBreakAfterRubyColumn(const InlineItemResult& column_result) const;
+  bool CanBreakAfterRubyColumn(const InlineItemResult& column_result,
+                               wtf_size_t column_end_item_index) const;
 
   bool CanBreakAfterAtomicInline(const InlineItem& item) const;
   bool CanBreakAfter(const InlineItem& item) const;

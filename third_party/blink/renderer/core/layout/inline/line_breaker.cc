@@ -3342,7 +3342,8 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
 
   column_result->text_offset.end = annotation_line_list[0].EndTextOffset();
   column_result->should_create_line_box = true;
-  column_result->can_break_after = CanBreakAfterRubyColumn(*column_result);
+  column_result->can_break_after = CanBreakAfterRubyColumn(
+      *column_result, annotation_data_list[0].end_item_index);
 
   if (base_line_info.Width() < ruby_size) {
     line_info.SetMayHaveRubyOverhang();
@@ -3368,7 +3369,8 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
 }
 
 bool LineBreaker::CanBreakAfterRubyColumn(
-    const InlineItemResult& column_result) const {
+    const InlineItemResult& column_result,
+    wtf_size_t column_end_item_index) const {
   DCHECK_EQ(column_result.item->Type(), InlineItem::kOpenRubyColumn);
   DCHECK(column_result.ruby_column);
   if (!auto_wrap_) {
@@ -3385,9 +3387,7 @@ bool LineBreaker::CanBreakAfterRubyColumn(
       base_line.EndTextOffset() - base_line.StartOffset();
   text_content.Append(
       StringView(Text(), base_line.StartOffset(), base_text_length));
-  const InlineItem& next_item =
-      Items()[column_result.ruby_column->annotation_line_list[0]
-                  .EndItemIndex()];
+  const InlineItem& next_item = Items()[column_end_item_index];
   DCHECK_EQ(next_item.Type(), InlineItem::kCloseRubyColumn);
   unsigned ignorable_bidi_length = 1 + IgnorableBidiControlLength(next_item);
   text_content.Append(
