@@ -37,6 +37,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/shlwapi.h"
 #include "base/win/shortcut.h"
@@ -630,12 +631,19 @@ void MigrateChromeAndChromeProxyShortcuts(
 }
 
 std::wstring GetHttpSchemeUserChoiceProgId() {
-  std::wstring prog_id;
-  base::win::RegKey key(HKEY_CURRENT_USER, ShellUtil::kRegVistaUrlPrefs,
-                        KEY_QUERY_VALUE);
-  if (key.Valid())
-    key.ReadValue(L"ProgId", &prog_id);
-  return prog_id;
+  Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
+  HRESULT hr = ::SHCreateAssociationRegistration(IID_PPV_ARGS(&registration));
+  if (FAILED(hr)) {
+    return std::wstring();
+  }
+
+  base::win::ScopedCoMem<wchar_t> prog_id;
+  hr = registration->QueryCurrentDefault(L"http", AT_URLPROTOCOL, AL_EFFECTIVE,
+                                         &prog_id);
+  if (FAILED(hr)) {
+    return std::wstring();
+  }
+  return prog_id.get();
 }
 
 }  // namespace
