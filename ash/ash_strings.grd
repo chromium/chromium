@@ -780,7 +780,9 @@ Style notes:
         Timer
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_MINUTES_LABEL" translateable="false" desc="The text that is placed after the textbox used to set the number of minutes for a focus session.">
-        minutes
+        {MINUTES, plural,
+          =1 {minute}
+          other {minutes}}
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD" translateable="false" desc="The accessible name for the textfield that the user can use to input a specific time value for a focus session.">
         Edit timer. <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>.

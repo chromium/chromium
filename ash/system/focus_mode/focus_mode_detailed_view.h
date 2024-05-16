@@ -158,6 +158,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // The decrement and increment buttons in the `timer_setting_view_`.
   raw_ptr<IconButton> timer_decrement_button_ = nullptr;
   raw_ptr<IconButton> timer_increment_button_ = nullptr;
+  // The visual "minutes" label that pairs with the `timer_textfield_` timer
+  // duration.
+  raw_ptr<views::Label> minutes_label_ = nullptr;
   // A label that displays the end time of the focus session when focus is
   // not active.
   raw_ptr<views::Label> end_time_label_ = nullptr;
