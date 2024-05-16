@@ -103,10 +103,6 @@ tast_disabled_tests_from_chrome_all = [
   "platform.Drivefs@reven-vmtest",
   "platform.Drivefs@betty-pi-arc",
 
-  # b/331384750
-  "videoconferencing.TrayTriggersExtension@brya",
-  "videoconferencing.TrayTriggersExtension.lacros@brya",
-
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
@@ -167,9 +163,6 @@ tast_disabled_tests_from_lacros_all = [
 
   # On branch day, Lacros is +3 newer than ash which break the test.
   "lacros.CompareVersionWithAsh",
-
-  # b/339482904
-  "videoconferencing.TrayTriggersExtension.lacros",
 
   # b/269177409: This is flaky on the Chromium builders, but works on the
   # ChromeOS builders.
