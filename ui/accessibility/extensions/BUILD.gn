@@ -23,7 +23,6 @@ group("extension_tests") {
   testonly = true
   if (is_chromeos_ash) {
     deps = [
-      ":caretbrowsing_tests",
       ":colorenhancer_tests",
       ":highcontrast_tests",
       "chromevoxclassic:chromevox_tests",
@@ -286,17 +285,7 @@ caretbrowsing_files = [
   "caretbrowsing/caret_19_on.png",
   "caretbrowsing/caret_19.png",
   "caretbrowsing/caret_48.png",
-  "caretbrowsing/caretbrowsing.css",
-  "caretbrowsing/caretbrowsing.js",
-  "caretbrowsing/increase_brightness.png",
   "caretbrowsing/manifest.json",
-  "caretbrowsing/node_util.js",
-  "caretbrowsing/options.html",
-  "caretbrowsing/options.js",
-  "caretbrowsing/selection_util.js",
-  "caretbrowsing/storage.js",
-  "caretbrowsing/traverse_util.js",
-  "//third_party/accessibility-audit/axs_testing.js",
 ]
 
 copy("caretbrowsing_copy") {
@@ -305,33 +294,6 @@ copy("caretbrowsing_copy") {
 }
 
 if (is_chromeos_ash) {
-  test("caretbrowsing_tests") {
-    deps = [ ":caretbrowsing_webui_js_tests" ]
-    deps += webui_test_deps
-
-    data = js2gtest_js_libraries
-  }
-
-  js2gtest("caretbrowsing_webui_js_tests") {
-    test_type = "webui"
-    sources = [
-      "caretbrowsing/node_util_test.js",
-      "caretbrowsing/selection_util_test.js",
-      "caretbrowsing/storage_test.js",
-    ]
-    gen_include_files = [
-      "caretbrowsing/node_util.js",
-      "caretbrowsing/selection_util.js",
-      "caretbrowsing/storage.js",
-      "caretbrowsing/traverse_util.js",
-      "testing/webstore_extension_test_base.js",
-      "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
-      "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
-    ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
   test("highcontrast_tests") {
     deps = [ ":highcontrast_webui_js_tests" ]
     deps += webui_test_deps
