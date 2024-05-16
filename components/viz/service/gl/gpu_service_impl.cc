@@ -922,10 +922,31 @@ void GpuServiceImpl::CreateGpuMemoryBuffer(
     int client_id,
     gpu::SurfaceHandle surface_handle,
     CreateGpuMemoryBufferCallback callback) {
-  DCHECK(io_runner_->BelongsToCurrentThread());
   // This needs to happen in the IO thread.
-  gpu_memory_buffer_factory_->CreateGpuMemoryBufferAsync(
-      id, size, format, usage, client_id, surface_handle, std::move(callback));
+  DCHECK(io_runner_->BelongsToCurrentThread());
+
+  // Create a native buffer handle if supported.
+  if (IsNativeBufferSupported(format, usage)) {
+    gpu_memory_buffer_factory_->CreateGpuMemoryBufferAsync(
+        id, size, format, usage, client_id, surface_handle,
+        std::move(callback));
+    return;
+  }
+
+  // Otherwise, create a shared memory handle if supported.
+  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
+      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
+                                                                 format)) {
+    gfx::GpuMemoryBufferHandle shm_handle;
+    shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
+        id, size, format, usage);
+    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, shm_handle.type);
+    std::move(callback).Run(std::move(shm_handle));
+    return;
+  }
+
+  // By default, return a null handle.
+  std::move(callback).Run(gfx::GpuMemoryBufferHandle());
 }
 
 void GpuServiceImpl::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
@@ -1573,36 +1594,16 @@ void GpuServiceImpl::ClientGmbInterfaceImpl::CreateGpuMemoryBuffer(
     return;
   }
 
-  // Create a native buffer handle if supported.
-  if (gpu_service_->IsNativeBufferSupported(format, usage)) {
-    PendingBufferInfo pending_buffer_info;
-    pending_buffer_info.size = size;
-    pending_buffer_info.format = format;
-    pending_buffer_info.callback = std::move(callback);
-    pending_buffers_.emplace(id, std::move(pending_buffer_info));
-    gpu_service_->CreateGpuMemoryBuffer(
-        id, size, format, usage, client_id_, surface_handle,
-        base::BindOnce(
-            &GpuServiceImpl::ClientGmbInterfaceImpl::OnGpuMemoryBufferAllocated,
-            weak_ptr_, id));
-    return;
-  }
-
-  // Create shared memory handle since native buffers are not supported.
-  if (gpu::GpuMemoryBufferImplSharedMemory::IsUsageSupported(usage) &&
-      gpu::GpuMemoryBufferImplSharedMemory::IsSizeValidForFormat(size,
-                                                                 format)) {
-    gfx::GpuMemoryBufferHandle shm_handle;
-    shm_handle = gpu::GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
-        id, size, format, usage);
-    DCHECK_EQ(gfx::SHARED_MEMORY_BUFFER, shm_handle.type);
-    gpu::AllocatedBufferInfo buffer_info(shm_handle, size, format);
-    allocated_buffers_.emplace(id, buffer_info);
-    std::move(callback).Run(std::move(shm_handle));
-    return;
-  }
-  // return null handle.
-  std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+  PendingBufferInfo pending_buffer_info;
+  pending_buffer_info.size = size;
+  pending_buffer_info.format = format;
+  pending_buffer_info.callback = std::move(callback);
+  pending_buffers_.emplace(id, std::move(pending_buffer_info));
+  gpu_service_->CreateGpuMemoryBuffer(
+      id, size, format, usage, client_id_, surface_handle,
+      base::BindOnce(
+          &GpuServiceImpl::ClientGmbInterfaceImpl::OnGpuMemoryBufferAllocated,
+          weak_ptr_, id));
 }
 
 void GpuServiceImpl::ClientGmbInterfaceImpl::DestroyGpuMemoryBuffer(
