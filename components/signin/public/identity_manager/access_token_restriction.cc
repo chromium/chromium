@@ -39,8 +39,6 @@ bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
 
       // Required by cloud policy.
       GaiaConstants::kDeviceManagementServiceOAuth,
-      // Required for password leak detection.
-      GaiaConstants::kPasswordsLeakCheckOAuth2Scope,
       // The "ChromeSync" scope is used by Sync-the-transport, which does
       // not require consent. Instead, features built on top of it (e.g., tab
       // sharing, account-scoped passwords, or Sync-the-feature) have their own
@@ -64,6 +62,9 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
 
       // Google Pay is accessible as it has its own consent dialogs.
       GaiaConstants::kPaymentsOAuth2Scope,
+
+      // Required for password leak detection.
+      GaiaConstants::kPasswordsLeakCheckOAuth2Scope,
 
       // Required by Zuul.
       GaiaConstants::kCryptAuthOAuth2Scope,

@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_delegate.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_request_factory.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -90,9 +91,8 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
     std::optional<std::string> api_key = kApiKey;
     if (user_signed_in) {
       api_key = std::nullopt;
-      AccountInfo info = identity_env().MakeAccountAvailable(kTestEmail);
-      identity_env().SetCookieAccounts({{info.email, info.gaia}});
-      identity_env().SetRefreshTokenForAccount(info.account_id);
+      identity_env().MakePrimaryAccountAvailable(kTestEmail,
+                                                 signin::ConsentLevel::kSignin);
     }
     leak_check_ = std::make_unique<LeakDetectionCheckImpl>(
         &delegate_, identity_test_env_.identity_manager(),

@@ -28,7 +28,7 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kChromeSyncOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kFCMOAuthScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPaymentsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
- {GaiaConstants::kPasswordsLeakCheckOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
+ {GaiaConstants::kPasswordsLeakCheckOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCryptAuthOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kChromeSafeBrowsingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},

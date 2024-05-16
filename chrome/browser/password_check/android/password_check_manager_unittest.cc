@@ -31,6 +31,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/test_sync_service.h"
@@ -258,7 +259,8 @@ TEST_F(PasswordCheckManagerTest, OnCompromisedCredentialsChanged) {
 }
 
 TEST_F(PasswordCheckManagerTest, RunCheckAfterLastInitialization) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   EXPECT_CALL(mock_observer(), OnPasswordCheckStatusChanged(_))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_observer(), OnSavedPasswordsFetched(1));
@@ -330,7 +332,8 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
 }
 
 TEST_F(PasswordCheckManagerTest, SetsTimestampOnSuccessfulCheck) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   InitializeManager();
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -376,7 +379,8 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStruct) {
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
-  identity_test_env().MakeAccountAvailable(kTestEmail);
+  identity_test_env().MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   InitializeManager();
 
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
