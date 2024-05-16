@@ -149,7 +149,8 @@ void OnDeviceModelAdaptationLoader::StateChanged(
 
   proto::Any any_metadata;
   any_metadata.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.OnDeviceBaseModelMetadata");
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1.OnDeviceBaseModelMetadata");
   proto::OnDeviceBaseModelMetadata model_metadata;
   model_metadata.set_base_model_version(base_model_spec_->model_version);
   model_metadata.set_base_model_name(base_model_spec_->model_name);
