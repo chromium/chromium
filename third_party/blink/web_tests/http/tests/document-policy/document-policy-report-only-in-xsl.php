@@ -1,5 +1,5 @@
 <?php
-header("Document-Policy-Report-Only: oversized-images=2.0");
+header("Document-Policy-Report-Only: sync-xhr=?0");
 header("Content-Type: application/xml");
 
 echo '<?xml version="1.0"?>

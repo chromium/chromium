@@ -9,25 +9,17 @@
       <script src="../../resources/testharness.js"></script>
       <script src="../../resources/testharnessreport.js"></script>
       <script>
-        // The page is expected to have 'oversized-images' threshold
-        // set to 2.0, i.e. images with actual_size / display_size ratio
-        // > 2.0 should be replaced with placeholder images. A violation
-        // report is also expected to be generated.
-
-        async_test(t => {
-          new ReportingObserver(t.step_func_done((reports, _) => {
-            assert_equals(reports.length, 1);
-            const report = reports[0];
-            assert_equals(report.type, 'document-policy-violation');
-            assert_equals(report.body.featureId, 'oversized-images');
-            assert_equals(report.body.disposition, 'enforce');
-          }), {types: ['document-policy-violation']}).observe();
+        test(t => {
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", document.location.href, false);
+        console.log(document.location.href);
+          assert_throws_dom('NetworkError',
+            () => xhr.send(),
+          "Synchronous XHR.send should throw an exception when disabled");
         });
-
       </script>
     </head>
     <body bgcolor="#ffffff">
-      <img src="resources/green-256x256.jpg" width="100"></img>
     </body>
   </html>
 </xsl:template>

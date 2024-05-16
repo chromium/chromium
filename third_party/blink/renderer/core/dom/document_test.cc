@@ -1802,8 +1802,7 @@ TEST_F(DocumentSimTest, LastModified) {
 
 TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
   SimRequest::Params params;
-  params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.0"}};
+  params.response_http_headers = {{"Document-Policy", "force-load-at-top=?0"}};
   SimRequest main_resource("https://example.com", "text/html", params);
   LoadURL("https://example.com");
   main_resource.Finish();
@@ -1815,14 +1814,14 @@ TEST_F(DocumentSimTest, DuplicatedDocumentPolicyViolationsAreIgnored) {
                                           mock_reporting_context);
 
   EXPECT_FALSE(execution_context->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.1), ReportOptions::kReportOnFailure));
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
+      PolicyValue::CreateBool(true), ReportOptions::kReportOnFailure));
 
   EXPECT_EQ(mock_reporting_context->report_count, 1u);
 
   EXPECT_FALSE(execution_context->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.1), ReportOptions::kReportOnFailure));
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
+      PolicyValue::CreateBool(true), ReportOptions::kReportOnFailure));
 
   EXPECT_EQ(mock_reporting_context->report_count, 1u);
 }

@@ -9,25 +9,27 @@
       <script src="../../resources/testharness.js"></script>
       <script src="../../resources/testharnessreport.js"></script>
       <script>
-        // The page is expected to have 'oversized-images' threshold
-        // set to 2.0 in report only mode, i.e. images with
-        // actual_size / display_size ratio > 2.0 should generate
-        // violation reports.
+        const check_report_format = ([reports, _]) => {
+          assert_equals(reports.length, 1);
+          const report = reports[0];
+          assert_equals(report.type, 'document-policy-violation');
+          assert_equals(report.body.featureId, 'sync-xhr');
+          assert_equals(report.body.disposition, 'report');
+        };
 
-        async_test(t => {
-          new ReportingObserver(t.step_func_done((reports, _) => {
-            assert_equals(reports.length, 1);
-            const report = reports[0];
-            assert_equals(report.type, 'document-policy-violation');
-            assert_equals(report.body.featureId, 'oversized-images');
-            assert_equals(report.body.disposition, 'report');
-          }), {types: ['document-policy-violation']}).observe();
+        promise_test(async t => {
+          const report = new Promise(resolve => {
+            new ReportingObserver((reports, observer) => resolve([reports, observer]),
+                                  {types: ['document-policy-violation']}).observe();
+          });
+          const xhr = new XMLHttpRequest();
+          xhr.open("GET", document.location.href, false);
+          xhr.send();
+          check_report_format(await report);
         });
-
       </script>
     </head>
     <body bgcolor="#ffffff">
-      <img src="resources/green-256x256.jpg" width="100"></img>
     </body>
   </html>
 </xsl:template>

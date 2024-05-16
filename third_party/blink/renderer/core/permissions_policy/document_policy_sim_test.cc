@@ -35,11 +35,11 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
 
   SimRequest::Params main_params;
   main_params.response_http_headers = {
-      {"Require-Document-Policy", "lossless-images-max-bpp=1.0"}};
+      {"Require-Document-Policy", "force-load-at-top=?0"}};
 
   SimRequest::Params iframe_params;
   iframe_params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.1"}};
+      {"Document-Policy", "force-load-at-top"}};
 
   SimRequest main_resource("https://example.com", "text/html", main_params);
   SimRequest iframe_resource("https://example.com/foo.html", "text/html",
@@ -49,7 +49,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
   main_resource.Complete(R"(
     <iframe
       src="https://example.com/foo.html"
-      policy="lossless-images-max-bpp=1.0">
+      policy="force-load-at-top=?0">
     </iframe>
   )");
 
@@ -69,22 +69,13 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
   EXPECT_FALSE(child_window->document()->IsUseCounted(
       mojom::WebFeature::kDocumentPolicyCausedPageUnload));
 
-  // lossless-images-max-bpp should be set to inf in main document, i.e. allow
-  // all values.
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
-  EXPECT_TRUE(Window().IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
+  // force-load-at-top should be set to false in main document.
+  EXPECT_FALSE(Window().IsFeatureEnabled(
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop));
 
-  // lossless-images-max-bpp should be set to 1.1 in child document.
-  EXPECT_FALSE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(2.0)));
+  // force-load-at-top should be set to true in child document.
   EXPECT_TRUE(child_window->IsFeatureEnabled(
-      mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue::CreateDecDouble(1.0)));
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop));
 }
 
 TEST_F(DocumentPolicySimTest, ReportDocumentPolicyHeaderParsingError) {
@@ -114,8 +105,7 @@ TEST_F(DocumentPolicySimTest, ReportRequireDocumentPolicyHeaderParsingError) {
 
 TEST_F(DocumentPolicySimTest, ReportErrorWhenDocumentPolicyIncompatible) {
   SimRequest::Params params;
-  params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.1"}};
+  params.response_http_headers = {{"Document-Policy", "force-load-at-top"}};
 
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest iframe_resource("https://example.com/foo.html", "text/html",
@@ -125,7 +115,7 @@ TEST_F(DocumentPolicySimTest, ReportErrorWhenDocumentPolicyIncompatible) {
   main_resource.Complete(R"(
     <iframe
       src="https://example.com/foo.html"
-      policy="lossless-images-max-bpp=1.0">
+      policy="force-load-at-top=?0">
     </iframe>
   )");
 
@@ -158,9 +148,8 @@ TEST_F(DocumentPolicySimTest, ReportErrorWhenDocumentPolicyIncompatible) {
 TEST_F(DocumentPolicySimTest,
        RequireDocumentPolicyHeaderShouldNotAffectCurrentDocument) {
   SimRequest::Params params;
-  params.response_http_headers = {
-      {"Require-Document-Policy", "lossless-images-max-bpp=1.0"},
-      {"Document-Policy", "lossless-images-max-bpp=1.1"}};
+  params.response_http_headers = {{"Require-Document-Policy", "sync-xhr=?0"},
+                                  {"Document-Policy", "force-load-at-top"}};
 
   SimRequest main_resource("https://example.com", "text/html", params);
   LoadURL("https://example.com");
@@ -174,8 +163,7 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
 
   SimRequest::Params params;
   params.response_http_headers = {
-      {"Document-Policy",
-       "font-display-late-swap, lossless-images-max-bpp=1.1"}};
+      {"Document-Policy", "force-load-at-top, sync-xhr"}};
 
   SimRequest main_resource("https://example.com", "text/html", params);
   LoadURL("https://example.com");
@@ -184,9 +172,9 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyHeaderHistogramTest) {
   histogram_tester.ExpectTotalCount("Blink.UseCounter.DocumentPolicy.Header",
                                     2);
   histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Header",
-                                     1 /* kFontDisplay */, 1);
+                                     3 /* kForceLoadAtTop */, 1);
   histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Header",
-                                     2 /* kUnoptimizedLosslessImages */, 1);
+                                     12 /* kSyncXHR */, 1);
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
@@ -198,21 +186,20 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyPolicyAttributeHistogramTest) {
   // Same feature should only be reported once in a document despite its
   // occurrence.
   main_resource.Complete(R"(
-    <iframe policy="font-display-late-swap"></iframe>
-    <iframe policy="font-display-late-swap=?0"></iframe>
+    <iframe policy="force-load-at-top"></iframe>
+    <iframe policy="force-load-at-top=?0"></iframe>
     <iframe
-      policy="font-display-late-swap, lossless-images-max-bpp=1.1">
+      policy="force-load-at-top,sync-xhr=?0">
     </iframe>
   )");
 
   histogram_tester.ExpectTotalCount(
       "Blink.UseCounter.DocumentPolicy.PolicyAttribute", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.PolicyAttribute", 1 /* kFontDisplay */,
-      1);
-  histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.DocumentPolicy.PolicyAttribute",
-      2 /* kUnoptimizedLosslessImages */, 1);
+      3 /* kForceLoadAtTop */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.DocumentPolicy.PolicyAttribute", 12 /* kSyncXHR */, 1);
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
@@ -223,25 +210,25 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyEnforcedReportHistogramTest) {
   main_resource.Finish();
 
   Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kFontDisplay,
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
       mojom::blink::PolicyDisposition::kEnforce,
-      "first font display violation");
+      "first fragment scroll violation");
 
   histogram_tester.ExpectTotalCount("Blink.UseCounter.DocumentPolicy.Enforced",
                                     1);
   histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Enforced",
-                                     1 /* kFontDisplay */, 1);
+                                     3 /* kForceLoadAtTop */, 1);
 
   // Multiple reports should be recorded multiple times.
   Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kFontDisplay,
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
       mojom::blink::PolicyDisposition::kEnforce,
-      "second font display violation");
+      "second fragment scroll violation");
 
   histogram_tester.ExpectTotalCount("Blink.UseCounter.DocumentPolicy.Enforced",
                                     2);
   histogram_tester.ExpectBucketCount("Blink.UseCounter.DocumentPolicy.Enforced",
-                                     1 /* kFontDisplay */, 2);
+                                     3 /* kForceLoadAtTop */, 2);
 }
 
 TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
@@ -249,31 +236,32 @@ TEST_F(DocumentPolicySimTest, DocumentPolicyReportOnlyReportHistogramTest) {
 
   SimRequest::Params params;
   params.response_http_headers = {
-      {"Document-Policy-Report-Only", "font-display-late-swap"}};
+      {"Document-Policy-Report-Only", "force-load-at-top"}};
   SimRequest main_resource("https://example.com", "text/html", params);
 
   LoadURL("https://example.com");
   main_resource.Finish();
 
   Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kFontDisplay,
-      mojom::blink::PolicyDisposition::kReport, "first font display violation");
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
+      mojom::blink::PolicyDisposition::kReport,
+      "first fragment scroll violation");
 
   histogram_tester.ExpectTotalCount(
       "Blink.UseCounter.DocumentPolicy.ReportOnly", 1);
   histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 1 /* kFontDisplay */, 1);
+      "Blink.UseCounter.DocumentPolicy.ReportOnly", 3 /* kForceLoadAtTop */, 1);
 
   // Multiple reports should be recorded multiple times.
   Window().ReportDocumentPolicyViolation(
-      mojom::blink::DocumentPolicyFeature::kFontDisplay,
+      mojom::blink::DocumentPolicyFeature::kForceLoadAtTop,
       mojom::blink::PolicyDisposition::kReport,
-      "second font display violation");
+      "second fragment scroll violation");
 
   histogram_tester.ExpectTotalCount(
       "Blink.UseCounter.DocumentPolicy.ReportOnly", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.DocumentPolicy.ReportOnly", 1 /* kFontDisplay */, 2);
+      "Blink.UseCounter.DocumentPolicy.ReportOnly", 3 /* kForceLoadAtTop */, 2);
 }
 
 class DocumentPolicyHeaderUseCounterTest
@@ -287,16 +275,15 @@ TEST_P(DocumentPolicyHeaderUseCounterTest, ShouldObserveUseCounterUpdate) {
 
   SimRequest::Params params;
   if (has_document_policy_header) {
-    params.response_http_headers.insert("Document-Policy",
-                                        "lossless-images-max-bpp=1.0");
+    params.response_http_headers.insert("Document-Policy", "sync-xhr=?0");
   }
   if (has_report_only_header) {
     params.response_http_headers.insert("Document-Policy-Report-Only",
-                                        "lossless-images-max-bpp=1.0");
+                                        "sync-xhr=?0");
   }
   if (has_require_header) {
     params.response_http_headers.insert("Require-Document-Policy",
-                                        "lossless-images-max-bpp=1.0");
+                                        "sync-xhr=?0");
   }
   SimRequest main_resource("https://example.com", "text/html", params);
   LoadURL("https://example.com");
@@ -323,15 +310,14 @@ TEST_F(DocumentPolicySimTest,
        DocumentPolicyIframePolicyAttributeUseCounterTest) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest::Params iframe_params;
-  iframe_params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.0"}};
+  iframe_params.response_http_headers = {{"Document-Policy", "sync-xhr=?0"}};
   SimRequest iframe_resource("https://example.com/foo.html", "text/html",
                              iframe_params);
   LoadURL("https://example.com");
   main_resource.Complete(R"(
     <iframe
       src="https://example.com/foo.html"
-      policy="lossless-images-max-bpp=1.0"
+      policy="sync-xhr=?0"
     ></iframe>
   )");
   iframe_resource.Finish();
@@ -353,13 +339,12 @@ TEST_F(DocumentPolicySimTest,
 TEST_F(DocumentPolicySimTest, RequiredDocumentPolicyUseCounterTest) {
   SimRequest::Params main_frame_params;
   main_frame_params.response_http_headers = {
-      {"Require-Document-Policy", "lossless-images-max-bpp=1.0"}};
+      {"Require-Document-Policy", "sync-xhr=?0"}};
   SimRequest main_resource("https://example.com", "text/html",
                            main_frame_params);
 
   SimRequest::Params iframe_params;
-  iframe_params.response_http_headers = {
-      {"Document-Policy", "lossless-images-max-bpp=1.0"}};
+  iframe_params.response_http_headers = {{"Document-Policy", "sync-xhr=?0"}};
   SimRequest iframe_resource("https://example.com/foo.html", "text/html",
                              iframe_params);
 
