@@ -112,6 +112,9 @@ void VisualQuerySuggestionsService::NotifyModelUpdatesAndClear() {
 
 void VisualQuerySuggestionsService::OnModelFileLoaded(base::File model_file) {
   if (!model_file.IsValid()) {
+    if (model_load_failure_callback_for_testing_) {
+      std::move(model_load_failure_callback_for_testing_).Run();
+    }
     return;
   }
 

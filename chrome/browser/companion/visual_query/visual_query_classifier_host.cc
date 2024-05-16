@@ -160,6 +160,9 @@ void VisualQueryClassifierHost::StartClassificationWithModel(
     mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_query,
     base::File model,
     std::optional<mojo_base::ProtoWrapper> wrapped_config) {
+  if (model_loaded_callback_for_testing_) {
+    std::move(model_loaded_callback_for_testing_).Run();
+  }
   base::UmaHistogramBoolean("Companion.VisualQuery.ClassifierModelAvailable",
                             model.IsValid());
   if (!model.IsValid()) {
