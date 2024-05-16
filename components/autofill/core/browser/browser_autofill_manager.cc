@@ -1194,8 +1194,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
   // When Compose suggestions or manual fallback for plus addresses are
   // requested, there is no need to load Autofill suggestions.
   if (IsTriggerSourceOnlyRelevantForCompose(trigger_source) ||
-      trigger_source ==
-          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
+      IsPlusAddressesManuallyTriggered(trigger_source)) {
     context.do_not_generate_autofill_suggestions = true;
     return context;
   }

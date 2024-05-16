@@ -211,4 +211,10 @@ bool IsPasswordsAutofillManuallyTriggered(
          AutofillSuggestionTriggerSource::kManualFallbackPasswords;
 }
 
+bool IsPlusAddressesManuallyTriggered(
+    AutofillSuggestionTriggerSource trigger_source) {
+  return trigger_source ==
+         AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses;
+}
+
 }  // namespace autofill
