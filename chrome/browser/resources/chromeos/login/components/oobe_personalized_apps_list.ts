@@ -102,7 +102,8 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
   }
 
   itemRenderedChanged(): void {
-    if (this.itemRendered === this.appsList.length &&
+    if (this.appsList.length !== 0 &&
+        this.itemRendered === this.appsList.length &&
         this.loadedIconsCount === this.appsList.length) {
       this.dispatchEvent(new CustomEvent(
           'apps-icons-loaded', {bubbles: true, composed: true}));

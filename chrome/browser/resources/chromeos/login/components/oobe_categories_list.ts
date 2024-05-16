@@ -107,7 +107,8 @@ export class OobeCategoriesList extends OobeCategoriesListBase {
   }
 
   itemRenderedChanged(): void {
-    if (this.itemRendered === this.categoriesList.length &&
+    if (this.categoriesList.length !== 0 &&
+        this.itemRendered === this.categoriesList.length &&
         this.loadedIconsCount === this.categoriesList.length) {
       this.setWebviewStyle();
       this.dispatchEvent(
