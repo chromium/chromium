@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -102,11 +103,18 @@ struct URLVisitAggregate {
 
   struct HistoryData {
     explicit HistoryData(history::AnnotatedVisit annotated_visit);
+    HistoryData(const HistoryData&) = delete;
+    HistoryData(HistoryData&& other);
+    HistoryData& operator=(HistoryData&& other);
     ~HistoryData();
 
     // The last annotated visit associated with the given URL visit in a given
     // time period.
     history::AnnotatedVisit last_visited;
+
+    // The last `app_id` value if any for any of the visits associated with the
+    // URL visit aggregate.
+    std::optional<std::string> last_app_id = std::nullopt;
 
     // Whether any of the annotated visits for the given URL visit aggregate are
     // part of a cluster.

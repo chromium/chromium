@@ -5,6 +5,7 @@
 #include "components/visited_url_ranking/public/url_visit.h"
 
 #include <set>
+#include <string>
 #include <utility>
 #include <variant>
 
@@ -76,7 +77,16 @@ URLVisitAggregate::HistoryData::HistoryData(
   visit_count = 1;
   total_foreground_duration =
       last_visited.context_annotations.total_foreground_duration;
+  if (last_visited.visit_row.app_id.has_value()) {
+    last_app_id = last_visited.visit_row.app_id;
+  }
 }
+
+URLVisitAggregate::HistoryData::HistoryData(
+    URLVisitAggregate::HistoryData&& other) = default;
+
+URLVisitAggregate::HistoryData& URLVisitAggregate::HistoryData::operator=(
+    URLVisitAggregate::HistoryData&& other) = default;
 
 URLVisitAggregate::HistoryData::~HistoryData() = default;
 

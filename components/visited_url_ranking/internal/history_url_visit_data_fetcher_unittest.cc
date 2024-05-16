@@ -29,6 +29,7 @@ history::AnnotatedVisit SampleAnnotatedVisit(
     const GURL& url,
     float visibility_score,
     const std::string& originator_cache_guid,
+    const std::optional<std::string> app_id = std::nullopt,
     const base::Time visit_time = base::Time::Now()) {
   history::VisitContentModelAnnotations model_annotations;
   model_annotations.visibility_score = visibility_score;
@@ -41,6 +42,7 @@ history::AnnotatedVisit SampleAnnotatedVisit(
   visit_row.visit_time = visit_time;
   visit_row.is_known_to_sync = true;
   visit_row.originator_cache_guid = originator_cache_guid;
+  visit_row.app_id = app_id;
 
   history::AnnotatedVisit annotated_visit;
   annotated_visit.url_row = std::move(url_row);
@@ -89,7 +91,8 @@ class HistoryURLVisitDataFetcherTest
                 -> base::CancelableTaskTracker::TaskId {
               std::vector<history::AnnotatedVisit> annotated_visits = {};
               annotated_visits.emplace_back(SampleAnnotatedVisit(
-                  1, GURL(base::StrCat({kSampleSearchUrl, "1"})), 1.0f, ""));
+                  1, GURL(base::StrCat({kSampleSearchUrl, "1"})), 1.0f, "",
+                  "sample_app_id"));
               annotated_visits.emplace_back(SampleAnnotatedVisit(
                   2, GURL(base::StrCat({kSampleSearchUrl, "2"})), 0.75f,
                   "foreign_session_guid"));
@@ -97,7 +100,7 @@ class HistoryURLVisitDataFetcherTest
               return 0;
             }));
     history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
-        mock_history_service_->AsWeakPtr());
+        mock_history_service_.get());
   }
 
   FetchResult FetchAndGetResult(const FetchOptions& options) {
@@ -129,6 +132,11 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
   auto result = FetchAndGetResult(options);
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 2u);
+
+  const auto entry_url = GURL(base::StrCat({kSampleSearchUrl, "1"}));
+  const auto* history = std::get_if<URLVisitAggregate::HistoryData>(
+      &result.data.at(entry_url.spec()));
+  EXPECT_EQ(history->last_app_id, "sample_app_id");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

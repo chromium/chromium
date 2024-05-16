@@ -98,8 +98,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
   if (hs) {
     data_fetchers.emplace(
         Fetcher::kHistory,
-        std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(
-            hs->AsWeakPtr()));
+        std::make_unique<visited_url_ranking::HistoryURLVisitDataFetcher>(hs));
   }
 
   // TODO(crbug.com/329242209): Add various aggregate transformers (e.g,
