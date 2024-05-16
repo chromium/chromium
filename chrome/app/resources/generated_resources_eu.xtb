@@ -3043,7 +3043,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3269093882174072735">Kargatu irudia</translation>
 <translation id="326911502853238749">Ez erakutsi <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Aktibatu sinkronizazioa, zure gauzen babeskopiak egin eta edozein gailutan erabil ditzazun</translation>
-<translation id="3269612321104318480">Anil argia eta zuria</translation>
+<translation id="3269612321104318480">Berde urdinxka argia eta zuria</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxategia}other{# fitxategi}}</translation>
 <translation id="326999365752735949">Aldea deskargatzen</translation>
 <translation id="3270965368676314374">Irakurri, aldatu eta ezabatu ordenagailuko argazkiak, musika eta bestelako multimedia-edukia</translation>
@@ -10253,7 +10253,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="880812391407122701">Eman fitxak antolatzeko baimena Chrome-ri</translation>
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Katua</translation>
-<translation id="8809147117840417135">Anil argia</translation>
+<translation id="8809147117840417135">Berde urdinxka argia</translation>
 <translation id="8811862054141704416">Crostini-ren mikrofonorako sarbidea</translation>
 <translation id="8811923271770626905">Baliteke luzapena atzeko planoan exekutatzea</translation>
 <translation id="8812593354822910461">Garbitu arakatze-datuak ere (<ph name="URL" />); hala, <ph name="DOMAIN" /> webguneko saioa amaituko da. <ph name="LEARN_MORE" /></translation>
@@ -10405,7 +10405,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="891931289445130855">Ezabatu datuak eta baimenak</translation>
 <translation id="8920133120839850939">Hautatu "Keinu gehiago" fitxa. Gero, aktibatu "Orri batetik bestera aldatzeko hatza pasatzea" aukera, atzera eta aurrera nabigatzeko.</translation>
 <translation id="8922624386829239660">Mugitu pantaila sagua pantailaren ertzera iristen denean</translation>
-<translation id="8923880975836399332">Anil iluna</translation>
+<translation id="8923880975836399332">Berde urdinxka iluna</translation>
 <translation id="8925124370124776087">Izenaren barra ezkutatuta dago orain</translation>
 <translation id="8925458182817574960">&amp;Ezarpenak</translation>
 <translation id="8926389886865778422">Ez galdetu berriro</translation>

@@ -1061,7 +1061,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1780572199786401845">Báo cáo nội dung phản cảm/không an toàn.</translation>
 <translation id="178092663238929451">Thiết lập tính năng Chia sẻ lân cận để nhận và gửi tệp với những người xung quanh bạn</translation>
 <translation id="1781291988450150470">Mã PIN hiện tại</translation>
-<translation id="1781502536226964113">Mở trang thẻ mới</translation>
+<translation id="1781502536226964113">Mở trang Thẻ mới</translation>
 <translation id="1781553166608855614">Ngôn ngữ nói</translation>
 <translation id="1781771911845953849">Tài khoản và đồng bộ hóa</translation>
 <translation id="1781979858217752599">Chia sẻ âm thanh trên cửa sổ</translation>
@@ -4248,7 +4248,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4159784952369912983">Tím</translation>
 <translation id="4163560723127662357">Bàn phím không xác định</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> không thuộc về một tổ chức hợp lệ. Hãy liên hệ với quản trị viên của bạn. Nếu bạn là quản trị viên thì bạn có thể thiết lập tổ chức của mình bằng cách truy cập: g.co/ChromeEnterpriseAccount</translation>
-<translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
+<translation id="4165986682804962316">Cài đặt trang web</translation>
 <translation id="4167212649627589331"><ph name="APP_NAME" /> đang cố truy cập vào <ph name="DEVICE_NAME" />. Hãy tắt nút chuyển quyền riêng tư của <ph name="DEVICE_NAME" /> để cho phép truy cập.</translation>
 <translation id="4167393659000039775">Google không chịu trách nhiệm đối với mọi dữ liệu bị mất và có thể <ph name="DEVICE_OS" /> sẽ không hoạt động trên một số kiểu thiết bị chưa được chứng nhận. Tìm hiểu thêm tại g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Thao tác khác cho lối tắt <ph name="SHORTCUT_TITLE" /></translation>
@@ -6064,7 +6064,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
     <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. Bạn có thể xem và xóa dữ liệu của mình cũng như thay đổi tùy chọn cài đặt tài khoản tại account.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5585019845078534178">Thẻ</translation>
 <translation id="5585118885427931890">Không thể tạo thư mục dấu trang.</translation>
-<translation id="558563010977877295">Mở một trang cụ thể hoặc tập hợp các trang</translation>
+<translation id="558563010977877295">Mở một trang hoặc một tập hợp các trang cụ thể</translation>
 <translation id="5585898376467608182">Thiết bị của bạn sắp hết dung lượng lưu trữ. Thiết bị phải có ít nhất <ph name="MINIMUM_SPACE" /> dung lượng trống thì mới dùng được <ph name="APP_NAME" />. Để tăng dung lượng trống, hãy xóa bớt tệp khỏi thiết bị.</translation>
 <translation id="5585912436068747822">Định dạng không thành công</translation>
 <translation id="5587765208077583036">Để chia sẻ, hãy nhấp chuột phải vào một thư mục trong ứng dụng Files rồi chọn "Chia sẻ với <ph name="SPECIFIC_NAME" />".</translation>

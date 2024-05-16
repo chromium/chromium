@@ -4057,7 +4057,7 @@ các tiện ích cố định ở một phiên bản cũng bị bỏ qua.
 Nếu bạn đặt chính sách này thành <ph name="ALLOW_UNPUBLISHED" /> (0) hoặc không đặt, các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ được cho phép.
 Nếu bạn đặt chính sách này thành <ph name="DISABLE_UNPUBLISHED" /> (1) thì các tiện ích chưa phát hành trên Cửa hàng Chrome trực tuyến sẽ bị vô hiệu hoá.</translation>
 <translation id="4164866067069311355">Kiểm soát phím tắt dùng để kích hoạt chế độ cài đặt F11/F12</translation>
-<translation id="4165986682804962316">Chế độ cài đặt trang web</translation>
+<translation id="4165986682804962316">Cài đặt trang web</translation>
 <translation id="4166174702671320480">Nếu bạn đặt chính sách này thành Bật, các chính sách không có chung nguồn với các chính sách có độ ưu tiên cao nhất trong một nhóm không thể phân chia sẽ bị bỏ qua.
 
       Nếu bạn đặt chính sách này thành Tắt, sẽ không có chính sách nào bị bỏ qua do vấn đề liên quan đến nguồn nữa. Các chính sách sẽ chỉ bị bỏ qua nếu có xung đột và chính sách này không có mức độ ưu tiên cao nhất.

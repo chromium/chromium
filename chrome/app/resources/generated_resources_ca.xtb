@@ -2180,7 +2180,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2603115962224169880">Neteja l'ordinador</translation>
 <translation id="2603355571917519942">Voice Match està a punt</translation>
 <translation id="2604129989323098489">Els llocs web solen demanar informació sobre les pantalles perquè puguin obrir i col·locar finestres de manera intel·ligent, com ara mostrar documents o contingut en pantalla completa en paral·lel</translation>
-<translation id="2604255671529671813">Error de connexió a la xarxa</translation>
+<translation id="2604255671529671813">Error de connexió de xarxa</translation>
 <translation id="2604805099836652105">S'ha emplenat el formulari d'adreces de <ph name="ADDRESS_LABEL" />.</translation>
 <translation id="2605668923777146443">Per veure les opcions de Better Together, ves a <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Enllaça les dades</translation>
@@ -3375,7 +3375,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3531070080754387701">Microsoft 365 no pot obrir <ph name="FILE_NAMES" /> des d'aquesta carpeta</translation>
 <translation id="3531883061432162622">Trobaràs la llista de lectura i les adreces d'interès a Adreces d'interès i llistes</translation>
 <translation id="3532273508346491126">Gestió de la sincronització</translation>
-<translation id="3532521178906420528">S'està establint la connexió a la xarxa...</translation>
+<translation id="3532521178906420528">S'està establint la connexió de xarxa...</translation>
 <translation id="3532852121563960103">{NUM_OF_FILES,plural, =1{S'està movent 1 fitxer a <ph name="CLOUD_PROVIDER" />}other{S'estan movent {NUM_OF_FILES} fitxers a <ph name="CLOUD_PROVIDER" />}}</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" />: l'àudio està desactivat</translation>
 <translation id="3537099313456411235">Connecta <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /> per accedir als teus fitxers de Drive des de l'aplicació Fitxers</translation>
@@ -5018,7 +5018,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4785719467058219317">Estàs utilitzant una clau de seguretat que no està registrada en aquest lloc web</translation>
 <translation id="4785914069240823137">Cancel·la la retallada</translation>
 <translation id="4787471921443575924">Edita la clau d'accés per al nom d'usuari: <ph name="USER_EMAIL" /></translation>
-<translation id="4788092183367008521">Comprova la connexió a la xarxa i torna-ho a provar.</translation>
+<translation id="4788092183367008521">Comprova la connexió de xarxa i torna-ho a provar.</translation>
 <translation id="4789348252524569426">No es poden instal·lar els fitxers de parla. Cal actualitzar el dispositiu. Reinicia'l i torna-ho a provar.</translation>
 <translation id="4789550509729954245">Mostra una notificació quan hi hagi dispositius compartint contingut a prop</translation>
 <translation id="4791037424585594169">(UDP)</translation>

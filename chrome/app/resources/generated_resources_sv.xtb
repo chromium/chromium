@@ -1387,7 +1387,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="2013550551806600826">Prova nu. Aktivera eller inaktivera inställningen och scrolla sedan med två fingrar på styrplattan i testområdet. Du hittar även detta under Inställningar &gt; Enhet &gt; Mus och styrplatta.</translation>
 <translation id="2015232545623037616">Datorn och Chromecast-enheten är på samma wifi-nätverk</translation>
 <translation id="2016473077102413275">Funktioner som kräver bilder slutar fungera</translation>
-<translation id="2016574333161572915">Google Meet-maskinvara är klar att konfigureras</translation>
+<translation id="2016574333161572915">Google Meet-hårdvara är klar att konfigureras</translation>
 <translation id="2017334798163366053">Inaktivera insamling av resultatdata</translation>
 <translation id="2017770349934140286">Google Play och appar som du har laddat ned från Google Play raderas från denna Chromebook.
     <ph name="LINE_BREAKS1" />
@@ -1956,7 +1956,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2428939361789119025">Stäng av wifi</translation>
 <translation id="2428978615149723410">dessa kundvagnar</translation>
 <translation id="2431027948063157455">Det gick inte att läsa in Google Assistent. Kontrollera nätverksanslutningen och försök igen.</translation>
-<translation id="243179355394256322">Organisationen tillåter endast auktoriserade användare att registrera enheter. Den här användaren har inte behörighet att registrera enheter. Se till att användaren har administratörsbehörigheten Registrera Google Meet-maskinvara i avsnittet Användare i administratörskonsolen.</translation>
+<translation id="243179355394256322">Organisationen tillåter endast auktoriserade användare att registrera enheter. Den här användaren har inte behörighet att registrera enheter. Se till att användaren har administratörsbehörigheten Registrera Google Meet-hårdvara i avsnittet Användare i administratörskonsolen.</translation>
 <translation id="243275146591958220">Avbryt nedladdning</translation>
 <translation id="2433452467737464329">Lägg till en frågeparameter i webbadressen om du vill uppdatera sidan automatiskt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
@@ -3268,7 +3268,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3441653493275994384">Skärm</translation>
 <translation id="3441663102605358937">Logga in på <ph name="ACCOUNT" /> igen för att verifiera kontot</translation>
 <translation id="3441824746233675597">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. <ph name="PRODUCT_NAME" /> använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
-<translation id="3442674350323953953">Låt Google använda din maskinvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
+<translation id="3442674350323953953">Låt Google använda din hårdvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
 <translation id="3443744348829035122"><ph name="BRAND" /> överskred tidsgränsen</translation>
 <translation id="3443754338602062261">Du har redan lösenord för dessa konton på <ph name="BRAND" />. Om du väljer att importera ett av lösenorden nedan ersätts det befintliga.</translation>
 <translation id="344449859752187052">Tredjepartscookies har blockerats</translation>
@@ -3445,7 +3445,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3575224072358507281">samla in resultat från IP-adresser och nätverksmätningar för Measurement Lab enligt deras integritetspolicy (measurementlab.net/privacy).</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3577487026101678864">Filsynkronisering på</translation>
-<translation id="3577745545227000795">Insamling av maskinvarudata för <ph name="DEVICE_OS" /></translation>
+<translation id="3577745545227000795">Insamling av hårdvarudata för <ph name="DEVICE_OS" /></translation>
 <translation id="3581605050355435601">Konfigurera IP-adress automatiskt</translation>
 <translation id="3581861561942370740">Sök i nedladdningshistoriken</translation>
 <translation id="3582057310199111521">Har angetts på en bedräglig webbplats och upptäckts i ett dataintrång</translation>
@@ -4041,7 +4041,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3992008114154328194">Laddar ned <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Säkerhetskopiera data</translation>
 <translation id="3993887353483242788">Synkronisera <ph name="DEVICE_TYPE" /> så att inställningarna kan användas på alla enheter där du är inloggad på Google-kontot. Detta gäller bland annat appar, inställningar, wifi-lösenord, språk, bakgrund och kortkommandon.</translation>
-<translation id="3994318741694670028">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-id. Detta förhindrar att ChromeOS Flex uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara sårbar för angrepp<ph name="END_BOLD" />.</translation>
+<translation id="3994318741694670028">Tyvärr är din dator konfigurerad med ett felaktigt hårdvaru-id. Detta förhindrar att ChromeOS Flex uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara sårbar för angrepp<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Lås upp mobilen och håll den närmare din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994708120330953242">Vissa av dina lösenord upptäcktes i samband med ett dataintrång. För att skydda dina konton bör du ändra dessa lösenord nu.</translation>
 <translation id="3994878504415702912">&amp;Zooma in</translation>
@@ -6504,7 +6504,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5932209916647644605"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart.</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
 <translation id="59324397759951282">USB-enhet från <ph name="MANUFACTURER_NAME" /></translation>
-<translation id="5932441198730183141">Du har inte tillräckligt många licenser tillgängliga för att registrera den här maskinvaruenheten för Google Meet. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
+<translation id="5932441198730183141">Du har inte tillräckligt många licenser tillgängliga för att registrera den här hårdvaruenheten för Google Meet. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933376509899483611">Tidszon</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> använder kameran och mikrofonen</translation>
@@ -6994,7 +6994,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6300654006256345126">Redigera lösenord</translation>
 <translation id="630065524203833229">&amp;Avsluta</translation>
 <translation id="6300718114348072351">Det gick inte att konfigurera <ph name="PRINTER_NAME" /> automatiskt. Ange avancerade utskriftsalternativ. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
-<translation id="6301300352769835063">Låt Google använda data om din maskinvara för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt. Läs mer på g.co/flex/HWDataCollection.</translation>
+<translation id="6301300352769835063">Låt Google använda data om din hårdvara för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt. Läs mer på g.co/flex/HWDataCollection.</translation>
 <translation id="6302661287897119265">Filtrera</translation>
 <translation id="630292539633944562">Personuppgiftsförslag</translation>
 <translation id="6305607932814307878">Global policy:</translation>
@@ -7559,7 +7559,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6766488013065406604">Öppna Google Lösenordshantering</translation>
 <translation id="6767566652486411142">Välj ett annat språk …</translation>
 <translation id="6768034047581882264">Får inte visa osäkert innehåll</translation>
-<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />För att tillhandahålla bästa möjliga upplevelse samlar <ph name="DEVICE_OS" /> in data om enhetens maskinvara och delar den med Google för att avgöra vilka uppdateringar som bör levereras. Du kan välja att ge Google tillåtelse att använda denna data för ytterligare syften, som support och förbättringar kring upplevelsen och tjänsten från <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />För att tillhandahålla bästa möjliga upplevelse samlar <ph name="DEVICE_OS" /> in data om enhetens hårdvara och delar den med Google för att avgöra vilka uppdateringar som bör levereras. Du kan välja att ge Google tillåtelse att använda denna data för ytterligare syften, som support och förbättringar kring upplevelsen och tjänsten från <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kan logga in på den här enheten och visa fält som anges som chromeosflex_ i chrome://system för att se data som skickas till Google för uppdateringsfiltrering och alla andra situationer där du väljer att dela data med Google.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Om du vill läsa mer om vilken data som <ph name="DEVICE_OS" /> kan dela med Google och hur den delas besöker du g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Webbplatser du besöker som definierar intressen</translation>
@@ -7932,7 +7932,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7030695672997239647">Högerklicka på en flik och välj Lägg till fliken i gruppen, och välj sedan Ny grupp</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serieporten är ansluten</translation>
 <translation id="7033616203784997570">Ange högst 62 tecken</translation>
-<translation id="7034692021407794547">En administratör med behörigheten Fakturahantering måste först godkänna användarvillkoren för Google Meet-maskinvara i avsnittet Google Meet-maskinvara i administratörskonsolen.</translation>
+<translation id="7034692021407794547">En administratör med behörigheten Fakturahantering måste först godkänna användarvillkoren för Google Meet-hårdvara i avsnittet Google Meet-hårdvara i administratörskonsolen.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> utrymme rekommenderas för Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="7037509989619051237">Text för förhandsgranskning</translation>
 <translation id="7038632520572155338">Brytarstyrning</translation>
@@ -8798,7 +8798,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7704305437604973648">Åtgärd</translation>
 <translation id="7704521324619958564">Öppna Play Butik</translation>
 <translation id="7705276765467986571">Det gick inte att läsa in bokmärkesmodellen.</translation>
-<translation id="7705334495398865155">Slumpgenerera maskinvaru-id:t (BSSID) för att förhindra att andra spårar den här enheten.</translation>
+<translation id="7705334495398865155">Slumpgenerera hårdvaru-id:t (BSSID) för att förhindra att andra spårar den här enheten.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">Den här webbplatsen har blockerats från att använda rörelsesensorerna.</translation>
 <translation id="7707922173985738739">Mobildata används</translation>
@@ -10089,7 +10089,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8673026256276578048">Sök på webben ...</translation>
 <translation id="867329473311423817">Tillåts hantera fönster på alla skärmar</translation>
 <translation id="8673383193459449849">Serverfel</translation>
-<translation id="8674903726754070732">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-ID. Detta förhindrar att ChromeOS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig kod<ph name="END_BOLD" />.</translation>
+<translation id="8674903726754070732">Tyvärr är din dator konfigurerad med ett felaktigt hårdvaru-ID. Detta förhindrar att ChromeOS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig kod<ph name="END_BOLD" />.</translation>
 <translation id="8675657007450883866">Webbplatser använder den här funktionen för att aktivera helskärm automatiskt. Användaren måste vanligtvis aktivera helskärmsläget själv.</translation>
 <translation id="8675704450909805533">Installationsprogram hittade ingen giltig destination för installationen av <ph name="DEVICE_OS" />.</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# videor}}</translation>
