@@ -57,9 +57,8 @@ class PrefRegistrySyncable;
 
 // ChromeWebAuthenticationDelegate is the //chrome layer implementation of
 // content::WebAuthenticationDelegate.
-class ChromeWebAuthenticationDelegate
-    : public content::WebAuthenticationDelegate,
-      base::SupportsWeakPtr<ChromeWebAuthenticationDelegate> {
+class ChromeWebAuthenticationDelegate final
+    : public content::WebAuthenticationDelegate {
  public:
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
