@@ -570,12 +570,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::DeviceScreensaverLoginScreenIdleTimeoutSecondsProto& container(
         policy.device_screensaver_login_screen_idle_timeout_seconds());
     if (container.has_device_screensaver_login_screen_idle_timeout_seconds()) {
-      auto idle_timeout_seconds = DecodeIntegerValue(
-          container.device_screensaver_login_screen_idle_timeout_seconds());
-      policies->Set(key::kDeviceScreensaverLoginScreenIdleTimeoutSeconds,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, std::move(*idle_timeout_seconds),
-                    nullptr);
+      if (auto value = DecodeIntegerValue(
+              container
+                  .device_screensaver_login_screen_idle_timeout_seconds())) {
+        policies->Set(key::kDeviceScreensaverLoginScreenIdleTimeoutSeconds,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+      }
     }
   }
 
@@ -587,13 +588,14 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                 .device_screensaver_login_screen_image_display_interval_seconds());
     if (container
             .has_device_screensaver_login_screen_image_display_interval_seconds()) {
-      auto interval_seconds = DecodeIntegerValue(
-          container
-              .device_screensaver_login_screen_image_display_interval_seconds());
-      policies->Set(
-          key::kDeviceScreensaverLoginScreenImageDisplayIntervalSeconds,
-          POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-          std::move(*interval_seconds), nullptr);
+      if (auto value = DecodeIntegerValue(
+              container
+                  .device_screensaver_login_screen_image_display_interval_seconds())) {
+        policies->Set(
+            key::kDeviceScreensaverLoginScreenImageDisplayIntervalSeconds,
+            POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+            std::move(*value), nullptr);
+      }
     }
   }
 
@@ -1566,12 +1568,13 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   if (policy.has_device_login_screen_geolocation_access_level() &&
       policy.device_login_screen_geolocation_access_level()
           .has_geolocation_access_level()) {
-    auto value =
-        DecodeIntegerValue(policy.device_login_screen_geolocation_access_level()
-                               .geolocation_access_level());
-    policies->Set(key::kDeviceLoginScreenGeolocationAccessLevel,
-                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+    if (auto value = DecodeIntegerValue(
+            policy.device_login_screen_geolocation_access_level()
+                .geolocation_access_level())) {
+      policies->Set(key::kDeviceLoginScreenGeolocationAccessLevel,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, std::move(*value), nullptr);
+    }
   } else {
     // Set policy default to kAllowed if the policy is unset.
     policies->Set(
