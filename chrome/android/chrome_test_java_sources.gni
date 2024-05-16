@@ -305,7 +305,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/page_info/PageInfoViewTest.java",
   "javatests/src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetricsTest.java",
   "javatests/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelperTest.java",
-  "javatests/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelperTestRunner.java",
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/BasePartnerBrowserCustomizationIntegrationTestRule.java",
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableIncognitoModeIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageIntegrationTest.java",
