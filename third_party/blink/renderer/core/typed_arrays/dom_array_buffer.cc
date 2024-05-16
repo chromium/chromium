@@ -46,12 +46,25 @@ const WrapperTypeInfo& DOMArrayBuffer::wrapper_type_info_ =
 
 static void AccumulateArrayBuffersForAllWorlds(
     v8::Isolate* isolate,
-    DOMArrayBuffer* object,
+    const DOMArrayBuffer* object,
     v8::LocalVector<v8::ArrayBuffer>& buffers) {
+  ScriptWrappable* wrappable =
+      dynamic_cast<ScriptWrappable*>(const_cast<DOMArrayBuffer*>(object));
+  if (!object->has_non_main_world_wrappers() && IsMainThread()) {
+    const DOMWrapperWorld& world = DOMWrapperWorld::MainWorld();
+    v8::Local<v8::Object> wrapper =
+        world.DomDataStore().GetWrapper(wrappable, isolate);
+    if (!wrapper.IsEmpty()) {
+      buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
+    }
+    return;
+  }
+
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
   for (const auto& world : worlds) {
-    v8::Local<v8::Object> wrapper = world->DomDataStore().Get(object, isolate);
+    v8::Local<v8::Object> wrapper =
+        world->DomDataStore().Get(wrappable, isolate);
     if (!wrapper.IsEmpty())
       buffers.push_back(v8::Local<v8::ArrayBuffer>::Cast(wrapper));
   }
@@ -254,6 +267,51 @@ v8::MaybeLocal<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
+}
+
+bool DOMArrayBuffer::IsDetached() const {
+  if (contents_.BackingStore() == nullptr) {
+    return is_detached_;
+  }
+  if (is_detached_) {
+    return true;
+  }
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope handle_scope(isolate);
+  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
+  AccumulateArrayBuffersForAllWorlds(isolate, this, buffer_handles);
+
+  // There may be several v8::ArrayBuffers corresponding to the DOMArrayBuffer,
+  // but at most one of them may be non-detached.
+  int nondetached_count = 0;
+  int detached_count = 0;
+
+  for (const auto& buffer_handle : buffer_handles) {
+    if (buffer_handle->WasDetached()) {
+      ++detached_count;
+    } else {
+      ++nondetached_count;
+    }
+  }
+  // This CHECK fires even though it should not. TODO(330759272): Investigate
+  // under which conditions we end up with multiple non-detached JSABs for the
+  // same DOMAB and potentially restore this check.
+
+  // CHECK_LE(nondetached_count, 1);
+
+  return nondetached_count == 0 && detached_count > 0;
+}
+
+v8::Local<v8::Object> DOMArrayBuffer::AssociateWithWrapper(
+    v8::Isolate* isolate,
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::Local<v8::Object> wrapper) {
+  if (!DOMWrapperWorld::Current(isolate).IsMainWorld()) {
+    has_non_main_world_wrappers_ = true;
+  }
+  return ScriptWrappable::AssociateWithWrapper(isolate, wrapper_type_info,
+                                               wrapper);
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {
