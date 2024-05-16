@@ -5,10 +5,11 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 
-#include <memory>
-
 #include <dawn/platform/DawnPlatform.h>
 
+#include <memory>
+
+#include "base/time/time.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
 namespace gpu::webgpu {
@@ -76,9 +77,16 @@ class DawnPlatform : public dawn::platform::Platform {
     ~CacheCounts();
   };
 
+  void HistogramCacheCountHelper(std::string name,
+                                 int sample,
+                                 int min,
+                                 int max,
+                                 int bucketCount);
+
   std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
   std::string uma_prefix_;
   scoped_refptr<CacheCounts> cache_counts_;
+  base::Time startup_time_;
 };
 
 }  // namespace gpu::webgpu

@@ -91,7 +91,8 @@ DawnPlatform::DawnPlatform(
     const char* uma_prefix)
     : dawn_caching_interface_(std::move(dawn_caching_interface)),
       uma_prefix_(uma_prefix),
-      cache_counts_(base::MakeRefCounted<CacheCounts>()) {}
+      cache_counts_(base::MakeRefCounted<CacheCounts>()),
+      startup_time_(base::Time::Now()) {}
 
 DawnPlatform::~DawnPlatform() = default;
 
@@ -140,27 +141,29 @@ uint64_t DawnPlatform::AddTraceEvent(
   return result;
 }
 
-void DawnPlatform::HistogramCustomCounts(const char* name,
-                                         int sample,
-                                         int min,
-                                         int max,
-                                         int bucketCount) {
-  std::string nameStr = name;
+void DawnPlatform::HistogramCacheCountHelper(std::string name,
+                                             int sample,
+                                             int min,
+                                             int max,
+                                             int bucketCount) {
   bool post_task = false;
-  bool is_cache = nameStr.find("Cache");
-  if (is_cache) {
-    if (nameStr.find("Hit")) {
+  if (name.find("Cache") != std::string::npos) {
+    if (name.find("Hit") != std::string::npos) {
       cache_counts_->cache_hit_count.fetch_add(1, std::memory_order_release);
-    } else if (nameStr.find("Miss")) {
+    } else if (name.find("Miss") != std::string::npos) {
       cache_counts_->cache_miss_count.fetch_add(1, std::memory_order_release);
     }
     post_task = cache_counts_->did_schedule_log.exchange(
                     true, std::memory_order_acq_rel) == false;
   }
-  base::UmaHistogramCustomCounts(uma_prefix_ + nameStr, sample, min, max,
-                                 bucketCount);
 
   if (post_task) {
+    if ((base::Time::Now() - startup_time_).InSeconds() <= 90) {
+      base::UmaHistogramCustomCounts(
+          uma_prefix_ + name + ".90SecondsPostStartup", sample, min, max,
+          bucketCount);
+    }
+
     // Record the stats soonish after the first call.
     // The 90 seconds comes from the 99 percentile of startup time on macos.
     base::ThreadPool::PostDelayedTask(
@@ -168,20 +171,29 @@ void DawnPlatform::HistogramCustomCounts(const char* name,
         base::BindOnce(
             [](const std::string& name,
                scoped_refptr<CacheCounts> cache_counts) {
-              if (name.find("Hit")) {
-                UMA_HISTOGRAM_COUNTS_10000(name,
-                                           cache_counts->cache_hit_count.load(
-                                               std::memory_order_acquire));
+              if (name.find("Hit") != std::string::npos) {
+                base::UmaHistogramCounts10000(
+                    name, cache_counts->cache_hit_count.load(
+                              std::memory_order_acquire));
               } else {
-                UMA_HISTOGRAM_COUNTS_10000(name,
-                                           cache_counts->cache_miss_count.load(
-                                               std::memory_order_acquire));
+                base::UmaHistogramCounts10000(
+                    name, cache_counts->cache_miss_count.load(
+                              std::memory_order_acquire));
               }
             },
-            uma_prefix_ + nameStr + ".Counts.90SecondsPostStartup",
-            cache_counts_),
+            uma_prefix_ + name + ".Counts.90SecondsPostStartup", cache_counts_),
         base::Seconds(90));
   }
+}
+
+void DawnPlatform::HistogramCustomCounts(const char* name,
+                                         int sample,
+                                         int min,
+                                         int max,
+                                         int bucketCount) {
+  base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
+                                 bucketCount);
+  HistogramCacheCountHelper(name, sample, min, max, bucketCount);
 }
 
 void DawnPlatform::HistogramCustomCountsHPC(const char* name,
@@ -192,6 +204,7 @@ void DawnPlatform::HistogramCustomCountsHPC(const char* name,
   if (base::TimeTicks::IsHighResolution()) {
     base::UmaHistogramCustomCounts(uma_prefix_ + name, sample, min, max,
                                    bucketCount);
+    HistogramCacheCountHelper(name, sample, min, max, bucketCount);
   }
 }
 

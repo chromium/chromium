@@ -1707,6 +1707,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.{CacheHitMiss}.90SecondsPostStartup"
+    units="microseconds" expires_after="2024-12-29">
+  <owner>hitawala@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the amount of time in microseconds it takes for a cached call to
+    {Cacheable}.{CacheHitMiss} to complete without error when we have a cache
+    hit or miss within 90 seconds of browser start up. Based off the
+    {Cacheable}.CacheHit and {Cacheable}.CacheMiss metrics above. Recorded only
+    for clients that support high-resolution clocks.
+  </summary>
+  <token key="Cacheable" variants="WebGPUCacheable"/>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="CacheHitMiss">
+    <variant name="CacheHit"/>
+    <variant name="CacheMiss"/>
+  </token>
+</histogram>
+
+<histogram
     name="GPU.{GraphiteDawnOrWebGPU}.{Cacheable}.{CacheHitMiss}.Counts.90SecondsPostStartup"
     units="count" expires_after="2024-12-29">
   <owner>hitawala@chromium.org</owner>
