@@ -170,9 +170,22 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
       this.clearRows();
     }
 
-    if (this.getId_) {
-      this.updateRows([data]);
-      return;
+    let tr: DataRowElement<T>|undefined;
+
+    const id = this.getId_ ? this.getId_(data, /*updated=*/ true) : undefined;
+    if (id !== undefined) {
+      tr = Array.prototype.find.call(
+          this.dataRows_(),
+          tr => id === this.getId_!(tr.data, /*updated=*/ false));
+
+      if (tr !== undefined) {
+        tr.data = data;
+        this.cols_!.forEach((render, idx) => render(tr!.cells[idx]!, data));
+      }
+    }
+
+    if (tr === undefined) {
+      tr = this.newRow_(data);
     }
 
     let nextTr: DataRowElement<T>|undefined;
@@ -182,7 +195,6 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
           this.dataRows_(), tr => this.compare_!(tr.data, data) > 0);
     }
 
-    const tr = this.newRow_(data);
     if (nextTr) {
       nextTr.before(tr);
     } else {

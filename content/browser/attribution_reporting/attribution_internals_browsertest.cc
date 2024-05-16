@@ -863,6 +863,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                            SourceBuilder(now).BuildStored())
                                  .SetReportTime(now)
                                  .SetPriority(7)
+                                 .SetReportId(AttributionReport::Id(1))
                                  .Build();
 
   std::vector<AttributionReport> stored_reports;
@@ -875,10 +876,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   callback) { std::move(callback).Run(stored_reports); });
 
   report.set_report_time(report.report_time() + base::Hours(1));
-  manager()->NotifyReportSent(report,
-                              /*is_debug_report=*/false,
-                              SendResult(SendResult::Status::kSent, net::OK,
-                                         /*http_response_code=*/200));
+
+  // Give the report a distinct ID to ensure that it won't overwrite the UI row
+  // for the stored report.
+  report.set_id(AttributionReport::Id(2));
 
   EXPECT_CALL(*manager(), ClearData)
       .WillOnce([&](base::Time delete_begin, base::Time delete_end,
@@ -918,6 +919,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Wait for the table to rendered.
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
+  manager()->NotifyReportSent(report,
+                              /*is_debug_report=*/false,
+                              SendResult(SendResult::Status::kSent, net::OK,
+                                         /*http_response_code=*/200));
   ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the report table is emptied.

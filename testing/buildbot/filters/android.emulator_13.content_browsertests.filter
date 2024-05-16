@@ -45,9 +45,6 @@
 # crbug.com/340585286
 -FoldableAPIsOriginTrialBrowserTest.ValidOriginTrialToken
 
-# crbug.com/340585314
--AttributionInternalsWebUiBrowserTest.WebUIWithPendingReportsClearStorage_ReportsRemoved
-
 # crbug.com/340587779
 -PerformanceTimelineBrowserTest.NoResourceTimingEntryForFileProtocol
 
