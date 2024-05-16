@@ -38,6 +38,7 @@ public class PopupOnLoadPageStation extends WebPageStation {
                         .build();
         PopupBlockedMessageFacility popupBlockedMessage =
                 new PopupBlockedMessageFacility(newPage, 2);
+        newPage.addInitialFacility(popupBlockedMessage);
         // TODO(crbug.com/329307093): Add condition that no new tabs were opened.
 
         String url = activityTestRule.getTestServer().getURL(PATH);

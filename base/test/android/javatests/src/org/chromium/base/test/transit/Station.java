@@ -148,7 +148,9 @@ public abstract class Station extends ConditionalState {
     /** Version of #enterFacilitySync() with extra TransitionOptions. */
     public <F extends Facility> F enterFacilitySync(
             F facility, TransitionOptions options, Trigger trigger) {
+        assert facility.getHostStation() == this;
         FacilityCheckIn checkIn = new FacilityCheckIn(facility, options, trigger);
+        registerFacility(facility);
         checkIn.transitionSync();
         return facility;
     }
@@ -172,5 +174,14 @@ public abstract class Station extends ConditionalState {
         FacilityCheckOut checkOut = new FacilityCheckOut(facility, options, trigger);
         checkOut.transitionSync();
         return facility;
+    }
+
+    /**
+     * Add a Facility which will be entered together with this Station. Both will become ACTIVE in
+     * the same Trip.
+     */
+    public void addInitialFacility(Facility facility) {
+        assertInPhase(Phase.NEW);
+        registerFacility(facility);
     }
 }

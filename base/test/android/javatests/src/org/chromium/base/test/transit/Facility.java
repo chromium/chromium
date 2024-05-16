@@ -48,7 +48,6 @@ public abstract class Facility<HostStationT extends Station> extends Conditional
     protected Facility(HostStationT hostStation) {
         mId = ++sLastFacilityId;
         mHostStation = hostStation;
-        mHostStation.registerFacility(this);
         mName =
                 String.format(
                         "<S%d|F%d: %s>", mHostStation.getId(), mId, getClass().getSimpleName());
@@ -62,5 +61,9 @@ public abstract class Facility<HostStationT extends Station> extends Conditional
     @Override
     public String toString() {
         return mName;
+    }
+
+    public HostStationT getHostStation() {
+        return mHostStation;
     }
 }
