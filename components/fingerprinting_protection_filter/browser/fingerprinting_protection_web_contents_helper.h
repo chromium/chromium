@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -29,6 +30,7 @@ class FingerprintingProtectionWebContentsHelper
           FingerprintingProtectionWebContentsHelper> {
  public:
   static void CreateForWebContents(content::WebContents* web_contents,
+                                   PrefService* pref_service,
                                    privacy_sandbox::TrackingProtectionSettings*
                                        tracking_protection_settings);
 
@@ -62,12 +64,14 @@ class FingerprintingProtectionWebContentsHelper
  private:
   explicit FingerprintingProtectionWebContentsHelper(
       content::WebContents* web_contents,
+      PrefService* pref_service,
       privacy_sandbox::TrackingProtectionSettings*
           tracking_protection_settings);
   friend class content::WebContentsUserData<
       FingerprintingProtectionWebContentsHelper>;
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  raw_ptr<PrefService> pref_service_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
   bool is_subresource_blocked_ = false;
   base::ObserverList<FingerprintingProtectionObserver>::Unchecked

@@ -23,6 +23,8 @@ if (use_blink) {
     public_deps = [
       ":features",
       "//base",
+      "//components/content_settings/core/browser:cookie_settings",
+      "//components/content_settings/core/common:common",
       "//components/privacy_sandbox:tracking_protection_settings",
       "//components/subresource_filter/content/shared/browser",
       "//components/subresource_filter/content/shared/common",

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_PROFILE_INTERACTION_MANAGER_H_
 
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/subresource_filter/content/shared/browser/page_activation_throttle_delegate.h"
 
@@ -26,6 +27,7 @@ class ProfileInteractionManager
     : public subresource_filter::PageActivationThrottleDelegate {
  public:
   explicit ProfileInteractionManager(
+      PrefService* pref_service_,
       privacy_sandbox::TrackingProtectionSettings*
           tracking_protection_settings);
   ~ProfileInteractionManager() override;
@@ -43,6 +45,7 @@ class ProfileInteractionManager
  private:
   raw_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace fingerprinting_protection_filter

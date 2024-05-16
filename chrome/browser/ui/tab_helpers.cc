@@ -408,7 +408,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                                        kEnableFingerprintingProtectionFilter)) {
     fingerprinting_protection_filter::
         FingerprintingProtectionWebContentsHelper::CreateForWebContents(
-            web_contents,
+            web_contents, profile->GetPrefs(),
             TrackingProtectionSettingsFactory::GetForProfile(profile));
   }
   download::DownloadNavigationObserver::CreateForWebContents(

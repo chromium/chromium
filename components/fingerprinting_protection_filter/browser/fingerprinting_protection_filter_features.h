@@ -23,6 +23,9 @@ COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;
 
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<bool> kEnableOn3pcBlocked;
+
 }  // namespace fingerprinting_protection_filter::features
 
 #endif  // COMPONENTS_FINGERPRINTING_PROTECTION_FILTER_BROWSER_FINGERPRINTING_PROTECTION_FILTER_FEATURES_H_
