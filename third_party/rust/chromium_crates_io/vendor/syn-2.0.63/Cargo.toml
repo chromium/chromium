@@ -13,8 +13,9 @@
 edition = "2021"
 rust-version = "1.60"
 name = "syn"
-version = "2.0.60"
+version = "2.0.63"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = false
 include = [
     "/benches/**",
     "/Cargo.toml",
@@ -24,6 +25,10 @@ include = [
     "/src/**",
     "/tests/**",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Parser for Rust source code"
 documentation = "https://docs.rs/syn"
 readme = "README.md"
@@ -57,10 +62,121 @@ features = [
 ]
 
 [lib]
+name = "syn"
+path = "src/lib.rs"
 doc-scrape-examples = false
+
+[[test]]
+name = "test_meta"
+path = "tests/test_meta.rs"
+
+[[test]]
+name = "test_stmt"
+path = "tests/test_stmt.rs"
+
+[[test]]
+name = "test_receiver"
+path = "tests/test_receiver.rs"
+
+[[test]]
+name = "regression"
+path = "tests/regression.rs"
+
+[[test]]
+name = "test_generics"
+path = "tests/test_generics.rs"
+
+[[test]]
+name = "test_grouping"
+path = "tests/test_grouping.rs"
+
+[[test]]
+name = "test_parse_stream"
+path = "tests/test_parse_stream.rs"
+
+[[test]]
+name = "test_round_trip"
+path = "tests/test_round_trip.rs"
+
+[[test]]
+name = "test_derive_input"
+path = "tests/test_derive_input.rs"
+
+[[test]]
+name = "test_visibility"
+path = "tests/test_visibility.rs"
+
+[[test]]
+name = "test_pat"
+path = "tests/test_pat.rs"
+
+[[test]]
+name = "zzz_stable"
+path = "tests/zzz_stable.rs"
+
+[[test]]
+name = "test_item"
+path = "tests/test_item.rs"
+
+[[test]]
+name = "test_iterators"
+path = "tests/test_iterators.rs"
+
+[[test]]
+name = "test_path"
+path = "tests/test_path.rs"
+
+[[test]]
+name = "test_lit"
+path = "tests/test_lit.rs"
+
+[[test]]
+name = "test_ident"
+path = "tests/test_ident.rs"
+
+[[test]]
+name = "test_parse_quote"
+path = "tests/test_parse_quote.rs"
+
+[[test]]
+name = "test_size"
+path = "tests/test_size.rs"
+
+[[test]]
+name = "test_ty"
+path = "tests/test_ty.rs"
+
+[[test]]
+name = "test_shebang"
+path = "tests/test_shebang.rs"
+
+[[test]]
+name = "test_attribute"
+path = "tests/test_attribute.rs"
+
+[[test]]
+name = "test_asyncness"
+path = "tests/test_asyncness.rs"
+
+[[test]]
+name = "test_expr"
+path = "tests/test_expr.rs"
+
+[[test]]
+name = "test_token_trees"
+path = "tests/test_token_trees.rs"
+
+[[test]]
+name = "test_parse_buffer"
+path = "tests/test_parse_buffer.rs"
+
+[[test]]
+name = "test_precedence"
+path = "tests/test_precedence.rs"
 
 [[bench]]
 name = "rust"
+path = "benches/rust.rs"
 harness = false
 required-features = [
     "full",
@@ -69,6 +185,7 @@ required-features = [
 
 [[bench]]
 name = "file"
+path = "benches/file.rs"
 required-features = [
     "full",
     "parsing",

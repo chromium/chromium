@@ -1,4 +1,6 @@
 use crate::attr::Attribute;
+#[cfg(all(feature = "parsing", feature = "full"))]
+use crate::error::Result;
 #[cfg(feature = "full")]
 use crate::generics::BoundLifetimes;
 use crate::ident::Ident;
@@ -7,6 +9,8 @@ use crate::lifetime::Lifetime;
 use crate::lit::Lit;
 use crate::mac::Macro;
 use crate::op::{BinOp, UnOp};
+#[cfg(all(feature = "parsing", feature = "full"))]
+use crate::parse::ParseStream;
 #[cfg(feature = "full")]
 use crate::pat::Pat;
 use crate::path::{AngleBracketedGenericArguments, Path, QSelf};
@@ -693,8 +697,26 @@ ast_struct! {
 }
 
 impl Expr {
-    #[cfg(feature = "parsing")]
-    const DUMMY: Self = Expr::Path(ExprPath {
+    /// An unspecified invalid expression.
+    ///
+    /// ```
+    /// use quote::ToTokens;
+    /// use std::mem;
+    /// use syn::{parse_quote, Expr};
+    ///
+    /// fn unparenthesize(e: &mut Expr) {
+    ///     while let Expr::Paren(paren) = e {
+    ///         *e = mem::replace(&mut *paren.expr, Expr::PLACEHOLDER);
+    ///     }
+    /// }
+    ///
+    /// fn main() {
+    ///     let mut e: Expr = parse_quote! { ((1 + 1)) };
+    ///     unparenthesize(&mut e);
+    ///     assert_eq!("1 + 1", e.to_token_stream().to_string());
+    /// }
+    /// ```
+    pub const PLACEHOLDER: Self = Expr::Path(ExprPath {
         attrs: Vec::new(),
         qself: None,
         path: Path {
@@ -702,6 +724,155 @@ impl Expr {
             segments: Punctuated::new(),
         },
     });
+
+    /// An alternative to the primary `Expr::parse` parser (from the [`Parse`]
+    /// trait) for ambiguous syntactic positions in which a trailing brace
+    /// should not be taken as part of the expression.
+    ///
+    /// [`Parse`]: crate::parse::Parse
+    ///
+    /// Rust grammar has an ambiguity where braces sometimes turn a path
+    /// expression into a struct initialization and sometimes do not. In the
+    /// following code, the expression `S {}` is one expression. Presumably
+    /// there is an empty struct `struct S {}` defined somewhere which it is
+    /// instantiating.
+    ///
+    /// ```
+    /// # struct S;
+    /// # impl std::ops::Deref for S {
+    /// #     type Target = bool;
+    /// #     fn deref(&self) -> &Self::Target {
+    /// #         &true
+    /// #     }
+    /// # }
+    /// let _ = *S {};
+    ///
+    /// // parsed by rustc as: `*(S {})`
+    /// ```
+    ///
+    /// We would want to parse the above using `Expr::parse` after the `=`
+    /// token.
+    ///
+    /// But in the following, `S {}` is *not* a struct init expression.
+    ///
+    /// ```
+    /// # const S: &bool = &true;
+    /// if *S {} {}
+    ///
+    /// // parsed by rustc as:
+    /// //
+    /// //    if (*S) {
+    /// //        /* empty block */
+    /// //    }
+    /// //    {
+    /// //        /* another empty block */
+    /// //    }
+    /// ```
+    ///
+    /// For that reason we would want to parse if-conditions using
+    /// `Expr::parse_without_eager_brace` after the `if` token. Same for similar
+    /// syntactic positions such as the condition expr after a `while` token or
+    /// the expr at the top of a `match`.
+    ///
+    /// The Rust grammar's choices around which way this ambiguity is resolved
+    /// at various syntactic positions is fairly arbitrary. Really either parse
+    /// behavior could work in most positions, and language designers just
+    /// decide each case based on which is more likely to be what the programmer
+    /// had in mind most of the time.
+    ///
+    /// ```
+    /// # struct S;
+    /// # fn doc() -> S {
+    /// if return S {} {}
+    /// # unreachable!()
+    /// # }
+    ///
+    /// // parsed by rustc as:
+    /// //
+    /// //    if (return (S {})) {
+    /// //    }
+    /// //
+    /// // but could equally well have been this other arbitrary choice:
+    /// //
+    /// //    if (return S) {
+    /// //    }
+    /// //    {}
+    /// ```
+    ///
+    /// Note the grammar ambiguity on trailing braces is distinct from
+    /// precedence and is not captured by assigning a precedence level to the
+    /// braced struct init expr in relation to other operators. This can be
+    /// illustrated by `return 0..S {}` vs `match 0..S {}`. The former parses as
+    /// `return (0..(S {}))` implying tighter precedence for struct init than
+    /// `..`, while the latter parses as `match (0..S) {}` implying tighter
+    /// precedence for `..` than struct init, a contradiction.
+    #[cfg(all(feature = "full", feature = "parsing"))]
+    #[cfg_attr(doc_cfg, doc(cfg(all(feature = "full", feature = "parsing"))))]
+    pub fn parse_without_eager_brace(input: ParseStream) -> Result<Expr> {
+        parsing::ambiguous_expr(input, parsing::AllowStruct(false))
+    }
+
+    /// An alternative to the primary `Expr::parse` parser (from the [`Parse`]
+    /// trait) for syntactic positions in which expression boundaries are placed
+    /// more eagerly than done by the typical expression grammar. This includes
+    /// expressions at the head of a statement or in the right-hand side of a
+    /// `match` arm.
+    ///
+    /// [`Parse`]: crate::parse::Parse
+    ///
+    /// Compare the following cases:
+    ///
+    /// 1.
+    ///   ```
+    ///   # let result = ();
+    ///   # let guard = false;
+    ///   # let cond = true;
+    ///   # let f = true;
+    ///   # let g = f;
+    ///   #
+    ///   let _ = match result {
+    ///       () if guard => if cond { f } else { g }
+    ///       () => false,
+    ///   };
+    ///   ```
+    ///
+    /// 2.
+    ///   ```
+    ///   # let cond = true;
+    ///   # let f = ();
+    ///   # let g = f;
+    ///   #
+    ///   let _ = || {
+    ///       if cond { f } else { g }
+    ///       ()
+    ///   };
+    ///   ```
+    ///
+    /// 3.
+    ///   ```
+    ///   # let cond = true;
+    ///   # let f = || ();
+    ///   # let g = f;
+    ///   #
+    ///   let _ = [if cond { f } else { g } ()];
+    ///   ```
+    ///
+    /// The same sequence of tokens `if cond { f } else { g } ()` appears in
+    /// expression position 3 times. The first two syntactic positions use eager
+    /// placement of expression boundaries, and parse as `Expr::If`, with the
+    /// adjacent `()` becoming `Pat::Tuple` or `Expr::Tuple`. In contrast, the
+    /// third case uses standard expression boundaries and parses as
+    /// `Expr::Call`.
+    ///
+    /// As with [`parse_without_eager_brace`], this ambiguity in the Rust
+    /// grammar is independent of precedence.
+    ///
+    /// [`parse_without_eager_brace`]: Self::parse_without_eager_brace
+    #[cfg(all(feature = "full", feature = "parsing"))]
+    #[cfg_attr(doc_cfg, doc(cfg(all(feature = "full", feature = "parsing"))))]
+    pub fn parse_with_earlier_boundary_rule(input: ParseStream) -> Result<Expr> {
+        parsing::parse_with_earlier_boundary_rule(input)
+    }
 
     #[cfg(all(feature = "parsing", feature = "full"))]
     pub(crate) fn replace_attrs(&mut self, new: Vec<Attribute>) -> Vec<Attribute> {
@@ -977,8 +1148,9 @@ pub(crate) fn requires_terminator(expr: &Expr) -> bool {
 #[cfg(feature = "parsing")]
 mod precedence {
     use super::BinOp;
+    use std::cmp::Ordering;
 
-    pub(crate) enum Precedence {
+    pub(super) enum Precedence {
         Any,
         Assign,
         Range,
@@ -995,7 +1167,7 @@ mod precedence {
     }
 
     impl Precedence {
-        pub(crate) fn of(op: &BinOp) -> Self {
+        pub(super) fn of(op: &BinOp) -> Self {
             match op {
                 BinOp::Add(_) | BinOp::Sub(_) => Precedence::Arithmetic,
                 BinOp::Mul(_) | BinOp::Div(_) | BinOp::Rem(_) => Precedence::Term,
@@ -1022,6 +1194,28 @@ mod precedence {
                 | BinOp::ShlAssign(_)
                 | BinOp::ShrAssign(_) => Precedence::Assign,
             }
+        }
+    }
+
+    impl Copy for Precedence {}
+
+    impl Clone for Precedence {
+        fn clone(&self) -> Self {
+            *self
+        }
+    }
+
+    impl PartialEq for Precedence {
+        fn eq(&self, other: &Self) -> bool {
+            *self as u8 == *other as u8
+        }
+    }
+
+    impl PartialOrd for Precedence {
+        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+            let this = *self as u8;
+            let other = *other as u8;
+            Some(this.cmp(&other))
         }
     }
 }
@@ -1072,7 +1266,6 @@ pub(crate) mod parsing {
     use crate::verbatim;
     #[cfg(feature = "full")]
     use proc_macro2::TokenStream;
-    use std::cmp::Ordering;
     use std::mem;
 
     mod kw {
@@ -1086,7 +1279,7 @@ pub(crate) mod parsing {
     // Struct literals are ambiguous in certain positions
     // https://github.com/rust-lang/rfcs/pull/92
     #[cfg(feature = "full")]
-    pub(crate) struct AllowStruct(bool);
+    pub(super) struct AllowStruct(pub bool);
 
     #[cfg_attr(doc_cfg, doc(cfg(feature = "parsing")))]
     impl Parse for Expr {
@@ -1099,208 +1292,65 @@ pub(crate) mod parsing {
         }
     }
 
-    impl Expr {
-        /// An alternative to the primary `Expr::parse` parser (from the
-        /// [`Parse`] trait) for ambiguous syntactic positions in which a
-        /// trailing brace should not be taken as part of the expression.
-        ///
-        /// Rust grammar has an ambiguity where braces sometimes turn a path
-        /// expression into a struct initialization and sometimes do not. In the
-        /// following code, the expression `S {}` is one expression. Presumably
-        /// there is an empty struct `struct S {}` defined somewhere which it is
-        /// instantiating.
-        ///
-        /// ```
-        /// # struct S;
-        /// # impl std::ops::Deref for S {
-        /// #     type Target = bool;
-        /// #     fn deref(&self) -> &Self::Target {
-        /// #         &true
-        /// #     }
-        /// # }
-        /// let _ = *S {};
-        ///
-        /// // parsed by rustc as: `*(S {})`
-        /// ```
-        ///
-        /// We would want to parse the above using `Expr::parse` after the `=`
-        /// token.
-        ///
-        /// But in the following, `S {}` is *not* a struct init expression.
-        ///
-        /// ```
-        /// # const S: &bool = &true;
-        /// if *S {} {}
-        ///
-        /// // parsed by rustc as:
-        /// //
-        /// //    if (*S) {
-        /// //        /* empty block */
-        /// //    }
-        /// //    {
-        /// //        /* another empty block */
-        /// //    }
-        /// ```
-        ///
-        /// For that reason we would want to parse if-conditions using
-        /// `Expr::parse_without_eager_brace` after the `if` token. Same for
-        /// similar syntactic positions such as the condition expr after a
-        /// `while` token or the expr at the top of a `match`.
-        ///
-        /// The Rust grammar's choices around which way this ambiguity is
-        /// resolved at various syntactic positions is fairly arbitrary. Really
-        /// either parse behavior could work in most positions, and language
-        /// designers just decide each case based on which is more likely to be
-        /// what the programmer had in mind most of the time.
-        ///
-        /// ```
-        /// # struct S;
-        /// # fn doc() -> S {
-        /// if return S {} {}
-        /// # unreachable!()
-        /// # }
-        ///
-        /// // parsed by rustc as:
-        /// //
-        /// //    if (return (S {})) {
-        /// //    }
-        /// //
-        /// // but could equally well have been this other arbitrary choice:
-        /// //
-        /// //    if (return S) {
-        /// //    }
-        /// //    {}
-        /// ```
-        ///
-        /// Note the grammar ambiguity on trailing braces is distinct from
-        /// precedence and is not captured by assigning a precedence level to
-        /// the braced struct init expr in relation to other operators. This can
-        /// be illustrated by `return 0..S {}` vs `match 0..S {}`. The former
-        /// parses as `return (0..(S {}))` implying tighter precedence for
-        /// struct init than `..`, while the latter parses as `match (0..S) {}`
-        /// implying tighter precedence for `..` than struct init, a
-        /// contradiction.
-        #[cfg(feature = "full")]
-        #[cfg_attr(doc_cfg, doc(cfg(all(feature = "full", feature = "parsing"))))]
-        pub fn parse_without_eager_brace(input: ParseStream) -> Result<Expr> {
-            ambiguous_expr(input, AllowStruct(false))
+    #[cfg(feature = "full")]
+    pub(super) fn parse_with_earlier_boundary_rule(input: ParseStream) -> Result<Expr> {
+        let mut attrs = input.call(expr_attrs)?;
+        let mut expr = if input.peek(token::Group) {
+            let allow_struct = AllowStruct(true);
+            let atom = expr_group(input, allow_struct)?;
+            if continue_parsing_early(&atom) {
+                trailer_helper(input, atom)?
+            } else {
+                atom
+            }
+        } else if input.peek(Token![if]) {
+            Expr::If(input.parse()?)
+        } else if input.peek(Token![while]) {
+            Expr::While(input.parse()?)
+        } else if input.peek(Token![for])
+            && !(input.peek2(Token![<]) && (input.peek3(Lifetime) || input.peek3(Token![>])))
+        {
+            Expr::ForLoop(input.parse()?)
+        } else if input.peek(Token![loop]) {
+            Expr::Loop(input.parse()?)
+        } else if input.peek(Token![match]) {
+            Expr::Match(input.parse()?)
+        } else if input.peek(Token![try]) && input.peek2(token::Brace) {
+            Expr::TryBlock(input.parse()?)
+        } else if input.peek(Token![unsafe]) {
+            Expr::Unsafe(input.parse()?)
+        } else if input.peek(Token![const]) && input.peek2(token::Brace) {
+            Expr::Const(input.parse()?)
+        } else if input.peek(token::Brace) {
+            Expr::Block(input.parse()?)
+        } else if input.peek(Lifetime) {
+            atom_labeled(input)?
+        } else {
+            let allow_struct = AllowStruct(true);
+            unary_expr(input, allow_struct)?
+        };
+
+        if continue_parsing_early(&expr) {
+            attrs.extend(expr.replace_attrs(Vec::new()));
+            expr.replace_attrs(attrs);
+
+            let allow_struct = AllowStruct(true);
+            return parse_expr(input, expr, allow_struct, Precedence::Any);
         }
 
-        /// An alternative to the primary `Expr::parse` parser (from the
-        /// [`Parse`] trait) for syntactic positions in which expression
-        /// boundaries are placed more eagerly than done by the typical
-        /// expression grammar. This includes expressions at the head of a
-        /// statement or in the right-hand side of a `match` arm.
-        ///
-        /// Compare the following cases:
-        ///
-        /// 1.
-        ///   ```
-        ///   # let result = ();
-        ///   # let guard = false;
-        ///   # let cond = true;
-        ///   # let f = true;
-        ///   # let g = f;
-        ///   #
-        ///   let _ = match result {
-        ///       () if guard => if cond { f } else { g }
-        ///       () => false,
-        ///   };
-        ///   ```
-        ///
-        /// 2.
-        ///   ```
-        ///   # let cond = true;
-        ///   # let f = ();
-        ///   # let g = f;
-        ///   #
-        ///   let _ = || {
-        ///       if cond { f } else { g }
-        ///       ()
-        ///   };
-        ///   ```
-        ///
-        /// 3.
-        ///   ```
-        ///   # let cond = true;
-        ///   # let f = || ();
-        ///   # let g = f;
-        ///   #
-        ///   let _ = [if cond { f } else { g } ()];
-        ///   ```
-        ///
-        /// The same sequence of tokens `if cond { f } else { g } ()` appears in
-        /// expression position 3 times. The first two syntactic positions use
-        /// eager placement of expression boundaries, and parse as `Expr::If`,
-        /// with the adjacent `()` becoming `Pat::Tuple` or `Expr::Tuple`. In
-        /// contrast, the third case uses standard expression boundaries and
-        /// parses as `Expr::Call`.
-        ///
-        /// As with [`parse_without_eager_brace`], this ambiguity in the Rust
-        /// grammar is independent of precedence.
-        ///
-        /// [`parse_without_eager_brace`]: Self::parse_without_eager_brace
-        #[cfg(feature = "full")]
-        #[cfg_attr(doc_cfg, doc(cfg(all(feature = "full", feature = "parsing"))))]
-        pub fn parse_with_earlier_boundary_rule(input: ParseStream) -> Result<Expr> {
-            let mut attrs = input.call(expr_attrs)?;
-            let mut expr = if input.peek(token::Group) {
-                let allow_struct = AllowStruct(true);
-                let atom = expr_group(input, allow_struct)?;
-                if continue_parsing_early(&atom) {
-                    trailer_helper(input, atom)?
-                } else {
-                    atom
-                }
-            } else if input.peek(Token![if]) {
-                Expr::If(input.parse()?)
-            } else if input.peek(Token![while]) {
-                Expr::While(input.parse()?)
-            } else if input.peek(Token![for])
-                && !(input.peek2(Token![<]) && (input.peek3(Lifetime) || input.peek3(Token![>])))
-            {
-                Expr::ForLoop(input.parse()?)
-            } else if input.peek(Token![loop]) {
-                Expr::Loop(input.parse()?)
-            } else if input.peek(Token![match]) {
-                Expr::Match(input.parse()?)
-            } else if input.peek(Token![try]) && input.peek2(token::Brace) {
-                Expr::TryBlock(input.parse()?)
-            } else if input.peek(Token![unsafe]) {
-                Expr::Unsafe(input.parse()?)
-            } else if input.peek(Token![const]) && input.peek2(token::Brace) {
-                Expr::Const(input.parse()?)
-            } else if input.peek(token::Brace) {
-                Expr::Block(input.parse()?)
-            } else if input.peek(Lifetime) {
-                atom_labeled(input)?
-            } else {
-                let allow_struct = AllowStruct(true);
-                unary_expr(input, allow_struct)?
-            };
-
-            if continue_parsing_early(&expr) {
-                attrs.extend(expr.replace_attrs(Vec::new()));
-                expr.replace_attrs(attrs);
-
-                let allow_struct = AllowStruct(true);
-                return parse_expr(input, expr, allow_struct, Precedence::Any);
-            }
-
-            if input.peek(Token![.]) && !input.peek(Token![..]) || input.peek(Token![?]) {
-                expr = trailer_helper(input, expr)?;
-
-                attrs.extend(expr.replace_attrs(Vec::new()));
-                expr.replace_attrs(attrs);
-
-                let allow_struct = AllowStruct(true);
-                return parse_expr(input, expr, allow_struct, Precedence::Any);
-            }
+        if input.peek(Token![.]) && !input.peek(Token![..]) || input.peek(Token![?]) {
+            expr = trailer_helper(input, expr)?;
 
             attrs.extend(expr.replace_attrs(Vec::new()));
             expr.replace_attrs(attrs);
-            Ok(expr)
+
+            let allow_struct = AllowStruct(true);
+            return parse_expr(input, expr, allow_struct, Precedence::Any);
         }
+
+        attrs.extend(expr.replace_attrs(Vec::new()));
+        expr.replace_attrs(attrs);
+        Ok(expr)
     }
 
     #[cfg(feature = "full")]
@@ -1310,28 +1360,6 @@ pub(crate) mod parsing {
     impl Clone for AllowStruct {
         fn clone(&self) -> Self {
             *self
-        }
-    }
-
-    impl Copy for Precedence {}
-
-    impl Clone for Precedence {
-        fn clone(&self) -> Self {
-            *self
-        }
-    }
-
-    impl PartialEq for Precedence {
-        fn eq(&self, other: &Self) -> bool {
-            *self as u8 == *other as u8
-        }
-    }
-
-    impl PartialOrd for Precedence {
-        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-            let this = *self as u8;
-            let other = *other as u8;
-            Some(this.cmp(&other))
         }
     }
 
@@ -1363,75 +1391,48 @@ pub(crate) mod parsing {
     ) -> Result<Expr> {
         loop {
             let ahead = input.fork();
-            if let Some(op) = match ahead.parse::<BinOp>() {
-                Ok(op) if Precedence::of(&op) >= base => Some(op),
-                _ => None,
-            } {
-                input.advance_to(&ahead);
+            if let Expr::Range(ExprRange { end: Some(_), .. }) = lhs {
+                // A range with an upper bound cannot be the left-hand side of
+                // another binary operator.
+                break;
+            } else if let Ok(op) = ahead.parse::<BinOp>() {
                 let precedence = Precedence::of(&op);
-                let mut rhs = unary_expr(input, allow_struct)?;
-                loop {
-                    let next = peek_precedence(input);
-                    if next > precedence || next == precedence && precedence == Precedence::Assign {
-                        rhs = parse_expr(input, rhs, allow_struct, next)?;
-                    } else {
-                        break;
+                if precedence < base {
+                    break;
+                }
+                if precedence == Precedence::Compare {
+                    if let Expr::Binary(lhs) = &lhs {
+                        if Precedence::of(&lhs.op) == Precedence::Compare {
+                            break;
+                        }
                     }
                 }
+                input.advance_to(&ahead);
+                let right = parse_binop_rhs(input, allow_struct, precedence)?;
                 lhs = Expr::Binary(ExprBinary {
                     attrs: Vec::new(),
                     left: Box::new(lhs),
                     op,
-                    right: Box::new(rhs),
+                    right,
                 });
-            } else if Precedence::Assign >= base
-                && input.peek(Token![=])
-                && !input.peek(Token![==])
-                && !input.peek(Token![=>])
+            } else if Precedence::Assign >= base && input.peek(Token![=]) && !input.peek(Token![=>])
             {
                 let eq_token: Token![=] = input.parse()?;
-                let mut rhs = unary_expr(input, allow_struct)?;
-                loop {
-                    let next = peek_precedence(input);
-                    if next >= Precedence::Assign {
-                        rhs = parse_expr(input, rhs, allow_struct, next)?;
-                    } else {
-                        break;
-                    }
-                }
+                let right = parse_binop_rhs(input, allow_struct, Precedence::Assign)?;
                 lhs = Expr::Assign(ExprAssign {
                     attrs: Vec::new(),
                     left: Box::new(lhs),
                     eq_token,
-                    right: Box::new(rhs),
+                    right,
                 });
             } else if Precedence::Range >= base && input.peek(Token![..]) {
                 let limits: RangeLimits = input.parse()?;
-                let rhs = if matches!(limits, RangeLimits::HalfOpen(_))
-                    && (input.is_empty()
-                        || input.peek(Token![,])
-                        || input.peek(Token![;])
-                        || input.peek(Token![.]) && !input.peek(Token![..])
-                        || !allow_struct.0 && input.peek(token::Brace))
-                {
-                    None
-                } else {
-                    let mut rhs = unary_expr(input, allow_struct)?;
-                    loop {
-                        let next = peek_precedence(input);
-                        if next > Precedence::Range {
-                            rhs = parse_expr(input, rhs, allow_struct, next)?;
-                        } else {
-                            break;
-                        }
-                    }
-                    Some(rhs)
-                };
+                let end = parse_range_end(input, &limits, allow_struct)?;
                 lhs = Expr::Range(ExprRange {
                     attrs: Vec::new(),
                     start: Some(Box::new(lhs)),
                     limits,
-                    end: rhs.map(Box::new),
+                    end,
                 });
             } else if Precedence::Cast >= base && input.peek(Token![as]) {
                 let as_token: Token![as] = input.parse()?;
@@ -1456,26 +1457,25 @@ pub(crate) mod parsing {
     fn parse_expr(input: ParseStream, mut lhs: Expr, base: Precedence) -> Result<Expr> {
         loop {
             let ahead = input.fork();
-            if let Some(op) = match ahead.parse::<BinOp>() {
-                Ok(op) if Precedence::of(&op) >= base => Some(op),
-                _ => None,
-            } {
-                input.advance_to(&ahead);
+            if let Ok(op) = ahead.parse::<BinOp>() {
                 let precedence = Precedence::of(&op);
-                let mut rhs = unary_expr(input)?;
-                loop {
-                    let next = peek_precedence(input);
-                    if next > precedence || next == precedence && precedence == Precedence::Assign {
-                        rhs = parse_expr(input, rhs, next)?;
-                    } else {
-                        break;
+                if precedence < base {
+                    break;
+                }
+                if precedence == Precedence::Compare {
+                    if let Expr::Binary(lhs) = &lhs {
+                        if Precedence::of(&lhs.op) == Precedence::Compare {
+                            break;
+                        }
                     }
                 }
+                input.advance_to(&ahead);
+                let right = parse_binop_rhs(input, precedence)?;
                 lhs = Expr::Binary(ExprBinary {
                     attrs: Vec::new(),
                     left: Box::new(lhs),
                     op,
-                    right: Box::new(rhs),
+                    right,
                 });
             } else if Precedence::Cast >= base && input.peek(Token![as]) {
                 let as_token: Token![as] = input.parse()?;
@@ -1496,6 +1496,32 @@ pub(crate) mod parsing {
         Ok(lhs)
     }
 
+    fn parse_binop_rhs(
+        input: ParseStream,
+        #[cfg(feature = "full")] allow_struct: AllowStruct,
+        precedence: Precedence,
+    ) -> Result<Box<Expr>> {
+        let mut rhs = unary_expr(
+            input,
+            #[cfg(feature = "full")]
+            allow_struct,
+        )?;
+        loop {
+            let next = peek_precedence(input);
+            if next > precedence || next == precedence && precedence == Precedence::Assign {
+                rhs = parse_expr(
+                    input,
+                    rhs,
+                    #[cfg(feature = "full")]
+                    allow_struct,
+                    next,
+                )?;
+            } else {
+                return Ok(Box::new(rhs));
+            }
+        }
+    }
+
     fn peek_precedence(input: ParseStream) -> Precedence {
         if let Ok(op) = input.fork().parse() {
             Precedence::of(&op)
@@ -1511,7 +1537,7 @@ pub(crate) mod parsing {
     }
 
     // Parse an arbitrary expression.
-    fn ambiguous_expr(
+    pub(super) fn ambiguous_expr(
         input: ParseStream,
         #[cfg(feature = "full")] allow_struct: AllowStruct,
     ) -> Result<Expr> {
@@ -2229,40 +2255,54 @@ pub(crate) mod parsing {
     impl Parse for ExprIf {
         fn parse(input: ParseStream) -> Result<Self> {
             let attrs = input.call(Attribute::parse_outer)?;
-            Ok(ExprIf {
-                attrs,
-                if_token: input.parse()?,
-                cond: Box::new(input.call(Expr::parse_without_eager_brace)?),
-                then_branch: input.parse()?,
-                else_branch: {
-                    if input.peek(Token![else]) {
-                        Some(input.call(else_block)?)
-                    } else {
-                        None
-                    }
-                },
-            })
+
+            let mut clauses = Vec::new();
+            let mut expr;
+            loop {
+                let if_token: Token![if] = input.parse()?;
+                let cond = input.call(Expr::parse_without_eager_brace)?;
+                let then_branch: Block = input.parse()?;
+
+                expr = ExprIf {
+                    attrs: Vec::new(),
+                    if_token,
+                    cond: Box::new(cond),
+                    then_branch,
+                    else_branch: None,
+                };
+
+                if !input.peek(Token![else]) {
+                    break;
+                }
+
+                let else_token: Token![else] = input.parse()?;
+                let lookahead = input.lookahead1();
+                if lookahead.peek(Token![if]) {
+                    expr.else_branch = Some((else_token, Box::new(Expr::PLACEHOLDER)));
+                    clauses.push(expr);
+                    continue;
+                } else if lookahead.peek(token::Brace) {
+                    expr.else_branch = Some((
+                        else_token,
+                        Box::new(Expr::Block(ExprBlock {
+                            attrs: Vec::new(),
+                            label: None,
+                            block: input.parse()?,
+                        })),
+                    ));
+                    break;
+                } else {
+                    return Err(lookahead.error());
+                }
+            }
+
+            while let Some(mut prev) = clauses.pop() {
+                *prev.else_branch.as_mut().unwrap().1 = Expr::If(expr);
+                expr = prev;
+            }
+            expr.attrs = attrs;
+            Ok(expr)
         }
-    }
-
-    #[cfg(feature = "full")]
-    fn else_block(input: ParseStream) -> Result<(Token![else], Box<Expr>)> {
-        let else_token: Token![else] = input.parse()?;
-
-        let lookahead = input.lookahead1();
-        let else_branch = if lookahead.peek(Token![if]) {
-            input.parse().map(Expr::If)?
-        } else if lookahead.peek(token::Brace) {
-            Expr::Block(ExprBlock {
-                attrs: Vec::new(),
-                label: None,
-                block: input.parse()?,
-            })
-        } else {
-            return Err(lookahead.error());
-        };
-
-        Ok((else_token, Box::new(else_branch)))
     }
 
     #[cfg(feature = "full")]
@@ -2851,24 +2891,33 @@ pub(crate) mod parsing {
     #[cfg(feature = "full")]
     fn expr_range(input: ParseStream, allow_struct: AllowStruct) -> Result<ExprRange> {
         let limits: RangeLimits = input.parse()?;
-        let end = if matches!(limits, RangeLimits::HalfOpen(_))
-            && (input.is_empty()
-                || input.peek(Token![,])
-                || input.peek(Token![;])
-                || input.peek(Token![.]) && !input.peek(Token![..])
-                || !allow_struct.0 && input.peek(token::Brace))
-        {
-            None
-        } else {
-            let to = ambiguous_expr(input, allow_struct)?;
-            Some(Box::new(to))
-        };
+        let end = parse_range_end(input, &limits, allow_struct)?;
         Ok(ExprRange {
             attrs: Vec::new(),
             start: None,
             limits,
             end,
         })
+    }
+
+    #[cfg(feature = "full")]
+    fn parse_range_end(
+        input: ParseStream,
+        limits: &RangeLimits,
+        allow_struct: AllowStruct,
+    ) -> Result<Option<Box<Expr>>> {
+        if matches!(limits, RangeLimits::HalfOpen(_))
+            && (input.is_empty()
+                || input.peek(Token![,])
+                || input.peek(Token![;])
+                || input.peek(Token![.]) && !input.peek(Token![..])
+                || !allow_struct.0 && input.peek(token::Brace))
+        {
+            Ok(None)
+        } else {
+            let end = parse_binop_rhs(input, allow_struct, Precedence::Range)?;
+            Ok(Some(end))
+        }
     }
 
     #[cfg(feature = "full")]
@@ -3004,7 +3053,7 @@ pub(crate) mod parsing {
             let part_end = offset + part.len();
             index.span = float_token.subspan(offset..part_end).unwrap_or(float_span);
 
-            let base = mem::replace(e, Expr::DUMMY);
+            let base = mem::replace(e, Expr::PLACEHOLDER);
             *e = Expr::Field(ExprField {
                 attrs: Vec::new(),
                 base: Box::new(base),
@@ -3285,16 +3334,33 @@ pub(crate) mod printing {
     impl ToTokens for ExprIf {
         fn to_tokens(&self, tokens: &mut TokenStream) {
             outer_attrs_to_tokens(&self.attrs, tokens);
-            self.if_token.to_tokens(tokens);
-            wrap_bare_struct(tokens, &self.cond);
-            self.then_branch.to_tokens(tokens);
-            if let Some((else_token, else_)) = &self.else_branch {
+
+            let mut expr = self;
+            loop {
+                expr.if_token.to_tokens(tokens);
+                wrap_bare_struct(tokens, &expr.cond);
+                expr.then_branch.to_tokens(tokens);
+
+                let (else_token, else_) = match &expr.else_branch {
+                    Some(else_branch) => else_branch,
+                    None => break,
+                };
+
                 else_token.to_tokens(tokens);
-                // If we are not one of the valid expressions to exist in an else
-                // clause, wrap ourselves in a block.
-                match **else_ {
-                    Expr::If(_) | Expr::Block(_) => else_.to_tokens(tokens),
-                    _ => token::Brace::default().surround(tokens, |tokens| else_.to_tokens(tokens)),
+                match &**else_ {
+                    Expr::If(next) => {
+                        expr = next;
+                    }
+                    Expr::Block(last) => {
+                        last.to_tokens(tokens);
+                        break;
+                    }
+                    // If this is not one of the valid expressions to exist in
+                    // an else clause, wrap it in a block.
+                    other => {
+                        token::Brace::default().surround(tokens, |tokens| other.to_tokens(tokens));
+                        break;
+                    }
                 }
             }
         }

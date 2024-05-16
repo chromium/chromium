@@ -3,6 +3,7 @@
 use proc_macro2::{Delimiter, Group, Punct, Spacing, Span, TokenStream, TokenTree};
 use quote::quote;
 use syn::ext::IdentExt as _;
+use syn::parse::discouraged::AnyDelimiter;
 use syn::parse::{ParseStream, Parser as _, Result};
 use syn::{parenthesized, token, Ident, Lifetime, Token};
 
@@ -158,16 +159,27 @@ fn test_peek_groups() {
         assert!(input.peek3(Token![static]));
         assert!(!input.peek2(Token![static]));
 
-        let _: Token![!] = input.parse()?;
+        let implicit = input.fork();
+        let explicit = input.fork();
 
-        assert!(input.peek(Token![=]));
-        assert!(input.peek2(Token![static]));
+        let _: Token![!] = implicit.parse()?;
+        assert!(implicit.peek(Token![=]));
+        assert!(implicit.peek2(Token![static]));
+        let _: Token![=] = implicit.parse()?;
+        assert!(implicit.peek(Token![static]));
 
-        let _: Token![=] = input.parse()?;
+        let (delimiter, _span, grouped) = explicit.parse_any_delimiter()?;
+        assert_eq!(delimiter, Delimiter::None);
+        assert!(grouped.peek(Token![!]));
+        assert!(grouped.peek2(Token![=]));
+        assert!(!grouped.peek3(Token![static]));
+        let _: Token![!] = grouped.parse()?;
+        assert!(grouped.peek(Token![=]));
+        assert!(!grouped.peek2(Token![static]));
+        let _: Token![=] = grouped.parse()?;
+        assert!(!grouped.peek(Token![static]));
 
-        assert!(input.peek(Token![static]));
-
-        let _: Token![static] = input.parse()?;
+        let _: TokenStream = input.parse()?;
         Ok(())
     }
 

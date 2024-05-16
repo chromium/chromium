@@ -470,7 +470,13 @@ pub(crate) mod parsing {
             attrs: Vec::new(),
             by_ref: input.parse()?,
             mutability: input.parse()?,
-            ident: input.call(Ident::parse_any)?,
+            ident: {
+                if input.peek(Token![self]) {
+                    input.call(Ident::parse_any)?
+                } else {
+                    input.parse()?
+                }
+            },
             subpat: {
                 if input.peek(Token![@]) {
                     let at_token: Token![@] = input.parse()?;
