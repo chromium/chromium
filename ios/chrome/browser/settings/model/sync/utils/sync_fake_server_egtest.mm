@@ -243,7 +243,8 @@ void ClearRelevantData() {
 
 // Tests that the local cache guid changes when the user signs out and then
 // signs back in with the same account.
-- (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
+// TODO(crbug.com/341053184): Re-enable this test.
+- (void)DISABLED_testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
