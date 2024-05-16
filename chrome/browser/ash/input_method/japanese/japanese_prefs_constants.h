@@ -92,6 +92,63 @@ static constexpr std::string_view kJpPrefMetadataOptionsSourceLegacyConfig1Db =
 static constexpr std::string_view kJpPrefMetadataOptionsSourcePrefService =
     "PrefService";
 
+// All the enums below correspond to UMA histograms enum values.
+// LINT.IfChange(jp_settings_hist_enums)
+enum class HistInputMode {
+  kRomaji = 0,
+  kKana = 1,
+  kMaxValue = kKana,
+};
+
+enum class HistKeymapStyle {
+  kCustom = 0,
+  kAtok = 1,
+  kMsime = 2,
+  kKotoeri = 3,
+  kMobile = 4,
+  kChromeos = 5,
+  kMaxValue = kChromeos,
+};
+
+enum class HistPunctuationStyle {
+  kKutenTouten = 0,
+  kCommaPeriod = 1,
+  kKutenPeriod = 2,
+  kCommaTouten = 3,
+  kMaxValue = kCommaTouten,
+};
+
+enum class HistSelectionShortcut {
+  kDigits123456789 = 0,
+  kAsdfghjkl = 1,
+  kNoShortcut = 2,
+  kMaxValue = kNoShortcut,
+};
+
+enum class HistShiftKeyModeStyle {
+  kOff = 0,
+  kAlphanumeric = 1,
+  kKatakana = 2,
+  kMaxValue = kKatakana,
+};
+
+enum class HistSpaceInputStyle {
+  kInputMode = 0,
+  kFullWidth = 1,
+  kHalfWidth = 2,
+  kMaxValue = kHalfWidth,
+};
+
+enum class HistSymbolStyle {
+  kCornerBracketMiddleDot = 0,
+  kSquareBracketSlash = 1,
+  kCornerBracketSlash = 2,
+  kSquareBracketMiddleDot = 3,
+  kMaxValue = kSquareBracketMiddleDot,
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/input/enums.xml:jp_settings_hist_enums)
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_PREFS_CONSTANTS_H_

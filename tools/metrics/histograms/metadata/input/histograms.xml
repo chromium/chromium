@@ -1540,6 +1540,135 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.AutoSwitchToHalfwidth"
+    enum="Boolean" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the
+    AutomaticallySwitchToHalfWidth setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.DisablePersonalizedSuggestions"
+    enum="Boolean" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the
+    DisablePersonalizedSuggestions setting is set to.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.InputMode"
+    enum="JpSettingsInputMode" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the InputMode setting is
+    set to.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.KeymapStyle"
+    enum="JpSettingsKeymapStyle" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the KeymapStyle setting is
+    set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.NumberOfSuggestions"
+    units="suggestions" expires_after="2023-05-01">
+  <owner>shend@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the NumberOfSuggestions
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.PunctuationStyle"
+    enum="JpSettingsPunctuationStyle" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the PunctuationStyle
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.SelectionShortcut"
+    enum="JpSettingsSelectionShortcut" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the SelectionShortcut
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.ShiftKeyModeStyle"
+    enum="JpSettingsShiftKeyModeStyle" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the ShiftKeyModeStyle
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.SpaceInputStyle"
+    enum="JpSettingsSpaceInputStyle" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the SpaceInputStyle
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.PhysicalKeyboard.Japanese.Settings.SymbolStyle"
+    enum="JpSettingsSymbolStyle" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the SymbolStyle setting is
+    set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.UseInputHistory"
+    enum="Boolean" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the UseInputHistory
+    setting is set to.
+  </summary>
+</histogram>
+
+<histogram
+    name="InputMethod.PhysicalKeyboard.Japanese.Settings.UseSystemDictionary"
+    enum="Boolean" expires_after="2025-05-01">
+  <owner>jhtin@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Logs (On IME activation or settings changed) what the UseSystemDictionary
+    setting is set to.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PhysicalKeyboard.Japanese.StartupAction"
     enum="JapaneseStartupAction" expires_after="2024-11-01">
   <owner>jhtin@chromium.org</owner>

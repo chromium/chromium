@@ -5,13 +5,92 @@
 #include "chrome/browser/ash/input_method/japanese/japanese_settings.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 
 namespace ash::input_method {
 namespace {
+
 using ::ash::ime::mojom::JapaneseSettings;
 using ::ash::ime::mojom::JapaneseSettingsPtr;
+using ::base::UmaHistogramBoolean;
+using ::base::UmaHistogramCustomCounts;
+using ::base::UmaHistogramEnumeration;
+
+constexpr auto kHistValInputModes =
+    base::MakeFixedFlatMap<JapaneseSettings::InputMode, HistInputMode>({
+        {JapaneseSettings::InputMode::kRomaji, HistInputMode::kRomaji},
+        {JapaneseSettings::InputMode::kKana, HistInputMode::kKana},
+    });
+
+constexpr auto kHistValPunctuations =
+    base::MakeFixedFlatMap<JapaneseSettings::PunctuationStyle,
+                           HistPunctuationStyle>({
+        {JapaneseSettings::PunctuationStyle::kKutenTouten,
+         HistPunctuationStyle::kKutenTouten},
+        {JapaneseSettings::PunctuationStyle::kCommaPeriod,
+         HistPunctuationStyle::kCommaPeriod},
+        {JapaneseSettings::PunctuationStyle::kKutenPeriod,
+         HistPunctuationStyle::kKutenPeriod},
+        {JapaneseSettings::PunctuationStyle::kCommaTouten,
+         HistPunctuationStyle::kCommaTouten},
+    });
+
+constexpr auto kHistValSymbols =
+    base::MakeFixedFlatMap<JapaneseSettings::SymbolStyle, HistSymbolStyle>({
+        {JapaneseSettings::SymbolStyle::kCornerBracketMiddleDot,
+         HistSymbolStyle::kCornerBracketMiddleDot},
+        {JapaneseSettings::SymbolStyle::kSquareBracketSlash,
+         HistSymbolStyle::kSquareBracketSlash},
+        {JapaneseSettings::SymbolStyle::kCornerBracketSlash,
+         HistSymbolStyle::kCornerBracketSlash},
+        {JapaneseSettings::SymbolStyle::kSquareBracketMiddleDot,
+         HistSymbolStyle::kSquareBracketMiddleDot},
+    });
+
+constexpr auto kHistValSpaceInputStyles =
+    base::MakeFixedFlatMap<JapaneseSettings::SpaceInputStyle,
+                           HistSpaceInputStyle>({
+        {JapaneseSettings::SpaceInputStyle::kInputMode,
+         HistSpaceInputStyle::kInputMode},
+        {JapaneseSettings::SpaceInputStyle::kFullWidth,
+         HistSpaceInputStyle::kFullWidth},
+        {JapaneseSettings::SpaceInputStyle::kHalfWidth,
+         HistSpaceInputStyle::kHalfWidth},
+    });
+
+constexpr auto kHistValSelectionShortcuts =
+    base::MakeFixedFlatMap<JapaneseSettings::SelectionShortcut,
+                           HistSelectionShortcut>({
+        {JapaneseSettings::SelectionShortcut::kDigits123456789,
+         HistSelectionShortcut::kDigits123456789},
+        {JapaneseSettings::SelectionShortcut::kAsdfghjkl,
+         HistSelectionShortcut::kAsdfghjkl},
+        {JapaneseSettings::SelectionShortcut::kNoShortcut,
+         HistSelectionShortcut::kNoShortcut},
+    });
+
+constexpr auto kHistValKeymapStyles =
+    base::MakeFixedFlatMap<JapaneseSettings::KeymapStyle, HistKeymapStyle>({
+        {JapaneseSettings::KeymapStyle::kCustom, HistKeymapStyle::kCustom},
+        {JapaneseSettings::KeymapStyle::kAtok, HistKeymapStyle::kAtok},
+        {JapaneseSettings::KeymapStyle::kMsime, HistKeymapStyle::kMsime},
+        {JapaneseSettings::KeymapStyle::kKotoeri, HistKeymapStyle::kKotoeri},
+        {JapaneseSettings::KeymapStyle::kMobile, HistKeymapStyle::kMobile},
+        {JapaneseSettings::KeymapStyle::kChromeos, HistKeymapStyle::kChromeos},
+    });
+
+constexpr auto kHistValShiftKeyModeStyles =
+    base::MakeFixedFlatMap<JapaneseSettings::ShiftKeyModeStyle,
+                           HistShiftKeyModeStyle>({
+        {JapaneseSettings::ShiftKeyModeStyle::kOff,
+         HistShiftKeyModeStyle::kOff},
+        {JapaneseSettings::ShiftKeyModeStyle::kAlphanumeric,
+         HistShiftKeyModeStyle::kAlphanumeric},
+        {JapaneseSettings::ShiftKeyModeStyle::kKatakana,
+         HistShiftKeyModeStyle::kKatakana},
+    });
 
 constexpr auto kInputModes =
     base::MakeFixedFlatMap<std::string_view, JapaneseSettings::InputMode>({
@@ -191,6 +270,82 @@ JapaneseSettingsPtr ToMojomInputMethodSettings(const base::Value::Dict& prefs) {
       prefs.FindBool(kJpPrefAutomaticallySendStatisticsToGoogle)
           .value_or(response->automatically_send_statistics_to_google);
   return response;
+}
+
+void RecordJapaneseSettingsMetrics(
+    const ash::ime::mojom::JapaneseSettings& settings) {
+  if (auto it = kHistValInputModes.find(settings.input_mode);
+      it != kHistValInputModes.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.InputMode", it->second);
+  }
+
+  if (auto it = kHistValKeymapStyles.find(settings.keymap_style);
+      it != kHistValKeymapStyles.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.KeymapStyle",
+        it->second);
+  }
+
+  if (auto it = kHistValPunctuations.find(settings.punctuation_style);
+      it != kHistValPunctuations.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.PunctuationStyle",
+        it->second);
+  }
+
+  if (auto it = kHistValSelectionShortcuts.find(settings.selection_shortcut);
+      it != kHistValSelectionShortcuts.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.SelectionShortcut",
+        it->second);
+  }
+
+  if (auto it = kHistValShiftKeyModeStyles.find(settings.shift_key_mode_style);
+      it != kHistValShiftKeyModeStyles.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.ShiftKeyModeStyle",
+        it->second);
+  }
+
+  if (auto it = kHistValSpaceInputStyles.find(settings.space_input_style);
+      it != kHistValSpaceInputStyles.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.SpaceInputStyle",
+        it->second);
+  }
+
+  if (auto it = kHistValSymbols.find(settings.symbol_style);
+      it != kHistValSymbols.end()) {
+    UmaHistogramEnumeration(
+        "InputMethod.PhysicalKeyboard.Japanese.Settings.SymbolStyle",
+        it->second);
+  }
+
+  UmaHistogramCustomCounts(
+      /*name*/
+      "InputMethod.PhysicalKeyboard.Japanese.Settings.NumberOfSuggestions",
+      /*sample=*/settings.number_of_suggestions,
+      /*min=*/1,
+      /*exclusive_max=*/10,
+      /*buckets=*/10);
+
+  UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.Japanese.Settings."
+      "AutoSwitchToHalfwidth",
+      settings.automatically_switch_to_halfwidth);
+  UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.Japanese.Settings."
+      "DisablePersonalizedSuggestions",
+      settings.disable_personalized_suggestions);
+  UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.Japanese.Settings."
+      "UseInputHistory",
+      settings.use_input_history);
+  UmaHistogramBoolean(
+      "InputMethod.PhysicalKeyboard.Japanese.Settings."
+      "UseSystemDictionary",
+      settings.use_system_dictionary);
 }
 
 }  // namespace ash::input_method

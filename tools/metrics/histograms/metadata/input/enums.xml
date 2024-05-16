@@ -437,6 +437,56 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   </int>
 </enum>
 
+<!--LINT.IfChange(jp_settings_hist_enums)-->
+
+<enum name="JpSettingsInputMode">
+  <int value="0" label="Romaji"/>
+  <int value="1" label="Kana"/>
+</enum>
+
+<enum name="JpSettingsKeymapStyle">
+  <int value="0" label="Custom"/>
+  <int value="1" label="Atok"/>
+  <int value="2" label="Msime"/>
+  <int value="3" label="Kotoeri"/>
+  <int value="4" label="Mobile"/>
+  <int value="5" label="Chromeos"/>
+</enum>
+
+<enum name="JpSettingsPunctuationStyle">
+  <int value="0" label="KutenTouten"/>
+  <int value="1" label="CommaPeriod"/>
+  <int value="2" label="KutenPeriod"/>
+  <int value="3" label="CommaTouten"/>
+</enum>
+
+<enum name="JpSettingsSelectionShortcut">
+  <int value="0" label="Digits123456789"/>
+  <int value="1" label="Asdfghjkl"/>
+  <int value="2" label="NoShortcut"/>
+</enum>
+
+<enum name="JpSettingsShiftKeyModeStyle">
+  <int value="0" label="Off"/>
+  <int value="1" label="Alphanumeric"/>
+  <int value="2" label="Katakana"/>
+</enum>
+
+<enum name="JpSettingsSpaceInputStyle">
+  <int value="0" label="kInputMode"/>
+  <int value="1" label="kFullWidth"/>
+  <int value="2" label="kHalfWidth"/>
+</enum>
+
+<enum name="JpSettingsSymbolStyle">
+  <int value="0" label="CornerBracketMiddleDot"/>
+  <int value="1" label="SquareBracketSlash"/>
+  <int value="2" label="CornerBracketSlash"/>
+  <int value="3" label="SquareBracketMiddleDot"/>
+</enum>
+
+<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:jp_settings_hist_enums)-->
+
 <enum name="KoreanAction">
   <summary>Actions that are available on the Korean IME.</summary>
   <int value="0" label="Unknown"/>

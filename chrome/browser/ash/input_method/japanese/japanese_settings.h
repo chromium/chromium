@@ -11,6 +11,9 @@ namespace ash::input_method {
 ash::ime::mojom::JapaneseSettingsPtr ToMojomInputMethodSettings(
     const base::Value::Dict& prefs_dict);
 
+void RecordJapaneseSettingsMetrics(
+    const ash::ime::mojom::JapaneseSettings& settings);
+
 }  // namespace ash::input_method
 
 #endif  // CHROME_BROWSER_ASH_INPUT_METHOD_JAPANESE_JAPANESE_SETTINGS_H_
