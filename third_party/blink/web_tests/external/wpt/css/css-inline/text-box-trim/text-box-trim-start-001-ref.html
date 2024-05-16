@@ -7,7 +7,7 @@
 }
 .spacer {
   background: lightgray;
-  height: 100px;
+  block-size: 100px;
 }
 .target {
   font-family: test-font;
@@ -17,12 +17,16 @@
 .offset {
   position: relative;
 }
+.vrl { writing-mode: vertical-rl; }
+.vlr { writing-mode: vertical-lr; }
 .text .target { line-height: 150px; }
-.text .offset { top: -25px; }
+.text .offset { inset-block-start: -25px; }
 .cap .target { line-height: 130px; }
-.cap .offset { top: -35px; }
+.cap .offset { inset-block-start: -35px; }
 .ex .target { line-height: 90px; }
-.ex .offset { top: -55px; }
+.ex .offset { inset-block-start: -55px; }
+.vlr.alphabetic .target { line-height: 130px; }
+.vlr.alphabetic .offset { inset-block-start: -35px;}
 </style>
 <div class="spacer"></div>
 <div class="target">

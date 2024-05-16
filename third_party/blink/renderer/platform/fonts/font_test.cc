@@ -67,6 +67,18 @@ TEST_F(FontTest, FonteMetricsCapHeight) {
 #endif
 }
 
+TEST_F(FontTest, ConvertBaseline) {
+  Font font = test::CreateAhemFont(100);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  const FontMetrics& metrics = font_data->GetFontMetrics();
+  EXPECT_EQ(metrics.FixedAscent(), 80);
+  EXPECT_EQ(metrics.FixedDescent(), 20);
+  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kAlphabeticBaseline), 0);
+  EXPECT_EQ(metrics.FixedAlphabetic(FontBaseline::kCentralBaseline), -30);
+  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kAlphabeticBaseline), 80);
+  EXPECT_EQ(metrics.FixedCapHeight(FontBaseline::kCentralBaseline), 50);
+}
+
 TEST_F(FontTest, IdeographicFullWidthAhem) {
   Font font = CreateTestFont(AtomicString("Ahem"),
                              test::PlatformTestDataPath("Ahem.woff"), 16);

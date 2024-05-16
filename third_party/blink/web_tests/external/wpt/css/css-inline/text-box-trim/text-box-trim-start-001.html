@@ -7,6 +7,13 @@
 <meta name="variant" content="?class=text">
 <meta name="variant" content="?class=cap">
 <meta name="variant" content="?class=ex">
+<meta name="variant" content="?class=vrl,leading">
+<meta name="variant" content="?class=vrl,text">
+<meta name="variant" content="?class=vrl,cap">
+<meta name="variant" content="?class=vrl,ex">
+<meta name="variant" content="?class=vlr,leading">
+<meta name="variant" content="?class=vlr,text">
+<meta name="variant" content="?class=vlr,alphabetic">
 <style>
 @font-face {
   font-family: test-font;
@@ -14,7 +21,7 @@
 }
 .spacer {
   background: lightgray;
-  height: 100px;
+  block-size: 100px;
 }
 .target {
   font-family: test-font;
@@ -22,10 +29,13 @@
   line-height: 2;
   text-box-trim: start;
 }
+.vrl { writing-mode: vertical-rl; }
+.vlr { writing-mode: vertical-lr; }
 .leading .target { text-box-edge: leading; }
 .text .target { text-box-edge: text; }
 .cap .target { text-box-edge: cap; }
 .ex .target { text-box-edge: ex; }
+.vlr.alphabetic .target { text-box-edge: text alphabetic; }
 </style>
 <div class="spacer"></div>
 <div class="target">A</div>

@@ -27,9 +27,9 @@ namespace {
 
 FontHeight FontHeightWithLeading(const ComputedStyle& style,
                                  const Font& font,
-                                 const SimpleFontData& font_data,
+                                 const FontMetrics& font_metrics,
                                  FontBaseline baseline_type) {
-  FontHeight metrics = font_data.GetFontMetrics().GetFontHeight(baseline_type);
+  FontHeight metrics = font_metrics.GetFontHeight(baseline_type);
   const LayoutUnit line_height = style.ComputedLineHeightAsFixed(font);
   const FontHeight leading = CalculateLeadingSpace(line_height, metrics);
   metrics.AddLeading(leading);
@@ -182,27 +182,24 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
   if (UNLIKELY(!font_data)) {
     return;
   }
+  const FontMetrics& font_metrics = font_data->GetFontMetrics();
   std::optional<FontHeight> font_height_with_leading;
   const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
   if (should_apply_over) {
     switch (text_box_edge.Over()) {
       case TextBoxEdge::Type::kLeading:
         font_height_with_leading =
-            FontHeightWithLeading(style, font, *font_data, baseline_type);
+            FontHeightWithLeading(style, font, font_metrics, baseline_type);
         metrics.ascent = font_height_with_leading->ascent;
         break;
       case TextBoxEdge::Type::kText:
-        metrics.ascent = font_data->GetFontMetrics().FixedAscent(baseline_type);
+        metrics.ascent = font_metrics.FixedAscent(baseline_type);
         break;
       case TextBoxEdge::Type::kCap:
-        // TODO(crbug.com/40254880): Support vertical.
-        metrics.ascent =
-            LayoutUnit::FromFloatCeil(font_data->GetFontMetrics().CapHeight());
+        metrics.ascent = font_metrics.FixedCapHeight(baseline_type);
         break;
       case TextBoxEdge::Type::kEx:
-        // TODO(crbug.com/40254880): Support vertical.
-        metrics.ascent =
-            LayoutUnit::FromFloatCeil(font_data->GetFontMetrics().XHeight());
+        metrics.ascent = font_metrics.FixedXHeight(baseline_type);
         break;
       case TextBoxEdge::Type::kAlphabetic:
         NOTREACHED_NORETURN();
@@ -214,17 +211,17 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
       case TextBoxEdge::Type::kLeading:
         if (!font_height_with_leading) {
           font_height_with_leading =
-              FontHeightWithLeading(style, font, *font_data, baseline_type);
+              FontHeightWithLeading(style, font, font_metrics, baseline_type);
         }
         metrics.descent = font_height_with_leading->descent;
         break;
       case TextBoxEdge::Type::kText:
-        metrics.descent =
-            font_data->GetFontMetrics().FixedDescent(baseline_type);
+        metrics.descent = font_metrics.FixedDescent(baseline_type);
         break;
       case TextBoxEdge::Type::kAlphabetic:
-        // TODO(crbug.com/40254880): Support vertical.
-        metrics.descent = LayoutUnit();
+        // `FixedAlphabetic()` returns a value in the ascent coordinates. Negate
+        // it when applying to descent.
+        metrics.descent = -font_metrics.FixedAlphabetic(baseline_type);
         break;
       case TextBoxEdge::Type::kCap:
       case TextBoxEdge::Type::kEx:
