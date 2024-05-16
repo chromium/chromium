@@ -162,6 +162,7 @@ android_library("content_full_java") {
     "//media/capture/video/android:capture_java",
     "//media/midi:midi_java",
     "//media/mojo/mojom:mojom_java",
+    "//media/mojo/mojom:web_speech_recognition_java",
     "//mojo/public/java:base_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",

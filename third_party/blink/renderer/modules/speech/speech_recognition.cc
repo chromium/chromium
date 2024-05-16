@@ -28,10 +28,10 @@
 #include <algorithm>
 
 #include "build/build_config.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom-blink.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom-blink.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -96,7 +96,7 @@ void SpeechRecognition::abort() {
 }
 
 void SpeechRecognition::ResultRetrieved(
-    WTF::Vector<mojom::blink::SpeechRecognitionResultPtr> results) {
+    WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results) {
   auto* it = std::stable_partition(
       results.begin(), results.end(),
       [](const auto& result) { return !result->is_provisional; });
@@ -139,8 +139,9 @@ void SpeechRecognition::ResultRetrieved(
 }
 
 void SpeechRecognition::ErrorOccurred(
-    mojom::blink::SpeechRecognitionErrorPtr error) {
-  if (error->code == mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
+    media::mojom::blink::SpeechRecognitionErrorPtr error) {
+  if (error->code ==
+      media::mojom::blink::SpeechRecognitionErrorCode::kNoMatch) {
     DispatchEvent(*SpeechRecognitionEvent::CreateNoMatch(nullptr));
   } else {
     // TODO(primiano): message?
@@ -202,9 +203,9 @@ void SpeechRecognition::PageVisibilityChanged() {
 }
 
 void SpeechRecognition::OnConnectionError() {
-  ErrorOccurred(mojom::blink::SpeechRecognitionError::New(
-      mojom::blink::SpeechRecognitionErrorCode::kNetwork,
-      mojom::blink::SpeechAudioErrorDetails::kNone));
+  ErrorOccurred(media::mojom::blink::SpeechRecognitionError::New(
+      media::mojom::blink::SpeechRecognitionErrorCode::kNetwork,
+      media::mojom::blink::SpeechAudioErrorDetails::kNone));
   Ended();
 }
 
@@ -228,7 +229,7 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   }
   final_results_.clear();
 
-  mojo::PendingRemote<mojom::blink::SpeechRecognitionSessionClient>
+  mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
       session_client;
   // See https://bit.ly/2S0zRAS for task types.
   receiver_.Bind(

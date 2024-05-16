@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module media.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 
@@ -18,9 +18,9 @@ struct SpeechRecognitionHypothesis {
 };
 
 // Group of recognition hypotheses for a particular speech segment.
-struct SpeechRecognitionResult {
+struct WebSpeechRecognitionResult {
   // An N-best list of hypotheses.
-  array<blink.mojom.SpeechRecognitionHypothesis> hypotheses;
+  array<media.mojom.SpeechRecognitionHypothesis> hypotheses;
 
   // False if this is the final time the speech service will return this
   // particular result. If true, then this represents an interim result that

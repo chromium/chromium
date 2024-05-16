@@ -1,6 +1,7 @@
 include_rules = [
   "+components/speech",
   "+components/soda",
+  "+media/mojo/mojom",
   "+google_apis",  # Exception to general rule, see content/DEPS for details.
 ]
 

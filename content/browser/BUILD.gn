@@ -175,6 +175,7 @@ source_set("browser") {
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
+    "//media/mojo/mojom:web_speech_recognition",
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",
@@ -3327,6 +3328,8 @@ source_set("browser") {
         "speech/soda_speech_recognition_engine_impl.cc",
         "speech/soda_speech_recognition_engine_impl.h",
       ]
+
+      deps += [ "//media/mojo/mojom:web_speech_recognition" ]
     }
 
     deps += [

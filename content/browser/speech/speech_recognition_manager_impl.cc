@@ -35,8 +35,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "media/audio/audio_device_description.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -342,9 +342,9 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
                        weak_factory_.GetWeakPtr(), session_id, EVENT_START));
   } else {
     OnRecognitionError(
-        session_id, blink::mojom::SpeechRecognitionError(
-                        blink::mojom::SpeechRecognitionErrorCode::kNotAllowed,
-                        blink::mojom::SpeechAudioErrorDetails::kNone));
+        session_id, media::mojom::SpeechRecognitionError(
+                        media::mojom::SpeechRecognitionErrorCode::kNotAllowed,
+                        media::mojom::SpeechAudioErrorDetails::kNone));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
@@ -522,7 +522,7 @@ void SpeechRecognitionManagerImpl::OnAudioEnd(int session_id) {
 
 void SpeechRecognitionManagerImpl::OnRecognitionResults(
     int session_id,
-    const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!SessionExists(session_id))
     return;
@@ -535,7 +535,7 @@ void SpeechRecognitionManagerImpl::OnRecognitionResults(
 
 void SpeechRecognitionManagerImpl::OnRecognitionError(
     int session_id,
-    const blink::mojom::SpeechRecognitionError& error) {
+    const media::mojom::SpeechRecognitionError& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!SessionExists(session_id))
     return;

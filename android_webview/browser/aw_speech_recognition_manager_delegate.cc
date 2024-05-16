@@ -17,8 +17,8 @@
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_context.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
 using content::BrowserThread;
 
@@ -40,11 +40,11 @@ void AwSpeechRecognitionManagerDelegate::OnAudioEnd(int session_id) {}
 
 void AwSpeechRecognitionManagerDelegate::OnRecognitionResults(
     int session_id,
-    const std::vector<blink::mojom::SpeechRecognitionResultPtr>& result) {}
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& result) {}
 
 void AwSpeechRecognitionManagerDelegate::OnRecognitionError(
     int session_id,
-    const blink::mojom::SpeechRecognitionError& error) {}
+    const media::mojom::SpeechRecognitionError& error) {}
 
 void AwSpeechRecognitionManagerDelegate::OnAudioLevelsChange(
     int session_id,

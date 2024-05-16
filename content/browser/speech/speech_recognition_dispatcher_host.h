@@ -11,10 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/speech/speech_recognizer.mojom.h"
 
 namespace network {
 class PendingSharedURLLoaderFactory;
@@ -31,7 +31,7 @@ class SpeechRecognitionManager;
 // SpeechRecognitionDispatcherHost is an implementation of the SpeechRecognizer
 // interface that allows a RenderFrame to start a speech recognition session
 // in the browser process, by communicating with SpeechRecognitionManager.
-class SpeechRecognitionDispatcherHost : public blink::mojom::SpeechRecognizer {
+class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
  public:
   SpeechRecognitionDispatcherHost(int render_process_id, int render_frame_id);
 
@@ -44,12 +44,12 @@ class SpeechRecognitionDispatcherHost : public blink::mojom::SpeechRecognizer {
   static void Create(
       int render_process_id,
       int render_frame_id,
-      mojo::PendingReceiver<blink::mojom::SpeechRecognizer> receiver);
+      mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver);
   base::WeakPtr<SpeechRecognitionDispatcherHost> AsWeakPtr();
 
-  // blink::mojom::SpeechRecognizer implementation
+  // media::mojom::SpeechRecognizer implementation
   void Start(
-      blink::mojom::StartSpeechRecognitionRequestParamsPtr params) override;
+      media::mojom::StartSpeechRecognitionRequestParamsPtr params) override;
 
  private:
   static void StartRequestOnUI(
@@ -57,9 +57,9 @@ class SpeechRecognitionDispatcherHost : public blink::mojom::SpeechRecognizer {
           speech_recognition_dispatcher_host,
       int render_process_id,
       int render_frame_id,
-      blink::mojom::StartSpeechRecognitionRequestParamsPtr params);
+      media::mojom::StartSpeechRecognitionRequestParamsPtr params);
   void StartSessionOnIO(
-      blink::mojom::StartSpeechRecognitionRequestParamsPtr params,
+      media::mojom::StartSpeechRecognitionRequestParamsPtr params,
       int embedder_render_process_id,
       int embedder_render_frame_id,
       const url::Origin& origin,

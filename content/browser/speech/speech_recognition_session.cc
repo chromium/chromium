@@ -15,7 +15,7 @@
 namespace content {
 
 SpeechRecognitionSession::SpeechRecognitionSession(
-    mojo::PendingRemote<blink::mojom::SpeechRecognitionSessionClient> client)
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient> client)
     : client_(std::move(client)) {
   client_.set_disconnect_handler(
       base::BindOnce(&SpeechRecognitionSession::ConnectionErrorHandler,
@@ -75,17 +75,17 @@ void SpeechRecognitionSession::OnRecognitionEnd(int session_id) {
 
 void SpeechRecognitionSession::OnRecognitionResults(
     int session_id,
-    const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results) {
   client_->ResultRetrieved(mojo::Clone(results));
 }
 
 void SpeechRecognitionSession::OnRecognitionError(
     int session_id,
-    const blink::mojom::SpeechRecognitionError& error) {
+    const media::mojom::SpeechRecognitionError& error) {
   if (!client_.is_bound()) {
     return;
   }
-  client_->ErrorOccurred(blink::mojom::SpeechRecognitionError::New(error));
+  client_->ErrorOccurred(media::mojom::SpeechRecognitionError::New(error));
 }
 
 // The events below are currently not used by speech JS APIs implementation.

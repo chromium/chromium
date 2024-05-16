@@ -345,8 +345,8 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/speech/speech_recognizer.mojom",
-    "blink.mojom.SpeechRecognizer",
+    "//media/mojo/mojom/speech_recognizer.mojom",
+    "media.mojom.SpeechRecognizer",
     "Remote",
   ],
   [

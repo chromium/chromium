@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module media.mojom;
 
-import "third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom";
+import "media/mojo/mojom/speech_recognition_error_code.mojom";
 
 // Used to provide further details about an audio capture related error.
 enum SpeechAudioErrorDetails {
@@ -15,6 +15,6 @@ enum SpeechAudioErrorDetails {
 // Used to send information to the renderer about an error in the browser's
 // speech recognition engine.
 struct SpeechRecognitionError {
-  blink.mojom.SpeechRecognitionErrorCode code;
-  blink.mojom.SpeechAudioErrorDetails details;
+  media.mojom.SpeechRecognitionErrorCode code;
+  media.mojom.SpeechAudioErrorDetails details;
 };

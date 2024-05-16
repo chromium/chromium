@@ -82,7 +82,7 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
 
   void MarkDone();
 
-  void Abort(blink::mojom::SpeechRecognitionErrorCode error);
+  void Abort(media::mojom::SpeechRecognitionErrorCode error);
 
   media::mojom::AudioDataS16Ptr ConvertToAudioDataS16(const AudioChunk& data);
 

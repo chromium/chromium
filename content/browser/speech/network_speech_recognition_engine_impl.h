@@ -24,10 +24,10 @@
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_grammar.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_grammar.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
 
 class AudioChunk;
 
@@ -69,7 +69,7 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
     ~Config();
 
     std::string language;
-    std::vector<blink::mojom::SpeechRecognitionGrammar> grammars;
+    std::vector<media::mojom::SpeechRecognitionGrammar> grammars;
     bool filter_profanities = false;
     bool continuous = true;
     bool interim_results = true;
@@ -183,7 +183,7 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
   FSMState CloseDownstream(const FSMEventArgs& event_args);
   FSMState AbortSilently(const FSMEventArgs& event_args);
   FSMState AbortWithError(const FSMEventArgs& event_args);
-  FSMState Abort(blink::mojom::SpeechRecognitionErrorCode error);
+  FSMState Abort(media::mojom::SpeechRecognitionErrorCode error);
   FSMState DoNothing(const FSMEventArgs& event_args);
   FSMState NotFeasible(const FSMEventArgs& event_args);
 

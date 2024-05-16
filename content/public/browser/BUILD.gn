@@ -573,6 +573,7 @@ source_set("browser_sources") {
     "//gpu/command_buffer/service:gles2",
     "//media",
     "//media/capture",
+    "//media/mojo/mojom:web_speech_recognition",
     "//net",
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:metrics_cpp",

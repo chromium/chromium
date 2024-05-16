@@ -111,7 +111,7 @@ void SodaSpeechRecognitionEngineImpl::EndRecognition() {
 void SodaSpeechRecognitionEngineImpl::TakeAudioChunk(const AudioChunk& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!is_start_recognition_) {
-    Abort(blink::mojom::SpeechRecognitionErrorCode::kNotAllowed);
+    Abort(media::mojom::SpeechRecognitionErrorCode::kNotAllowed);
     return;
   }
 
@@ -136,13 +136,13 @@ void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionRecognitionEvent(
   std::move(reply).Run(is_start_recognition_);
 
   // Map recognition results.
-  std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
-  results.push_back(blink::mojom::SpeechRecognitionResult::New());
-  blink::mojom::SpeechRecognitionResultPtr& result = results.back();
+  std::vector<media::mojom::WebSpeechRecognitionResultPtr> results;
+  results.push_back(media::mojom::WebSpeechRecognitionResult::New());
+  media::mojom::WebSpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = !recognition_result.is_final;
 
-  blink::mojom::SpeechRecognitionHypothesisPtr hypothesis =
-      blink::mojom::SpeechRecognitionHypothesis::New();
+  media::mojom::SpeechRecognitionHypothesisPtr hypothesis =
+      media::mojom::SpeechRecognitionHypothesis::New();
   // TODO(crbug.com/40286514): Hardcode now.
   hypothesis->confidence = kSpeechRecognitionConfidence;
   hypothesis->utterance = base::UTF8ToUTF16(recognition_result.transcription);
@@ -156,14 +156,14 @@ void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionRecognitionEvent(
 }
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionError() {
-  Abort(blink::mojom::SpeechRecognitionErrorCode::kNoSpeech);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kNoSpeech);
 }
 
 void SodaSpeechRecognitionEngineImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {}
 
 void SodaSpeechRecognitionEngineImpl::OnSpeechRecognitionStopped() {
-  Abort(blink::mojom::SpeechRecognitionErrorCode::kAborted);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
 }
 
 void SodaSpeechRecognitionEngineImpl::
@@ -193,7 +193,7 @@ void SodaSpeechRecognitionEngineImpl::OnRecognizerBound(
 
 void SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  Abort(blink::mojom::SpeechRecognitionErrorCode::kAborted);
+  Abort(media::mojom::SpeechRecognitionErrorCode::kAborted);
 }
 
 void SodaSpeechRecognitionEngineImpl::SendAudioToSpeechRecognitionService(
@@ -212,13 +212,13 @@ void SodaSpeechRecognitionEngineImpl::MarkDone() {
 }
 
 void SodaSpeechRecognitionEngineImpl::Abort(
-    blink::mojom::SpeechRecognitionErrorCode error_code) {
+    media::mojom::SpeechRecognitionErrorCode error_code) {
   DVLOG(1) << "Aborting with error " << error_code;
 
-  if (error_code != blink::mojom::SpeechRecognitionErrorCode::kNone) {
+  if (error_code != media::mojom::SpeechRecognitionErrorCode::kNone) {
     delegate_->OnSpeechRecognitionEngineError(
-        blink::mojom::SpeechRecognitionError(
-            error_code, blink::mojom::SpeechAudioErrorDetails::kNone));
+        media::mojom::SpeechRecognitionError(
+            error_code, media::mojom::SpeechAudioErrorDetails::kNone));
   }
 }
 

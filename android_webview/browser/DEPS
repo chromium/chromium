@@ -75,6 +75,7 @@ include_rules = [
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",
+  "+media/mojo/mojom",
 
   "+components/policy/policy_constants.h",
   "+components/embedder_support/android",

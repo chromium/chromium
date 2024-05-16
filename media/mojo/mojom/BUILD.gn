@@ -875,3 +875,20 @@ source_set("unit_tests") {
     deps += [ ":speech_recognition" ]
   }
 }
+
+mojom("web_speech_recognition") {
+  generate_java = true
+
+  sources = [
+    "speech_recognition_error.mojom",
+    "speech_recognition_error_code.mojom",
+    "speech_recognition_grammar.mojom",
+    "speech_recognition_result.mojom",
+    "speech_recognizer.mojom",
+  ]
+
+  deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+}

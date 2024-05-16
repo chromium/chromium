@@ -53,11 +53,11 @@ void ShellSpeechRecognitionManagerDelegate::OnRecognitionEnd(int session_id) {
 
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionResults(
     int session_id,
-    const std::vector<blink::mojom::SpeechRecognitionResultPtr>& result) {}
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& result) {}
 
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionError(
     int session_id,
-    const blink::mojom::SpeechRecognitionError& error) {}
+    const media::mojom::SpeechRecognitionError& error) {}
 
 void ShellSpeechRecognitionManagerDelegate::OnAudioLevelsChange(
     int session_id,

@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module blink.mojom;
+module media.mojom;
 
-import "third_party/blink/public/mojom/speech/speech_recognition_grammar.mojom";
-import "third_party/blink/public/mojom/speech/speech_recognition_result.mojom";
-import "third_party/blink/public/mojom/speech/speech_recognition_error.mojom";
+import "media/mojo/mojom/speech_recognition_grammar.mojom";
+import "media/mojo/mojom/speech_recognition_result.mojom";
+import "media/mojo/mojom/speech_recognition_error.mojom";
 
 // Created by the renderer and sent to the browser to start a speech recognition
 // session.
@@ -65,7 +65,7 @@ interface SpeechRecognitionSession {
 // WebSpeechRecognitionHandle.
 interface SpeechRecognitionSessionClient {
   // Called to dispatch the "result" event.
-  ResultRetrieved(array<SpeechRecognitionResult> results);
+  ResultRetrieved(array<WebSpeechRecognitionResult> results);
 
   // Called to dispatch the "nomatch" event if the error code passed is of types
   // kNoMatch, otherwise dispatchers an "error" event.

@@ -120,6 +120,7 @@ if (!is_android) {
       "//media/mojo/mojom:mojom_mojolpm",
       "//media/mojo/mojom:remoting_mojolpm",
       "//media/mojo/mojom:speech_recognition_mojolpm",
+      "//media/mojo/mojom:web_speech_recognition_mojolpm",
       "//services/device/public/mojom:mojom_mojolpm",
       "//services/image_annotation/public/mojom:mojom_mojolpm",
       "//services/network/public/mojom:cookies_mojom_mojolpm",

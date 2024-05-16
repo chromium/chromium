@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_CONTROLLER_H_
 
+#include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/speech/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -49,24 +49,25 @@ class SpeechRecognitionController final
   explicit SpeechRecognitionController(LocalDOMWindow&);
   virtual ~SpeechRecognitionController();
 
-  void Start(mojo::PendingReceiver<mojom::blink::SpeechRecognitionSession>
-                 session_receiver,
-             mojo::PendingRemote<mojom::blink::SpeechRecognitionSessionClient>
-                 session_client,
-             const SpeechGrammarList& grammars,
-             const String& lang,
-             bool continuous,
-             bool interim_results,
-             uint32_t max_alternatives);
+  void Start(
+      mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
+          session_client,
+      const SpeechGrammarList& grammars,
+      const String& lang,
+      bool continuous,
+      bool interim_results,
+      uint32_t max_alternatives);
 
   static SpeechRecognitionController* From(LocalDOMWindow&);
 
   void Trace(Visitor* visitor) const override;
 
  private:
-  mojom::blink::SpeechRecognizer* GetSpeechRecognizer();
+  media::mojom::blink::SpeechRecognizer* GetSpeechRecognizer();
 
-  HeapMojoRemote<mojom::blink::SpeechRecognizer> speech_recognizer_;
+  HeapMojoRemote<media::mojom::blink::SpeechRecognizer> speech_recognizer_;
 };
 
 }  // namespace blink

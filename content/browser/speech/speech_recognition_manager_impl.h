@@ -16,8 +16,8 @@
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
 #include "content/public/browser/speech_recognition_session_context.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
 
 namespace media {
 class AudioSystem;
@@ -82,11 +82,11 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   void OnRecognitionEnd(int session_id) override;
   void OnRecognitionResults(
       int session_id,
-      const std::vector<blink::mojom::SpeechRecognitionResultPtr>& result)
+      const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& result)
       override;
   void OnRecognitionError(
       int session_id,
-      const blink::mojom::SpeechRecognitionError& error) override;
+      const media::mojom::SpeechRecognitionError& error) override;
   void OnAudioLevelsChange(int session_id,
                            float volume,
                            float noise_volume) override;

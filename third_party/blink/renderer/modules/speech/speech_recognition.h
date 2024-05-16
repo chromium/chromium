@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 
-#include "third_party/blink/public/mojom/speech/speech_recognizer.mojom-blink.h"
+#include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -51,7 +51,7 @@ class MODULES_EXPORT SpeechRecognition final
     : public EventTarget,
       public ActiveScriptWrappable<SpeechRecognition>,
       public ExecutionContextLifecycleObserver,
-      public mojom::blink::SpeechRecognitionSessionClient,
+      public media::mojom::blink::SpeechRecognitionSessionClient,
       public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -83,10 +83,12 @@ class MODULES_EXPORT SpeechRecognition final
   void stopFunction();
   void abort();
 
-  // mojom::blink::SpeechRecognitionSessionClient
+  // media::mojom::blink::SpeechRecognitionSessionClient
   void ResultRetrieved(
-      WTF::Vector<mojom::blink::SpeechRecognitionResultPtr> results) override;
-  void ErrorOccurred(mojom::blink::SpeechRecognitionErrorPtr error) override;
+      WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results)
+      override;
+  void ErrorOccurred(
+      media::mojom::blink::SpeechRecognitionErrorPtr error) override;
   void Started() override;
   void AudioStarted() override;
   void SoundStarted() override;
@@ -135,10 +137,10 @@ class MODULES_EXPORT SpeechRecognition final
   bool started_;
   bool stopping_;
   HeapVector<Member<SpeechRecognitionResult>> final_results_;
-  HeapMojoReceiver<mojom::blink::SpeechRecognitionSessionClient,
+  HeapMojoReceiver<media::mojom::blink::SpeechRecognitionSessionClient,
                    SpeechRecognition>
       receiver_;
-  HeapMojoRemote<mojom::blink::SpeechRecognitionSession> session_;
+  HeapMojoRemote<media::mojom::blink::SpeechRecognitionSession> session_;
 };
 
 }  // namespace blink

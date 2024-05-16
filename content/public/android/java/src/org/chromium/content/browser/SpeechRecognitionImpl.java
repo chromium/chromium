@@ -26,9 +26,9 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
-import org.chromium.blink.mojom.SpeechRecognitionErrorCode;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.SpeechRecognition;
+import org.chromium.media.mojom.SpeechRecognitionErrorCode;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;

@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_ERROR_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_ERROR_EVENT_H_
 
-#include "third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom-blink-forward.h"
+#include "media/mojo/mojom/speech_recognition_error_code.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_recognition_error_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -39,7 +39,7 @@ class MODULES_EXPORT SpeechRecognitionErrorEvent final : public Event {
 
  public:
   static SpeechRecognitionErrorEvent* Create(
-      mojom::blink::SpeechRecognitionErrorCode,
+      media::mojom::blink::SpeechRecognitionErrorCode,
       const String&);
   static SpeechRecognitionErrorEvent* Create(
       const AtomicString&,

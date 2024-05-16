@@ -10,8 +10,8 @@
 #include "components/speech/audio_buffer.h"
 #include "content/common/content_export.h"
 #include "media/base/audio_parameters.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_error.mojom.h"
-#include "third_party/blink/public/mojom/speech/speech_recognition_result.mojom.h"
+#include "media/mojo/mojom/speech_recognition_error.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.mojom.h"
 
 namespace blink {
 namespace mojom {
@@ -39,11 +39,11 @@ class CONTENT_EXPORT SpeechRecognitionEngine {
    public:
     // Called whenever a result is retrieved.
     virtual void OnSpeechRecognitionEngineResults(
-        const std::vector<blink::mojom::SpeechRecognitionResultPtr>&
+        const std::vector<media::mojom::WebSpeechRecognitionResultPtr>&
             results) = 0;
     virtual void OnSpeechRecognitionEngineEndOfUtterance() = 0;
     virtual void OnSpeechRecognitionEngineError(
-        const blink::mojom::SpeechRecognitionError& error) = 0;
+        const media::mojom::SpeechRecognitionError& error) = 0;
 
    protected:
     virtual ~Delegate() = default;

@@ -42,7 +42,7 @@ SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
 void SpeechRecognitionDispatcherHost::Create(
     int render_process_id,
     int render_frame_id,
-    mojo::PendingReceiver<blink::mojom::SpeechRecognizer> receiver) {
+    mojo::PendingReceiver<media::mojom::SpeechRecognizer> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<SpeechRecognitionDispatcherHost>(
                                   render_process_id, render_frame_id),
                               std::move(receiver));
@@ -55,10 +55,10 @@ SpeechRecognitionDispatcherHost::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-// -------- blink::mojom::SpeechRecognizer interface implementation ------------
+// -------- media::mojom::SpeechRecognizer interface implementation ------------
 
 void SpeechRecognitionDispatcherHost::Start(
-    blink::mojom::StartSpeechRecognitionRequestParamsPtr params) {
+    media::mojom::StartSpeechRecognitionRequestParamsPtr params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTask(
@@ -74,7 +74,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
         speech_recognition_dispatcher_host,
     int render_process_id,
     int render_frame_id,
-    blink::mojom::StartSpeechRecognitionRequestParamsPtr params) {
+    media::mojom::StartSpeechRecognitionRequestParamsPtr params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   int embedder_render_process_id = 0;
   int embedder_render_frame_id = MSG_ROUTING_NONE;
@@ -145,7 +145,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
 }
 
 void SpeechRecognitionDispatcherHost::StartSessionOnIO(
-    blink::mojom::StartSpeechRecognitionRequestParamsPtr params,
+    media::mojom::StartSpeechRecognitionRequestParamsPtr params,
     int embedder_render_process_id,
     int embedder_render_frame_id,
     const url::Origin& origin,
@@ -178,7 +178,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   config.interim_results = params->interim_results;
   config.event_listener = session->AsWeakPtr();
 
-  for (blink::mojom::SpeechRecognitionGrammarPtr& grammar_ptr :
+  for (media::mojom::SpeechRecognitionGrammarPtr& grammar_ptr :
        params->grammars) {
     config.grammars.push_back(*grammar_ptr);
   }

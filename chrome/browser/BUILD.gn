@@ -2581,6 +2581,7 @@ static_library("browser") {
     "//media/midi",
     "//media/mojo:buildflags",
     "//media/mojo/common",
+    "//media/mojo/mojom:web_speech_recognition",
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",

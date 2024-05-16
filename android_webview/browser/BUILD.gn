@@ -307,6 +307,7 @@ source_set("browser") {
     "//components/webdata/common",
     "//content/public/browser",
     "//media/mojo:buildflags",
+    "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/base:protobuf_support",
     "//services/cert_verifier/public/mojom",
     "//services/device/public/cpp:device_feature_list",

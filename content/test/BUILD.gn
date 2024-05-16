@@ -568,6 +568,7 @@ static_library("test_support") {
     "//media",
     "//media/capture",
     "//media/capture/mojom:image_capture",
+    "//media/mojo/mojom:web_speech_recognition",
     "//mojo/core/embedder",
     "//mojo/public/cpp/test_support:test_utils",
     "//net:quic_test_tools",
@@ -2114,6 +2115,7 @@ test("content_browsertests") {
     deps += [
       "//components/soda:utils",
       "//content/public/browser:proto",
+      "//media/mojo/mojom:web_speech_recognition",
       "//ui/base/clipboard:clipboard_test_support",
     ]
 
@@ -3352,7 +3354,10 @@ test("content_unittests") {
       "../browser/speech/speech_recognizer_impl_unittest.cc",
       "../browser/tracing/tracing_ui_unittest.cc",
     ]
-    deps += [ "//components/speech:speech" ]
+    deps += [
+      "//components/speech:speech",
+      "//media/mojo/mojom:web_speech_recognition",
+    ]
 
     if (!is_fuchsia) {
       sources += [
