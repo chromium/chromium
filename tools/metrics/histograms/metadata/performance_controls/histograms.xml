@@ -76,6 +76,17 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.MemorySaver.DiscardRingTreatment"
+    enum="BooleanEnabled" expires_after="2025-05-07">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs whether the inactive tabs appearance pref is enabled, whenever the user
+    makes a change to it through the settings page. This will be used to measure
+    how many users opt out of seeing the discard ring on inactive tabs.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
     enum="BooleanEnabled" expires_after="2024-09-22">
   <owner>agale@chromium.org</owner>
