@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package test.fuzzing.atspi_fuzzing;
+
+// A fuzzer case for atspi_in_process_fuzzer.cc.
+message FuzzCase {
+  // Actions to take.
+  repeated Action action = 1;
+}
+
+// Actions to take
+message Action {
+  // The path to the control with which we want to interact.
+  // This doesn't give stable test cases - see comments in .cc file.
+  repeated uint32 path_to_control = 1;
+
+  // The type of action to take
+  uint32 action_id = 2;
+}
