@@ -147,6 +147,7 @@ static_library("tether") {
   public_deps = [
     "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/multidevice_setup/public/mojom",
+    "//third_party/nearby:presence_types",
   ]
 }
 
@@ -264,6 +265,7 @@ source_set("unit_tests") {
     "tether_disconnector_impl_unittest.cc",
     "tether_host_fetcher_impl_unittest.cc",
     "tether_host_response_recorder_unittest.cc",
+    "tether_host_unittest.cc",
     "tether_network_disconnection_handler_unittest.cc",
     "tether_session_completion_logger_unittest.cc",
     "top_level_host_scan_cache_unittest.cc",
