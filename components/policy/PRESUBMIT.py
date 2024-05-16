@@ -203,6 +203,11 @@ def _GetPolicyChangeList(input_api):
         filename == 'OWNERS' or
         filename == 'DIR_METADATA'):
       continue
+
+    if policy_name not in policy_name_to_id:
+      raise Exception("Policy not listed in %s: '%s'" % (
+          _POLICIES_YAML_PATH, policy_name))
+
     old_policy = None
     new_policy = None
     if affected_file.Action() == 'M':
