@@ -316,6 +316,10 @@ extern int GetLensOverlayTapRegionWidth();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseLensOverlayForImageSearch();
 
+// Returns whether to enable the find-in-page entry point.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsFindInPageEntryPointEnabled();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

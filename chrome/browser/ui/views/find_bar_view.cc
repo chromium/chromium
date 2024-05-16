@@ -280,7 +280,8 @@ FindBarView::FindBarView(FindBarHost* host) {
   SetProperty(views::kElementIdentifierKey, kElementId);
   AddChildView(std::move(main_container));
 
-  if (LensOverlayController::IsEnabled(host->browser_view()->GetProfile())) {
+  if (lens::features::IsFindInPageEntryPointEnabled() &&
+      LensOverlayController::IsEnabled(host->browser_view()->GetProfile())) {
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
