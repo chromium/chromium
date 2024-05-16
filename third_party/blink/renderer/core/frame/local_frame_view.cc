@@ -4165,21 +4165,28 @@ void LocalFrameView::CollectDraggableRegions(
 bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     unsigned parent_flags,
     std::optional<base::TimeTicks>& monotonic_time) {
+  // This will be recomputed, but default to the previous computed value if
+  // there's an early return.
+  bool needs_occlusion_tracking = false;
+  IntersectionObserverController* controller =
+      GetFrame().GetDocument()->GetIntersectionObserverController();
+  if (controller) {
+    needs_occlusion_tracking = controller->NeedsOcclusionTracking();
+  }
+
   // TODO(dcheng): Since LocalFrameView tree updates are deferred, FrameViews
   // might still be in the LocalFrameView hierarchy even though the associated
   // Document is already detached. Investigate if this check and a similar check
   // in lifecycle updates are still needed when there are no more deferred
   // LocalFrameView updates: https://crbug.com/561683
   if (!GetFrame().GetDocument()->IsActive()) {
-    return false;
+    return needs_occlusion_tracking;
   }
 
   unsigned flags = GetIntersectionObservationFlags(parent_flags);
-  bool needs_occlusion_tracking = false;
   if (!NeedsLayout() || IsDisplayLocked()) {
     // Notify javascript IntersectionObservers
-    if (IntersectionObserverController* controller =
-            GetFrame().GetDocument()->GetIntersectionObserverController()) {
+    if (controller) {
       needs_occlusion_tracking = controller->ComputeIntersections(
           flags, GetUkmAggregator(), monotonic_time,
           accumulated_scroll_delta_since_last_intersection_update_);
