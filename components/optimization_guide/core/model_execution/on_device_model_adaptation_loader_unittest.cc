@@ -190,7 +190,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelIncompatible) {
       .SetModelMetadata(CreateOnDeviceBaseModelMetadata(
           {"different_base_model_name", kBaseModelVersion}))
       .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
+          temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
   SendAdaptationModelUpdated(model_info_builder.Build().get());
   histogram_tester_.ExpectUniqueSample(
@@ -212,7 +212,6 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       .SetModelMetadata(
           CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
       .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
       });
@@ -240,7 +239,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       .SetModelMetadata(
           CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
       .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
+          temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
 
   proto::OnDeviceModelExecutionConfig config;
@@ -269,7 +268,7 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       .SetModelMetadata(
           CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
       .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
+          temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
       });
 
   proto::OnDeviceModelExecutionConfig config;
@@ -290,39 +289,6 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
   EXPECT_FALSE(adaptation_metadata_);
 }
 
-TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValidWithoutWeights) {
-  SetBaseModelStateChanged(
-      OnDeviceBaseModelSpec{kBaseModelName, kBaseModelVersion});
-  EXPECT_EQ(proto::OptimizationTarget::OPTIMIZATION_TARGET_MODEL_VALIDATION,
-            model_provider_.optimization_target_);
-
-  TestModelInfoBuilder model_info_builder;
-  model_info_builder
-      .SetModelMetadata(
-          CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
-      .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
-          temp_dir().Append(kOnDeviceModelExecutionConfigFile),
-      });
-
-  proto::OnDeviceModelExecutionConfig config;
-  config.add_feature_configs()->set_feature(
-      proto::MODEL_EXECUTION_FEATURE_TEST);
-  WriteConfigToFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
-                    config);
-
-  SendAdaptationModelUpdated(model_info_builder.Build().get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
-      "Test",
-      OnDeviceModelAdaptationAvailability::kAvailable, 1);
-  EXPECT_TRUE(adaptation_metadata_);
-  EXPECT_EQ(base::FilePath(kOnDeviceModelAdaptationModelFile),
-            adaptation_metadata_->asset_paths().model.BaseName());
-  EXPECT_TRUE(adaptation_metadata_->asset_paths().weights.empty());
-}
-
 TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValid) {
   SetBaseModelStateChanged(
       OnDeviceBaseModelSpec{kBaseModelName, kBaseModelVersion});
@@ -334,7 +300,6 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValid) {
       .SetModelMetadata(
           CreateOnDeviceBaseModelMetadata({kBaseModelName, kBaseModelVersion}))
       .SetAdditionalFiles({
-          temp_dir().Append(kOnDeviceModelAdaptationModelFile),
           temp_dir().Append(kOnDeviceModelAdaptationWeightsFile),
           temp_dir().Append(kOnDeviceModelExecutionConfigFile),
       });
@@ -352,8 +317,6 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, AdaptationModelValid) {
       "Test",
       OnDeviceModelAdaptationAvailability::kAvailable, 1);
   EXPECT_TRUE(adaptation_metadata_);
-  EXPECT_EQ(base::FilePath(kOnDeviceModelAdaptationModelFile),
-            adaptation_metadata_->asset_paths().model.BaseName());
   EXPECT_EQ(base::FilePath(kOnDeviceModelAdaptationWeightsFile),
             adaptation_metadata_->asset_paths().weights.BaseName());
 }

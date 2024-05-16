@@ -52,7 +52,6 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) AdaptationAssetPaths {
   AdaptationAssetPaths(const AdaptationAssetPaths&);
   ~AdaptationAssetPaths();
 
-  base::FilePath model;
   base::FilePath weights;
 };
 

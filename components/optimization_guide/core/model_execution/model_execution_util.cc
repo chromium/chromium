@@ -114,14 +114,6 @@ GetOnDeviceModelAdaptationOverride(proto::ModelExecutionFeature feature) {
           << adaptation_asset.weights;
       return std::nullopt;
     }
-    if (override_parts.size() == 3) {
-      adaptation_asset.model = *StringToFilePath(override_parts[2]);
-      if (!adaptation_asset.model.IsAbsolute()) {
-        DLOG(ERROR) << "Provided model adaptations file path must be absolute "
-                    << adaptation_asset.model;
-        return std::nullopt;
-      }
-    }
     return adaptation_asset;
   }
   return std::nullopt;

@@ -223,20 +223,15 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
         OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
   }
 
-  auto model_file = model_info->GetAdditionalFileWithBaseName(
-      kOnDeviceModelAdaptationModelFile);
-  if (!model_file) {
+  auto weights_file = model_info->GetAdditionalFileWithBaseName(
+      kOnDeviceModelAdaptationWeightsFile);
+  if (!weights_file) {
     return base::unexpected(
         OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid);
   }
-  auto weights_file = model_info->GetAdditionalFileWithBaseName(
-      kOnDeviceModelAdaptationWeightsFile);
   auto adaptations_assets =
       std::make_unique<on_device_model::AdaptationAssetPaths>();
-  adaptations_assets->model = *model_file;
-  if (weights_file) {
-    adaptations_assets->weights = *weights_file;
-  }
+  adaptations_assets->weights = *weights_file;
   return base::ok(std::move(adaptations_assets));
 }
 
