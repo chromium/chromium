@@ -286,14 +286,12 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   if (user && user->GetAccountId().is_valid()) {
     html_source->AddString(
         "googleDriveSignedInAs",
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS,
-            base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_GOOGLE_DRIVE_SIGNED_IN_AS,
+                                   base::ASCIIToUTF16(user->display_email())));
     html_source->AddString(
         "googleDriveReconnectAs",
-        l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_GOOGLE_DRIVE_RECONNECT_AS,
-            base::ASCIIToUTF16(user->GetAccountId().GetUserEmail())));
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_GOOGLE_DRIVE_RECONNECT_AS,
+                                   base::ASCIIToUTF16(user->display_email())));
   }
 
   html_source->AddBoolean(
