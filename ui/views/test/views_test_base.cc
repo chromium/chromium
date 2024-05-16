@@ -36,10 +36,6 @@
 
 namespace views {
 
-namespace {
-
-}  // namespace
-
 void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
   widget->CloseNow();
 }
@@ -78,8 +74,9 @@ void ViewsTestBase::SetUp() {
 }
 
 void ViewsTestBase::TearDown() {
-  if (interactive_setup_called_)
+  if (interactive_setup_called_) {
     ui::ResourceBundle::CleanupSharedInstance();
+  }
   ui::Clipboard::DestroyClipboardForCurrentThread();
 
   // Flush the message loop because we have pending release tasks
@@ -113,10 +110,16 @@ void ViewsTestBase::RunPendingMessages() {
   run_loop.RunUntilIdle();
 }
 
-Widget::InitParams ViewsTestBase::CreateParams(Widget::InitParams::Type type) {
-  Widget::InitParams params(type);
+Widget::InitParams ViewsTestBase::CreateParams(
+    Widget::InitParams::Ownership ownership,
+    Widget::InitParams::Type type) {
+  Widget::InitParams params(ownership, type);
   params.context = GetContext();
   return params;
+}
+
+Widget::InitParams ViewsTestBase::CreateParams(Widget::InitParams::Type type) {
+  return CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET, type);
 }
 
 std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
@@ -189,11 +192,17 @@ std::unique_ptr<Widget> ViewsTestBase::AllocateTestWidget() {
 }
 
 Widget::InitParams ViewsTestBase::CreateParamsForTestWidget(
+    Widget::InitParams::Ownership ownership,
     Widget::InitParams::Type type) {
-  Widget::InitParams params = CreateParams(type);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params = CreateParams(ownership, type);
   params.bounds = gfx::Rect(0, 0, 400, 400);
   return params;
+}
+
+Widget::InitParams ViewsTestBase::CreateParamsForTestWidget(
+    Widget::InitParams::Type type) {
+  return CreateParamsForTestWidget(
+      Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, type);
 }
 
 void ViewsTestWithDesktopNativeWidget::SetUp() {

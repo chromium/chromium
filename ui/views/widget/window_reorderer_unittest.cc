@@ -40,7 +40,8 @@ class WindowReordererTest : public ViewsTestBase {
  protected:
   std::unique_ptr<Widget> CreateControlWidget(aura::Window* parent) {
     Widget::InitParams params =
-        CreateParamsForTestWidget(Widget::InitParams::TYPE_CONTROL);
+        CreateParamsForTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                                  Widget::InitParams::TYPE_CONTROL);
     params.parent = parent;
     return CreateTestWidget(std::move(params));
   }

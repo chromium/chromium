@@ -62,6 +62,7 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
   }
 
   views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Ownership ownership,
       views::Widget::InitParams::Type type) override {
     // This relies on the setup done in the ToggleCheckboxes test below.
     auto dialog = std::make_unique<MediaGalleriesDialogViews>(controller());
@@ -70,7 +71,8 @@ class MediaGalleriesDialogTest : public ChromeViewsTestBase {
     checkbox_ = dialog->checkbox_map_[1]->checkbox();
     EXPECT_TRUE(checkbox_->GetChecked());
 
-    views::Widget::InitParams params = ChromeViewsTestBase::CreateParams(type);
+    views::Widget::InitParams params =
+        ChromeViewsTestBase::CreateParams(ownership, type);
     params.delegate = dialog.release();
     params.delegate->SetOwnedByWidget(true);
     return params;

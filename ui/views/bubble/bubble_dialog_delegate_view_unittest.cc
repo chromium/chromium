@@ -81,8 +81,9 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     return kContentSize;
   }
   void AddedToWidget() override {
-    if (title_view_)
+    if (title_view_) {
       GetBubbleFrameView()->SetTitleView(std::move(title_view_));
+    }
   }
 
   std::u16string GetWindowTitle() const override {
@@ -180,7 +181,8 @@ class BubbleDialogDelegateViewTest : public ViewsTestBase {
   std::unique_ptr<views::Widget> CreateTestWidget(
       views::Widget::InitParams::Type type =
           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS) override {
-    Widget::InitParams params = CreateParamsForTestWidget(type);
+    Widget::InitParams params = CreateParamsForTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, type);
     auto widget = std::make_unique<WidgetWithNonNullThemeProvider>();
     widget->Init(std::move(params));
     widget->Show();
@@ -1091,8 +1093,9 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
   // Creates a test bubble dialog widget. If |anchor_to| is not specified, uses
   // dummy_widget().
   Widget* CreateBubble(Widget* anchor_to = nullptr) {
-    if (!anchor_to)
+    if (!anchor_to) {
       anchor_to = dummy_widget();
+    }
     View* const anchor_view = anchor_to ? GetAnchorView(anchor_to) : nullptr;
     auto* bubble_delegate = new AnchorTestBubbleDialogDelegateView(anchor_view);
     bubble_delegate->set_close_on_deactivate(false);

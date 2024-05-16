@@ -226,10 +226,16 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
       // e.g. a scoped_ptr in tests. Production use is discouraged because the
       // Widget API might become unsafe after the platform window is closed.
       WIDGET_OWNS_NATIVE_WIDGET,
-      // NOT READY FOR PRODUCTION USE.
-      // This is intended to be a safe replacement for
-      // WIDGET_OWNS_NATIVE_WIDGET.
-      // The NativeWidget will be closed along with the platform window.
+      // Preferred Ownership mode. This is intended to be a safe replacement for
+      // WIDGET_OWNS_NATIVE_WIDGET. The NativeWidget will be closed along with
+      // the platform window.
+      // The above "default" reflects the behavior of various platforms in which
+      // the NativeWidget is effectively "owned" by the platform itself. It is
+      // possible that the NativeWidget is destroyed at the behest of the plat-
+      // form, leaving the associated Widget reference dangling.
+      // Using this ownership mode allows for the Widget being resilient to the
+      // NativeWidget being destroyed out from under the Widget while being
+      // able to manage the Widget independently.
       CLIENT_OWNS_WIDGET
     };
 
@@ -243,10 +249,20 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     };
 
     // Default initialization with |type| set to TYPE_WINDOW.
+    // TODO(crbug.com/339619005): Remove the default constructor once call sites
+    //                            have been migrated to always specifying the
+    //                            ownership mode.
     InitParams();
 
     // Initialization for other |type| types.
+    // TODO(crbug.com/339619005): Remove this constructor. See comment on the
+    //                            default constructor for more details.
     explicit InitParams(Type type);
+
+    // The preferred constructor. Must specify the ownership mode. The ownership
+    // mode will eventually go away and will implicitly be CLIENT_OWNS_WIDGET.
+    // This is here for migration purposes.
+    explicit InitParams(Ownership ownership, Type type = TYPE_WINDOW);
 
     InitParams(InitParams&& other);
     ~InitParams();
@@ -266,7 +282,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // are set.
     bool ShouldInitAsHeadless() const;
 
-    Type type = TYPE_WINDOW;
+    Type type;
 
     // If null, a default implementation will be constructed. The default
     // implementation deletes itself when the Widget closes.
@@ -306,7 +322,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     bool visible_on_all_workspaces = false;
 
     // See Widget class comment above.
-    Ownership ownership = NATIVE_WIDGET_OWNS_WIDGET;
+    Ownership ownership;
 
     bool mirror_origin_in_rtl = false;
 

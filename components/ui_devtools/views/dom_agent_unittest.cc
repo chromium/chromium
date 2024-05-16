@@ -90,8 +90,10 @@ class DOMAgentTest : public views::ViewsTestBase {
   ~DOMAgentTest() override = default;
 
   views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Ownership ownership,
       views::Widget::InitParams::Type type) override {
-    views::Widget::InitParams params = views::ViewsTestBase::CreateParams(type);
+    views::Widget::InitParams params =
+        views::ViewsTestBase::CreateParams(ownership, type);
     params.name = name_;
     return params;
   }

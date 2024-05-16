@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -76,8 +76,9 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
   views::View* GetContentsView() override {
     // This will first be called by Widget::Init(), which passes the returned
     // View* to SetContentsView(), which takes ownership.
-    if (!contents_)
+    if (!contents_) {
       contents_ = new TestView(harness_);
+    }
     return contents_;
   }
 
@@ -103,11 +104,13 @@ ViewEventTestBase::ViewEventTestBase() {
   DCHECK(!display::Screen::HasScreen());
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     BUILDFLAG(IS_OZONE)
-  if (!display::Screen::HasScreen())
+  if (!display::Screen::HasScreen()) {
     screen_ = views::test::TestDesktopScreenOzone::Create();
+  }
 #endif
-  if (!display::Screen::HasScreen())
+  if (!display::Screen::HasScreen()) {
     screen_ = views::CreateDesktopScreen();
+  }
 #endif
 }
 
@@ -126,7 +129,9 @@ void ViewEventTestBase::SetUp() {
   test_views_delegate()->set_use_desktop_native_widgets(true);
 
   window_ = AllocateTestWidget().release();
-  window_->Init(CreateParams(views::Widget::InitParams::TYPE_WINDOW));
+  window_->Init(
+      CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW));
   window_->Show();
 }
 
@@ -140,8 +145,10 @@ void ViewEventTestBase::TearDown() {
 }
 
 views::Widget::InitParams ViewEventTestBase::CreateParams(
+    views::Widget::InitParams::Ownership ownership,
     views::Widget::InitParams::Type type) {
-  views::Widget::InitParams params = ChromeViewsTestBase::CreateParams(type);
+  views::Widget::InitParams params =
+      ChromeViewsTestBase::CreateParams(ownership, type);
   params.delegate = new TestBaseWidgetDelegate(this);  // Owns itself.
   return params;
 }
