@@ -174,7 +174,8 @@ constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
     UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
 constexpr UrlIdentity::FormatOptions url_identity_options{
-    .default_options = {UrlIdentity::DefaultFormatOptions::kHostname}};
+    .default_options = {UrlIdentity::DefaultFormatOptions::
+                            kOmitSchemePathAndTrivialSubdomains}};
 
 // Converts `entry` to a base::Value::Dict to be owned by the caller.
 base::Value::Dict HistoryEntryToValue(
