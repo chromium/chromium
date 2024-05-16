@@ -39,6 +39,7 @@ class CSSParserSavePoint<CSSParserTokenStream> {
 
   ~CSSParserSavePoint() {
     if (!released_) {
+      stream_.EnsureLookAhead();
       stream_.Restore(savepoint_);
     }
   }
