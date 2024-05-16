@@ -959,6 +959,59 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   EXPECT_FALSE(history_helper::GetUrlFromClient(/*index=*/0, url_remote, &row));
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DoesNotDuplicateEntriesWhenTurningSyncOffAndOnAgain) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // One URL exists on the server already.
+  const GURL url_other_client("https://www.other-client.com");
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(
+      CreateSpecifics(base::Time::Now() - base::Minutes(5), "other_cache_guid",
+                      url_other_client)));
+
+  // Turn on Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // After Sync was enabled, navigate somewhere, and make sure this arrives on
+  // the server.
+  GURL url_this_client =
+      embedded_test_server()->GetURL("this-client.com", "/sync/simple.html");
+  NavigateToURL(url_this_client);
+  ASSERT_TRUE(WaitForServerHistory(UnorderedElementsAre(
+      UrlIs(url_other_client.spec()), UrlIs(url_this_client.spec()))));
+
+  // Turn Sync off by removing the primary account.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_EQ(GetSyncService(0)->GetTransportState(),
+            syncer::SyncService::TransportState::DISABLED);
+
+  // The visit that happened on this device is still here.
+  history::URLRow row;
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_this_client, &row));
+  ASSERT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
+  // ..but the remote visit isn't
+  ASSERT_FALSE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_other_client, &row));
+
+  // Turn Sync back on.
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::ModelType::HISTORY));
+
+  // Wait for the remote data to be re-downloaded.
+  ASSERT_TRUE(
+      WaitForLocalHistory({{url_other_client, UnorderedElementsAre(_)}}));
+
+  // Sanity check: The remote URL came back.
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_other_client, &row));
+  // There should still be only a single visit for the synced URL.
+  ASSERT_TRUE(
+      history_helper::GetUrlFromClient(/*index=*/0, url_this_client, &row));
+  EXPECT_EQ(history_helper::GetVisitsFromClient(0, row.id()).size(), 1u);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On Android, switches::kSyncUserForTest isn't supported (the passed-in
