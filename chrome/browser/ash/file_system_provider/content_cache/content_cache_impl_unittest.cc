@@ -666,28 +666,34 @@ TEST_F(FileSystemProviderContentCacheImplTest, OldestFilesAreEvictedOnResize) {
 
 TEST_F(FileSystemProviderContentCacheImplTest,
        AlreadyEvictedFilesAndOldestFilesAreEvictedOnResize) {
-  content_cache_->SetMaxCacheItems(3);
+  content_cache_->SetMaxCacheItems(4);
 
-  // Inserts file into cache with size `kDefaultChunkSize`. 2 spaces left.
+  // Inserts file into cache with size `kDefaultChunkSize`. 3 spaces left.
   int64_t random_path1_size = kDefaultChunkSize;
   base::FilePath random_path1("random-path1");
   WriteFileToCache(random_path1, "versionA", random_path1_size);
-  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 1 space
+  // Inserts another file into cache that is `kDefaultChunkSize` * 2. 2 spaces
   // left.
-  WriteFileToCache(base::FilePath("random-path2"), "versionA",
-                   kDefaultChunkSize * 2);
+  int64_t random_path2_size = kDefaultChunkSize * 2;
+  base::FilePath random_path2("random-path2");
+  WriteFileToCache(random_path2, "versionA", random_path2_size);
+  // Inserts another file into cache that is `kDefaultChunkSize` * 3. 1 space
+  // left.
+  WriteFileToCache(base::FilePath("random-path3"), "versionA",
+                   kDefaultChunkSize * 3);
   // Inserts another file into cache that is `kDefaultChunkSize` * 4. 0 spaces
   // left.
-  int64_t random_path3_size = kDefaultChunkSize * 4;
-  base::FilePath random_path3("random-path3");
-  WriteFileToCache(random_path3, "versionA", random_path3_size);
+  int64_t random_path4_size = kDefaultChunkSize * 4;
+  base::FilePath random_path4("random-path4");
+  WriteFileToCache(random_path4, "versionA", random_path4_size);
 
-  // Evict the most-recently-used file.
-  content_cache_->Evict(random_path3);
+  // Evict the least and most-recently-used file.
+  content_cache_->Evict(random_path1);
+  content_cache_->Evict(random_path4);
 
-  // Resize the cache to only have 1 spot, the `random-path3` entry
-  // is already evicted so only one more file (`random-path1` the
-  // least-recently used) is evicted.
+  // Resize the cache to only have 1 spot, the `random-path4` and `random-path1`
+  // entries are already evicted so only one more file (`random-path2` the
+  // least-recently used and not already evicted) is evicted.
   content_cache_->SetMaxCacheItems(1);
 
   // The evicted items should not be readable again (despite being
@@ -698,20 +704,27 @@ TEST_F(FileSystemProviderContentCacheImplTest,
       ReadBytesFromContentCache(file1, /*buffer=*/nullptr,
                                 /*offset=*/0, /*length=*/kDefaultChunkSize),
       Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
-  OpenedCloudFile file3(random_path3, OpenFileMode::OPEN_FILE_MODE_READ,
-                        ++request_id_, "versionA", random_path3_size);
+  OpenedCloudFile file2(random_path2, OpenFileMode::OPEN_FILE_MODE_READ,
+                        ++request_id_, "versionA", random_path2_size);
   EXPECT_THAT(
-      ReadBytesFromContentCache(file3, /*buffer=*/nullptr,
+      ReadBytesFromContentCache(file2, /*buffer=*/nullptr,
+                                /*offset=*/0, /*length=*/kDefaultChunkSize),
+      Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
+  OpenedCloudFile file4(random_path4, OpenFileMode::OPEN_FILE_MODE_READ,
+                        ++request_id_, "versionA", random_path4_size);
+  EXPECT_THAT(
+      ReadBytesFromContentCache(file4, /*buffer=*/nullptr,
                                 /*offset=*/0, /*length=*/kDefaultChunkSize),
       Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
 
   // Ensure the `RemoveItems` returns the correct values.
   TestFuture<RemovedItemStats> remove_items_future;
   content_cache_->RemoveItems(remove_items_future.GetCallback());
-  EXPECT_THAT(remove_items_future.Get(),
-              AllOf(Field(&RemovedItemStats::num_items, 2),
-                    Field(&RemovedItemStats::bytes_removed,
-                          random_path1_size + random_path3_size)));
+  EXPECT_THAT(
+      remove_items_future.Get(),
+      AllOf(Field(&RemovedItemStats::num_items, 3),
+            Field(&RemovedItemStats::bytes_removed,
+                  random_path1_size + random_path2_size + random_path4_size)));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,

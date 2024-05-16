@@ -113,7 +113,7 @@ class ContentCacheImpl : public ContentCache {
   void OnStaleItemsPruned(base::OnceClosure callback,
                           std::vector<bool> prune_success);
 
-  void EvictContext(const base::FilePath& path, CacheFileContext& ctx);
+  void EvictItems(std::vector<const base::FilePath>& file_paths);
 
   // The cache has maximum bounds on the number of items available. In the event
   // this boundary is exceeded, excess items should be evicted. There may
@@ -121,7 +121,7 @@ class ContentCacheImpl : public ContentCache {
   // remaining items to evict will be the least-recently used items.
   // TODO(b/330602540): Update the logic to also evict items when the maximum
   // size threshold has been reached.
-  void EvictItems();
+  void EvictExcessItems();
 
   // Removes the evicted items individually from on disk then bulk removes these
   // items from the database. The `item_ids` contains a list of IDs to be

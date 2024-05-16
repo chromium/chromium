@@ -61,10 +61,8 @@ class CacheFileContext {
   bool has_writer() const { return has_writer_; }
   void set_has_writer(bool has_writer) { has_writer_ = has_writer; }
 
-  bool pending_removal() const { return pending_removal_; }
-  void set_pending_removal(bool pending_removal) {
-    pending_removal_ = pending_removal;
-  }
+  bool evicted() const { return evicted_; }
+  void set_evicted(bool evicted) { evicted_ = evicted; }
 
  private:
   // The number of contiguous bytes that are written to this file currently. If
@@ -91,7 +89,7 @@ class CacheFileContext {
 
   // Evicted items are scheduled to be removed from disk and the database, so
   // any further use should be disallowed.
-  bool pending_removal_ = false;
+  bool evicted_ = false;
 
   // A map (keyed by request ID) that represents any open file descriptors for
   // this specific file.

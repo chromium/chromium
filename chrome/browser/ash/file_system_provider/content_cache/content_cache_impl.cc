@@ -94,46 +94,49 @@ std::unique_ptr<ContentCache> ContentCacheImpl::Create(
 
 void ContentCacheImpl::SetMaxCacheItems(size_t max_cache_items) {
   max_cache_items_ = max_cache_items;
-  EvictItems();
+  EvictExcessItems();
 }
 
 void ContentCacheImpl::Notify(ProvidedFileSystemObserver::Changes& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  std::vector<const base::FilePath> to_evict;
   for (const auto& change : changes) {
     ContentLRUCache::iterator it = lru_cache_.Peek(change.entry_path);
     if (it == lru_cache_.end()) {
       VLOG(1) << "File is not in cache";
       continue;
     }
-    CacheFileContext& ctx = it->second;
 
     // Evict any deleted items or items with mismatched version tags from the
     // cache.
     if (change.change_type == storage::WatcherManager::ChangeType::DELETED) {
       VLOG(2) << "File is deleted, evict from the cache";
-      EvictContext(change.entry_path, ctx);
-    } else if (change.cloud_file_info &&
-               change.cloud_file_info->version_tag != ctx.version_tag()) {
+      to_evict.push_back(change.entry_path);
+      continue;
+    }
+
+    if (!change.cloud_file_info) {
+      // All cached files should have a version_tag.
+      VLOG(2) << "No version_tag, evict from the cache";
+      to_evict.push_back(change.entry_path);
+      continue;
+    }
+
+    CacheFileContext& ctx = it->second;
+    if (change.cloud_file_info->version_tag != ctx.version_tag()) {
       VLOG(2) << "File version is out of date, evict from the cache";
-      EvictContext(change.entry_path, ctx);
+      to_evict.push_back(change.entry_path);
     }
   }
+  EvictItems(to_evict);
   // Remove all evicted items.
   RemoveItems(base::DoNothing());
 }
 
 void ContentCacheImpl::Evict(const base::FilePath& file_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ContentLRUCache::iterator it = lru_cache_.Get(file_path);
-  if (it == lru_cache_.end()) {
-    VLOG(1) << "Path '" << file_path << "' is not in the cache";
-    return;
-  }
-
-  CacheFileContext& ctx = it->second;
-  EvictContext(file_path, ctx);
+  std::vector<const base::FilePath> file_paths = {file_path};
+  EvictItems(file_paths);
 }
 
 void ContentCacheImpl::SetOnItemEvictedCallback(
@@ -172,7 +175,7 @@ void ContentCacheImpl::RemoveEvictedItems(ContentLRUCache::reverse_iterator it,
   // all the items that are evicted and remove them from the disk.
   while (it != lru_cache_.rend()) {
     const CacheFileContext& ctx = it->second;
-    if (ctx.pending_removal()) {
+    if (ctx.evicted()) {
       io_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(&base::DeleteFile, GetPathOnDiskFromId(ctx.id())),
@@ -232,23 +235,32 @@ void ContentCacheImpl::OnItemRemovedFromDisk(
   RemoveEvictedItems(it, item_ids, removed_items);
 }
 
-void ContentCacheImpl::EvictContext(const base::FilePath& path,
-                                    CacheFileContext& ctx) {
+void ContentCacheImpl::EvictItems(
+    std::vector<const base::FilePath>& file_paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!ctx.pending_removal()) {
-    VLOG(2) << "Evicting '" << path << "'";
-    ctx.set_pending_removal(true);
-    evicted_cache_items_++;
-    if (on_item_evicted_callback_) {
-      on_item_evicted_callback_.Run(path);
+  for (const base::FilePath& file_path : file_paths) {
+    ContentLRUCache::iterator it = lru_cache_.Peek(file_path);
+    if (it == lru_cache_.end()) {
+      VLOG(1) << "Path '" << file_path << "' is not in the cache";
+      continue;
     }
-  } else {
-    VLOG(2) << "Item '" << path << "'is already evicted";
+
+    CacheFileContext& ctx = it->second;
+    if (!ctx.evicted()) {
+      VLOG(2) << "Evicting '" << file_path << "'";
+      ctx.set_evicted(true);
+      evicted_cache_items_++;
+      if (on_item_evicted_callback_) {
+        on_item_evicted_callback_.Run(file_path);
+      }
+    } else {
+      VLOG(2) << "Item '" << file_path << "'is already evicted";
+    }
   }
 }
 
-void ContentCacheImpl::EvictItems() {
+void ContentCacheImpl::EvictExcessItems() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The cache size should not include the items that are expected to be evicted
@@ -262,20 +274,23 @@ void ContentCacheImpl::EvictItems() {
     return;
   }
 
-  size_t items_to_evict = lru_cache_.size() - max_cache_items_;
-  VLOG(2) << items_to_evict << " items to be evicted, including "
+  size_t items_to_evict = cache_items_without_evicted_items - max_cache_items_;
+  VLOG(2) << items_to_evict << " items to be evicted, not including "
           << evicted_cache_items_ << " already evicted";
 
   // Evict items starting from the least-recently-used until the total number of
   // evicted items brings the size of the cache (without these items) to below
   // the `max_cache_items_`.
   ContentLRUCache::reverse_iterator it = lru_cache_.rbegin();
-  while (evicted_cache_items_ < items_to_evict) {
+  std::vector<const base::FilePath> to_evict;
+  while (to_evict.size() < items_to_evict) {
     CacheFileContext& ctx = it->second;
-    const base::FilePath& path = it->first;
-    EvictContext(path, ctx);
+    if (!ctx.evicted()) {
+      to_evict.push_back(it->first);
+    }
     it++;
   }
+  EvictItems(to_evict);
 }
 
 void ContentCacheImpl::ReadBytes(
@@ -300,7 +315,7 @@ void ContentCacheImpl::ReadBytes(
 
   CacheFileContext& ctx = it->second;
   bool already_opened = ctx.HasLocalFD(file.request_id);
-  if (!already_opened && ctx.pending_removal()) {
+  if (!already_opened && ctx.evicted()) {
     VLOG(1) << "Cache miss: file evicted";
     callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
                  base::File::FILE_ERROR_NOT_FOUND);
@@ -399,11 +414,11 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
     // the supplied version_tag.
     it = lru_cache_.Put(
         PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
-    EvictItems();
+    EvictExcessItems();
   }
 
   CacheFileContext& ctx = it->second;
-  if (ctx.pending_removal()) {
+  if (ctx.evicted()) {
     VLOG(1) << "Cache miss: file evicted";
     std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND);
     return;
@@ -619,7 +634,7 @@ std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<base::FilePath> cached_file_paths;
   for (const auto& [file_path, cache_file_context] : lru_cache_) {
-    if (!cache_file_context.pending_removal()) {
+    if (!cache_file_context.evicted()) {
       cached_file_paths.push_back(file_path);
     }
   }
