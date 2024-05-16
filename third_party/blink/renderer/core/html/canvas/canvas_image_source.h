@@ -68,7 +68,7 @@ class CORE_EXPORT CanvasImageSource {
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) = 0;
+      const AlphaDisposition alpha_disposition) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
   // already tainted because this function may be used to determine whether

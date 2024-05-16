@@ -6082,7 +6082,7 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
       FlushReason::kWebGLTexImage, &source_image_status,
-      gfx::SizeF(*params.width, *params.height));
+      gfx::SizeF(*params.width, *params.height), kPremultiplyAlpha);
   if (source_image_status != kNormalSourceImageStatus)
     return;
 

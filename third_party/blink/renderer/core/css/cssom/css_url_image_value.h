@@ -29,7 +29,7 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;
+      const AlphaDisposition alpha_disposition) final;
   bool IsAccelerated() const final;
 
   // CSSStyleValue

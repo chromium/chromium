@@ -112,7 +112,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
+      const AlphaDisposition alpha_disposition) override;
   bool WouldTaintOrigin() const override {
     return image_ ? !image_->OriginClean() : false;
   }

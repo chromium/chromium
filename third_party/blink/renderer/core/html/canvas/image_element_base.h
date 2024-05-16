@@ -37,7 +37,7 @@ class CORE_EXPORT ImageElementBase : public CanvasImageSource,
       FlushReason,
       SourceImageStatus*,
       const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
+      const AlphaDisposition alpha_disposition) override;
 
   bool WouldTaintOrigin() const override;
 
