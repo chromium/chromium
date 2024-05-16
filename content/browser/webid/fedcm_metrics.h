@@ -23,70 +23,74 @@ using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 using RpMode = blink::mojom::RpMode;
 
 // This enum describes the status of a request id token call to the FedCM API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FedCmRequestIdTokenStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kSuccessUsingTokenInHttpResponse,
-  kTooManyRequests,
-  kAborted,
-  kUnhandledRequest,
-  kIdpNotPotentiallyTrustworthy,
-  kNotSelectAccount,
-  kConfigHttpNotFound,
-  kConfigNoResponse,
-  kConfigInvalidResponse,
-  kClientMetadataHttpNotFound,     // obsolete
-  kClientMetadataNoResponse,       // obsolete
-  kClientMetadataInvalidResponse,  // obsolete
-  kAccountsHttpNotFound,
-  kAccountsNoResponse,
-  kAccountsInvalidResponse,
-  kIdTokenHttpNotFound,
-  kIdTokenNoResponse,
-  kIdTokenInvalidResponse,
-  kIdTokenInvalidRequest,                  // obsolete
-  kClientMetadataMissingPrivacyPolicyUrl,  // obsolete
-  kThirdPartyCookiesBlocked,               // obsolete
-  kDisabledInSettings,
-  kDisabledInFlags,
-  kWellKnownHttpNotFound,
-  kWellKnownNoResponse,
-  kWellKnownInvalidResponse,
-  kConfigNotInWellKnown,
-  kWellKnownTooBig,
-  kDisabledEmbargo,
-  kUserInterfaceTimedOut,  // obsolete
-  kRpPageNotVisible,
-  kShouldEmbargo,
-  kNotSignedInWithIdp,
-  kAccountsListEmpty,
-  kWellKnownListEmpty,
-  kWellKnownInvalidContentType,
-  kConfigInvalidContentType,
-  kAccountsInvalidContentType,
-  kIdTokenInvalidContentType,
-  kSilentMediationFailure,
-  kIdTokenIdpErrorResponse,
-  kIdTokenCrossSiteIdpErrorResponse,
-  kOtherIdpChosen,
-  kMissingTransientUserActivation,
-  kReplacedByButtonMode,
-  kContinuationPopupClosedByUser,
-  kSuccessUsingIdentityProviderResolve,
-  kContinuationPopupClosedByIdentityProviderClose,
-  kInvalidFieldsSpecified,
+  kSuccessUsingTokenInHttpResponse = 0,
+  kTooManyRequests = 1,
+  kAborted = 2,
+  kUnhandledRequest = 3,
+  kIdpNotPotentiallyTrustworthy = 4,
+  kNotSelectAccount = 5,
+  kConfigHttpNotFound = 6,
+  kConfigNoResponse = 7,
+  kConfigInvalidResponse = 8,
+  kClientMetadataHttpNotFound = 9,      // obsolete
+  kClientMetadataNoResponse = 10,       // obsolete
+  kClientMetadataInvalidResponse = 11,  // obsolete
+  kAccountsHttpNotFound = 12,
+  kAccountsNoResponse = 13,
+  kAccountsInvalidResponse = 14,
+  kIdTokenHttpNotFound = 15,
+  kIdTokenNoResponse = 16,
+  kIdTokenInvalidResponse = 17,
+  kIdTokenInvalidRequest = 18,                  // obsolete
+  kClientMetadataMissingPrivacyPolicyUrl = 19,  // obsolete
+  kThirdPartyCookiesBlocked = 20,               // obsolete
+  kDisabledInSettings = 21,
+  kDisabledInFlags = 22,
+  kWellKnownHttpNotFound = 23,
+  kWellKnownNoResponse = 24,
+  kWellKnownInvalidResponse = 25,
+  kConfigNotInWellKnown = 26,
+  kWellKnownTooBig = 27,
+  kDisabledEmbargo = 28,
+  kUserInterfaceTimedOut = 29,  // obsolete
+  kRpPageNotVisible = 30,
+  kShouldEmbargo = 31,
+  kNotSignedInWithIdp = 32,
+  kAccountsListEmpty = 33,
+  kWellKnownListEmpty = 34,
+  kWellKnownInvalidContentType = 35,
+  kConfigInvalidContentType = 36,
+  kAccountsInvalidContentType = 37,
+  kIdTokenInvalidContentType = 38,
+  kSilentMediationFailure = 39,
+  kIdTokenIdpErrorResponse = 40,
+  kIdTokenCrossSiteIdpErrorResponse = 41,
+  kOtherIdpChosen = 42,
+  kMissingTransientUserActivation = 43,
+  kReplacedByButtonMode = 44,
+  kContinuationPopupClosedByUser = 45,
+  kSuccessUsingIdentityProviderResolve = 46,
+  kContinuationPopupClosedByIdentityProviderClose = 47,
+  kInvalidFieldsSpecified = 48,
 
   kMaxValue = kInvalidFieldsSpecified
 };
 
 // This enum describes whether user sign-in states between IDP and browser
 // match.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FedCmSignInStateMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kMatch,
-  kIdpClaimedSignIn,
-  kBrowserObservedSignIn,
+  kMatch = 0,
+  kIdpClaimedSignIn = 1,
+  kBrowserObservedSignIn = 2,
 
   kMaxValue = kBrowserObservedSignIn
 };
@@ -94,56 +98,62 @@ enum class FedCmSignInStateMatchStatus {
 // This enum describes whether the browser's knowledge of whether the user is
 // signed into the IDP based on observing signin/signout HTTP headers matches
 // the information returned by the accounts endpoint.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FedCmIdpSigninMatchStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kMatchWithAccounts,
-  kMatchWithoutAccounts,
-  kUnknownStatusWithAccounts,
-  kUnknownStatusWithoutAccounts,
-  kMismatchWithNetworkError,
-  kMismatchWithNoContent,
-  kMismatchWithInvalidResponse,
-  kMismatchWithUnexpectedAccounts,
+  kMatchWithAccounts = 0,
+  kMatchWithoutAccounts = 1,
+  kUnknownStatusWithAccounts = 2,
+  kUnknownStatusWithoutAccounts = 3,
+  kMismatchWithNetworkError = 4,
+  kMismatchWithNoContent = 5,
+  kMismatchWithInvalidResponse = 6,
+  kMismatchWithUnexpectedAccounts = 7,
 
   kMaxValue = kMismatchWithUnexpectedAccounts
 };
 
 // This enum describes the type of frame that invokes a FedCM API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FedCmRequesterFrameType {
   // Do not change the meaning or order of these values since they are being
   // recorded in metrics and in sync with the counterpart in enums.xml.
-  kMainFrame,
-  kSameSiteIframe,
-  kCrossSiteIframe,
+  kMainFrame = 0,
+  kSameSiteIframe = 1,
+  kCrossSiteIframe = 2,
 
   kMaxValue = kCrossSiteIframe
 };
 
 // This enum describes the status of a disconnect call to the FedCM API.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FedCmDisconnectStatus {
   // Don't change the meaning or the order of these values because they are
   // being recorded in metrics and in sync with the counterpart in enums.xml.
-  kSuccess,
-  kTooManyRequests,
-  kUnhandledRequest,
-  kNoAccountToDisconnect,
-  kDisconnectUrlIsCrossOrigin,
-  kDisconnectFailedOnServer,
-  kConfigHttpNotFound,
-  kConfigNoResponse,
-  kConfigInvalidResponse,
-  kDisabledInSettings,
-  kDisabledInFlags,
-  kWellKnownHttpNotFound,
-  kWellKnownNoResponse,
-  kWellKnownInvalidResponse,
-  kWellKnownListEmpty,
-  kConfigNotInWellKnown,
-  kWellKnownTooBig,
-  kWellKnownInvalidContentType,
-  kConfigInvalidContentType,
-  kIdpNotPotentiallyTrustworthy,
+  kSuccess = 0,
+  kTooManyRequests = 1,
+  kUnhandledRequest = 2,
+  kNoAccountToDisconnect = 3,
+  kDisconnectUrlIsCrossOrigin = 4,
+  kDisconnectFailedOnServer = 5,
+  kConfigHttpNotFound = 6,
+  kConfigNoResponse = 7,
+  kConfigInvalidResponse = 8,
+  kDisabledInSettings = 9,
+  kDisabledInFlags = 10,
+  kWellKnownHttpNotFound = 11,
+  kWellKnownNoResponse = 12,
+  kWellKnownInvalidResponse = 13,
+  kWellKnownListEmpty = 14,
+  kConfigNotInWellKnown = 15,
+  kWellKnownTooBig = 16,
+  kWellKnownInvalidContentType = 17,
+  kConfigInvalidContentType = 18,
+  kIdpNotPotentiallyTrustworthy = 19,
 
   kMaxValue = kIdpNotPotentiallyTrustworthy
 };
