@@ -40,7 +40,6 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -48,7 +47,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -89,8 +87,6 @@ public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
     private static final String CHILD_EMAIL = "child.account@gmail.com";
     private static final String TEST_URL = "https://foo.com";
-
-    @Rule public final TestRule mCommandLineFlagRule = CommandLineFlags.getTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

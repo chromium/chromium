@@ -37,7 +37,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.ChildProcessAllocatorSettings;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestHelperService;
@@ -81,11 +80,10 @@ public class ChildProcessLauncherHelperTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    @ChildProcessAllocatorSettings(
-            sandboxedServiceCount = 2,
-            sandboxedServiceName = DEFAULT_SANDBOXED_PROCESS_SERVICE)
     @DisabledTest(message = "Flaky - crbug.com/752691")
     public void testBindServiceFromMultipleProcesses() throws RemoteException {
+        ChildProcessLauncherHelperImpl.setSandboxServicesSettingsForTesting(
+                /* factory= */ null, 2, DEFAULT_SANDBOXED_PROCESS_SERVICE);
         final Context context = InstrumentationRegistry.getTargetContext();
 
         // Start the Helper service.

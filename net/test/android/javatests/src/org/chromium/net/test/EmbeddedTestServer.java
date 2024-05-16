@@ -19,7 +19,6 @@ import org.junit.Assert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
@@ -523,11 +522,7 @@ public class EmbeddedTestServer {
         }
     }
 
-    public static ClassHook getPreClassHook() {
-        return (targetContext, testClass) -> EmbeddedTestServer.setUpClass(testClass);
-    }
-
-    public static void setUpClass(Class<?> clazz) {
+    public static void initCerts() {
         if (sTestRootInitDone) {
             return;
         }

@@ -9,17 +9,12 @@ import android.text.TextUtils;
 
 import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.Log;
-import org.chromium.base.test.BaseJUnit4ClassRunner.ClassHook;
-import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -286,50 +281,7 @@ public final class CommandLineFlags {
         return Arrays.asList(value.split(","));
     }
 
-    private CommandLineFlags() {
-        throw new AssertionError("CommandLineFlags is a non-instantiable class");
-    }
-
-    private static class CommandLineFlagsTestRule implements TestRule {
-        @Override
-        public Statement apply(final Statement base, Description description) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    try {
-                        Class<?> clazz = description.getTestClass();
-                        CommandLineFlags.setUpClass(clazz);
-                        CommandLineFlags.setUpMethod(clazz.getMethod(description.getMethodName()));
-
-                        base.evaluate();
-                    } finally {
-                        CommandLineFlags.tearDownMethod();
-                        CommandLineFlags.tearDownClass();
-                    }
-                }
-            };
-        }
-    }
-
-    public static TestRule getTestRule() {
-        return new CommandLineFlagsTestRule();
-    }
-
-    public static TestHook getPreTestHook() {
-        return (targetContext, testMethod) -> CommandLineFlags.setUpMethod(testMethod.getMethod());
-    }
-
-    public static ClassHook getPreClassHook() {
-        return (targetContext, testClass) -> CommandLineFlags.setUpClass(testClass);
-    }
-
-    public static TestHook getPostTestHook() {
-        return (targetContext, testMethod) -> CommandLineFlags.tearDownMethod();
-    }
-
-    public static ClassHook getPostClassHook() {
-        return (targetContext, testClass) -> CommandLineFlags.tearDownClass();
-    }
+    private CommandLineFlags() {}
 
     public static String getTestCmdLineFile() {
         return "test-cmdline-file";

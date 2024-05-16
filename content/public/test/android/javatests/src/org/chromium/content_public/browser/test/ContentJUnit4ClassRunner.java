@@ -32,6 +32,7 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
         // Display ui scale-up on auto for tests by default, individual tests can restore this
         // scaling.
         DisplayUtil.setUiScalingFactorForAutomotiveForTesting(1.0f);
+        EmbeddedTestServer.initCerts();
     }
 
     @Override
@@ -42,16 +43,5 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
                 new DeviceRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
                 new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()),
                 new GmsCoreVersionRestrictionSkipCheck(getApplication().getApplicationContext()));
-    }
-
-    /** Change this static function to add default {@code PreTestHook}s. */
-    @Override
-    protected List<TestHook> getPreTestHooks() {
-        return addToList(super.getPreTestHooks(), new ChildProcessAllocatorSettingsHook());
-    }
-
-    @Override
-    protected List<ClassHook> getPreClassHooks() {
-        return addToList(super.getPreClassHooks(), EmbeddedTestServer.getPreClassHook());
     }
 }

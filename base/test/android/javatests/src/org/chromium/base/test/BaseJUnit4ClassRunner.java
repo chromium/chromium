@@ -22,14 +22,18 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureParam;
+import org.chromium.base.Flag;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
 import org.chromium.base.test.util.EspressoIdleTimeoutRule;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 
@@ -162,60 +166,53 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     /**
      * See {@link ClassHook}. Prefer to use TestRules over this.
      *
-     * Additional hooks can be added to the list by overriding this method and using {@link
-     * #addToList}:
-     * {@code return addToList(super.getPreClassHooks(), hook1, hook2);}
+     * <p>Additional hooks can be added to the list by overriding this method and using {@link
+     * #addToList}: {@code return addToList(super.getPreClassHooks(), hook1, hook2);}
      */
     @CallSuper
     protected List<ClassHook> getPreClassHooks() {
-        return Arrays.asList(CommandLineFlags.getPreClassHook());
+        return Collections.emptyList();
     }
 
     /**
      * See {@link ClassHook}. Prefer to use TestRules over this.
      *
-     * Additional hooks can be added to the list by overriding this method and using {@link
-     * #addToList}:
-     * {@code return addToList(super.getPostClassHooks(), hook1, hook2);}
+     * <p>Additional hooks can be added to the list by overriding this method and using {@link
+     * #addToList}: {@code return addToList(super.getPostClassHooks(), hook1, hook2);}
      */
     @CallSuper
     protected List<ClassHook> getPostClassHooks() {
-        return Arrays.asList(CommandLineFlags.getPostClassHook());
+        return Collections.emptyList();
     }
 
     /**
      * See {@link TestHook}. Prefer to use TestRules over this.
      *
-     * Additional hooks can be added to the list by overriding this method and using {@link
-     * #addToList}:
-     * {@code return addToList(super.getPreTestHooks(), hook1, hook2);}
+     * <p>Additional hooks can be added to the list by overriding this method and using {@link
+     * #addToList}: {@code return addToList(super.getPreTestHooks(), hook1, hook2);}
      */
     @CallSuper
     protected List<TestHook> getPreTestHooks() {
-        return Arrays.asList(
-                CommandLineFlags.getPreTestHook(),
-                new UnitTestNoBrowserProcessHook(),
-                new ResetCachedFlagValuesTestHook());
+        return Collections.emptyList();
     }
 
     /**
      * See {@link TestHook}. Prefer to use TestRules over this.
      *
-     * Additional hooks can be added to the list by overriding this method and using {@link
-     * #addToList}:
-     * {@code return addToList(super.getPostTestHooks(), hook1, hook2);}
+     * <p>Additional hooks can be added to the list by overriding this method and using {@link
+     * #addToList}: {@code return addToList(super.getPostTestHooks(), hook1, hook2);}
      */
     @CallSuper
     protected List<TestHook> getPostTestHooks() {
-        return Arrays.asList(CommandLineFlags.getPostTestHook());
+        return Collections.emptyList();
     }
 
     /**
-     * Override this method to return a list of method rules that should be applied to all tests
-     * run with this test runner.
+     * Override this method to return a list of method rules that should be applied to all tests run
+     * with this test runner.
      *
-     * Additional rules can be added to the list using {@link #addToList}:
-     * {@code return addToList(super.getDefaultMethodRules(), rule1, rule2);}
+     * <p>Additional rules can be added to the list using {@link #addToList}: {@code return
+     * addToList(super.getDefaultMethodRules(), rule1, rule2);}
      */
     @CallSuper
     protected List<MethodRule> getDefaultMethodRules() {
@@ -269,15 +266,26 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         }
 
         ResettersForTesting.beforeClassHooksWillExecute();
-        runPreClassHooks(getDescription().getTestClass());
-        assert CommandLine.isInitialized();
+
+        Class<?> testClass = getDescription().getTestClass();
+        CommandLineFlags.setUpClass(testClass);
+        runPreClassHooks(testClass);
 
         super.run(notifier);
 
         try {
-            runPostClassHooks(getDescription().getTestClass());
+            CommandLineFlags.tearDownClass();
+            runPostClassHooks(testClass);
         } finally {
             ResettersForTesting.afterClassHooksDidExecute();
+        }
+    }
+
+    private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
+        Batch annotation = testMethod.getDeclaringClass().getAnnotation(Batch.class);
+        if (annotation != null && annotation.value().equals(Batch.UNIT_TESTS)) {
+            if (testMethod.getAnnotation(RequiresRestart.class) != null) return;
+            LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
     }
 
@@ -289,11 +297,19 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         long start = SystemClock.uptimeMillis();
 
         ResettersForTesting.beforeHooksWillExecute();
+
+        CommandLineFlags.setUpMethod(method.getMethod());
+        blockUnitTestsFromStartingBrowser(method);
+        // TODO(agrieve): These should not reset flag values set in @BeforeClass
+        Flag.resetAllInMemoryCachedValuesForTesting();
+        FeatureParam.resetAllInMemoryCachedValuesForTesting();
+
         runPreTestHooks(method);
 
         super.runChild(method, notifier);
 
         runPostTestHooks(method);
+        CommandLineFlags.tearDownMethod();
         ResettersForTesting.afterHooksDidExecute();
 
         Bundle b = new Bundle();
