@@ -121,7 +121,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
@@ -138,11 +137,23 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "browser_launcher\.cc": [
+    # TODO(crbug.com/339770461): Remove.
+    "+chrome/common/channel_info.h",
+  ],
+  "browser_util\.cc": [
+    # TODO(crbug.com/339770461): Remove.
+    "+chrome/common/channel_info.h",
+  ],
   "crosapi_ash\.cc": [
     "+services/video_capture/ash",
   ],
   "crosapi_ash\.h": [
     "+media/gpu/buildflags.h",
+  ],
+  "crosapi_util\.cc": [
+    # TODO(crbug.com/339770461): Remove.
+    "+chrome/common/channel_info.h",
   ],
   "eye_dropper_ash\.cc": [
     "+components/eye_dropper",
@@ -167,6 +178,10 @@ specific_include_rules = {
   "select_file_ash\.cc": [
     # For Chrome OS-specific file manager parameters.
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
+  ],
+  "stateful_lacros_loader\.cc": [
+    # TODO(crbug.com/339770461): Remove.
+    "+chrome/common/channel_info.h",
   ],
   "test_controller_ash\.cc": [
     # For Chrome OS-specific tab scrubbing tests.
