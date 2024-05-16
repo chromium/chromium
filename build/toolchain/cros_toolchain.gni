@@ -25,7 +25,6 @@
 # will be necessary to successfully compile a working CrOS Chrome. See
 # the definition of GYP_DEFINES inside a sysroot shell.)
 #
-# goma_dir = "/g/.cros_cache/common/goma+2"
 # target_sysroot= /g/.cros_cache/chrome-sdk/tarballs/auron_paine+7644.0.0+sysroot_chromeos-base_chromeos-chrome.tar.xz"
 # cros_target_cc = "x86_64-cros-linux-gnu-gcc -B/g/.cros_cache/chrome-sdk/tarballs/auron_paine+7657.0.0+target_toolchain/usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/binutils-bin/2.25.51-gold"
 # cros_target_cxx = "x86_64-cros-linux-gnu-g++ -B/g/.cros_cache/chrome-sdk/tarballs/auron_paine+7657.0.0+target_toolchain/usr/x86_64-pc-linux-gnu/x86_64-cros-linux-gnu/binutils-bin/2.25.51-gold"

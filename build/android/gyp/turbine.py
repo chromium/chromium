@@ -108,7 +108,7 @@ def main(argv):
     cmd += options.java_srcjars
 
   if java_files:
-    # Use jar_path to ensure paths are relative (needed for goma).
+    # Use jar_path to ensure paths are relative (needed for rbe).
     files_rsp_path = options.jar_path + '.java_files_list.txt'
     with open(files_rsp_path, 'w') as f:
       f.write('\n'.join(java_files))

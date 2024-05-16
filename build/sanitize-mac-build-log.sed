@@ -18,9 +18,6 @@
 \|^    /Developer/Library/PrivateFrameworks/DevToolsCore\.framework/|d
 \|^    /Developer/Library/Xcode/Plug-ins/CoreBuildTasks\.xcplugin/|d
 
-# Drop any goma command lines as well.
-\|^    .*/gomacc |d
-
 # And, if you've overridden something from your own bin directory, remove those
 # full command lines, too.
 \|^    /Users/[^/]*/bin/|d

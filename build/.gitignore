@@ -11,8 +11,6 @@ ciopfs
 /Debug
 /Debug_x64
 /fuchsia/internal/
-/goma
-/gomacc.lock
 /ipch/
 /lacros/prebuilt_ash_chrome/
 /Release

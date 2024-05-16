@@ -6,7 +6,7 @@ import("//build/toolchain/concurrent_links.gni")
 import("//build/toolchain/rbe.gni")
 
 declare_args() {
-  # Pool for non goma tasks.
+  # Pool for non remote tasks.
   action_pool_depth = -1
 }
 

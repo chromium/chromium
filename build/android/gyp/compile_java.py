@@ -505,7 +505,7 @@ def _RunCompiler(changes,
   java_srcjars = options.java_srcjars
   save_info_file = jar_info_path is not None
 
-  # Use jar_path's directory to ensure paths are relative (needed for goma).
+  # Use jar_path's directory to ensure paths are relative (needed for rbe).
   temp_dir = jar_path + '.staging'
   build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
@@ -664,8 +664,6 @@ def _ParseOptions(argv):
       help='Whether code being compiled should be built with stricter '
       'warnings for chromium code.')
   parser.add_option(
-      '--gomacc-path', help='When set, prefix javac command with gomacc')
-  parser.add_option(
       '--errorprone-path', help='Use the Errorprone compiler at this path.')
   parser.add_option(
       '--enable-errorprone',
@@ -742,10 +740,7 @@ def main(argv):
                                        force=options.use_build_server)):
     return
 
-  javac_cmd = []
-  if options.gomacc_path:
-    javac_cmd.append(options.gomacc_path)
-  javac_cmd.append(build_utils.JAVAC_PATH)
+  javac_cmd = [build_utils.JAVAC_PATH]
 
   javac_args = [
       '-g',

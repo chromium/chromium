@@ -31,7 +31,7 @@ def _RunCompiler(args,
 
   java_srcjars = args.java_srcjars
 
-  # Use jar_path's directory to ensure paths are relative (needed for goma).
+  # Use jar_path's directory to ensure paths are relative (needed for rbe).
   temp_dir = jar_path + '.staging'
   build_utils.DeleteDirectory(temp_dir)
   os.makedirs(temp_dir)
@@ -114,8 +114,6 @@ def _ParseOptions(argv):
       action='store_true',
       help='Whether code being compiled should be built with stricter '
       'warnings for chromium code.')
-  parser.add_argument('--gomacc-path',
-                      help='When set, prefix kotlinc command with gomacc')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -146,10 +144,7 @@ def main(argv):
   argv = build_utils.ExpandFileArgs(argv)
   args, source_files = _ParseOptions(argv)
 
-  kotlinc_cmd = []
-  if args.gomacc_path:
-    kotlinc_cmd.append(args.gomacc_path)
-  kotlinc_cmd.append(build_utils.KOTLINC_PATH)
+  kotlinc_cmd = [build_utils.KOTLINC_PATH]
 
   kotlinc_cmd += [
       '-no-jdk',  # Avoid depending on the bundled JDK.

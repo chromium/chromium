@@ -534,10 +534,6 @@ done
 session="$(schroot -c "${chroot}" -b)"
 export CHROOT_SESSION_ID="${session}"
 
-# Set GOMA_TMP_DIR for better handling of goma inside chroot.
-export GOMA_TMP_DIR="/tmp/goma_tmp_$CHROOT_SESSION_ID"
-mkdir -p "$GOMA_TMP_DIR"
-
 if [ $# -eq 0 ]; then
   # Run an interactive shell session
   schroot -c "${session}" -r -p
@@ -588,8 +584,6 @@ done
 # clean up the stale files by invoking us with "--clean" after having killed
 # all running processes.
 schroot -c "${session}" -e
-# Since no goma processes are running, we can remove goma directory.
-rm -rf "$GOMA_TMP_DIR"
 exit $rc
 EOF
 sudo chown root:root /usr/local/bin/"${target%bit}"

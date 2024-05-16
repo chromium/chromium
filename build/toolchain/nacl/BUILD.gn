@@ -161,10 +161,7 @@ nacl_glibc_toolchain("x86") {
   toolchain_revision = nacl_x86_glibc_rev
 
   # Rely on the :compiler_cpu_abi config adding the -m32 flag here rather
-  # than using the i686-nacl binary directly.  This is a because i686-nacl-gcc
-  # is a shell script wrapper around x86_64-nacl-gcc and goma has trouble with
-  # compiler executables that are shell scripts (so the i686 'compiler' is not
-  # currently in goma).
+  # than using the i686-nacl binary directly.
   toolchain_tuple = "x86_64-nacl"
 }
 
