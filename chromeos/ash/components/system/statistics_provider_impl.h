@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   // Waits up to `kTimeoutSecs` for statistics to be loaded. Returns true if
   // they were loaded successfully.
-  bool WaitForStatisticsLoaded();
+  bool WaitForStatisticsLoaded(std::string_view statistic_name);
 
   // Loads the machine statistics off of disk. Runs on the file thread.
   void LoadMachineStatistics(bool load_oem_manifest);

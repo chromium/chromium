@@ -16,12 +16,15 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -73,6 +76,9 @@ constexpr base::TimeDelta kLoadTimeout = base::Seconds(3);
 // A default activation date for providing results in tests.
 constexpr char kDefaultActivateDateStub[] = "2000-01";
 
+constexpr char kStatisticLoadingTimeMetricNamePrefix[] =
+    "ChromeOS.MachineStatistic.";
+
 // Gets the list from the given `dictionary` by given `key`, and returns it as a
 // string with all list values joined by ','. Returns nullopt if `key` is not
 // found.
@@ -80,20 +86,23 @@ std::optional<std::string> JoinListValuesToString(
     const base::Value::Dict& dictionary,
     std::string_view key) {
   const base::Value::List* list_value = dictionary.FindList(key);
-  if (list_value == nullptr)
+  if (list_value == nullptr) {
     return std::nullopt;
+  }
 
   std::string buffer;
   bool first = true;
   for (const auto& v : *list_value) {
     const std::string* value = v.GetIfString();
-    if (!value)
+    if (!value) {
       return std::nullopt;
+    }
 
-    if (first)
+    if (first) {
       first = false;
-    else
+    } else {
       buffer += ',';
+    }
 
     buffer += *value;
   }
@@ -112,8 +121,9 @@ std::optional<std::string> GetFirstListValueAsString(
   }
 
   const std::string* value = list_value->begin()->GetIfString();
-  if (value == nullptr)
+  if (value == nullptr) {
     return std::nullopt;
+  }
 
   return *value;
 }
@@ -127,8 +137,9 @@ std::optional<std::string> GetKeyboardMechanicalLayoutFromRegionalData(
     const base::Value::Dict& region_dict) {
   const std::string* value =
       region_dict.FindString(kKeyboardMechanicalLayoutPath);
-  if (value == nullptr)
+  if (value == nullptr) {
     return std::nullopt;
+  }
 
   return *value;
 }
@@ -195,6 +206,69 @@ bool GetVpdResult(const std::vector<std::string>& command_template,
     return false;
   }
   return true;
+}
+
+// Maps machine statistic name to the MachineStatistic variant in
+// tools/metrics/histograms/metadata/chromeos/histograms.xml.
+std::string_view StatisticNameToMachineStatisticVariant(
+    std::string_view statistic_name) {
+  static constexpr auto kStatisticNameToVariant =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>({
+          {kActivateDateKey, "ActivateDate"},
+          {kBlockDevModeKey, "BlockDevmode"},
+          {kCheckEnrollmentKey, "CheckEnrollment"},
+          {kShouldSendRlzPingKey, "ShouldSendRlzPing"},
+          {kRlzEmbargoEndDateKey, "RlzEmbargoEndDate"},
+          {kEnterpriseManagementEmbargoEndDateKey,
+           "EnterpriseManagementEmbargoEndDate"},
+          {kCustomizationIdKey, "CustomizationId"},
+          {kDevSwitchBootKey, "DevswBoot"},
+          {kDockMacAddressKey, "DockMac"},
+          {kEthernetMacAddressKey, "EthernetMac"},
+          {kFirmwareWriteProtectCurrentKey, "WpswCur"},
+          {kFirmwareTypeKey, "MainfwType"},
+          {kHardwareClassKey, "HardwareClass"},
+          {kIsVmKey, "IsVm"},
+          {kIsCrosDebugKey, "IsCrosDebug"},
+          {kMachineModelName, "ModelName"},
+          {kMachineOemName, "OemName"},
+          {kManufactureDateKey, "MfgDate"},
+          {kOffersCouponCodeKey, "UbindAttribute"},
+          {kOffersGroupCodeKey, "GbindAttribute"},
+          {kRlzBrandCodeKey, "RlzBrandCode"},
+          {kRegionKey, "Region"},
+          {kSerialNumberKey, "SerialNumber"},
+          {kFlexIdKey, "FlexId"},
+          {kLegacySerialNumberKey, "LegacySerialNumber"},
+          {kInitialLocaleKey, "InitialLocale"},
+          {kInitialTimezoneKey, "InitialTimezone"},
+          {kKeyboardLayoutKey, "KeyboardLayout"},
+          {kKeyboardMechanicalLayoutKey, "KeyboardMechanicalLayout"},
+          {kAttestedDeviceIdKey, "AttestedDeviceId"},
+          {kDisplayProfilesKey, "DisplayProfiles"},
+          {kOemCanExitEnterpriseEnrollmentKey, "OemCanExitEnrollment"},
+          {kOemDeviceRequisitionKey, "OemDeviceRequisition"},
+          {kOemIsEnterpriseManagedKey, "OemEnterpriseManaged"},
+          {kOemKeyboardDrivenOobeKey, "OemKeyboardDrivenOobe"},
+      });
+
+  if (const auto it = kStatisticNameToVariant.find(statistic_name);
+      it != kStatisticNameToVariant.end()) {
+    return it->second;
+  }
+
+  LOG(WARNING) << "Unhandled statistic is recorded: " << statistic_name;
+  return statistic_name;
+}
+
+void RecordStatisticsRequestLoadingTimeMetric(std::string_view statistic_name,
+                                              base::TimeDelta loading_time) {
+  // Loading time is expected to be 0 (when requested statistic is already
+  // loaded), or up to short time of `kLoadTimeout`.
+  const std::string metric_name = base::StrCat(
+      {kStatisticLoadingTimeMetricNamePrefix,
+       StatisticNameToMachineStatisticVariant(statistic_name), ".LoadingTime"});
+  base::UmaHistogramTimes(metric_name, loading_time);
 }
 
 }  // namespace
@@ -279,7 +353,7 @@ void StatisticsProviderImpl::ScheduleOnMachineStatisticsLoaded(
 std::optional<std::string_view> StatisticsProviderImpl::GetMachineStatistic(
     std::string_view name) {
   VLOG(1) << "Machine Statistic requested: " << name;
-  if (!WaitForStatisticsLoaded()) {
+  if (!WaitForStatisticsLoaded(name)) {
     LOG(ERROR) << "GetMachineStatistic called before load started: " << name;
     return std::nullopt;
   }
@@ -313,7 +387,7 @@ std::optional<std::string_view> StatisticsProviderImpl::GetMachineStatistic(
 StatisticsProviderImpl::FlagValue StatisticsProviderImpl::GetMachineFlag(
     std::string_view name) {
   VLOG(1) << "Machine Flag requested: " << name;
-  if (!WaitForStatisticsLoaded()) {
+  if (!WaitForStatisticsLoaded(name)) {
     LOG(ERROR) << "GetMachineFlag called before load started: " << name;
     return FlagValue::kUnset;
   }
@@ -336,8 +410,9 @@ void StatisticsProviderImpl::Shutdown() {
 }
 
 bool StatisticsProviderImpl::IsRunningOnVm() {
-  if (!base::SysInfo::IsRunningOnChromeOS())
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
     return false;
+  }
   return GetMachineStatistic(kIsVmKey) == kIsVmValueTrue;
 }
 
@@ -369,22 +444,31 @@ void StatisticsProviderImpl::SignalStatisticsLoaded() {
   }
 
   // Schedule callbacks that were in `statistics_loaded_callbacks_`.
-  for (auto& callback : local_statistics_loaded_callbacks)
+  for (auto& callback : local_statistics_loaded_callbacks) {
     callback.second->PostTask(FROM_HERE, std::move(callback.first));
+  }
 }
 
-bool StatisticsProviderImpl::WaitForStatisticsLoaded() {
+bool StatisticsProviderImpl::WaitForStatisticsLoaded(
+    std::string_view statistic_name) {
   CHECK(load_statistics_started_);
-  if (statistics_loaded_.IsSignaled())
+  if (statistics_loaded_.IsSignaled()) {
+    RecordStatisticsRequestLoadingTimeMetric(
+        statistic_name,
+        /*loading_time=*/base::TimeDelta());
     return true;
+  }
 
   // Block if the statistics are not loaded yet. Normally this shouldn't
   // happen except during OOBE.
-  base::Time start_time = base::Time::Now();
+  const base::Time start_time = base::Time::Now();
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   statistics_loaded_.TimedWait(kLoadTimeout);
 
-  base::TimeDelta dtime = base::Time::Now() - start_time;
+  const base::TimeDelta dtime = base::Time::Now() - start_time;
+
+  RecordStatisticsRequestLoadingTimeMetric(statistic_name, dtime);
+
   if (statistics_loaded_.IsSignaled()) {
     VLOG(1) << "Statistics loaded after waiting " << dtime.InMilliseconds()
             << "ms.";
@@ -400,8 +484,9 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   // Run from the file task runner. StatisticsProviderImpl is a Singleton<> and
   // will not be destroyed until after threads have been stopped, so this test
   // is always safe.
-  if (cancellation_flag_.IsSet())
+  if (cancellation_flag_.IsSet()) {
     return;
+  }
 
   LoadCrossystemTool();
 
@@ -607,8 +692,9 @@ void StatisticsProviderImpl::LoadVpd() {
 void StatisticsProviderImpl::LoadOemManifestFromFile(
     const base::FilePath& file) {
   // Called from LoadMachineStatistics. Check cancellation_flag_ again here.
-  if (cancellation_flag_.IsSet())
+  if (cancellation_flag_.IsSet()) {
     return;
+  }
 
   KioskOemManifestParser::Manifest oem_manifest;
   if (!KioskOemManifestParser::Load(file, &oem_manifest)) {
@@ -633,9 +719,10 @@ void StatisticsProviderImpl::LoadRegionsFile(const base::FilePath& filename,
   std::unique_ptr<base::Value> json_value =
       regions_file.Deserialize(&regions_error_code, &regions_error_message);
   if (!json_value.get()) {
-    if (base::SysInfo::IsRunningOnChromeOS())
+    if (base::SysInfo::IsRunningOnChromeOS()) {
       LOG(ERROR) << "Failed to load regions file '" << filename.value()
                  << "': error='" << regions_error_message << "'";
+    }
 
     return;
   }

@@ -196,6 +196,48 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <variant name="ThreeHours"/>
 </variants>
 
+<variants name="MachineStatistics">
+<!-- The variants are the possible names of machine statistics loaded by `StatisticsProvider`.
+They are defined as constants in chromeos/ash/components/system/statistics_provider.h
+and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
+
+  <variant name="ActivateDate"/>
+  <variant name="AttestedDeviceId"/>
+  <variant name="BlockDevmode"/>
+  <variant name="CheckEnrollment"/>
+  <variant name="CustomizationId"/>
+  <variant name="DevswBoot"/>
+  <variant name="DisplayProfiles"/>
+  <variant name="DockMac"/>
+  <variant name="EnterpriseManagementEmbargoEndDate"/>
+  <variant name="EthernetMac"/>
+  <variant name="FlexId"/>
+  <variant name="GbindAttribute"/>
+  <variant name="HardwareClass"/>
+  <variant name="InitialLocale"/>
+  <variant name="InitialTimezone"/>
+  <variant name="IsCrosDebug"/>
+  <variant name="IsVm"/>
+  <variant name="KeyboardLayout"/>
+  <variant name="KeyboardMechanicalLayout"/>
+  <variant name="LegacySerialNumber"/>
+  <variant name="MainfwType"/>
+  <variant name="MfgDate"/>
+  <variant name="ModelName"/>
+  <variant name="OemCanExitEnrollment"/>
+  <variant name="OemDeviceRequisition"/>
+  <variant name="OemEnterpriseManaged"/>
+  <variant name="OemKeyboardDrivenOobe"/>
+  <variant name="OemName"/>
+  <variant name="Region"/>
+  <variant name="RlzBrandCode"/>
+  <variant name="RlzEmbargoEndDate"/>
+  <variant name="SerialNumber"/>
+  <variant name="ShouldSendRlzPing"/>
+  <variant name="UbindAttribute"/>
+  <variant name="WpswCur"/>
+</variants>
+
 <histogram name="ChromeOS.AnomalousProcCount.AttemptedMemfdExec"
     units="processes" expires_after="2024-10-06">
   <owner>enlightened@chromium.org</owner>
@@ -2373,6 +2415,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
     NB: Data before M90 is incomplete.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.MachineStatistic.{MachineStatistic}.LoadingTime"
+    units="ms" expires_after="2024-09-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
+  <summary>
+    Tracks duration of {MachineStatistic} machine statistic loading time when
+    the statistic is requested.
+
+    The metric is recorded on every request of a machine statistic.
+
+    Zero time indicates a request to already loaded statistic. 3 seconds
+    indicates a request timeout.
+  </summary>
+  <token key="MachineStatistic" variants="MachineStatistics"/>
 </histogram>
 
 <histogram name="ChromeOS.Mahi.ContentExtraction.TriggeringLatency" units="ms"
