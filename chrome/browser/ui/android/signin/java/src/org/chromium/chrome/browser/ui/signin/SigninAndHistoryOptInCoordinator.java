@@ -432,7 +432,7 @@ public class SigninAndHistoryOptInCoordinator
                         this,
                         profile,
                         mSigninAccessPoint,
-                        mDidShowSigninStep,
+                        /* showEmailInFooter= */ !mDidShowSigninStep,
                         mDidShowSigninStep && mIsHistorySyncDedicatedFlow,
                         null);
         assert mDialogModel != null;

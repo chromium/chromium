@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -15,6 +16,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -151,12 +154,24 @@ public class SigninAndHistoryOptInIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingSignedInAccount_onlyShowsHistoryOptIn() {
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
+
+        // The footer should show the email of the signed in account.
+        onView(withId(R.id.sync_consent_details_description))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                allOf(
+                                        isDisplayed(),
+                                        withText(
+                                                containsString(
+                                                        AccountManagerTestRule.TEST_ACCOUNT_1
+                                                                .getEmail())))));
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -177,6 +192,20 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and decline.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+        // The user has just signed in, so the footer shouldn't show the email.
+        onView(withId(R.id.sync_consent_details_description))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                allOf(
+                                        isDisplayed(),
+                                        not(
+                                                withText(
+                                                        containsString(
+                                                                AccountManagerTestRule
+                                                                        .TEST_ACCOUNT_1
+                                                                        .getEmail()))))));
+
         onView(allOf(withId(R.id.button_secondary), isCompletelyDisplayed())).perform(click());
 
         // Verify that the flow completion callback, which finishes the activity, is called.
