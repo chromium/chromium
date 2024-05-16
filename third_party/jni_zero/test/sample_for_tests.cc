@@ -17,6 +17,7 @@
 namespace jni_zero::internal {
 static_assert(IsContainer<std::vector<std::string>>);
 static_assert(!IsObjectContainer<std::vector<char>>);
+static_assert(!IsObjectContainer<std::vector<float>>);
 static_assert(!IsObjectContainer<std::string>);
 static_assert(IsObjectContainer<std::vector<std::string>>);
 static_assert(IsObjectContainer<std::vector<std::string*>>);

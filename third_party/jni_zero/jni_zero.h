@@ -750,7 +750,7 @@ concept IsContainer = requires(T t) {
 
 template <typename T>
 concept IsObjectContainer =
-    IsContainer<T> && !std::integral<typename T::value_type>;
+    IsContainer<T> && !std::is_arithmetic_v<typename T::value_type>;
 }  // namespace internal
 
 // Partial specialization for converting java arrays into std containers
