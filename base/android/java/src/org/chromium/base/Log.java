@@ -64,20 +64,11 @@ public class Log {
         return "cr_" + tag;
     }
 
-    private static boolean isDebug() {
-        // Proguard sets value to false in release builds.
-        return true;
-    }
-
     /**
      * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}.
      * In release: Always returns false (via proguard rule).
      */
     public static boolean isLoggable(String tag, int level) {
-        // Early return helps optimizer eliminate calls to isLoggable().
-        if (!isDebug() && level <= INFO) {
-            return false;
-        }
         return android.util.Log.isLoggable(tag, level);
     }
 
@@ -92,7 +83,7 @@ public class Log {
      *     one is a {@link Throwable}, its trace will be printed.
      */
     public static void v(String tag, String messageTemplate, Object... args) {
-        if (!isDebug()) return;
+        if (!isLoggable(tag, VERBOSE)) return;
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
@@ -115,7 +106,7 @@ public class Log {
      *     one is a {@link Throwable}, its trace will be printed.
      */
     public static void d(String tag, String messageTemplate, Object... args) {
-        if (!isDebug()) return;
+        if (!isLoggable(tag, DEBUG)) return;
 
         Throwable tr = getThrowableToLog(args);
         String message = formatLog(messageTemplate, tr, args);
