@@ -1,0 +1,17 @@
+digraph {
+  layout = "circo"
+  dpi = 156
+  node[shape=box]
+
+  crt[shape=circle, label="(not yet fully\ninitialized)\nWindows\nCRT"]
+  malloc[label="malloc()"]
+  crt->malloc[label="calls"]
+  malloc->PartitionAlloc[label="intercepted\nby"]
+
+  static_local[label="nontrivial\nfunction-local\nstatic"]
+  PartitionAlloc->static_local[label="initializes"]
+  lock[label="critical section\n(implicit lock)"]
+  static_local->lock[label="enters"]
+
+  lock->crt[label="attempts\nre-entry\ninto", style=dotted]
+}
