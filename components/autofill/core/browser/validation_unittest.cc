@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,12 +48,16 @@ const char16_t* const kValidNumbers[] = {
     u"6331101999990016",    u"6247130048162403",
     u"4532261615476013542",  // Visa, 19 digits.
     u"5067071446391278",     // Elo.
+    u"5060995764815772",     // Verve.
+    u"506099576481577267",   // Verve 18 digits.
+    u"5060995764815772675",  // Verve 19 digits.
 };
 const char16_t* const kInvalidNumbers[] = {
     u"4111 1111 112",        /* too short */
     u"41111111111111111115", /* too long */
     u"4111-1111-1111-1110",  /* wrong Luhn checksum */
     u"3056 9309 0259 04aa",  /* non-digit characters */
+    u"50609957648157726",    /* Verve 17 digits */
 };
 const char kCurrentDate[] = "1 May 2013";
 const IntExpirationDate kValidCreditCardIntExpirationDate[] = {
@@ -95,6 +101,9 @@ const char16_t* const kPlausibleCreditCardCVCNumbers[] = {u"1234", u"2099",
 }  // namespace
 
 TEST(AutofillValidation, IsValidCreditCardNumber) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableVerveCardSupport};
+
   for (const char16_t* valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(IsValidCreditCardNumber(valid_number));

@@ -78,6 +78,9 @@ bool HasCorrectLength(const std::u16string& number) {
     return false;
   if (type == kUnionPay && (number.size() < 16 || number.size() > 19))
     return false;
+  if (type == kVerveCard && number.size() != 16 && number.size() != 18 &&
+      number.size() != 19)
+    return false;
   if (type == kVisaCard && number.size() != 13 && number.size() != 16 &&
       number.size() != 19)
     return false;

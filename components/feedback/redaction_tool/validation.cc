@@ -28,6 +28,7 @@ enum class CreditCardIssuer {
   kMirCard,
   kTroyCard,
   kUnionPay,
+  kVerveCard,
   kVisaCard,
   // Elo card is missing here as it's gated behind a feature flag. Once the card
   // is GA this file should be updated here as well.
@@ -40,7 +41,7 @@ CreditCardIssuer GetCardNetwork(const std::string& number) {
   // https://developer.ean.com/general-info/valid-card-types,
   // http://www.bincodes.com/, and
   // http://www.fraudpractice.com/FL-binCC.html.
-  // (Last updated: March 2021; change Troy bin range)
+  // (Last updated: May 2024; added Verve range)
   //
   // Card Type              Prefix(es)                                  Length
   // --------------------------------------------------------------------------
@@ -53,12 +54,19 @@ CreditCardIssuer GetCardNetwork(const std::string& number) {
   // MIR                    2200-2204                                  16
   // Troy                   22050-22052, 9792                          16
   // UnionPay               62                                         16-19
+  // Verve                  506099–506198,507865-507964,650002–650027  16,18,19
 
   // Check for prefixes of length 6.
   if (number.size() >= 6) {
     int first_six_digits = 0;
     if (!base::StringToInt(number.substr(0, 6), &first_six_digits)) {
       return CreditCardIssuer::kGenericCard;
+    }
+
+    if ((first_six_digits >= 506099 && first_six_digits <= 506198) ||
+        (first_six_digits >= 507865 && first_six_digits <= 507964) ||
+        (first_six_digits >= 650002 && first_six_digits <= 650027)) {
+      return CreditCardIssuer::kVerveCard;
     }
   }
 
@@ -191,13 +199,13 @@ bool HasCorrectLength(const std::string& number) {
     case 16:
       return (type == kDiscoverCard || type == kJCBCard ||
               type == kMasterCard || type == kMirCard || type == kTroyCard ||
-              type == kUnionPay || type == kVisaCard);
+              type == kUnionPay || type == kVerveCard || type == kVisaCard);
     case 17:
       [[fallthrough]];
     case 18:
-      return type == kUnionPay;
+      return (type == kUnionPay || type == kVerveCard);
     case 19:
-      return (type == kUnionPay || type == kVisaCard);
+      return (type == kUnionPay || type == kVerveCard || type == kVisaCard);
     default: {
       return false;
     }
