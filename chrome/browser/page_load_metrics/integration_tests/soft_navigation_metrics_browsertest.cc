@@ -553,12 +553,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SoftNavigationTest,
                          ::testing::Values(false, true));
 
-// TODO(crbug.com/338061920): Flaky on win-asan.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/338061920, crbug.com/333963663): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_INP_ClickWithPresentation DISABLED_INP_ClickWithPresentation
 #else
 #define MAYBE_INP_ClickWithPresentation INP_ClickWithPresentation
-#endif  //  BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#endif  //  BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, MAYBE_INP_ClickWithPresentation) {
   // Add waiter to wait for the interaction is arrived in browser.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
