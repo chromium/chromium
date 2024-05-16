@@ -16221,6 +16221,23 @@
             ]
         }
     ],
+    "PumpFastToSleepAndroid": [
+        {
+            "platforms": [
+                "android_weblayer",
+                "android_webview",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PumpFastToSleepAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
