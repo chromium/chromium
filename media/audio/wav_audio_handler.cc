@@ -47,12 +47,21 @@ const size_t kSubFormatOffset = 24;
 // A convenience struct for passing WAV parameters around. AudioParameters is
 // too heavyweight for this. Keep this class internal to this implementation.
 struct WavAudioParameters {
-  WavAudioHandler::AudioFormat audio_format;
-  uint16_t num_channels;
-  uint32_t sample_rate;
-  uint16_t bits_per_sample;
-  uint16_t valid_bits_per_sample;
-  bool is_extensible;
+  // TODO(crbug.com/340824112): note that zero-initializing this field does not
+  // correspond to any enumerator value defined in the `AudioFormat` enum.
+  // However, not initializing is also problematic: `ParseFmtChunk()` simply
+  // early-returns on failure, leaving random fields uninitialized and causing
+  // MSan errors elsewhere. A better long-term solution would be for
+  // `ParseFmtChunk` to return a `std::optional<WavAudioParameters>`. For now,
+  // zero-initializing this field has a (small) benefit that it won't
+  // correspond to any valid format and is guaranteed to fail the
+  // `ParamsAreValid()` check.
+  WavAudioHandler::AudioFormat audio_format = {};
+  uint16_t num_channels = 0;
+  uint32_t sample_rate = 0;
+  uint16_t bits_per_sample = 0;
+  uint16_t valid_bits_per_sample = 0;
+  bool is_extensible = false;
 };
 
 bool ParamsAreValid(const WavAudioParameters& params) {
