@@ -197,7 +197,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rustc-demangle-capi:0.1.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."rustc-demangle:0.1.23"]
+[policy."rustc-demangle:0.1.24"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."rustc_version:0.4.0"]

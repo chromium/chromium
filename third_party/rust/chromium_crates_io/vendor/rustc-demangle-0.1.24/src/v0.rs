@@ -803,7 +803,7 @@ impl<'a, 'b, 's> Printer<'a, 'b, 's> {
 
                 self.print(name)?;
                 if let Some(out) = &mut self.out {
-                    if !out.alternate() {
+                    if !out.alternate() && dis != 0 {
                         out.write_str("[")?;
                         fmt::LowerHex::fmt(&dis, out)?;
                         out.write_str("]")?;
@@ -1271,7 +1271,7 @@ mod tests {
             t_const!($mangled, $value);
             t!(
                 concat!("_RIC0K", $mangled, "E"),
-                concat!("[0]::<", $value, $value_ty_suffix, ">")
+                concat!("::<", $value, $value_ty_suffix, ">")
             );
         }};
     }
@@ -1279,6 +1279,12 @@ mod tests {
     #[test]
     fn demangle_crate_with_leading_digit() {
         t_nohash!("_RNvC6_123foo3bar", "123foo::bar");
+    }
+
+    #[test]
+    fn demangle_crate_with_zero_disambiguator() {
+        t!("_RC4f128", "f128");
+        t_nohash!("_RC4f128", "f128");
     }
 
     #[test]
