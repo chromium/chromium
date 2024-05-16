@@ -45,7 +45,7 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
             @Nullable RecyclerView.OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.password_list_title),
-                IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),
+                IconProvider.getIcon(context, R.drawable.ic_password_manager_key),
                 context.getString(R.string.password_accessory_sheet_toggle),
                 R.layout.password_accessory_sheet,
                 AccessoryTabType.PASSWORDS,
@@ -80,7 +80,9 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
         getTab().setIcon(
                         IconProvider.getIcon(
                                 mContext,
-                                enabled ? R.drawable.ic_vpn_key_grey : R.drawable.ic_vpn_key_off));
+                                enabled
+                                        ? R.drawable.ic_password_manager_key
+                                        : R.drawable.ic_password_manager_key_off));
     }
 
     /**
