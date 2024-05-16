@@ -59,7 +59,7 @@ struct ResourceRequest;
 namespace blink {
 
 class BackForwardCacheLoaderHelper;
-class BackgroundResponseProcessor;
+class BackgroundResponseProcessorFactory;
 class BlobDataHandle;
 class CodeCacheHost;
 class ResourceLoadInfoNotifierWrapper;
@@ -141,10 +141,11 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // For BackgroundResourceFetch feature.
   // Returns true if the loader can handle the response on a background thread.
   virtual bool CanHandleResponseOnBackground() { return false; }
-  // Set a BackgroundResponseProcessor to process the response on a background
-  // thread.
-  virtual void SetBackgroundResponseProcessor(
-      scoped_refptr<BackgroundResponseProcessor> background_response_processor);
+  // Set a BackgroundResponseProcessorFactory to process the response on a
+  // background thread.
+  virtual void SetBackgroundResponseProcessorFactory(
+      std::unique_ptr<BackgroundResponseProcessorFactory>
+          background_response_processor_factory);
 
   void SetResourceRequestSenderForTesting(
       std::unique_ptr<ResourceRequestSender> resource_request_sender);

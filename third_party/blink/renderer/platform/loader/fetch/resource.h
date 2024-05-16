@@ -69,7 +69,7 @@ class Clock;
 
 namespace blink {
 
-class BackgroundResponseProcessor;
+class BackgroundResponseProcessorFactory;
 class BlobDataHandle;
 class FetchParameters;
 class ResourceFinishObserver;
@@ -442,8 +442,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   bool IsLoadedFromMemoryCache() { return is_loaded_from_memory_cache_; }
 
-  virtual scoped_refptr<BackgroundResponseProcessor>
-  MaybeCreateBackgroundResponseProcessor();
+  virtual std::unique_ptr<BackgroundResponseProcessorFactory>
+  MaybeCreateBackgroundResponseProcessorFactory();
 
  protected:
   Resource(const ResourceRequestHead&,

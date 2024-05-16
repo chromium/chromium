@@ -391,17 +391,19 @@ class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
   }
   v8::ScriptType GetScriptType() const override;
 
-  scoped_refptr<BackgroundResponseProcessor> GetBackgroundResponseProcessor();
-
-  void FinalizeOnMainThread();
+  std::unique_ptr<BackgroundResponseProcessorFactory>
+  CreateBackgroundResponseProcessorFactory();
 
   ParkableString TakeDecodedData();
 
  private:
   class BackgroundProcessor;
+  class BackgroundProcessorFactory;
+
+  void OnResult(std::unique_ptr<DecodedDataAndStreamedSource> result,
+                NotStreamingReason suppressed_reason);
 
   Member<ScriptResource> script_resource_;
-  scoped_refptr<BackgroundProcessor> background_processor_;
   const v8::ScriptType script_type_;
 
   std::unique_ptr<DecodedDataAndStreamedSource> result_;

@@ -333,7 +333,6 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   }
 
   if (background_streamer_) {
-    background_streamer_->FinalizeOnMainThread();
     if (!background_streamer_->IsStreamingSuppressed()) {
       source_text_ = background_streamer_->TakeDecodedData();
       SetDecodedSize(source_text_.CharactersSizeInBytes());
@@ -585,8 +584,8 @@ void ScriptResource::CheckConsumeCacheState() const {
   }
 }
 
-scoped_refptr<BackgroundResponseProcessor>
-ScriptResource::MaybeCreateBackgroundResponseProcessor() {
+std::unique_ptr<BackgroundResponseProcessorFactory>
+ScriptResource::MaybeCreateBackgroundResponseProcessorFactory() {
   CHECK(!streamer_);
   background_streamer_ = nullptr;
   if (no_streamer_reason_ != ScriptStreamer::NotStreamingReason::kInvalid) {
@@ -608,7 +607,7 @@ ScriptResource::MaybeCreateBackgroundResponseProcessor() {
 
   background_streamer_ =
       MakeGarbageCollected<BackgroundResourceScriptStreamer>(this);
-  return background_streamer_->GetBackgroundResponseProcessor();
+  return background_streamer_->CreateBackgroundResponseProcessorFactory();
 }
 
 }  // namespace blink

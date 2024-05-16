@@ -83,9 +83,9 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
                          int intra_priority_value) override;
 
   bool CanHandleResponseOnBackground() override { return true; }
-  void SetBackgroundResponseProcessor(
-      scoped_refptr<BackgroundResponseProcessor> background_response_processor)
-      override;
+  void SetBackgroundResponseProcessorFactory(
+      std::unique_ptr<BackgroundResponseProcessorFactory>
+          background_response_processor_factory) override;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override;

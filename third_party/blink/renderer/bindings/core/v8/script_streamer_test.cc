@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
@@ -768,8 +769,9 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
 
   bool load_started() const { return load_started_; }
-  scoped_refptr<BackgroundResponseProcessor> TakeBackgroundResponseProcessor() {
-    return std::move(background_response_processor_);
+  std::unique_ptr<BackgroundResponseProcessorFactory>
+  TakeBackgroundResponseProcessorFactory() {
+    return std::move(background_response_processor_factory_);
   }
 
  private:
@@ -814,10 +816,11 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
       NOTREACHED_IN_MIGRATION();
     }
     bool CanHandleResponseOnBackground() override { return true; }
-    void SetBackgroundResponseProcessor(
-        scoped_refptr<BackgroundResponseProcessor>
-            background_response_processor) override {
-      factory_->background_response_processor_ = background_response_processor;
+    void SetBackgroundResponseProcessorFactory(
+        std::unique_ptr<BackgroundResponseProcessorFactory>
+            background_response_processor_factory) override {
+      factory_->background_response_processor_factory_ =
+          std::move(background_response_processor_factory);
     }
     scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
         override {
@@ -828,13 +831,17 @@ class DummyLoaderFactory final : public ResourceFetcher::LoaderFactory {
   };
 
   bool load_started_ = false;
-  scoped_refptr<BackgroundResponseProcessor> background_response_processor_;
+  std::unique_ptr<BackgroundResponseProcessorFactory>
+      background_response_processor_factory_;
 };
 
 class DummyBackgroundResponseProcessorClient
     : public BackgroundResponseProcessor::Client {
  public:
-  DummyBackgroundResponseProcessorClient() = default;
+  DummyBackgroundResponseProcessorClient()
+      : main_thread_task_runner_(
+            scheduler::GetSingleThreadTaskRunnerForTesting()) {}
+
   ~DummyBackgroundResponseProcessorClient() override = default;
 
   void DidFinishBackgroundResponseProcessor(
@@ -845,6 +852,9 @@ class DummyBackgroundResponseProcessorClient
     body_ = std::move(body);
     cached_metadata_ = std::move(cached_metadata);
     run_loop_.Quit();
+  }
+  void PostTaskToMainThread(CrossThreadOnceClosure task) override {
+    PostCrossThreadTask(*main_thread_task_runner_, FROM_HERE, std::move(task));
   }
 
   void WaitUntilFinished() { run_loop_.Run(); }
@@ -876,6 +886,7 @@ class DummyBackgroundResponseProcessorClient
   }
 
  private:
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   base::RunLoop run_loop_;
   network::mojom::URLResponseHeadPtr head_;
   BackgroundResponseProcessor::BodyVariant body_;
@@ -943,19 +954,24 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
   }
   ~BackgroundResourceScriptStreamerTest() override = default;
 
+  void TearDown() override {
+    RunInBackgroundThred(base::BindLambdaForTesting(
+        [&]() { background_response_processor_.reset(); }));
+  }
+
  protected:
   void Init(v8::Isolate* isolate,
             bool is_module_script = false,
             std::optional<WTF::TextEncoding> charset = std::nullopt) {
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
         scheduler::GetSingleThreadTaskRunnerForTesting();
     DummyLoaderFactory* dummy_loader_factory =
         MakeGarbageCollected<DummyLoaderFactory>();
     auto* fetcher = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
-        properties->MakeDetachable(), context, task_runner, task_runner,
-        dummy_loader_factory,
+        properties->MakeDetachable(), context, main_thread_task_runner,
+        main_thread_task_runner, dummy_loader_factory,
         MakeGarbageCollected<MockContextLifecycleNotifier>(),
         nullptr /* back_forward_cache_loader_helper */));
 
@@ -982,15 +998,18 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
         ScriptResource::Fetch(params, fetcher, resource_client_, isolate,
                               ScriptResource::kAllowStreaming,
                               kNoCompileHintsProducer, kNoCompileHintsConsumer);
-    resource_->AddClient(resource_client_, task_runner.get());
+    resource_->AddClient(resource_client_, main_thread_task_runner.get());
 
     CHECK(dummy_loader_factory->load_started());
-    background_response_processor_ =
-        dummy_loader_factory->TakeBackgroundResponseProcessor();
-
     background_resource_fetch_task_runner_ =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::USER_BLOCKING});
+
+    RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+      std::unique_ptr<BackgroundResponseProcessorFactory> factory =
+          dummy_loader_factory->TakeBackgroundResponseProcessorFactory();
+      background_response_processor_ = std::move(*factory).Create();
+    }));
   }
 
   ClassicScript* CreateClassicScript() const {
@@ -1059,8 +1078,9 @@ class BackgroundResourceScriptStreamerTest : public testing::Test {
   Persistent<ScriptResource> resource_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
-  scoped_refptr<BackgroundResponseProcessor> background_response_processor_;
+  std::unique_ptr<BackgroundResponseProcessor> background_response_processor_;
   DummyBackgroundResponseProcessorClient background_response_processor_client_;
+
   scoped_refptr<base::SequencedTaskRunner>
       background_resource_fetch_task_runner_;
   base::test::ScopedFeatureList feature_list_;
@@ -1495,7 +1515,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileWaitingForDataPipe) {
   }));
   Cancel();
   RunInBackgroundThred(base::BindLambdaForTesting(
-      [&]() { background_response_processor_->Cancel(); }));
+      [&]() { background_response_processor_.reset(); }));
   producer_handle_.reset();
   // Cancelling the background response processor while waiting for data pipe
   // should not cause any crash.
@@ -1507,7 +1527,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelBeforeReceiveResponse) {
   Init(scope.GetIsolate());
   Cancel();
   RunInBackgroundThred(base::BindLambdaForTesting(
-      [&]() { background_response_processor_->Cancel(); }));
+      [&]() { background_response_processor_.reset(); }));
   // Cancelling the background response processor before receiving response
   // should not cause any crash.
   task_environment_.RunUntilIdle();
@@ -1531,7 +1551,7 @@ TEST_F(BackgroundResourceScriptStreamerTest, CancelWhileRuningStreamingTask) {
   AppendData(kLargeEnoughScript);
   Cancel();
   RunInBackgroundThred(base::BindLambdaForTesting(
-      [&]() { background_response_processor_->Cancel(); }));
+      [&]() { background_response_processor_.reset(); }));
   producer_handle_.reset();
   // Cancelling the background response processor while running streaming task
   // should not cause any crash.
@@ -1656,12 +1676,56 @@ TEST_F(BackgroundResourceScriptStreamerTest, DataPipeReadableAfterGC) {
   producer_handle_.reset();
 
   Cancel();
-  background_response_processor_.reset();
+
   resource_ = nullptr;
   resource_client_ = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  // Unblock the background thread to call OnDataPipeReadable().
+  // Unblock the background thread.
+  waitable_event.Signal();
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(BackgroundResourceScriptStreamerTest,
+       DataPipeReadableAfterProcessorIsDeleted) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  RunInBackgroundThred(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    std::optional<mojo_base::BigBuffer> cached_metadata;
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+    EXPECT_FALSE(cached_metadata);
+  }));
+
+  // Start blocking the background thread.
+  base::WaitableEvent waitable_event;
+  background_resource_fetch_task_runner_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+        waitable_event.Wait();
+        // Delete `background_response_processor_` before SimpleWatcher calls
+        // OnDataPipeReadable().
+        background_response_processor_.reset();
+      }));
+
+  // Resetting `producer_handle_` will triggers SimpleWatcher's callback on the
+  // background thread. But the background thread is still blocked by the
+  // `waitable_event`.
+  producer_handle_.reset();
+
+  Cancel();
+
+  resource_ = nullptr;
+  resource_client_ = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // Unblock the background thread.
   waitable_event.Signal();
 
   task_environment_.RunUntilIdle();

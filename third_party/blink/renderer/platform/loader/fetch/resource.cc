@@ -1237,8 +1237,8 @@ void Resource::UpdateMemoryCacheLastAccessedTime() {
   memory_cache_last_accessed_ = base::TimeTicks::Now();
 }
 
-scoped_refptr<BackgroundResponseProcessor>
-Resource::MaybeCreateBackgroundResponseProcessor() {
+std::unique_ptr<BackgroundResponseProcessorFactory>
+Resource::MaybeCreateBackgroundResponseProcessorFactory() {
   return nullptr;
 }
 

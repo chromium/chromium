@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_BACKGROUND_RESPONSE_PROCESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_BACKGROUND_RESPONSE_PROCESSOR_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace base {
@@ -22,8 +24,11 @@ class SequencedTaskRunner;
 
 namespace blink {
 
-class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor
-    : public WTF::ThreadSafeRefCounted<BackgroundResponseProcessor> {
+// BackgroundResponseProcessor is used for processing the response on the
+// background thread of the BackgroundURLLoader. This class is created by
+// a BackgroundResponseProcessorFactory on the background thread, and lives in
+// the background thread.
+class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor {
  public:
   using BodyVariant =
       absl::variant<mojo::ScopedDataPipeConsumerHandle, Deque<Vector<char>>>;
@@ -34,6 +39,7 @@ class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor
         network::mojom::URLResponseHeadPtr head,
         BodyVariant body,
         std::optional<mojo_base::BigBuffer> cached_metadata) = 0;
+    virtual void PostTaskToMainThread(CrossThreadOnceClosure task) = 0;
   };
 
   virtual ~BackgroundResponseProcessor() = default;
@@ -52,8 +58,16 @@ class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor
       std::optional<mojo_base::BigBuffer>& cached_metadata,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       Client* client) = 0;
+};
 
-  virtual void Cancel() = 0;
+// A factory for BackgroundResponseProcessor. This is created in the main
+// thread, and passed to the background thread.
+class BLINK_PLATFORM_EXPORT BackgroundResponseProcessorFactory {
+ public:
+  virtual ~BackgroundResponseProcessorFactory() = default;
+  // Creates a new BackgroundResponseProcessor. Called on the background
+  // thread.
+  virtual std::unique_ptr<BackgroundResponseProcessor> Create() && = 0;
 };
 
 }  // namespace blink

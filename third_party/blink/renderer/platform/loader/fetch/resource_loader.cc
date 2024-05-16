@@ -1332,8 +1332,9 @@ void ResourceLoader::RequestAsynchronously() {
   // `loader_`.
   if (loader_->CanHandleResponseOnBackground() &&
       features::kBackgroundResponseProcessor.Get()) {
-    if (auto processor = resource_->MaybeCreateBackgroundResponseProcessor()) {
-      loader_->SetBackgroundResponseProcessor(std::move(processor));
+    if (auto factory =
+            resource_->MaybeCreateBackgroundResponseProcessorFactory()) {
+      loader_->SetBackgroundResponseProcessorFactory(std::move(factory));
     }
   }
 

@@ -163,8 +163,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // Returns the Isolate if set. This may be null.
   v8::Isolate* GetIsolateOrNull() { return isolate_if_main_thread_; }
 
-  scoped_refptr<BackgroundResponseProcessor>
-  MaybeCreateBackgroundResponseProcessor() override;
+  std::unique_ptr<BackgroundResponseProcessorFactory>
+  MaybeCreateBackgroundResponseProcessorFactory() override;
 
  protected:
   void DestroyDecodedDataIfPossible() override;
