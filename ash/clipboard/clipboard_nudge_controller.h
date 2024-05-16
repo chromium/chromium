@@ -11,7 +11,6 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/system/tray/system_nudge_controller.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -34,8 +33,7 @@ class ClipboardMonitor;
 namespace ash {
 
 class ASH_EXPORT ClipboardNudgeController
-    : public SystemNudgeController,
-      public ClipboardHistory::Observer,
+    : public ClipboardHistory::Observer,
       public ui::ClipboardObserver,
       public ClipboardHistoryController::Observer {
  public:
@@ -152,9 +150,6 @@ class ASH_EXPORT ClipboardNudgeController
     // the last nudge shown.
     bool has_recorded_menu_shown_ = false;
   };
-
-  // SystemNudgeController:
-  std::unique_ptr<SystemNudge> CreateSystemNudge() override;
 
   // Caches the onboarding state.
   // TODO(http://b/284368255): move this data member to a separate class.

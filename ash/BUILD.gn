@@ -457,8 +457,6 @@ component("ash") {
     "clipboard/clipboard_history_url_title_fetcher.h",
     "clipboard/clipboard_history_util.cc",
     "clipboard/clipboard_history_util.h",
-    "clipboard/clipboard_nudge.cc",
-    "clipboard/clipboard_nudge.h",
     "clipboard/clipboard_nudge_constants.cc",
     "clipboard/clipboard_nudge_constants.h",
     "clipboard/clipboard_nudge_controller.cc",
