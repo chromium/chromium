@@ -300,15 +300,17 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 }
 
-std::optional<FieldTypeSet>
-AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
+SuggestionType
+AutofillExternalDelegate::GetLastAcceptedSuggestionToFillForSection(
     const Section& section) const {
-  if (auto it =
-          last_field_types_to_fill_for_address_form_section_.find(section);
-      it != last_field_types_to_fill_for_address_form_section_.end()) {
+  if (auto it = last_accepted_address_suggestion_for_address_form_section_.find(
+          section);
+      it != last_accepted_address_suggestion_for_address_form_section_.end()) {
     return it->second;
   }
-  return std::nullopt;
+  // In case no suggestions were accepted for this section, default to full form
+  // filling suggestions.
+  return SuggestionType::kAddressEntry;
 }
 
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
@@ -921,9 +923,9 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     // `last_field_types_to_fill_for_address_form_section_` to know the current
     // filling granularity. The exact type is not important, what matters here
     // is that the user targeted one ONE field, i.e, field-by-field filling.
-    last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
-                                                           ->section()] = {
-        *suggestion.field_by_field_filling_type_used};
+    last_accepted_address_suggestion_for_address_form_section_
+        [autofill_trigger_field->section()] =
+            SuggestionType::kAddressFieldByFieldFilling;
   }
   const bool is_triggering_field_address =
       autofill_trigger_field &&
@@ -1036,9 +1038,8 @@ void AutofillExternalDelegate::FillAutofillFormData(
     const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
     if (autofill_trigger_field && kAutofillAddressSuggestions.contains(type) &&
         !is_preview) {
-      last_field_types_to_fill_for_address_form_section_[autofill_trigger_field
-                                                             ->section()] =
-          trigger_details.field_types_to_fill;
+      last_accepted_address_suggestion_for_address_form_section_
+          [autofill_trigger_field->section()] = type;
     }
   }
 

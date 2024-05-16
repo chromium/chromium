@@ -822,11 +822,10 @@ TEST_F(AutofillSuggestionGeneratorTest, CreateSuggestionsFromProfiles) {
 
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
-          .CreateSuggestionsFromProfiles({&profile},
-                                         {ADDRESS_HOME_STREET_ADDRESS},
-                                         /*last_targeted_fields=*/std::nullopt,
-                                         ADDRESS_HOME_STREET_ADDRESS,
-                                         /*trigger_field_max_length=*/0);
+          .CreateSuggestionsFromProfiles(
+              {&profile}, {ADDRESS_HOME_STREET_ADDRESS},
+              SuggestionType::kAddressEntry, ADDRESS_HOME_STREET_ADDRESS,
+              /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_EQ(u"123 Zoo St., Second Line, Third line, unit 5",
             suggestions[0].main_text.value);
@@ -843,7 +842,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles({&profile}, {PHONE_HOME_WHOLE_NUMBER},
-                                         /*last_targeted_fields=*/std::nullopt,
+                                         SuggestionType::kAddressEntry,
                                          PHONE_HOME_WHOLE_NUMBER,
                                          /*trigger_field_max_length=*/0);
   ASSERT_FALSE(suggestions.empty());
@@ -859,7 +858,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_THAT(
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles({&profile}, {NAME_FIRST, NAME_LAST},
-                                         /*last_targeted_fields=*/std::nullopt,
+                                         SuggestionType::kAddressEntry,
                                          NAME_FIRST,
                                          /*trigger_field_max_length=*/0),
       SuggestionVectorMainTextsAre(Suggestion::Text(
@@ -916,7 +915,7 @@ TEST_P(
           .CreateSuggestionsFromProfiles(
               {&profile},
               {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP},
-              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
+              SuggestionType::kAddressEntry, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(AllOf(EqualLabels({{full_form_filling_label}}))));
 }
@@ -940,7 +939,7 @@ TEST_P(
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
               {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
+              SuggestionType::kAddressEntry, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"hoa@gmail.com"}})),
@@ -968,7 +967,7 @@ TEST_P(
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
               {&profile1, &profile2}, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS},
-              /*last_targeted_fields=*/std::nullopt, triggering_field_type,
+              SuggestionType::kAddressEntry, triggering_field_type,
               /*trigger_field_max_length=*/0),
       ElementsAre(
           AllOf(EqualLabels({{full_form_filling_label + u"United States"}})),
@@ -1238,22 +1237,21 @@ class AutofillChildrenSuggestionGeneratorTest
  public:
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
-      std::optional<FieldTypeSet> last_targeted_fields,
+      SuggestionType suggestion_type,
       FieldType trigger_field_type,
       const FieldTypeSet& field_types) {
     return test_api(suggestion_generator())
-        .CreateSuggestionsFromProfiles({&profile}, field_types,
-                                       last_targeted_fields, trigger_field_type,
+        .CreateSuggestionsFromProfiles({&profile}, field_types, suggestion_type,
+                                       trigger_field_type,
                                        /*trigger_field_max_length=*/0);
   }
 
   std::vector<Suggestion> CreateSuggestionWithChildrenFromProfile(
       const AutofillProfile& profile,
-      std::optional<FieldTypeSet> last_targeted_fields,
+      SuggestionType suggestion_type,
       FieldType trigger_field_type) {
     return CreateSuggestionWithChildrenFromProfile(
-        profile, last_targeted_fields, trigger_field_type,
-        {trigger_field_type});
+        profile, suggestion_type, trigger_field_type, {trigger_field_type});
   }
 
   std::u16string GetFormattedInternationalNumber() {
@@ -1287,9 +1285,7 @@ class AutofillChildrenSuggestionGeneratorTest
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillAddress) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/
-      GetAddressFieldsForGroupFilling(),
+      profile(), SuggestionType::kFillFullAddress,
       /*trigger_field_type=*/ADDRESS_HOME_LINE1,
       /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
 
@@ -1316,7 +1312,7 @@ TEST_F(
           .CreateSuggestionsFromProfiles(
               {&profile_1, &profile_2},
               {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
-              GetAddressFieldsForGroupFilling(), ADDRESS_HOME_LINE1,
+              SuggestionType::kFillFullAddress, ADDRESS_HOME_LINE1,
               /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
@@ -1346,7 +1342,7 @@ TEST_F(
           .CreateSuggestionsFromProfiles(
               {&profile_1, &profile_2},
               {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY},
-              GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
+              SuggestionType::kFillFullAddress, ADDRESS_HOME_ZIP,
               /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 2u);
@@ -1364,7 +1360,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
       /*last_targeted_fields=*/
-      GetFieldTypesOfGroup(FieldTypeGroup::kName),
+      SuggestionType::kFillFullName,
       /*trigger_field_type=*/NAME_FIRST,
       /*field_types=*/{NAME_FIRST, NAME_LAST});
 
@@ -1372,40 +1368,6 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].labels,
             std::vector<std::vector<Suggestion::Text>>(
                 {{Suggestion::Text(u"Fill full name")}}));
-}
-
-// If the last targeted fields belong to a different group than the triggering
-// field, the granular filling label should still match the triggering field.
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName_DifferentLastTargetedFields) {
-  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/
-      GetAddressFieldsForGroupFilling(),
-      /*trigger_field_type=*/NAME_FIRST,
-      /*field_types=*/{NAME_FIRST, NAME_LAST});
-
-  ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels,
-            std::vector<std::vector<Suggestion::Text>>(
-                {{Suggestion::Text(u"Fill full name")}}));
-}
-
-// If the last targeted fields belong to a different group than the triggering
-// field, the granular filling label should still match the triggering field.
-TEST_F(
-    AutofillChildrenSuggestionGeneratorTest,
-    CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillAddress_DifferentLastTargetedFields) {
-  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/GetFieldTypesOfGroup(FieldTypeGroup::kName),
-      /*trigger_field_type=*/ADDRESS_HOME_LINE1,
-      /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
-
-  ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].labels, std::vector<std::vector<Suggestion::Text>>(
-                                       {{Suggestion::Text(u"Fill address")}}));
 }
 
 // Test that no labels are added when filling targets only one field.
@@ -1417,8 +1379,7 @@ TEST_F(
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
-              {&profile}, {NAME_FULL},
-              GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FULL,
+              {&profile}, {NAME_FULL}, SuggestionType::kFillFullName, NAME_FULL,
               /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(suggestions.size(), 1u);
@@ -1429,8 +1390,7 @@ TEST_F(
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST);
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   // Test root suggestion
@@ -1515,8 +1475,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        FillEverythingFromAddressProfile_NotAddedIfNoLastTargetedField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/std::nullopt, NAME_FIRST);
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_THAT(suggestions[0].children,
@@ -1530,8 +1489,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
        IncognitoMode_EditAndDeleteSuggestionsAreNotAdded) {
   autofill_client()->set_is_off_the_record(true);
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/std::nullopt, NAME_FIRST);
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1u, suggestions.size());
   ASSERT_GT(suggestions[0].children.size(), 0u);
@@ -1550,22 +1508,20 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        FillEverythingFromAddressProfile_NotAddedIfLastTargetedAllFieldTypes) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST);
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_THAT(suggestions[0].children,
               Not(Contains(EqualsSuggestion(
                   SuggestionType::kFillEverythingFromAddressProfile))))
       << "Children should not contain the 'fill everything' suggestion because "
-         "the last targeted fields is `kAllFieldTypes`.";
+         "the current suggestions are full filling suggestions.";
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        FillEverythingFromAddressProfile_AddedIfFieldByFieldFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/FieldTypeSet{IBAN_VALUE}, NAME_FIRST);
+      profile(), SuggestionType::kAddressFieldByFieldFilling, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_THAT(suggestions[0].children,
@@ -1578,8 +1534,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_SecondLevelChildrenSuggestions) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(),
-      /*last_targeted_fields=*/std::nullopt, NAME_FIRST);
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST);
 
   ASSERT_EQ(1U, suggestions.size());
   // Suggestions should have two levels of children, The address line 1 (sixth
@@ -1607,7 +1562,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), std::optional<FieldTypeSet>({NAME_LAST}), NAME_FIRST);
+      profile(), SuggestionType::kAddressFieldByFieldFilling, NAME_FIRST);
 
   ASSERT_EQ(suggestions.size(), 1u);
   // Differently from other filling modes, where when focusing on a name field
@@ -1624,8 +1579,8 @@ TEST_F(
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), std::optional<FieldTypeSet>(GetAddressFieldsForGroupFilling()),
-      NAME_FIRST, {NAME_FIRST, NAME_LAST});
+      profile(), SuggestionType::kFillFullName, NAME_FIRST,
+      {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kFillFullName);
@@ -1636,7 +1591,8 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllFields_FullForm) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, NAME_FIRST, {NAME_FIRST, NAME_LAST});
+      profile(), SuggestionType::kAddressEntry, NAME_FIRST,
+      {NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressEntry);
@@ -1652,7 +1608,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_International) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, PHONE_HOME_WHOLE_NUMBER);
+      profile(), SuggestionType::kAddressEntry, PHONE_HOME_WHOLE_NUMBER);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1691,7 +1647,7 @@ TEST_F(
     AutofillChildrenSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_CountryCode) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, PHONE_HOME_COUNTRY_CODE);
+      profile(), SuggestionType::kAddressEntry, PHONE_HOME_COUNTRY_CODE);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1729,7 +1685,7 @@ TEST_F(
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField_Local) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, PHONE_HOME_CITY_AND_NUMBER);
+      profile(), SuggestionType::kAddressEntry, PHONE_HOME_CITY_AND_NUMBER);
 
   ASSERT_EQ(1U, suggestions.size());
   // The child suggestions should be:
@@ -1762,7 +1718,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsEmailField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, EMAIL_ADDRESS);
+      profile(), SuggestionType::kAddressEntry, EMAIL_ADDRESS);
 
   // The child suggestions should be:
   //
@@ -1789,7 +1745,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, ADDRESS_HOME_LINE1);
+      profile(), SuggestionType::kAddressEntry, ADDRESS_HOME_LINE1);
 
   // The child suggestions should be:
   //
@@ -1818,7 +1774,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsCompanyField) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), kAllFieldTypes, COMPANY_NAME);
+      profile(), SuggestionType::kAddressEntry, COMPANY_NAME);
 
   // The child suggestions should be:
   //
@@ -1855,7 +1811,7 @@ TEST_F(
   profile.SetRawInfo(ADDRESS_HOME_STREET_NAME, u"Amphitheatre Parkway");
   profile.SetRawInfo(ADDRESS_HOME_HOUSE_NUMBER, u"1600");
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile, /*last_targeted_fields=*/std::nullopt, ADDRESS_HOME_LINE1);
+      profile, SuggestionType::kAddressEntry, ADDRESS_HOME_LINE1);
 
   ASSERT_EQ(1u, suggestions.size());
   ASSERT_LE(3u, suggestions[0].children.size());
@@ -1884,7 +1840,8 @@ TEST_F(
   // We set only a name field as `last_targeted_fields` to denote that the user
   // chose field by field filling.
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), std::optional<FieldTypeSet>({NAME_FIRST}), ADDRESS_HOME_LINE1);
+      profile(), SuggestionType::kAddressFieldByFieldFilling,
+      ADDRESS_HOME_LINE1);
 
   ASSERT_EQ(1U, suggestions.size());
   EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
@@ -1920,7 +1877,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
           {UNKNOWN_TYPE}, triggering_field, UNKNOWN_TYPE,
-          /*last_targeted_fields=*/std::nullopt,
+          SuggestionType::kAddressEntry,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
   EXPECT_EQ(suggestions.size(), 4ul);
   EXPECT_THAT(suggestions[0], EqualsSuggestion(SuggestionType::kAddressEntry));
@@ -1952,8 +1909,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           .CreateSuggestionsFromProfiles(
               {&profiles[0], &profiles[1], &profiles[2], &profiles[3],
                &profiles[4]},
-              {UNKNOWN_TYPE},
-              /*last_targeted_fields=*/std::nullopt, UNKNOWN_TYPE,
+              {UNKNOWN_TYPE}, SuggestionType::kAddressEntry, UNKNOWN_TYPE,
               /*trigger_field_max_length=*/0);
 
   ASSERT_EQ(5u, suggestions.size());
@@ -2006,7 +1962,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles({&profile}, {UNKNOWN_TYPE},
-                                         /*last_targeted_fields=*/std::nullopt,
+                                         SuggestionType::kAddressEntry,
                                          UNKNOWN_TYPE,
                                          /*trigger_field_max_length=*/0);
   EXPECT_THAT(suggestions,
@@ -2033,7 +1989,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles({&profile}, {UNKNOWN_TYPE},
-                                         /*last_targeted_fields=*/std::nullopt,
+                                         SuggestionType::kAddressEntry,
                                          UNKNOWN_TYPE,
                                          /*trigger_field_max_length=*/0);
   EXPECT_THAT(
@@ -2059,7 +2015,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions =
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles({&profile}, {UNKNOWN_TYPE},
-                                         /*last_targeted_fields=*/std::nullopt,
+                                         SuggestionType::kAddressEntry,
                                          UNKNOWN_TYPE,
                                          /*trigger_field_max_length=*/0);
   EXPECT_THAT(suggestions,
@@ -2078,7 +2034,7 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
 TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionHasCorrectChildren) {
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
-      profile(), std::nullopt, UNKNOWN_TYPE);
+      profile(), SuggestionType::kAddressEntry, UNKNOWN_TYPE);
 
   // The child suggestions should be:
   //
@@ -2170,7 +2126,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       suggestion_generator().GetSuggestionsForProfiles(
           {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
           FormFieldData(), PHONE_HOME_WHOLE_NUMBER,
-          /*last_targeted_fields=*/std::nullopt,
+          SuggestionType::kAddressEntry,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressEntry);
@@ -2249,7 +2205,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   std::vector<Suggestion> address_suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
           {NAME_FIRST}, triggering_field, NAME_FIRST,
-          /*last_targeted_fields=*/std::nullopt,
+          SuggestionType::kAddressEntry,
           AutofillSuggestionTriggerSource::kFormControlElementClicked);
   EXPECT_EQ(address_suggestions.size(), 3ul);
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
@@ -2258,7 +2214,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   std::vector<Suggestion> manual_fallback_suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
           {NAME_FIRST}, triggering_field, NAME_FIRST,
-          /*last_targeted_fields=*/std::nullopt,
+          SuggestionType::kAddressEntry,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
   EXPECT_EQ(manual_fallback_suggestions.size(), 4ul);
   EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
@@ -2303,8 +2259,8 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions =
       suggestion_generator().GetSuggestionsForProfiles(
-          {NAME_FIRST}, field, NAME_FIRST,
-          /*last_targeted_fields=*/std::nullopt, kDefaultTriggerSource);
+          {NAME_FIRST}, field, NAME_FIRST, SuggestionType::kAddressEntry,
+          kDefaultTriggerSource);
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
@@ -3106,7 +3062,7 @@ TEST_F(AutofillSuggestionGeneratorTest, TestAddressSuggestion) {
       test_api(suggestion_generator())
           .CreateSuggestionsFromProfiles(
               {&profile}, /*field_types=*/{NAME_FIRST},
-              /*last_targeted_fields=*/kAllFieldTypes, NAME_FIRST,
+              SuggestionType::kAddressEntry, NAME_FIRST,
               /*trigger_field_max_length=*/0);
 
   // There should be test address suggestion and one regular profile

@@ -1944,8 +1944,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Test parameter data for asserting that the expected set of field types
 // is stored in the delegate.
 struct GetLastFieldTypesToFillForSectionTestParams {
-  const std::optional<FieldTypeSet>
-      expected_last_field_types_to_fill_for_section;
+  SuggestionType last_accepted_address_suggestion_for_section;
   const SuggestionType type;
   const std::optional<Section> section;
   const bool is_preview = false;
@@ -1962,7 +1961,8 @@ const GetLastFieldTypesToFillForSectionTestParams
         // Tests that when `SuggestionType::kAddressEntry` is accepted and
         // therefore the user wanted to fill the whole form. Autofill
         // stores the last targeted fields as `kAllFieldTypes`.
-        {.expected_last_field_types_to_fill_for_section = kAllFieldTypes,
+        {.last_accepted_address_suggestion_for_section =
+             SuggestionType::kAddressEntry,
          .type = SuggestionType::kAddressEntry,
          .test_name = "_AllFields"},
         // Tests that when `SuggestionType::kAddressFieldByFieldFilling`
@@ -1970,25 +1970,27 @@ const GetLastFieldTypesToFillForSectionTestParams
         // The last targeted fields is stored as the triggering field type
         // only, this way the next time the user interacts
         // with the form, they are kept at the same filling granularity.
-        {.expected_last_field_types_to_fill_for_section =
-             std::optional<FieldTypeSet>({NAME_FIRST}),
+        {.last_accepted_address_suggestion_for_section =
+             SuggestionType::kAddressFieldByFieldFilling,
          .type = SuggestionType::kAddressFieldByFieldFilling,
          .test_name = "_SingleField"},
         // Tests that when `GetLastFieldTypesToFillForSection` is called for
         // a section for which no information was stored, `std::nullopt` is
         // returned.
-        {.expected_last_field_types_to_fill_for_section = std::nullopt,
+        {.last_accepted_address_suggestion_for_section =
+             SuggestionType::kAddressEntry,
          .type = SuggestionType::kCreditCardEntry,
          .test_name = "_EmptySet"},
-        {.expected_last_field_types_to_fill_for_section = std::nullopt,
+        {.last_accepted_address_suggestion_for_section =
+             SuggestionType::kAddressEntry,
          .type = SuggestionType::kAddressEntry,
          .section = Section::FromAutocomplete({.section = "another-section"}),
          .test_name = "_DoesNotReturnsForNonExistingSection"},
-        // Tests that when `SuggestionType::kAddressEntry` is selected
-        // (i.e preview mode) we do not store anything as last
-        // targeted fields.
-        {.expected_last_field_types_to_fill_for_section = std::nullopt,
-         .type = SuggestionType::kAddressEntry,
+        // Tests that when `SuggestionType::kFillFullAddress` is selected
+        // (i.e preview) we do not store anything as last accepted suggestion.
+        {.last_accepted_address_suggestion_for_section =
+             SuggestionType::kAddressEntry,
+         .type = SuggestionType::kFillFullAddress,
          .is_preview = true,
          .test_name = "_NotStoredDuringPreview"}};
 
@@ -2017,9 +2019,9 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
   }
 
   EXPECT_EQ(
-      external_delegate().GetLastFieldTypesToFillForSection(
+      external_delegate().GetLastAcceptedSuggestionToFillForSection(
           params.section.value_or(get_triggering_autofill_field()->section())),
-      params.expected_last_field_types_to_fill_for_section);
+      params.last_accepted_address_suggestion_for_section);
 }
 
 INSTANTIATE_TEST_SUITE_P(

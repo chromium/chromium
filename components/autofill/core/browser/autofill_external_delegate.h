@@ -87,17 +87,14 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions);
 
-  // Returns the last targeted field types to be filled. This does not
-  // equate to the field types that were actually filed, but only to those
-  // that were targeted. If a field type is not present on the form that
-  // triggered the suggestions, it cannot possibly be filled.
+  // Returns the type of the last accepted address filling suggestion.
   // This is used by group filling to keep users in the same granularity level
   // by filtering out fields that do not match the last targeted fields group
   // granularity. For example, if users choose to fill every address field, we
   // will store these fields so that in a next iteration, when the user clicks,
   // say a name field only fields that are of group name are filled, therefore
   // staying at a group filling level.
-  std::optional<FieldTypeSet> GetLastFieldTypesToFillForSection(
+  SuggestionType GetLastAcceptedSuggestionToFillForSection(
       const Section& section) const;
 
   // Returns true if there is a screen reader installed on the machine.
@@ -258,11 +255,10 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // The method how suggestions were triggered on the current form.
   AutofillSuggestionTriggerSource trigger_source_;
 
-  // Stores the last `AutofillTriggerDetails::field_types_to_fill`.
   // We key this information by form section to guarantee granular filling
   // side effects are specific are not "leaked" to other forms.
-  base::flat_map<Section, FieldTypeSet>
-      last_field_types_to_fill_for_address_form_section_;
+  base::flat_map<Section, SuggestionType>
+      last_accepted_address_suggestion_for_address_form_section_;
 
   bool show_cards_from_account_suggestion_was_shown_ = false;
 

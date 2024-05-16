@@ -579,6 +579,73 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   }
 }
 
+SuggestionType GetSuggestionTypeFromLastAcceptedAddressSuggestion(
+    SuggestionType last_suggestion_type,
+    FieldType trigger_field_type) {
+  switch (last_suggestion_type) {
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+      return SuggestionType::kAddressEntry;
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
+      switch (GroupTypeOfFieldType(trigger_field_type)) {
+        case FieldTypeGroup::kName:
+          return SuggestionType::kFillFullName;
+        case FieldTypeGroup::kEmail:
+          return SuggestionType::kFillFullEmail;
+        case FieldTypeGroup::kCompany:
+        case FieldTypeGroup::kAddress:
+          return SuggestionType::kFillFullAddress;
+        case FieldTypeGroup::kPhone:
+          return SuggestionType::kFillFullPhoneNumber;
+        case FieldTypeGroup::kCreditCard:
+        case FieldTypeGroup::kPasswordField:
+        case FieldTypeGroup::kTransaction:
+        case FieldTypeGroup::kUsernameField:
+        case FieldTypeGroup::kUnfillable:
+        case FieldTypeGroup::kIban:
+        case FieldTypeGroup::kNoGroup:
+          // This function should only be called when triggering suggestions on
+          // an address field. Suggestions on non-address fields always get
+          // SuggestionType::kAddress and are handled elsewhere.
+          NOTREACHED_NORETURN();
+      }
+      NOTREACHED_NORETURN();
+    case SuggestionType::kAddressFieldByFieldFilling:
+      return SuggestionType::kAddressFieldByFieldFilling;
+    default:
+      // `last_suggestion_type` is only one of the address filling suggestion
+      // types, therefore no other type should be passed to this function.
+      NOTREACHED_NORETURN();
+  }
+  NOTREACHED_NORETURN();
+}
+
+FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
+    SuggestionType suggestion_type,
+    FieldType trigger_field_type) {
+  switch (suggestion_type) {
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+      return kAllFieldTypes;
+    case SuggestionType::kFillFullAddress:
+      return GetAddressFieldsForGroupFilling();
+    case SuggestionType::kFillFullName:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
+    case SuggestionType::kFillFullPhoneNumber:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
+    case SuggestionType::kFillFullEmail:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
+    case SuggestionType::kAddressFieldByFieldFilling:
+      return FieldTypeSet{trigger_field_type};
+    default:
+      NOTREACHED_NORETURN();
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
@@ -2324,25 +2391,26 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 #endif
   address_form_event_logger_->OnDidPollSuggestions(trigger_field,
                                                    signin_state_for_metrics_);
-  const bool triggering_field_is_not_address_field =
-      !form_structure ||
-      (trigger_autofill_field &&
-       !IsAddressType(trigger_autofill_field->Type().GetStorableType()));
 
-  if (triggering_field_is_not_address_field) {
+  const bool trigger_field_type_is_address_type =
+      form_structure && trigger_autofill_field &&
+      IsAddressType(trigger_autofill_field->Type().GetStorableType());
+  if (!trigger_field_type_is_address_type) {
     // Since Autofill was triggered from a field that is not classified as
     // address, we consider the `field_types` (i.e, the fields found in the
     // "form") to be a single unclassified field. Note that in this flow it is
     // not used and only holds semantic value.
     return suggestion_generator_->GetSuggestionsForProfiles(
         /*field_types=*/{UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
-        /*last_targeted_fields=*/std::nullopt, trigger_source);
+        SuggestionType::kAddressEntry, trigger_source);
   }
-  // If not manual fallback, `form_structure` and `autofill_field` should exist.
-  CHECK(form_structure && trigger_autofill_field);
-  std::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
-      external_delegate_->GetLastFieldTypesToFillForSection(
-          trigger_autofill_field->section());
+
+  CHECK(trigger_field_type_is_address_type);
+  SuggestionType current_suggestion_type =
+      GetSuggestionTypeFromLastAcceptedAddressSuggestion(
+          external_delegate_->GetLastAcceptedSuggestionToFillForSection(
+              trigger_autofill_field->section()),
+          trigger_autofill_field->Type().GetStorableType());
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
   // assumes that the passed FormData and FormStructure have the same size. If
@@ -2352,11 +2420,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       form.fields.size() == form_structure->field_count()
           ? form_filler_->GetFieldFillingSkipReasons(
                 form, *form_structure, *trigger_autofill_field,
-                last_address_fields_to_fill_for_section
-                    ? GetTargetServerFieldsForTypeAndLastTargetedFields(
-                          *last_address_fields_to_fill_for_section,
-                          trigger_autofill_field->Type().GetStorableType())
-                    : kAllFieldTypes,
+                GetTargetFieldsForAddressFillingSuggestionType(
+                    current_suggestion_type,
+                    trigger_autofill_field->Type().GetStorableType()),
                 /*type_groups_originally_filled=*/std::nullopt,
                 FillingProduct::kAddress,
                 /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
@@ -2374,8 +2440,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
       field_types, trigger_field,
-      trigger_autofill_field->Type().GetStorableType(),
-      last_address_fields_to_fill_for_section, trigger_source);
+      trigger_autofill_field->Type().GetStorableType(), current_suggestion_type,
+      trigger_source);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(

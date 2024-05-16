@@ -9,35 +9,6 @@
 
 namespace autofill {
 
-namespace {
-
-FieldTypeSet GetFieldTypesForFieldGroup(FieldTypeGroup group) {
-  switch (group) {
-    case FieldTypeGroup::kName:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
-    case FieldTypeGroup::kAddress:
-    case FieldTypeGroup::kCompany:
-      return GetAddressFieldsForGroupFilling();
-    case FieldTypeGroup::kPhone:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
-    case FieldTypeGroup::kEmail:
-      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kCreditCard:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kIban:
-      // If `group` is not one of the groups we offer group filling for
-      // (name, address and phone field), we default back to fill full form
-      // behaviour/pre-granular filling.
-      return kAllFieldTypes;
-  }
-}
-
-}  // namespace
-
 FillingMethod GetFillingMethodFromTargetedFields(
     const FieldTypeSet& targeted_field_types) {
   if (targeted_field_types == kAllFieldTypes) {
@@ -106,26 +77,6 @@ FieldTypeSet GetTargetFieldTypesFromFillingMethod(
     case FillingMethod::kNone:
       NOTREACHED_NORETURN();
   }
-}
-
-FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const FieldTypeSet& last_targeted_field_types,
-    FieldType triggering_field_type) {
-  switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
-    case FillingMethod::kGroupFillingName:
-    case FillingMethod::kGroupFillingAddress:
-    case FillingMethod::kGroupFillingEmail:
-    case FillingMethod::kGroupFillingPhoneNumber:
-      return GetFieldTypesForFieldGroup(
-          GroupTypeOfFieldType(triggering_field_type));
-    case FillingMethod::kFullForm:
-      return kAllFieldTypes;
-    case FillingMethod::kFieldByFieldFilling:
-      return {triggering_field_type};
-    case FillingMethod::kNone:
-      break;
-  }
-  NOTREACHED_NORETURN();
 }
 
 }  // namespace autofill

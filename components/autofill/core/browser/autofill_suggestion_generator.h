@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace base {
@@ -48,16 +49,12 @@ class AutofillSuggestionGenerator {
   // Generates suggestions for a form containing the given `field_types`. It
   // considers all available profiles, deduplicates them based on the types and
   // returns one suggestion per remaining profile.
-  // `last_targeted_fields` is used to know which fields were targeted on a
-  // prior form interaction. In the context of granular filling, this could lead
-  // the user to be in one of the available filling granularities, field by
-  // field filling, group filling or full form (default). `field_types` are the
-  // relevant types for the current suggestions.
+  // `field_types` are the relevant types for the current suggestions.
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FieldTypeSet& field_types,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      std::optional<FieldTypeSet> last_targeted_fields,
+      SuggestionType suggestion_type,
       AutofillSuggestionTriggerSource trigger_source);
 
   // Generates suggestions for all available credit cards based on the
@@ -160,7 +157,7 @@ class AutofillSuggestionGenerator {
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
       const FieldTypeSet& field_types,
-      std::optional<FieldTypeSet> last_targeted_fields,
+      SuggestionType suggestion_type,
       FieldType trigger_field_type,
       uint64_t trigger_field_max_length);
 
@@ -215,13 +212,9 @@ class AutofillSuggestionGenerator {
   // information. Uses `trigger_field_type` to define what group filling
   // suggestion to add (name, address or phone). The existence of child
   // suggestions defines whether the autofill popup will have submenus.
-  // `last_targeted_fields` specified the last set of fields target by the user.
-  // When not present, we default to full form.
-  void AddAddressGranularFillingChildSuggestions(
-      std::optional<FieldTypeSet> last_targeted_fields,
-      FieldType trigger_field_type,
-      const AutofillProfile& profile,
-      Suggestion& suggestion) const;
+  void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
+                                                 const AutofillProfile& profile,
+                                                 Suggestion& suggestion) const;
 
   // Creates nested/child suggestions for `suggestion` with the `credit_card`
   // information. The number of nested suggestions added depends on the
