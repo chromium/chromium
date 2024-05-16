@@ -196,8 +196,6 @@ def main():
 
   parser.add_argument('out_dir', nargs='?', default='out/IOSWebViewBuild',
                       help='path to output directory')
-  parser.add_argument('--no_goma', action='store_true',
-                      help='Prevents adding use_goma=true to the gn args.')
   parser.add_argument('--ninja_args',
                       help='Additional gn args to pass through to ninja.')
   build_configs = ['Debug', 'Release']
@@ -224,8 +222,6 @@ def main():
 
   output_name = 'ChromeWebView'
   extra_gn_options = []
-  if not options.no_goma:
-    extra_gn_options.append('use_goma=true')
   # This prevents Breakpad from being included in the final binary to avoid
   # duplicate symbols with the client app.
   extra_gn_options.append('use_crash_key_stubs=true')

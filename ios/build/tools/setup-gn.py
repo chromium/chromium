@@ -116,12 +116,6 @@ class GnGenerator(object):
     """
     args = []
 
-    if self._settings.getboolean('goma', 'enabled'):
-      args.append(('use_goma', True))
-      goma_dir = self._settings.getstring('goma', 'install')
-      if goma_dir:
-        args.append(('goma_dir', '"%s"' % os.path.expanduser(goma_dir)))
-
     is_debug = self._config == 'Debug'
     official = self._config == 'Official'
     is_optim = self._config in ('Profile', 'Official')
