@@ -92,7 +92,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int NUM_ENTRIES = 8;
     };
 
-    private static final int CAPABILITY_TIMEOUT_MS = 400;
+    private static final int CAPABILITY_TIMEOUT_MS = 1000;
 
     private static boolean sDisableHistorySyncOptInTimeout;
 
