@@ -11,7 +11,6 @@ import androidx.annotation.Nullable;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
-import org.chromium.base.test.transit.ViewConditions.ExistsCondition;
 import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
 import org.chromium.base.test.transit.ViewElement.Scope;
@@ -40,8 +39,8 @@ class ViewElementInState implements ElementInState {
         mGate = gate;
 
         Matcher<View> viewMatcher = mViewElement.getViewMatcher();
-        ExistsCondition.Options conditionOptions =
-                ExistsCondition.newOptions()
+        DisplayedCondition.Options conditionOptions =
+                DisplayedCondition.newOptions()
                         .withExpectEnabled(mViewElement.getOptions().mExpectEnabled)
                         .build();
         if (mGate != null) {
