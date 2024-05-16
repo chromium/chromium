@@ -1225,6 +1225,14 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     element_name = element_name.LowerASCII();
   }
 
+  // A tag name is not valid following a pseudo-element. This can happen for
+  // e.g. :::part(x):is(div).
+  if (restricting_pseudo_element_ != CSSSelector::kPseudoUnknown &&
+      has_q_name) {
+    failed_parsing_ = true;
+    return {};  // Failure.
+  }
+
   // Consume all the simple selectors that are not tag names.
   while (ConsumeSimpleSelector(range)) {
     const CSSSelector& simple_selector = output_.back();
