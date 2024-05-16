@@ -170,6 +170,10 @@ class PLATFORM_EXPORT MainThreadEventQueue
 
   void ClearRafFallbackTimerForTesting();
 
+  void UnblockQueuedBlockingTouchMovesIfNeeded(
+      const WebInputEvent& dispatched_event,
+      mojom::blink::InputEventResultState ack_result);
+
   friend class QueuedWebInputEvent;
   friend class MainThreadEventQueueTest;
   friend class MainThreadEventQueueInitializationTest;
@@ -177,6 +181,7 @@ class PLATFORM_EXPORT MainThreadEventQueue
   const bool allow_raf_aligned_input_;
   bool last_touch_start_forced_nonblocking_due_to_fling_ = false;
   bool has_pointerrawupdate_handlers_ = false;
+  bool blocking_touch_start_not_consumed_ = false;
 
   // These variables are read on the compositor thread but are
   // written on the main thread, so we use atomics to keep them

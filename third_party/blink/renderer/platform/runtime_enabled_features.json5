@@ -4052,6 +4052,13 @@
       status: "experimental",
     },
     {
+      // Unblock queued blocking touchmove after the main thread handles the
+      // touchstart and the first touchmove and they didn't call
+      // preventDefault(), instead of waiting for the browser to send
+      // touchscrollstarted.
+      name: "UnblockTouchMoveEarlier",
+    },
+    {
       name: "UnclosedFormControlIsInvalid",
       status: "experimental",
     },
