@@ -220,6 +220,10 @@ void ManagementUIHandler::RegisterMessages() {
       "initBrowserReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitBrowserReportingInfo,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "initProfileReportingInfo",
+      base::BindRepeating(&ManagementUIHandler::HandleInitProfileReportingInfo,
+                          base::Unretained(this)));
 }
 
 void ManagementUIHandler::OnJavascriptAllowed() {
@@ -230,7 +234,8 @@ void ManagementUIHandler::OnJavascriptDisallowed() {
   RemoveObservers();
 }
 
-void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
+void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
+                                           bool is_browser) {
   const policy::PolicyService* policy_service = GetPolicyService();
 
   const policy::PolicyNamespace
@@ -261,6 +266,9 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
            ->GetPrefs()
            ->GetList(enterprise_reporting::kCloudLegacyTechReportAllowlist)
            .empty();
+  const bool cloud_profile_reporting_policy_enabled =
+      Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+          enterprise_reporting::kCloudProfileReportingEnabled);
 
   if (cloud_legacy_tech_report_enabled) {
     Profile::FromWebUI(web_ui())->GetPrefs()->GetList(
@@ -293,42 +301,58 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources) {
       {kPolicyKeyReportUserBrowsingData, kManagementLegacyTechReport,
        ReportingType::kLegacyTech, cloud_legacy_tech_report_enabled}};
 
-  std::unordered_set<const char*> enabled_messages;
-
-  for (auto& report_definition : report_definitions) {
-    if (report_definition.cloud_reporting_enabled) {
-      enabled_messages.insert(report_definition.message);
-    } else if (report_definition.reporting_extension_policy_key) {
-      for (const policy::PolicyMap* policy_map : policy_maps) {
-        const base::Value* policy_value = policy_map->GetValue(
-            report_definition.reporting_extension_policy_key,
-            base::Value::Type::BOOLEAN);
-        if (policy_value && policy_value->GetBool()) {
-          enabled_messages.insert(report_definition.message);
-          break;
+  if (is_browser) {
+    std::unordered_set<const char*> enabled_messages;
+    for (auto& report_definition : report_definitions) {
+      if (report_definition.cloud_reporting_enabled) {
+        enabled_messages.insert(report_definition.message);
+      } else if (report_definition.reporting_extension_policy_key) {
+        for (const policy::PolicyMap* policy_map : policy_maps) {
+          const base::Value* policy_value = policy_map->GetValue(
+              report_definition.reporting_extension_policy_key,
+              base::Value::Type::BOOLEAN);
+          if (policy_value && policy_value->GetBool()) {
+            enabled_messages.insert(report_definition.message);
+            break;
+          }
         }
       }
     }
-  }
 
-  // The message with more data collected for kPolicyKeyReportMachineIdData
-  // trumps the one with less data.
-  if (enabled_messages.find(kManagementExtensionReportMachineNameAddress) !=
-      enabled_messages.end()) {
-    enabled_messages.erase(kManagementExtensionReportMachineName);
-  }
-
-  for (auto& report_definition : report_definitions) {
-    if (enabled_messages.find(report_definition.message) ==
+    // The message with more data collected for kPolicyKeyReportMachineIdData
+    // trumps the one with less data.
+    if (enabled_messages.find(kManagementExtensionReportMachineNameAddress) !=
         enabled_messages.end()) {
-      continue;
+      enabled_messages.erase(kManagementExtensionReportMachineName);
     }
 
-    base::Value::Dict data;
-    data.Set("messageId", report_definition.message);
-    data.Set("reportingType",
-             GetReportingTypeValue(report_definition.reporting_type));
-    report_sources->Append(std::move(data));
+    for (auto& report_definition : report_definitions) {
+      if (enabled_messages.find(report_definition.message) ==
+          enabled_messages.end()) {
+        continue;
+      }
+
+      base::Value::Dict data;
+      data.Set("messageId", report_definition.message);
+      data.Set("reportingType",
+               GetReportingTypeValue(report_definition.reporting_type));
+      report_sources->Append(std::move(data));
+    }
+  } else {
+    if (cloud_reporting_policy_enabled ||
+        !cloud_profile_reporting_policy_enabled) {
+      return;
+    }
+
+    const std::string messages[] = {
+        kProfileReportingOverview, kProfileReportingUsername,
+        kProfileReportingBrowser, kProfileReportingExtension,
+        kProfileReportingPolicy};
+    for (const auto& message : messages) {
+      base::Value::Dict data;
+      data.Set("messageId", message);
+      report_sources->Append(std::move(data));
+    }
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Insert the device signals consent disclosure at the end of browser
@@ -620,14 +644,28 @@ void ManagementUIHandler::HandleInitBrowserReportingInfo(
     const base::Value::List& args) {
   base::Value::List report_sources;
   AllowJavascript();
-  AddReportingInfo(&report_sources);
+  AddReportingInfo(&report_sources, /*is_browser=*/true);
+  ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
+}
+
+void ManagementUIHandler::HandleInitProfileReportingInfo(
+    const base::Value::List& args) {
+  base::Value::List report_sources;
+  AllowJavascript();
+  AddReportingInfo(&report_sources, /*is_browser=*/false);
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
 }
 
 void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {
   base::Value::List report_sources;
-  AddReportingInfo(&report_sources);
+  AddReportingInfo(&report_sources, /*is_browser=*/true);
   FireWebUIListener("browser-reporting-info-updated", report_sources);
+}
+
+void ManagementUIHandler::NotifyProfileReportingInfoUpdated() {
+  base::Value::List report_sources;
+  AddReportingInfo(&report_sources, /*is_browser=*/false);
+  FireWebUIListener("profile-reporting-info-updated", report_sources);
 }
 
 void ManagementUIHandler::NotifyThreatProtectionInfoUpdated() {
@@ -660,6 +698,7 @@ void ManagementUIHandler::OnPolicyUpdated(
     const policy::PolicyMap& /*current*/) {
   UpdateManagedState();
   NotifyBrowserReportingInfoUpdated();
+  NotifyProfileReportingInfoUpdated();
   NotifyThreatProtectionInfoUpdated();
 }
 

@@ -31,7 +31,7 @@ import {getTemplate} from './management_ui.html.js';
 
 interface BrowserReportingData {
   messageIds: string[];
-  icon: string;
+  icon?: string;
 }
 
 const ManagementUiElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
@@ -61,6 +61,11 @@ class ManagementUiElement extends ManagementUiElementBase {
        * List of messages related to browser reporting.
        */
       browserReportingInfo_: Array,
+
+      /**
+       * List of messages related to profile reporting.
+       */
+      profileReportingInfo_: Array,
 
       /**
        * List of messages related to extension reporting.
@@ -111,6 +116,8 @@ class ManagementUiElement extends ManagementUiElementBase {
 
   private applications_: Application[]|null;
   private browserReportingInfo_: BrowserReportingData[]|null;
+  private profileReportingInfo_: BrowserReportingData[]|null;
+  private reportingInfo_: BrowserReportingData[]|null;
   private extensions_: Extension[]|null;
   private managedWebsites_: string[]|null;
   private managedWebsitesSubtitle_: string;
@@ -145,13 +152,18 @@ class ManagementUiElement extends ManagementUiElementBase {
     document.documentElement.classList.remove('loading');
     this.browserProxy_ = ManagementBrowserProxyImpl.getInstance();
     this.updateManagedFields_();
-    this.initBrowserReportingInfo_();
+    this.initReportingInfo_();
     this.getThreatProtectionInfo_();
 
     this.addWebUiListener(
         'browser-reporting-info-updated',
         (reportingInfo: BrowserReportingResponse[]) =>
             this.onBrowserReportingInfoReceived_(reportingInfo));
+
+    this.addWebUiListener(
+        'profile-reporting-info-updated',
+        (reportingInfo: BrowserReportingResponse[]) =>
+            this.onProfileReportingInfoReceived_(reportingInfo));
 
     // <if expr="is_chromeos">
     this.addWebUiListener(
@@ -177,9 +189,11 @@ class ManagementUiElement extends ManagementUiElementBase {
     // </if>
   }
 
-  private initBrowserReportingInfo_() {
+  private initReportingInfo_() {
     this.browserProxy_!.initBrowserReportingInfo().then(
         reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
+    this.browserProxy_!.initProfileReportingInfo().then(
+        reportingInfo => this.onProfileReportingInfoReceived_(reportingInfo));
   }
 
   private onBrowserReportingInfoReceived_(reportingInfo:
@@ -208,6 +222,14 @@ class ManagementUiElement extends ManagementUiElementBase {
             .map(reportingType => reportingInfoMap[reportingType]);
   }
 
+
+  private onProfileReportingInfoReceived_(reportingInfo:
+                                              BrowserReportingResponse[]) {
+    this.profileReportingInfo_ =
+        reportingInfo.map((info) => ({
+                            messageIds: [info.messageId],
+                          }));
+  }
   private getExtensions_() {
     this.browserProxy_!.getExtensions().then(extensions => {
       this.extensions_ = extensions;
@@ -341,6 +363,15 @@ class ManagementUiElement extends ManagementUiElementBase {
     return !!this.browserReportingInfo_ &&
         this.browserReportingInfo_.length > 0;
   }
+
+  /**
+   * @return Whether there are profile reporting info to show with new format.
+   */
+  private showProfileReportingInfo_(): boolean {
+    return !!this.profileReportingInfo_ &&
+        this.profileReportingInfo_.length > 0;
+  }
+
 
   /**
    * @return Whether there are extension reporting info to show.
