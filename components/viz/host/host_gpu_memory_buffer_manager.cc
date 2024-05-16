@@ -441,7 +441,7 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
   if (client_iter == pending_buffers_.end()) {
     // The client has been destroyed since the allocation request was made. The
     // callback is already called with null handle.
-    if (!handle.is_null()) {
+    if (!handle.is_null() && handle.type != gfx::SHARED_MEMORY_BUFFER) {
       auto* gpu_service = GetGpuService();
       gpu_service->DestroyGpuMemoryBuffer(handle.id, client_id);
     }
@@ -450,7 +450,7 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
 
   auto buffer_iter = client_iter->second.find(id);
   if (buffer_iter == client_iter->second.end()) {
-    if (!handle.is_null()) {
+    if (!handle.is_null() && handle.type != gfx::SHARED_MEMORY_BUFFER) {
       // DestroyGpuMemoryBuffer for client_id was called followed by an
       // AllocateGpuMemoryBuffer for a new id.
       auto* gpu_service = GetGpuService();
