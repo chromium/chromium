@@ -485,7 +485,6 @@ crbug.com/40935289 [ fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP
 
 # Failures on Windows with SkiaGraphite
 crbug.com/329235191 [ graphite-enabled nvidia-0x2184 win10 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
-crbug.com/329235191 [ graphite-enabled qualcomm-0x41333430 target-cpu-64 win11 ] Pixel_WebGL_PremultipliedAlpha_False [ Failure ]
 
 # Failures on Mac Asan with Graphite
 crbug.com/338071687 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthrough ] Pixel_Canvas2DBlitText [ Failure ]
