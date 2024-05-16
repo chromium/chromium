@@ -4164,9 +4164,6 @@ extern const char kArcWindowPredictorDescription[];
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
 
-extern const char kScreencastV2Name[];
-extern const char kScreencastV2Description[];
-
 extern const char kSealKeyName[];
 extern const char kSealKeyDescription[];
 

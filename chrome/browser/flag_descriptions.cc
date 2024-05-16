@@ -7186,9 +7186,6 @@ const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
 
-const char kScreencastV2Name[] = "Screencast V2";
-const char kScreencastV2Description[] = "Enable V2 features for Screencast app";
-
 const char kSeaPenName[] = "SeaPen";
 const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
 
