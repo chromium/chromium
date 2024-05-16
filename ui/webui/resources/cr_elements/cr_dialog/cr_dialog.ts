@@ -25,7 +25,6 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CrContainerShadowMixinLit} from '../cr_container_shadow_mixin_lit.js';
-import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getCss} from './cr_dialog.css.js';
@@ -35,7 +34,6 @@ const CrDialogElementBase = CrContainerShadowMixinLit(CrLitElement);
 
 export interface CrDialogElement {
   $: {
-    close: CrIconButtonElement,
     dialog: HTMLDialogElement,
   };
 }

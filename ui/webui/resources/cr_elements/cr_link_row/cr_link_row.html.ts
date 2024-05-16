@@ -7,10 +7,11 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrLinkRowElement} from './cr_link_row.js';
 
 export function getHtml(this: CrLinkRowElement) {
+  // clang-format off
   return html`
-<cr-icon id="startIcon" .icon="${this.startIcon}" ?hidden="${!this.startIcon}"
-    aria-hidden="true">
-</cr-icon>
+    ${this.startIcon ? html`
+<cr-icon id="startIcon" .icon="${this.startIcon}" aria-hidden="true"></cr-icon>
+    `: ''}
 <div id="labelWrapper" ?hidden="${this.shouldHideLabelWrapper_()}">
   <div id="label" aria-hidden="${!this.ariaShowLabel}">
     ${this.label}
@@ -31,4 +32,5 @@ export function getHtml(this: CrLinkRowElement) {
     aria-describedby="buttonAriaDescription"
     aria-labelledby="label subLabel" ?disabled="${this.disabled}">
 </cr-icon-button>`;
+  // clang-format on
 }

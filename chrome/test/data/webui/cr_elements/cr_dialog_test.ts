@@ -10,8 +10,8 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {keyDownOn, keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
@@ -174,7 +174,7 @@ suite('cr-dialog', function() {
 
   test('enter keys should trigger action buttons once', function() {
     document.body.innerHTML = getTrustedHTML`
-      <cr-dialog>
+      <cr-dialog show-close-button>
         <div slot="title">title</div>
         <div slot="body">
           <button class="action-button">button</button>
@@ -213,7 +213,9 @@ suite('cr-dialog', function() {
     assertEquals(0, clickedCounter);
 
     // Enter keys on the close icon in the top-right corner should be ignored.
-    pressEnter(dialog.$.close);
+    const close = dialog.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!close);
+    pressEnter(close);
     assertEquals(0, clickedCounter);
   });
 
@@ -449,7 +451,7 @@ suite('cr-dialog', function() {
     assertTrue(dialog.noCancel);
     dialog.showModal();
 
-    assertTrue(dialog.$.close.hidden);
+    assertNull(dialog.shadowRoot!.querySelector('#close'));
 
     // Hitting escape fires a 'cancel' event. Cancelling that event prevents the
     // dialog from closing.
@@ -475,9 +477,10 @@ suite('cr-dialog', function() {
     dialog.showModal();
     assertTrue(dialog.open);
 
-    assertFalse(dialog.$.close.hidden);
-    assertEquals('flex', window.getComputedStyle(dialog.$.close).display);
-    dialog.$.close.click();
+    const close = dialog.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!close);
+    assertTrue(isVisible(close));
+    close.click();
     assertFalse(dialog.open);
   });
 
@@ -490,8 +493,7 @@ suite('cr-dialog', function() {
     const dialog = document.body.querySelector('cr-dialog')!;
     dialog.showModal();
 
-    assertTrue(dialog.$.close.hidden);
-    assertEquals('none', window.getComputedStyle(dialog.$.close).display);
+    assertNull(dialog.shadowRoot!.querySelector('#close'));
   });
 
   test('keydown should be consumed when the property is true', function() {
@@ -553,20 +555,22 @@ suite('cr-dialog', function() {
 
   test('close-text', async () => {
     document.body.innerHTML = getTrustedHTML`
-      <cr-dialog close-text="foo">
+      <cr-dialog close-text="foo" show-close-button>
         <div slot="title">title</div>
       </cr-dialog>`;
     const dialog = document.body.querySelector('cr-dialog')!;
     dialog.showModal();
 
     assertEquals('foo', dialog.closeText);
-    assertEquals('foo', dialog.$.close.ariaLabel);
-    assertEquals('foo', dialog.$.close.getAttribute('aria-label'));
+    const close = dialog.shadowRoot!.querySelector<HTMLElement>('#close');
+    assertTrue(!!close);
+    assertEquals('foo', close.ariaLabel);
+    assertEquals('foo', close.getAttribute('aria-label'));
 
     dialog.closeText = undefined;
     await dialog.updateComplete;
-    assertEquals(null, dialog.$.close.ariaLabel);
-    assertFalse(dialog.$.close.hasAttribute('aria-label'));
+    assertEquals(null, close.ariaLabel);
+    assertFalse(close.hasAttribute('aria-label'));
   });
 
   // Test that when ignoreEnterKey is set, pressing "Enter" does not trigger the

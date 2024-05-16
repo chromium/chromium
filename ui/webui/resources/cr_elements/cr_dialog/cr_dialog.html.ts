@@ -7,6 +7,7 @@ import type {CrDialogElement} from './cr_dialog.js';
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(this: CrDialogElement) {
+  // clang-format off
   return html`
 <dialog id="dialog" @close="${this.onNativeDialogClose_}"
     @cancel="${this.onNativeDialogCancel_}" part="dialog"
@@ -19,11 +20,12 @@ export function getHtml(this: CrDialogElement) {
       <h2 id="title" class="title-container" tabindex="-1">
         <slot name="title"></slot>
       </h2>
-      <cr-icon-button id="close" class="icon-clear"
-          ?hidden="${!this.showCloseButton}"
-          aria-label="${this.closeText || nothing}"
-          @click="${this.cancel}" @keypress="${this.onCloseKeypress_}">
-      </cr-icon-button>
+      ${this.showCloseButton ? html`
+        <cr-icon-button id="close" class="icon-clear"
+            aria-label="${this.closeText || nothing}"
+            @click="${this.cancel}" @keypress="${this.onCloseKeypress_}">
+        </cr-icon-button>
+       ` : ''}
     </div>
     <slot name="header"></slot>
     <div class="body-container" id="container" show-bottom-shadow
@@ -34,4 +36,5 @@ export function getHtml(this: CrDialogElement) {
     <slot name="footer"></slot>
   </div>
 </dialog>`;
+  // clang-format on
 }
