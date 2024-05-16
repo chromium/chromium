@@ -4417,6 +4417,7 @@ source_set("ash") {
     "//components/reporting/util:rate_limiter_slide_window",
     "//components/reporting/util:status",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/search_engines",
     "//components/services/app_service",
     "//components/services/filesystem/public/mojom",
     "//components/services/unzip/content",
