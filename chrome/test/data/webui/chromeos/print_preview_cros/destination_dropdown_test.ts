@@ -11,7 +11,8 @@ import {DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownCon
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -49,6 +50,19 @@ suite('DestinationDropdown', () => {
     mockController.reset();
   });
 
+  function getSelectedDestinationRow(): DestinationRowElement {
+    return strictQuery<DestinationRowElement>(
+        selectedDestinationSelector, element.shadowRoot, DestinationRowElement);
+  }
+
+  async function toggleDropdown(): Promise<void> {
+    const selected = getSelectedDestinationRow();
+    const clickEvent = eventToPromise('click', selected);
+    selected.click();
+    await clickEvent;
+    flush();
+  }
+
   // Verify the dropdown can be added to UI.
   test('element renders', () => {
     assertTrue(
@@ -79,9 +93,7 @@ suite('DestinationDropdown', () => {
         controller.dispatchEvent(testEvent);
         await selectedChangedEvent1;
 
-        const selected = strictQuery<DestinationRowElement>(
-            selectedDestinationSelector, element.shadowRoot,
-            DestinationRowElement);
+        const selected = getSelectedDestinationRow();
         const rowLabel = strictQuery<HTMLElement>(
             '#label', selected.shadowRoot, HTMLElement);
         assertEquals(
@@ -99,4 +111,24 @@ suite('DestinationDropdown', () => {
             PDF_DESTINATION.displayName, rowLabel.textContent!.trim(),
             `Selected destination should match active destination`);
       });
+
+  // Verify clicking dropdown's selected UI toggles content visibility.
+  test('clicking dropdown toggles content visibility', async () => {
+    const getDestinationsFn =
+        mockController.createFunctionMock(controller, 'getDestinations');
+    getDestinationsFn.returnValue = [PDF_DESTINATION];
+
+    assertTrue(isVisible(getSelectedDestinationRow()));
+    const content =
+        strictQuery<HTMLElement>('#content', element.shadowRoot, HTMLElement);
+    assertFalse(isVisible(content), 'Content is not initially displayed');
+
+    // Open dropdown.
+    await toggleDropdown();
+    assertTrue(isVisible(content), 'Content displayed after click');
+
+    // Close dropdown.
+    await toggleDropdown();
+    assertFalse(isVisible(content), 'Content closed after click');
+  });
 });

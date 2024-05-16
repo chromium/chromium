@@ -1,3 +1,12 @@
 <style include="print-preview-cros-shared"></style>
-<destination-row id="selected" destination="[[selectedDestination]]">
+<destination-row id="selected" destination="[[selectedDestination]]"
+  on-click="onSelectedClicked">
 </destination-row>
+<div id="content" hidden="[[!open]]">
+  <!-- TODO(b/323421684): Replace with list of recent destinations, digital
+  destinations, and add button to open destination dialog. -->
+  <template is="dom-repeat" items="[[destinations]]">
+    <destination-row destination="[[item]]">
+    </destination-row>
+  </template>
+</div>

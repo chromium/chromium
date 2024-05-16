@@ -10,10 +10,12 @@ import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destinati
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {createTestDestination} from './test_utils.js';
 
 suite('DestinationDropdownController', () => {
   let controller: DestinationDropdownController;
@@ -102,4 +104,14 @@ suite('DestinationDropdownController', () => {
             expectedCallCount, callCount,
             `${DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION} emitted`);
       });
+
+  // Verify getDestinations returns expected list of destinations.
+  test('getDestinations returns expected list of destinations', () => {
+    const getDestinationsFn = mockController.createFunctionMock(
+        destinationManager, 'getDestinations');
+    const expectedDestinations = [createTestDestination()];
+    getDestinationsFn.returnValue = expectedDestinations;
+
+    assertDeepEquals(expectedDestinations, controller.getDestinations());
+  });
 });

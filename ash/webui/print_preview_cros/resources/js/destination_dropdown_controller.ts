@@ -43,6 +43,12 @@ export class DestinationDropdownController extends EventTarget {
   getSelectedDestination(): Destination|null {
     return this.destinationManager.getActiveDestination();
   }
+
+  // TODO(b/323421684): Replace with functions to get list of digital and
+  // recent destinations.
+  getDestinations(): Destination[] {
+    return this.destinationManager.getDestinations();
+  }
 }
 
 
