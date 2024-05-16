@@ -841,12 +841,14 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
 
 // Privacy guide integration tests.
 // TODO(crbug.com/40899379): Re-enable when no longer flaky.
-// TODO(crbug.com/339561987): Flaky on Windows.
-#if (!BUILDFLAG(IS_LINUX) || defined(NDEBUG)) || BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, Integration) {
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#define MAYBE_Integration DISABLED_Integration
+#else
+#define MAYBE_Integration Integration
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MAYBE_Integration) {
   RunTest("settings/privacy_guide_integration_test.js", "mocha.run()");
 }
-#endif
 
 // Privacy guide fragment tests.
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, WelcomeFragment) {
