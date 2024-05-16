@@ -1811,11 +1811,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "default-browser-promo-force-show-promo",
-    "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "default-browser-promo-trigger-criteria-experiment",
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 125

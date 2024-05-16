@@ -309,13 +309,6 @@ const char kDefaultBrowserIntentsShowSettingsDescription[] =
     "When enabled, external apps can trigger the settings screen showing "
     "default browser tutorial.";
 
-const char kDefaultBrowserPromoForceShowPromoName[] =
-    "Skip default browser promo triggering criteria";
-const char kDefaultBrowserPromoForceShowPromoDescription[] =
-    "When enabled, the user will be able to chose which default browser promo "
-    "will skip the triggering criteria. For this flag to effectively force a "
-    "default browser promo, enable IPH_iOSPromoDefaultBrowser.";
-
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
 const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =

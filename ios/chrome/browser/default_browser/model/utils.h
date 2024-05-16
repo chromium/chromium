@@ -174,14 +174,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
 // enabled.
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled();
 
-// Returns true if the default browser promo triggering criteria should be
-// skipped.
-bool ShouldForceDefaultPromoType();
-
-// Returns the promo type (DefaultPromoType) of the default browser promo after
-// skipping the triggering criteria.
-DefaultPromoType ForceDefaultPromoType();
-
 // Returns true if client is in Default Browser promo trigger criteria
 // experiment.
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled();

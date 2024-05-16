@@ -61,9 +61,6 @@ NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
 // valid URL into the omnibox.
 NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 
-const char kDefaultBrowserPromoForceShowPromo[] =
-    "default-browser-promo-force-show-promo";
-
 // Action string for "Appear" event of the promo.
 const char kAppearAction[] = "Appear";
 
@@ -495,30 +492,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   }
 
   return false;
-}
-
-bool ShouldForceDefaultPromoType() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kDefaultBrowserPromoForceShowPromo);
-}
-
-DefaultPromoType ForceDefaultPromoType() {
-  DCHECK(ShouldForceDefaultPromoType());
-  std::string type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kDefaultBrowserPromoForceShowPromo);
-  int default_promo_type = 0;
-  if (base::StringToInt(type, &default_promo_type)) {
-    switch (default_promo_type) {
-      case DefaultPromoTypeGeneral:
-      case DefaultPromoTypeStaySafe:
-      case DefaultPromoTypeMadeForIOS:
-      case DefaultPromoTypeAllTabs:
-        return static_cast<DefaultPromoType>(default_promo_type);
-    }
-  }
-
-  return DefaultPromoType::DefaultPromoTypeGeneral;
 }
 
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {

@@ -129,18 +129,6 @@ const FeatureEntry::Choice
         {"5000", signin::kWaitThresholdMillisecondsForCapabilitiesApi, "5000"},
 };
 
-// Uses int values from DefaultPromoType enum.
-const FeatureEntry::Choice kDefaultBrowserPromoForceShowPromoChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Show generic promo", "default-browser-promo-force-show-promo", "0"},
-    {"Show tailored stay safe promo", "default-browser-promo-force-show-promo",
-     "1"},
-    {"Show tailored made for ios promo",
-     "default-browser-promo-force-show-promo", "2"},
-    {"Show tailored all tabs promo", "default-browser-promo-force-show-promo",
-     "3"},
-};
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -1056,11 +1044,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
-    {"default-browser-promo-force-show-promo",
-     flag_descriptions::kDefaultBrowserPromoForceShowPromoName,
-     flag_descriptions::kDefaultBrowserPromoForceShowPromoDescription,
-     flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kDefaultBrowserPromoForceShowPromoChoices)},
     {"default-browser-promo-trigger-criteria-experiment",
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentName,
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentDescription,

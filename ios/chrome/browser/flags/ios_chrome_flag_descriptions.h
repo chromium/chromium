@@ -257,11 +257,6 @@ extern const char kDefaultBrowserVideoInSettingsDescription[];
 extern const char kDefaultBrowserIntentsShowSettingsName[];
 extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 
-// Title and description for the flag to enable skipping the default browser
-// promo.
-extern const char kDefaultBrowserPromoForceShowPromoName[];
-extern const char kDefaultBrowserPromoForceShowPromoDescription[];
-
 // Title and description for default browser promo trigger criteria experiment.
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
