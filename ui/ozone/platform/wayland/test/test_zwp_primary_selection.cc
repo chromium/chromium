@@ -88,6 +88,10 @@ struct ZwpPrimarySelectionSource : public TestSelectionSource::Delegate {
     NOTREACHED() << "The interface does not support this method.";
   }
 
+  void SendDndDropPerformed() override {
+    NOTREACHED() << "The interface does not support this method.";
+  }
+
   raw_ptr<TestSelectionSource> source = nullptr;
 };
 
