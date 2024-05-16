@@ -5,7 +5,6 @@
 package org.chromium.base;
 
 import org.chromium.build.annotations.AlwaysInline;
-import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Locale;
 
@@ -65,22 +64,13 @@ public class Log {
         return "cr_" + tag;
     }
 
-    /**
-     * Returns a formatted log message, using the supplied format and arguments.
-     * The message will be prepended with the filename and line number of the call.
-     */
-    private static String formatLogWithStack(
-            String messageTemplate, Throwable tr, Object... params) {
-        return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, tr, params);
-    }
-
     private static boolean isDebug() {
         // Proguard sets value to false in release builds.
         return true;
     }
 
     /**
-     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}, but always
+     * In debug: Forwards to {@link android.util.Log#isLoggable(String, int)}.
      * In release: Always returns false (via proguard rule).
      */
     public static boolean isLoggable(String tag, int level) {
@@ -94,19 +84,18 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#VERBOSE} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag Used to identify the source of a log message. Might be modified in the output (see
+     *     {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
-     *                        string.
+     *     string.
      * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     *     one is a {@link Throwable}, its trace will be printed.
      */
-    @CheckDiscard("crbug.com/1231625")
     public static void v(String tag, String messageTemplate, Object... args) {
         if (!isDebug()) return;
 
         Throwable tr = getThrowableToLog(args);
-        String message = formatLogWithStack(messageTemplate, tr, args);
+        String message = formatLog(messageTemplate, tr, args);
         tag = normalizeTag(tag);
         if (tr != null) {
             android.util.Log.v(tag, message, tr);
@@ -118,19 +107,18 @@ public class Log {
     /**
      * Sends a {@link android.util.Log#DEBUG} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag Used to identify the source of a log message. Might be modified in the output (see
+     *     {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
-     *                        string.
+     *     string.
      * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     *     one is a {@link Throwable}, its trace will be printed.
      */
-    @CheckDiscard("crbug.com/1231625")
     public static void d(String tag, String messageTemplate, Object... args) {
         if (!isDebug()) return;
 
         Throwable tr = getThrowableToLog(args);
-        String message = formatLogWithStack(messageTemplate, tr, args);
+        String message = formatLog(messageTemplate, tr, args);
         tag = normalizeTag(tag);
         if (tr != null) {
             android.util.Log.d(tag, message, tr);
@@ -886,29 +874,5 @@ public class Log {
 
         if (!(lastArg instanceof Throwable)) return null;
         return (Throwable) lastArg;
-    }
-
-    /** Returns a string form of the origin of the log call, to be used as secondary tag.*/
-    @CheckDiscard("crbug.com/1231625")
-    private static String getCallOrigin() {
-        StackTraceElement[] st = Thread.currentThread().getStackTrace();
-
-        // The call stack should look like:
-        //   n [a variable number of calls depending on the vm used]
-        //  +0 getCallOrigin()
-        //  +1 formatLogWithStack()
-        //  +2 privateLogFunction: verbose or debug
-        //  +3 caller
-
-        int callerStackIndex;
-        String logClassName = Log.class.getName();
-        for (callerStackIndex = 0; callerStackIndex < st.length; callerStackIndex++) {
-            if (st[callerStackIndex].getClassName().equals(logClassName)) {
-                callerStackIndex += 3;
-                break;
-            }
-        }
-
-        return st[callerStackIndex].getFileName() + ":" + st[callerStackIndex].getLineNumber();
     }
 }
