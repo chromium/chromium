@@ -17,14 +17,14 @@
   para.style.webkitTransition = 'width 1s, left 1s, top 1s';
   para.style.webkitTransitionProperty = 'width, left';
 
-  shouldBeEqualToString("para.style.webkitTransition", "width 1s ease 0s, left 1s ease 0s, 1s ease 0s");
+  shouldBeEqualToString("para.style.webkitTransition", "width 1s, left 1s, 1s");
 
   // Test shorter shorthand
   para.style.webkitTransition = 'width 1s, left 1s';
   para.style.webkitTransitionProperty = 'width, left, top';
 
   // the next line will crash
-  shouldBeEqualToString("para.style.webkitTransition", "width 1s ease 0s, left 1s ease 0s, top");
+  shouldBeEqualToString("para.style.webkitTransition", "width 1s, left 1s, top");
 </script>
 </body>
 </html>

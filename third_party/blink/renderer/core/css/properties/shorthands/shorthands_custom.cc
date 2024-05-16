@@ -3517,26 +3517,65 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   const CSSTransitionData* transition_data = style.Transitions();
+  bool use_short_serialization =
+      RuntimeEnabledFeatures::CSSTransitionShorterSerializationEnabled();
   if (transition_data) {
     CSSValueList* transitions_list = CSSValueList::CreateCommaSeparated();
     for (wtf_size_t i = 0; i < transition_data->PropertyList().size(); ++i) {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      list->Append(*ComputedStyleUtils::CreateTransitionPropertyValue(
-          transition_data->PropertyList()[i]));
-      list->Append(*CSSNumericLiteralValue::Create(
-          CSSTimingData::GetRepeated(transition_data->DurationList(), i)
-              .value(),
-          CSSPrimitiveValue::UnitType::kSeconds));
-      list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
-          CSSTimingData::GetRepeated(transition_data->TimingFunctionList(),
-                                     i)));
-      list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
-          CSSTimingData::GetRepeated(transition_data->DelayStartList(), i)));
-      if (CSSTimingData::GetRepeated(transition_data->BehaviorList(), i) !=
-          CSSTransitionData::InitialBehavior()) {
-        list->Append(*ComputedStyleUtils::CreateTransitionBehaviorValue(
-            transition_data->BehaviorList()[i]));
+
+      CSSTransitionData::TransitionProperty property =
+          transition_data->PropertyList()[i];
+      if (!use_short_serialization ||
+          property != CSSTransitionData::InitialProperty()) {
+        list->Append(
+            *ComputedStyleUtils::CreateTransitionPropertyValue(property));
       }
+
+      // If we have a transition-delay but no transition-duration set, we must
+      // serialize the transition-duration because they're both <time> values
+      // and transition-duration comes first.
+      Timing::Delay delay =
+          CSSTimingData::GetRepeated(transition_data->DelayStartList(), i);
+      const double duration =
+          CSSTimingData::GetRepeated(transition_data->DurationList(), i)
+              .value();
+      bool shows_delay = delay != CSSTimingData::InitialDelayStart();
+      bool shows_duration =
+          shows_delay || duration != CSSTransitionData::InitialDuration();
+
+      if (shows_duration || !use_short_serialization) {
+        list->Append(*CSSNumericLiteralValue::Create(
+            duration, CSSPrimitiveValue::UnitType::kSeconds));
+      }
+
+      CSSValue* timing_function =
+          ComputedStyleUtils::ValueForAnimationTimingFunction(
+              CSSTimingData::GetRepeated(transition_data->TimingFunctionList(),
+                                         i));
+      CSSIdentifierValue* timing_function_value_id =
+          DynamicTo<CSSIdentifierValue>(timing_function);
+      if (!use_short_serialization || !timing_function_value_id ||
+          timing_function_value_id->GetValueID() != CSSValueID::kEase) {
+        list->Append(*timing_function);
+      }
+
+      if (shows_delay || !use_short_serialization) {
+        list->Append(*ComputedStyleUtils::ValueForAnimationDelay(delay));
+      }
+
+      const CSSTransitionData::TransitionBehavior behavior =
+          CSSTimingData::GetRepeated(transition_data->BehaviorList(), i);
+      if (behavior != CSSTransitionData::InitialBehavior()) {
+        list->Append(
+            *ComputedStyleUtils::CreateTransitionBehaviorValue(behavior));
+      }
+
+      if (use_short_serialization && !list->length()) {
+        list->Append(*ComputedStyleUtils::CreateTransitionPropertyValue(
+            CSSTransitionData::InitialProperty()));
+      }
+
       transitions_list->Append(*list);
     }
     return transitions_list;
@@ -3545,13 +3584,15 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   // transition-property default value.
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kAll));
-  list->Append(*CSSNumericLiteralValue::Create(
-      CSSTransitionData::InitialDuration().value(),
-      CSSPrimitiveValue::UnitType::kSeconds));
-  list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
-      CSSTransitionData::InitialTimingFunction()));
-  list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
-      CSSTransitionData::InitialDelayStart()));
+  if (!use_short_serialization) {
+    list->Append(*CSSNumericLiteralValue::Create(
+        CSSTransitionData::InitialDuration().value(),
+        CSSPrimitiveValue::UnitType::kSeconds));
+    list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
+        CSSTransitionData::InitialTimingFunction()));
+    list->Append(*ComputedStyleUtils::ValueForAnimationDelay(
+        CSSTransitionData::InitialDelayStart()));
+  }
   return list;
 }
 
