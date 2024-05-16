@@ -25,6 +25,7 @@
 #include "chrome/services/sharing/nearby/platform/scheduled_executor.h"
 #include "chrome/services/sharing/nearby/platform/submittable_executor.h"
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
+#include "chrome/services/sharing/nearby/platform/wifi_direct_medium.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
@@ -50,6 +51,64 @@
 #include "third_party/nearby/src/internal/platform/implementation/wifi.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_direct.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_hotspot.h"
+
+namespace nearby::chrome {
+
+// Minimal `WifiMedium` implementation required to allow WiFi Direct.
+class WifiMedium : public api::WifiMedium {
+ public:
+  WifiMedium() {
+    // The official WifiDirectMedium implementation queries the platform layer
+    // to determine if the device supports WiFi Direct, so this capabilities
+    // value is not actually used to determine support.
+    capabilities_.support_wifi_direct = true;
+  }
+
+  // api::WifiMedium
+  bool IsInterfaceValid() const override {
+    // This call is required for the WifiDirectMedium to trigger properly.
+    return true;
+  }
+
+  api::WifiCapability& GetCapability() override {
+    NOTIMPLEMENTED();
+    return capabilities_;
+  }
+
+  api::WifiInformation& GetInformation() override {
+    NOTIMPLEMENTED();
+    return information_;
+  }
+
+  bool Scan(const ScanResultCallback& scan_result_callback) override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
+  api::WifiConnectionStatus ConnectToNetwork(
+      absl::string_view ssid,
+      absl::string_view password,
+      api::WifiAuthType auth_type) override {
+    NOTIMPLEMENTED();
+    return api::WifiConnectionStatus::kUnknown;
+  }
+
+  bool VerifyInternetConnectivity() override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+
+  std::string GetIpAddress() override {
+    NOTIMPLEMENTED();
+    return std::string();
+  }
+
+ private:
+  api::WifiCapability capabilities_;
+  api::WifiInformation information_;
+};
+
+}  // namespace nearby::chrome
 
 namespace nearby::api {
 
@@ -244,12 +303,33 @@ ImplementationPlatform::CreateServerSyncMedium() {
 }
 
 std::unique_ptr<WifiMedium> ImplementationPlatform::CreateWifiMedium() {
-  return nullptr;
+  return std::make_unique<chrome::WifiMedium>();
 }
 
 std::unique_ptr<WifiDirectMedium>
 ImplementationPlatform::CreateWifiDirectMedium() {
-  return nullptr;
+  nearby::NearbySharedRemotes* nearby_shared_remotes =
+      nearby::NearbySharedRemotes::GetInstance();
+  if (!nearby_shared_remotes) {
+    return nullptr;
+  }
+
+  // TODO(b/340273442): This should always be bound when the WifiDirect feature
+  // flag is enabled. Update logging to ERROR after launch.
+  if (!nearby_shared_remotes->wifi_direct_manager.is_bound()) {
+    VLOG(1) << "WifiDirectManager not bound. Returning null WifiDirect medium";
+    return nullptr;
+  }
+
+  if (!nearby_shared_remotes->wifi_direct_firewall_hole_factory.is_bound()) {
+    VLOG(1)
+        << "FirewallHoleFactory not bound. Returning null WifiDirect medium";
+    return nullptr;
+  }
+
+  return std::make_unique<chrome::WifiDirectMedium>(
+      std::move(nearby_shared_remotes->wifi_direct_manager),
+      std::move(nearby_shared_remotes->wifi_direct_firewall_hole_factory));
 }
 
 std::unique_ptr<WifiHotspotMedium>
@@ -348,10 +428,11 @@ std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
 std::unique_ptr<Mutex> ImplementationPlatform::CreateMutex(Mutex::Mode mode) {
   // Chrome does not support unchecked Mutex in debug mode, therefore
   // chrome::Mutex is used for both kRegular and kRegularNoCheck.
-  if (mode == Mutex::Mode::kRecursive)
+  if (mode == Mutex::Mode::kRecursive) {
     return std::make_unique<chrome::RecursiveMutex>();
-  else
+  } else {
     return std::make_unique<chrome::Mutex>();
+  }
 }
 
 std::unique_ptr<ConditionVariable>
