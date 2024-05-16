@@ -6633,7 +6633,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     // Simulate text input in the first fields.
     SimulateUserChangedTextFieldTo(form, form.fields[0], u"United States",
                                    parse_time + base::Milliseconds(3));
-    task_environment_.FastForwardBy(base::Milliseconds(9));
+    task_environment_.FastForwardBy(base::Milliseconds(1200));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
@@ -6731,7 +6731,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
                form.fields[i % 3].global_id())},
           {UFIAST::kSubmittedType1Name, submitted_type1},
           {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
-          {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+          {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
       };
       EXPECT_EQ(expected.size(), entry->metrics.size());
       for (const auto& [metric, value] : expected) {
@@ -6759,8 +6759,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
         {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
         {UFST::kSampleRateName, 1},
         {UFST::kWasSubmittedName, true},
-        {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 6},
-        {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+        {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 1000},
+        {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
     };
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
@@ -6847,7 +6847,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  task_environment_.FastForwardBy(base::Milliseconds(17));
+  task_environment_.FastForwardBy(base::Milliseconds(37000));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -6966,7 +6966,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIAST::kSubmittedType1Name, EMPTY_TYPE},
         {UFIAST::kSubmissionSourceName,
          static_cast<int>(SubmissionSource::FORM_SUBMISSION)},
-        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 10},
+        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 35000},
     };
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
@@ -6992,7 +6992,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},
-      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 10},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 35000},
   };
   EXPECT_EQ(expected.size(), entry->metrics.size());
   for (const auto& [metric, value] : expected) {
@@ -7043,7 +7043,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                  parse_time + base::Milliseconds(3));
   SimulateUserChangedTextFieldTo(form, form.fields[1], u"buddy@gmail.com",
                                  parse_time + base::Milliseconds(3));
-  task_environment_.FastForwardBy(base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(1200));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
@@ -7102,7 +7102,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
              form.fields[i % 3].global_id())},
         {UFIAST::kSubmittedType1Name, submitted_types[i % 3]},
         {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
-        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+        {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
     };
     EXPECT_EQ(expected.size(), entry->metrics.size());
     for (const auto& [metric, value] : expected) {
@@ -7128,8 +7128,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},
-      {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 6},
-      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+      {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 1000},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
   };
   EXPECT_EQ(expected.size(), entry->metrics.size());
   for (const auto& [metric, value] : expected) {
@@ -7290,7 +7290,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                         UNKNOWN_TYPE};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  task_environment_.FastForwardBy(base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(3500));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -7347,7 +7347,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},
-      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 3000},
   };
   EXPECT_EQ(expected.size(), form_entry->metrics.size());
   for (const auto& [metric, value] : expected) {
@@ -7429,7 +7429,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   std::vector<FieldType> field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  task_environment_.FastForwardBy(base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(1980000));  // 33m
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -7507,7 +7507,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},
-      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 9},
+      {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1800000},  // 30m
   };
   EXPECT_EQ(expected.size(), form_entry->metrics.size());
   for (const auto& [metric, value] : expected) {
