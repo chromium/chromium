@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
@@ -116,18 +117,29 @@ void BirchWeatherProvider::OnWeatherInfoFetched(
     return;
   }
 
-  // Ideally we should avoid downloading from the same url again to reduce the
-  // overhead, as it's unlikely that the weather condition is changing
-  // frequently during the day.
+  // Check for a cached icon.
+  gfx::ImageSkia icon = Shell::Get()->birch_model()->icon_cache()->Get(
+      *weather_info->condition_icon_url);
+  if (!icon.isNull()) {
+    // Use the cached icon.
+    AddItemToBirchModel(base::UTF8ToUTF16(*weather_info->condition_description),
+                        *weather_info->temp_f, weather_info->show_celsius,
+                        icon);
+    return;
+  }
+
+  // Download the weather condition icon.
   DownloadImageFromUrl(
       *weather_info->condition_icon_url,
       base::BindOnce(&BirchWeatherProvider::OnWeatherConditionIconDownloaded,
                      weak_factory_.GetWeakPtr(),
+                     *weather_info->condition_icon_url,
                      base::UTF8ToUTF16(*weather_info->condition_description),
                      *weather_info->temp_f, weather_info->show_celsius));
 }
 
 void BirchWeatherProvider::OnWeatherConditionIconDownloaded(
+    const std::string& condition_icon_url,
     const std::u16string& weather_description,
     float temp_f,
     bool show_celsius,
@@ -137,6 +149,17 @@ void BirchWeatherProvider::OnWeatherConditionIconDownloaded(
     return;
   }
 
+  // Add the icon to the cache.
+  Shell::Get()->birch_model()->icon_cache()->Put(condition_icon_url, icon);
+
+  AddItemToBirchModel(weather_description, temp_f, show_celsius, icon);
+}
+
+void BirchWeatherProvider::AddItemToBirchModel(
+    const std::u16string& weather_description,
+    float temp_f,
+    bool show_celsius,
+    const gfx::ImageSkia& icon) {
   std::u16string temperature_string =
       show_celsius ? l10n_util::GetStringFUTF16Int(
                          IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS,

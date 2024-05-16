@@ -24,6 +24,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class BirchDataProvider;
+class BirchIconCache;
 class BirchItemRemover;
 
 // Birch model, which is used to aggregate and store relevant information from
@@ -105,6 +106,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetClientAndInit(BirchClient* client);
 
   BirchClient* birch_client() { return birch_client_; }
+  BirchIconCache* icon_cache() { return icon_cache_.get(); }
 
   const std::vector<BirchCalendarItem>& GetCalendarItemsForTest() const {
     return calendar_data_.items;
@@ -224,6 +226,8 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   DataTypeInfo<BirchWeatherItem> weather_data_;
 
   raw_ptr<BirchClient> birch_client_ = nullptr;
+
+  std::unique_ptr<BirchIconCache> icon_cache_;
 
   std::unique_ptr<BirchDataProvider> weather_provider_;
 

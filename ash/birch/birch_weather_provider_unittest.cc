@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ambient/ambient_controller.h"
+#include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/geolocation_access_level.h"
@@ -382,6 +383,66 @@ TEST_F(BirchWeatherProviderTest, AllowOneFetchAtATime) {
 
   // The backend only received one request to fetch weather.
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
+TEST_F(BirchWeatherProviderTest, IconCache) {
+  auto* birch_model = Shell::Get()->birch_model();
+  auto* icon_cache = birch_model->icon_cache();
+
+  // The cache starts empty.
+  EXPECT_EQ(icon_cache->size_for_test(), 0u);
+
+  // Fetch weather.
+  WeatherInfo info1;
+  info1.condition_description = "Cloudy";
+  info1.condition_icon_url = "https://cloudy-icon-url";
+  info1.show_celsius = false;
+  info1.temp_f = 70.0f;
+  ambient_backend_controller_->SetWeatherInfo(info1);
+
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The icon cache has a single item in it.
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
+
+  // Fetch again with the same icon URL.
+  WeatherInfo info2;
+  info2.condition_description = "Cloudy";
+  info2.condition_icon_url = "https://cloudy-icon-url";
+  info2.show_celsius = false;
+  info2.temp_f = 70.0f;
+  ambient_backend_controller_->SetWeatherInfo(info2);
+
+  base::RunLoop run_loop2;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop2.QuitClosure());
+  run_loop2.Run();
+
+  // The cache still has a single item in it because the icon was the same.
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
+
+  // Fetch again with a different icon URL.
+  WeatherInfo info3;
+  info2.condition_description = "Sunny";
+  info2.condition_icon_url = "https://sunny-icon-url";
+  info2.show_celsius = false;
+  info2.temp_f = 73.0f;
+  ambient_backend_controller_->SetWeatherInfo(info2);
+
+  base::RunLoop run_loop3;
+  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
+                                     run_loop3.QuitClosure());
+  run_loop3.Run();
+
+  // Cache now has two items in it for the two different icons.
+  EXPECT_EQ(icon_cache->size_for_test(), 2u);
+  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
+  EXPECT_FALSE(icon_cache->Get("https://sunny-icon-url").isNull());
 }
 
 }  // namespace ash

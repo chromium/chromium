@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/birch/birch_data_provider.h"
+#include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_ranker.h"
@@ -58,7 +59,8 @@ BirchModel::BirchModel()
       recent_tab_data_(prefs::kBirchUseRecentTabs, "Tab"),
       self_share_data_(prefs::kBirchUseSelfShare, "SelfShare"),
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
-      weather_data_(prefs::kBirchUseWeather, "Weather") {
+      weather_data_(prefs::kBirchUseWeather, "Weather"),
+      icon_cache_(std::make_unique<BirchIconCache>()) {
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }

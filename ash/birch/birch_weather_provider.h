@@ -44,10 +44,17 @@ class ASH_EXPORT BirchWeatherProvider : public BirchDataProvider {
   // Callback to weather info icon request. It will update birch model with the
   // fetched weather info (including the downloaded weather icon).
   void OnWeatherConditionIconDownloaded(
+      const std::string& condition_icon_url,
       const std::u16string& weather_description,
       float temp_f,
       bool show_celsius,
       const gfx::ImageSkia& icon);
+
+  // Adds the weather item to the birch model.
+  void AddItemToBirchModel(const std::u16string& weather_description,
+                           float temp_f,
+                           bool show_celsius,
+                           const gfx::ImageSkia& icon);
 
   const raw_ptr<BirchModel> birch_model_;
   bool is_fetching_ = false;
