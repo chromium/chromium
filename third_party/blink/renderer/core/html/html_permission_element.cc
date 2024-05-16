@@ -593,13 +593,13 @@ void HTMLPermissionElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     event.SetDefaultHandled();
     if (event.IsFullyTrusted() ||
-        RuntimeEnabledFeatures::DisablePepcSecurityForTestingEnabled()) {
+        RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
       if (IsClickingEnabled()) {
         RequestPageEmbededPermissions();
       }
     } else {
       // For automated testing purposes this behavior can be overridden by
-      // adding '--enable-features=DisablePepcSecurityForTesting' to the
+      // adding '--enable-features=BypassPepcSecurityForTesting' to the
       // command line when launching the browser.
       AddConsoleError(
           "The permission element can only be activated by actual user "
@@ -736,7 +736,7 @@ bool HTMLPermissionElement::IsClickingEnabled() {
 
   // Do not check click-disabling reasons if the PEPC validation feature is
   // disabled. This should only occur in testing scenarios.
-  if (RuntimeEnabledFeatures::DisablePepcSecurityForTestingEnabled()) {
+  if (RuntimeEnabledFeatures::BypassPepcSecurityForTestingEnabled()) {
     return true;
   }
 

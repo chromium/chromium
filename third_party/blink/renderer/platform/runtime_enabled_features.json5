@@ -536,6 +536,13 @@
       status: "stable",
     },
     {
+      // Bypasses the enforcement of the Page Embedded Permission Control
+      // security checks. This flag is disabled by default and should only be
+      // enabled in automated tests in order to allow them to avoid needing to
+      // wait until the PEPC is validated and also to use JS-initiated clicks.
+      name: "BypassPepcSecurityForTesting",
+    },
+    {
       name: "CacheStorageCodeCacheHint",
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",
@@ -1234,13 +1241,6 @@
       origin_trial_feature_name: "DisableHardwareNoiseSuppression",
       status: "experimental",
       base_feature: "none",
-    },
-    {
-      // Bypasses the enforcement of the Page Embedded Permission Control
-      // security checks. This flag is disabled by default and should only be
-      // enabled in automated tests in order to allow them to avoid needing to
-      // wait until the PEPC is validated and also to use JS-initiated clicks.
-      name: "DisablePepcSecurityForTesting",
     },
     {
       name: "DisableSelectAllForEmptyText",

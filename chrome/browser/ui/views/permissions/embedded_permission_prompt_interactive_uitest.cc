@@ -51,7 +51,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures(
         {permissions::features::kOneTimePermission,
          blink::features::kPermissionElement,
-         blink::features::kDisablePepcSecurityForTesting},
+         blink::features::kBypassPepcSecurityForTesting},
         {});
   }
 
@@ -717,7 +717,7 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
             {blink::features::kPermissionElement, {}},
             {permissions::features::kPermissionElementDialogPositioning, {}},
             {permissions::features::kOneTimePermission, {}},
-            {blink::features::kDisablePepcSecurityForTesting, {}},
+            {blink::features::kBypassPepcSecurityForTesting, {}},
         },
         {});
   }
