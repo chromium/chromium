@@ -681,7 +681,7 @@ class URLUtilTypedTest : public ::testing::TestWithParam<bool> {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
+TEST_P(URLUtilTypedTest, TestResolveRelativeWithNonStandardBase) {
   // This tests non-standard (in the sense that IsStandard() == false)
   // hierarchical schemes.
   struct ResolveRelativeCase {
@@ -689,6 +689,9 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     const char* rel;
     bool is_valid;
     const char* out;
+    // Optional expected output when the feature is enabled.
+    // If the result doesn't change, you can omit this field.
+    const char* out_when_non_special_url_feature_is_enabled;
   } resolve_non_standard_cases[] = {
       // Resolving a relative path against a non-hierarchical URL should fail.
       {"scheme:opaque_data", "/path", false, ""},
@@ -716,7 +719,11 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
       // A path with an authority section gets canonicalized under standard URL
       // rules, even though the base was non-standard.
       {"content://content.Provider/", "//other.Provider", true,
-       "content://other.provider/"},
+       "content://other.provider/",
+       // With the feature enabled:
+       // - Host case sensitivity should be preserved.
+       // - Trailing slash after a host is no longer necessary.
+       "content://other.Provider"},
       // Resolving an absolute URL doesn't cause canonicalization of the
       // result.
       {"about:blank", "custom://Authority", true, "custom://Authority"},
@@ -740,10 +747,9 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed =
-        url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()
-            ? ParseNonSpecialURL(test.base)
-            : ParsePathURL(test.base, /*trim_path_end=*/true);
+    Parsed base_parsed = use_standard_compliant_non_special_scheme_url_parsing_
+                             ? ParseNonSpecialURL(test.base)
+                             : ParsePathURL(test.base, /*trim_path_end=*/true);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
@@ -755,7 +761,12 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
 
     EXPECT_EQ(test.is_valid, valid);
     if (test.is_valid && valid) {
-      EXPECT_EQ(test.out, resolved);
+      if (use_standard_compliant_non_special_scheme_url_parsing_ &&
+          test.out_when_non_special_url_feature_is_enabled) {
+        EXPECT_EQ(test.out_when_non_special_url_feature_is_enabled, resolved);
+      } else {
+        EXPECT_EQ(test.out, resolved);
+      }
     }
   }
 }
