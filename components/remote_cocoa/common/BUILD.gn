@@ -10,7 +10,6 @@ mojom("mojo") {
   sources = [
     "alert.mojom",
     "application.mojom",
-    "color_panel.mojom",
     "font.mojom",
     "menu.mojom",
     "native_widget_ns_window.mojom",

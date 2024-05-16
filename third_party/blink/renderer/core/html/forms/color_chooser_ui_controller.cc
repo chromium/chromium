@@ -84,7 +84,7 @@ void ColorChooserUIController::DidChooseColor(uint32_t color) {
   client_->DidChooseColor(Color::FromRGBA32(color));
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void ColorChooserUIController::OpenColorChooser() {
   DCHECK(!chooser_);
   scoped_refptr<base::SequencedTaskRunner> runner =

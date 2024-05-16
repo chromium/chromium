@@ -283,7 +283,6 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/color_chooser.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -2059,15 +2058,6 @@ bool Browser::GuestSaveFrame(content::WebContents* guest_web_contents) {
       extensions::MimeHandlerViewGuest::FromWebContents(guest_web_contents);
   return guest_view && guest_view->PluginDoSave();
 }
-
-#if BUILDFLAG(IS_MAC)
-std::unique_ptr<content::ColorChooser> Browser::OpenColorChooser(
-    WebContents* web_contents,
-    SkColor initial_color,
-    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return chrome::ShowColorChooser(web_contents, initial_color);
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<content::EyeDropper> Browser::OpenEyeDropper(
     content::RenderFrameHost* frame,

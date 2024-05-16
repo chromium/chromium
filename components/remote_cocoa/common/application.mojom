@@ -5,7 +5,6 @@
 module remote_cocoa.mojom;
 
 import "components/remote_cocoa/common/alert.mojom";
-import "components/remote_cocoa/common/color_panel.mojom";
 import "components/remote_cocoa/common/native_widget_ns_window.mojom";
 import "components/remote_cocoa/common/native_widget_ns_window_host.mojom";
 import "components/remote_cocoa/common/text_input_host.mojom";
@@ -32,10 +31,6 @@ enum CutCopyPasteCommand {
 interface Application {
   // Create a bridge for an NSAlert. The resulting object owns its own lifetime.
   CreateAlert(pending_receiver<AlertBridge> alert_bridge_receiver);
-
-  // Show the NSColorPanel in this application.
-  ShowColorPanel(pending_receiver<ColorPanel> receiver,
-                 pending_remote<ColorPanelHost> host);
 
   // Create a window for a native widget. The resulting object will be owned by
   // the connection for |host|. Closing that connection will result in deleting
@@ -67,4 +62,3 @@ interface Application {
   // Forwards a Cut, Copy or Paste operation to the NSApplication.
   ForwardCutCopyPaste(CutCopyPasteCommand command);
 };
-

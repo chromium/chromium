@@ -647,7 +647,7 @@ void Shell::ActivateContents(WebContents* contents) {
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 std::unique_ptr<ColorChooser> Shell::OpenColorChooser(
     WebContents* web_contents,
     SkColor color,

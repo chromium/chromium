@@ -28,8 +28,6 @@ component("app_shim") {
     "bridged_content_view_touch_bar.mm",
     "browser_native_widget_window_mac.h",
     "browser_native_widget_window_mac.mm",
-    "color_panel_bridge.h",
-    "color_panel_bridge.mm",
     "context_menu_runner.h",
     "context_menu_runner.mm",
     "drag_drop_client.h",
