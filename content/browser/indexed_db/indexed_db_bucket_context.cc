@@ -301,7 +301,7 @@ CreateLevelDBState(const leveldb_env::Options& base_options,
     leveldb::Status status =
         leveldb_env::OpenDB(in_memory_options, std::string(), &db);
 
-    if (UNLIKELY(!status.ok())) {
+    if (!status.ok()) [[unlikely]] {
       LOG(ERROR) << "Failed to open in-memory LevelDB database: "
                  << status.ToString();
       return {nullptr, status, false};
@@ -320,7 +320,7 @@ CreateLevelDBState(const leveldb_env::Options& base_options,
   std::unique_ptr<leveldb::DB> db;
   leveldb::Status status =
       leveldb_env::OpenDB(options, file_name.AsUTF8Unsafe(), &db);
-  if (UNLIKELY(!status.ok())) {
+  if (!status.ok()) [[unlikely]] {
     if (!create_if_missing && status.IsInvalidArgument()) {
       return {nullptr, leveldb::Status::NotFound("", ""), false};
     }
@@ -1474,7 +1474,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
     // database.
     std::string corruption_message =
         indexed_db::ReadCorruptionInfo(data_directory, bucket_locator());
-    if (UNLIKELY(!corruption_message.empty())) {
+    if (!corruption_message.empty()) [[unlikely]] {
       LOG(ERROR) << "IndexedDB recovering from a corrupted (and deleted) "
                     "database.";
       if (is_first_attempt) {
@@ -1490,7 +1490,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
       status =
           leveldb::DestroyDB(database_path.AsUTF8Unsafe(), leveldb_options_);
 
-      if (UNLIKELY(!status.ok())) {
+      if (!status.ok()) [[unlikely]] {
         LOG(ERROR) << "Unable to delete backing store: " << status.ToString();
         return {nullptr, status, data_loss_info, /*is_disk_full=*/false};
       }
@@ -1507,7 +1507,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
         leveldb_options_, database_path, create_if_missing,
         base::StringPrintf("indexedDB-bucket-%" PRId64,
                            bucket_info().id.GetUnsafeValue()));
-    if (UNLIKELY(!status.ok())) {
+    if (!status.ok()) [[unlikely]] {
       if (!status.IsNotFound()) {
         indexed_db::ReportLevelDBError("WebCore.IndexedDB.LevelDBOpenErrors",
                                        status);
@@ -1534,7 +1534,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
                                 base::Unretained(this))));
     status = scopes->Initialize();
 
-    if (UNLIKELY(!status.ok())) {
+    if (!status.ok()) [[unlikely]] {
       return {nullptr, status, std::move(data_loss_info),
               /*is_disk_full=*/false};
     }
@@ -1549,7 +1549,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
 
   bool are_schemas_known = false;
   std::tie(are_schemas_known, status) = AreSchemasKnown(database.get());
-  if (UNLIKELY(!status.ok())) {
+  if (!status.ok()) [[unlikely]] {
     LOG(ERROR) << "IndexedDB had an error checking schema, treating it as "
                   "failure to open: "
                << status.ToString();
@@ -1558,7 +1558,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
             INDEXED_DB_BACKING_STORE_OPEN_FAILED_IO_ERROR_CHECKING_SCHEMA,
         bucket_locator());
     return {nullptr, status, std::move(data_loss_info), /*is_disk_full=*/false};
-  } else if (UNLIKELY(!are_schemas_known)) {
+  } else if (!are_schemas_known) [[unlikely]] {
     LOG(ERROR) << "IndexedDB backing store had unknown schema, treating it as "
                   "failure to open.";
     ReportOpenStatus(
@@ -1583,7 +1583,7 @@ IndexedDBBucketContext::OpenAndVerifyIndexedDBBackingStore(
   status = backing_store->Initialize(
       /*clean_active_blob_journal=*/!in_memory);
 
-  if (UNLIKELY(!status.ok())) {
+  if (!status.ok()) [[unlikely]] {
     return {nullptr, status, IndexedDBDataLossInfo(), /*is_disk_full=*/false};
   }
 
@@ -1631,10 +1631,10 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
         OpenAndVerifyIndexedDBBackingStore(data_path_, database_path, blob_path,
                                            lock_manager.get(), is_first_attempt,
                                            create_if_missing);
-    if (LIKELY(is_first_attempt)) {
+    if (is_first_attempt) [[likely]] {
       first_try_status = status;
     }
-    if (LIKELY(status.ok())) {
+    if (status.ok()) [[likely]] {
       break;
     }
     if (!create_if_missing && status.IsNotFound()) {
@@ -1662,13 +1662,13 @@ IndexedDBBucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
       leveldb_env::GetLevelDBStatusUMAValue(first_try_status),
       leveldb_env::LEVELDB_STATUS_MAX);
 
-  if (LIKELY(first_try_status.ok())) {
+  if (first_try_status.ok()) [[likely]] {
     UMA_HISTOGRAM_TIMES(
         "WebCore.IndexedDB.BackingStore.OpenFirstTrySuccessTime",
         open_timer.Elapsed());
   }
 
-  if (LIKELY(status.ok())) {
+  if (status.ok()) [[likely]] {
     base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenSuccessTime",
                             open_timer.Elapsed());
   } else {

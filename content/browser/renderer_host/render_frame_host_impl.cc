@@ -16600,8 +16600,8 @@ bool RenderFrameHostImpl::ShouldWaitForUnloadHandlers() const {
 }
 
 void RenderFrameHostImpl::AssertFrameWasCommitted() const {
-  if (LIKELY(lifecycle_state() != LifecycleStateImpl::kSpeculative &&
-             lifecycle_state() != LifecycleStateImpl::kPendingCommit)) {
+  if (lifecycle_state() != LifecycleStateImpl::kSpeculative &&
+      lifecycle_state() != LifecycleStateImpl::kPendingCommit) [[likely]] {
     return;
   }
 
@@ -16610,8 +16610,9 @@ void RenderFrameHostImpl::AssertFrameWasCommitted() const {
 }
 
 void RenderFrameHostImpl::AssertBrowserContextShutdownHasntStarted() {
-  if (LIKELY(!GetBrowserContext()->ShutdownStarted()))
+  if (!GetBrowserContext()->ShutdownStarted()) [[likely]] {
     return;
+  }
 
   std::string debug_string = ToDebugString();
   SCOPED_CRASH_KEY_STRING256("shutdown", "frame->ToDebugString", debug_string);

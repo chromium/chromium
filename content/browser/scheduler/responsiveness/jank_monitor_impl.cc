@@ -273,7 +273,7 @@ void JankMonitorImpl::OnJankStopped(
 }
 
 void JankMonitorImpl::NotifyJankStopIfNecessary(const void* opaque_identifier) {
-  if (LIKELY(!janky_task_id_ || janky_task_id_ != opaque_identifier)) {
+  if (!janky_task_id_ || janky_task_id_ != opaque_identifier) [[likely]] {
     // Most tasks are unlikely to be janky.
     return;
   }
@@ -307,9 +307,9 @@ JankMonitorImpl::ThreadExecutionState::CheckJankiness() {
   static base::TimeDelta jank_threshold = base::Milliseconds(kJankThresholdMs);
 
   base::AutoLock lock(lock_);
-  if (LIKELY(task_execution_metadata_.empty() ||
-             (now - task_execution_metadata_.back().execution_start_time) <
-                 jank_threshold)) {
+  if (task_execution_metadata_.empty() ||
+      (now - task_execution_metadata_.back().execution_start_time) <
+          jank_threshold) [[likely]] {
     // Most tasks are unlikely to be janky.
     return std::nullopt;
   }
@@ -333,8 +333,9 @@ void JankMonitorImpl::ThreadExecutionState::DidRunTaskOrEvent(
   AssertOnTargetThread();
 
   base::AutoLock lock(lock_);
-  if (UNLIKELY(task_execution_metadata_.empty()) ||
-      opaque_identifier != task_execution_metadata_.back().identifier) {
+  if (task_execution_metadata_.empty() ||
+      opaque_identifier != task_execution_metadata_.back().identifier)
+      [[unlikely]] {
     // Mismatches can happen (e.g: on ozone/wayland when Paste button is pressed
     // in context menus, among others). Simply ignore the mismatches for now.
     // See https://crbug.com/929813 for the details of why the mismatch

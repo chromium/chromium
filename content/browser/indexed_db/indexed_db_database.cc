@@ -310,8 +310,9 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
   connections_.clear();
   leveldb::Status abort_status =
       connection_coordinator_.PruneTasksForForceClose();
-  if (UNLIKELY(!abort_status.ok()))
+  if (!abort_status.ok()) [[unlikely]] {
     return abort_status;
+  }
   connection_coordinator_.OnNoConnections();
 
   // Execute any pending tasks in the connection coordinator.

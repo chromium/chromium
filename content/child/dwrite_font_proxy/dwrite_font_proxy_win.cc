@@ -202,8 +202,9 @@ std::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     DCHECK(family_names_.find(family_name) == family_names_.end() ||
            family_names_[family_name] == family_index);
     family_names_[family_name] = family_index;
-    if (UNLIKELY(family_index == kFamilyNotFound))
+    if (family_index == kFamilyNotFound) [[unlikely]] {
       return std::nullopt;
+    }
     DCHECK(IsValidFamilyIndex(family_index));
 
     if (DWriteFontFamilyProxy* family =
@@ -234,8 +235,9 @@ void DWriteFontCollectionProxy::PrewarmFamily(
   if (!prewarm_task_runner_) {
     // |BindHostReceiverOnMainThread| requires |ChildThread::Get()|, but it may
     // not be available in some tests. Disable the prewarmer.
-    if (UNLIKELY(!ChildThread::Get()))
+    if (!ChildThread::Get()) [[unlikely]] {
       return;
+    }
     InitializePrewarmer();
   }
 

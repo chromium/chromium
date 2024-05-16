@@ -81,7 +81,7 @@ void Watcher::WillRunTask(const base::PendingTask* task,
                           bool was_blocked_or_low_priority,
                           std::vector<Metadata>* currently_running_metadata) {
   // Reentrancy should be rare.
-  if (UNLIKELY(!currently_running_metadata->empty())) {
+  if (!currently_running_metadata->empty()) [[unlikely]] {
     currently_running_metadata->back().caused_reentrancy = true;
   }
 
@@ -98,8 +98,8 @@ void Watcher::DidRunTask(const base::PendingTask* task,
   // the identifier should differ is when Watcher is first constructed. The
   // TaskRunner Observers may be added while a task is being run, which means
   // that there was no corresponding WillRunTask.
-  if (UNLIKELY(currently_running_metadata->empty() ||
-               (task != currently_running_metadata->back().identifier))) {
+  if (currently_running_metadata->empty() ||
+      (task != currently_running_metadata->back().identifier)) [[unlikely]] {
     *mismatched_task_identifiers += 1;
     // Mismatches can happen, so just ignore them for now. See
     // https://crbug.com/929813 and https://crbug.com/931874 for details.
@@ -111,14 +111,15 @@ void Watcher::DidRunTask(const base::PendingTask* task,
 
   // Ignore tasks that caused reentrancy, since their execution latency will
   // be very large, but Chrome was still responsive.
-  if (UNLIKELY(metadata.caused_reentrancy))
+  if (metadata.caused_reentrancy) [[unlikely]] {
     return;
+  }
 
   // Immediate tasks which were posted before the MessageLoopObserver was
   // created will not have a queue_time nor a delayed run time, and should be
   // ignored.
-  if (UNLIKELY(task->queue_time.is_null()) &&
-      UNLIKELY(task->delayed_run_time.is_null())) {
+  if (task->queue_time.is_null() && task->delayed_run_time.is_null())
+      [[unlikely]] {
     return;
   }
 
@@ -145,7 +146,7 @@ void Watcher::DidRunTask(const base::PendingTask* task,
 void Watcher::WillRunEventOnUIThread(const void* opaque_identifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Reentrancy should be rare.
-  if (UNLIKELY(!currently_running_metadata_ui_.empty())) {
+  if (!currently_running_metadata_ui_.empty()) [[unlikely]] {
     currently_running_metadata_ui_.back().caused_reentrancy = true;
   }
 
@@ -162,9 +163,9 @@ void Watcher::DidRunEventOnUIThread(const void* opaque_identifier) {
   // WillRunEventOnUIThread. The only time the identifier should differ is when
   // Watcher is first constructed. The TaskRunner Observers may be added while a
   // task is being run, which means that there was no corresponding WillRunTask.
-  if (UNLIKELY(currently_running_metadata_ui_.empty() ||
-               (opaque_identifier !=
-                currently_running_metadata_ui_.back().identifier))) {
+  if (currently_running_metadata_ui_.empty() ||
+      (opaque_identifier != currently_running_metadata_ui_.back().identifier))
+      [[unlikely]] {
     mismatched_event_identifiers_ui_ += 1;
     // See comment in DidRunTask() for why |currently_running_metadata_ui_| may
     // be reset.
@@ -179,8 +180,9 @@ void Watcher::DidRunEventOnUIThread(const void* opaque_identifier) {
 
   // Ignore events that caused reentrancy, since their execution latency will
   // be very large, but Chrome was still responsive.
-  if (UNLIKELY(caused_reentrancy))
+  if (caused_reentrancy) [[unlikely]] {
     return;
+  }
 
   const base::TimeTicks queue_time = execution_start_time;
   const base::TimeTicks execution_finish_time = base::TimeTicks::Now();
