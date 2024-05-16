@@ -62,11 +62,10 @@ interface LensPageHandler {
 
   // Similar to IssueTextSelectionRequest(), but requests that the selected
   // text be translated.
-  IssueTranslateSelectionRequest(
-      string query,
-      string content_language,
-      int32 selection_start_index,
-      int32 selection_end_index);
+  IssueTranslateSelectionRequest(string query,
+                                 string content_language,
+                                 int32 selection_start_index,
+                                 int32 selection_end_index);
 
   // When called, the C++ coordinator closes the lens search bubble. When the
   // user selects text or thumbnail on the WebUI overlay, the search bubble
@@ -84,6 +83,10 @@ interface LensPage {
 
   // Notifies the WebUI that our results panel is opening.
   NotifyResultsPanelOpened();
+
+  // Notifies the WebUI that a close has been triggered and the overlay will
+  // soon be hidden.
+  NotifyOverlayClosing();
 
   // Passes objects received from Lens to WebUI for rendering.
   ObjectsReceived(array<OverlayObject> objects);

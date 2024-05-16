@@ -58,6 +58,11 @@
   #selectionElements {
     /* Background color #181C22 with 5% transparency */
     background-color: #181C220D;
+    transition: opacity 150ms linear;
+  }
+
+  :host([is-closing]) #selectionElements{
+    opacity: 0;
   }
 
   #selectionElements > * {
@@ -154,7 +159,6 @@
     on-pointerleave="handlePointerLeave">
   <img id="backgroundImage" on-load="onImageLoad" draggable="false"
       src="[[screenshotDataUri]]">
-  <div id="scrim"></div>
   <!-- Wrapper div is needed to stack the selection elements on top of
   background image. -->
   <div id="selectionElements">

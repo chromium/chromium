@@ -13,6 +13,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -110,6 +111,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      isClosing: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -131,8 +136,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
+  // Whether the overlay is being shut down.
+  private isClosing: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
+  // Listener ids for events from the browser side.
+  private listenerIds: number[];
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   private draggingRespondent = DragFeature.NONE;
@@ -155,6 +164,12 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     super.connectedCallback();
     this.resizeObserver.observe(this);
     this.selectionElementsResizeObserver.observe(this.$.selectionOverlay);
+    this.listenerIds = [
+      BrowserProxyImpl.getInstance()
+          .callbackRouter.notifyOverlayClosing.addListener(() => {
+            this.isClosing = true;
+          }),
+    ];
     this.eventTracker_.add(
         document, 'set-cursor', (e: CustomEvent<CursorData>) => {
           if (e.detail.cursor === CursorType.POINTER) {
@@ -190,6 +205,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.resizeObserver.unobserve(this);
     this.selectionElementsResizeObserver.unobserve(this.$.selectionOverlay);
     this.eventTracker_.removeAll();
+    this.listenerIds.forEach(
+        id => assert(
+            BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
+    this.listenerIds = [];
   }
 
   override ready() {

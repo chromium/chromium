@@ -43,6 +43,15 @@
     --cr-icon-image: url("feedback.svg");
   }
 
+  .app-container :not(lens-selection-overlay) {
+    transition: opacity 150ms linear;
+  }
+
+  :host([is-closing]) .app-container :not(lens-selection-overlay) {
+    opacity: 0;
+  }
+
+
   initial-toast {
     pointer-events: none;
   }
@@ -52,8 +61,7 @@
     on-screenshot-rendered="onScreenshotRendered">
   <div id="backgroundScrim" on-click="onBackgroundScrimClicked"
       hidden$="[[!isImageRendered]]"></div>
-  <lens-selection-overlay
-      screenshot-data-uri="[[screenshotDataUri]]"
+  <lens-selection-overlay screenshot-data-uri="[[screenshotDataUri]]"
       class$="[[getSelectionOverlayClass(screenshotDataUri)]]">
   </lens-selection-overlay>
   <initial-toast id="initialToast"></initial-toast>

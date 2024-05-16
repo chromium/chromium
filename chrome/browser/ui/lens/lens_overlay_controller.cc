@@ -65,6 +65,11 @@ namespace {
 // The radius of the blur to use for the underlying tab contents.
 constexpr int kBlurRadiusPixels = 200;
 
+// Timeout for the fadeout animation. This is purposely set to be twice the
+// duration of the fade out animation on the WebUI JS because there is a delay
+// between us notifying the WebUI, and the WebUI receiving our event.
+constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
+
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
 
@@ -331,7 +336,7 @@ void LensOverlayController::ShowUI(
 
 void LensOverlayController::CloseUIAsync(
     lens::LensOverlayDismissalSource dismissal_source) {
-  if (state_ == State::kOff || state_ == State::kClosing) {
+  if (state_ == State::kOff || IsOverlayClosing()) {
     return;
   }
 
@@ -341,6 +346,12 @@ void LensOverlayController::CloseUIAsync(
     state_ = State::kClosing;
     CloseUIPart2(dismissal_source);
     return;
+  }
+
+  // Notify the overlay so it can do any animations or cleanup. The page_ is not
+  // guaranteed to exist if CloseUIAsync is called during the setup process.
+  if (page_) {
+    page_->NotifyOverlayClosing();
   }
 
   if (state_ == State::kOverlayAndResults) {
@@ -357,23 +368,14 @@ void LensOverlayController::CloseUIAsync(
       return;
     }
   }
+
   state_ = State::kClosing;
-
-  // To avoid flickering, we need to remove the background blur and wait for a
-  // paint before closing the rest of the overlay.
-  RemoveBackgroundBlur();
-
-  // This callback can come from the WebUI. CloseUI synchronously destroys the
-  // WebUI. Therefore it is important to dispatch to the call to CloseUIAsync to
-  // avoid re-entrancy.
-  auto* ui_layer_compositor = tab_->GetBrowserWindowInterface()
-                                  ->GetWebView()
-                                  ->holder()
-                                  ->GetUILayer()
-                                  ->GetCompositor();
-  ui_layer_compositor->RequestSuccessfulPresentationTimeForNextFrame(
-      base::BindOnce(&LensOverlayController::OnBackgroundUnblurred,
-                     weak_factory_.GetWeakPtr(), dismissal_source));
+  // Set a short 200ms timeout to give the fade out time to transition.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&LensOverlayController::UnblurBackgroundAndContinueClose,
+                     weak_factory_.GetWeakPtr(), dismissal_source),
+      kFadeoutAnimationTimeout);
 }
 
 // static
@@ -497,6 +499,10 @@ bool LensOverlayController::IsOverlayShowing() {
          state_ == State::kClosingSidePanel;
 }
 
+bool LensOverlayController::IsOverlayClosing() {
+  return state_ == State::kClosing || state_ == State::kClosingSidePanel;
+}
+
 void LensOverlayController::LoadURLInResultsFrame(const GURL& url) {
   // TODO(b/337114915): If the new URL has a text query parameter and came from
   // the renderer, we need to update the searchbox text.
@@ -599,7 +605,7 @@ void LensOverlayController::SetSidePanelIsLoadingResults(bool is_loading) {
 void LensOverlayController::OnSidePanelEntryDeregistered() {
   if (state_ == State::kClosingSidePanel) {
     CHECK(last_dismissal_source_.has_value());
-    CloseUIAsync(*last_dismissal_source_);
+    UnblurBackgroundAndContinueClose(*last_dismissal_source_);
     last_dismissal_source_.reset();
     return;
   }
@@ -728,7 +734,7 @@ void LensOverlayController::CaptureScreenshot() {
 void LensOverlayController::DidCaptureScreenshot(int attempt_id,
                                                  const SkBitmap& bitmap) {
   // While capturing a screenshot the overlay was cancelled. Do nothing.
-  if (state_ == State::kOff) {
+  if (state_ == State::kOff || IsOverlayClosing()) {
     return;
   }
 
@@ -945,6 +951,32 @@ void LensOverlayController::CloseUIPart2(
   state_ = State::kOff;
 
   base::UmaHistogramEnumeration("Lens.Overlay.Dismissed", dismissal_source);
+}
+
+void LensOverlayController::UnblurBackgroundAndContinueClose(
+    lens::LensOverlayDismissalSource dismissal_source) {
+  if (state_ != State::kClosing && state_ != State::kClosingSidePanel) {
+    return;
+  }
+
+  // If we are not in a closing flow, do nothing.
+  CHECK(state_ == State::kClosing || state_ == State::kClosingSidePanel);
+
+  // To avoid flickering, we need to remove the background blur and wait for a
+  // paint before closing the rest of the overlay.
+  RemoveBackgroundBlur();
+
+  // This callback can come from the WebUI. CloseUI synchronously destroys the
+  // WebUI. Therefore it is important to dispatch to the call to CloseUIAsync to
+  // avoid re-entrancy.
+  auto* ui_layer_compositor = tab_->GetBrowserWindowInterface()
+                                  ->GetWebView()
+                                  ->holder()
+                                  ->GetUILayer()
+                                  ->GetCompositor();
+  ui_layer_compositor->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(&LensOverlayController::OnBackgroundUnblurred,
+                     weak_factory_.GetWeakPtr(), dismissal_source));
 }
 
 void LensOverlayController::OnBackgroundUnblurred(

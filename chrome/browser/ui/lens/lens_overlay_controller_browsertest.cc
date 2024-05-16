@@ -191,6 +191,8 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
     did_notify_results_opened_ = true;
   }
 
+  void NotifyOverlayClosing() override { did_notify_overlay_closing_ = true; }
+
   void SetPostRegionSelection(
       lens::mojom::CenterRotatedBoxPtr region) override {
     post_region_selection_ = std::move(region);
@@ -219,6 +221,7 @@ class LensOverlayPageFake : public lens::mojom::LensPage {
   std::vector<lens::mojom::OverlayObjectPtr> last_received_objects_;
   lens::mojom::TextPtr last_received_text_;
   bool did_notify_results_opened_ = false;
+  bool did_notify_overlay_closing_ = false;
   lens::mojom::CenterRotatedBoxPtr post_region_selection_;
   std::pair<int, int> text_selection_indexes_;
   bool did_clear_region_selection_ = false;
@@ -801,6 +804,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
   // Now show the side panel.
   controller->results_side_panel_coordinator()->RegisterEntryAndShow();
 
@@ -812,9 +820,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   // Close the side panel.
   coordinator->Close();
 
-  // Ensure the side panel closes too.
+  // Ensure the overlay closes too.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
@@ -2014,6 +2023,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
   // Open the side panel
   auto* side_panel_coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
@@ -2024,6 +2038,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Overlay should close.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -2045,6 +2060,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
+  // Grab fake controller to test if notify the overlay of being closed.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  EXPECT_FALSE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
+
   // Open our results panel
   controller->IssueTextSelectionRequestForTesting("test query",
                                                   /*selection_start_index=*/0,
@@ -2065,6 +2085,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Overlay should close.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
+  EXPECT_TRUE(fake_controller->fake_overlay_page_.did_notify_overlay_closing_);
 }
 
 // TODO(b/340886492): Fix and reenable test on MSAN.

@@ -254,6 +254,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
+  // Returns true if the overlay is currently in the process of closing.
+  bool IsOverlayClosing();
+
   // Pass a result frame URL to load in the side panel.
   void LoadURLInResultsFrame(const GURL& url);
 
@@ -453,6 +456,12 @@ class LensOverlayController : public LensSearchboxClient,
   // CloseUIAsync. Anyone called trying to close the UI should go through
   // CloseUIAsync.
   void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
+
+  // Unblurs the background and gives a callback to the UI compositor layer to
+  // finish the closing process once the background is unblurred. This should
+  // only be called from a closing flow that started with CloseUIAsync.
+  void UnblurBackgroundAndContinueClose(
+      lens::LensOverlayDismissalSource dismissal_source);
 
   // Passed into the compositor layer to know when the background is done being
   // unblurred and it is safe to close the overlay.

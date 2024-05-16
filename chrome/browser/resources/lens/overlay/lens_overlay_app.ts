@@ -46,20 +46,27 @@ export class LensOverlayAppElement extends PolymerElement {
   static get properties() {
     return {
       screenshotDataUri: String,
+      isImageRendered: Boolean,
       closeButtonHidden: {
         type: Boolean,
         reflectToAttribute: true,
       },
-      isImageRendered: Boolean,
+      isClosing: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
   // The data URI of the screenshot passed from C++.
   private screenshotDataUri: string = '';
-  // Whether the close button should be hidden.
-  private closeButtonHidden: boolean = false;
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
+  // Whether the close button should be hidden.
+  private closeButtonHidden: boolean = false;
+  // Whether the overlay is being shut down.
+  private isClosing: boolean = false;
+
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds: number[];
@@ -73,6 +80,9 @@ export class LensOverlayAppElement extends PolymerElement {
           this.screenshotDataUriReceived.bind(this)),
       callbackRouter.notifyResultsPanelOpened.addListener(
           this.onNotifyResultsPanelOpened.bind(this)),
+      callbackRouter.notifyOverlayClosing.addListener(() => {
+        this.isClosing = true;
+      }),
     ];
     window.addEventListener('keyup', maybeCloseOverlay);
   }
