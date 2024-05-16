@@ -258,24 +258,22 @@ void GetContainersInRootWindow(int container_mask,
         Shell::GetContainer(root_window, kShellWindowId_ShelfContainer));
   }
   if (container_mask & SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS) {
-    // TODO(antrim): Figure out a way to eliminate a need to exclude shelf
-    // in such way.
-    aura::Window* non_lock_screen_containers = Shell::GetContainer(
-        root_window, kShellWindowId_NonLockScreenContainersContainer);
-    // |non_lock_screen_containers| may already be removed in some tests.
-    constexpr int ContainersToAnimate[] = {
-        kShellWindowId_HomeScreenContainer,
-        kShellWindowId_AlwaysOnTopContainer,
-        kShellWindowId_PipContainer,
-        kShellWindowId_SystemModalContainer,
-    };
-    if (non_lock_screen_containers) {
-      for (aura::Window* window : non_lock_screen_containers->children()) {
-        if ((base::Contains(ContainersToAnimate, window->GetId()) ||
-             desks_util::IsActiveDeskContainer(window))) {
-          containers->push_back(window);
-        }
+    // `non_lock_screen_containers` may already be removed in some tests.
+    if (aura::Window* non_lock_screen_containers = Shell::GetContainer(
+            root_window, kShellWindowId_NonLockScreenContainersContainer);
+        non_lock_screen_containers) {
+      constexpr int ContainersToAnimate[] = {
+          kShellWindowId_HomeScreenContainer,
+          kShellWindowId_AlwaysOnTopContainer,
+          kShellWindowId_FloatContainer,
+          kShellWindowId_PipContainer,
+          kShellWindowId_SystemModalContainer,
+      };
+      for (const int id : ContainersToAnimate) {
+        containers->push_back(Shell::GetContainer(root_window, id));
       }
+      containers->push_back(
+          desks_util::GetActiveDeskContainerForRoot(root_window));
     }
   }
   if (container_mask & SessionStateAnimator::LOCK_SCREEN_WALLPAPER) {
