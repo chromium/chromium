@@ -229,12 +229,10 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   // logs.
   net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
   net::EmbeddedTestServer::ServerCertificateConfig server_config;
-  // TODO(crbug.com/40767453): Need to use a separate hostname for each
-  // request since the current code does not flush verifier caches on CT log
-  // updates. When log updates switch to the new path, change the test to use
-  // the same hostname for each request to test that caches are cleared as
-  // expected.
-  server_config.dns_names = {"*.example.com"};
+  // The same hostname is used for each request, which verifies that the CT log
+  // updates cause verifier caches and socket pool invalidation, so that the
+  // next request for the same host will use the updated CT state.
+  server_config.dns_names = {"example.com"};
   server_config.embedded_scts.emplace_back(
       log1_id, bssl::UpRef(log1_private_key->key()), base::Time::Now());
   server_config.embedded_scts.emplace_back(
@@ -246,7 +244,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
 
   // Check that the page is blocked depending on CT enforcement.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("a.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
   if (GetParam() == CTEnforcement::kEnabled) {
@@ -312,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("b.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
 
   // Update CT configuration again with the same CT logs but mark the 1st log
@@ -352,7 +350,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(3);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   if (GetParam() == CTEnforcement::kEnabled) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
