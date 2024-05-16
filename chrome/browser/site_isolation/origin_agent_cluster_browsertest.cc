@@ -220,28 +220,6 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
 }
 
 IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
-                       SyntheticTrialActivation) {
-  const std::string kSyntheticTrialName =
-      "ProcessIsolatedOriginAgentClusterActive";
-  const std::string kSyntheticTrialGroup = "Enabled";
-
-  GURL start_url(https_server()->GetURL("foo.com", "/iframe.html"));
-  GURL origin_keyed_url(
-      https_server()->GetURL("origin-keyed.foo.com", "/origin_key_me"));
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
-  // We won't have an active synthetic trial until we navigate to
-  // `origin_keyed_url`.
-  EXPECT_FALSE(variations::HasSyntheticTrial(kSyntheticTrialName));
-  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", origin_keyed_url));
-  EXPECT_TRUE(variations::IsInSyntheticTrialGroup(kSyntheticTrialName,
-                                                  kSyntheticTrialGroup));
-}
-
-IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest,
                        ProcessCountMetricsSimple) {
   GURL start_url(https_server()->GetURL("foo.com", "/iframe.html"));
   GURL origin_keyed_url(

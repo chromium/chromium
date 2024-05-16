@@ -45,13 +45,6 @@ NavigationMetricsRecorder::NavigationMetricsRecorder(
       site_engagement::SiteEngagementService::Get(profile);
   cookie_settings_ = CookieSettingsFactory::GetForProfile(profile);
 
-#if BUILDFLAG(IS_ANDROID)
-  // The site isolation synthetic field trial is only needed on Android, as on
-  // desktop it would be unnecessarily set for all users.
-  is_synthetic_isolation_trial_enabled_ = true;
-#else
-  is_synthetic_isolation_trial_enabled_ = false;
-#endif
 }
 
 NavigationMetricsRecorder::~NavigationMetricsRecorder() = default;
@@ -68,43 +61,13 @@ NavigationMetricsRecorder::GetThirdPartyCookieBlockState(const GURL& url) {
                    kThirdPartyCookieBlockingDisabledForSite;
 }
 
-void NavigationMetricsRecorder::EnableSiteIsolationSyntheticTrialForTesting() {
-  is_synthetic_isolation_trial_enabled_ = true;
-}
-
 void NavigationMetricsRecorder::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
-
-  // See if the navigation committed for a site that required a dedicated
-  // process and register a synthetic field trial if so.  Note that this needs
-  // to go before the IsInPrimaryMainFrame() check, as we want to register
-  // navigations to isolated sites from both main frames and subframes.
-  auto* site_instance =
-      navigation_handle->GetRenderFrameHost()->GetSiteInstance();
-  if (is_synthetic_isolation_trial_enabled_ &&
-      site_instance->RequiresDedicatedProcess()) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "SiteIsolationActive", "Enabled");
   }
-
-  if (site_instance->RequiresOriginKeyedProcess()) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "ProcessIsolatedOriginAgentClusterActive", "Enabled");
-  }
-
-  // Also register a synthetic field trial when we encounter a navigation to an
-  // OOPIF.
-  if (is_synthetic_isolation_trial_enabled_ &&
-      navigation_handle->GetRenderFrameHost()->IsCrossProcessSubframe()) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        "OutOfProcessIframesActive", "Enabled");
-  }
-
-  if (!navigation_handle->IsInPrimaryMainFrame())
-    return;
 
   content::BrowserContext* context = web_contents()->GetBrowserContext();
   content::NavigationEntry* last_committed_entry =
