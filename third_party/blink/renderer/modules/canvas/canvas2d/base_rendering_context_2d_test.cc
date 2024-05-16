@@ -68,6 +68,7 @@ using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
 using ::cc::SetMatrixOp;
 using ::cc::TranslateOp;
+using ::cc::UsePaintCache;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;

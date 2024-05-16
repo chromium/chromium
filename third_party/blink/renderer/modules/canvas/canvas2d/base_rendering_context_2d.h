@@ -56,7 +56,6 @@ struct V8CanvasStyle;
 enum class V8CanvasStyleType;
 class GPUTexture;
 class V8UnionCanvasFilterOrString;
-using cc::UsePaintCache;
 
 class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
  public:
@@ -715,7 +714,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void DrawPathInternal(const CanvasPath&,
                         CanvasRenderingContext2DState::PaintType,
                         SkPathFillType,
-                        UsePaintCache);
+                        cc::UsePaintCache);
   void DrawImageInternal(cc::PaintCanvas*,
                          CanvasImageSource*,
                          Image*,
@@ -725,7 +724,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                          const cc::PaintFlags*);
   void ClipInternal(const Path&,
                     const String& winding_rule_string,
-                    UsePaintCache);
+                    cc::UsePaintCache);
 
   bool IsPointInPathInternal(const Path&,
                              const double x,
@@ -786,7 +785,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasResourceProvider& resource_provider);
 
   bool origin_tainted_by_content_ = false;
-  UsePaintCache path2d_use_paint_cache_;
+  cc::UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
   base::HashingLRUCache<String, CachedColor> color_cache_{8};

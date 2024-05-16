@@ -92,6 +92,8 @@
 
 namespace blink {
 
+using ::cc::UsePaintCache;
+
 BASE_FEATURE(kDisableCanvasOverdrawOptimization,
              "DisableCanvasOverdrawOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
