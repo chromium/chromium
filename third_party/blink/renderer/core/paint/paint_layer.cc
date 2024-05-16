@@ -291,6 +291,7 @@ void PaintLayer::UpdateTransform() {
 }
 
 void PaintLayer::UpdateTransformAfterStyleChange(
+    StyleDifference diff,
     const ComputedStyle* old_style,
     const ComputedStyle& new_style) {
   // It's possible for the old and new style transform data to be equivalent
@@ -299,7 +300,7 @@ void PaintLayer::UpdateTransformAfterStyleChange(
   bool had_transform = Transform();
   bool has_transform = GetLayoutObject().HasTransform();
   if (had_transform == has_transform && old_style &&
-      new_style.TransformDataEquivalent(*old_style)) {
+      !diff.TransformDataChanged()) {
     return;
   }
   bool had_3d_transform = Has3DTransform();
@@ -2152,7 +2153,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   if (!old_style || old_style->GetPosition() != new_style.GetPosition())
     MarkAncestorChainForFlagsUpdate();
 
-  UpdateTransformAfterStyleChange(old_style, new_style);
+  UpdateTransformAfterStyleChange(diff, old_style, new_style);
   UpdateFilters(diff, old_style, new_style);
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);

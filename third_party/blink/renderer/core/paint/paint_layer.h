@@ -671,7 +671,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void SetNeedsDescendantDependentFlagsUpdate();
 
-  void UpdateTransformAfterStyleChange(const ComputedStyle* old_style,
+  void UpdateTransformAfterStyleChange(StyleDifference,
+                                       const ComputedStyle* old_style,
                                        const ComputedStyle& new_style);
 
   void MarkCompositingContainerChainForNeedsRepaint();

@@ -1895,14 +1895,6 @@ class ComputedStyle final : public ComputedStyleBase {
                ? ETransformStyle3D::kFlat
                : ETransformStyle3D::kPreserve3d;
   }
-  // Returns whether the transform operations for |otherStyle| differ from the
-  // operations for this style instance. Note that callers may want to also
-  // check hasTransform(), as it is possible for two styles to have matching
-  // transform operations but differ in other transform-impacting style
-  // respects.
-  bool TransformDataEquivalent(const ComputedStyle& other) const {
-    return !DiffTransformData(*this, other);
-  }
   bool Preserves3D() const {
     return UsedTransformStyle3D() != ETransformStyle3D::kFlat;
   }

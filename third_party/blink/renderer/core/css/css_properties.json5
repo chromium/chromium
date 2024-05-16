@@ -338,6 +338,7 @@
         "scrollbar-style",
         "stroke",
         "text-decoration",
+        "transform-data",
         "transform-property",
         "visibility",
         "visual-overflow",
@@ -3944,6 +3945,7 @@
       converter: "ConvertPositionOrAuto",
       keywords: ["auto"],
       typedom_types: ["Keyword", "Position"],
+      invalidate: ["transform-data"],
     },
     {
       name: "offset-distance",
@@ -3954,6 +3956,7 @@
       default_value: "Length::Fixed(0)",
       converter: "ConvertLength",
       typedom_types: ["Length", "Percentage"],
+      invalidate: ["transform-data"],
     },
     {
       name: "offset-path",
@@ -3968,6 +3971,7 @@
       converter: "ConvertOffsetPath",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      invalidate: ["transform-data"],
     },
     {
       name: "offset-position",
@@ -3981,6 +3985,7 @@
       converter: "ConvertOffsetPosition",
       keywords: ["auto", "normal"],
       typedom_types: ["Keyword", "Position"],
+      invalidate: ["transform-data"],
     },
     {
       name: "offset-rotate",
@@ -3994,6 +3999,7 @@
       converter: "ConvertOffsetRotate",
       keywords: ["auto", "reverse"],
       typedom_types: ["Keyword", "Angle"],
+      invalidate: ["transform-data"],
     },
     {
       name: "opacity",
@@ -5780,7 +5786,7 @@
       type_name: "TransformOperations",
       converter: "ConvertTransformOperations",
       supports_incremental_style: true,
-      invalidate: ["transform-property"],
+      invalidate: ["transform-data", "transform-property"],
     },
     {
       name: "transform-box",
@@ -5791,6 +5797,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       supports_incremental_style: true,
+      invalidate: ["transform-data"],
     },
     {
       name: "transform-origin",
@@ -5807,6 +5814,7 @@
       supports_incremental_style: true,
       // Overlaps with -webkit-transform-origin-[x,y,z].
       overlapping: true,
+      invalidate: ["transform-data"],
     },
     {
       name: "transform-style",
@@ -5833,6 +5841,7 @@
       type_name: "TranslateTransformOperation",
       converter: "ConvertTranslate",
       supports_incremental_style: true,
+      invalidate: ["transform-data"],
     },
     {
       name: "rotate",
@@ -5847,6 +5856,7 @@
       type_name: "RotateTransformOperation",
       converter: "ConvertRotate",
       supports_incremental_style: true,
+      invalidate: ["transform-data"],
     },
     {
       name: "scale",
@@ -5861,6 +5871,7 @@
       type_name: "ScaleTransformOperation",
       converter: "ConvertScale",
       supports_incremental_style: true,
+      invalidate: ["transform-data"],
     },
     {
       name: "unicode-bidi",

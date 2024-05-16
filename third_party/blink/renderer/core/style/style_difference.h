@@ -48,7 +48,8 @@ class StyleDifference {
         scroll_anchor_disabling_property_changed_(false),
         compositing_reasons_changed_(false),
         compositable_paint_effect_changed_(false),
-        border_radius_changed_(false) {}
+        border_radius_changed_(false),
+        transform_data_changed_(false) {}
 
   void Merge(StyleDifference other) {
     paint_invalidation_type_ =
@@ -63,6 +64,7 @@ class StyleDifference {
     compositable_paint_effect_changed_ |=
         other.compositable_paint_effect_changed_;
     border_radius_changed_ |= other.border_radius_changed_;
+    transform_data_changed_ |= other.transform_data_changed_;
   }
 
   bool HasDifference() const {
@@ -72,7 +74,7 @@ class StyleDifference {
            recompute_visual_overflow_ ||
            scroll_anchor_disabling_property_changed_ ||
            compositing_reasons_changed_ || compositable_paint_effect_changed_ ||
-           border_radius_changed_;
+           border_radius_changed_ || transform_data_changed_;
   }
 
   // For simple paint invalidation, we can directly invalidate the
@@ -211,6 +213,8 @@ class StyleDifference {
   }
   bool BorderRadiusChanged() const { return border_radius_changed_; }
   void SetBorderRadiusChanged() { border_radius_changed_ = true; }
+  bool TransformDataChanged() const { return transform_data_changed_; }
+  void SetTransformDataChanged() { transform_data_changed_ = true; }
 
  private:
   static constexpr int kPropertyDifferenceCount = 11;
@@ -232,6 +236,7 @@ class StyleDifference {
   // composited using paint worklet infra.
   unsigned compositable_paint_effect_changed_ : 1;
   unsigned border_radius_changed_ : 1;
+  unsigned transform_data_changed_ : 1;
 
   // This exists only to get the object up to exactly 32 bits,
   // which keeps Clang from making partial writes of it when copying
@@ -239,7 +244,7 @@ class StyleDifference {
   // data back again with a large read can cause store-to-load forward
   // stalls). Feel free to take bits from here if you need them
   // for something else.
-  unsigned padding_ [[maybe_unused]] : 11;
+  unsigned padding_ [[maybe_unused]] : 10;
 };
 static_assert(sizeof(StyleDifference) == 4, "Remove some padding bits!");
 

@@ -48,13 +48,6 @@
         ],
     },
     {
-        name: "DiffTransformData",
-        fields_to_diff: ["transform", "translate", "rotate",
-                    "scale", "offset-path", "offset-rotate", "transform-origin",
-                     "offset-position", "offset-anchor", "offset-distance",
-                     "transform-box"],
-    },
-    {
         // Diff of transform-related properties other than the transform itself.
         // Because HasTransform() is checked below, this will also check for
         // changes to the existence of the transform property.
