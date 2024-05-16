@@ -589,11 +589,9 @@ TEST_P(TabStripTest, EventsOnClosingTab) {
   EXPECT_TRUE(second_tab->closing());
 }
 
-TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
-  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug.com/1520595): Disabled for now due to test failing when CR2023
+// enabled.
+TEST_P(TabStripTest, DISABLED_ChangingLayoutTypeResizesTabs) {
   SetMaxTabStripWidth(1000);
 
   controller_->AddTab(0, TabActive::kInactive);
