@@ -171,6 +171,17 @@ class EnclaveManager : public EnclaveManagerInterface {
   // user, erase local keys, and erase local state for the user. Safe to call in
   // any state and is a no-op if no registration exists.
   void Unenroll(Callback callback) override;
+  // Process the current security domain state. Requires `is_registered()`. This
+  // can update the locally-cached view of the current GPM PIN, or can make
+  // `is_ready()` false if the security domain has been reset.
+  //
+  // Returns whether `is_ready()` will return true in the future. (Because
+  // other operations may be running at the time, is_ready() may not update
+  // immediately.)
+  bool ConsiderSecurityDomainState(
+      const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+          state,
+      Callback callback);
 
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
