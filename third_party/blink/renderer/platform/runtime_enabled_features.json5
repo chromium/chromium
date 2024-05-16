@@ -3909,6 +3909,11 @@
       base_feature: "none",
       is_protected_feature: true,
     },
+    // For unit tests.
+    {
+      name: "TestFeatureStable",
+      status: "stable",
+    },
     {
       // crbug.com/331680200
       name: "TextAlignJustifyBidiIsolate",

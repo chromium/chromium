@@ -1887,5 +1887,8 @@
     // container-progress()
     "container-progress",
     "of",
+
+    // @supports blink-feature(RuntimeEnabledFeatureName)
+    "blink-feature",
   ],
 }

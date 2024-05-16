@@ -3036,4 +3036,8 @@ const MediaQuerySet* CSSParserImpl::CachedMediaQuerySet(
   return media.Get();
 }
 
+CSSParserMode CSSParserImpl::GetMode() const {
+  return context_->Mode();
+}
+
 }  // namespace blink

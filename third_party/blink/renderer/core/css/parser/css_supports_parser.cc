@@ -102,12 +102,18 @@ bool CSSSupportsParser::IsSupportsDecl(const CSSParserToken& first_token,
          second_token.GetType() == kIdentToken;
 }
 
+bool CSSSupportsParser::IsBlinkFeatureFn(const CSSParserToken& first_token) {
+  return first_token.GetType() == kFunctionToken &&
+         first_token.FunctionId() == CSSValueID::kBlinkFeature;
+}
+
 bool CSSSupportsParser::IsSupportsFeature(const CSSParserToken& first_token,
                                           const CSSParserToken& second_token) {
   return IsSupportsSelectorFn(first_token, second_token) ||
          IsSupportsDecl(first_token, second_token) ||
          IsFontFormatFn(first_token, second_token) ||
-         IsFontTechFn(first_token, second_token);
+         IsFontTechFn(first_token, second_token) ||
+         IsBlinkFeatureFn(first_token);
 }
 
 bool CSSSupportsParser::IsGeneralEnclosed(const CSSParserToken& first_token) {
@@ -163,6 +169,11 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsFeature(
   // <supports-font-format-fn>
   if (IsFontFormatFn(first_token, stream.Peek())) {
     return ConsumeFontFormatFn(first_token, stream);
+  }
+
+  if (parser_.GetMode() == CSSParserMode::kUASheetMode &&
+      IsBlinkFeatureFn(first_token)) {
+    return ConsumeBlinkFeatureFn(first_token, stream);
   }
 
   // <supports-decl>
@@ -301,6 +312,18 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeGeneralEnclosed(
     return Result::kUnsupported;
   }
   return Result::kParseFailure;
+}
+
+CSSSupportsParser::Result CSSSupportsParser::ConsumeBlinkFeatureFn(
+    const CSSParserToken& first_token,
+    CSSParserTokenStream& stream) {
+  DCHECK(IsBlinkFeatureFn(first_token));
+  CSSParserTokenRange feature_name_block =
+      stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
+  return RuntimeEnabledFeatures::IsFeatureEnabledFromString(
+             feature_name_block.Peek().Value().Utf8())
+             ? Result::kSupported
+             : Result::kUnsupported;
 }
 
 }  // namespace blink

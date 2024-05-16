@@ -93,6 +93,8 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   {% endfor %}
 
+  static bool IsFeatureEnabledFromString(const std::string& name);
+
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.
   {% for feature_set in feature_sets %}

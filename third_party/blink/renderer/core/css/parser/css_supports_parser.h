@@ -81,6 +81,9 @@ class CORE_EXPORT CSSSupportsParser {
   //                  | ( <any-value>? )
   Result ConsumeGeneralEnclosed(const CSSParserToken&, CSSParserTokenStream&);
 
+  // This is an internal feature which is not web-exposed.
+  Result ConsumeBlinkFeatureFn(const CSSParserToken&, CSSParserTokenStream&);
+
   // Parsing helpers.
   static bool IsSupportsInParens(const CSSParserToken&);
   static bool IsEnclosedSupportsCondition(const CSSParserToken&,
@@ -92,6 +95,7 @@ class CORE_EXPORT CSSSupportsParser {
   static bool IsSupportsDecl(const CSSParserToken&, const CSSParserToken&);
   static bool IsSupportsFeature(const CSSParserToken&, const CSSParserToken&);
   static bool IsGeneralEnclosed(const CSSParserToken&);
+  static bool IsBlinkFeatureFn(const CSSParserToken&);
 
   CSSParserImpl& parser_;
 };

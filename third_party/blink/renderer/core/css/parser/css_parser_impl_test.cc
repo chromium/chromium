@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -1426,6 +1427,75 @@ TEST(CSSParserImplTest, AllPropertiesCanParseImportant) {
 
   // So that we don't introduce more, or break the entire test inadvertently.
   EXPECT_EQ(broken_properties, 20);
+}
+
+TEST(CSSParserImplTest, ParseSupportsBlinkFeature) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = R"CSS(
+    @supports blink-feature(TestFeatureStable) {
+      div { color: red; }
+      span { color: green; }
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kUASheetMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(sheet->ChildRules().size(), 1u);
+
+  StyleRuleBase* rule = sheet->ChildRules()[0].Get();
+  ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
+  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  ASSERT_TRUE(supports_rule->ConditionIsSupported());
+
+  StyleRuleBase::ChildRuleVector child_rules = supports_rule->ChildRules();
+  ASSERT_EQ(child_rules.size(), 2u);
+  ASSERT_EQ(String("div"),
+            To<StyleRule>(child_rules[0].Get())->SelectorsText());
+  ASSERT_EQ(String("span"),
+            To<StyleRule>(child_rules[1].Get())->SelectorsText());
+}
+
+TEST(CSSParserImplTest, ParseSupportsBlinkFeatureAuthorStylesheet) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = R"CSS(
+    @supports blink-feature(TestFeatureStable) {
+      div { color: red; }
+      span { color: green; }
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(sheet->ChildRules().size(), 0u);
+}
+
+TEST(CSSParserImplTest, ParseSupportsBlinkFeatureDisabledFeature) {
+  test::TaskEnvironment task_environment;
+  String sheet_text = R"CSS(
+    @supports blink-feature(TestFeature) {
+      div { color: red; }
+      span { color: green; }
+    }
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kUASheetMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+  ASSERT_EQ(sheet->ChildRules().size(), 1u);
+
+  StyleRuleBase* rule = sheet->ChildRules()[0].Get();
+  ASSERT_EQ(rule->GetType(), StyleRuleBase::RuleType::kSupports);
+  StyleRuleSupports* supports_rule = DynamicTo<StyleRuleSupports>(rule);
+  ASSERT_FALSE(supports_rule->ConditionIsSupported());
+
+  StyleRuleBase::ChildRuleVector child_rules = supports_rule->ChildRules();
+  ASSERT_EQ(child_rules.size(), 2u);
+  ASSERT_EQ(String("div"),
+            To<StyleRule>(child_rules[0].Get())->SelectorsText());
+  ASSERT_EQ(String("span"),
+            To<StyleRule>(child_rules[1].Get())->SelectorsText());
 }
 
 }  // namespace blink

@@ -181,6 +181,8 @@ class CORE_EXPORT CSSParserImpl {
 
   static bool RemoveImportantAnnotationIfPresent(CSSTokenizedValue&);
 
+  CSSParserMode GetMode() const;
+
  private:
   enum RuleListType {
     kTopLevelRuleList,
