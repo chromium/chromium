@@ -56,6 +56,7 @@
 
 class BackgroundContents;
 class BreadcrumbManagerBrowserAgent;
+class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
 class BrowserSyncedWindowDelegate;
@@ -499,6 +500,8 @@ class Browser : public TabStripModelObserver,
   TabMenuModelDelegate* tab_menu_model_delegate() const {
     return tab_menu_model_delegate_.get();
   }
+
+  BrowserActions* browser_actions() const { return browser_actions_.get(); }
 
   chrome::BrowserCommandController* command_controller() {
     return command_controller_.get();
@@ -1399,6 +1402,8 @@ class Browser : public TabStripModelObserver,
 
   std::unique_ptr<extensions::BrowserExtensionWindowController>
       extension_window_controller_;
+
+  std::unique_ptr<BrowserActions> browser_actions_;
 
   std::unique_ptr<chrome::BrowserCommandController> command_controller_;
 

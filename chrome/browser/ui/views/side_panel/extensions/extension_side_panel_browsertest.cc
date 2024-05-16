@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   ASSERT_TRUE(side_panel_extension);
 
   // Check if ActionItem is created.
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* action_item =
       GetActionItemForExtension(side_panel_extension.get(), browser_actions);
   EXPECT_EQ(action_item->GetText(),
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   SidePanelEntry::Key extension_key = GetKey(extension->id());
 
   EXPECT_TRUE(global_registry()->GetEntryForKey(extension_key));
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* browser_one_action_item =
       GetActionItemForExtension(extension.get(), browser_actions);
   EXPECT_EQ(browser_one_action_item->GetText(),
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, MultipleBrowsers) {
   // registered for the new window's global SidePanelRegistry.
   Browser* second_browser = CreateBrowser(browser()->profile());
   BrowserActions* browser_actions_second_browser =
-      BrowserActions::FromBrowser(second_browser);
+      second_browser->browser_actions();
 
   SidePanelRegistry* second_global_registry =
       SidePanelCoordinator::GetGlobalSidePanelRegistry(second_browser);
@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   ASSERT_TRUE(extension);
 
   // Check if ActionItem is created.
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   actions::ActionItem* action_item =
       GetActionItemForExtension(extension.get(), browser_actions);
   EXPECT_EQ(action_item->GetText(), base::UTF8ToUTF16(extension->short_name()));

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
+
 #include <iostream>
 
 #include "base/check_op.h"
@@ -15,8 +16,8 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -62,7 +63,7 @@ BrowserView* LensSidePanelCoordinator::GetBrowserView() {
 
 actions::ActionItem* LensSidePanelCoordinator::GetActionItem() {
   CHECK(features::IsSidePanelPinningEnabled());
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(&GetBrowser());
+  BrowserActions* browser_actions = GetBrowser().browser_actions();
   return actions::ActionManager::Get().FindAction(
       kActionSidePanelShowLens, browser_actions->root_action_item());
 }

@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -60,7 +61,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1984,10 +1984,9 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
 
 actions::ActionItem* BrowserCommandController::FindAction(
     actions::ActionId action_id) {
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
-  return browser_actions ? actions::ActionManager::Get().FindAction(
-                               action_id, browser_actions->root_action_item())
-                         : nullptr;
+  BrowserActions* browser_actions = browser_->browser_actions();
+  return actions::ActionManager::Get().FindAction(
+      action_id, browser_actions->root_action_item());
 }
 
 void BrowserCommandController::UpdateCommandAndActionEnabled(

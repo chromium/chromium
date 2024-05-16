@@ -83,7 +83,9 @@ bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   return IsSearchInCompanionSidePanelSupportedForProfile(browser->profile());
 }
 
-bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile) {
+bool IsSearchInCompanionSidePanelSupportedForProfile(
+    Profile* profile,
+    bool include_runtime_checks) {
   if (!profile) {
     return false;
   }
@@ -92,26 +94,34 @@ bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile) {
     return false;
   }
 
-  // If `kSidePanelCompanion` and `kSidePanelCompanion2` are disabled, then
-  // `kCompanionEnabledByObservingExpsNavigations` must be enabled and pref must
-  // be set to true.
-  if (!base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion) &&
-      !base::FeatureList::IsEnabled(features::internal::kSidePanelCompanion2)) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::internal::kCompanionEnabledByObservingExpsNavigations));
-    base::UmaHistogramBoolean(
-        "Companion.HasNavigatedToExpsSuccessPagePref.Status",
-        profile->GetPrefs()->GetBoolean(
-            companion::kHasNavigatedToExpsSuccessPage));
-    if (!profile->GetPrefs()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
-      return false;
-    }
+  if (profile->IsIncognitoProfile() || profile->IsGuestSession() ||
+      profile->IsOffTheRecord()) {
+    return false;
   }
 
-  return !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
-         search::DefaultSearchProviderIsGoogle(profile) &&
-         !profile->IsOffTheRecord() &&
-         IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
+  if (include_runtime_checks) {
+    // If `kSidePanelCompanion` and `kSidePanelCompanion2` are disabled, then
+    // `kCompanionEnabledByObservingExpsNavigations` must be enabled and pref
+    // must be set to true.
+    if (!base::FeatureList::IsEnabled(
+            features::internal::kSidePanelCompanion) &&
+        !base::FeatureList::IsEnabled(
+            features::internal::kSidePanelCompanion2)) {
+      CHECK(base::FeatureList::IsEnabled(
+          features::internal::kCompanionEnabledByObservingExpsNavigations));
+      base::UmaHistogramBoolean(
+          "Companion.HasNavigatedToExpsSuccessPagePref.Status",
+          profile->GetPrefs()->GetBoolean(
+              companion::kHasNavigatedToExpsSuccessPage));
+      if (!profile->GetPrefs()->GetBoolean(kHasNavigatedToExpsSuccessPage)) {
+        return false;
+      }
+    }
+
+    return search::DefaultSearchProviderIsGoogle(profile) &&
+           IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
+  }
+  return true;
 }
 
 bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser) {

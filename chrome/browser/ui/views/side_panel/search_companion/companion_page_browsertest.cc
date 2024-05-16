@@ -30,12 +30,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -2412,7 +2412,7 @@ IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
   actions::ActionItem* companion_action_item =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
+          browser()->browser_actions()->root_action_item());
   EXPECT_TRUE(companion_action_item->GetEnabled());
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2427,7 +2427,7 @@ IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,
   actions::ActionItem* companion_action_item =
       actions::ActionManager::Get().FindAction(
           kActionSidePanelShowSearchCompanion,
-          BrowserActions::FromBrowser(browser())->root_action_item());
+          browser()->browser_actions()->root_action_item());
   EXPECT_TRUE(companion_action_item->GetEnabled());
 
   EnableCompanionByPolicy(false);

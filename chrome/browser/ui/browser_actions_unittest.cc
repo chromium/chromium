@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_actions.h"
+#include "chrome/browser/ui/browser_actions.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "ui/base/ui_base_features.h"
 
-class BrowserActionsTest : public TestWithBrowserView {
+class BrowserActionsTest : public BrowserWithTestWindowTest {
  public:
   BrowserActionsTest() {
     feature_list_.InitWithFeatures(
@@ -30,7 +30,7 @@ class BrowserActionsTest : public TestWithBrowserView {
 };
 
 TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   auto& action_manager = actions::ActionManager::GetForTesting();
 
   std::vector<actions::ActionId> browser_action_ids = {
@@ -45,7 +45,7 @@ TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
 }
 
 TEST_F(BrowserActionsTest, CheckBrowserActionsEnabledState) {
-  BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
+  BrowserActions* browser_actions = browser()->browser_actions();
   auto& action_manager = actions::ActionManager::GetForTesting();
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);

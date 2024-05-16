@@ -14,10 +14,10 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -183,7 +183,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
        /*is_section_end=*/true}};
 
   // Support actions items.
-  const auto* const browser_actions = BrowserActions::FromBrowser(browser);
+  const auto* const browser_actions = browser->browser_actions();
   if (browser_actions) {
     auto* root_item = browser_actions->root_action_item();
     if (root_item) {

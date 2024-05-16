@@ -39,16 +39,6 @@
 #include "extensions/common/extension_features.h"
 #endif
 
-namespace {
-constexpr std::underlying_type_t<SidePanelOpenTrigger>
-    kInvalidSidePanelOpenTrigger = -1;
-}
-
-DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelOpenTrigger)
-DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
-                             kSidePanelOpenTriggerKey,
-                             kInvalidSidePanelOpenTrigger)
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentState)
 DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
                              kSidePanelContentStateKey,
@@ -247,21 +237,4 @@ void SidePanelUtil::RecordSidePanelAnimationMetrics(
     base::TimeDelta largest_step_time) {
   base::UmaHistogramTimes("SidePanel.TimeOfLongestAnimationStep",
                           largest_step_time);
-}
-
-actions::ActionItem::InvokeActionCallback
-SidePanelUtil::CreateToggleSidePanelActionCallback(SidePanelEntryKey key,
-                                                   Browser* browser) {
-  return base::BindRepeating(
-      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
-         actions::ActionInvocationContext context) {
-        const SidePanelOpenTrigger open_trigger =
-            static_cast<SidePanelOpenTrigger>(
-                context.GetProperty(kSidePanelOpenTriggerKey));
-        CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
-        CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-        SidePanelUI::GetSidePanelUIForBrowser(browser)->Toggle(key,
-                                                               open_trigger);
-      },
-      key, browser);
 }

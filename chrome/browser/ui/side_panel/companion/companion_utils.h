@@ -32,11 +32,19 @@ bool IsCompanionAvailableForURL(const GURL& url);
 // dynamically, so callers should not cache the returned results.
 bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service);
 
-// Returns true if companion side panel should be available for `browser` or
-// `profile`. Takes into account the runtime checks such as companion field
+// Returns true if companion side panel should be available for `browser`
+// Takes into account the runtime checks such as companion field
 // trial state, if browser is valid, DSE is Google, enterprise policies etc.
 bool IsSearchInCompanionSidePanelSupported(const Browser* browser);
-bool IsSearchInCompanionSidePanelSupportedForProfile(Profile* profile);
+
+// Returns true if companion side panel should be available for `profile`
+// Takes into account companion field trial state, profile type and if
+// `include_runtime_checks` is true also performs checks like if DSE is
+// Google, enterpise policies and if the user has successfully navigated
+// to exps registration success page etc.
+bool IsSearchInCompanionSidePanelSupportedForProfile(
+    Profile* profile,
+    bool include_runtime_checks = true);
 
 // Returns true if necessary flags are enabled, browser is valid and default
 // search engine is Google.

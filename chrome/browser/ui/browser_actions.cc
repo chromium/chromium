@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_actions.h"
+#include "chrome/browser/ui/browser_actions.h"
 
 #include <optional>
 #include <string>
@@ -20,20 +20,15 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/side_panel/history_clusters/history_clusters_side_panel_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/history_clusters/core/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/performance_manager/public/features.h"
@@ -60,8 +55,7 @@ actions::ActionItem::ActionItemBuilder ChromeMenuAction(
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
-      .SetImage(ui::ImageModel::FromVectorIcon(
-          icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+      .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, true);
 }
 
@@ -73,25 +67,18 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
     actions::ActionId action_id,
     Browser* browser,
     bool is_pinnable) {
-  const int side_panel_icon_size =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-
   return actions::ActionItem::Builder(
-             SidePanelUtil::CreateToggleSidePanelActionCallback(
+             CreateToggleSidePanelActionCallback(
                  SidePanelEntryKey(id), browser))
       .SetActionId(action_id)
       .SetText(title_id.has_value()
                    ? l10n_util::GetStringUTF16(title_id.value())
                    : std::u16string())
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
-      .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon,
-                                               side_panel_icon_size))
+      .SetImage(ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon))
       .SetProperty(actions::kActionItemPinnableKey, is_pinnable);
 }
 }  // namespace
-
-const int BrowserActions::kUserDataKey;
 
 BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {
   BrowserActions::InitializeBrowserActions();
@@ -105,12 +92,6 @@ BrowserActions::~BrowserActions() {
   root_action_item_ = nullptr;
 }
 
-// static
-BrowserActions* BrowserActions::FromBrowser(const Browser* browser) {
-  return static_cast<BrowserActions*>(
-      browser->GetUserData(BrowserActions::UserDataKey()));
-}
-
 void BrowserActions::InitializeBrowserActions() {
   Profile* profile = browser_->profile();
 
@@ -118,13 +99,12 @@ void BrowserActions::InitializeBrowserActions() {
       actions::ActionItem::Builder()
           .CopyAddressTo(&root_action_item_)
           .AddChildren(
-              SidePanelAction(
-                  SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
-                  IDS_BOOKMARK_MANAGER_TITLE,
-                  features::IsChromeRefresh2023()
-                      ? kBookmarksSidePanelRefreshIcon
-                      : kBookmarksSidePanelIcon,
-                  kActionSidePanelShowBookmarks, &(browser_.get()), true),
+              SidePanelAction(SidePanelEntryId::kBookmarks,
+                              IDS_BOOKMARK_MANAGER_TITLE,
+                              IDS_BOOKMARK_MANAGER_TITLE,
+                              kBookmarksSidePanelRefreshIcon,
+                              kActionSidePanelShowBookmarks,
+                              &(browser_.get()), true),
               SidePanelAction(SidePanelEntryId::kReadingList,
                               IDS_READ_LATER_TITLE, IDS_READ_LATER_TITLE,
                               kReadingListIcon, kActionSidePanelShowReadingList,
@@ -149,7 +129,8 @@ void BrowserActions::InitializeBrowserActions() {
                               &(browser_.get()), false))
           .Build());
 
-  if (HistoryClustersSidePanelCoordinator::IsSupported(profile)) {
+  if (side_panel::history_clusters::
+          IsHistoryClustersSidePanelSupportedForProfile(profile)) {
     root_action_item_->AddChild(
         SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
                         IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
@@ -207,7 +188,7 @@ void BrowserActions::InitializeBrowserActions() {
             .SetProperty(actions::kActionItemPinnableKey, true)
             .Build());
   } else if (companion::IsCompanionFeatureEnabled()) {
-    if (SearchCompanionSidePanelCoordinator::IsSupported(
+    if (companion::IsSearchInCompanionSidePanelSupportedForProfile(
             profile,
             /*include_runtime_checks=*/false)) {
       actions::ActionItem* companion_action_item = root_action_item_->AddChild(
@@ -225,7 +206,7 @@ void BrowserActions::InitializeBrowserActions() {
               .Build());
 
       companion_action_item->SetVisible(
-          SearchCompanionSidePanelCoordinator::IsSupported(
+          companion::IsSearchInCompanionSidePanelSupportedForProfile(
               profile,
               /*include_runtime_checks=*/true));
     }
