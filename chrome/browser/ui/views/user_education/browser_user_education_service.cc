@@ -558,6 +558,40 @@ void MaybeRegisterChromeFeaturePromos(
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  // kIPHExplicitBrowserSigninPreferenceRememberedFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::
+              kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+          kToolbarAvatarButtonElementId,
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN,
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_SETTINGS_BUTTON,
+          base::BindRepeating([](ui::ElementContext ctx,
+                                 user_education::FeaturePromoHandle
+                                     promo_handle) {
+            auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+            if (!browser) {
+              return;
+            }
+            ShowPromoInPage::Params params;
+            params.bubble_anchor_id = kToolbarAvatarButtonElementId;
+            params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
+            params.bubble_text = l10n_util::GetStringUTF16(
+                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN);
+            ShowPromoInPage::Start(browser, std::move(params));
+            chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
+            base::RecordAction(
+                base::UserMetricsAction("ExplicitBrowserSigninPreferenceRemembe"
+                                        "red_IPHPromo_SettingsPageOpened"));
+          }))
+          .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                               PromoSubtype::kKeyedNotice)
+          .SetBubbleTitleText(
+              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN)
+          .SetCustomActionIsDefault(false)));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // kIPHCookieControlsFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
