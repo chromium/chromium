@@ -358,6 +358,7 @@
       default_value: "true",
       field_group: "visual",
       computed_style_custom_functions: ["setter"],
+      invalidate: ["clip"],
     },
     {
       name: "HasAutoZIndex",

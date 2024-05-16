@@ -913,12 +913,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     diff.SetNeedsRecomputeVisualOverflow();
   }
 
-  bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
-  bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
-  if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
-    diff.SetCSSClipChanged();
-  }
-
   if (DiffCompositingReasonsChanged(other, field_diff)) {
     diff.SetCompositingReasonsChanged();
   }
@@ -934,6 +928,13 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   }
   if (field_diff & kBorderRadius) {
     diff.SetBorderRadiusChanged();
+  }
+  if (field_diff & kClip) {
+    bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
+    bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
+    if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
+      diff.SetCSSClipChanged();
+    }
   }
   if (field_diff & kClipPath) {
     diff.SetClipPathChanged();
@@ -1141,10 +1142,6 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     const ComputedStyle& other,
     uint32_t field_diff) const {
   if (field_diff & kPaint) {
-    return true;
-  }
-
-  if (field_diff & kBorderRadius) {
     return true;
   }
 
