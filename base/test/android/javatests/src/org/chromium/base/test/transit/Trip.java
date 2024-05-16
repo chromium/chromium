@@ -106,6 +106,7 @@ public class Trip extends Transition {
         mDestination.setStateTransitioningTo();
 
         mWaits = calculateConditionWaits(mOrigin, mDestination, getTransitionConditions());
+        ConditionWaiter.preCheck(mWaits, mOptions, mTrigger);
         for (ConditionWait wait : mWaits) {
             wait.getCondition().onStartMonitoring();
         }
