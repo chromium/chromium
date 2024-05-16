@@ -2761,6 +2761,17 @@
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
+      'Dawn Win10 x64 Release (Intel UHD 770)': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'win10_intel_uhd_770_stable',
+        ],
+        # TODO(crbug.com/331316080): Actually enable tests.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Win10 x64 Release (Intel)': {
         'os_type': 'win',
         'browser_config': 'release_x64',

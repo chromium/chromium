@@ -51,6 +51,7 @@ chromium/try/dawn-try-mac-arm64-m2-exp
 chromium/try/dawn-try-mac-arm64-rel
 chromium/try/dawn-try-mac-intel-exp
 chromium/try/dawn-try-win-x64-intel-exp
+chromium/try/dawn-try-win-x64-intel-uhd770-rel
 chromium/try/dawn-try-win-x64-nvidia-exp
 chromium/try/dawn-try-win-x86-intel-exp
 chromium/try/dawn-try-win-x86-nvidia-exp

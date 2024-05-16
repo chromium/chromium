@@ -699,6 +699,7 @@
     "dawn-try-mac-arm64-rel": "try/dawn-try-mac-arm64-rel/gn-args.json",
     "dawn-try-mac-intel-exp": "try/dawn-try-mac-intel-exp/gn-args.json",
     "dawn-try-win-x64-intel-exp": "try/dawn-try-win-x64-intel-exp/gn-args.json",
+    "dawn-try-win-x64-intel-uhd770-rel": "try/dawn-try-win-x64-intel-uhd770-rel/gn-args.json",
     "dawn-try-win-x64-nvidia-exp": "try/dawn-try-win-x64-nvidia-exp/gn-args.json",
     "dawn-try-win-x86-intel-exp": "try/dawn-try-win-x86-intel-exp/gn-args.json",
     "dawn-try-win-x86-nvidia-exp": "try/dawn-try-win-x86-nvidia-exp/gn-args.json",

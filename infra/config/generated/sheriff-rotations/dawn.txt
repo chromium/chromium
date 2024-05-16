@@ -41,6 +41,7 @@ ci/Dawn Win10 x64 DEPS Release (Intel)
 ci/Dawn Win10 x64 DEPS Release (NVIDIA)
 ci/Dawn Win10 x64 Experimental Release (Intel)
 ci/Dawn Win10 x64 Experimental Release (NVIDIA)
+ci/Dawn Win10 x64 Release (Intel UHD 770)
 ci/Dawn Win10 x64 Release (Intel)
 ci/Dawn Win10 x64 Release (NVIDIA)
 ci/Dawn Win10 x86 Builder

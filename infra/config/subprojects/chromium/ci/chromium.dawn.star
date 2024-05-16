@@ -1131,8 +1131,8 @@ ci.gpu.windows_builder(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|ASAN|Builder",
-        short_name = "x64",
+        category = "ToT|Windows|Builder",
+        short_name = "asn",
     ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
@@ -1161,8 +1161,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|ASAN|Intel",
-        short_name = "x64",
+        category = "ToT|Windows|x64|Intel",
+        short_name = "asn",
     ),
     # Building DXC from source + ASAN results in longer run times, so
     # increase default timeout.
@@ -1193,8 +1193,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|ASAN|Nvidia",
-        short_name = "x64",
+        category = "ToT|Windows|x64|Nvidia",
+        short_name = "asn",
     ),
     # Building DXC from source + ASAN results in longer run times, so
     # increase default timeout.
@@ -1373,8 +1373,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Intel",
-        short_name = "x64",
+        category = "DEPS|Windows|x64|Intel",
+        short_name = "630",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -1401,8 +1401,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Nvidia",
-        short_name = "x64",
+        category = "DEPS|Windows|x64|Nvidia",
+        short_name = "1660",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -1429,8 +1429,8 @@ ci.thin_tester(
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|Intel",
-    #     short_name = "ex64",
+    #     category = "ToT|Windows|x64|Intel",
+    #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
 )
@@ -1456,8 +1456,35 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Intel",
-        short_name = "x64",
+        category = "ToT|Windows|x64|Intel",
+        short_name = "630",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Win10 x64 Release (Intel UHD 770)",
+    description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
+    triggered_by = ["Dawn Win10 x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|x64|Intel",
+        short_name = "770",
     ),
 )
 
@@ -1484,8 +1511,8 @@ ci.thin_tester(
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Nvidia",
-        short_name = "ex64",
+        category = "ToT|Windows|x64|Nvidia",
+        short_name = "exp",
     ),
     list_view = "chromium.gpu.experimental",
     execution_timeout = 6 * time.hour,
@@ -1512,8 +1539,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Nvidia",
-        short_name = "x64",
+        category = "ToT|Windows|x64|Nvidia",
+        short_name = "1660",
     ),
 )
 
@@ -1614,8 +1641,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Intel",
-        short_name = "x86",
+        category = "DEPS|Windows|x86|Intel",
+        short_name = "630",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -1642,8 +1669,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Windows|Nvidia",
-        short_name = "x86",
+        category = "DEPS|Windows|x86|Nvidia",
+        short_name = "1660",
     ),
     cq_mirrors_console_view = "mirrors",
 )
@@ -1670,8 +1697,8 @@ ci.thin_tester(
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     # console_view_entry = consoles.console_view_entry(
-    #     category = "ToT|Windows|Intel",
-    #     short_name = "ex86",
+    #     category = "ToT|Windows|x86|Intel",
+    #     short_name = "exp",
     # ),
     list_view = "chromium.gpu.experimental",
 )
@@ -1699,8 +1726,8 @@ ci.thin_tester(
     ),
     # Uncomment this entry when this experimental tester is actually in use.
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Nvidia",
-        short_name = "ex86",
+        category = "ToT|Windows|x86|Nvidia",
+        short_name = "exp",
     ),
     list_view = "chromium.gpu.experimental",
 )
@@ -1726,8 +1753,8 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Intel",
-        short_name = "x86",
+        category = "ToT|Windows|x86|Intel",
+        short_name = "630",
     ),
 )
 
@@ -1752,7 +1779,7 @@ ci.thin_tester(
         run_tests_serially = True,
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "ToT|Windows|Nvidia",
-        short_name = "x86",
+        category = "ToT|Windows|x86|Nvidia",
+        short_name = "1660",
     ),
 )
