@@ -117,13 +117,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
   void PropagateStatusUpdates();
   void UpdateAllFactorStates();
 
-  raw_ptr<Owner> owner_;
+  // TODO(b/271248452): Those `raw_ptr`s are currently dangling due to a problem
+  // with the destruction order. Something causes those ptrs to be freed before
+  // the execution reaches the destruction of this class. Likely a higher level
+  // component in the ownership graph has the objects pointed to below and the
+  // current class as downstream dependencies.
+  raw_ptr<Owner, DanglingUntriaged> owner_;
+  raw_ptr<AuthFactorStatusConsumer, DanglingUntriaged> status_consumer_;
+
   AuthAttemptVector attempt_;
   AuthEnginesMap engines_;
   AuthFactorsSet initial_factors_;
 
   AuthFactorsSet available_factors_;
-  raw_ptr<AuthFactorStatusConsumer> status_consumer_;
 
   base::flat_map<AshAuthFactor, FactorAttemptState> factor_state_;
 

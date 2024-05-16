@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   void StartAuthentication(AccountId accountId,
                            AuthPurpose purpose,
                            AuthAttemptConsumer* consumer) override;
+
+  void CancelCurrentAttempt(AuthHubConnector* connector) override;
   void Shutdown() override;
 
   // AuthHubModeLifecycle::Owner:
@@ -72,6 +74,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
                         AuthFactorsSet available_factors,
                         AuthFactorsSet failed_factors) override;
   void OnAttemptFinished(const AuthAttemptVector& attempt) override;
+  void OnAttemptCancelled(const AuthAttemptVector& attempt) override;
   void OnIdle() override;
 
   // AuthHubAttemptHandler::Owner
@@ -89,7 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubImpl
   // override `second`.
   bool AttemptShouldOverrideAnother(const AuthAttemptVector& first,
                                     const AuthAttemptVector& second);
-  void OnFactorAttemptFinished();
+  void OnFactorAttemptFinishedForCancel();
 
   AuthEnginesMap engines_;
 

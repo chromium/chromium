@@ -46,6 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
                                   AuthFactorsSet available_factors,
                                   AuthFactorsSet failed_factors) = 0;
     virtual void OnAttemptFinished(const AuthAttemptVector& attempt) = 0;
+    virtual void OnAttemptCancelled(const AuthAttemptVector& attempt) = 0;
     virtual void OnIdle() = 0;
   };
 
@@ -56,7 +57,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
 
   void StartAttempt(const AuthAttemptVector& vector);
   void OnFactorInitialized(AshAuthFactor factor);
+
+  // Calling any of those those methods would trigger the same cleanup code path
+  // within this class. The difference is the `owner_` aka `AuthHub` method that
+  // we call at the end of the cleanup, indicating either that the flow has been
+  // shut down due to a request from the user to cancel the flow, or that the
+  // flow has been shut down due to a successful auth attempt.
   void CancelAttempt();
+  void FinishAttempt();
+
   bool IsIdle() const;
 
   // AuthFactorEngine::FactorEngineObserver:
@@ -78,16 +87,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
     kFinishingAttempt,
   };
 
+  // When an attempt is finished, or canceled after request form the user we
+  // start shutting the engines as part of
+  // `AuthHubVectorLifecycle::ShutdownAttempt`, We need to notify `Owner` (a.k.a
+  // AuthHub) that we have finished all necessary steps for the shutdown, and
+  // thus, when finishing or canceling an attempt, we need to make sure we are
+  // properly notifying `AuthHub`.
+  using OnShutdownAttemptNotifyOwner =
+      base::OnceCallback<void(const AuthAttemptVector&)>;
+
   struct FactorAttemptState;
 
   void StartForTargetAttempt();
   void OnAttemptStartWatchdog();
   void ProceedIfAllFactorsStarted();
 
-  void FinishAttempt();
+  void ShutdownAttempt(OnShutdownAttemptNotifyOwner on_shutdown_attempt);
   void OnFactorFinished(AshAuthFactor factor);
   void OnAttemptFinishWatchdog();
   void ProceedIfAllFactorsFinished();
+
+  void OnCancelAttempt(const AuthAttemptVector& current_attempt);
+  void OnFinishAttempt(const AuthAttemptVector& current_attempt);
 
   Stage stage_ = Stage::kIdle;
 
@@ -102,6 +123,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubVectorLifecycle
 
   base::OneShotTimer watchdog_;
   raw_ptr<Owner> owner_;
+  OnShutdownAttemptNotifyOwner on_shutdown_attempt_;
   base::WeakPtrFactory<AuthHubVectorLifecycle> weak_factory_{this};
 };
 

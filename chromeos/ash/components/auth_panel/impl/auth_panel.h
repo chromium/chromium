@@ -63,13 +63,13 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
  private:
   void InitializeViewPlaceholders();
 
+  base::flat_map<AshAuthFactor, raw_ptr<views::View>> views_;
   std::unique_ptr<AuthPanelEventDispatcherFactory> event_dispatcher_factory_;
   std::unique_ptr<FactorAuthViewFactory> view_factory_;
   std::unique_ptr<AuthFactorStoreFactory> store_factory_;
 
   std::unique_ptr<AuthFactorStore> store_;
   std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher_;
-  base::flat_map<AshAuthFactor, views::View*> views_;
 
   base::OnceClosure on_end_authentication_;
   base::RepeatingClosure on_preferred_size_changed_;

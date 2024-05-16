@@ -10,6 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/auth_panel/public/shared_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -58,6 +60,8 @@ class InSessionAuthDialogContentsView : public views::View {
                     base::RepeatingClosure on_ui_initialized,
                     AuthHubConnector* connector);
 
+  void OnCloseButtonPressed();
+
   raw_ptr<AnimatedRoundedImageView> avatar_view_ = nullptr;
 
   raw_ptr<views::Label> title_ = nullptr;
@@ -69,6 +73,10 @@ class InSessionAuthDialogContentsView : public views::View {
   raw_ptr<NonAccessibleView> close_button_container_;
 
   raw_ptr<views::ImageButton> close_button_;
+
+  raw_ptr<AuthHubConnector> connector_;
+
+  base::WeakPtrFactory<InSessionAuthDialogContentsView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

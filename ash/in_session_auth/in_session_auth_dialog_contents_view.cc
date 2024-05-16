@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
+#include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "components/account_id/account_id.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -133,14 +134,12 @@ void InSessionAuthDialogContentsView::AddCloseButton() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true);
 
-  auto callback = [](const ui::Event& event) {
-    // TODO(b/271248452): placeholder.
-    LOG(ERROR) << "pressed";
-  };
-
   std::unique_ptr<views::ImageButton> close_button =
       views::CreateVectorImageButtonWithNativeTheme(
-          base::BindRepeating(callback), views::kIcCloseIcon);
+          base::BindRepeating(
+              &InSessionAuthDialogContentsView::OnCloseButtonPressed,
+              weak_ptr_factory_.GetWeakPtr()),
+          views::kIcCloseIcon);
 
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
@@ -219,6 +218,10 @@ void InSessionAuthDialogContentsView::AddAuthPanel(
 
 AuthPanel* InSessionAuthDialogContentsView::GetAuthPanel() {
   return auth_panel_;
+}
+
+void InSessionAuthDialogContentsView::OnCloseButtonPressed() {
+  AuthHub::Get()->CancelCurrentAttempt(connector_);
 }
 
 BEGIN_METADATA(InSessionAuthDialogContentsView)

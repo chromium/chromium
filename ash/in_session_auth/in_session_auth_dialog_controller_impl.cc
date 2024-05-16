@@ -180,7 +180,8 @@ void InSessionAuthDialogControllerImpl::OnAccountNotFound() {
 }
 
 void InSessionAuthDialogControllerImpl::OnUserAuthAttemptCancelled() {
-  NOTIMPLEMENTED();
+  NotifyFailure();
+  OnEndAuthentication();
 }
 
 void InSessionAuthDialogControllerImpl::OnFactorAttemptFailed(
@@ -188,16 +189,30 @@ void InSessionAuthDialogControllerImpl::OnFactorAttemptFailed(
   NOTIMPLEMENTED();
 }
 
-void InSessionAuthDialogControllerImpl::OnUserAuthSuccess(
-    AshAuthFactor factor,
+void InSessionAuthDialogControllerImpl::NotifySuccess(
     const AuthProofToken& token) {
   if (!on_auth_complete_) {
     LOG(ERROR) << "Encountered null auth completion callback, possible double "
                   "invocation?";
     return;
   }
+
   std::move(on_auth_complete_)
       .Run(true, token, cryptohome::kAuthsessionInitialLifetime);
+}
+
+void InSessionAuthDialogControllerImpl::NotifyFailure() {
+  if (on_auth_complete_) {
+    std::move(on_auth_complete_)
+        .Run(false, /*token=*/{},
+             /*timeout=*/{});
+  }
+}
+
+void InSessionAuthDialogControllerImpl::OnUserAuthSuccess(
+    AshAuthFactor factor,
+    const AuthProofToken& token) {
+  NotifySuccess(token);
 }
 
 void InSessionAuthDialogControllerImpl::OnEndAuthentication() {

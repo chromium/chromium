@@ -71,6 +71,9 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   // Destroys the authentication dialog.
   void OnEndAuthentication();
 
+  void NotifySuccess(const AuthProofToken& token);
+  void NotifyFailure();
+
   // Non owning pointer, initialized and owned by
   // `ChromeBrowserMainExtraPartsAsh`.
   // `auth_token_provider_` will outlive this controller since the controller

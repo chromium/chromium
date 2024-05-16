@@ -67,7 +67,8 @@ void AuthHubVectorLifecycle::StartAttempt(const AuthAttemptVector& attempt) {
       StartForTargetAttempt();
       break;
     case Stage::kStarted:
-      FinishAttempt();
+      ShutdownAttempt(base::BindOnce(&AuthHubVectorLifecycle::OnCancelAttempt,
+                                     weak_factory_.GetWeakPtr()));
       break;
     case Stage::kStartingAttempt:
       // Set up new target mode, but do not modify initializing_for_,
@@ -87,13 +88,36 @@ void AuthHubVectorLifecycle::CancelAttempt() {
       break;
     case Stage::kStarted:
       target_attempt_ = std::nullopt;
-      FinishAttempt();
+      ShutdownAttempt(base::BindOnce(&AuthHubVectorLifecycle::OnCancelAttempt,
+                                     weak_factory_.GetWeakPtr()));
       break;
     case Stage::kStartingAttempt:
     case Stage::kFinishingAttempt:
       target_attempt_ = std::nullopt;
       break;
   }
+}
+
+void AuthHubVectorLifecycle::FinishAttempt() {
+  if (stage_ != Stage::kStarted) {
+    LOG(ERROR) << "Trying to finish attempt when none is started";
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
+  target_attempt_ = std::nullopt;
+  ShutdownAttempt(base::BindOnce(&AuthHubVectorLifecycle::OnFinishAttempt,
+                                 weak_factory_.GetWeakPtr()));
+}
+
+void AuthHubVectorLifecycle::OnCancelAttempt(
+    const AuthAttemptVector& current_attempt) {
+  owner_->OnAttemptCancelled(current_attempt);
+}
+
+void AuthHubVectorLifecycle::OnFinishAttempt(
+    const AuthAttemptVector& current_attempt) {
+  owner_->OnAttemptFinished(current_attempt);
 }
 
 bool AuthHubVectorLifecycle::IsIdle() const {
@@ -150,7 +174,8 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
   if (initializing_for_ != target_attempt_) {
     // Not notifying owner, just restart for new target.
     initializing_for_ = std::nullopt;
-    FinishAttempt();
+    ShutdownAttempt(base::BindOnce(&AuthHubVectorLifecycle::OnCancelAttempt,
+                                   weak_factory_.GetWeakPtr()));
     return;
   }
   CHECK(target_attempt_.has_value());
@@ -182,8 +207,13 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
   owner_->OnAttemptStarted(*current_attempt_, present, failed);
 }
 
-void AuthHubVectorLifecycle::FinishAttempt() {
+void AuthHubVectorLifecycle::ShutdownAttempt(
+    OnShutdownAttemptNotifyOwner on_shutdown_attempt) {
   CHECK_EQ(stage_, Stage::kStarted);
+  CHECK(!on_shutdown_attempt_);
+
+  on_shutdown_attempt_ = std::move(on_shutdown_attempt);
+
   stage_ = Stage::kFinishingAttempt;
   for (auto& state : engines_) {
     state.second.status = EngineAttemptStatus::kFinishing;
@@ -240,7 +270,8 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsFinished() {
   if (current_attempt_.has_value()) {
     // We have notified owner about attempt start, so
     // we need to notify about finish.
-    owner_->OnAttemptFinished(*current_attempt_);
+    CHECK(on_shutdown_attempt_);
+    std::move(on_shutdown_attempt_).Run(*current_attempt_);
   }
   current_attempt_ = std::nullopt;
 

@@ -55,6 +55,8 @@ class MockVectorLifecycleOwner : public AuthHubVectorLifecycle::Owner {
               (const AuthAttemptVector&, AuthFactorsSet, AuthFactorsSet),
               (override));
   MOCK_METHOD(void, OnAttemptFinished, (const AuthAttemptVector&), (override));
+  MOCK_METHOD(void, OnAttemptCancelled, (const AuthAttemptVector&), (override));
+
   MOCK_METHOD(void, OnIdle, (), (override));
 };
 
@@ -203,7 +205,7 @@ TEST_F(AuthHubVectorLifecycleTest, SingleFactorAttemptStartCancel) {
 
   ASSERT_FALSE(callback.is_null());
 
-  EXPECT_CALL(owner_, OnAttemptFinished(Eq(attempt)));
+  EXPECT_CALL(owner_, OnAttemptCancelled(Eq(attempt)));
   EXPECT_CALL(owner_, OnIdle());
 
   // Once engine finishes attempt cleanup, Lifecycle should notify
@@ -247,7 +249,7 @@ TEST_F(AuthHubVectorLifecycleTest, FactorNotPresent) {
   // to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
@@ -285,7 +287,7 @@ TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringInit) {
   // to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
@@ -321,7 +323,7 @@ TEST_F(AuthHubVectorLifecycleTest, FactorCriticalErrorDuringInit) {
   // Upon cleanup, failed factor should still be asked to stop auth flow.
   ExpectAllFactorsShutdown();
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
 
   lifecycle_->CancelAttempt();
@@ -342,7 +344,7 @@ TEST_F(AuthHubVectorLifecycleTest, FactorTimedOutDuringShutdown) {
 
   ASSERT_FALSE(callback.is_null());
 
-  EXPECT_CALL(owner_, OnAttemptFinished(_));
+  EXPECT_CALL(owner_, OnAttemptCancelled(_));
   EXPECT_CALL(owner_, OnIdle());
   EXPECT_CALL(*timeout_engine, StopFlowTimedOut());
 
