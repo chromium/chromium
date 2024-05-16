@@ -196,3 +196,7 @@ wayland_protocol("xdg_shell_protocol") {
     "src/unstable/xdg-shell/xdg-shell-unstable-v6.xml",
   ]
 }
+
+wayland_protocol("xdg_toplevel_drag_protocol") {
+  sources = [ "src/staging/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml" ]
+}
