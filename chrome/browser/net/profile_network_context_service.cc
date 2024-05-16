@@ -348,11 +348,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kBlockTruncatedCookies,
-      base::BindRepeating(
-          &ProfileNetworkContextService::OnTruncatedCookieBlockingChanged,
-          base::Unretained(this)));
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -459,20 +454,6 @@ void ProfileNetworkContextService::OnTrackingProtectionEnabledFor3pcdChanged(
       [&](content::StoragePartition* storage_partition) {
         storage_partition->GetCookieManagerForBrowserProcess()
             ->SetTrackingProtectionEnabledFor3pcd(enable);
-      });
-}
-
-void ProfileNetworkContextService::OnTruncatedCookieBlockingChanged() {
-  const bool block_truncated_cookies =
-      profile_->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
-
-  profile_->ForEachLoadedStoragePartition(
-      [&](content::StoragePartition* storage_partition) {
-        // Update the main CookieManager's CookieSettings object to block
-        // truncated cookies, and since this is shared with all of the
-        // RestrictedCookieManager instances, those will get the change as well.
-        storage_partition->GetCookieManagerForBrowserProcess()
-            ->BlockTruncatedCookies(block_truncated_cookies);
       });
 }
 
@@ -817,9 +798,6 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   out->cookie_access_delegate_type =
       network::mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS;
-
-  out->block_truncated_cookies =
-      profile->GetPrefs()->GetBoolean(prefs::kBlockTruncatedCookies);
 
   out->mitigations_enabled_for_3pcd =
       cookie_settings.MitigationsEnabledFor3pcd();

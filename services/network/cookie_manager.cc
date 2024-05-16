@@ -333,11 +333,6 @@ void CookieManager::BlockThirdPartyCookies(bool block) {
   cookie_settings_.set_block_third_party_cookies(block);
 }
 
-void CookieManager::BlockTruncatedCookies(bool block) {
-  OnSettingsWillChange();
-  cookie_settings_.set_block_truncated_cookies(block);
-}
-
 void CookieManager::SetMitigationsEnabledFor3pcd(bool enable) {
   OnSettingsWillChange();
   cookie_settings_.set_mitigations_enabled_for_3pcd(enable);
@@ -359,7 +354,6 @@ void CookieManager::ConfigureCookieSettings(
     const network::mojom::CookieManagerParams& params,
     CookieSettings* out) {
   out->set_block_third_party_cookies(params.block_third_party_cookies);
-  out->set_block_truncated_cookies(params.block_truncated_cookies);
   out->set_mitigations_enabled_for_3pcd(params.mitigations_enabled_for_3pcd);
   out->set_tracking_protection_enabled_for_3pcd(
       params.tracking_protection_enabled_for_3pcd);

@@ -17,8 +17,6 @@ namespace prefs {
 // enabled. This will block third-party cookies similar to
 // kBlockThirdPartyCookies but with a new UI.
 inline constexpr char kCookieControlsMode[] = "profile.cookie_controls_mode";
-inline constexpr char kBlockTruncatedCookies[] =
-    "profile.cookie_block_truncated";
 
 // Version of the pattern format used to define content settings.
 inline constexpr char kContentSettingsVersion[] =

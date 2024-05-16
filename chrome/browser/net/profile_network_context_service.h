@@ -167,8 +167,6 @@ class ProfileNetworkContextService
 
   void UpdateCorsNonWildcardRequestHeadersSupport();
 
-  void OnTruncatedCookieBlockingChanged();
-
   // Creates parameters for the NetworkContext. Use |in_memory| instead of
   // |profile_->IsOffTheRecord()| because sometimes normal profiles want off the
   // record partitions (e.g. for webview tag).

@@ -28,8 +28,8 @@ owners:
 schema:
   type: boolean
 supported_on:
-- android:118-
-- chrome_os:118-
-- chrome.*:118-
+- android:118-126
+- chrome_os:118-126
+- chrome.*:118-126
 tags: []
 type: main

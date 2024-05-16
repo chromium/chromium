@@ -1088,6 +1088,9 @@ inline constexpr char kAccessibilityMouseKeysDisableInTextFields[] =
     "settings.a11y.mouse_keys.disable_in_text_fields";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2024.
+constexpr char kBlockTruncatedCookies[] = "profile.cookie_block_truncated";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1561,6 +1564,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kAccessibilityMouseKeysDisableInTextFields,
                                 true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2024.
+  registry->RegisterBooleanPref(kBlockTruncatedCookies, true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2287,7 +2293,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(kClearUserDataDir1Pref, false);
 #endif
 
-  registry->RegisterBooleanPref(prefs::kBlockTruncatedCookies, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPrivateNetworkAccessRestrictionsEnabled, false);
 
@@ -2919,6 +2924,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kAccessibilityMouseKeysShortcutToPauseEnabled);
   profile_prefs->ClearPref(kAccessibilityMouseKeysDisableInTextFields);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 05/2024.
+  profile_prefs->ClearPref(kBlockTruncatedCookies);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

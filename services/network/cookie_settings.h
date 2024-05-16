@@ -90,10 +90,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   void set_content_settings(ContentSettingsType type,
                             const ContentSettingsForOneType& settings);
 
-  void set_block_truncated_cookies(bool block_truncated_cookies) {
-    block_truncated_cookies_ = block_truncated_cookies;
-  }
-
   void set_mitigations_enabled_for_3pcd(bool enable) {
     mitigations_enabled_for_3pcd_ = enable;
   }
@@ -104,10 +100,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   void set_tpcd_metadata_manager(tpcd::metadata::Manager* manager) {
     tpcd_metadata_manager_ = manager;
-  }
-
-  bool are_truncated_cookies_blocked() const {
-    return block_truncated_cookies_;
   }
 
   // Returns a predicate that takes the domain of a cookie and a bool whether
@@ -238,7 +230,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   // Returns true if user blocks 3PC or 3PCD is on.
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
-  bool block_truncated_cookies_ = true;
   bool mitigations_enabled_for_3pcd_ = false;
   // This bool makes sure the correct cookie exclusion reasons are used.
   bool tracking_protection_enabled_for_3pcd_ = false;

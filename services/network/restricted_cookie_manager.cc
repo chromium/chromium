@@ -955,8 +955,7 @@ void RestrictedCookieManager::SetCookieFromString(
       net::CanonicalCookie::Create(
           url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_,
-          cookie_settings().are_truncated_cookies_blocked(),
-          net::CookieSourceType::kScript, &status);
+          /*block_truncated=*/true, net::CookieSourceType::kScript, &status);
   if (!parsed_cookie) {
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>

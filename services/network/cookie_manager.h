@@ -114,7 +114,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
                               AllowFileSchemeCookiesCallback callback) override;
   void SetForceKeepSessionState() override;
   void BlockThirdPartyCookies(bool block) override;
-  void BlockTruncatedCookies(bool block) override;
   void SetMitigationsEnabledFor3pcd(bool enable) override;
   void SetTrackingProtectionEnabledFor3pcd(bool enable) override;
 

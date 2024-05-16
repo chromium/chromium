@@ -1,22 +1,5 @@
 [
   {
-    "can_be_recommended": true,
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android",
-      "fuchsia"
-    ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "profile.cookie_block_truncated",
-      "default_value": true,
-      "values_to_test": [
-        true,
-        false
-      ]
-    }
+    "reason_for_missing_test": "Policy was removed"
   }
 ]
