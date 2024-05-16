@@ -36,6 +36,10 @@ class PrintPreviewCrosBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest, CapabilitiesManagerTest) {
+  RunTestAtPath("capabilities_manager_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewCrosBrowserTest,
                        DestinationDropdownControllerTest) {
   RunTestAtPath("destination_dropdown_controller_test.js");

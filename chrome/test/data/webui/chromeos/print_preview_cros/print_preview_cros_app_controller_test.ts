@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/print_preview_cros_app_controller.js';
 
+import {CAPABILITIES_MANAGER_SESSION_INITIALIZED, CapabilitiesManager} from 'chrome://os-print/js/data/capabilities_manager.js';
 import {DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
@@ -25,6 +26,7 @@ suite('PrintPreviewCrosAppController', () => {
     mockTimer = new MockTimer();
     mockTimer.install();
 
+    CapabilitiesManager.resetInstanceForTesting();
     DestinationManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
     PreviewTicketManager.resetInstanceForTesting();
@@ -36,6 +38,7 @@ suite('PrintPreviewCrosAppController', () => {
 
   teardown(() => {
     printPreviewPageHandler.reset();
+    CapabilitiesManager.resetInstanceForTesting();
     DestinationManager.resetInstanceForTesting();
     PreviewTicketManager.resetInstanceForTesting();
     PrintTicketManager.resetInstanceForTesting();
@@ -143,6 +146,31 @@ suite('PrintPreviewCrosAppController', () => {
         assertTrue(
             previewTicketManager.isSessionInitialized(),
             'After initializeSession PreviewTicketManager instance should be ' +
+                'initialized');
+      });
+
+  // Verify capabilities manager is initialized after start session resolves.
+  test(
+      'on resolve of startSession calls CapabilitiesManager.initializeSession',
+      async () => {
+        printPreviewPageHandler.setTestDelay(testDelay);
+
+        const controller = new PrintPreviewCrosAppController();
+        assertTrue(!!controller, 'Unable to create controller');
+        const capabilitiesManager = CapabilitiesManager.getInstance();
+        assertFalse(
+            capabilitiesManager.isSessionInitialized(),
+            'Before initializeSession CapabilitiesManager instance should ' +
+                'not be initialized');
+
+        // Move timer forward to resolve startSession.
+        mockTimer.tick(testDelay);
+        await eventToPromise(
+            CAPABILITIES_MANAGER_SESSION_INITIALIZED, capabilitiesManager);
+
+        assertTrue(
+            capabilitiesManager.isSessionInitialized(),
+            'After initializeSession CapabilitiesManager instance should be ' +
                 'initialized');
       });
 });

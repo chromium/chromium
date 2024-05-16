@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CapabilitiesManager} from './data/capabilities_manager.js';
 import {DestinationManager} from './data/destination_manager.js';
 import {PreviewTicketManager} from './data/preview_ticket_manager.js';
 import {PrintTicketManager} from './data/print_ticket_manager.js';
@@ -19,6 +20,7 @@ import {SessionContext} from './utils/print_preview_cros_app_types.js';
 export class PrintPreviewCrosAppController extends EventTarget {
   private printPreviewPageHandler = getPrintPreviewPageHandler();
   private sessionContext: SessionContext;
+  private capabilitiesManager = CapabilitiesManager.getInstance();
   private destinationManager = DestinationManager.getInstance();
   private previewTicketManager = PreviewTicketManager.getInstance();
   private printTicketManager = PrintTicketManager.getInstance();
@@ -29,6 +31,7 @@ export class PrintPreviewCrosAppController extends EventTarget {
     this.printPreviewPageHandler.startSession().then(
         (sessionContext: SessionContext): void => {
           this.sessionContext = sessionContext;
+          this.capabilitiesManager.initializeSession(this.sessionContext);
           this.destinationManager.initializeSession(this.sessionContext);
           this.previewTicketManager.initializeSession(this.sessionContext);
           this.printTicketManager.initializeSession(this.sessionContext);

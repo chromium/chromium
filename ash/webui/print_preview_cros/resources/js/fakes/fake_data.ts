@@ -45,7 +45,8 @@ export function getFakePreviewTicket(): PreviewTicket {
 }
 
 
-export function getFakeCapabilities(destinationId: string = ''): Capabilities {
+export function getFakeCapabilities(destinationId: string = 'Printer1'):
+    Capabilities {
   const collate: CollateCapability = {
     valueDefault: true,
   };
