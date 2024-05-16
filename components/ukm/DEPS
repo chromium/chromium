@@ -1,5 +1,5 @@
 include_rules = [
-  "+components/crx_file",
+  "+components/crx_file/id_util.h",
   "+components/metrics",
   "+components/prefs",
   "+components/unified_consent",
