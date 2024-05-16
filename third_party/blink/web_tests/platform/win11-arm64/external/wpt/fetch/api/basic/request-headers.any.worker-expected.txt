@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error in remote http://web-platform.test:8001/fetch/api/basic/request-headers.any.js: Uncaught ReferenceError: Float16Array is not defined
+Harness: the test ran to completion.
+
