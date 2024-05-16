@@ -56,12 +56,10 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
 
         VisitedUrlRankingBackendJni.get()
                 .getRankedSuggestions(
-                        mNativeVisitedUrlRankingBackend, getCurrentTimeMs(), suggestions, callback);
-    }
-
-    /** Returns the current time in ms since the epoch. */
-    long getCurrentTimeMs() {
-        return System.currentTimeMillis();
+                        mNativeVisitedUrlRankingBackend,
+                        TabResumptionModuleUtils.getCurrentTimeMs(),
+                        suggestions,
+                        callback);
     }
 
     /** Member method callback to trigger update. */

@@ -29,6 +29,11 @@ public class TabResumptionModuleUtils {
         void onSuggestionClickByTabId(int tabId);
     }
 
+    /** Overrides getCurrentTime() return value, for testing. */
+    public interface FakeGetCurrentTimeMs {
+        long get();
+    }
+
     /**
      * A set of the host URLs of default native apps on Android. This set should be keep consistent
      * with kDefaultAppBlocklist in {@link
@@ -81,6 +86,23 @@ public class TabResumptionModuleUtils {
                     ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
                     TAB_RESUMPTION_USE_DEFAULT_APP_FILTER_PARAM,
                     false);
+
+    private static FakeGetCurrentTimeMs sFakeGetCurrentTimeMs;
+
+    /**
+     * Overrides the getCurrentTimeMs() results. Using a function instead of static value for
+     * flexibility, which is useful for simulating an advancing clock. Passing null disables this.
+     */
+    static void setFakeCurrentTimeMsForTesting(FakeGetCurrentTimeMs fakeGetCurrentTimeMs) {
+        sFakeGetCurrentTimeMs = fakeGetCurrentTimeMs;
+    }
+
+    /** Returns the current time in ms since the epock. Mockable. */
+    static long getCurrentTimeMs() {
+        return (sFakeGetCurrentTimeMs == null)
+                ? System.currentTimeMillis()
+                : sFakeGetCurrentTimeMs.get();
+    }
 
     /**
      * Computes the string representation of how recent an event was, given the time delta.

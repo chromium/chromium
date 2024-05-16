@@ -68,6 +68,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Context context = ApplicationProvider.getApplicationContext();
         context.setTheme(R.style.Theme_BrowserUI_DayNight);
 
+        TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> CURRENT_TIME_MS);
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
 
         mMediator =
@@ -79,12 +80,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* thumbnailProvider= */ mThumbnailProvider,
                         /* statusChangedCallback= */ () -> {},
                         /* seeMoreLinkClickCallback= */ () -> {},
-                        /* suggestionClickCallbacks= */ mClickCallbacks) {
-                    @Override
-                    long getCurrentTimeMs() {
-                        return CURRENT_TIME_MS;
-                    }
-                };
+                        /* suggestionClickCallbacks= */ mClickCallbacks);
         mMediator.startSession(mDataProvider);
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
@@ -100,8 +96,9 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     public void tearDown() {
         mMediator.endSession();
         mMediator.destroy();
-        mModel = null;
         mMediator = null;
+        mModel = null;
+        TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(null);
     }
 
     @Test

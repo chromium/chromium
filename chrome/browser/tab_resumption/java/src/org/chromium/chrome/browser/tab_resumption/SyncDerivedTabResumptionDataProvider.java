@@ -84,7 +84,7 @@ public class SyncDerivedTabResumptionDataProvider extends TabResumptionDataProvi
         }
 
         if (mStrength == ResultStrength.TENTATIVE && mTentativeSuggestionTime == 0) {
-            mTentativeSuggestionTime = mEntrySource.getCurrentTimeMs();
+            mTentativeSuggestionTime = TabResumptionModuleUtils.getCurrentTimeMs();
         }
         mEntrySource.getSuggestions(
                 (List<SuggestionEntry> suggestions) -> {
@@ -104,7 +104,7 @@ public class SyncDerivedTabResumptionDataProvider extends TabResumptionDataProvi
 
             // Require this to be the first update (for (3a)), and that it's timely (for (3b)).
         } else if (mStrength == ResultStrength.TENTATIVE
-                && mEntrySource.getCurrentTimeMs() - mTentativeSuggestionTime
+                && TabResumptionModuleUtils.getCurrentTimeMs() - mTentativeSuggestionTime
                         < TIMELY_THRESHOLD_MS) {
             mStrength = ResultStrength.STABLE;
             dispatchStatusChangedCallback();

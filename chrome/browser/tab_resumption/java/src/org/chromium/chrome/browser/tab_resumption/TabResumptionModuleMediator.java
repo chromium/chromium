@@ -142,7 +142,7 @@ public class TabResumptionModuleMediator {
                             || moduleShowConfig.intValue() != ModuleShowConfig.SINGLE_TILE_LOCAL)) {
                 // Log only if Foreign Session suggestions exist.
                 TabResumptionModuleMetricsUtils.recordStabilityDelay(
-                        getCurrentTimeMs() - mFirstLoadTime);
+                        TabResumptionModuleUtils.getCurrentTimeMs() - mFirstLoadTime);
             }
             if (moduleShowConfig == null) {
                 TabResumptionModuleMetricsUtils.recordModuleNotShownReason(
@@ -215,7 +215,7 @@ public class TabResumptionModuleMediator {
             }
 
             if (mFirstLoadTime == 0) {
-                mFirstLoadTime = getCurrentTimeMs();
+                mFirstLoadTime = TabResumptionModuleUtils.getCurrentTimeMs();
             }
 
             mDataProvider.fetchSuggestions(this::onSuggestionReceived);
@@ -336,11 +336,6 @@ public class TabResumptionModuleMediator {
         assert mSession == null;
     }
 
-    /** Returns the current time in ms since the epoch. */
-    long getCurrentTimeMs() {
-        return System.currentTimeMillis();
-    }
-
     /**
      * Fetches new suggestions, creates SuggestionBundle, then updates `mModel`. If no data is
      * available then hides the module. See onSuggestionReceived() for details.
@@ -363,7 +358,7 @@ public class TabResumptionModuleMediator {
      * @param suggestions Retrieved suggestions with basic filtering, from most recent to least.
      */
     private SuggestionBundle makeSuggestionBundle(List<SuggestionEntry> suggestions) {
-        long currentTimeMs = getCurrentTimeMs();
+        long currentTimeMs = TabResumptionModuleUtils.getCurrentTimeMs();
         SuggestionBundle bundle = new SuggestionBundle(currentTimeMs);
         int maxTilesNumber = TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER.getValue();
         for (SuggestionEntry entry : suggestions) {

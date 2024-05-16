@@ -173,11 +173,6 @@ public class SyncDerivedSuggestionEntrySource
         }
     }
 
-    /** Returns the current time in ms since the epoch. */
-    long getCurrentTimeMs() {
-        return System.currentTimeMillis();
-    }
-
     private void dispatchSourceDataChangedObservers(boolean isPermissionUpdate) {
         mPassUseCachedResults = false;
         for (SourceDataChangedObserver observer : mSourceDataChangedObservers) {

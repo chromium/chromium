@@ -70,6 +70,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         MockitoAnnotations.initMocks(this);
 
         mFakeTime = CURRENT_TIME_MS;
+        TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> mFakeTime);
         mSourceDataChangedObserver =
                 (boolean isPermissionUpdate) -> {
                     ++mDataChangedCounter;
@@ -83,6 +84,9 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
             mSource.removeObserver(mSourceDataChangedObserver);
             mSource.destroy();
         }
+        mSourceDataChangedObserver = null;
+        mSource = null;
+        TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(null);
     }
 
     @Test
@@ -229,12 +233,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
                         /* signinManager= */ mSigninManager,
                         /* identityManager= */ mIdentityManager,
                         /* syncService= */ mSyncService,
-                        /* foreignSessionHelper= */ mSuggestionBackend) {
-                    @Override
-                    long getCurrentTimeMs() {
-                        return mFakeTime;
-                    }
-                };
+                        /* foreignSessionHelper= */ mSuggestionBackend);
         mSource.addObserver(mSourceDataChangedObserver);
 
         verify(mSigninManager).addSignInStateObserver(mSignInStateObserverCaptor.capture());
