@@ -647,7 +647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.AbsTimestampDiffMs" units="ms"
-    expires_after="2024-05-25">
+    expires_after="2025-05-25">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.FakeTimestamps" enum="Boolean"
-    expires_after="2024-05-25">
+    expires_after="2025-05-25">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -761,7 +761,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamNotifyStreamError"
-    units="errorcode" expires_after="2024-04-28">
+    units="errorcode" expires_after="2025-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasInputStreamStartSuccess"
-    enum="CrasInputStreamStartSuccess" expires_after="2024-04-28">
+    enum="CrasInputStreamStartSuccess" expires_after="2025-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -794,7 +794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamNotifyStreamError"
-    units="errorcode" expires_after="2024-04-28">
+    units="errorcode" expires_after="2025-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -816,7 +816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.CrasUnifiedStreamStartSuccess"
-    enum="CrasUnifiedStreamStartSuccess" expires_after="2024-04-28">
+    enum="CrasUnifiedStreamStartSuccess" expires_after="2025-04-28">
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
@@ -1062,7 +1062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Processing.RenderDelayVarianceMs"
-    units="ms squared" expires_after="2024-05-03">
+    units="ms squared" expires_after="2025-05-03">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
