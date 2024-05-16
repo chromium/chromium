@@ -121,7 +121,7 @@ export class CrProfileAvatarSelectorElement extends CrLitElement {
     // component.
     const target = e.currentTarget as HTMLElement;
     const index = Number(target.dataset['index']);
-    this.selectedAvatar = this.avatars[index];
+    this.selectedAvatar = this.avatars[index]!;
 
     // Autoscroll to selected avatar if it is not completely visible.
     const avatarList =

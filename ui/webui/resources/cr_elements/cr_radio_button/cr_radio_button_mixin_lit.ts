@@ -117,10 +117,6 @@ export const CrRadioButtonMixinLit =
           assertNotReached();
         }
 
-        private onFocus_() {
-          this.getRipple().showAndHoldDown();
-        }
-
         private hideRipple_() {
           this.getRipple().clear();
         }

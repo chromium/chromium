@@ -92,10 +92,10 @@ export class CrToolbarElement extends CrLitElement {
     };
   }
 
-  pageName: string;
-  searchPrompt: string;
-  clearLabel: string;
-  menuLabel: string;
+  pageName: string = '';
+  searchPrompt: string = '';
+  clearLabel: string = '';
+  menuLabel?: string;
   spinnerActive: boolean = false;
   showMenu: boolean = false;
   showSearch: boolean = true;

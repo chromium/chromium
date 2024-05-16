@@ -62,7 +62,7 @@ export class CrTabsElement extends CrLitElement {
 
   tabIcons: string[] = [];
   tabNames: string[] = [];
-  selected: number;
+  selected: number = NONE_SELECTED;
 
   private isRtl_: boolean = false;
 

@@ -76,7 +76,7 @@ export class CrIconsetElement extends CrLitElement implements Iconset {
       // Add special class so we can identify it in remove.
       svg.classList.add(APPLIED_ICON_CLASS);
       // insert svg element into shadow root
-      element.shadowRoot!.insertBefore(svg, element.shadowRoot!.childNodes[0]);
+      element.shadowRoot!.insertBefore(svg, element.shadowRoot!.childNodes[0]!);
       return svg;
     }
     return null;

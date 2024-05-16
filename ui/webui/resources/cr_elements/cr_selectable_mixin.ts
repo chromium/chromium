@@ -7,9 +7,9 @@ import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup
 
 function toCamelCase(name: string): string {
   const pieces = name.split('-');
-  let camel = pieces[0];
+  let camel = pieces[0]!;
   pieces.slice(1).forEach(
-      piece => camel = camel + piece[0].toUpperCase() + piece.substr(1));
+      piece => camel = camel + piece[0]!.toUpperCase() + piece.substr(1));
   return camel;
 }
 

@@ -47,7 +47,7 @@ export class CrDrawerElement extends CrLitElement {
     };
   }
 
-  heading: string;
+  heading: string = '';
   align: 'ltr'|'rtl' = 'ltr';
   protected show_: boolean = false;
 

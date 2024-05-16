@@ -164,7 +164,7 @@ export class CrInputElement extends CrLitElement {
     };
   }
 
-  override ariaDescription: string|null;
+  override ariaDescription: string|null = null;
   override ariaLabel: string = '';
   override autofocus: boolean = false;
   autoValidate: boolean = false;

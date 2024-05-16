@@ -55,7 +55,7 @@ export class CrRadioGroupElement extends CrLitElement {
   selectableElements: string =
       'cr-radio-button, cr-card-radio-button, controlled-radio-button';
   nestedSelectable: boolean = false;
-  private selectableRegExp_: RegExp;
+  private selectableRegExp_: RegExp = new RegExp('');
 
   private buttons_: CrRadioButtonElement[]|null = null;
   private buttonEventTracker_: EventTracker = new EventTracker();

@@ -180,7 +180,7 @@ export class CrSliderElement extends CrSliderElementBase {
   ticks: SliderTick[]|number[] = [];
   value: number;
 
-  protected disabled_: boolean;
+  protected disabled_: boolean = false;
   protected label_: string = '';
   protected showLabel_: boolean = false;
   protected transiting_: boolean = false;
