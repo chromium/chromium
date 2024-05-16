@@ -148,7 +148,11 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
          model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
-             "HistoryClustersModuleRankingModelMetadata";
+             "HistoryClustersModuleRankingModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "OnDeviceBaseModelMetadata";
 }
 
 void RecordModelAvailableAtRegistration(
@@ -199,8 +203,9 @@ PredictionManager::PredictionManager(
 }
 
 PredictionManager::~PredictionManager() {
-  if (prediction_model_download_manager_)
+  if (prediction_model_download_manager_) {
     prediction_model_download_manager_->RemoveObserver(this);
+  }
 }
 
 void PredictionManager::Initialize(
@@ -352,8 +357,9 @@ void PredictionManager::FetchModels() {
       static_cast<int>(
           *base_model_info.supported_model_engine_versions().begin()));
 
-  if (switches::IsModelOverridePresent())
+  if (switches::IsModelOverridePresent()) {
     return;
+  }
 
   if (!ShouldFetchModels(off_the_record_,
                          component_updates_enabled_provider_.Run())) {
@@ -418,8 +424,9 @@ void PredictionManager::FetchModels() {
 
     auto model_it =
         optimization_target_model_info_map_.find(registration_info.first);
-    if (model_it != optimization_target_model_info_map_.end())
+    if (model_it != optimization_target_model_info_map_.end()) {
       model_info.set_version(model_it->second.get()->GetVersion());
+    }
 
     models_info.push_back(model_info);
     if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
@@ -623,8 +630,9 @@ void PredictionManager::UpdatePredictionModels(
 void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
                                      const proto::PredictionModel& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (switches::IsModelOverridePresent())
+  if (switches::IsModelOverridePresent()) {
     return;
+  }
 
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
@@ -812,8 +820,9 @@ void PredictionManager::OnLoadPredictionModel(
   }
   bool success = ProcessAndStoreLoadedModel(*model);
   DCHECK_EQ(optimization_target, model->model_info().optimization_target());
-  if (record_availability_metrics)
+  if (record_availability_metrics) {
     RecordModelAvailableAtRegistration(optimization_target, success);
+  }
   OnProcessLoadedModel(*model, success);
 }
 
@@ -848,12 +857,15 @@ void PredictionManager::RemoveModelFromStore(
 bool PredictionManager::ProcessAndStoreLoadedModel(
     const proto::PredictionModel& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!model.model_info().has_optimization_target())
+  if (!model.model_info().has_optimization_target()) {
     return false;
-  if (!model.model_info().has_version())
+  }
+  if (!model.model_info().has_version()) {
     return false;
-  if (!model.has_model())
+  }
+  if (!model.has_model()) {
     return false;
+  }
   if (!model_registration_info_map_.contains(
           model.model_info().optimization_target())) {
     return false;
@@ -891,8 +903,9 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
 
   auto model_meta_it =
       optimization_target_model_info_map_.find(optimization_target);
-  if (model_meta_it != optimization_target_model_info_map_.end())
+  if (model_meta_it != optimization_target_model_info_map_.end()) {
     return model_meta_it->second->GetVersion() != new_version;
+  }
 
   return true;
 }
