@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +57,23 @@ public class BottomBarConfigCreatorTest {
     }
 
     @Test
-    public void emptyString_throwsException() {
-        assertThrows(IllegalArgumentException.class, () -> mConfigCreator.create("", List.of()));
+    public void emptyString_returnsDefaultConfig() {
+        assertDefaultConfig(mConfigCreator.create("", List.of()));
+    }
+
+    @Test
+    public void onlyOneItem_returnsDefaultConfig() {
+        assertDefaultConfig(mConfigCreator.create("1", List.of()));
+    }
+
+    @Test
+    public void invalidButtonIdInList_returnsDefaultConfig() {
+        assertDefaultConfig(mConfigCreator.create("0,10,1", List.of()));
+    }
+
+    @Test
+    public void invalidSpotlightButton_returnsDefaultConfig() {
+        assertDefaultConfig(mConfigCreator.create("10,1,2,3", List.of()));
     }
 
     @Test
@@ -118,12 +133,6 @@ public class BottomBarConfigCreatorTest {
     }
 
     @Test
-    public void invalidButtonId_throwsException() {
-        assertThrows(
-                IllegalArgumentException.class, () -> mConfigCreator.create("0,10,1", List.of()));
-    }
-
-    @Test
     public void withCorrectCustomParams_hasCorrectButtonConfig() {
         Drawable drawable = mock(Drawable.class);
         when(mCustomButtonParams.getId()).thenReturn(100); // SAVE
@@ -137,5 +146,13 @@ public class BottomBarConfigCreatorTest {
 
         // the button has the expected custom button params set
         assertEquals(pendingIntent, buttonConfig.getButtonList().get(2).getPendingIntent());
+    }
+
+    private static void assertDefaultConfig(BottomBarConfig config) {
+        assertNull(config.getSpotlightId());
+        assertEquals(3, config.getButtonList().size());
+        assertEquals(ButtonId.SAVE, config.getButtonList().get(0).getId());
+        assertEquals(ButtonId.PIH_BASIC, config.getButtonList().get(1).getId());
+        assertEquals(ButtonId.SHARE, config.getButtonList().get(2).getId());
     }
 }
