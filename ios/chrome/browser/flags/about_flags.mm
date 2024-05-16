@@ -1580,6 +1580,26 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensCircleToSearchEnabledName,
      flag_descriptions::kLensCircleToSearchEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensCircleToSearchEnabled)},
+    {"autofill-enable-save-card-loading-and-confirmation",
+     flag_descriptions::kAutofillEnableSaveCardLoadingAndConfirmationName,
+     flag_descriptions::
+         kAutofillEnableSaveCardLoadingAndConfirmationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)},
+    {"autofill-enable-save-card-local-save-fallback",
+     flag_descriptions::kAutofillEnableSaveCardLocalSaveFallbackName,
+     flag_descriptions::kAutofillEnableSaveCardLocalSaveFallbackDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSaveCardLocalSaveFallback)},
+    {"autofill-enable-vcn-enroll-loading-and-confirmation",
+     flag_descriptions::kAutofillEnableVcnEnrollLoadingAndConfirmationName,
+     flag_descriptions::
+         kAutofillEnableVcnEnrollLoadingAndConfirmationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

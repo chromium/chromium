@@ -78,6 +78,16 @@ extern const char kAutofillEnableRankingFormulaCreditCardsDescription[];
 extern const char kAutofillEnableRemadeDownstreamMetricsName[];
 extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
 
+// Title and description for the flag to enable loading and confirmation
+// for save card.
+extern const char kAutofillEnableSaveCardLoadingAndConfirmationName[];
+extern const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[];
+
+// Title and description for the flag to enable fallback for save card failure
+// to upload and saves the card locally instead.
+extern const char kAutofillEnableSaveCardLocalSaveFallbackName[];
+extern const char kAutofillEnableSaveCardLocalSaveFallbackDescription[];
+
 // Title and description for the flag that controls whether Autofill handles
 // administrative area level 2 fields.
 extern const char kAutofillEnableSupportForAdminLevel2Name[];
@@ -97,6 +107,11 @@ extern const char kAutofillEnableSupportForLandmarkDescription[];
 // of issuer network) in Payments UI.
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
+
+// Title and description for the flag to enable loading and confirmation
+// for virtual card enrollment.
+extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationName[];
+extern const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[];
 
 // Title and description for flag to enable Verve card support for autofill.
 extern const char kAutofillEnableVerveCardSupportName[];
