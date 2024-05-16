@@ -95,4 +95,8 @@ const char kWebViewForceCrashJava[] = "webview-force-crash-java";
 // Enables crashes during WebView startup in the Native layer
 const char kWebViewForceCrashNative[] = "webview-force-crash-native";
 
+// Use WebView's context for resource lookups instead of the embedding app's.
+const char kWebViewUseSeparateResourceContext[] =
+    "webview-use-separate-resource-context";
+
 }  // namespace switches

@@ -28,6 +28,7 @@ extern const char kWebViewFpsComponent[];
 extern const char kWebViewForceDisable3pcs[];
 extern const char kWebViewForceCrashJava[];
 extern const char kWebViewForceCrashNative[];
+extern const char kWebViewUseSeparateResourceContext[];
 
 }  // namespace switches
 

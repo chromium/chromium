@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
@@ -312,6 +313,21 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.initCommandLine")) {
                 // This may take ~20 ms only on userdebug devices.
                 CommandLineUtil.initCommandLine();
+            }
+
+            boolean useWebViewContext =
+                    CommandLine.getInstance()
+                            .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT);
+            if (useWebViewContext) {
+                try {
+                    Context override =
+                            ctx.createPackageContext(
+                                    packageInfo.packageName,
+                                    Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                    ClassLoaderContextWrapperFactory.setWebViewResourceOverrideContext(override);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.e(TAG, "Could not get resource override context.");
+                }
             }
 
             // WebView needs to make sure to always use the wrapped application context.

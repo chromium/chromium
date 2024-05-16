@@ -4,6 +4,10 @@
 
 package org.chromium.components.embedder_support.application;
 
+import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+import static android.content.res.Configuration.UI_MODE_NIGHT_NO;
+import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
+
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -44,10 +48,16 @@ public class ClassLoaderContextWrapperFactory {
      * Sets light and dark mode contexts that will override the return values from getAssets(),
      * getResources(), and getSystemService() when asking for layout inflater.
      */
-    public static void setLightDarkResourceOverrideContext(
-            Context lightModeContext, Context darkModeContext) {
-        sLightModeResourceOverrideContext = lightModeContext;
-        sDarkModeResourceOverrideContext = darkModeContext;
+    public static void setWebViewResourceOverrideContext(Context webViewResourceOverrideContext) {
+        Configuration lightModeConfig =
+                new Configuration(webViewResourceOverrideContext.getResources().getConfiguration());
+        lightModeConfig.uiMode = (lightModeConfig.uiMode & ~UI_MODE_NIGHT_MASK) | UI_MODE_NIGHT_NO;
+        Configuration darkModeConfig = new Configuration(lightModeConfig);
+        darkModeConfig.uiMode = (lightModeConfig.uiMode & ~UI_MODE_NIGHT_MASK) | UI_MODE_NIGHT_YES;
+        sLightModeResourceOverrideContext =
+                webViewResourceOverrideContext.createConfigurationContext(lightModeConfig);
+        sDarkModeResourceOverrideContext =
+                webViewResourceOverrideContext.createConfigurationContext(darkModeConfig);
     }
 
     public static Context get(Context ctx) {
