@@ -9,6 +9,13 @@ class PrefRegistrySimple;
 
 namespace push_notification {
 
+namespace prefs {
+
+extern const char
+    kPushNotificationRegistrationAttemptBackoffSchedulerPrefName[];
+
+}  // namespace prefs
+
 void RegisterPushNotificationPrefs(PrefRegistrySimple* registry);
 
 }  // namespace push_notification

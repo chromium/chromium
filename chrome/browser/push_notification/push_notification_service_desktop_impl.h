@@ -31,6 +31,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace ash::nearby {
+class NearbyScheduler;
+}  // namespace ash::nearby
+
 namespace push_notification {
 
 // Desktop implementation of PushNotificationService.
@@ -38,15 +42,11 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
                                            public KeyedService,
                                            public gcm::GCMAppHandler {
  public:
-  // This `unittest_initialization_callback` should only be a `DoNothing()` in
-  // production, its usage is for testing only.
   PushNotificationServiceDesktopImpl(
       PrefService* pref_service,
       instance_id::InstanceIDDriver* instance_id_driver,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::OnceCallback<void(bool)> unittest_initialization_callback =
-          base::DoNothing());
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   PushNotificationServiceDesktopImpl(
       const PushNotificationServiceDesktopImpl&) = delete;
@@ -91,20 +91,21 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
 
   bool is_initialized_ = false;
 
+  // Scheduler attempts initialization of the service with unlimited retries.
+  // The scheduler requires internet connection to attempt a retry.
+  std::unique_ptr<ash::nearby::NearbyScheduler>
+      initialization_on_demand_scheduler_;
+
   // Constructed per RPC request, and destroyed on RPC response (server
   // interaction completed). This field is reused by multiple RPCs during the
   // lifetime of the `PushNotificationServerClient` object.
   std::unique_ptr<PushNotificationServerClient> server_client_;
   std::string token_;
-  raw_ptr<const PrefService> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Callback should only be a `DoNothing()` in production, its usage is for
-  // testing only.
-  base::OnceCallback<void(bool)> unittest_initialization_callback_;
 
   base::WeakPtrFactory<PushNotificationServiceDesktopImpl> weak_ptr_factory_{
       this};

@@ -6,10 +6,12 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/push_notification/prefs/push_notification_prefs.h"
 #include "chrome/browser/push_notification/protos/notifications_multi_login_update.pb.h"
 #include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client.h"
 #include "chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.h"
+#include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler_factory.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -33,21 +35,24 @@ PushNotificationServiceDesktopImpl::PushNotificationServiceDesktopImpl(
     PrefService* pref_service,
     instance_id::InstanceIDDriver* instance_id_driver,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::OnceCallback<void(bool)> unittest_initialization_callback)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : pref_service_(pref_service),
       instance_id_driver_(instance_id_driver),
       identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory),
-      unittest_initialization_callback_(
-          std::move(unittest_initialization_callback)) {
+      url_loader_factory_(url_loader_factory) {
   CHECK(pref_service_);
   CHECK(instance_id_driver_);
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PushNotificationServiceDesktopImpl::Initialize,
-                                base::Unretained(this)));
+  initialization_on_demand_scheduler_ =
+      ash::nearby::NearbySchedulerFactory::CreateOnDemandScheduler(
+          /*retry_failures=*/true, /*require_connectivity=*/true,
+          prefs::kPushNotificationRegistrationAttemptBackoffSchedulerPrefName,
+          pref_service_,
+          base::BindRepeating(&PushNotificationServiceDesktopImpl::Initialize,
+                              base::Unretained(this)),
+          Feature::NEARBY_INFRA, base::DefaultClock::GetInstance());
+  initialization_on_demand_scheduler_->Start();
 }
 
 PushNotificationServiceDesktopImpl::~PushNotificationServiceDesktopImpl() =
@@ -137,9 +142,7 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
   if (result != instance_id::InstanceID::Result::SUCCESS) {
     LOG(ERROR) << "Failed to retrieve GCM token: " << result;
 
-    // This is always a no-op in production, it is only used in testing to
-    // signal when the initialization flow is ready for the next step.
-    std::move(unittest_initialization_callback_).Run(false);
+    initialization_on_demand_scheduler_->HandleResult(/*success=*/false);
     return;
   }
 
@@ -183,10 +186,6 @@ void PushNotificationServiceDesktopImpl::OnTokenReceived(
       base::BindOnce(&PushNotificationServiceDesktopImpl::
                          OnPushNotificationRegistrationFailure,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // This is always a no-op in production, it is only used in testing to signal
-  // when the initialization flow is ready for the next step.
-  std::move(unittest_initialization_callback_).Run(true);
 }
 
 void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
@@ -194,6 +193,8 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
   VLOG(1) << __func__ << ": Push notification service registration successful";
   is_initialized_ = true;
   server_client_.reset();
+  initialization_on_demand_scheduler_->HandleResult(/*success=*/true);
+
   // TODO(b/321305351): Use response proto to update prefs with response
   // information for later calls.
 }
@@ -204,7 +205,13 @@ void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationFailure(
   LOG(ERROR) << __func__
              << ": Push notification service registration failure: " << error;
   server_client_.reset();
-  // TODO(b/323949082): Initiate retry logic.
+
+  // Remove ourselves as a GCM app handler since initialization failed.
+  instance_id_driver_->GetInstanceID(kPushNotificationAppId)
+      ->gcm_driver()
+      ->RemoveAppHandler(kPushNotificationAppId);
+
+  initialization_on_demand_scheduler_->HandleResult(/*success=*/false);
 }
 
 }  // namespace push_notification

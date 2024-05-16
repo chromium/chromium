@@ -9,8 +9,18 @@
 
 namespace push_notification {
 
+namespace prefs {
+
+const char kPushNotificationRegistrationAttemptBackoffSchedulerPrefName[] =
+    "push_notification.scheduler.registration_attempt_backoff";
+
+}  // namespace prefs
+
 // TODO(b/306399332): Add pref for `representative_target_id` to be used when
 // registering with Chime.
-void RegisterPushNotificationPrefs(PrefRegistrySimple* registry) {}
+void RegisterPushNotificationPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(
+      prefs::kPushNotificationRegistrationAttemptBackoffSchedulerPrefName);
+}
 
 }  // namespace push_notification

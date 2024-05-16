@@ -8866,6 +8866,7 @@ test("unit_tests") {
       "//chromeos/ash/components/login/session",
       "//chromeos/ash/components/multidevice:test_support",
       "//chromeos/ash/components/nearby/common/connections_manager:test_support",
+      "//chromeos/ash/components/nearby/common/scheduling:test_support",
       "//chromeos/ash/components/proximity_auth",
       "//chromeos/ash/components/proximity_auth:test_support",
       "//chromeos/ash/components/standalone_browser:standalone_browser",
