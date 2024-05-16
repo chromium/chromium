@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
+#include "chrome/browser/ash/login/oobe_apps_service/oobe_apps_discovery_service_factory.h"
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
@@ -220,6 +221,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   OAuth2LoginManagerFactory::GetInstance();
   on_device_controls::AppControlsServiceFactory::GetInstance();
   OfflineSigninLimiterFactory::GetInstance();
+  OobeAppsDiscoveryServiceFactory::GetInstance();
   OwnerSettingsServiceAshFactory::GetInstance();
   PasswordSyncTokenVerifierFactory::GetInstance();
   personalization_app::PersonalizationAppManagerFactory::GetInstance();

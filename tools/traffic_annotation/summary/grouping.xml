@@ -324,6 +324,7 @@ after discussions on the right group.
       <annotation id="lens_overlay"/>
       <annotation id="register_push_notification_service"/>
       <annotation id="youtube_music_integration"/>
+      <annotation id="personalized_recommended_apps_download"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
