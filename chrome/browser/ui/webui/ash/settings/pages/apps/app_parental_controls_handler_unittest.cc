@@ -5,13 +5,20 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_test_base.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -21,18 +28,24 @@
 
 namespace ash::settings {
 
-class AppParentalControlsHandlerTest : public testing::Test {
+class AppParentalControlsHandlerTest
+    : public on_device_controls::AppControlsTestBase {
  public:
   AppParentalControlsHandlerTest() {}
   ~AppParentalControlsHandlerTest() override = default;
 
   void SetUp() override {
-    app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(&profile_);
+    on_device_controls::AppControlsTestBase::SetUp();
+
     handler_ = std::make_unique<AppParentalControlsHandler>(
-        app_service_proxy_.get(), profile_.GetPrefs());
+        app_service_test().proxy(), profile().GetPrefs());
   }
 
-  void TearDown() override { handler_.reset(); }
+  void TearDown() override {
+    handler_.reset();
+
+    on_device_controls::AppControlsTestBase::TearDown();
+  }
 
  protected:
   void CreateAndStoreFakeApp(std::string fake_id,
@@ -49,16 +62,11 @@ class AppParentalControlsHandlerTest : public testing::Test {
 
   void UpdateAppRegistryCache(std::vector<apps::AppPtr>& fake_apps,
                               apps::AppType app_type) {
-    app_service_proxy_->OnApps(std::move(fake_apps), app_type, false);
+    app_service_test().proxy()->OnApps(std::move(fake_apps), app_type, false);
   }
 
  protected:
   std::unique_ptr<AppParentalControlsHandler> handler_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  raw_ptr<apps::AppServiceProxy> app_service_proxy_ = nullptr;
 };
 
 TEST_F(AppParentalControlsHandlerTest, TestOnlyManageableArcAppsFetched) {
@@ -80,6 +88,46 @@ TEST_F(AppParentalControlsHandlerTest, TestOnlyManageableArcAppsFetched) {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+TEST_F(AppParentalControlsHandlerTest, TesAppUpdate) {
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  ASSERT_FALSE(app_id.empty());
+
+  base::RunLoop run_loop1;
+  handler_->GetApps(base::BindLambdaForTesting(
+      [&](std::vector<app_parental_controls::mojom::AppPtr> apps) -> void {
+        EXPECT_EQ(apps.size(), 1u);
+        EXPECT_EQ(apps[0]->id, app_id);
+        EXPECT_FALSE(apps[0]->is_blocked);
+        run_loop1.Quit();
+      }));
+  run_loop1.Run();
+
+  handler_->UpdateApp(app_id, /*is_blocked=*/true);
+
+  base::RunLoop run_loop2;
+  handler_->GetApps(base::BindLambdaForTesting(
+      [&](std::vector<app_parental_controls::mojom::AppPtr> apps) -> void {
+        EXPECT_EQ(apps.size(), 1u);
+        EXPECT_EQ(apps[0]->id, app_id);
+        EXPECT_TRUE(apps[0]->is_blocked);
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
+
+  handler_->UpdateApp(app_id, /*is_blocked=*/false);
+
+  base::RunLoop run_loop3;
+  handler_->GetApps(base::BindLambdaForTesting(
+      [&](std::vector<app_parental_controls::mojom::AppPtr> apps) -> void {
+        EXPECT_EQ(apps.size(), 1u);
+        EXPECT_EQ(apps[0]->id, app_id);
+        EXPECT_FALSE(apps[0]->is_blocked);
+        run_loop3.Quit();
+      }));
+  run_loop3.Run();
 }
 
 }  // namespace ash::settings

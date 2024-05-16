@@ -5602,6 +5602,8 @@ source_set("unit_tests") {
     "child_accounts/family_user_parental_control_metrics_unittest.cc",
     "child_accounts/family_user_session_metrics_unittest.cc",
     "child_accounts/on_device_controls/app_controls_service_factory_unittest.cc",
+    "child_accounts/on_device_controls/app_controls_test_base.cc",
+    "child_accounts/on_device_controls/app_controls_test_base.h",
     "child_accounts/on_device_controls/blocked_app_registry_unittest.cc",
     "child_accounts/on_device_controls/on_device_utils_unittest.cc",
     "child_accounts/parent_access_code/authenticator_unittest.cc",

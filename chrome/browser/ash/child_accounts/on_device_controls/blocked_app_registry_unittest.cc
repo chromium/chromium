@@ -10,18 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/test/scoped_command_line.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
-#include "chrome/common/chrome_switches.h"
+#include "chrome/browser/ash/child_accounts/on_device_controls/app_controls_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -31,46 +24,29 @@
 namespace ash::on_device_controls {
 
 // Tests blocked app registry.
-class BlockedAppRegistryTest : public testing::Test {
- protected:
+class BlockedAppRegistryTest : public AppControlsTestBase {
+ public:
   BlockedAppRegistryTest() = default;
-  BlockedAppRegistryTest(const BlockedAppRegistryTest&) = delete;
-  BlockedAppRegistryTest& operator=(const BlockedAppRegistryTest&) = delete;
   ~BlockedAppRegistryTest() override = default;
 
   BlockedAppRegistry* registry() { return registry_.get(); }
-  ArcAppTest& arc_test() { return arc_test_; }
 
   // Returns app readiness or nullopt if the app with `app_id` was not found in
   // the app service cache.
   std::optional<apps::Readiness> GetAppReadiness(const std::string& app_id);
 
  protected:
-  // testing::Test:
+  // AppControlsTestBase:
   void SetUp() override;
-  void TearDown() override;
 
-  // Installs ARC++ app with the given `package_name` and returns its AppService
-  // id.
-  std::string InstallArcApp(const std::string& package_name,
-                            const std::string& app_name);
-  void UninstallArcApp(const std::string& package_name);
-
-  //  private:
-  base::test::ScopedCommandLine scoped_command_line_;
-  content::BrowserTaskEnvironment task_environment_;
-
-  TestingProfile profile_;
-  apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
-
+ private:
   std::unique_ptr<BlockedAppRegistry> registry_;
 };
 
 std::optional<apps::Readiness> BlockedAppRegistryTest::GetAppReadiness(
     const std::string& app_id) {
   apps::AppRegistryCache& app_cache =
-      app_service_test_.proxy()->AppRegistryCache();
+      app_service_test().proxy()->AppRegistryCache();
   std::optional<apps::Readiness> readiness;
   app_cache.ForOneApp(app_id, [&readiness](const apps::AppUpdate& update) {
     readiness = update.Readiness();
@@ -79,40 +55,10 @@ std::optional<apps::Readiness> BlockedAppRegistryTest::GetAppReadiness(
 }
 
 void BlockedAppRegistryTest::SetUp() {
-  testing::Test::SetUp();
+  AppControlsTestBase::SetUp();
 
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kDisableDefaultApps);
-
-  app_service_test_.SetUp(&profile_);
-  arc_test_.SetUp(&profile_);
-  task_environment_.RunUntilIdle();
-
-  registry_ = std::make_unique<BlockedAppRegistry>(app_service_test_.proxy(),
-                                                   profile_.GetPrefs());
-}
-
-void BlockedAppRegistryTest::TearDown() {
-  arc_test_.TearDown();
-
-  testing::Test::TearDown();
-}
-
-std::string BlockedAppRegistryTest::InstallArcApp(
-    const std::string& package_name,
-    const std::string& app_name) {
-  arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
-  std::vector<arc::mojom::AppInfoPtr> apps;
-  apps.emplace_back(CreateArcAppInfo(package_name, app_name));
-  arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
-  task_environment_.RunUntilIdle();
-
-  return arc::ArcPackageNameToAppId(package_name, &profile_);
-}
-
-void BlockedAppRegistryTest::UninstallArcApp(const std::string& package_name) {
-  arc_test_.app_instance()->UninstallPackage(package_name);
-  task_environment_.RunUntilIdle();
+  registry_ = std::make_unique<BlockedAppRegistry>(app_service_test().proxy(),
+                                                   profile().GetPrefs());
 }
 
 // Tests registry state when adding an app.
