@@ -51,6 +51,9 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     // Must match keys in tracking_protection_preferences.xml.
     private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
+    private static final String PREF_IP_PROTECTION_TOGGLE = "ip_protection_toggle";
+    private static final String PREF_FINGERPRINTING_PROTECTION_TOGGLE =
+            "fingerprinting_protection_toggle";
     private static final String PREF_DNT_TOGGLE = "dnt_toggle";
     private static final String PREF_BULLET_TWO = "bullet_point_two";
     private static final String ALLOWED_GROUP = "allowed_group";
@@ -90,6 +93,10 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
 
         ChromeSwitchPreference blockAll3PCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
+        ChromeSwitchPreference ipProtectionSwitch =
+                (ChromeSwitchPreference) findPreference(PREF_IP_PROTECTION_TOGGLE);
+        ChromeSwitchPreference fingerprintingProtectionSwitch =
+                (ChromeSwitchPreference) findPreference(PREF_FINGERPRINTING_PROTECTION_TOGGLE);
         ChromeSwitchPreference doNotTrackSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_DNT_TOGGLE);
 
@@ -100,6 +107,29 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                     mDelegate.setBlockAll3PCD((boolean) newValue);
                     return true;
                 });
+
+        // IP protection switch.
+        if (mDelegate.shouldDisplayIpProtection()) {
+            ipProtectionSwitch.setVisible(true);
+            ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
+            ipProtectionSwitch.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        mDelegate.setIpProtection((boolean) newValue);
+                        return true;
+                    });
+        }
+
+        // Fingerprinting protection switch.
+        if (mDelegate.shouldDisplayFingerprintingProtection()) {
+            fingerprintingProtectionSwitch.setVisible(true);
+            fingerprintingProtectionSwitch.setChecked(
+                    mDelegate.isFingerprintingProtectionEnabled());
+            fingerprintingProtectionSwitch.setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        mDelegate.setFingerprintingProtection((boolean) newValue);
+                        return true;
+                    });
+        }
 
         // Do not track switch.
         doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());

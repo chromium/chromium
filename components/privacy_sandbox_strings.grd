@@ -322,6 +322,18 @@
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         Change protections
       </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Hide your IP address
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
+        When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Limit digital fingerprinting
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
+        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
+      </message>
     </messages>
   </release>
 </grit>
