@@ -541,7 +541,6 @@ testing 123
 }
 
 #[cfg(procmacro2_semver_exempt)]
-#[cfg(not(nightly))]
 #[test]
 fn default_span() {
     let start = Span::call_site().start();

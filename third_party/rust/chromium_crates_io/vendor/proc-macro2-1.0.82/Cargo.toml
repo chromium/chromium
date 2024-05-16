@@ -13,11 +13,15 @@
 edition = "2021"
 rust-version = "1.56"
 name = "proc-macro2"
-version = "1.0.81"
+version = "1.0.82"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
 ]
+build = "build.rs"
+autobins = false
+autoexamples = false
+autotests = false
 autobenches = false
 description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
 documentation = "https://docs.rs/proc-macro2"
@@ -48,7 +52,33 @@ targets = ["x86_64-unknown-linux-gnu"]
 features = ["span-locations"]
 
 [lib]
+name = "proc_macro2"
+path = "src/lib.rs"
 doc-scrape-examples = false
+
+[[test]]
+name = "comments"
+path = "tests/comments.rs"
+
+[[test]]
+name = "test_fmt"
+path = "tests/test_fmt.rs"
+
+[[test]]
+name = "features"
+path = "tests/features.rs"
+
+[[test]]
+name = "marker"
+path = "tests/marker.rs"
+
+[[test]]
+name = "test_size"
+path = "tests/test_size.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
 
 [dependencies.unicode-ident]
 version = "1.0"
@@ -58,7 +88,7 @@ version = "1.0"
 
 [dev-dependencies.quote]
 version = "1.0"
-default_features = false
+default-features = false
 
 [dev-dependencies.rayon]
 version = "1.0"

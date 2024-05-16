@@ -1,6 +1,6 @@
 [package]
 name = "proc-macro2"
-version = "1.0.81"
+version = "1.0.82"
 authors = ["David Tolnay <dtolnay@gmail.com>", "Alex Crichton <alex@alexcrichton.com>"]
 autobenches = false
 categories = ["development-tools::procedural-macro-helpers"]
@@ -25,7 +25,7 @@ unicode-ident = "1.0"
 
 [dev-dependencies]
 flate2 = "1.0"
-quote = { version = "1.0", default_features = false }
+quote = { version = "1.0", default-features = false }
 rayon = "1.0"
 rustversion = "1"
 tar = "0.4"
