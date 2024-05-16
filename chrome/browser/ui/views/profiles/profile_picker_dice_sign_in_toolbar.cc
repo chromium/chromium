@@ -56,6 +56,8 @@ ProfilePickerDiceSignInToolbar::ProfilePickerDiceSignInToolbar() {
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true)
       .SetInteriorMargin(kToolbarPadding);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
   SetProperty(views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                        views::MaximumFlexSizeRule::kPreferred));

@@ -19,6 +19,7 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 
 namespace base {
@@ -113,9 +114,9 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
 // user selects from a list of apps that are actively capturing audio/video
 // and/or sharing the screen, and the selected app is brought to the top and
 // focused.
-class ASH_EXPORT ReturnToAppPanel : public views::View,
+class ASH_EXPORT ReturnToAppPanel : public views::FlexLayoutView,
                                     ReturnToAppButton::Observer {
-  METADATA_HEADER(ReturnToAppPanel, views::View)
+  METADATA_HEADER(ReturnToAppPanel, views::FlexLayoutView)
 
  public:
   explicit ReturnToAppPanel(const MediaApps& apps);

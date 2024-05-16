@@ -13,8 +13,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/view.h"
 
 namespace views {
 
@@ -32,8 +32,8 @@ class TabbedPaneWithWidgetTest;
 // associated view is displayed.
 // Support for horizontal-highlight and vertical-border modes is limited and
 // may require additional polish.
-class VIEWS_EXPORT TabbedPane : public View {
-  METADATA_HEADER(TabbedPane, View)
+class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
+  METADATA_HEADER(TabbedPane, FlexLayoutView)
 
  public:
   // The orientation of the tab alignment.
@@ -280,7 +280,7 @@ class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
   Coordinates animating_to_;
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, View)
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, TabbedPane, FlexLayoutView)
 VIEW_BUILDER_METHOD_ALIAS(AddTab,
                           AddTab<View>,
                           const std::u16string&,

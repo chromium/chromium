@@ -60,6 +60,9 @@ std::unique_ptr<views::View> CreateButtonContainer(
     int label_message_id,
     int label_max_width) {
   auto container = std::make_unique<views::BoxLayoutView>();
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  container->SetLayoutManagerUseConstrainedSpace(false);
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetBetweenChildSpacing(kCenterPadding);
   container->AddChildView(std::move(button_view));

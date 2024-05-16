@@ -69,6 +69,10 @@ class VIEWS_EXPORT FlexLayoutView : public View {
     InvalidateLayout();
   }
 
+ protected:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+
  private:
   raw_ptr<FlexLayout> layout_;
   LayoutOrientation orientation_;

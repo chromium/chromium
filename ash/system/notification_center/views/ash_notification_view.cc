@@ -534,6 +534,8 @@ AshNotificationView::AshNotificationView(
                                   .SetCallback(base::BindRepeating(
                                       &AshNotificationView::ToggleExpand,
                                       base::Unretained(this))))));
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  content_row()->SetLayoutManagerUseConstrainedSpace(false);
 
   // Main right view contains all the views besides control buttons, app icon,
   // grouped container and action buttons.
@@ -579,6 +581,7 @@ AshNotificationView::AshNotificationView(
                         .SetID(kAppIconViewContainer)
                         .SetOrientation(Orientation::kVertical)
                         .SetMainAxisAlignment(MainAxisAlignment::kStart)
+                        .SetCrossAxisAlignment(CrossAxisAlignment::kStart)
                         .AddChild(views::Builder<RoundedImageView>()
                                       .CopyAddressTo(&app_icon_view_)
                                       .SetCornerRadius(

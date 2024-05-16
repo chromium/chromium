@@ -3603,12 +3603,16 @@ TEST_F(NestedFlexLayoutTest, Layout_OppositeOrientation) {
       .SetDefault(views::kMarginsKey, gfx::Insets::TLBR(2, 3, 4, 5))
       .SetInteriorMargin(gfx::Insets::TLBR(4, 3, 2, 1));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(1)->SetLayoutManagerUseConstrainedSpace(false);
   layout(1)
       ->SetOrientation(LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey, gfx::Insets(2))
       .SetInteriorMargin(gfx::Insets(1));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(2)->SetLayoutManagerUseConstrainedSpace(false);
   layout(2)
       ->SetOrientation(LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
@@ -3639,12 +3643,16 @@ TEST_F(NestedFlexLayoutTest, Layout_SameOrientation) {
       .SetDefault(views::kMarginsKey, gfx::Insets::TLBR(2, 3, 4, 5))
       .SetInteriorMargin(gfx::Insets::TLBR(4, 3, 2, 1));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(1)->SetLayoutManagerUseConstrainedSpace(false);
   layout(1)
       ->SetOrientation(LayoutOrientation::kHorizontal)
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey, gfx::Insets(2))
       .SetInteriorMargin(gfx::Insets(1));
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(2)->SetLayoutManagerUseConstrainedSpace(false);
   layout(2)
       ->SetOrientation(LayoutOrientation::kHorizontal)
       .SetCollapseMargins(true)
@@ -3677,6 +3685,8 @@ TEST_F(NestedFlexLayoutTest, Layout_Flex) {
   child(1)->SetProperty(views::kFlexBehaviorKey, kFlex1ScaleToZero);
   child(2)->SetProperty(views::kFlexBehaviorKey, kFlex1ScaleToZero);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(1)->SetLayoutManagerUseConstrainedSpace(false);
   layout(1)
       ->SetOrientation(LayoutOrientation::kHorizontal)
       .SetCollapseMargins(true)
@@ -3685,6 +3695,8 @@ TEST_F(NestedFlexLayoutTest, Layout_Flex) {
   grandchild(1, 1)->SetProperty(views::kFlexBehaviorKey, kFlex1ScaleToZero);
   grandchild(1, 2)->SetProperty(views::kFlexBehaviorKey, kFlex1ScaleToZero);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  child(2)->SetLayoutManagerUseConstrainedSpace(false);
   layout(2)
       ->SetOrientation(LayoutOrientation::kHorizontal)
       .SetCollapseMargins(true)

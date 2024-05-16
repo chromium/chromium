@@ -434,11 +434,10 @@ END_METADATA
 ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
   SetID(BubbleViewID::kReturnToApp);
 
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
-      .SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
+  SetOrientation(views::LayoutOrientation::kVertical);
+  SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  SetInteriorMargin(gfx::Insets::TLBR(16, 16, 0, 16));
 
   auto container_view = std::make_unique<ReturnToAppContainer>();
   container_view_ = AddChildView(std::move(container_view));

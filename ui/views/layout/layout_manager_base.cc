@@ -55,11 +55,8 @@ gfx::Size LayoutManagerBase::GetPreferredSize(
     const View* host,
     const SizeBounds& available_size) const {
   DCHECK_EQ(host_view_, host);
-  if (available_size.is_fully_bounded()) {
+  if (available_size.width().is_bounded()) {
     return CalculateProposedLayout(available_size).host_size;
-  } else if (available_size.width().is_bounded()) {
-    int width = available_size.width().value();
-    return gfx::Size(width, GetPreferredHeightForWidth(host, width));
   }
 
   return GetPreferredSize(host);

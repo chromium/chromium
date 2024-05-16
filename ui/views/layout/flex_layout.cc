@@ -780,6 +780,11 @@ void FlexLayout::UpdateLayoutFromChildren(
 
   // For cases with a non-zero cross-axis bound, the objective is to fit the
   // layout into that precise size, not to determine what size we need.
+  //
+  // TODO(crbug.com/40232718): If the cross axis of the constraint space is
+  // constrained in FlexLayout, the cross axis of the host view will be
+  // stretched to the incoming constraint size by default. This results in
+  // unexpected calculations for some client code.
   bool force_cross_size = false;
   if (bounds.cross().is_bounded() && bounds.cross() > 0) {
     data.total_size.SetToMax(0, bounds.cross().value());

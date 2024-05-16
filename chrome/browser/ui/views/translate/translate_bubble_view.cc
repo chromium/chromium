@@ -71,7 +71,6 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
@@ -828,6 +827,8 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
     // only happen on non-Chrome-branded builds.
     auto* icon_view =
         view->AddChildView(std::make_unique<views::BoxLayoutView>());
+    icon_view->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
     icon_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
     icon_view->AddChildView(std::move(language_icon));
     icon_view->SetProperty(views::kMarginsKey,

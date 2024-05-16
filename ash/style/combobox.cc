@@ -353,6 +353,9 @@ Combobox::Combobox(ui::ComboboxModel* model)
   // Set up layout.
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(kComboboxBorderInsets);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
+
   // Allow `title_` to shrink and elide, so that `drop_down_arrow_` on the
   // right always remains visible.
   title_->SetProperty(

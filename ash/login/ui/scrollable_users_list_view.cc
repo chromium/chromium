@@ -214,10 +214,13 @@ ScrollableUsersListView::ScrollableUsersListView(
   // |user_view_host_| cannot be set as |contents()| directly because it needs
   // to be vertically centered when non-scrollable.
   auto ensure_min_height = std::make_unique<EnsureMinHeightView>();
-  ensure_min_height
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  auto* ensure_min_height_layout =
+      ensure_min_height->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  ensure_min_height_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  ensure_min_height_layout->set_cross_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
   ensure_min_height->AddChildView(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
   SetBackgroundColor(std::nullopt);

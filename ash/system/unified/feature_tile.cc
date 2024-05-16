@@ -215,6 +215,9 @@ void FeatureTile::CreateChildViews() {
       ->SetOrientation(is_compact ? views::LayoutOrientation::kVertical
                                   : views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
+
   // Set `MaximumFlexSizeRule` to `kUnbounded` so the view takes up all of the
   // available space in its parent container.
   SetProperty(views::kFlexBehaviorKey,

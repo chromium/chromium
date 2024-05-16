@@ -308,6 +308,10 @@ CalendarEventListItemView::CalendarEventListItemView(
             views::BoxLayout::Orientation::kVertical));
     layout_vertical_start->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kStart);
+
+    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+    event_list_dot_container->SetLayoutManagerUseConstrainedSpace(false);
+
     event_list_dot_container
         ->AddChildView(std::make_unique<CalendarEventListItemDot>(
             is_past_event_ ? kPastEventsColorId : event.color_id()))
@@ -327,6 +331,10 @@ CalendarEventListItemView::CalendarEventListItemView(
       CreateTimeLabel(formatted_time_text, tooltip_text, is_past_event_)
           .Build());
   horizontal_container_layout_manager->SetFlexForView(vertical_container, 1);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  // `vertical_container` has 1 flex. This causes the passed constraint space to
+  // be fully occupied. Thus causing the view to become larger.
+  horizontal_container->SetLayoutManagerUseConstrainedSpace(false);
 
   // Join button. Only shows it if the event is not the past event.
   if (!video_conference_url_.is_empty() && !is_past_event_) {

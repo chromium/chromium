@@ -694,6 +694,8 @@ void ProfileMenuViewBase::BuildProfileBackgroundContainer(
         views::BoxLayout::CrossAxisAlignment::kCenter,
         gfx::Insets::TLBR(0, 0, kHalfOfAvatarImageViewSize + kDefaultMargin,
                           0)));
+    // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+    edit_button_container->SetLayoutManagerUseConstrainedSpace(false);
     edit_button_container->AddChildView(std::move(edit_button));
   }
 }

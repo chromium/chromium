@@ -104,8 +104,7 @@ PickerSearchFieldView::PickerSearchFieldView(
     : search_callback_(std::move(search_callback)),
       key_event_handler_(key_event_handler),
       performance_metrics_(performance_metrics) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal);
+  SetOrientation(views::LayoutOrientation::kHorizontal);
 
   views::Builder<PickerSearchFieldView>(this)
       .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)

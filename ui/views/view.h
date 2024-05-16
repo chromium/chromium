@@ -820,9 +820,17 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Sets whether or not the layout manager need to respect the available space.
   //
-  // TODO(crbug.com/40232718): All layout management needs to respect the
-  // available space. But there are some problems with `FlexLayout`. After we
-  // fix the problem with FlexLayout. Remove this.
+  // TODO(crbug.com/40232718): If the cross axis of the constraint space is
+  // constrained in FlexLayout, the cross axis of the host view will be
+  // stretched to the incoming constraint size by default. This results in
+  // incorrect calculations.
+  //
+  // When vertical BoxLayouts and other views are nested inside the horizontal
+  // BoxLayout, the width of the horizontal BoxLayout will be passed in as the
+  // cross axis of the vertical BoxLayout. At this time, if the vertical
+  // BoxLayout is set to stretch the cross axis (default), the first vertical
+  // BoxLayout will occupy all the space, which will cause the subsequent
+  // BoxLayout to be unable to be displayed.
   void SetLayoutManagerUseConstrainedSpace(
       bool layout_manager_use_constrained_space);
 
@@ -2337,7 +2345,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // TODO(crbug.com/40232718): All layout management needs to respect the
   // available space. But there are some problems with `FlexLayout`. After we
   // fix the problem with FlexLayout. Remove this.
-  bool layout_manager_use_constrained_space_ = false;
+  bool layout_manager_use_constrained_space_ = true;
 
   // Used to generate an UMA metric for the maximum reentrant call depth seen
   // during layout. Normally the metric value will be one (Layout() was not

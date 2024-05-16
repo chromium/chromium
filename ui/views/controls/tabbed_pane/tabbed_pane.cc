@@ -524,9 +524,8 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        bool scrollable) {
   DCHECK(orientation != TabbedPane::Orientation::kHorizontal ||
          style != TabbedPane::TabStripStyle::kHighlight);
-  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   if (orientation == TabbedPane::Orientation::kHorizontal)
-    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    SetOrientation(views::LayoutOrientation::kVertical);
 
   auto tab_strip = std::make_unique<TabbedPaneTabStrip>(orientation, style);
   if (scrollable) {

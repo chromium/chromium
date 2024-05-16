@@ -410,6 +410,9 @@ void AssistantDialogPlate::InitKeyboardLayoutContainer() {
 
 void AssistantDialogPlate::InitVoiceLayoutContainer() {
   auto voice_layout_container = std::make_unique<views::View>();
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  voice_layout_container->SetLayoutManagerUseConstrainedSpace(false);
   voice_layout_container->SetPaintToLayer();
   voice_layout_container->layer()->SetFillsBoundsOpaquely(false);
   voice_layout_container->layer()->SetOpacity(0.f);
