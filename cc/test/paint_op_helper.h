@@ -142,23 +142,23 @@ class PaintOpHelper {
         const auto& op = static_cast<const DrawLineLiteOp&>(base_op);
         str << "x0=" << ToString(op.x0) << ", y0=" << ToString(op.y0)
             << ", x1=" << ToString(op.x1) << ", y1=" << ToString(op.y1)
-            << ", flags=" << ToString(op.core_paint_flags) << ")";
+            << ", flags=" << ToString(op.core_paint_flags);
         break;
       }
       case PaintOpType::kDrawArc: {
         const auto& op = static_cast<const DrawArcOp&>(base_op);
-        str << "DrawArcOp(oval=" << ToString(op.oval)
+        str << "oval=" << ToString(op.oval)
             << ", start_angle=" << ToString(op.start_angle_degrees)
             << ", sweep_angle=" << ToString(op.sweep_angle_degrees)
-            << ", flags=" << ToString(op.flags) << ")";
+            << ", flags=" << ToString(op.flags);
         break;
       }
       case PaintOpType::kDrawArcLite: {
         const auto& op = static_cast<const DrawArcLiteOp&>(base_op);
-        str << "DrawArcOp(oval=" << ToString(op.oval)
+        str << "oval=" << ToString(op.oval)
             << ", start_angle=" << ToString(op.start_angle_degrees)
             << ", sweep_angle=" << ToString(op.sweep_angle_degrees)
-            << ", flags=" << ToString(op.core_paint_flags) << ")";
+            << ", flags=" << ToString(op.core_paint_flags);
         break;
       }
       case PaintOpType::kDrawOval: {
