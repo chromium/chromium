@@ -296,6 +296,18 @@ void ApplyTestState(
           GetItemValue<std::string>(value), false);
       return;
     }
+    case (StateKey::kBlockAll3pcToggleEnabledUserPrefValue): {
+      SCOPED_TRACE("State Setup: Block all 3pc toggle enabled");
+      testing_pref_service->SetUserPref(prefs::kBlockAll3pcToggleEnabled,
+                                        base::Value(GetItemValue<bool>(value)));
+      return;
+    }
+    case (StateKey::kTrackingProtection3pcdEnabledUserPrefValue): {
+      SCOPED_TRACE("State Setup: Tracking protection 3pcd enabled");
+      testing_pref_service->SetUserPref(prefs::kTrackingProtection3pcdEnabled,
+                                        base::Value(GetItemValue<bool>(value)));
+      return;
+    }
     default:
       NOTREACHED_IN_MIGRATION();
   }

@@ -57,6 +57,7 @@ class MockPrivacySandboxServiceTestInterface
 }  // namespace
 
 // TODO (crbug.com/1408187): Add coverage for all state / input / output keys.
+// TODO (crbug.com/340589498): Parameterize tests in this file.
 class PrivacySandboxTestUtilTest : public testing::Test {
  public:
   PrivacySandboxTestUtilTest()
@@ -179,6 +180,29 @@ TEST_F(PrivacySandboxTestUtilTest, StateKey_CookieControlsModeUserPrefValue) {
     EXPECT_EQ(state,
               static_cast<content_settings::CookieControlsMode>(
                   prefs()->GetUserPref(prefs::kCookieControlsMode)->GetInt()));
+  }
+}
+
+TEST_F(PrivacySandboxTestUtilTest,
+       StateKey_VerifykBlockAll3pcToggleEnabledUserPrefValueSetsPref) {
+  std::vector<bool> states = {true, false};
+  for (auto state : states) {
+    ApplyTestState(StateKey::kBlockAll3pcToggleEnabledUserPrefValue, state);
+    EXPECT_EQ(
+        state,
+        prefs()->GetUserPref(prefs::kBlockAll3pcToggleEnabled)->GetBool());
+  }
+}
+
+TEST_F(PrivacySandboxTestUtilTest,
+       StateKey_VerifykTrackingProtection3pcdEnabledUserPrefValueSetsPref) {
+  std::vector<bool> states = {true, false};
+  for (auto state : states) {
+    ApplyTestState(StateKey::kTrackingProtection3pcdEnabledUserPrefValue,
+                   state);
+    EXPECT_EQ(
+        state,
+        prefs()->GetUserPref(prefs::kTrackingProtection3pcdEnabled)->GetBool());
   }
 }
 

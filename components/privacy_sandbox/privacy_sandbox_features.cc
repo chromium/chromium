@@ -230,4 +230,8 @@ const base::FeatureParam<int> kPrivacySandboxActivityTypeStorageWithinXDays{
     &kPrivacySandboxActivityTypeStorage,
     kPrivacySandboxActivityTypeStorageWithinXDaysName, 60};
 
+BASE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock,
+             "PrivacySandboxAdsDialogDisabledOnAll3PCBlock",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

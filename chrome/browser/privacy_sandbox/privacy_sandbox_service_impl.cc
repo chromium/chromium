@@ -70,12 +70,32 @@ bool g_prompt_disabled_for_tests = false;
 
 // Returns whether 3P cookies are blocked by |cookie_settings|. This can be
 // either through blocking 3P cookies directly, or blocking all cookies.
-bool AreThirdPartyCookiesBlocked(
+// Blocking in this case also covers the "3P cookies limited" state.
+bool ShouldBlockThirdPartyOrFirstPartyCookies(
     content_settings::CookieSettings* cookie_settings) {
   const auto default_content_setting =
       cookie_settings->GetDefaultCookieSetting();
   return cookie_settings->ShouldBlockThirdPartyCookies() ||
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
+}
+
+// Similar to the function above, but checks for ALL 3P cookies to be blocked
+// pre and post 3PCD.
+bool AreAllThirdPartyCookiesBlocked(
+    content_settings::CookieSettings* cookie_settings,
+    PrefService* prefs,
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings) {
+  // Check if 1PCs are blocked.
+  if (cookie_settings->GetDefaultCookieSetting() ==
+      ContentSetting::CONTENT_SETTING_BLOCK) {
+    return true;
+  }
+  // Check if all 3PCs are blocked.
+  return tracking_protection_settings->AreAllThirdPartyCookiesBlocked() ||
+         (!tracking_protection_settings->IsTrackingProtection3pcdEnabled() &&
+          prefs->GetInteger(prefs::kCookieControlsMode) ==
+              static_cast<int>(
+                  content_settings::CookieControlsMode::kBlockThirdParty));
 }
 
 // Sorts |topics| alphabetically by topic display name for display.
@@ -240,6 +260,7 @@ void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     content::InterestGroupManager* interest_group_manager,
@@ -252,6 +273,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     browsing_topics::BrowsingTopicsService* browsing_topics_service,
     first_party_sets::FirstPartySetsPolicyService* first_party_sets_service)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
+      tracking_protection_settings_(tracking_protection_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       interest_group_manager_(interest_group_manager),
@@ -266,6 +288,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
+  CHECK(tracking_protection_settings_);
 
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
@@ -326,8 +349,15 @@ PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 PrivacySandboxService::PromptType
 PrivacySandboxServiceImpl::GetRequiredPromptType() {
-  const auto third_party_cookies_blocked =
-      AreThirdPartyCookiesBlocked(cookie_settings_.get());
+  bool third_party_cookies_blocked;
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAdsDialogDisabledOnAll3PCBlock)) {
+    third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
+        cookie_settings_.get(), pref_service_, tracking_protection_settings_);
+  } else {
+    third_party_cookies_blocked =
+        ShouldBlockThirdPartyOrFirstPartyCookies(cookie_settings_.get());
+  }
   return GetRequiredPromptTypeInternal(
       pref_service_, profile_type_, privacy_sandbox_settings_,
       third_party_cookies_blocked,
@@ -1160,7 +1190,7 @@ void PrivacySandboxServiceImpl::MaybeInitializeFirstPartySetsPref() {
   // side of privacy, this init logic is run per-device (the pref recording that
   // init has been run is not synced). If any of the user's devices local state
   // would disable the pref, it is disabled across all devices.
-  if (AreThirdPartyCookiesBlocked(cookie_settings_.get())) {
+  if (ShouldBlockThirdPartyOrFirstPartyCookies(cookie_settings_.get())) {
     pref_service_->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                               false);
   }

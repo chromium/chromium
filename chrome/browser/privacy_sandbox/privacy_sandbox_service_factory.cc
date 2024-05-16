@@ -11,6 +11,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -72,6 +73,7 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
 #endif
@@ -90,6 +92,7 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<PrivacySandboxServiceImpl>(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
+      TrackingProtectionSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       GetProfileType(profile),

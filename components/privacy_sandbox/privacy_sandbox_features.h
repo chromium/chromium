@@ -264,6 +264,10 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 extern const base::FeatureParam<int>
     kPrivacySandboxActivityTypeStorageWithinXDays;
 
+// Disables the Privacy Sandbox Ads Dialog when all 3pc are blocked.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock);
+
 }  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_FEATURES_H_

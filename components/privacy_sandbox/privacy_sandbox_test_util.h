@@ -170,6 +170,8 @@ enum class StateKey {
   kM1RestrictedNoticePreviouslyAcknowledged = 25,
   kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,
+  kBlockAll3pcToggleEnabledUserPrefValue = 28,
+  kTrackingProtection3pcdEnabledUserPrefValue = 29,
 };
 
 // Defines the input to the functions under test.
