@@ -139,8 +139,14 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
 };
 
+// TODO(crbug.com/339983706): Fix flaky test on macOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ValidOriginTrialToken DISABLED_ValidOriginTrialToken
+#else
+#define MAYBE_ValidOriginTrialToken ValidOriginTrialToken
+#endif
 IN_PROC_BROWSER_TEST_F(FoldableAPIsOriginTrialBrowserTest,
-                       ValidOriginTrialToken) {
+                       MAYBE_ValidOriginTrialToken) {
   ASSERT_TRUE(NavigateToURL(shell(), kValidTokenUrl));
   SetUpFoldableState();
   EXPECT_TRUE(HasDevicePostureApi());
