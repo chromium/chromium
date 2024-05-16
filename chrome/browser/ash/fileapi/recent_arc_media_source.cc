@@ -98,10 +98,8 @@ const char RecentArcMediaSource::kLoadHistogramName[] =
     "FileBrowser.Recent.LoadArcMedia";
 
 RecentArcMediaSource::RecentArcMediaSource(Profile* profile,
-                                           const std::string& root_id,
-                                           size_t max_files)
+                                           const std::string& root_id)
     : profile_(profile),
-      max_files_(max_files),
       root_id_(root_id),
       relative_mount_path_(GetRelativeMountPath(root_id)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -316,6 +314,7 @@ std::vector<RecentFile> RecentArcMediaSource::Stop(const int32_t call_id) {
     return {};
   }
 
+  size_t max_files = context->params.max_files();
   // We do not call the callback, so just clean it up.
   context->callback.Reset();
 
@@ -325,7 +324,7 @@ std::vector<RecentFile> RecentArcMediaSource::Stop(const int32_t call_id) {
 
   context_map_.Remove(call_id);
 
-  return PrepareResponse(std::move(files), max_files_);
+  return PrepareResponse(std::move(files), max_files);
 }
 
 void RecentArcMediaSource::OnComplete(const int32_t call_id) {
@@ -347,7 +346,7 @@ void RecentArcMediaSource::OnComplete(const int32_t call_id) {
   std::vector<RecentFile> files =
       ExtractFoundFiles(context->document_id_to_file);
   std::move(context->callback)
-      .Run(PrepareResponse(std::move(files), max_files_));
+      .Run(PrepareResponse(std::move(files), context->params.max_files()));
   context_map_.Remove(call_id);
 }
 

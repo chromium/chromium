@@ -33,6 +33,31 @@ class FileSystemContext;
 
 namespace ash {
 
+// The options that impact how the search for recent files is carried out. The
+// default values for the options is to look for files that were modified in the
+// last 30 days, with no limit to how long the scan can take, returning any type
+// of files, but no more than 1000. If possible files will be returned from the
+// recent cache.
+struct RecentModelOptions {
+  // How far back to accept files.
+  base::TimeDelta now_delta = base::Days(30);
+
+  // The maximum time the scan for recent files can take. Sources that do
+  // not complete before the timeout do not contribute to returned results.
+  base::TimeDelta scan_timeout = base::TimeDelta::Max();
+
+  // The maximum number of files to be returned.
+  size_t max_files = 1000u;
+
+  // Whether or not to invalidate the cache; if this flag is true, even if
+  // there are cached results, they are not returned. Instead a full scan
+  // of sources is performed.
+  bool invalidate_cache = false;
+
+  // The type of files to be returned.
+  RecentSource::FileType file_type = RecentSource::FileType::kAll;
+};
+
 // Implements a service that returns files matching a given query, type, with
 // the given modification date. A typical use is shown below:
 //
@@ -48,9 +73,7 @@ namespace ash {
 //     context,
 //     GURL("chrome://file-manager/"),
 //     "foobar",
-//     base::Days(30),
-//     ash::RecentModel::FileType::kImage,
-//     false,
+//     RecentModelOptions::Default(),
 //     std::move(callback));
 //
 // In addition to the above flow, one can set the maximum duration for the
@@ -74,6 +97,8 @@ class RecentModel : public KeyedService {
     std::string query;
     // The maximum age of accepted files measured as a delta from now.
     base::TimeDelta now_delta;
+    // The maximum number of files to  be returned.
+    size_t max_files;
     // The type of files accepted, e.g., images, documents, etc.
     FileType file_type;
 
@@ -94,8 +119,7 @@ class RecentModel : public KeyedService {
 
   // Creates an instance with given sources. Only for testing.
   static std::unique_ptr<RecentModel> CreateForTest(
-      std::vector<std::unique_ptr<RecentSource>> sources,
-      size_t max_files);
+      std::vector<std::unique_ptr<RecentSource>> sources);
 
   // Returns a list of recent files by querying sources.
   // Files are sorted by descending order of last modified time.
@@ -103,31 +127,18 @@ class RecentModel : public KeyedService {
   void GetRecentFiles(storage::FileSystemContext* file_system_context,
                       const GURL& origin,
                       const std::string& query,
-                      const base::TimeDelta& now_delta,
-                      FileType file_type,
-                      bool invalidate_cache,
+                      const RecentModelOptions& options,
                       GetRecentFilesCallback callback);
 
   // KeyedService overrides:
   void Shutdown() override;
 
-  // Sets the timeout for recent model to return recent files. By default,
-  // there is no timeout. However, if one is set, any recent source that does
-  // not deliver results before the timeout elapses is ignored.
-  void SetScanTimeout(const base::TimeDelta& delta);
-
-  // Clears the timeout by which recent sources must deliver results to have
-  // them retunred to the caller of GetRecentFiles.
-  void ClearScanTimeout();
-
  private:
-  explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
-                       size_t max_files);
+  explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources);
 
   // Context for a single GetRecentFiles call.
   struct CallContext {
-    CallContext(size_t max_files,
-                const SearchCriteria& search_criteria,
+    CallContext(const SearchCriteria& search_criteria,
                 GetRecentFilesCallback callback);
     CallContext(CallContext&& context);
     ~CallContext();
@@ -190,9 +201,6 @@ class RecentModel : public KeyedService {
   // The counter used to enumerate GetRecentFiles calls. This is used to stop
   // calls that take too long.
   int32_t call_id_ = 0;
-
-  // The maximum files to be returned by a single GetRecentFiles call.
-  const size_t max_files_;
 
   // If set, limits the length of time the GetRecentFiles method can take before
   // returning results, if any, in the callback.

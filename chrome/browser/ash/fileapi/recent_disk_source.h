@@ -33,12 +33,9 @@ class RecentDiskSource : public RecentSource {
   // Does nothing if no volume is registered at `mount_point_name`.
   // If `ignore_dotfiles` is true, recents will ignore directories and files
   // starting with a dot. Set `max_depth` to zero for unlimited depth.
-  // The `max_files` parameter limits the maximum number of files returned on
-  // the callback of `params` of GetRecentFiles method.
   RecentDiskSource(std::string mount_point_name,
                    bool ignore_dotfiles,
                    int max_depth,
-                   size_t max_files,
                    std::string uma_histogram_name);
 
   RecentDiskSource(const RecentDiskSource&) = delete;
@@ -94,9 +91,7 @@ class RecentDiskSource : public RecentSource {
   // map is only accessed on the UI thread we do not need to use additional
   // locks to guarantee its consistency.
   struct CallContext {
-    CallContext(const Params& params,
-                size_t max_files,
-                GetRecentFilesCallback callback);
+    CallContext(const Params& params, GetRecentFilesCallback callback);
     // Move constructor; necessary as callback is a move-only type.
     CallContext(CallContext&& context);
 
@@ -119,9 +114,6 @@ class RecentDiskSource : public RecentSource {
 
   // A map from call_id to the context of the call.
   base::IDMap<std::unique_ptr<CallContext>> context_map_;
-
-  // The maximum number of files returned by this source.
-  const size_t max_files_;
 
   base::WeakPtrFactory<RecentDiskSource> weak_ptr_factory_{this};
 };

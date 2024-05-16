@@ -41,10 +41,12 @@ void GetRecentFiles(Profile* profile,
   if (!model) {
     return;
   }
+  ash::RecentModelOptions options = {
+      .now_delta = kMaxFileRecencyDelta,
+  };
 
   model->GetRecentFiles(file_system_context.get(), GURL(), /*query=*/"",
-                        kMaxFileRecencyDelta, ash::RecentModel::FileType::kAll,
-                        /*invalidate_cache=*/false, std::move(callback));
+                        options, std::move(callback));
 }
 
 void GetDriveFileMetadata(

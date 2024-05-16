@@ -85,15 +85,13 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 std::unique_ptr<KeyedService> BuildTestRecentModelFactory(
     std::vector<ash::RecentFile> files,
     content::BrowserContext* context) {
-  const size_t max_files = files.size();
-
   auto source = std::make_unique<ash::FakeRecentSource>();
   source->AddProducer(std::make_unique<ash::FileProducer>(
       /*lag=*/base::Milliseconds(0), std::move(files)));
 
   std::vector<std::unique_ptr<ash::RecentSource>> sources;
   sources.push_back(std::move(source));
-  return ash::RecentModel::CreateForTest(std::move(sources), max_files);
+  return ash::RecentModel::CreateForTest(std::move(sources));
 }
 
 std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(

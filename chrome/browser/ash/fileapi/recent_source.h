@@ -51,6 +51,7 @@ class RecentSource {
            int32_t call_id,
            const GURL& origin,
            const std::string& query,
+           const size_t max_files,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
            FileType file_type);
@@ -72,6 +73,9 @@ class RecentSource {
     // The query to be applied to recent files to further narrow the returned
     // matches.
     const std::string& query() const { return query_; }
+
+    // The maximum number of files to be returned by this source.
+    size_t max_files() const { return max_files_; }
 
     // Cut-off last modified time. RecentSource is expected to return files
     // modified at this time or later. It is fine to return older files than
@@ -96,6 +100,7 @@ class RecentSource {
     const int32_t call_id_;
     const GURL origin_;
     const std::string query_;
+    const size_t max_files_;
     const base::Time cutoff_time_;
     const FileType file_type_;
     const base::TimeTicks end_time_;

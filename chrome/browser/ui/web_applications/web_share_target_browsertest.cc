@@ -190,10 +190,7 @@ class WebShareTargetBrowserTest : public WebAppBrowserTestBase {
     ash::RecentModelFactory::GetForProfile(profile())->GetRecentFiles(
         file_system_context.get(),
         /*origin=*/GURL(),
-        /*query=*/"",
-        /*cutoff_days=*/base::Days(30),
-        /*file_type=*/ash::RecentModel::FileType::kAll,
-        /*invalidate_cache=*/false,
+        /*query=*/"", ash::RecentModelOptions{},
         base::BindLambdaForTesting(
             [&result, &run_loop](const std::vector<ash::RecentFile>& files) {
               result = files.size();

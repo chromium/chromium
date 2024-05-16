@@ -32,7 +32,7 @@ class RecentFile;
 // TODO(nya): Write unit tests.
 class RecentDriveSource : public RecentSource {
  public:
-  RecentDriveSource(Profile* profile, size_t max_files);
+  explicit RecentDriveSource(Profile* profile);
 
   RecentDriveSource(const RecentDriveSource&) = delete;
   RecentDriveSource& operator=(const RecentDriveSource&) = delete;
@@ -90,11 +90,6 @@ class RecentDriveSource : public RecentSource {
 
   // A map from call_id to the call context.
   base::IDMap<std::unique_ptr<CallContext>> context_map_;
-
-  // The maximum number of files to be returned as a result of the
-  // GetRecentFiles. This is established at the construction time and never
-  // changed.
-  const size_t max_files_;
 
   base::WeakPtrFactory<RecentDriveSource> weak_ptr_factory_{this};
 };

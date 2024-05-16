@@ -82,12 +82,11 @@ void GetMetadataOnIOThread(
 
 RecentDiskSource::RecentDiskSource::CallContext::CallContext(
     const Params& params,
-    size_t max_files,
     GetRecentFilesCallback callback)
     : params(params),
       callback(std::move(callback)),
       build_start_time(base::TimeTicks::Now()),
-      accumulator(max_files) {}
+      accumulator(params.max_files()) {}
 
 RecentDiskSource::RecentDiskSource::CallContext::CallContext(
     CallContext&& context)
@@ -103,13 +102,11 @@ RecentDiskSource::RecentDiskSource::CallContext::~CallContext() = default;
 RecentDiskSource::RecentDiskSource(std::string mount_point_name,
                                    bool ignore_dotfiles,
                                    int max_depth,
-                                   size_t max_files,
                                    std::string uma_histogram_name)
     : mount_point_name_(std::move(mount_point_name)),
       ignore_dotfiles_(ignore_dotfiles),
       max_depth_(max_depth),
-      uma_histogram_name_(std::move(uma_histogram_name)),
-      max_files_(max_files) {
+      uma_histogram_name_(std::move(uma_histogram_name)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -132,8 +129,7 @@ void RecentDiskSource::GetRecentFiles(const Params& params,
   }
 
   // Create a unique context for this call.
-  auto context =
-      std::make_unique<CallContext>(params, max_files_, std::move(callback));
+  auto context = std::make_unique<CallContext>(params, std::move(callback));
   context_map_.AddWithID(std::move(context), params.call_id());
 
   ScanDirectory(params.call_id(), base::FilePath(), 1);

@@ -39,12 +39,8 @@ class RecentArcMediaSource : public RecentSource {
   // to arc::ArcFileSystemOperationRunner and arc::ArcDocumentsProviderRootMap
   // for retrieving recent files and scanning ARC directories, respectively. The
   // `root_id` must be one of the know ARC root IDs, denoting Documents, Videos,
-  // Images or Audio roots. The `max_files` parameter limits the maximum number
-  // of files returned by this source to the callback specified in the
-  // parameters of the GetRecentFiles method.
-  RecentArcMediaSource(Profile* profile,
-                       const std::string& root_id,
-                       size_t max_files);
+  // Images or Audio roots.
+  RecentArcMediaSource(Profile* profile, const std::string& root_id);
 
   RecentArcMediaSource(const RecentArcMediaSource&) = delete;
   RecentArcMediaSource& operator=(const RecentArcMediaSource&) = delete;
@@ -142,9 +138,6 @@ class RecentArcMediaSource : public RecentSource {
 
   // The profile for which this recent source was created.
   const raw_ptr<Profile> profile_;
-
-  // The maximum number of files to be returned on the callback.
-  const size_t max_files_;
 
   // The ARC root, such as Documents, Images, Media or Audio.
   const std::string root_id_;
