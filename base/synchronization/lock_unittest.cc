@@ -250,4 +250,22 @@ TEST(LockTest, ReleasableAutoLockImplicitRelease) {
   EXPECT_DCHECK_DEATH(lock.AssertAcquired());
 }
 
+class TryLockTest : public testing::Test {
+ protected:
+  Lock lock_;
+  int x_ GUARDED_BY(lock_) = 0;
+};
+
+// Verifies thread safety annotations do not prevent correct `AutoTryLock` usage
+// from compiling. A dual of this test exists in lock_nocompile.nc. For more
+// context, see <https://crbug.com/340196356>.
+TEST_F(TryLockTest, CorrectlyCheckIsAcquired) {
+  AutoTryLock maybe(lock_);
+  // Should compile because we correctly check whether the lock is acquired
+  // before writing to `x_`.
+  if (maybe.is_acquired()) {
+    x_ = 5;
+  }
+}
+
 }  // namespace base

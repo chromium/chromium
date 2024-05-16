@@ -4291,6 +4291,7 @@ if (enable_nocompile_tests) {
       "strings/cstring_view_nocompile.nc",
       "strings/string_piece_nocompile.nc",
       "strings/stringprintf_nocompile.nc",
+      "synchronization/lock_nocompile.nc",
       "task/bind_post_task_nocompile.nc",
       "task/task_traits_nocompile.nc",
       "test/bind_test_nocompile.nc",

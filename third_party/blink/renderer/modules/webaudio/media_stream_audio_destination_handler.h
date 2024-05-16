@@ -54,7 +54,7 @@ class MediaStreamAudioDestinationHandler final : public AudioHandler {
 
   // This internal mix bus is for up/down mixing the input to the actual
   // number of channels in the destination.
-  scoped_refptr<AudioBus> mix_bus_ GUARDED_BY(process_lock_);
+  scoped_refptr<AudioBus> mix_bus_;
 
   // When setting to true, handler will be pulled automatically by
   // BaseAudioContext before the end of each render quantum.

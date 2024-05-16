@@ -164,7 +164,13 @@ class SCOPED_LOCKABLE BasicAutoTryLock {
   STACK_ALLOCATED();
 
  public:
-  explicit BasicAutoTryLock(LockType& lock) EXCLUSIVE_LOCK_FUNCTION(lock)
+  // The `LOCKS_EXCLUDED(lock)` annotation requires that the caller has not
+  // acquired `lock`. Without the annotation, Clang's Thread Safety Analysis
+  // would generate a false positive despite correct usage. For instance, a
+  // caller that checks `is_acquired()` before writing to guarded data would be
+  // flagged with "writing variable 'foo' requires holding 'lock' exclusively."
+  // See <https://crbug.com/340196356>.
+  explicit BasicAutoTryLock(LockType& lock) LOCKS_EXCLUDED(lock)
       : lock_(lock), is_acquired_(lock_.Try()) {}
 
   BasicAutoTryLock(const BasicAutoTryLock&) = delete;
@@ -177,7 +183,9 @@ class SCOPED_LOCKABLE BasicAutoTryLock {
     }
   }
 
-  bool is_acquired() const { return is_acquired_; }
+  bool is_acquired() const EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+    return is_acquired_;
+  }
 
  private:
   LockType& lock_;
