@@ -150,7 +150,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   base::FilePath MaybeMakeAbsolute(const base::FilePath& path) const;
 
   const base::FilePath root_;
-  const size_t num_root_components_ = 0;
 
   // If |remote_directory_| is set this is a restricted proxy, otherwise
   // it is unrestricted and will perform filesystem operations directly.
