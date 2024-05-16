@@ -39,7 +39,6 @@ namespace file_manager::file_tasks {
 FORWARD_DECLARE_TEST(DriveTest, OpenFileInDrive);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileFromODFS);
 FORWARD_DECLARE_TEST(OneDriveTest, OpenFileNotFromODFS);
-FORWARD_DECLARE_TEST(OneDriveTest, CannotShowMoveConfirmation);
 FORWARD_DECLARE_TEST(OneDriveTest,
                      FailToOpenFileFromODFSReauthenticationRequired);
 FORWARD_DECLARE_TEST(OneDriveTest, FailToOpenFileFromODFSOtherAccessError);
@@ -141,8 +140,6 @@ class CloudOpenTask : public BrowserListObserver,
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            OpenFileNotFromODFS);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
-                           CannotShowMoveConfirmation);
-  FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            FailToOpenFileFromODFSReauthenticationRequired);
   FRIEND_TEST_ALL_PREFIXES(::file_manager::file_tasks::OneDriveTest,
                            FailToOpenFileFromODFSOtherAccessError);
@@ -173,7 +170,7 @@ class CloudOpenTask : public BrowserListObserver,
   // See the .cc implementation for comments on private methods.
   bool ExecuteInternal();
   bool MaybeRunFixupFlow();
-  void OpenOrMoveFiles();
+  bool OpenOrMoveFiles();
   void OpenAlreadyHostedDriveUrls();
   void OnGoogleDriveGetMetadata(drive::FileError error,
                                 drivefs::mojom::FileMetadataPtr metadata);
@@ -187,7 +184,7 @@ class CloudOpenTask : public BrowserListObserver,
       const storage::FileSystemURL& android_onedrive_url);
 
   bool ShouldShowConfirmationDialog();
-  void ConfirmMoveOrStartUpload();
+  bool ConfirmMoveOrStartUpload();
   void StartUpload();
   void StartNextGoogleDriveUpload();
   void StartNextOneDriveUpload();

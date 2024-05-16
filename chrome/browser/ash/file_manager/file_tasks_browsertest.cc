@@ -2235,8 +2235,22 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowSetupDialog) {
 // Test to check that a second move confirmation dialog will not launch when one
 // is already being shown.
 IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowMoveConfirmation) {
+  // Doing this before SetUpTest creates a FakeWebAppPublisher which would
+  // intercept Files app launching.
+  LaunchFilesAppAndWait();
+
+  // Creates a fake ODFS.
+  SetUpTest();
+
+  const TaskDescriptor open_in_office_task = CreateOpenInOfficeTask();
   FileSystemURL file_outside_one_drive = CreateOfficeFileSourceURL(profile());
   std::vector<storage::FileSystemURL> file_urls{file_outside_one_drive};
+
+  // Disable the setup flow for office files.
+  SetWordFileHandlerToFilesSWA(profile(), kActionIdWebDriveOfficeWord);
+
+  // Set online status to avoid the office fallback dialog showing.
+  SetNetworkConnected(true);
 
   // Watch for dialog URL chrome://cloud-upload.
   GURL expected_dialog_URL(chrome::kChromeUICloudUploadURL);
@@ -2244,22 +2258,22 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowMoveConfirmation) {
       expected_dialog_URL);
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  LaunchFilesAppAndWait();
-
   // Launches the first move confirmation dialog. Let it
   // hang waiting for a choice from the user.
-  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
-      profile(), file_urls, CreateOpenInOfficeTask(),
-      ash::cloud_upload::CloudProvider::kOneDrive,
-      std::move(cloud_open_metrics_)));
-  task->OpenOrMoveFiles();
+  base::test::TestFuture<TaskResult, std::string> executed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  executed_future.GetCallback());
+  ASSERT_EQ(executed_future.Get<0>(), TaskResult::kOpened);
 
   // Wait for the first move confirmation dialog to open.
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  // Fails to launch a second move confirmation dialog.
-  task->OpenOrMoveFiles();
+  // Fails to launch a second move confirmation dialog for the same file.
+  base::test::TestFuture<TaskResult, std::string> failed_future;
+  ExecuteFileTask(profile(), open_in_office_task, file_urls,
+                  failed_future.GetCallback());
+  ASSERT_EQ(failed_future.Get<0>(), TaskResult::kFailed);
 
   // Both open file requests will log the TransferRequired metric.
   histogram_.ExpectUniqueSample(
