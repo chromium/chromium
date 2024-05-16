@@ -42,6 +42,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
+#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -2415,6 +2416,11 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     return false;
   base::AutoReset<bool> applying_change(&applying_default_search_engine_change_,
                                         true);
+
+  search_terms_data_->set_search_engine_chosen_in_choice_screen(
+      default_search_manager_
+          .GetChoiceMadeLocationForUserSelectedDefaultSearchEngine() ==
+      search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   if (!loaded_) {
     // Set pre-loading default search provider from the preferences. This is
