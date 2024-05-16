@@ -576,8 +576,9 @@ void QuotaManagerProxy::GetBucketSpaceRemaining(
 
   auto respond =
       base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+
   if (!quota_manager_impl_) {
-    std::move(respond).Run(false);
+    std::move(respond).Run(base::unexpected(QuotaError::kUnknownError));
     return;
   }
 
