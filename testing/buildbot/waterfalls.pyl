@@ -2527,6 +2527,17 @@
           'isolated_scripts': 'gpu_dawn_isolated_scripts',
         },
       },
+      'Dawn Linux x64 Release (Intel UHD 770)': {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_intel_uhd_770_stable',
+        ],
+        # TODO(crbug.com/329253685): Actually add tests.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Linux x64 Release (NVIDIA)': {
         'os_type': 'linux',
         'browser_config': 'release',

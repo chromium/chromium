@@ -30,6 +30,7 @@ ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
 ci/Dawn Linux x64 DEPS Release (NVIDIA)
 ci/Dawn Linux x64 Experimental Release (Intel UHD 630)
 ci/Dawn Linux x64 Release (Intel UHD 630)
+ci/Dawn Linux x64 Release (Intel UHD 770)
 ci/Dawn Linux x64 Release (NVIDIA)
 ci/Dawn Mac arm64 Builder
 ci/Dawn Mac arm64 DEPS Builder
@@ -154,6 +155,7 @@ try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
 try/dawn-try-linux-tsan-rel
+try/dawn-try-linux-x64-intel-uhd770-rel
 try/dawn-try-mac-amd-exp
 try/dawn-try-mac-arm64-deps-rel
 try/dawn-try-mac-arm64-m2-exp

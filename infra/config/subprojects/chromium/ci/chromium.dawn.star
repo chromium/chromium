@@ -631,7 +631,34 @@ ci.thin_tester(
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Linux|Intel",
-        short_name = "x64",
+        short_name = "630",
+    ),
+)
+
+ci.thin_tester(
+    name = "Dawn Linux x64 Release (Intel UHD 770)",
+    description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
+    triggered_by = ["Dawn Linux x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Linux|Intel",
+        short_name = "770",
     ),
 )
 

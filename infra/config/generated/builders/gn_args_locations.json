@@ -692,6 +692,7 @@
     "dawn-mac-arm64-deps-rel": "try/dawn-mac-arm64-deps-rel/gn-args.json",
     "dawn-mac-x64-deps-rel": "try/dawn-mac-x64-deps-rel/gn-args.json",
     "dawn-try-linux-tsan-rel": "try/dawn-try-linux-tsan-rel/gn-args.json",
+    "dawn-try-linux-x64-intel-uhd770-rel": "try/dawn-try-linux-x64-intel-uhd770-rel/gn-args.json",
     "dawn-try-mac-amd-exp": "try/dawn-try-mac-amd-exp/gn-args.json",
     "dawn-try-mac-arm64-deps-rel": "try/dawn-try-mac-arm64-deps-rel/gn-args.json",
     "dawn-try-mac-arm64-m2-exp": "try/dawn-try-mac-arm64-m2-exp/gn-args.json",

@@ -17,6 +17,7 @@ ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
 ci/Dawn Linux x64 DEPS Release (NVIDIA)
 ci/Dawn Linux x64 Experimental Release (Intel UHD 630)
 ci/Dawn Linux x64 Release (Intel UHD 630)
+ci/Dawn Linux x64 Release (Intel UHD 770)
 ci/Dawn Linux x64 Release (NVIDIA)
 ci/Dawn Mac arm64 Builder
 ci/Dawn Mac arm64 DEPS Builder
