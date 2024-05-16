@@ -1146,6 +1146,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Memory.PsiPolicyError"
+    enum="Platform.Memory.PsiPolicyError" expires_after="2024-10-10">
+  <owner>kawasin@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    The error types from psi memory policy feature. This is recorded each time
+    the psi memory handler detects an error. PsiPolicy is not expected to fail.
+    Even if it fails continuously, it reports the error at most once per 1
+    second. If any error is detected, psi policy feature should be turned off by
+    the finch flag.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Memory.ReclaimReason"
+    enum="Platform.Memory.ReclaimReason" expires_after="2024-10-10">
+  <owner>kawasin@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    The reason of reclaiming memory on memory pressure. This is recorded when
+    resourced detects memory pressure and decides to reclaim memory by
+    discarding tabs or killing processes in VMs. This is reported at most once
+    per 1 second.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Memory.Renderers" units="MiB"
     expires_after="2023-08-08">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryType" -->
