@@ -56,6 +56,10 @@ using VoidCrasAudioHandlerCallback = base::OnceCallback<void(bool result)>;
 // supported by the board.
 using OnNoiseCancellationSupportedCallback = base::OnceCallback<void()>;
 
+// Callback to handle the dbus message for whether style transfer is
+// supported by the board.
+using OnStyleTransferSupportedCallback = base::OnceCallback<void()>;
+
 // Callback to handle the dbus message for whether hfp_mic_sr is
 // supported by the board.
 using OnHfpMicSrSupportedCallback = base::OnceCallback<void()>;
@@ -180,6 +184,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
     // Called when noise cancellation state changed.
     virtual void OnNoiseCancellationStateChanged();
+
+    // Called when style transfer state changed.
+    virtual void OnStyleTransferStateChanged();
 
     // Called when force respect ui gains state changed.
     virtual void OnForceRespectUiGainsStateChanged();
@@ -408,6 +415,27 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Simulate noise cancellation support in a test.
   void SetNoiseCancellationSupportedForTesting(bool supported);
 
+  // Returns style transfer supported if:
+  // - Overall board/device supports style transfer
+  // - Audio device has bit for style transfer set in `audio_effect`.
+  bool IsStyleTransferSupportedForDevice(uint64_t device_id);
+
+  // Gets the pref state of input style transfer.
+  bool GetStyleTransferState() const;
+
+  // Refreshes the input device style transfer state.
+  void RefreshStyleTransferState();
+
+  // Updates style transfer state in `CrasAudioClient` and
+  // `AudioDevicesPrefHandler` to the provided value.
+  void SetStyleTransferState(bool style_transfer_on);
+
+  // Get if style transfer is supported by the board.
+  void RequestStyleTransferSupported(OnStyleTransferSupportedCallback callback);
+
+  // Simulate style transfer support in a test.
+  void SetStyleTransferSupportedForTesting(bool supported);
+
   // Gets the state of input force respect ui gains state.
   bool GetForceRespectUiGainsState() const;
 
@@ -596,6 +624,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Returns if noise cancellation is supported in CRAS or not.
   bool noise_cancellation_supported() const;
+
+  // Returns if style transfer is supported in CRAS or not.
+  bool style_transfer_supported() const;
 
   // Returns if hfp_mic_sr is supported in CRAS or not.
   bool hfp_mic_sr_supported() const;
@@ -885,6 +916,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       OnNoiseCancellationSupportedCallback callback,
       std::optional<bool> system_noise_cancellation_supported);
 
+  // Handle dbus callback for GetSystemStyleTransferSupported.
+  void HandleGetStyleTransferSupported(
+      OnStyleTransferSupportedCallback callback,
+      std::optional<bool> system_style_transfer_supported);
+
   // Handle dbus callback for IsHfpMicSrSupported.
   void HandleGetHfpMicSrSupported(OnHfpMicSrSupportedCallback callback,
                                   std::optional<bool> hfp_mic_sr_supported);
@@ -1031,6 +1067,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   bool system_aec_supported_ = false;
   bool noise_cancellation_supported_ = false;
+  bool style_transfer_supported_ = false;
   int32_t system_aec_group_id_ = kSystemAecGroupIdNotAvailable;
   bool system_ns_supported_ = false;
   bool system_agc_supported_ = false;

@@ -118,6 +118,8 @@ void CrasAudioHandler::AudioObserver::OnOutputChannelRemixingChanged(
 
 void CrasAudioHandler::AudioObserver::OnNoiseCancellationStateChanged() {}
 
+void CrasAudioHandler::AudioObserver::OnStyleTransferStateChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnForceRespectUiGainsStateChanged() {}
 
 void CrasAudioHandler::AudioObserver::OnHfpMicSrStateChanged() {}
@@ -660,6 +662,75 @@ void CrasAudioHandler::HandleGetNoiseCancellationSupported(
 
 void CrasAudioHandler::SetNoiseCancellationSupportedForTesting(bool supported) {
   noise_cancellation_supported_ = supported;
+}
+
+bool CrasAudioHandler::IsStyleTransferSupportedForDevice(uint64_t device_id) {
+  if (!style_transfer_supported()) {
+    return false;
+  }
+
+  const AudioDevice* device = GetDeviceFromId(device_id);
+  if (!device) {
+    return false;
+  }
+
+  return device->audio_effect & cras::EFFECT_TYPE_STYLE_TRANSFER;
+}
+
+bool CrasAudioHandler::GetStyleTransferState() const {
+  return audio_pref_handler_->GetStyleTransferState();
+}
+
+void CrasAudioHandler::RefreshStyleTransferState() {
+  if (!style_transfer_supported()) {
+    return;
+  }
+
+  const AudioDevice* internal_mic =
+      GetDeviceByType(AudioDeviceType::kInternalMic);
+
+  if (!internal_mic) {
+    return;
+  }
+
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetStyleTransferEnabled(
+      GetStyleTransferState() &&
+      (internal_mic->audio_effect & cras::EFFECT_TYPE_STYLE_TRANSFER));
+}
+
+void CrasAudioHandler::SetStyleTransferState(bool style_transfer_on) {
+  CrasAudioClient::Get()->SetStyleTransferEnabled(style_transfer_on);
+  audio_pref_handler_->SetStyleTransferState(style_transfer_on);
+
+  for (auto& observer : observers_) {
+    observer.OnStyleTransferStateChanged();
+  }
+}
+
+void CrasAudioHandler::RequestStyleTransferSupported(
+    OnStyleTransferSupportedCallback callback) {
+  CrasAudioClient::Get()->GetStyleTransferSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetStyleTransferSupported,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrasAudioHandler::HandleGetStyleTransferSupported(
+    OnStyleTransferSupportedCallback callback,
+    std::optional<bool> system_style_transfer_supported) {
+  if (!system_style_transfer_supported.has_value()) {
+    LOG(ERROR)
+        << "cras_audio_handler: Failed to retrieve style transfer support";
+  } else {
+    style_transfer_supported_ = system_style_transfer_supported.value();
+  }
+
+  std::move(callback).Run();
+}
+
+void CrasAudioHandler::SetStyleTransferSupportedForTesting(bool supported) {
+  style_transfer_supported_ = supported;
 }
 
 bool CrasAudioHandler::GetForceRespectUiGainsState() const {
@@ -1626,6 +1697,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemAgcSupported();
   RequestNoiseCancellationSupported(base::BindOnce(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
+  RequestStyleTransferSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
+                                               weak_ptr_factory_.GetWeakPtr()));
   RequestHfpMicSrSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
                                           weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
@@ -2576,6 +2649,9 @@ void CrasAudioHandler::HandleGetNodes(std::optional<AudioNodeList> node_list) {
   // Always set the input noise cancellation state on NodesChange event.
   RefreshNoiseCancellationState();
 
+  // Always set the input style transfer state on NodesChange event.
+  RefreshStyleTransferState();
+
   // Always set the hfp_mic_sr state on NodesChange event.
   RefreshHfpMicSrState();
 
@@ -2864,6 +2940,10 @@ void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
 
 bool CrasAudioHandler::noise_cancellation_supported() const {
   return noise_cancellation_supported_;
+}
+
+bool CrasAudioHandler::style_transfer_supported() const {
+  return style_transfer_supported_;
 }
 
 bool CrasAudioHandler::hfp_mic_sr_supported() const {
