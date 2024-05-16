@@ -457,4 +457,20 @@ TEST_F(LensOverlayUrlBuilderTest, IsValidSearchURLInvalidURL) {
   EXPECT_FALSE(lens::IsValidSearchResultsUrl(GURL()));
 }
 
+TEST_F(LensOverlayUrlBuilderTest, RemoveViewportParamFromURL) {
+  std::string text_query = "Apples";
+  std::string viewport_width = "400";
+  std::string viewport_height = "500";
+  std::string initial_url =
+      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s&biw=%s&bih=%s",
+                         kResultsSearchBaseUrl, text_query.c_str(), kLanguage,
+                         viewport_width.c_str(), viewport_height.c_str());
+  std::string expected_url =
+      base::StringPrintf("%s?q=%s&gsc=1&masfc=c&hl=%s", kResultsSearchBaseUrl,
+                         text_query.c_str(), kLanguage);
+
+  EXPECT_EQ(lens::RemoveUrlViewportParams(GURL(initial_url)),
+            GURL(expected_url));
+}
+
 }  // namespace lens

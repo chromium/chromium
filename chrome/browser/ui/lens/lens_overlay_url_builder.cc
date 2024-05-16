@@ -67,6 +67,10 @@ inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
 inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
 inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
 
+// The url query param for the viewport width and height.
+constexpr char kViewportWidthQueryParamKey[] = "biw";
+constexpr char kViewportHeightQueryParamKey[] = "bih";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -252,6 +256,25 @@ bool IsValidSearchResultsUrl(const GURL& url) {
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+GURL RemoveUrlViewportParams(const GURL& url) {
+  GURL processed_url = url;
+  std::string actual_viewport_width;
+  bool has_viewport_width = net::GetValueForKeyInQuery(
+      url, kViewportWidthQueryParamKey, &actual_viewport_width);
+  std::string actual_viewport_height;
+  bool has_viewport_height = net::GetValueForKeyInQuery(
+      GURL(url), kViewportHeightQueryParamKey, &actual_viewport_height);
+  if (has_viewport_width) {
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportWidthQueryParamKey, std::nullopt);
+  }
+  if (has_viewport_height) {
+    processed_url = net::AppendOrReplaceQueryParameter(
+        processed_url, kViewportHeightQueryParamKey, std::nullopt);
+  }
+  return processed_url;
 }
 
 }  // namespace lens

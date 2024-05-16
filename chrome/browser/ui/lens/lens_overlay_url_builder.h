@@ -56,6 +56,11 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // finch configured flag.
 bool IsValidSearchResultsUrl(const GURL& url);
 
+// Removes the viewport width (biw) and viewport height (bih) params from the
+// search url. This allows us to compare search url's accurately in
+// AddQueryToHistory when the side panel is resized.
+GURL RemoveUrlViewportParams(const GURL& url);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

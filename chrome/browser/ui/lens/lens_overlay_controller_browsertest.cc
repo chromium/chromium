@@ -1765,6 +1765,57 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       AddQueryToHistoryAfterResize) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+
+  // Loading a url in the side panel should show the results page.
+  const GURL first_search_url(
+      "https://www.google.com/search?q=oranges&gsc=1&masfc=c&hl=en-US");
+  controller->LoadURLInResultsFrame(first_search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Loading a second url in the side panel should show the results page.
+  const GURL second_search_url(
+      "https://www.google.com/search?q=kiwi&gsc=1&masfc=c&hl=en-US");
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  content::TestNavigationObserver observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->LoadURLInResultsFrame(second_search_url);
+  observer.WaitForNavigationFinished();
+
+  // Make the side panel larger.
+  const int increment = -50;
+  BrowserView::GetBrowserViewForBrowser(browser())
+      ->unified_side_panel()
+      ->OnResize(increment, true);
+  // Popping the query should load the previous query into the results frame.
+  content::TestNavigationObserver pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->PopAndLoadQueryFromHistory();
+  pop_observer.WaitForNavigationFinished();
+  // The search query history stack should be empty and the currently loaded
+  // query should be set to the previous query.
+  EXPECT_TRUE(controller->GetSearchQueryHistoryForTesting().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        RecordInvocationAndDismissalHistograms) {
   base::HistogramTester histogram_tester;
   WaitForPaint();

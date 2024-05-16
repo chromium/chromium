@@ -530,7 +530,8 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   auto loaded_search_query =
       initialization_data_->currently_loaded_search_query_;
   if (loaded_search_query &&
-      loaded_search_query->search_query_url_ == search_url) {
+      lens::RemoveUrlViewportParams(loaded_search_query->search_query_url_) ==
+          lens::RemoveUrlViewportParams(search_url)) {
     return;
   }
 
