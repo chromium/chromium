@@ -819,9 +819,9 @@ criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
 version = "0.12.3"
 
 [[audits.prost-derive]]
-who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["safe-to-run", "does-not-implement-crypto"]
-delta = "0.12.3 -> 0.12.4"
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.12.3 -> 0.12.5"
 
 [[audits.qr_code]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

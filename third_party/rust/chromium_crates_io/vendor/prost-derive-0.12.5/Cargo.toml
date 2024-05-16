@@ -13,13 +13,14 @@
 edition = "2021"
 rust-version = "1.70"
 name = "prost-derive"
-version = "0.12.4"
+version = "0.12.5"
 authors = [
     "Dan Burkert <dan@danburkert.com>",
     "Lucio Franco <luciofranco14@gmail.com>",
+    "Casper Meijn <casper@meijn.net>",
     "Tokio Contributors <team@tokio.rs>",
 ]
-description = "A Protocol Buffers implementation for the Rust Language."
+description = "Generate encoding and decoding implementations for Prost annotated types."
 documentation = "https://docs.rs/prost-derive"
 readme = "README.md"
 license = "Apache-2.0"

@@ -149,7 +149,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."proc-macro2:1.0.82"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."prost-derive:0.12.4"]
+[policy."prost-derive:0.12.5"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."prost:0.12.4"]

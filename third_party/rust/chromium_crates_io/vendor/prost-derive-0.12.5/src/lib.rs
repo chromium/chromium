@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/prost-derive/0.12.2")]
+#![doc(html_root_url = "https://docs.rs/prost-derive/0.12.5")]
 // The `quote!` macro requires deep recursion.
 #![recursion_limit = "4096"]
 
@@ -88,12 +88,12 @@ fn try_message(input: TokenStream) -> Result<TokenStream, Error> {
     // TODO: This encodes oneof fields in the position of their lowest tag,
     // regardless of the currently occupied variant, is that consequential?
     // See: https://developers.google.com/protocol-buffers/docs/encoding#order
-    fields.sort_by_key(|&(_, ref field)| field.tags().into_iter().min().unwrap());
+    fields.sort_by_key(|(_, field)| field.tags().into_iter().min().unwrap());
     let fields = fields;
 
     let mut tags = fields
         .iter()
-        .flat_map(|&(_, ref field)| field.tags())
+        .flat_map(|(_, field)| field.tags())
         .collect::<Vec<_>>();
     let num_tags = tags.len();
     tags.sort_unstable();
@@ -104,13 +104,13 @@ fn try_message(input: TokenStream) -> Result<TokenStream, Error> {
 
     let encoded_len = fields
         .iter()
-        .map(|&(ref field_ident, ref field)| field.encoded_len(quote!(self.#field_ident)));
+        .map(|(field_ident, field)| field.encoded_len(quote!(self.#field_ident)));
 
     let encode = fields
         .iter()
-        .map(|&(ref field_ident, ref field)| field.encode(quote!(self.#field_ident)));
+        .map(|(field_ident, field)| field.encode(quote!(self.#field_ident)));
 
-    let merge = fields.iter().map(|&(ref field_ident, ref field)| {
+    let merge = fields.iter().map(|(field_ident, field)| {
         let merge = field.merge(quote!(value));
         let tags = field.tags().into_iter().map(|tag| quote!(#tag));
         let tags = Itertools::intersperse(tags, quote!(|));
@@ -136,7 +136,7 @@ fn try_message(input: TokenStream) -> Result<TokenStream, Error> {
 
     let clear = fields
         .iter()
-        .map(|&(ref field_ident, ref field)| field.clear(quote!(self.#field_ident)));
+        .map(|(field_ident, field)| field.clear(quote!(self.#field_ident)));
 
     let default = if is_struct {
         let default = fields.iter().map(|(field_ident, field)| {
@@ -158,7 +158,7 @@ fn try_message(input: TokenStream) -> Result<TokenStream, Error> {
 
     let methods = fields
         .iter()
-        .flat_map(|&(ref field_ident, ref field)| field.methods(field_ident))
+        .flat_map(|(field_ident, field)| field.methods(field_ident))
         .collect::<Vec<_>>();
     let methods = if methods.is_empty() {
         quote!()
@@ -213,7 +213,7 @@ fn try_message(input: TokenStream) -> Result<TokenStream, Error> {
     let expanded = if skip_debug {
         expanded
     } else {
-        let debugs = unsorted_fields.iter().map(|&(ref field_ident, ref field)| {
+        let debugs = unsorted_fields.iter().map(|(field_ident, field)| {
             let wrapper = field.debug(quote!(self.#field_ident));
             let call = if is_struct {
                 quote!(builder.field(stringify!(#field_ident), &wrapper))
@@ -300,16 +300,14 @@ fn try_enumeration(input: TokenStream) -> Result<TokenStream, Error> {
 
     let default = variants[0].0.clone();
 
-    let is_valid = variants
+    let is_valid = variants.iter().map(|(_, value)| quote!(#value => true));
+    let from = variants
         .iter()
-        .map(|&(_, ref value)| quote!(#value => true));
-    let from = variants.iter().map(
-        |&(ref variant, ref value)| quote!(#value => ::core::option::Option::Some(#ident::#variant)),
-    );
+        .map(|(variant, value)| quote!(#value => ::core::option::Option::Some(#ident::#variant)));
 
-    let try_from = variants.iter().map(
-        |&(ref variant, ref value)| quote!(#value => ::core::result::Result::Ok(#ident::#variant)),
-    );
+    let try_from = variants
+        .iter()
+        .map(|(variant, value)| quote!(#value => ::core::result::Result::Ok(#ident::#variant)));
 
     let is_valid_doc = format!("Returns `true` if `value` is a variant of `{}`.", ident);
     let from_i32_doc = format!(
@@ -416,7 +414,7 @@ fn try_oneof(input: TokenStream) -> Result<TokenStream, Error> {
 
     let mut tags = fields
         .iter()
-        .flat_map(|&(ref variant_ident, ref field)| -> Result<u32, Error> {
+        .flat_map(|(variant_ident, field)| -> Result<u32, Error> {
             if field.tags().len() > 1 {
                 bail!(
                     "invalid oneof variant {}::{}: oneof variants may only have a single tag",
@@ -433,12 +431,12 @@ fn try_oneof(input: TokenStream) -> Result<TokenStream, Error> {
         panic!("invalid oneof {}: variants have duplicate tags", ident);
     }
 
-    let encode = fields.iter().map(|&(ref variant_ident, ref field)| {
+    let encode = fields.iter().map(|(variant_ident, field)| {
         let encode = field.encode(quote!(*value));
         quote!(#ident::#variant_ident(ref value) => { #encode })
     });
 
-    let merge = fields.iter().map(|&(ref variant_ident, ref field)| {
+    let merge = fields.iter().map(|(variant_ident, field)| {
         let tag = field.tags()[0];
         let merge = field.merge(quote!(value));
         quote! {
@@ -457,7 +455,7 @@ fn try_oneof(input: TokenStream) -> Result<TokenStream, Error> {
         }
     });
 
-    let encoded_len = fields.iter().map(|&(ref variant_ident, ref field)| {
+    let encoded_len = fields.iter().map(|(variant_ident, field)| {
         let encoded_len = field.encoded_len(quote!(*value));
         quote!(#ident::#variant_ident(ref value) => #encoded_len)
     });
@@ -499,7 +497,7 @@ fn try_oneof(input: TokenStream) -> Result<TokenStream, Error> {
     let expanded = if skip_debug {
         expanded
     } else {
-        let debug = fields.iter().map(|&(ref variant_ident, ref field)| {
+        let debug = fields.iter().map(|(variant_ident, field)| {
             let wrapper = field.debug(quote!(*value));
             quote!(#ident::#variant_ident(ref value) => {
                 let wrapper = #wrapper;
