@@ -49,6 +49,10 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     // This shared prefs file was used for storing tab group session counts. It is no longer in use.
     private static final String LEGACY_TAB_GROUP_PREFS_FILE = "tab_group_pref";
 
+    // This shared prefs file was used for storing tab properties to use before tabs had loaded for
+    // tab switching surfaces.
+    private static final String LEGACY_TAB_ATTRIBUTE_CACHE_FILE = "tab_attribute_cache";
+
     /** <M53 The name of the file where the old tab metadata file is saved per directory. */
     @VisibleForTesting static final String LEGACY_SAVED_STATE_FILE = "tab_state";
 
@@ -477,6 +481,8 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
 
             ContextUtils.getApplicationContext()
                     .deleteSharedPreferences(LEGACY_TAB_GROUP_PREFS_FILE);
+            ContextUtils.getApplicationContext()
+                    .deleteSharedPreferences(LEGACY_TAB_ATTRIBUTE_CACHE_FILE);
 
             return null;
         }

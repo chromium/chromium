@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -106,7 +105,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGroupModelFilter mTabModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
-    @Mock private TitleProvider mTitleProvider;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private ScrimCoordinator mScrimCoordinator;
@@ -181,7 +179,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         () -> mTabModel,
                         mTabContentManager,
                         mTabCreatorManager,
-                        mTitleProvider,
                         mBrowserControlsStateProvider,
                         mMultiWindowModeStateDispatcher,
                         mScrimCoordinator,

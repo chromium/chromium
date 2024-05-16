@@ -206,7 +206,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                 tabContentManager.getTabThumbnailWithCallback(
                                         tabId, thumbnailSize, callback, forceUpdate, writeBack);
                             },
-                            null,
                             false,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
@@ -449,7 +448,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Override
     public void resetWithListOfTabs(@Nullable List<Tab> tabs) {
-        mTabListCoordinator.resetWithListOfTabs(tabs);
+        mTabListCoordinator.resetWithListOfTabs(tabs, false);
         mMediator.onReset(tabs);
     }
 

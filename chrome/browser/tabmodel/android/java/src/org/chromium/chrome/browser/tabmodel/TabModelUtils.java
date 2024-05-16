@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -13,6 +14,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A set of convenience methods used for interacting with {@link TabList}s and {@link TabModel}s.
@@ -23,7 +27,7 @@ public class TabModelUtils {
     /**
      * @param model The {@link TabModel} to act on.
      * @param index The index of the {@link Tab} to close.
-     * @return      {@code true} if the {@link Tab} was found.
+     * @return {@code true} if the {@link Tab} was found.
      */
     public static boolean closeTabByIndex(TabModel model, int index) {
         Tab tab = model.getTabAt(index);
@@ -258,5 +262,16 @@ public class TabModelUtils {
         if (selector == null) return null;
 
         return selector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
+    }
+
+    /** Converts a {@link TabList} to a {@link List<Tab>}. A null input returns an empty list. */
+    public static @Nullable List<Tab> convertTabListToListOfTabs(@Nullable TabList tabList) {
+        ArrayList<Tab> list = new ArrayList<>();
+        if (tabList == null) return list;
+
+        for (int i = 0; i < tabList.getCount(); i++) {
+            list.add(tabList.getTabAt(i));
+        }
+        return list;
     }
 }

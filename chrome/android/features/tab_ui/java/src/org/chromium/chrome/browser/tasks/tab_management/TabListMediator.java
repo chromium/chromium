@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
@@ -374,7 +373,6 @@ class TabListMediator {
     private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
     private final TabActionListener mTabClosedListener;
-    private final PseudoTab.TitleProvider mTitleProvider;
     private final SelectionDelegateProvider mSelectionDelegateProvider;
     private final GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     private final TabGridDialogHandler mTabGridDialogHandler;
@@ -540,12 +538,12 @@ class TabListMediator {
                             .model
                             .set(
                                     TabProperties.TITLE,
-                                    getLatestTitleForTab(PseudoTab.fromTab(updatedTab)));
+                                    getLatestTitleForTab(updatedTab, /* useDefault= */ true));
                 }
 
                 @Override
                 public void onFaviconUpdated(Tab updatedTab, Bitmap icon, GURL iconUrl) {
-                    updateFaviconForTab(PseudoTab.fromTab(updatedTab), icon, iconUrl);
+                    updateFaviconForTab(updatedTab, icon, iconUrl);
                 }
 
                 @Override
@@ -591,12 +589,12 @@ class TabListMediator {
 
                     @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
                     if (indexAndTab == null) return;
-                    PseudoTab pseudoTab = PseudoTab.fromTab(indexAndTab.second);
+                    Tab tab = indexAndTab.second;
                     PropertyModel model = mModel.get(indexAndTab.first).model;
 
                     model.set(TabProperties.TITLE, newTitle);
-                    updateDescriptionString(pseudoTab, model);
-                    updateActionButtonDescriptionString(pseudoTab, model);
+                    updateDescriptionString(tab, model);
+                    updateActionButtonDescriptionString(tab, model);
                 }
 
                 @Override
@@ -607,16 +605,16 @@ class TabListMediator {
 
                     @Nullable Pair<Integer, Tab> indexAndTab = getIndexAndTabForRootId(rootId);
                     if (indexAndTab == null) return;
-                    PseudoTab pseudoTab = PseudoTab.fromTab(indexAndTab.second);
+                    Tab tab = indexAndTab.second;
                     PropertyModel model = mModel.get(indexAndTab.first).model;
 
                     if (mMode == TabListMode.LIST) {
                         model.set(TabProperties.TAB_GROUP_COLOR_ID, newColor);
                     } else if (mMode == TabListMode.GRID) {
-                        updateFaviconForTab(pseudoTab, null, null);
+                        updateFaviconForTab(tab, null, null);
                     }
-                    updateDescriptionString(pseudoTab, model);
-                    updateActionButtonDescriptionString(pseudoTab, model);
+                    updateDescriptionString(tab, model);
+                    updateActionButtonDescriptionString(tab, model);
                 }
 
                 @Override
@@ -691,14 +689,14 @@ class TabListMediator {
                                 && movedTab != previousGroupTab) {
                             int filterIndex = filter.indexOf(movedTab);
                             addTabInfoToModel(
-                                    PseudoTab.fromTab(movedTab),
+                                    movedTab,
                                     mModel.indexOfNthTabCard(filterIndex),
                                     currentSelectedTabId == movedTab.getId());
                         }
                         boolean isSelected = currentSelectedTabId == previousGroupTab.getId();
                         updateTab(
                                 mModel.indexOfNthTabCard(prevFilterIndex),
-                                PseudoTab.fromTab(previousGroupTab),
+                                previousGroupTab,
                                 isSelected,
                                 true,
                                 false);
@@ -751,7 +749,7 @@ class TabListMediator {
                                     TabModelUtils.getTabById(
                                             tabModel,
                                             mModel.get(desIndex).model.get(TabProperties.TAB_ID));
-                            updateTab(desIndex, PseudoTab.fromTab(tab), isSelected, false, false);
+                            updateTab(desIndex, tab, isSelected, false, false);
                             return;
                         }
 
@@ -775,12 +773,7 @@ class TabListMediator {
                         boolean isSelected =
                                 TabModelUtils.getCurrentTab(tabModel)
                                         == newSelectedTabInMergedGroup;
-                        updateTab(
-                                desIndex,
-                                PseudoTab.fromTab(newSelectedTabInMergedGroup),
-                                isSelected,
-                                true,
-                                false);
+                        updateTab(desIndex, newSelectedTabInMergedGroup, isSelected, true, false);
                     } else {
                         // If the model is empty we can't check if the added tab is part of the
                         // current group. Assume it isn't since a group state with 0 tab should be
@@ -888,7 +881,6 @@ class TabListMediator {
      * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
      * @param regularTabModelSupplier The supplier of the regular {@link TabModel}.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
-     * @param titleProvider {@link PseudoTab.TitleProvider} for a given tab's title to show.
      * @param tabListFaviconProvider Provider for all favicon related drawables.
      * @param tabGroupColorFaviconProvider Provider for tab group color favicon related drawables.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
@@ -912,7 +904,6 @@ class TabListMediator {
             @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull Supplier<TabModel> regularTabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
-            @Nullable PseudoTab.TitleProvider titleProvider,
             TabListFaviconProvider tabListFaviconProvider,
             @NonNull TabGroupColorFaviconProvider tabGroupColorFaviconProvider,
             boolean actionOnRelatedTabs,
@@ -933,7 +924,6 @@ class TabListMediator {
         mTabListFaviconProvider = tabListFaviconProvider;
         mTabGroupColorFaviconProvider = tabGroupColorFaviconProvider;
         mComponentName = componentName;
-        mTitleProvider = titleProvider;
         mSelectionDelegateProvider = selectionDelegateProvider;
         mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
         mTabGridDialogHandler = dialogHandler;
@@ -1014,7 +1004,7 @@ class TabListMediator {
 
                             updateTab(
                                     tabListModelIndex,
-                                    PseudoTab.fromTab(currentGroupSelectedTab),
+                                    currentGroupSelectedTab,
                                     mModel.get(tabListModelIndex)
                                             .model
                                             .get(TabProperties.IS_SELECTED),
@@ -1061,7 +1051,7 @@ class TabListMediator {
                             }
                             updateTab(
                                     tabListModelIndex,
-                                    PseudoTab.fromTab(currentGroupSelectedTab),
+                                    currentGroupSelectedTab,
                                     mModel.get(tabListModelIndex)
                                             .model
                                             .get(TabProperties.IS_SELECTED),
@@ -1085,12 +1075,7 @@ class TabListMediator {
                                 final int currentSelectedTabId =
                                         TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
                                 boolean isSelected = currentSelectedTabId == groupTab.getId();
-                                updateTab(
-                                        groupIndex,
-                                        PseudoTab.fromTab(groupTab),
-                                        isSelected,
-                                        true,
-                                        false);
+                                updateTab(groupIndex, groupTab, isSelected, true, false);
 
                                 return;
                             }
@@ -1279,9 +1264,8 @@ class TabListMediator {
                         int index = mModel.indexFromId(currentGroupSelectedTab.getId());
                         if (index == TabModel.INVALID_TAB_INDEX) return;
                         mModel.get(index).model.set(TabProperties.TITLE, title);
-                        updateDescriptionString(PseudoTab.fromTab(tab), mModel.get(index).model);
-                        updateActionButtonDescriptionString(
-                                PseudoTab.fromTab(tab), mModel.get(index).model);
+                        updateDescriptionString(tab, mModel.get(index).model);
+                        updateActionButtonDescriptionString(tab, mModel.get(index).model);
                     }
 
                     @Override
@@ -1404,7 +1388,7 @@ class TabListMediator {
 
         Tab currentTab =
                 TabModelUtils.getCurrentTab(mCurrentTabModelFilterSupplier.get().getTabModel());
-        addTabInfoToModel(PseudoTab.fromTab(tab), newIndex, currentTab == tab);
+        addTabInfoToModel(tab, newIndex, currentTab == tab);
         return newIndex;
     }
 
@@ -1412,7 +1396,7 @@ class TabListMediator {
         return position != TabModel.INVALID_TAB_INDEX && position < mModel.size();
     }
 
-    private boolean areTabsUnchanged(@Nullable List<PseudoTab> tabs) {
+    private boolean areTabsUnchanged(@Nullable List<Tab> tabs) {
         int tabsCount = 0;
         for (int i = 0; i < mModel.size(); i++) {
             if (mModel.get(i).model.get(CARD_TYPE) == TAB) {
@@ -1441,17 +1425,16 @@ class TabListMediator {
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
      * @return Whether the {@link TabListRecyclerView} can be shown quickly.
      */
-    boolean resetWithListOfTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
-        List<PseudoTab> tabsList = tabs;
-        mVisible = tabsList != null;
+    boolean resetWithListOfTabs(@Nullable List<Tab> tabs, boolean quickMode) {
+        mVisible = tabs != null;
         if (tabs != null) {
             recordPriceAnnotationsEnabledMetrics();
         }
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-        if (areTabsUnchanged(tabsList)) {
-            if (tabsList == null) return true;
-            for (int i = 0; i < tabsList.size(); i++) {
-                PseudoTab tab = tabsList.get(i);
+        if (areTabsUnchanged(tabs)) {
+            if (tabs == null) return true;
+            for (int i = 0; i < tabs.size(); i++) {
+                Tab tab = tabs.get(i);
                 int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
                 boolean isSelected = isSelectedTab(tab, currentTabId);
                 updateTab(mModel.indexOfNthTabCard(i), tab, isSelected, false, quickMode);
@@ -1461,13 +1444,13 @@ class TabListMediator {
         mModel.set(new ArrayList<>());
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
-        if (tabsList == null) {
+        if (tabs == null) {
             return true;
         }
         int currentTabId = TabModelUtils.getCurrentTabId(filter.getTabModel());
 
-        for (int i = 0; i < tabsList.size(); i++) {
-            PseudoTab tab = tabsList.get(i);
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
             addTabInfoToModel(tab, i, isSelectedTab(tab, currentTabId));
         }
 
@@ -1497,7 +1480,7 @@ class TabListMediator {
         }
     }
 
-    private boolean isSelectedTab(PseudoTab tab, int tabModelSelectedTabId) {
+    private boolean isSelectedTab(Tab tab, int tabModelSelectedTabId) {
         SelectionDelegate<Integer> selectionDelegate = getTabSelectionDelegate();
         if (selectionDelegate == null) {
             return tab.getId() == tabModelSelectedTabId;
@@ -1551,36 +1534,26 @@ class TabListMediator {
     }
 
     private void updateTab(
-            int index,
-            PseudoTab pseudoTab,
-            boolean isSelected,
-            boolean isUpdatingId,
-            boolean quickMode) {
+            int index, Tab tab, boolean isSelected, boolean isUpdatingId, boolean quickMode) {
         if (index < 0 || index >= mModel.size()) return;
         if (isUpdatingId) {
-            mModel.get(index).model.set(TabProperties.TAB_ID, pseudoTab.getId());
+            mModel.get(index).model.set(TabProperties.TAB_ID, tab.getId());
         } else {
-            assert mModel.get(index).model.get(TabProperties.TAB_ID) == pseudoTab.getId();
+            assert mModel.get(index).model.get(TabProperties.TAB_ID) == tab.getId();
         }
 
         // TODO(wychen): refactor this.
-        boolean isRealTab = pseudoTab.hasRealTab();
-        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
+        boolean isInTabGroup = isTabInTabGroup(tab);
         TabActionListener tabSelectedListener;
-        if (!isRealTab) {
-            tabSelectedListener = null;
+        if (mGridCardOnClickListenerProvider == null
+                || !isInTabGroup
+                || !mActionsOnAllRelatedTabs) {
+            tabSelectedListener = mTabSelectedListener;
         } else {
-            if (mGridCardOnClickListenerProvider == null
-                    || !isInTabGroup
-                    || !mActionsOnAllRelatedTabs) {
-                tabSelectedListener = mTabSelectedListener;
-            } else {
-                tabSelectedListener =
-                        mGridCardOnClickListenerProvider.openTabGridDialog(pseudoTab.getTab());
+            tabSelectedListener = mGridCardOnClickListenerProvider.openTabGridDialog(tab);
 
-                if (tabSelectedListener == null) {
-                    tabSelectedListener = mTabSelectedListener;
-                }
+            if (tabSelectedListener == null) {
+                tabSelectedListener = mTabSelectedListener;
             }
         }
 
@@ -1589,9 +1562,9 @@ class TabListMediator {
             if (mMode == TabListMode.LIST && isInTabGroup) {
                 final @TabGroupColorId int tabGroupColorId =
                         TabGroupColorUtils.getOrCreateTabGroupColor(
-                                pseudoTab.getRootId(),
+                                tab.getRootId(),
                                 (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get());
-                PropertyModel model = getModelFromId(pseudoTab.getId());
+                PropertyModel model = getModelFromId(tab.getId());
                 if (model != null) {
                     model.set(TabProperties.TAB_GROUP_COLOR_ID, tabGroupColorId);
                 }
@@ -1601,17 +1574,19 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
-        mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
+        mModel.get(index)
+                .model
+                .set(TabProperties.TITLE, getLatestTitleForTab(tab, /* useDefault= */ true));
 
         mModel.get(index)
                 .model
                 .set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
         // A tab is deemed a tab group card representation if it is part of a tab group and
         // based in the tab switcher.
-        boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
+        boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
         // Update the group color icon.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled() && isTabGroup) {
-            updateFaviconForTab(pseudoTab, null, null);
+            updateFaviconForTab(tab, null, null);
         }
         // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
         // setting the property keys on the model. Both properties modify the onClickListener
@@ -1620,9 +1595,7 @@ class TabListMediator {
         if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
             mModel.get(index)
                     .model
-                    .set(
-                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                            isRealTab ? mTabClosedListener : null);
+                    .set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
         }
         // Only set this for tab group representation cards. An onClickListener will be set in the
         // view as part of the accompanying logic.
@@ -1636,17 +1609,13 @@ class TabListMediator {
                                     isTabGroup));
         }
 
-        updateDescriptionString(pseudoTab, mModel.get(index).model);
-        updateActionButtonDescriptionString(pseudoTab, mModel.get(index).model);
-        if (isRealTab) {
-            mModel.get(index)
-                    .model
-                    .set(TabProperties.URL_DOMAIN, getDomainForTab(pseudoTab.getTab()));
-        }
+        updateDescriptionString(tab, mModel.get(index).model);
+        updateActionButtonDescriptionString(tab, mModel.get(index).model);
+        mModel.get(index).model.set(TabProperties.URL_DOMAIN, getDomainForTab(tab));
 
-        setupPersistedTabDataFetcherForTab(pseudoTab, index);
+        setupPersistedTabDataFetcherForTab(tab, index);
 
-        updateFaviconForTab(pseudoTab, null, null);
+        updateFaviconForTab(tab, null, null);
         boolean forceUpdate = isSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
@@ -1663,7 +1632,7 @@ class TabListMediator {
             ThumbnailFetcher callback =
                     new ThumbnailFetcher(
                             mThumbnailProvider,
-                            pseudoTab.getId(),
+                            tab.getId(),
                             (forceUpdate || forceUpdateLastSelected) && !isSelectable,
                             forceUpdate
                                     && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
@@ -1673,18 +1642,11 @@ class TabListMediator {
     }
 
     @VisibleForTesting
-    public boolean isPseudoTabInTabGroup(@NonNull PseudoTab pseudoTab) {
+    public boolean isTabInTabGroup(@NonNull Tab tab) {
         TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
-        if (filter.isTabModelRestored()) {
-            Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
-            return filter.isTabInTabGroup(tab);
-        } else {
-            if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
-                return pseudoTab.getTabGroupId() != null;
-            } else {
-                return PseudoTab.getRelatedTabs(mContext, pseudoTab, filter).size() > 1;
-            }
-        }
+        assert filter.isTabModelRestored();
+
+        return filter.isTabInTabGroup(tab);
     }
 
     public Set<Integer> getViewedTabIdsForTesting() {
@@ -1874,24 +1836,20 @@ class TabListMediator {
         }
     }
 
-    private void addTabInfoToModel(final PseudoTab pseudoTab, int index, boolean isSelected) {
+    private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
         boolean showIPH = false;
-        boolean isRealTab = pseudoTab.hasRealTab();
-        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
-        if (mActionsOnAllRelatedTabs && !mShownIPH && isRealTab) {
+        boolean isInTabGroup = isTabInTabGroup(tab);
+        if (mActionsOnAllRelatedTabs && !mShownIPH) {
             showIPH = isInTabGroup;
         }
         TabActionListener tabSelectedListener;
-        if (!isRealTab) {
-            tabSelectedListener = null;
-        } else if (mGridCardOnClickListenerProvider == null
+        if (mGridCardOnClickListenerProvider == null
                 || !isInTabGroup
                 || !mActionsOnAllRelatedTabs) {
             tabSelectedListener = mTabSelectedListener;
         } else {
-            tabSelectedListener =
-                    mGridCardOnClickListenerProvider.openTabGridDialog(pseudoTab.getTab());
+            tabSelectedListener = mGridCardOnClickListenerProvider.openTabGridDialog(tab);
             if (tabSelectedListener == null) {
                 tabSelectedListener = mTabSelectedListener;
             }
@@ -1906,28 +1864,27 @@ class TabListMediator {
             // Rather it's LIST mode where we do this, and additionally not when we've opened a
             // dialog for a particular group, checked by isParentComponentTabSwitcher().
             if (mMode == TabListMode.LIST && isInTabGroup && isParentComponentTabSwitcher()) {
-                colorId =
-                        TabGroupColorUtils.getOrCreateTabGroupColor(pseudoTab.getRootId(), filter);
+                colorId = TabGroupColorUtils.getOrCreateTabGroupColor(tab.getRootId(), filter);
             }
         }
 
         int selectedTabBackgroundDrawableId =
-                pseudoTab.isIncognito()
+                tab.isIncognito()
                         ? R.drawable.selected_tab_background_incognito
                         : R.drawable.selected_tab_background;
 
         int tabstripFaviconBackgroundDrawableId =
-                pseudoTab.isIncognito()
+                tab.isIncognito()
                         ? R.color.favicon_background_color_incognito
                         : R.color.favicon_background_color;
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
-                        .with(TabProperties.TAB_ID, pseudoTab.getId())
-                        .with(TabProperties.TITLE, getLatestTitleForTab(pseudoTab))
+                        .with(TabProperties.TAB_ID, tab.getId())
                         .with(
-                                TabProperties.URL_DOMAIN,
-                                isRealTab ? getDomainForTab(pseudoTab.getTab()) : null)
+                                TabProperties.TITLE,
+                                getLatestTitleForTab(tab, /* useDefault= */ true))
+                        .with(TabProperties.URL_DOMAIN, getDomainForTab(tab))
                         .with(TabProperties.FAVICON_FETCHER, null)
                         .with(TabProperties.FAVICON_FETCHED, false)
                         .with(TabProperties.IS_SELECTED, isSelected)
@@ -1936,10 +1893,8 @@ class TabListMediator {
                         .with(
                                 TabProperties.CARD_ANIMATION_STATUS,
                                 TabGridView.AnimationStatus.CARD_RESTORE)
-                        .with(
-                                TabProperties.TAB_SELECTION_DELEGATE,
-                                isRealTab ? getTabSelectionDelegate() : null)
-                        .with(TabProperties.IS_INCOGNITO, pseudoTab.isIncognito())
+                        .with(TabProperties.TAB_SELECTION_DELEGATE, getTabSelectionDelegate())
+                        .with(TabProperties.IS_INCOGNITO, tab.isIncognito())
                         .with(
                                 TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
                                 selectedTabBackgroundDrawableId)
@@ -1955,10 +1910,10 @@ class TabListMediator {
                         .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
                         .build();
 
-        if (!mActionsOnAllRelatedTabs || !isPseudoTabInTabGroup(pseudoTab)) {
+        if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
             tabInfo.set(
                     TabProperties.FAVICON_FETCHER,
-                    mTabListFaviconProvider.getDefaultFaviconFetcher(pseudoTab.isIncognito()));
+                    mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
         }
 
         if (mTabActionState == TabActionState.SELECTABLE) {
@@ -1967,20 +1922,20 @@ class TabListMediator {
             // dark.
             ColorStateList checkedDrawableColorList =
                     ColorStateList.valueOf(
-                            pseudoTab.isIncognito()
+                            tab.isIncognito()
                                     ? mContext.getColor(R.color.default_icon_color_dark)
                                     : SemanticColorUtils.getDefaultIconColorInverse(mContext));
             ColorStateList actionButtonBackgroundColorList =
                     AppCompatResources.getColorStateList(
                             mContext,
-                            pseudoTab.isIncognito()
+                            tab.isIncognito()
                                     ? R.color.default_icon_color_light
                                     : R.color.default_icon_color_tint_list);
             // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
             // the associated bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
                     ColorStateList.valueOf(
-                            pseudoTab.isIncognito()
+                            tab.isIncognito()
                                     ? mContext.getColor(R.color.baseline_primary_80)
                                     : SemanticColorUtils.getDefaultControlColorActive(mContext));
 
@@ -1999,15 +1954,13 @@ class TabListMediator {
             tabInfo.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
             // A tab is deemed a tab group card representation if it is part of a tab group and
             // based in the tab switcher.
-            boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
+            boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
             // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
             // setting the property keys on the model. Both properties modify the onClickListener
             // so ensure that the default behavior (close on click) is set first, and tab groups
             // under valid circumstances will override the listener with alternate behavior.
             if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-                tabInfo.set(
-                        TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                        isRealTab ? mTabClosedListener : null);
+                tabInfo.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
             }
             // Only set this for tab group representation cards. An onClickListener will be set in
             // the view as part of the accompanying logic.
@@ -2018,8 +1971,8 @@ class TabListMediator {
                                 TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
             }
 
-            updateDescriptionString(pseudoTab, tabInfo);
-            updateActionButtonDescriptionString(pseudoTab, tabInfo);
+            updateDescriptionString(tab, tabInfo);
+            updateActionButtonDescriptionString(tab, tabInfo);
         }
 
         @UiType
@@ -2031,9 +1984,9 @@ class TabListMediator {
             mModel.add(index, new SimpleRecyclerViewAdapter.ListItem(tabUiType, tabInfo));
         }
 
-        setupPersistedTabDataFetcherForTab(pseudoTab, index);
+        setupPersistedTabDataFetcherForTab(tab, index);
 
-        updateFaviconForTab(pseudoTab, null, null);
+        updateFaviconForTab(tab, null, null);
 
         if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
             if (!mDefaultGridCardSize.equals(tabInfo.get(TabProperties.GRID_CARD_SIZE))) {
@@ -2048,17 +2001,16 @@ class TabListMediator {
             ThumbnailFetcher callback =
                     new ThumbnailFetcher(
                             mThumbnailProvider,
-                            pseudoTab.getId(),
+                            tab.getId(),
                             isSelected && !isSelectable,
                             isSelected
                                     && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mContext)
                                     && !isSelectable);
             tabInfo.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
-        if (pseudoTab.getTab() != null) pseudoTab.getTab().addObserver(mTabObserver);
+        tab.addObserver(mTabObserver);
     }
 
-    // TODO(wychen): make this work with PseudoTab.
     private String getDomainForTab(Tab tab) {
         if (!mActionsOnAllRelatedTabs) return getDomain(tab);
 
@@ -2074,13 +2026,12 @@ class TabListMediator {
         return TextUtils.join(", ", domainNames);
     }
 
-    private void updateDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
+    private void updateDescriptionString(Tab tab, PropertyModel model) {
         if (!mActionsOnAllRelatedTabs) return;
-        boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
-        int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
+        boolean isInTabGroup = isTabInTabGroup(tab);
+        int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
         if (isInTabGroup) {
-            String title = getLatestTitleForTab(pseudoTab);
-            title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
+            String title = getLatestTitleForTab(tab, /* useDefault= */ false);
             Resources res = mContext.getResources();
             if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                 model.set(
@@ -2096,7 +2047,7 @@ class TabListMediator {
                                         title,
                                         numOfRelatedTabs));
             } else {
-                int colorId = TabGroupColorUtils.getTabGroupColor(pseudoTab.getRootId());
+                int colorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
                 // This should never be the case in practice, but if the color is invalid then set
                 // it to the first color in the list.
                 if (colorId == INVALID_COLOR_ID) {
@@ -2127,17 +2078,15 @@ class TabListMediator {
         }
     }
 
-    private void updateActionButtonDescriptionString(PseudoTab pseudoTab, PropertyModel model) {
+    private void updateActionButtonDescriptionString(Tab tab, PropertyModel model) {
         if (mActionsOnAllRelatedTabs) {
-            boolean isInTabGroup = isPseudoTabInTabGroup(pseudoTab);
-            int numOfRelatedTabs = getRelatedTabsForId(pseudoTab.getId()).size();
+            boolean isInTabGroup = isTabInTabGroup(tab);
+            int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
             if (isInTabGroup) {
-                String title = getLatestTitleForTab(pseudoTab);
-                title = title.equals(pseudoTab.getTitle(mContext, mTitleProvider)) ? "" : title;
+                String title = getLatestTitleForTab(tab, /* useDefault= */ false);
 
                 String descriptionString =
-                        getActionButtonDescriptionString(
-                                numOfRelatedTabs, title, pseudoTab.getRootId());
+                        getActionButtonDescriptionString(numOfRelatedTabs, title, tab.getRootId());
                 model.set(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING, descriptionString);
                 return;
             }
@@ -2145,8 +2094,7 @@ class TabListMediator {
 
         model.set(
                 ACTION_BUTTON_DESCRIPTION_STRING,
-                mContext.getString(
-                        R.string.accessibility_tabstrip_btn_close_tab, pseudoTab.getTitle()));
+                mContext.getString(R.string.accessibility_tabstrip_btn_close_tab, tab.getTitle()));
     }
 
     @VisibleForTesting
@@ -2176,15 +2124,24 @@ class TabListMediator {
     }
 
     @VisibleForTesting
-    String getLatestTitleForTab(PseudoTab pseudoTab) {
-        String originalTitle = pseudoTab.getTitle(mContext, mTitleProvider);
-        if (!mActionsOnAllRelatedTabs || mTabGroupTitleEditor == null) return originalTitle;
-        // If the group degrades to a single tab, delete the stored title.
-        if (!isPseudoTabInTabGroup(pseudoTab)) {
+    String getLatestTitleForTab(Tab tab, boolean useDefault) {
+        String originalTitle = tab.getTitle();
+        if (!mActionsOnAllRelatedTabs || mTabGroupTitleEditor == null || !isTabInTabGroup(tab)) {
             return originalTitle;
         }
-        String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(pseudoTab.getRootId());
-        return storedTitle == null ? originalTitle : storedTitle;
+
+        String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(tab.getRootId());
+        if (storedTitle == null) {
+            if (useDefault) {
+                TabGroupModelFilter filter =
+                        (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                return TabGroupTitleEditor.getDefaultTitle(
+                        mContext, filter.getRelatedTabCountForRootId(tab.getRootId()));
+            } else {
+                return "";
+            }
+        }
+        return storedTitle;
     }
 
     int selectedTabId() {
@@ -2195,18 +2152,17 @@ class TabListMediator {
         return TabModelUtils.getCurrentTabId(mCurrentTabModelFilterSupplier.get().getTabModel());
     }
 
-    private void setupPersistedTabDataFetcherForTab(PseudoTab pseudoTab, int index) {
-        if (mMode == TabListMode.GRID && pseudoTab.hasRealTab() && !pseudoTab.isIncognito()) {
+    private void setupPersistedTabDataFetcherForTab(Tab tab, int index) {
+        if (mMode == TabListMode.GRID && !tab.isIncognito()) {
             assert mProfile != null;
             if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile)
-                    && !isPseudoTabInTabGroup(pseudoTab)) {
+                    && !isTabInTabGroup(tab)) {
                 mModel.get(index)
                         .model
                         .set(
                                 TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                                 new ShoppingPersistedTabDataFetcher(
-                                        pseudoTab.getTab(),
-                                        mPriceWelcomeMessageControllerSupplier));
+                                        tab, mPriceWelcomeMessageControllerSupplier));
             } else {
                 mModel.get(index)
                         .model
@@ -2218,12 +2174,12 @@ class TabListMediator {
     }
 
     @VisibleForTesting
-    void updateFaviconForTab(PseudoTab pseudoTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
-        int modelIndex = mModel.indexFromId(pseudoTab.getId());
+    void updateFaviconForTab(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+        int modelIndex = mModel.indexFromId(tab.getId());
         if (modelIndex == Tab.INVALID_TAB_ID) return;
 
-        if (mActionsOnAllRelatedTabs && isPseudoTabInTabGroup(pseudoTab)) {
-            List<Tab> relatedTabList = getRelatedTabsForId(pseudoTab.getId());
+        if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
+            List<Tab> relatedTabList = getRelatedTabsForId(tab.getId());
             if (mMode != TabListMode.LIST) {
                 // For tab group card in grid tab switcher, the favicon is set to be null.
                 // With tab group colors, set the the favicon fetcher to a circle of color.
@@ -2231,7 +2187,7 @@ class TabListMediator {
                 if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                     TabGroupModelFilter filter =
                             (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-                    int colorId = TabGroupColorUtils.getTabGroupColor(pseudoTab.getRootId());
+                    int colorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
                     faviconFetcher =
                             mTabGroupColorFaviconProvider.getFaviconFromTabGroupColorFetcher(
                                     colorId, filter.getTabModel().isIncognito());
@@ -2242,9 +2198,9 @@ class TabListMediator {
             } else if (mMode == TabListMode.LIST && relatedTabList.size() > 1) {
                 // The order of the url list matches the multi-thumbnail.
                 List<GURL> urls = new ArrayList<>();
-                urls.add(pseudoTab.getUrl());
+                urls.add(tab.getUrl());
                 for (int i = 0; urls.size() < 4 && i < relatedTabList.size(); i++) {
-                    if (pseudoTab.getId() == relatedTabList.get(i).getId()) continue;
+                    if (tab.getId() == relatedTabList.get(i).getId()) continue;
                     urls.add(relatedTabList.get(i).getUrl());
                 }
 
@@ -2254,7 +2210,7 @@ class TabListMediator {
                         .set(
                                 TabProperties.FAVICON_FETCHER,
                                 mTabListFaviconProvider.getComposedFaviconImageFetcher(
-                                        urls, pseudoTab.isIncognito()));
+                                        urls, tab.isIncognito()));
                 return;
             }
         }
@@ -2273,8 +2229,7 @@ class TabListMediator {
         }
 
         TabFaviconFetcher fetcher =
-                mTabListFaviconProvider.getFaviconForUrlFetcher(
-                        pseudoTab.getUrl(), pseudoTab.isIncognito());
+                mTabListFaviconProvider.getFaviconForUrlFetcher(tab.getUrl(), tab.isIncognito());
         mModel.get(modelIndex).model.set(TabProperties.FAVICON_FETCHER, fetcher);
     }
 

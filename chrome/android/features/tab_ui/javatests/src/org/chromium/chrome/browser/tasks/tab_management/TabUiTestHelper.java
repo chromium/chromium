@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -742,7 +741,6 @@ public class TabUiTestHelper {
     /** Finishes the given activity and do tab_ui-specific cleanup. */
     public static void finishActivity(final Activity activity) throws Exception {
         ApplicationTestUtils.finishActivity(activity);
-        PseudoTab.clearForTesting();
     }
 
     /**

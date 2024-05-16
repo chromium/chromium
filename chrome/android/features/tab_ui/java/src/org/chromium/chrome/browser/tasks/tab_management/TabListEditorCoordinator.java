@@ -29,9 +29,6 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -179,7 +176,6 @@ class TabListEditorCoordinator {
 
             ThumbnailProvider thumbnailProvider =
                     initThumbnailProvider(displayGroups, tabContentManager);
-            PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
 
             // TODO(ckitagawa): Lazily instantiate the TabListEditorCoordinator. When doing so,
             // the Coordinator hosting the TabListEditorCoordinator could share and reconfigure
@@ -192,7 +188,6 @@ class TabListEditorCoordinator {
                             currentTabModelFilterSupplier,
                             regularTabModelSupplier,
                             thumbnailProvider,
-                            titleProvider,
                             displayGroups,
                             null,
                             null,
@@ -319,12 +314,13 @@ class TabListEditorCoordinator {
 
     /**
      * Resets {@link TabListCoordinator} with the provided list.
+     *
      * @param tabs List of {@link Tab}s to reset.
      * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
      * @param quickMode whether to use quick mode.
      */
     void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
-        mTabListCoordinator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), quickMode);
+        mTabListCoordinator.resetWithListOfTabs(tabs, quickMode);
 
         if (tabs != null && preSelectedCount > 0 && preSelectedCount < tabs.size()) {
             mTabListCoordinator.addSpecialListItem(
@@ -332,16 +328,6 @@ class TabListEditorCoordinator {
                     TabProperties.UiType.DIVIDER,
                     new PropertyModel.Builder(CARD_TYPE).with(CARD_TYPE, OTHERS).build());
         }
-    }
-
-    private String getTitle(Context context, PseudoTab pseudoTab) {
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
-        assert tab != null;
-        if (!filter.isTabInTabGroup(tab)) return tab.getTitle();
-
-        return TabGroupTitleEditor.getDefaultTitle(
-                context, filter.getRelatedTabCountForRootId(tab.getRootId()));
     }
 
     private ThumbnailProvider initThumbnailProvider(

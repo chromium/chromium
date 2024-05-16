@@ -42,8 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -92,7 +91,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param regularTabModelSupplier The supplier of the regular tab model.
      * @param tabContentManager For management of thumbnails.
      * @param tabCreatorManager For creating new tabs.
-     * @param titleProvider The default title provider for tabs and tab groups.
      * @param browserControlsStateProvider For determining thumbnail size.
      * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
      * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
@@ -115,7 +113,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull Supplier<TabModel> regularTabModelSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
-            @NonNull TitleProvider titleProvider,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ScrimCoordinator scrimCoordinator,
@@ -209,7 +206,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             tabModelFilterSupplier,
                             regularTabModelSupplier,
                             mMultiThumbnailCardProvider,
-                            titleProvider,
                             /* actionOnRelatedTabs= */ true,
                             getGridCardOnClickListenerProvider(),
                             /* dialogHandler= */ null,
@@ -320,13 +316,14 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabList The {@link TabList} to show tabs for.
      */
     public void resetWithTabList(@Nullable TabList tabList) {
-        var pseudoTabList = PseudoTab.getListOfPseudoTab(tabList);
+        List<Tab> tabs = TabModelUtils.convertTabListToListOfTabs(tabList);
         mMessageManager.beforeReset();
         // Quick mode being false here ensures the selected tab's thumbnail gets updated. With Hub
         // the TabListCoordinator no longer triggers thumbnail captures so this shouldn't guard
         // against the large amount of work that is used to.
-        mTabListCoordinator.resetWithListOfTabs(pseudoTabList, /* quickMode= */ false);
-        mMessageManager.afterReset(pseudoTabList == null ? 0 : pseudoTabList.size());
+        mTabListCoordinator.resetWithListOfTabs(
+                tabList == null ? null : tabs, /* quickMode= */ false);
+        mMessageManager.afterReset(tabs.size());
     }
 
     /** Performs soft cleanup which removes thumbnails to relieve memory usage. */

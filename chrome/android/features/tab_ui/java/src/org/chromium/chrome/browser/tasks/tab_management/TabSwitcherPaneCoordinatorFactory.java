@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -19,17 +18,12 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -41,7 +35,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Holds dependencies for constructing a {@link TabSwitcherPane}. */
 public class TabSwitcherPaneCoordinatorFactory {
-    private final TitleProvider mTitleProvider = this::getTitle;
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
@@ -132,7 +125,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 () -> mTabModelSelector.getModel(false),
                 mTabContentManager,
                 mTabCreatorManager,
-                mTitleProvider,
                 mBrowserControlsStateProvider,
                 mMultiWindowModeStateDispatcher,
                 mScrimCoordinator,
@@ -155,23 +147,6 @@ public class TabSwitcherPaneCoordinatorFactory {
         // low-end and is not subject to change. Certain behaviors are limited to LIST vs GRID
         // mode and this information may be required even if a coordinator does not exist.
         return mMode;
-    }
-
-    /** Returns the title of a tab or tab group for display in the tab switcher. */
-    @VisibleForTesting
-    String getTitle(@NonNull Context context, @NonNull PseudoTab pseudoTab) {
-        assert mTabModelSelector.isTabStateInitialized();
-        TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(pseudoTab.isIncognito());
-        Tab tab = TabModelUtils.getTabById(filter.getTabModel(), pseudoTab.getId());
-        assert tab != null;
-        if (!filter.isTabInTabGroup(tab)) return tab.getTitle();
-
-        return TabGroupTitleEditor.getDefaultTitle(
-                context, filter.getRelatedTabCountForRootId(tab.getRootId()));
     }
 
     /** Returns a scrim coordinator to use for tab grid dialog on LFF devices. */

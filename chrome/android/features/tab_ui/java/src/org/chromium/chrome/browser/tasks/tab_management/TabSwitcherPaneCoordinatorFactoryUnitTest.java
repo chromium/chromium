@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -162,30 +161,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testTabListMode_LowEnd() {
         assertEquals(TabListMode.LIST, mFactory.getTabListMode());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetTitle_Tab() {
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelFilter.isTabInTabGroup(mTab1)).thenReturn(false);
-
-        PseudoTab tab1 = PseudoTab.fromTab(mTab1);
-        assertEquals(TAB1_TITLE, mFactory.getTitle(mActivity, tab1));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetTitle_TabGroup() {
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
-        int tabCount = 2;
-        when(mTabModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(tabCount);
-
-        PseudoTab tab1 = PseudoTab.fromTab(mTab1);
-        assertEquals(
-                TabGroupTitleEditor.getDefaultTitle(mActivity, tabCount),
-                mFactory.getTitle(mActivity, tab1));
     }
 
     @Test
