@@ -420,6 +420,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * message items when the closure of the last tab in tab switcher is undone.
      */
     private void restoreAllAppendedMessage() {
+        // TODO(crbug.com/340730009): The Profile should never be null, and this should be removed
+        // once this bug is addressed.
+        if (mCurrentTabModelFilterSupplier.get().getTabModel().getProfile() == null) return;
+
         sAppendedMessagesForTesting = false;
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();

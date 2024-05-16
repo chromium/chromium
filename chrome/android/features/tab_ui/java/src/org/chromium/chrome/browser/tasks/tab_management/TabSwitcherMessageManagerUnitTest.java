@@ -105,6 +105,7 @@ public class TabSwitcherMessageManagerUnitTest {
                 .addObserver(mMultiWindowModeObserverCaptor.capture());
         doNothing().when(mTabModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTabModel).when(mTabModelFilter).getTabModel();
+        doReturn(mProfile).when(mTabModel).getProfile();
         mCurrentTabModelFilterSupplier.set(mTabModelFilter);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
