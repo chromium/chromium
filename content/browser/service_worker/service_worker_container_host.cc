@@ -1496,8 +1496,18 @@ void ServiceWorkerClient::EvictFromBackForwardCache(
 void ServiceWorkerClient::OnEnterBackForwardCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
-  if (controller_)
+  if (controller_) {
+    // TODO(crbug.com/330928087): remove check when this issue resolved.
+    SCOPED_CRASH_KEY_NUMBER("SWV_RCFBCM", "client_type",
+                            static_cast<int32_t>(GetClientType()));
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_execution_ready",
+                          is_execution_ready());
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_blob_url",
+                          url() != GetUrlForScopeMatch());
+    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_inherited", is_inherited());
+    CHECK(!controller_->BFCacheContainsControllee(client_uuid()));
     controller_->MoveControlleeToBackForwardCacheMap(client_uuid());
+  }
   is_in_back_forward_cache_ = true;
 }
 
