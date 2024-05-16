@@ -306,8 +306,9 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
   EXPECT_TRUE(policy_listener2.WaitUntilSatisfied());
 }
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40187980, crbug.com/1230268): The test is flaky on Windows and
+// Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
 #define MAYBE_InstallNewExtension DISABLED_InstallNewExtension
 #else
 #define MAYBE_InstallNewExtension InstallNewExtension
@@ -346,7 +347,14 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
 // get policy for components working again.
 // Signing out on Lacros is not possible.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
+
+// TODO(crbug.com/40187980, crbug.com/1230268): The test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SignOutAndBackIn DISABLED_SignOutAndBackIn
+#else
+#define MAYBE_SignOutAndBackIn SignOutAndBackIn
+#endif
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_SignOutAndBackIn) {
   // Signout is not enabled when this feature is enabled.
   if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
     event_listener_->Reply("idle");

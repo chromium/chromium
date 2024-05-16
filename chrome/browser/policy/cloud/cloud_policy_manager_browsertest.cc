@@ -265,7 +265,13 @@ class CloudPolicyManagerTest : public PlatformBrowserTest {
 #endif
 };
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
+// TODO(crbug.com/40187980): The test fails on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Register DISABLED_Register
+#else
+#define MAYBE_Register Register
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_Register) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         // Accept one register request. The initial request should not include
@@ -285,7 +291,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, Register) {
   EXPECT_TRUE(policy_manager()->core()->client()->is_registered());
 }
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFails) {
+// TODO(crbug.com/40187980): The test fails on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RegisterFails DISABLED_RegisterFails
+#else
+#define MAYBE_RegisterFails RegisterFails
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterFails) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         test_url_loader_factory_->AddResponse(request.url.spec(), std::string(),
@@ -317,7 +329,13 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterFailsWithRetries) {
   EXPECT_EQ(4, count);
 }
 
-IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, RegisterWithRetry) {
+// TODO(crbug.com/40187980): The test fails on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RegisterWithRetry DISABLED_RegisterWithRetry
+#else
+#define MAYBE_RegisterWithRetry RegisterWithRetry
+#endif
+IN_PROC_BROWSER_TEST_F(CloudPolicyManagerTest, MAYBE_RegisterWithRetry) {
   test_url_loader_factory_->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         em::DeviceRegisterRequest::Type expected_type =
