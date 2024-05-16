@@ -4148,6 +4148,11 @@ inline constexpr char kBreachedCredentialsCount[] =
     "profile.safety_hub_breached_credentials_count";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_MAC)
+// The integer value of the ExtensibleEnterpriseSSOEnabled policy.
+inline constexpr char kExtensibleEnterpriseSSOEnabled[] =
+    "extensible_enterprise_sso.enabled";
+#endif  //  BUILDFLAG(IS_MAC)
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

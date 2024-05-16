@@ -1,0 +1,37 @@
+owners:
+- ydago@chromium.org
+- file://components/policy/OWNERS
+caption: Enable extensible Enterprise SSO support
+desc: |-
+  Configures automatic user sign-in for accounts with authentication providers by an Enterprise SSO Extension.
+
+  By setting this policy to 1 (<ph name="POLICY_VALUE_ENABLED">Enabled</ph>) or leaving it unset, authentication providers with an SSO extension on the device will use that extension to authenticate users trying to sign in.
+
+  By setting this policy to 0 (<ph name="POLICY_VALUE_DISABLED">Disabled</ph>), automatic sign-in as described above is disabled.
+
+  This feature is available starting in MacOS Catalina.
+
+  Note: This policy doesn't apply to Incognito or Guest modes.
+future_on:
+- chrome.mac
+
+features:
+  dynamic_refresh: true
+  per_profile: false
+type: int-enum
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+items:
+- caption: Disable extensible Enterprise SSO support
+  name: Disabled
+  value: 0
+- caption: Enable extensible Enterprise SSO support
+  name: Enabled
+  value: 1
+
+default: 1
+example_value: 0
+tags: []

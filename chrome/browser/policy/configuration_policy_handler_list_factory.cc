@@ -2042,6 +2042,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCreatePasskeysInICloudKeychain,
     prefs::kCreatePasskeysInICloudKeychain,
     base::Value::Type::BOOLEAN },
+  { key::kExtensibleEnterpriseSSOEnabled,
+    prefs::kExtensibleEnterpriseSSOEnabled,
+    base::Value::Type::INTEGER},
 #endif
   { key::kAccessControlAllowMethodsInCORSPreflightSpecConformant,
     prefs::kAccessControlAllowMethodsInCORSPreflightSpecConformant,

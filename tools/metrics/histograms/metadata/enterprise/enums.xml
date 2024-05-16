@@ -2135,6 +2135,7 @@ chromium-metrics-reviews@google.com.
   <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
   <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
   <int value="1258" label="KeyboardFocusableScrollersEnabled"/>
+  <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
