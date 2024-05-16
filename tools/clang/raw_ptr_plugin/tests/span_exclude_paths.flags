@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-raw-ptr-plugin -Xclang check-span-fields -Xclang -plugin-arg-raw-ptr-plugin -Xclang raw-ptr-exclude-path=span_exclude_paths

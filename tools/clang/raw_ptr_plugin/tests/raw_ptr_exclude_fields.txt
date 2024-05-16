@@ -1,0 +1,7 @@
+raw_ptr_exclude_fields.cpp:10:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+raw_ptr_exclude_fields.cpp:15:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& raw_ref_field;
+             ^
+2 errors generated.

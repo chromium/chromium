@@ -1,0 +1,1 @@
+-ferror-limit=0 -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-bad-raw-ptr-cast

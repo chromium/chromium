@@ -1,0 +1,22 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_STRING_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_STRING_
+
+namespace std {
+
+template<typename CharType>
+struct basic_string {
+  basic_string();
+  basic_string(const basic_string&);
+  basic_string(basic_string&&);
+  ~basic_string();
+};
+
+using string = basic_string<char>;
+
+}  // namespace std
+
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_STRING_

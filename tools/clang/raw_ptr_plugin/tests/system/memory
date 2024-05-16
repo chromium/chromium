@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_MEMORY_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_MEMORY_
+
+#include <atomic>
+
+namespace std {
+
+template <typename T>
+struct shared_ptr {
+  shared_ptr();
+  ~shared_ptr();
+  shared_ptr(const shared_ptr&);
+  shared_ptr(shared_ptr&&);
+  shared_ptr& operator=(const shared_ptr&);
+  shared_ptr& operator=(shared_ptr&&);
+
+ private:
+  T* ptr_ = nullptr;
+};
+
+// The STL has this specialization defined through <memory>.
+// Normally template parameters to std::atomic must be trivially copyable,
+// but exceptions are made for std::shared_ptr and std::weak_ptr.
+template <typename T>
+struct atomic<shared_ptr<T> > {
+  shared_ptr<T> i;
+
+  atomic();
+  ~atomic();
+  atomic(const atomic&) = delete;
+  atomic(atomic&&) = delete;
+  atomic& operator=(const atomic&) = delete;
+  atomic& operator=(atomic&&) = delete;
+};
+
+}  // namespace std
+
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_MEMORY_

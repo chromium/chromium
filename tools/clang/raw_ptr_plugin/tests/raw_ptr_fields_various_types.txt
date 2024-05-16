@@ -1,0 +1,118 @@
+raw_ptr_fields_various_types.cpp:26:15: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass** double_ptr;
+              ^
+raw_ptr_fields_various_types.cpp:29:9: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  void* void_ptr;
+        ^
+raw_ptr_fields_various_types.cpp:32:9: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  bool* bool_ptr;
+        ^
+raw_ptr_fields_various_types.cpp:33:15: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  const bool* const_bool_ptr;
+              ^
+raw_ptr_fields_various_types.cpp:37:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  std::string* string_ptr;
+               ^
+raw_ptr_fields_various_types.cpp:38:22: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  std::vector<char>* vector_ptr;
+                     ^
+raw_ptr_fields_various_types.cpp:39:23: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeTemplate<char>* template_ptr;
+                      ^
+raw_ptr_fields_various_types.cpp:45:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* int_spelling1;
+       ^
+raw_ptr_fields_various_types.cpp:46:15: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  signed int* int_spelling2;
+              ^
+raw_ptr_fields_various_types.cpp:47:13: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  long int* int_spelling3;
+            ^
+raw_ptr_fields_various_types.cpp:48:13: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  unsigned* int_spelling4;
+            ^
+raw_ptr_fields_various_types.cpp:54:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* class_spelling1;
+             ^
+raw_ptr_fields_various_types.cpp:55:20: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  class SomeClass* class_spelling2;
+                   ^
+raw_ptr_fields_various_types.cpp:56:28: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  my_namespace::SomeClass* class_spelling3;
+                           ^
+raw_ptr_fields_various_types.cpp:71:21: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClassTypedef* typedef_ptr;
+                    ^
+raw_ptr_fields_various_types.cpp:73:19: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClassAlias* alias_ptr;
+                  ^
+raw_ptr_fields_various_types.cpp:75:22: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  func_ptr_typedef2* ptr_to_function_ptr;
+                     ^
+raw_ptr_fields_various_types.cpp:77:21: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClassTypedef& typedef_ref;
+                    ^
+raw_ptr_fields_various_types.cpp:79:19: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClassAlias& alias_ref;
+                  ^
+raw_ptr_fields_various_types.cpp:81:22: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  func_ptr_typedef2& ref_to_function_ptr;
+                     ^
+raw_ptr_fields_various_types.cpp:86:9: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  char* char_ptr;
+        ^
+raw_ptr_fields_various_types.cpp:90:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  wchar_t* wide_char_ptr;
+           ^
+raw_ptr_fields_various_types.cpp:94:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  char8_t* char8_ptr;
+           ^
+raw_ptr_fields_various_types.cpp:98:13: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  char16_t* char16_ptr;
+            ^
+raw_ptr_fields_various_types.cpp:101:13: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  char32_t* char32_ptr;
+            ^
+raw_ptr_fields_various_types.cpp:106:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  const uint8_t* const_unsigned_char_ptr;
+                 ^
+raw_ptr_fields_various_types.cpp:108:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  const int8_t* const_signed_char_ptr;
+                ^
+raw_ptr_fields_various_types.cpp:110:24: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  const unsigned char* const_unsigned_char_ptr2;
+                       ^
+raw_ptr_fields_various_types.cpp:112:22: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  const signed char* const_signed_char_ptr2;
+                     ^
+raw_ptr_fields_various_types.cpp:130:16: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  std::string& string_ref;
+               ^
+raw_ptr_fields_various_types.cpp:131:22: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  std::vector<char>& vector_ref;
+                     ^
+raw_ptr_fields_various_types.cpp:132:23: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeTemplate<char>& template_ref;
+                      ^
+raw_ptr_fields_various_types.cpp:138:8: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  int& int_ref_spelling1;
+       ^
+raw_ptr_fields_various_types.cpp:139:15: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  signed int& int_ref_spelling2;
+              ^
+raw_ptr_fields_various_types.cpp:140:13: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  long int& int_ref_spelling3;
+            ^
+raw_ptr_fields_various_types.cpp:141:13: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  unsigned& int_ref_spelling4;
+            ^
+raw_ptr_fields_various_types.cpp:147:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& class_ref_spelling1;
+             ^
+raw_ptr_fields_various_types.cpp:148:20: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  class SomeClass& class_ref_spelling2;
+                   ^
+raw_ptr_fields_various_types.cpp:149:28: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  my_namespace::SomeClass& class_ref_spelling3;
+                           ^
+39 errors generated.

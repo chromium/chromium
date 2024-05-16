@@ -1124,7 +1124,9 @@ def main():
 
   chrome_tools = []
   if not args.no_tools:
-    default_tools = ['plugins', 'blink_gc_plugin', 'translation_unit']
+    default_tools = [
+        'plugins', 'blink_gc_plugin', 'raw_ptr_plugin', 'translation_unit'
+    ]
     chrome_tools = list(set(default_tools + args.extra_tools))
   if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
   if cxx is not None: base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)

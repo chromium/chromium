@@ -1,0 +1,194 @@
+In file included from /src/tools/clang/plugins/tests/gen/fake_location.cpp:57:
+/src/tools/clang/plugins/tests/system/raw_ptr_system_test.h:66:3: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP_FIELD();
+  ^
+raw_ptr_fields_macro.cpp:10:31: note: expanded from macro 'USR_INTP_FIELD'
+#define USR_INTP_FIELD() int* macro_ptr
+                              ^
+raw_ptr_fields_macro.cpp:66:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;
+       ^
+raw_ptr_fields_macro.cpp:68:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SYS_INT* ptr1;
+           ^
+raw_ptr_fields_macro.cpp:70:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SYS_INTP ptr2;
+           ^
+raw_ptr_fields_macro.cpp:72:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* SYS_CONST ptr3;
+                 ^
+raw_ptr_fields_macro.cpp:74:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* SYS_ATTR ptr4;
+                ^
+raw_ptr_fields_macro.cpp:78:34: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SYS_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;
+                                 ^
+raw_ptr_fields_macro.cpp:80:19: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* SYS_SYMBOL(ptr6);
+                  ^
+raw_ptr_fields_macro.cpp:85:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 SYS_EQ nullptr;
+       ^
+raw_ptr_fields_macro.cpp:87:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = SYS_NULLPTR;
+       ^
+raw_ptr_fields_macro.cpp:96:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;                                     // Error.
+       ^
+raw_ptr_fields_macro.cpp:97:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  CMD_INT* ptr1;                                 // Error.
+           ^
+raw_ptr_fields_macro.cpp:98:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  CMD_INTP ptr2;                                 // Error.
+           ^
+raw_ptr_fields_macro.cpp:99:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* CMD_CONST ptr3;                           // Error.
+                 ^
+raw_ptr_fields_macro.cpp:100:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* CMD_ATTR ptr4;                            // Error.
+                ^
+raw_ptr_fields_macro.cpp:102:34: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  CMD_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;           // Error.
+                                 ^
+raw_ptr_fields_macro.cpp:103:19: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* CMD_SYMBOL(ptr6);                         // Error.
+                  ^
+raw_ptr_fields_macro.cpp:105:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 CMD_EQ nullptr;                      // Error.
+       ^
+raw_ptr_fields_macro.cpp:106:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = CMD_NULLPTR;                       // Error.
+       ^
+raw_ptr_fields_macro.cpp:112:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;
+       ^
+raw_ptr_fields_macro.cpp:114:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INT* ptr1;
+           ^
+raw_ptr_fields_macro.cpp:116:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP ptr2;
+           ^
+raw_ptr_fields_macro.cpp:118:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* USR_CONST ptr3;
+                 ^
+raw_ptr_fields_macro.cpp:120:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* USR_ATTR ptr4;
+                ^
+raw_ptr_fields_macro.cpp:122:3: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP_FIELD();
+  ^
+raw_ptr_fields_macro.cpp:10:31: note: expanded from macro 'USR_INTP_FIELD'
+#define USR_INTP_FIELD() int* macro_ptr
+                              ^
+raw_ptr_fields_macro.cpp:124:34: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;
+                                 ^
+raw_ptr_fields_macro.cpp:126:19: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* USR_SYMBOL(ptr6);
+                  ^
+raw_ptr_fields_macro.cpp:131:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 USR_EQ nullptr;
+       ^
+raw_ptr_fields_macro.cpp:133:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = USR_NULLPTR;
+       ^
+raw_ptr_fields_macro.cpp:141:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;                                    // Error.
+       ^
+raw_ptr_fields_macro.cpp:142:11: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  TP_INT* ptr1;                                 // Error.
+          ^
+raw_ptr_fields_macro.cpp:143:11: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  TP_INTP ptr2;                                 // Error.
+          ^
+raw_ptr_fields_macro.cpp:144:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* TP_CONST ptr3;                           // Error.
+                ^
+raw_ptr_fields_macro.cpp:145:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* TP_ATTR ptr4;                            // Error.
+               ^
+raw_ptr_fields_macro.cpp:147:33: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  TP_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;           // Error.
+                                ^
+raw_ptr_fields_macro.cpp:148:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* TP_SYMBOL(ptr6);                         // Error.
+                 ^
+raw_ptr_fields_macro.cpp:150:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 TP_EQ nullptr;                      // Error.
+       ^
+raw_ptr_fields_macro.cpp:151:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = TP_NULLPTR;                       // Error.
+       ^
+raw_ptr_fields_macro.cpp:157:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;                                    // Error.
+       ^
+raw_ptr_fields_macro.cpp:158:11: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  IG_INT* ptr1;                                 // Error.
+          ^
+raw_ptr_fields_macro.cpp:159:11: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  IG_INTP ptr2;                                 // Error.
+          ^
+raw_ptr_fields_macro.cpp:160:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* IG_CONST ptr3;                           // Error.
+                ^
+raw_ptr_fields_macro.cpp:161:16: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* IG_ATTR ptr4;                            // Error.
+               ^
+raw_ptr_fields_macro.cpp:163:33: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  IG_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;           // Error.
+                                ^
+raw_ptr_fields_macro.cpp:164:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* IG_SYMBOL(ptr6);                         // Error.
+                 ^
+raw_ptr_fields_macro.cpp:166:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 IG_EQ nullptr;                      // Error.
+       ^
+raw_ptr_fields_macro.cpp:167:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = IG_NULLPTR;                       // Error.
+       ^
+raw_ptr_fields_macro.cpp:173:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;                                     // Error.
+       ^
+raw_ptr_fields_macro.cpp:174:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  GEN_INT* ptr1;                                 // Error.
+           ^
+raw_ptr_fields_macro.cpp:175:12: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  GEN_INTP ptr2;                                 // Error.
+           ^
+raw_ptr_fields_macro.cpp:176:18: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* GEN_CONST ptr3;                           // Error.
+                 ^
+raw_ptr_fields_macro.cpp:177:17: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* GEN_ATTR ptr4;                            // Error.
+                ^
+raw_ptr_fields_macro.cpp:179:34: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  GEN_TYPE_WITH_SUFFIX(UsrTyp) * ptr5;           // Error.
+                                 ^
+raw_ptr_fields_macro.cpp:180:19: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* GEN_SYMBOL(ptr6);                         // Error.
+                  ^
+raw_ptr_fields_macro.cpp:182:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr8 GEN_EQ nullptr;                      // Error.
+       ^
+raw_ptr_fields_macro.cpp:183:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr9 = GEN_NULLPTR;                       // Error.
+       ^
+/src/tools/clang/plugins/tests/third_party/fake_location.cpp:226:3: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP_FIELD();                              // Error.
+  ^
+raw_ptr_fields_macro.cpp:10:31: note: expanded from macro 'USR_INTP_FIELD'
+#define USR_INTP_FIELD() int* macro_ptr
+                              ^
+/src/tools/clang/plugins/tests/internal/fake_location.cpp:319:3: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP_FIELD();                                 // Error.
+  ^
+raw_ptr_fields_macro.cpp:10:31: note: expanded from macro 'USR_INTP_FIELD'
+#define USR_INTP_FIELD() int* macro_ptr
+                              ^
+/src/tools/clang/plugins/tests/gen/fake_location.cpp:412:3: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  USR_INTP_FIELD();                              // Error.
+  ^
+raw_ptr_fields_macro.cpp:10:31: note: expanded from macro 'USR_INTP_FIELD'
+#define USR_INTP_FIELD() int* macro_ptr
+                              ^
+59 errors generated.

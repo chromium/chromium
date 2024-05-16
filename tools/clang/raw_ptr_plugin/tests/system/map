@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_MAP_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_MAP_
+
+namespace std {
+
+template<typename Key, typename Value>
+struct map {
+  map();
+  map(const map&);
+  map(map&&);
+  ~map();
+  map& operator=(const map&);
+  map& operator=(map&&);
+  unsigned int size() { return 0; }
+  void insert() {}
+  void erase() {}
+};
+
+}  // namespace std
+
+#endif

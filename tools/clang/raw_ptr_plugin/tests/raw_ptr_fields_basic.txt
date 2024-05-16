@@ -1,0 +1,31 @@
+raw_ptr_fields_basic.cpp:10:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+raw_ptr_fields_basic.cpp:16:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& raw_ref_field;
+             ^
+raw_ptr_fields_basic.cpp:21:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass* raw_ptr_field;
+             ^
+raw_ptr_fields_basic.cpp:32:14: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  SomeClass *raw_ptr_field2;
+             ^
+raw_ptr_fields_basic.cpp:36:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass& raw_ref_field;
+             ^
+raw_ptr_fields_basic.cpp:47:14: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  SomeClass &raw_ref_field2;
+             ^
+raw_ptr_fields_basic.cpp:55:6: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  T* raw_ptr_field;
+     ^
+raw_ptr_fields_basic.cpp:61:6: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  T& raw_ref_field;
+     ^
+raw_ptr_fields_basic.cpp:73:40: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  typename MaybeProvidesType<T>::Type* field;
+                                       ^
+raw_ptr_fields_basic.cpp:77:40: error: [chromium-rawref] Use raw_ref<T> instead of a native reference.
+  typename MaybeProvidesType<T>::Type& ref_field;
+                                       ^
+10 errors generated.

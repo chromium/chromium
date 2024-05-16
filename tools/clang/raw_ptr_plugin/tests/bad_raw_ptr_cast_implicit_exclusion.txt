@@ -1,0 +1,29 @@
+bad_raw_ptr_cast_implicit_exclusion.cpp:31:43: error: [chromium-style] casting 'void *' to 'RawPtrWrapper * is not allowed.
+  (void)reinterpret_cast<RawPtrWrapper*>(p);
+                                          ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:31:43: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_implicit_exclusion.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:32:34: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
+  (void)reinterpret_cast<void*>(q);
+                                 ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:32:34: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_implicit_exclusion.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:39:20: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
+  test::NormalFunc(q);                    // Not allowlisted
+                   ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:39:20: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_implicit_exclusion.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:41:33: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
+  (void)test::NormalConstructor(q);       // Not allowlisted
+                                ^
+bad_raw_ptr_cast_implicit_exclusion.cpp:41:33: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_implicit_exclusion.cpp:8:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+4 errors generated.

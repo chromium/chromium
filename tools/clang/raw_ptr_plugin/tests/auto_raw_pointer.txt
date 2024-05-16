@@ -1,0 +1,65 @@
+auto_raw_pointer.cpp:41:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto raw_int_ptr = &integer;
+  ^~~~
+  auto*
+auto_raw_pointer.cpp:42:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto const_raw_int_ptr = &integer;
+  ^~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:43:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto& const_raw_int_ptr_ref = &integer;
+  ^~~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:48:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto raw_foo_ptr = &foo;
+  ^~~~
+  auto*
+auto_raw_pointer.cpp:49:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto const_raw_foo_ptr = &foo;
+  ^~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:50:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto& const_raw_foo_ptr_ref = &foo;
+  ^~~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:57:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto double_ptr_auto = &int_ptr;
+  ^~~~
+  auto**
+auto_raw_pointer.cpp:58:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto* double_ptr_auto_ptr = &int_ptr;
+  ^~~~~
+  auto**
+auto_raw_pointer.cpp:65:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto auto_awesome = pointer_awesomeness;
+  ^~~~
+  auto* const* const volatile** const*
+auto_raw_pointer.cpp:67:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto& int_ptr_ref = int_ptr;
+  ^~~~~
+  auto*&
+auto_raw_pointer.cpp:68:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto& const_int_ptr_ref = int_ptr;
+  ^~~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:69:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto&& int_ptr_rref = static_cast<int*&&>(int_ptr);
+  ^~~~~~
+  auto*&&
+auto_raw_pointer.cpp:70:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  const auto&& const_int_ptr_rref = static_cast<int*&&>(int_ptr);
+  ^~~~~~~~~~~~
+  auto* const
+auto_raw_pointer.cpp:72:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  static auto static_ptr = new int;
+  ^~~~~~~~~~~
+  static auto*
+auto_raw_pointer.cpp:75:8: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  for (auto& it : iterable) {
+       ^~~~~
+       auto* const
+auto_raw_pointer.cpp:87:3: warning: [chromium-style] auto variable type must not deduce to a raw pointer type.
+  auto bad_ptr_to_alias = return_ptr_to_alias_with_ptr();
+  ^~~~
+  auto*
+16 warnings generated.

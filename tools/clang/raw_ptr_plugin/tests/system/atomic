@@ -1,0 +1,44 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_ATOMIC_
+#define TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_ATOMIC_
+
+namespace std {
+
+// Faux-implementation of std::atomic.
+// The standard requires that the following conditions are met for `T`:
+// std::is_copy_constructible<T>::value == true
+// std::is_move_constructible<T>::value == true
+// std::is_copy_assignable<T>::value == true
+// std::is_move_assignable<T>::value == true
+// std::is_trivially_copyable<T>::value == true
+//
+// An exception is made to the last condition for
+// std::atomic<std::shared_ptr<T>> and std::atomic<std::weak_ptr<T>>, by
+// defining partial-specializations in <memory>
+//
+// The standard also says that std::atomic<Integral> (where `Integral` is a
+// built-in integral type, including raw pointers) is a standard-layout struct,
+// and has a trivial destructor:
+// https://eel.is/c++draft/atomics.types.generic#atomics.types.int-2
+template <typename T>
+struct atomic {
+  T i;
+
+  atomic();
+  ~atomic() = default;
+
+  // std::atomic is never copyable or moveable
+  atomic(const atomic&) = delete;
+  atomic(atomic&&) = delete;
+  atomic& operator=(const atomic&) = delete;
+  atomic& operator=(atomic&&) = delete;
+};
+
+using atomic_int = std::atomic<int>;
+
+}  // namespace std
+
+#endif  // TOOLS_CLANG_RAW_PTR_PLUGIN_TESTS_SYSTEM_ATOMIC_
