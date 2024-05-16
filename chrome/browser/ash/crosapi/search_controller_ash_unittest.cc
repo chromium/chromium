@@ -47,10 +47,10 @@ class TestMojomSearchController : public mojom::SearchController {
   }
 
   void RunUntilSearch() {
-    base::RunLoop loop;
-    base::AutoReset<base::RepeatingClosure> quit_loop(&search_callback_,
-                                                      loop.QuitClosure());
-    loop.Run();
+    base::test::TestFuture<void> future;
+    base::AutoReset<base::RepeatingClosure> quit_loop(
+        &search_callback_, future.GetRepeatingCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   void ProduceResults(
@@ -96,11 +96,9 @@ TEST_F(SearchControllerAshTest, CallbackNotCalledIfNotConnected) {
         std::make_unique<SearchControllerAsh>(mojom_controller.BindToRemote());
   }
   {
-    base::RunLoop loop;
-    controller->AddDisconnectHandler(
-        SearchControllerAsh::DisconnectCallback(base::DoNothing())
-            .Then(loop.QuitClosure()));
-    loop.Run();
+    DisconnectTestFuture future1;
+    controller->AddDisconnectHandler(future1.GetCallback());
+    EXPECT_TRUE(future1.Wait());
   }
   controller->Search(u"cat", future.GetRepeatingCallback());
 
@@ -345,11 +343,9 @@ TEST_F(SearchControllerAshTest,
   SearchControllerAsh controller(mojom_controller->BindToRemote());
   mojom_controller.reset();
   {
-    base::RunLoop loop;
-    controller.AddDisconnectHandler(
-        SearchControllerAsh::DisconnectCallback(base::DoNothing())
-            .Then(loop.QuitClosure()));
-    loop.Run();
+    DisconnectTestFuture future1;
+    controller.AddDisconnectHandler(future1.GetCallback());
+    EXPECT_TRUE(future1.Wait());
   }
   ASSERT_FALSE(controller.IsConnected());
 

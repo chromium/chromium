@@ -12,13 +12,13 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -83,17 +83,12 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
       &pref_service_, user_id_hash);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<BrowserDataMigrator::Result> future;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  std::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
-        run_loop.Quit();
-        out_result = result;
-      }));
-  run_loop.Run();
+  migrator->Migrate(future.GetCallback());
+  BrowserDataMigrator::Result result = future.Take();
 
   const base::FilePath new_user_data_dir =
       from_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -105,8 +100,7 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   EXPECT_TRUE(
       ash::standalone_browser::migrator_util::
           IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result->kind);
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kSucceeded, result.kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // Successful migration should clear the migration attempt count.
@@ -131,18 +125,13 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
       &pref_service_, user_id_hash);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<BrowserDataMigrator::Result> future;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  std::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
-        run_loop.Quit();
-        out_result = result;
-      }));
+  migrator->Migrate(future.GetCallback());
   migrator->Cancel();
-  run_loop.Run();
+  BrowserDataMigrator::Result result = future.Take();
 
   const base::FilePath new_user_data_dir =
       from_dir_.Append(browser_data_migrator_util::kLacrosDir);
@@ -152,8 +141,7 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   EXPECT_FALSE(
       ash::standalone_browser::migrator_util::
           IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result->kind);
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kCancelled, result.kind);
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // If migration fails, migration attempt count should not be cleared thus
@@ -179,22 +167,16 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDisk) {
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<BrowserDataMigrator::Result> future;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
       std::make_unique<BrowserDataMigratorImpl>(
           from_dir_, user_id_hash, base::DoNothing(), &pref_service_);
-  std::optional<BrowserDataMigrator::Result> result;
-  migrator->Migrate(base::BindLambdaForTesting(
-      [&out_result = result, &run_loop](BrowserDataMigrator::Result result) {
-        run_loop.Quit();
-        out_result = result;
-      }));
-  run_loop.Run();
+  migrator->Migrate(future.GetCallback());
+  BrowserDataMigrator::Result result = future.Take();
 
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(BrowserDataMigrator::ResultKind::kFailed, result->kind);
+  EXPECT_EQ(BrowserDataMigrator::ResultKind::kFailed, result.kind);
   // |required_size| should carry the data.
-  EXPECT_EQ(100u, result->required_size);
+  EXPECT_EQ(100u, result.required_size);
 }
 
 class BrowserDataMigratorRestartTest : public ::testing::Test {
@@ -297,16 +279,12 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     base::test::ScopedCommandLine command_line;
     command_line.GetProcessCommandLine()->AppendSwitchASCII(
         switches::kForceBrowserDataMigrationForTesting, "force-skip");
-    std::optional<bool> result;
+    base::test::TestFuture<bool, const std::optional<uint64_t>&> future;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
-        user->GetAccountId(), user->username_hash(),
-        base::BindLambdaForTesting(
-            [&out_result = result](bool result,
-                                   const std::optional<uint64_t>& size) {
-              out_result = result;
-            }));
-    EXPECT_TRUE(result.has_value());
-    EXPECT_FALSE(result.value());
+        user->GetAccountId(), user->username_hash(), future.GetCallback());
+
+    bool success = future.Get<0>();
+    EXPECT_FALSE(success);
     EXPECT_FALSE(restart_called);
   }
 
@@ -321,21 +299,15 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
         scoped_extra_bytes(1024 * 1024);
 
-    std::optional<bool> result;
-    std::optional<uint64_t> out_size;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool, const std::optional<uint64_t>> future;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
         user->GetAccountId(), user->username_hash(),
-        base::BindLambdaForTesting(
-            [&out_result = result, &out_size, &run_loop](
-                bool result, const std::optional<uint64_t>& size) {
-              run_loop.Quit();
-              out_result = result;
-              out_size = size;
-            }));
-    run_loop.Run();
-    ASSERT_TRUE(result.has_value());
-    EXPECT_FALSE(result.value());
+        future.GetCallback<bool, const std::optional<uint64_t>&>());
+
+    bool success = future.Get<0>();
+    std::optional<uint64_t> out_size = future.Get<1>();
+
+    EXPECT_FALSE(success);
     EXPECT_EQ(1024u * 1024u, out_size);
     EXPECT_FALSE(restart_called);
   }
@@ -349,19 +321,14 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateWithDiskCheck) {
     browser_data_migrator_util::ScopedExtraBytesRequiredToBeFreedForTesting
         scoped_extra_bytes(0);
 
-    std::optional<bool> result;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool, const std::optional<uint64_t>> future;
     BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
         user->GetAccountId(), user->username_hash(),
-        base::BindLambdaForTesting(
-            [&out_result = result, &run_loop](
-                bool result, const std::optional<uint64_t>& size) {
-              run_loop.Quit();
-              out_result = result;
-            }));
-    run_loop.Run();
-    ASSERT_TRUE(result.has_value());
-    EXPECT_TRUE(result.value());
+        future.GetCallback<bool, const std::optional<uint64_t>&>());
+
+    bool success = future.Get<0>();
+
+    EXPECT_TRUE(success);
     EXPECT_TRUE(restart_called);
   }
 }

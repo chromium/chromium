@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-
 #include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -82,47 +81,35 @@ class FakeVcManagerCppClient : public mojom::VideoConferenceManagerClient {
 
 // Calls all crosapi::mojom::VideoConference methods over mojo.
 void CallVcManagerAshMethods(FakeVcManagerMojoClient& client) {
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future1;
   client.remote_->NotifyMediaUsageUpdate(
       crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           client.id_, true, false, true, false, true, false),
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+      future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
 
-  base::RunLoop run_loop2;
+  base::test::TestFuture<bool> future2;
   client.remote_->NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, u"Test App",
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop2.Quit();
-      }));
-  run_loop2.Run();
+      future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 }
 
 // Calls all crosapi::mojom::VideoConference methods directly.
 void CallVcManagerAshMethods(FakeVcManagerCppClient& client,
                              ash::VideoConferenceManagerAsh* vc_manager) {
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future1;
   vc_manager->NotifyMediaUsageUpdate(
       crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           client.id_, true, true, false, false, true, true),
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+      future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
 
-  base::RunLoop run_loop2;
+  base::test::TestFuture<bool> future2;
   vc_manager->NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, u"Test App",
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop2.Quit();
-      }));
-  run_loop2.Run();
+      future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 }
 
 class VideoConferenceAshBrowserTest : public InProcessBrowserTest {
@@ -157,14 +144,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshBrowserTest, Basics) {
     FakeVcManagerMojoClient mojo_client1;
     vc_manager->BindReceiver(mojo_client1.remote_.BindNewPipeAndPassReceiver());
 
-    base::RunLoop run_loop1;
+    base::test::TestFuture<bool> future1;
     mojo_client1.remote_->RegisterMojoClient(
         mojo_client1.receiver_.BindNewPipeAndPassRemote(), mojo_client1.id_,
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop1.Quit();
-        }));
-    run_loop1.Run();
+        future1.GetCallback());
+    EXPECT_TRUE(future1.Take());
 
     FakeVcManagerCppClient cpp_client1;
     vc_manager->RegisterCppClient(&cpp_client1, cpp_client1.id_);
@@ -178,14 +162,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAshBrowserTest, Basics) {
   FakeVcManagerMojoClient mojo_client2;
   vc_manager->BindReceiver(mojo_client2.remote_.BindNewPipeAndPassReceiver());
 
-  base::RunLoop run_loop1;
+  base::test::TestFuture<bool> future2;
   mojo_client2.remote_->RegisterMojoClient(
       mojo_client2.receiver_.BindNewPipeAndPassRemote(), mojo_client2.id_,
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
+      future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 
   FakeVcManagerCppClient cpp_client2;
   vc_manager->RegisterCppClient(&cpp_client2, cpp_client2.id_);
