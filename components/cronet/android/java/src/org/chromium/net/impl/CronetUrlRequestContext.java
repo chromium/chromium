@@ -813,12 +813,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
     }
 
-    boolean hasRequestFinishedListener() {
-        synchronized (mFinishedListenerLock) {
-            return !mFinishedListenerMap.isEmpty();
-        }
-    }
-
     @Override
     public URLConnection openConnection(URL url) {
         return openConnection(url, Proxy.NO_PROXY);
@@ -974,14 +968,18 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     }
 
     void reportRequestFinished(
-            final RequestFinishedInfo requestInfo, RefCountDelegate inflightCallbackCount) {
-        ArrayList<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners;
+            final RequestFinishedInfo requestInfo,
+            RefCountDelegate inflightCallbackCount,
+            VersionSafeCallbacks.RequestFinishedInfoListener extraRequestFinishedInfoListener) {
+        List<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners;
         synchronized (mFinishedListenerLock) {
-            if (mFinishedListenerMap.isEmpty()) return;
-            currentListeners =
-                    new ArrayList<VersionSafeCallbacks.RequestFinishedInfoListener>(
-                            mFinishedListenerMap.values());
+            if (mFinishedListenerMap.isEmpty() && extraRequestFinishedInfoListener == null) return;
+            currentListeners = new ArrayList<>(mFinishedListenerMap.values());
         }
+        if (extraRequestFinishedInfoListener != null) {
+            currentListeners.add(extraRequestFinishedInfoListener);
+        }
+
         for (final VersionSafeCallbacks.RequestFinishedInfoListener listener : currentListeners) {
             Runnable task =
                     new Runnable() {

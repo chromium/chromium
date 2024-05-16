@@ -1063,38 +1063,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                             mFinishedReason,
                             mResponseInfo,
                             mException);
-            mRequestContext.reportRequestFinished(requestInfo, inflightCallbackCount);
-            if (mRequestFinishedListener != null) {
-                inflightCallbackCount.increment();
-                try {
-                    mRequestFinishedListener
-                            .getExecutor()
-                            .execute(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                mRequestFinishedListener.onRequestFinished(
-                                                        requestInfo);
-                                            } catch (Exception e) {
-                                                Log.e(
-                                                        CronetUrlRequestContext.LOG_TAG,
-                                                        "Exception thrown from request"
-                                                                + " finishedlistener",
-                                                        e);
-                                            } finally {
-                                                inflightCallbackCount.decrement();
-                                            }
-                                        }
-                                    });
-                } catch (RejectedExecutionException failException) {
-                    Log.e(
-                            CronetUrlRequestContext.LOG_TAG,
-                            "Exception posting task to executor",
-                            failException);
-                    inflightCallbackCount.decrement();
-                }
-            }
+            mRequestContext.reportRequestFinished(
+                    requestInfo, inflightCallbackCount, mRequestFinishedListener);
         } finally {
             inflightCallbackCount.decrement();
         }
