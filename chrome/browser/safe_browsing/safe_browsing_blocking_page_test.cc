@@ -3781,15 +3781,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
                 ->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/339333828): re-enable the test
-#if BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)
-#define MAYBE_PostCommitInterstitialProceed \
-  DISABLED_PostCommitInterstitialProceed
-#else
-#define MAYBE_PostCommitInterstitialProceed PostCommitInterstitialProceed
-#endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
-                       MAYBE_PostCommitInterstitialProceed) {
+                       PostCommitInterstitialProceed) {
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
