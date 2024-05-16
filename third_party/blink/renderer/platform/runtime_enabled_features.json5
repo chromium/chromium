@@ -3524,7 +3524,7 @@
       // Maintain author-defined ::selection highlight colors, even if they
       // match the text color.
       name: "SelectionRespectsColors",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
