@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.AsyncViewProvider;
@@ -209,18 +210,19 @@ public class AutocompleteCoordinator
             public void inflate() {
                 AsyncViewStub stub =
                         mParent.getRootView().findViewById(R.id.omnibox_results_container_stub);
-                stub.setShouldInflateOnBackgroundThread(true);
+                stub.setShouldInflateOnBackgroundThread(
+                        OmniboxFeatures.sAsyncViewInflation.isEnabled());
                 mAsyncProvider = AsyncViewProvider.of(stub, R.id.omnibox_results_container);
                 mAsyncProvider.whenLoaded(this::onAsyncInflationComplete);
                 mAsyncProvider.inflate();
             }
 
             private void onAsyncInflationComplete(ViewGroup container) {
-                OmniboxSuggestionsDropdown dropdown =
-                        new OmniboxSuggestionsDropdown(
-                                context, mRecycledViewPool, forcePhoneStyleOmnibox);
+                OmniboxSuggestionsDropdown dropdown = new OmniboxSuggestionsDropdown(context);
 
+                dropdown.forcePhoneStyleOmnibox(forcePhoneStyleOmnibox);
                 dropdown.setAdapter(mAdapter);
+                dropdown.setRecycledViewPool(mRecycledViewPool);
 
                 mHolder = new SuggestionListViewHolder(container, dropdown);
                 for (int i = 0; i < mCallbacks.size(); i++) {

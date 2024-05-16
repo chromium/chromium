@@ -66,7 +66,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private int mListViewMaxHeight;
     private int mLastBroadcastedListViewMaxHeight;
     private @Nullable Callback<OmniboxAlignment> mOmniboxAlignmentObserver;
-    private final boolean mForcePhoneStyleOmnibox;
     private float mChildVerticalTranslation;
 
     /**
@@ -216,15 +215,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(
-            @NonNull Context context,
-            RecycledViewPool recycledViewPool,
-            boolean forcePhoneStyleOmnibox) {
+    public OmniboxSuggestionsDropdown(@NonNull Context context) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setRecycledViewPool(recycledViewPool);
-        mForcePhoneStyleOmnibox = forcePhoneStyleOmnibox;
         setId(R.id.omnibox_suggestions_dropdown);
 
         // By default RecyclerViews come with item animators.
@@ -243,17 +237,30 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
 
         mContext = context;
-        if (!mForcePhoneStyleOmnibox
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && context.getResources().getConfiguration().screenWidthDp
+    }
+
+    /**
+     * Override the visuals of the Omnibox. This method is particularly relevant for SearchActivity,
+     * which presents Phone-style omnibox even when running on Tablets.
+     *
+     * @param shouldForce whether Omnibox should be forced to use Phone-style visuals
+     */
+    public void forcePhoneStyleOmnibox(boolean shouldForce) {
+        if (!shouldForce
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && getContext().getResources().getConfiguration().screenWidthDp
                         >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP) {
             setOutlineProvider(
                     new RoundedCornerOutlineProvider(
-                            context.getResources()
+                            getContext()
+                                    .getResources()
                                     .getDimensionPixelSize(
                                             R.dimen
                                                     .omnibox_suggestion_dropdown_round_corner_radius)));
             setClipToOutline(true);
+        } else {
+            setOutlineProvider(null);
+            setClipToOutline(false);
         }
     }
 
