@@ -161,6 +161,8 @@ void AdpfHintSession::UpdateTargetDuration(base::TimeDelta target_duration) {
   if (target_duration_ == target_duration)
     return;
   target_duration_ = target_duration;
+  TRACE_EVENT_INSTANT("android.adpf", "UpdateTargetDuration",
+                      "target_duration_ms", target_duration.InMillisecondsF());
   AdpfMethods::Get().APerformanceHint_updateTargetWorkDurationFn(
       hint_session_, target_duration.InNanoseconds());
 }
@@ -173,7 +175,9 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
   base::TimeDelta frame_duration =
       boost_manager_.GetFrameDurationAndMaybeUpdateBoostType(
           target_duration_, actual_duration, draw_start, preferable_boost_type);
-
+  TRACE_EVENT_INSTANT("android.adpf", "ReportCpuCompletionTime",
+                      "frame_duration_ms", frame_duration.InMillisecondsF(),
+                      "target_duration_ms", target_duration_.InMillisecondsF());
   AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
       hint_session_, frame_duration.InNanoseconds());
 }
@@ -210,8 +214,12 @@ std::unique_ptr<HintSession> HintSessionFactoryImpl::CreateSession(
       AdpfMethods::Get().APerformanceHint_createSessionFn(
           manager_, thread_ids.data(), thread_ids.size(),
           target_duration.InNanoseconds());
-  if (!hint_session)
+  if (!hint_session) {
+    TRACE_EVENT_INSTANT("android.adpf", "FailedToCreateSession");
     return nullptr;
+  }
+  TRACE_EVENT_INSTANT("android.adpf", "CreateSession", "thread_ids", thread_ids,
+                      "target_duration_ms", target_duration.InMillisecondsF());
   return std::make_unique<AdpfHintSession>(hint_session, this, target_duration);
 }
 

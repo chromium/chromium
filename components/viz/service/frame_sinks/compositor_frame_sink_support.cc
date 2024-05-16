@@ -610,6 +610,10 @@ void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
     bool passed_verification) {
   if (passed_verification) {
     thread_ids_ = std::move(thread_ids);
+  } else {
+    TRACE_EVENT_INSTANT("viz,android.adpf",
+                        "FailedToUpdateThreadIdsPostVerification", "thread_ids",
+                        thread_ids);
   }
 }
 
