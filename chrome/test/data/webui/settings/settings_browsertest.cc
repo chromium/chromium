@@ -735,10 +735,19 @@ IN_PROC_BROWSER_TEST_F(SettingsPersonalizationOptionsTest, OfficialBuild) {
 }
 #endif
 
+// Privacy guide page tests.
 class SettingsPrivacyGuideTest : public SettingsBrowserTest {
+ protected:
+  SettingsPrivacyGuideTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPrivacyGuideForceAvailable,
+         content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtectionSettingsLaunch},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      content_settings::features::kTrackingProtection3pcd};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/339683762): Flaky on Windows.
@@ -819,6 +828,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_PrivacyGuideDialog) {
           "runMochaSuite('PrivacyGuideDialog')");
 }
 
+// TODO(crbug.com/40942110): Re-enable when no longer flaky.
+// TODO(crbug.com/339568232): Flaky on Windows.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_WIN)
+#define MAYBE_3pcdOff DISABLED_3pcdOff
+#else
+#define MAYBE_3pcdOff 3pcdOff
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
+  RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('3pcdOff')");
+}
+
+// Privacy guide integration tests.
 // TODO(crbug.com/40899379): Re-enable when no longer flaky.
 // TODO(crbug.com/339561987): Flaky on Windows.
 #if (!BUILDFLAG(IS_LINUX) || defined(NDEBUG)) || BUILDFLAG(IS_WIN)
@@ -827,26 +848,13 @@ IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, Integration) {
 }
 #endif
 
-class SettingsPrivacyGuideFragmentsTest : public SettingsBrowserTest {
- protected:
-  SettingsPrivacyGuideFragmentsTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPrivacyGuideForceAvailable,
-         content_settings::features::kTrackingProtection3pcd,
-         privacy_sandbox::kTrackingProtectionSettingsLaunch},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, WelcomeFragment) {
+// Privacy guide fragment tests.
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, WelcomeFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('WelcomeFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, MsbbFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('MsbbFragment')");
 }
@@ -857,49 +865,36 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, MsbbFragment) {
 #else
 #define MAYBE_HistorySyncFragment HistorySyncFragment
 #endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
-                       MAYBE_HistorySyncFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_HistorySyncFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('HistorySyncFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
-                       SafeBrowsingFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('SafeBrowsingFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CookiesFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CookiesFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest, CompletionFragment) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CompletionFragment) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragment')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentPrivacySandboxRestricted) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideFragmentsTest,
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentWithTrackingProtection) {
   RunTest("settings/privacy_guide_fragments_test.js",
           "runMochaSuite('CompletionFragmentWithoutTrackingProtection')");
-}
-
-// TODO(crbug.com/40942110): Re-enable when no longer flaky.
-// TODO(crbug.com/339568232): Flaky on Windows.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_WIN)
-#define MAYBE_3pcdOff DISABLED_3pcdOff
-#else
-#define MAYBE_3pcdOff 3pcdOff
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
-  RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('3pcdOff')");
 }
 
 class SettingsPrivacyPagePrivacySandboxRestrictedTest
