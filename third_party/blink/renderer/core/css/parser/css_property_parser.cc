@@ -203,13 +203,13 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   // note of the original offsets so that we can see what we tokenized.
   stream_.EnsureLookAhead();
   stream_.Restore(savepoint);
-  wtf_size_t start_offset = stream_.LookAheadOffset();
-  CSSParserTokenRange range = stream_.ConsumeUntilPeekedTypeIs<>();
-  wtf_size_t end_offset = stream_.Offset();
-  StringView original_text = StripInitialWhitespace(
-      stream_.StringRangeAt(start_offset, end_offset - start_offset));
 
-  CSSTokenizedValue value{range, original_text};
+  CSSTokenizedValue value =
+      CSSParserImpl::ConsumeRestrictedPropertyValue(stream_);
+  if (!stream_.AtEnd()) {
+    return false;
+  }
+
   const bool important =
       CSSParserImpl::RemoveImportantAnnotationIfPresent(value);
   value.text =
