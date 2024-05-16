@@ -8,8 +8,8 @@ import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
-    "search_engine_choice_service_factory.cc",
     "search_engine_choice_service_factory.h",
+    "search_engine_choice_service_factory.mm",
     "search_engine_java_script_feature.h",
     "search_engine_java_script_feature.mm",
     "search_engine_observer_bridge.h",
@@ -40,6 +40,7 @@ source_set("model") {
     "//components/prefs",
     "//components/search",
     "//components/search_engines",
+    "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/history/model",
