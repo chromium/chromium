@@ -167,6 +167,22 @@ TEST_F(StyleRuleTest, SetPreludeTextReparentsStyleRules) {
             FindParentSelector(child_rule.FirstSelector())->ParentRule());
 }
 
+TEST_F(StyleRuleTest, SetPreludeTextWithEscape) {
+  auto* scope_rule = DynamicTo<StyleRuleScope>(
+      css_test_helpers::ParseRule(GetDocument(), R"CSS(
+      @scope (.a) to (.b &) {
+        .c & { }
+      }
+    )CSS"));
+
+  // Don't crash.
+  scope_rule->SetPreludeText(GetDocument().GetExecutionContext(),
+                             "(.x) to (.\\1F60A)", CSSNestingType::kNone,
+                             /* parent_rule_for_nesting */ nullptr,
+                             /* is_within_scope */ false,
+                             /* style_sheet */ nullptr);
+}
+
 TEST_F(StyleRuleTest, SetPreludeTextPreservesNestingContext) {
   CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
   // Note that this test is making use of the fact that unparsed
