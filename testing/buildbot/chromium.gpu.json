@@ -2152,7 +2152,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2181,7 +2181,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2214,7 +2214,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2254,7 +2254,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2302,7 +2302,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2341,7 +2341,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2380,7 +2380,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2423,7 +2423,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2471,7 +2471,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2511,7 +2511,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2550,7 +2550,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2591,7 +2591,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2619,7 +2619,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2648,7 +2648,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2681,7 +2681,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2710,7 +2710,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2750,7 +2750,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2798,7 +2798,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2837,7 +2837,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2876,7 +2876,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2919,7 +2919,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -2967,7 +2967,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -3007,7 +3007,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -3046,7 +3046,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
@@ -3087,7 +3087,7 @@
             "display_attached": "1",
             "gpu": "1002:67ef",
             "hidpi": "1",
-            "os": "Mac-13.5",
+            "os": "Mac-13.5|Mac-14.4.1",
             "pool": "chromium.tests.gpu",
             "puppet_env": "production"
           },
