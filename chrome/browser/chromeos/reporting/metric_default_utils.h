@@ -9,6 +9,10 @@
 
 namespace reporting::metrics {
 
+// IMPORTANT: If you are updating any of the values in this file please
+// make sure you keep it in sync with the comments in the proto:
+// components/reporting/proto/synced/metric_data.proto
+
 // Default app telemetry collection rate.
 constexpr base::TimeDelta kDefaultAppUsageTelemetryCollectionRate =
     base::Minutes(15);
