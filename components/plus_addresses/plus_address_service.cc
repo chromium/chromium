@@ -10,10 +10,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -28,7 +30,6 @@
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -45,6 +46,7 @@ namespace {
 
 using autofill::Suggestion;
 using autofill::SuggestionType;
+using PasswordFormType = autofill::AutofillClient::PasswordFormType;
 
 // Get the ETLD+1 of `origin`, which means any subdomain is treated
 // equivalently. See `GetDomainAndRegistry` for concrete examples.
@@ -75,6 +77,20 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
     facet = GetEtldPlusOne(origin);
   }
   return facet;
+}
+
+bool ShouldOfferPlusAddressCreation(PasswordFormType form_type) {
+  switch (form_type) {
+    case PasswordFormType::kNoPasswordForm:
+    case PasswordFormType::kSignupForm:
+      return true;
+    case PasswordFormType::kLoginForm:
+    case PasswordFormType::kChangePasswordForm:
+    case PasswordFormType::kResetPasswordForm:
+    case PasswordFormType::kSingleUsernameForm:
+      return false;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -195,6 +211,7 @@ bool PlusAddressService::IsPlusAddress(
 std::vector<Suggestion> PlusAddressService::GetSuggestions(
     const url::Origin& last_committed_primary_main_frame_origin,
     bool is_off_the_record,
+    PasswordFormType focused_form_type,
     std::u16string_view focused_field_value,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   using enum autofill::AutofillSuggestionTriggerSource;
@@ -208,8 +225,11 @@ std::vector<Suggestion> PlusAddressService::GetSuggestions(
   std::optional<std::string> maybe_address =
       GetPlusAddress(OriginToFacet(last_committed_primary_main_frame_origin));
   if (maybe_address == std::nullopt) {
+    // Do not offer creation on non-empty fields and certain form types (e.g.
+    // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
-        !normalized_field_value.empty()) {
+        (!normalized_field_value.empty() ||
+         !ShouldOfferPlusAddressCreation(focused_form_type))) {
       return {};
     }
     Suggestion create_plus_address_suggestion(

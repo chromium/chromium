@@ -2567,7 +2567,10 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
     *suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
-        client().IsOffTheRecord(), field.value(), trigger_source);
+        client().IsOffTheRecord(),
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id()),
+        field.value(), trigger_source);
     return;
   }
 
@@ -2661,7 +2664,10 @@ void BrowserAutofillManager::GetAvailableSuggestions(
       std::vector<Suggestion> plus_address_suggestions =
           client().GetPlusAddressDelegate()->GetSuggestions(
               client().GetLastCommittedPrimaryMainFrameOrigin(),
-              client().IsOffTheRecord(), field.value(), trigger_source);
+              client().IsOffTheRecord(),
+              client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                              field.global_id()),
+              field.value(), trigger_source);
       suggestions->insert(
           suggestions->cbegin(),
           std::make_move_iterator(plus_address_suggestions.begin()),

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/aliases.h"
 
 namespace url {
@@ -17,7 +18,6 @@ class Origin;
 
 namespace autofill {
 
-using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -56,6 +56,7 @@ class AutofillPlusAddressDelegate {
   virtual std::vector<Suggestion> GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
+      AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 

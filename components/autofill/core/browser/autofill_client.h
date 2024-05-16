@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -81,6 +80,7 @@ class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
+class AutofillPlusAddressDelegate;
 class AutofillProfile;
 class CreditCard;
 enum class CreditCardFetchResult;
@@ -104,6 +104,9 @@ namespace payments {
 class MandatoryReauthManager;
 class PaymentsAutofillClient;
 }
+
+// Fills the focused field with the string passed to it.
+using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 
 // A client interface that needs to be supplied to the Autofill component by the
 // embedder.

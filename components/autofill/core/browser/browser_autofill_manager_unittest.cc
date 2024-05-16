@@ -7869,7 +7869,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   EXPECT_CALL(
       plus_address_delegate(),
       GetSuggestions(
-          _, _, _,
+          _, _, _, _,
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses))
       .WillOnce(Return(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));

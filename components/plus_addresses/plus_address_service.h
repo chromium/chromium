@@ -81,6 +81,7 @@ class PlusAddressService : public KeyedService,
   std::vector<autofill::Suggestion> GetSuggestions(
       const url::Origin& last_committed_primary_main_frame_origin,
       bool is_off_the_record,
+      autofill::AutofillClient::PasswordFormType focused_form_type,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;

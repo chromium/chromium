@@ -21,6 +21,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               GetSuggestions,
               (const url::Origin&,
                bool,
+               AutofillClient::PasswordFormType,
                std::u16string_view,
                AutofillSuggestionTriggerSource),
               (override));

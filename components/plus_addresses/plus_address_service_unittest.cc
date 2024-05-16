@@ -53,6 +53,7 @@
 
 namespace {
 
+using PasswordFormType = autofill::AutofillClient::PasswordFormType;
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
@@ -1069,6 +1070,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // We offer filling if the field is empty.
   EXPECT_THAT(service().GetSuggestions(
                   origin, /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(profile.plus_address));
@@ -1080,6 +1082,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // normalization), the plus address continues to be offered.
   EXPECT_THAT(service().GetSuggestions(
                   origin, /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"P",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(profile.plus_address));
@@ -1091,6 +1094,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // shown.
   EXPECT_THAT(service().GetSuggestions(
                   origin, /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"pp",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
@@ -1107,11 +1111,13 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForETLD) {
   service().SavePlusProfile(profile);
   ASSERT_THAT(service().GetSuggestions(
                   OriginFromFacet(profile.facet), /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(profile.plus_address));
   EXPECT_THAT(service().GetSuggestions(
                   OriginFromFacet("asd.foo.com"), /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(profile.plus_address));
@@ -1130,6 +1136,7 @@ TEST_F(PlusAddressSuggestionsTest,
   EXPECT_THAT(
       service().GetSuggestions(
           origin, /*is_off_the_record=*/false,
+          PasswordFormType::kNoPasswordForm,
           /*focused_field_value=*/u"",
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleFillPlusAddressSuggestion(profile.plus_address));
@@ -1142,6 +1149,7 @@ TEST_F(PlusAddressSuggestionsTest,
   EXPECT_THAT(
       service().GetSuggestions(
           origin, /*is_off_the_record=*/false,
+          PasswordFormType::kNoPasswordForm,
           /*focused_field_value=*/u"pp",
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleFillPlusAddressSuggestion(profile.plus_address));
@@ -1154,11 +1162,12 @@ TEST_F(PlusAddressSuggestionsTest,
 // existing plus address for the domain and the field value is empty.
 TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
   base::HistogramTester histogram_tester;
-  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
+  const auto origin = url::Origin::Create(GURL("https://foo.com"));
 
   // We offer creation if the field is empty.
   EXPECT_THAT(service().GetSuggestions(
                   origin, /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleCreatePlusAddressSuggestion());
@@ -1169,6 +1178,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
   // If the field value is not empty, nothing is shown.
   EXPECT_THAT(service().GetSuggestions(
                   origin, /*is_off_the_record=*/false,
+                  PasswordFormType::kNoPasswordForm,
                   /*focused_field_value=*/u"some text",
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
@@ -1183,11 +1193,12 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForCreateNewPlusAddress) {
 TEST_F(PlusAddressSuggestionsTest,
        SuggestionsForCreateNewPlusAddressWithManualFallback) {
   base::HistogramTester histogram_tester;
-  const auto origin = url::Origin::Create(GURL("https://foo.coom"));
+  const auto origin = url::Origin::Create(GURL("https://foo.com"));
 
   EXPECT_THAT(
       service().GetSuggestions(
           origin, /*is_off_the_record=*/false,
+          PasswordFormType::kNoPasswordForm,
           /*focused_field_value=*/u"",
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleCreatePlusAddressSuggestion());
@@ -1198,6 +1209,7 @@ TEST_F(PlusAddressSuggestionsTest,
   EXPECT_THAT(
       service().GetSuggestions(
           origin, /*is_off_the_record=*/false,
+          PasswordFormType::kNoPasswordForm,
           /*focused_field_value=*/u"some text",
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleCreatePlusAddressSuggestion());
@@ -1211,11 +1223,86 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kPlusAddressesEnabled);
 
-  EXPECT_THAT(service().GetSuggestions(
-                  url::Origin::Create(GURL("https://foo.coom")),
-                  /*is_off_the_record=*/false, /*focused_field_value=*/u"",
-                  AutofillSuggestionTriggerSource::kFormControlElementClicked),
-              IsEmpty());
+  EXPECT_THAT(
+      service().GetSuggestions(
+          url::Origin::Create(GURL("https://foo.com")),
+          /*is_off_the_record=*/false, PasswordFormType::kNoPasswordForm,
+          /*focused_field_value=*/u"",
+          AutofillSuggestionTriggerSource::kFormControlElementClicked),
+      IsEmpty());
+}
+
+// Tests that the only password form on which create suggestions are offered on
+// click is a signup form, but that filling suggestions are always offered.
+TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordForms) {
+  const PlusProfile profile = test::CreatePlusProfile();
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  auto get_suggestions_for_form_type = [&](PasswordFormType type) {
+    return service().GetSuggestions(
+        origin,
+        /*is_off_the_record=*/false, type,
+        /*focused_field_value=*/u"",
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  };
+
+  using enum PasswordFormType;
+  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm), IsEmpty());
+  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm), IsEmpty());
+  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm), IsEmpty());
+  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm), IsEmpty());
+  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
+              IsSingleCreatePlusAddressSuggestion());
+
+  service().SavePlusProfile(profile);
+  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+}
+
+// Tests that create suggestions are offered regardless of form type if the
+// trigger source is a manual fallback.
+TEST_F(PlusAddressSuggestionsTest,
+       SuggestionsOnPasswordFormsWithManualFallbacks) {
+  const PlusProfile profile = test::CreatePlusProfile();
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  auto get_suggestions_for_form_type = [&](PasswordFormType type) {
+    return service().GetSuggestions(
+        origin,
+        /*is_off_the_record=*/false, type,
+        /*focused_field_value=*/u"",
+        AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+  };
+
+  using enum PasswordFormType;
+  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
+              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
+              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
+              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
+              IsSingleCreatePlusAddressSuggestion());
+  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
+              IsSingleCreatePlusAddressSuggestion());
+
+  service().SavePlusProfile(profile);
+  EXPECT_THAT(get_suggestions_for_form_type(kLoginForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kChangePasswordForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kResetPasswordForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kSingleUsernameForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
+  EXPECT_THAT(get_suggestions_for_form_type(kSignupForm),
+              IsSingleFillPlusAddressSuggestion(profile.plus_address));
 }
 
 }  // namespace plus_addresses
