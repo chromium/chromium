@@ -67,7 +67,7 @@
         width: 40px;
       }
 
-      .eol-section iron-icon {
+      .eol-section cr-icon {
         --iron-icon-fill-color: #E8710A;
         height: var(--cr-icon-size);
         width: var(--cr-icon-size);
@@ -130,7 +130,7 @@
         margin: 0;
       }
 
-      .report iron-icon {
+      .report cr-icon {
         height: 20px;
         margin-inline-end: 16px;
         width: 20px;
@@ -223,7 +223,7 @@
 <if expr="chromeos_ash">
           <section class="eol-section" hidden="[[!eolMessage_]]">
             <div class="eol-warning-icon">
-              <iron-icon icon="cr20:banner-warning"></iron-icon>
+              <cr-icon icon="cr20:banner-warning"></cr-icon>
             </div>
             <div class="eol-message">
               <div>[[eolMessage_]]</div>
@@ -297,8 +297,8 @@
               <div class="content-indented">
                 <template is="dom-repeat" items="[[deviceReportingInfo_]]">
                   <div class="report">
-                    <iron-icon icon="[[getIconForDeviceReportingType_(
-                        item.reportingType)]]"></iron-icon>
+                    <cr-icon icon="[[getIconForDeviceReportingType_(
+                        item.reportingType)]]"></cr-icon>
                     <div
                       inner-h-t-m-l="[[getDeviceReportingHtmlContent_(item)]]">
                     </div>
@@ -323,7 +323,7 @@
               <div>
                 <template is="dom-repeat" items="[[browserReportingInfo_]]">
                   <div class="report">
-                    <iron-icon icon="[[item.icon]]"></iron-icon>
+                    <cr-icon icon="[[item.icon]]"></cr-icon>
                     <ul>
                       <template is="dom-repeat" items="[[item.messageIds]]"
                           as="messageId">
