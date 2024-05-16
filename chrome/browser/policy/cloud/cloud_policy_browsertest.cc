@@ -367,13 +367,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 };
 
-// TODO(crbug.com/40187980): The test fails on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FetchPolicy DISABLED_FetchPolicy
-#else
-#define MAYBE_FetchPolicy FetchPolicy
-#endif
-IN_PROC_BROWSER_TEST_F(CloudPolicyTest, MAYBE_FetchPolicy) {
+IN_PROC_BROWSER_TEST_F(CloudPolicyTest, FetchPolicy) {
   PolicyService* policy_service = GetPolicyService();
   {
     base::RunLoop run_loop;
@@ -428,9 +422,8 @@ IN_PROC_BROWSER_TEST_F(CloudPolicyTest, EnsureDefaultPoliciesSet) {
 }
 #endif
 
-// TODO(crbug.com/40187980, crbug.com/1230268): The test fails on Lacros and
-// Windows.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+// crbug.com/1230268 not working on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_InvalidatePolicy DISABLED_InvalidatePolicy
 #else
 #define MAYBE_InvalidatePolicy InvalidatePolicy
