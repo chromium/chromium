@@ -14,6 +14,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -119,6 +120,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull TabListCoordinator mTabListCoordinator;
+    private final @NonNull Supplier<Boolean> mVisibilitySupplier;
     private final @NonNull LazyOneshotSupplier<TabListEditorController>
             mTabListEditorControllerSupplier;
     private final @NonNull PriceWelcomeMessageReviewActionProvider
@@ -146,6 +148,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param snackbarManager The {@link SnackbarManager} for the activity.
      * @param modalDialogManager The {@link ModalDialogManager} for the activity.
      * @param tabListCoordinator The {@link TabListCoordinator} to show messages on.
+     * @param visibilitySupplier A supplier for the visibility of the {@link TabListCoordinator}.
      * @param tabListEditorControllerSupplier The supplier of the {@link TabListEditorController}.
      * @param priceWelcomeMessageReviewActionProvider The review action provider for price welcome.
      * @param mode The {@link TabListMode} the {@link TabListCoordinator} is in.
@@ -159,6 +162,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull TabListCoordinator tabListCoordinator,
+            @NonNull Supplier<Boolean> visibilitySupplier,
             @NonNull LazyOneshotSupplier<TabListEditorController> tabListEditorControllerSupplier,
             @NonNull
                     PriceWelcomeMessageReviewActionProvider priceWelcomeMessageReviewActionProvider,
@@ -171,6 +175,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
         mTabListCoordinator = tabListCoordinator;
+        mVisibilitySupplier = visibilitySupplier;
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mPriceWelcomeMessageReviewActionProvider = priceWelcomeMessageReviewActionProvider;
         mMode = mode;
@@ -339,7 +344,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     }
 
     private void appendMessagesTo(int index) {
-        if (mMultiWindowModeStateDispatcher.isInMultiWindowMode()) return;
+        if (!shouldShowMessages()) return;
+
         sAppendedMessagesForTesting = false;
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
@@ -350,7 +356,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                         index, TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
             } else if (messages.get(i).type
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
-                mayAddIncognitoReauthPromoCard(messages.get(i).model);
+                if (!mayAddIncognitoReauthPromoCard(messages.get(i).model)) {
+                    // Skip incrementing index if the message was not added.
+                    continue;
+                }
             } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
                 // TODO(crbug.com/40073668): Update to a mayAdd call checking show criteria
                 mTabListCoordinator.addSpecialListItem(
@@ -369,11 +378,13 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
     }
 
-    private void mayAddIncognitoReauthPromoCard(PropertyModel model) {
+    private boolean mayAddIncognitoReauthPromoCard(PropertyModel model) {
         if (mIncognitoReauthPromoMessageService.isIncognitoReauthPromoMessageEnabled(mProfile)) {
             mTabListCoordinator.addSpecialListItemToEnd(TabProperties.UiType.LARGE_MESSAGE, model);
             mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
+            return true;
         }
+        return false;
     }
 
     private boolean shouldAppendMessage(MessageCardProviderMediator.Message message) {
@@ -420,6 +431,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * message items when the closure of the last tab in tab switcher is undone.
      */
     private void restoreAllAppendedMessage() {
+        if (!shouldShowMessages()) return;
+
         // TODO(crbug.com/340730009): The Profile should never be null, and this should be removed
         // once this bug is addressed.
         if (mCurrentTabModelFilterSupplier.get().getTabModel().getProfile() == null) return;
@@ -520,6 +533,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (filter != null) {
             filter.removeObserver(mTabModelObserver);
         }
+    }
+
+    private boolean shouldShowMessages() {
+        return !mMultiWindowModeStateDispatcher.isInMultiWindowMode() && mVisibilitySupplier.get();
     }
 
     /** Returns whether this manager has appended any messages. */

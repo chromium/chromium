@@ -298,6 +298,7 @@ public class TabSwitcherCoordinator
                             snackbarManager,
                             modalDialogManager,
                             mTabListCoordinator,
+                            /* visibilitySupplier= */ () -> true,
                             tabListEditorControllerSupplier,
                             mMediator,
                             mode);

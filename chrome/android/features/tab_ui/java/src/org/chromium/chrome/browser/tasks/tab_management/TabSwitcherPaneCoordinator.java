@@ -273,6 +273,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             snackbarManager,
                             modalDialogManager,
                             tabListCoordinator,
+                            isVisibleSupplier,
                             tabListEditorControllerSupplier,
                             /* priceWelcomeMessageReviewActionProvider= */ mMediator,
                             mode);
