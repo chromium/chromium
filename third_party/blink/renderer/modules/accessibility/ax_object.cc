@@ -1350,11 +1350,10 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
-  if (accessibility_mode.has_mode(ui::AXMode::kHTML))
-    SerializeHTMLTagAndClass(node_data);  // Used for test readability.
-
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     SerializeColorAttributes(node_data);  // Blends using all nodes' values.
+    SerializeHTMLIdTagAndClass(node_data);
+  }
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
       accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
@@ -1574,7 +1573,7 @@ void AXObject::SerializeElementAttributes(ui::AXNodeData* node_data) const {
       node_data, ax::mojom::blink::StringAttribute::kRole, role_str);
 }
 
-void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const {
+void AXObject::SerializeHTMLIdTagAndClass(ui::AXNodeData* node_data) const {
   Element* element = GetElement();
   if (!element) {
     if (IsA<Document>(GetNode())) {
@@ -1583,6 +1582,10 @@ void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const {
     }
     return;
   }
+
+  TruncateAndAddStringAttribute(node_data,
+                                ax::mojom::blink::StringAttribute::kHtmlId,
+                                element->GetIdAttribute());
 
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,
@@ -1599,7 +1602,8 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
   DCHECK(element);
   for (const Attribute& attr : element->Attributes()) {
     std::string name = attr.LocalName().LowerASCII().Utf8();
-    if (name == "class") {  // class already in kClassName
+    if (name == "id" || name == "class") {
+      // Attribute already in kHtmlId or kClassName.
       continue;
     }
     std::string value = attr.Value().Utf8();

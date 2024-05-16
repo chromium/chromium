@@ -1297,6 +1297,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "doDefaultLabel";
     case ax::mojom::StringAttribute::kFontFamily:
       return "fontFamily";
+    case ax::mojom::StringAttribute::kHtmlId:
+      return "htmlId";
     case ax::mojom::StringAttribute::kHtmlTag:
       return "htmlTag";
     case ax::mojom::StringAttribute::kImageAnnotation:
@@ -1380,6 +1382,8 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kDoDefaultLabel;
   } else if (string_attribute == "kFontFamily") {
     return ax::mojom::StringAttribute::kFontFamily;
+  } else if (string_attribute == "kHtmlId") {
+    return ax::mojom::StringAttribute::kHtmlId;
   } else if (string_attribute == "kHtmlTag") {
     return ax::mojom::StringAttribute::kHtmlTag;
   } else if (string_attribute == "kImageAnnotation") {

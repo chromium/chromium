@@ -180,7 +180,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', async function() {
 
   const originalGroup = Navigator.byItem.group_;
   assertEquals(
-      Navigator.byItem.node_.automationNode.htmlAttributes.id, 'group',
+      Navigator.byItem.node_.automationNode.htmlId, 'group',
       'Did not move to group properly');
 
   Navigator.byItem.enterGroup();
@@ -210,8 +210,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
       button1 instanceof BackButtonNode,
       'button1 should not be a BackButtonNode');
   assertEquals(
-      'button1', button1.automationNode.htmlAttributes.id,
-      'Current node is not button1');
+      'button1', button1.automationNode.htmlId, 'Current node is not button1');
 
   Navigator.byItem.moveForward();
   assertFalse(
@@ -222,8 +221,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
       button2 instanceof BackButtonNode,
       'button2 should not be a BackButtonNode');
   assertEquals(
-      'button2', button2.automationNode.htmlAttributes.id,
-      'Current node is not button2');
+      'button2', button2.automationNode.htmlId, 'Current node is not button2');
 
   Navigator.byItem.moveForward();
   assertFalse(
@@ -237,8 +235,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', async function() {
       button3 instanceof BackButtonNode,
       'button3 should not be a BackButtonNode');
   assertEquals(
-      'button3', button3.automationNode.htmlAttributes.id,
-      'Current node is not button3');
+      'button3', button3.automationNode.htmlId, 'Current node is not button3');
 
   Navigator.byItem.moveForward();
   assertTrue(
@@ -264,8 +261,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
       button1 instanceof BackButtonNode,
       'button1 should not be a BackButtonNode');
   assertEquals(
-      'button1', button1.automationNode.htmlAttributes.id,
-      'Current node is not button1');
+      'button1', button1.automationNode.htmlId, 'Current node is not button1');
 
   Navigator.byItem.moveBackward();
   assertTrue(
@@ -281,8 +277,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
       button3 instanceof BackButtonNode,
       'button3 should not be a BackButtonNode');
   assertEquals(
-      'button3', button3.automationNode.htmlAttributes.id,
-      'Current node is not button3');
+      'button3', button3.automationNode.htmlId, 'Current node is not button3');
 
   Navigator.byItem.moveBackward();
   assertFalse(
@@ -294,8 +289,7 @@ AX_TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', async function() {
       button2 instanceof BackButtonNode,
       'button2 should not be a BackButtonNode');
   assertEquals(
-      'button2', button2.automationNode.htmlAttributes.id,
-      'Current node is not button2');
+      'button2', button2.automationNode.htmlId, 'Current node is not button2');
 
   Navigator.byItem.moveBackward();
   assertTrue(
@@ -316,7 +310,7 @@ AX_TEST_F(
           button1 instanceof BackButtonNode,
           'button1 should not be a BackButtonNode');
       assertEquals(
-          'button1', button1.automationNode.htmlAttributes.id,
+          'button1', button1.automationNode.htmlId,
           'Current node is not button1');
 
       // Simulate the underlying node's deletion. Note that this is different
@@ -342,7 +336,7 @@ AX_TEST_F(
       Navigator.byItem.moveTo_(this.findNodeById('testinput'));
       const input = Navigator.byItem.node_;
       assertEquals(
-          'testinput', input.automationNode.htmlAttributes.id,
+          'testinput', input.automationNode.htmlId,
           'Current node is not input');
       input.performAction(MenuAction.KEYBOARD);
 
@@ -379,7 +373,7 @@ AX_TEST_F(
       Navigator.byItem.moveTo_(this.findNodeById('testinput'));
       const input = Navigator.byItem.node_;
       assertEquals(
-          'testinput', input.automationNode.htmlAttributes.id,
+          'testinput', input.automationNode.htmlId,
           'Current node is not input');
       input.performAction(MenuAction.KEYBOARD);
 
@@ -442,8 +436,7 @@ AX_TEST_F(
       Navigator.byItem.moveTo_(this.findNodeById('slider'));
       const slider = Navigator.byItem.node_;
       assertEquals(
-          'slider', slider.automationNode.htmlAttributes.id,
-          'Current node is not slider');
+          'slider', slider.automationNode.htmlId, 'Current node is not slider');
 
       // Trigger a children changed on the group.
       const automationGroup =

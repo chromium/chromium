@@ -572,8 +572,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 5
-// Next value: 38
+// Next version: 6
+// Next value: 39
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -602,6 +602,7 @@ enum StringAttribute {
   [MinVersion=1] kDoDefaultLabel = 31, // Only for ARC
   // Only present when different from parent.
   kFontFamily = 13,
+  [MinVersion=5] kHtmlId = 38,
   kHtmlTag = 14,
   // Stores an automatic image annotation if one is available. Only valid on
   // ax::mojom::Role::kImage. See kImageAnnotationStatus, too.
