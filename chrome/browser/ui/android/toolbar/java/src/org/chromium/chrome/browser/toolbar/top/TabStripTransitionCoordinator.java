@@ -373,9 +373,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         // clears out, #onTokenUpdated will route into this method again.
         if (mDeferTransitionTokenHolder.hasTokens()) return;
 
-        // Invalid width will be ignored. This can happen when the mControlContainer is created
-        // hidden after theme changes. See crbug.com/1511599.
-        if (tabStripWidth <= 0) return;
+        // Invalid width / height will be ignored. This can happen when the mControlContainer is
+        // created hidden after theme changes. See crbug.com/1511599.
+        if (tabStripWidth <= 0 || controlContainerView().getHeight() == 0) return;
 
         boolean showTabStrip;
         if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(/* isTablet= */ true)) {

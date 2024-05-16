@@ -280,6 +280,19 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    public void hideTabStripBeforeLayout() {
+        // Simulate the control container hasn't been measured yet.
+        doReturn(0).when(mSpyControlContainer).getWidth();
+        doReturn(0).when(mSpyControlContainer).getHeight();
+
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
+        Assert.assertEquals(
+                "Height request should be ignored if control container hasn't been measured.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+    }
+
+    @Test
     @Config(qualifiers = "w320dp")
     public void showTabStrip() {
         settleTransitionDuringInitForNarrowWindow();
@@ -463,6 +476,22 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "w320dp")
+    public void showTabStripBeforeLayout() {
+        settleTransitionDuringInitForNarrowWindow();
+
+        // Simulate the control container hasn't been measured yet.
+        doReturn(0).when(mSpyControlContainer).getWidth();
+        doReturn(0).when(mSpyControlContainer).getHeight();
+
+        setDeviceWidthDp(600);
+        Assert.assertEquals(
+                "Height request should be ignored if control container hasn't been measured.",
+                NOTHING_OBSERVED,
+                mObserver.heightRequested);
+    }
+
+    @Test
     public void configurationChangedDuringDelayedTask() {
         setConfigurationWithNewWidth(NARROW_WINDOW_WIDTH);
         simulateLayoutChange(NARROW_WINDOW_WIDTH);
@@ -635,6 +664,28 @@ public class TabStripTransitionCoordinatorUnitTest {
         Assert.assertEquals(
                 "Narrower width does not trigger tab strip hiding, instead use the height only.",
                 newHeight,
+                mObserver.heightRequested);
+    }
+
+    @Test
+    public void useDesktopWindowStateProvider_WithouControlContainerLayout() {
+        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
+        // Simulate a rect update that has a smaller width.
+        int newHeight = TEST_TAB_STRIP_HEIGHT + 10;
+        Rect appHeaderRect = new Rect(0, 0, NARROW_WINDOW_WIDTH, newHeight);
+        mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
+
+        // Set the height as if the first measure pass hasn't happened yet.
+        doReturn(0).when(mSpyControlContainer).getHeight();
+        doReturn(0).when(mSpyControlContainer).getWidth();
+
+        // Create the transition coordinator again with initial value of AppHeaderState.
+        setUpTabStripTransitionCoordinator();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Assert.assertEquals(
+                "Height request should be ignored if control container hasn't been measured.",
+                NOTHING_OBSERVED,
                 mObserver.heightRequested);
     }
 
@@ -846,6 +897,10 @@ public class TabStripTransitionCoordinatorUnitTest {
             doAnswer(args -> context.getResources().getDisplayMetrics().widthPixels)
                     .when(controlContainer)
                     .getWidth();
+            // Set a test height for the control container as if it's already being measured.
+            doReturn(TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT)
+                    .when(controlContainer)
+                    .getHeight();
             doAnswer(
                             args -> {
                                 controlContainer.onLayoutChangeListener = args.getArgument(0);
