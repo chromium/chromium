@@ -3,6 +3,9 @@ use std::env;
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
+    println!("cargo:rustc-check-cfg=cfg(limb_width_32)");
+    println!("cargo:rustc-check-cfg=cfg(limb_width_64)");
+
     // Decide ideal limb width for arithmetic in the float parser. Refer to
     // src/lexical/math.rs for where this has an effect.
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap();

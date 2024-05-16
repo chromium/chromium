@@ -13,11 +13,16 @@
 edition = "2021"
 rust-version = "1.56"
 name = "serde_json"
-version = "1.0.116"
+version = "1.0.117"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
 ]
+build = "build.rs"
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A JSON serialization file format"
 documentation = "https://docs.rs/serde_json"
 readme = "README.md"
@@ -51,7 +56,37 @@ targets = ["x86_64-unknown-linux-gnu"]
 features = ["raw_value"]
 
 [lib]
+name = "serde_json"
+path = "src/lib.rs"
 doc-scrape-examples = false
+
+[[test]]
+name = "regression"
+path = "tests/regression.rs"
+
+[[test]]
+name = "map"
+path = "tests/map.rs"
+
+[[test]]
+name = "debug"
+path = "tests/debug.rs"
+
+[[test]]
+name = "compiletest"
+path = "tests/compiletest.rs"
+
+[[test]]
+name = "lexical"
+path = "tests/lexical.rs"
+
+[[test]]
+name = "stream"
+path = "tests/stream.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
 
 [dependencies.indexmap]
 version = "2.2.1"

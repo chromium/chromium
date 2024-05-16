@@ -2100,20 +2100,20 @@ fn issue_220() {
     assert_eq!(from_str::<E>(r#"{"V": 0}"#).unwrap(), E::V(0));
 }
 
-macro_rules! number_partialeq_ok {
-    ($($n:expr)*) => {
-        $(
-            let value = to_value($n).unwrap();
-            let s = $n.to_string();
-            assert_eq!(value, $n);
-            assert_eq!($n, value);
-            assert_ne!(value, s);
-        )*
-    }
-}
-
 #[test]
 fn test_partialeq_number() {
+    macro_rules! number_partialeq_ok {
+        ($($n:expr)*) => {
+            $(
+                let value = to_value($n).unwrap();
+                let s = $n.to_string();
+                assert_eq!(value, $n);
+                assert_eq!($n, value);
+                assert_ne!(value, s);
+            )*
+        };
+    }
+
     number_partialeq_ok!(0 1 100
         i8::MIN i8::MAX i16::MIN i16::MAX i32::MIN i32::MAX i64::MIN i64::MAX
         u8::MIN u8::MAX u16::MIN u16::MAX u32::MIN u32::MAX u64::MIN u64::MAX
@@ -2122,13 +2122,6 @@ fn test_partialeq_number() {
         f32::consts::E f32::consts::PI f32::consts::LN_2 f32::consts::LOG2_E
         f64::consts::E f64::consts::PI f64::consts::LN_2 f64::consts::LOG2_E
     );
-}
-
-#[test]
-#[cfg(integer128)]
-#[cfg(feature = "arbitrary_precision")]
-fn test_partialeq_integer128() {
-    number_partialeq_ok!(i128::MIN i128::MAX u128::MIN u128::MAX)
 }
 
 #[test]
