@@ -2410,36 +2410,29 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableCaption;
   }
 
-  bool InternalVisitedBorderLeftColorHasNotChanged(
-      const ComputedStyle& other) const {
-    return (InternalVisitedBorderLeftColor() ==
-                other.InternalVisitedBorderLeftColor() ||
-            !BorderLeftWidth());
-  }
-  bool InternalVisitedBorderRightColorHasNotChanged(
-      const ComputedStyle& other) const {
-    return (InternalVisitedBorderRightColor() ==
-                other.InternalVisitedBorderRightColor() ||
-            !BorderRightWidth());
-  }
-  bool InternalVisitedBorderBottomColorHasNotChanged(
-      const ComputedStyle& other) const {
-    return (InternalVisitedBorderBottomColor() ==
-                other.InternalVisitedBorderBottomColor() ||
-            !BorderBottomWidth());
-  }
-  bool InternalVisitedBorderTopColorHasNotChanged(
-      const ComputedStyle& other) const {
-    return (InternalVisitedBorderTopColor() ==
-                other.InternalVisitedBorderTopColor() ||
-            !BorderTopWidth());
-  }
-
-  bool InternalVisitedOutlineColorHasNotChanged(
-      const ComputedStyle& other) const {
-    return (InternalVisitedOutlineColor() ==
-                other.InternalVisitedOutlineColor() ||
-            !OutlineWidth());
+  bool BorderOutlineVisitedColorChanged(const ComputedStyle& other) const {
+    // Only invalidate if the border/outline is present.
+    if (BorderTopWidth() && InternalVisitedBorderTopColor() !=
+                                other.InternalVisitedBorderTopColor()) {
+      return true;
+    }
+    if (BorderRightWidth() && InternalVisitedBorderRightColor() !=
+                                  other.InternalVisitedBorderRightColor()) {
+      return true;
+    }
+    if (BorderBottomWidth() && InternalVisitedBorderBottomColor() !=
+                                   other.InternalVisitedBorderBottomColor()) {
+      return true;
+    }
+    if (BorderLeftWidth() && InternalVisitedBorderLeftColor() !=
+                                 other.InternalVisitedBorderLeftColor()) {
+      return true;
+    }
+    if (OutlineWidth() &&
+        InternalVisitedOutlineColor() != other.InternalVisitedOutlineColor()) {
+      return true;
+    }
+    return false;
   }
 
   StyleColor DecorationColorIncludingFallback(bool visited_link) const;

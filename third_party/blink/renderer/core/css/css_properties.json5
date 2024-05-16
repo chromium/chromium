@@ -318,6 +318,7 @@
         "blend-mode",
         "border-image",
         "border-radius",
+        "border-outline-visited-color",
         "border-width",
         "clip-path",
         "color",
@@ -8338,6 +8339,7 @@
         name: "visited-border-color",
         resolver: "left",
       },
+      invalidate: ["border-outline-visited-color"],
     },
     {
       name: "-internal-visited-border-right-color",
@@ -8356,6 +8358,7 @@
         name: "visited-border-color",
         resolver: "right",
       },
+      invalidate: ["border-outline-visited-color"],
     },
     {
       name: "-internal-visited-border-top-color",
@@ -8374,6 +8377,7 @@
         name: "visited-border-color",
         resolver: "top",
       },
+      invalidate: ["border-outline-visited-color"],
     },
     {
       name: "-internal-visited-border-bottom-color",
@@ -8392,6 +8396,7 @@
         name: "visited-border-color",
         resolver: "bottom",
       },
+      invalidate: ["border-outline-visited-color"],
     },
     {
       name: "-internal-visited-border-inline-start-color",
@@ -8465,6 +8470,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
       valid_for_cue: true,
+      invalidate: ["border-outline-visited-color"],
     },
     {
       name: "-internal-visited-stroke",

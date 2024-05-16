@@ -1116,6 +1116,11 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     return true;
   }
 
+  if ((field_diff & kBorderOutlineVisitedColor) &&
+      BorderOutlineVisitedColorChanged(other)) {
+    return true;
+  }
+
   if (ComputedStyleBase::DiffNeedsPaintInvalidation(*this, other)) {
     return true;
   }

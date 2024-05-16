@@ -59,28 +59,6 @@
             field_dependencies: ["scrollbar-color"]
           },
         ],
-        predicates_to_test: [
-          {
-            predicate: "a.InternalVisitedBorderLeftColorHasNotChanged(b)",
-            field_dependencies: ["-internal-visited-border-left-color"]
-          },
-          {
-            predicate: "a.InternalVisitedBorderRightColorHasNotChanged(b)",
-            field_dependencies: ["-internal-visited-border-right-color"]
-          },
-          {
-            predicate: "a.InternalVisitedBorderBottomColorHasNotChanged(b)",
-            field_dependencies: ["-internal-visited-border-bottom-color"]
-          },
-          {
-            predicate: "a.InternalVisitedBorderTopColorHasNotChanged(b)",
-            field_dependencies: ["-internal-visited-border-top-color"]
-          },
-          {
-            predicate: "a.InternalVisitedOutlineColorHasNotChanged(b)",
-            field_dependencies: ["-internal-visited-outline-color"]
-          },
-        ]
     },
     {
         name: "DiffTransformData",
