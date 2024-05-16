@@ -436,22 +436,26 @@ class SkiaRenderer::VizDebuggerLog {
     if (enabled) {
       DBG_LOG("renderer.skia.render_pass_backings",
               "render_pass_backings_ = [");
-      for (auto& kv : render_pass_backings) {
+      for (auto& [render_pass_id, backing] : render_pass_backings) {
         base::trace_event::TracedValueJSON value;
         base::trace_event::TracedValue::Dictionary(
             {
-                {"size", kv.second.size.ToString()},
-                {"generate_mipmap", kv.second.generate_mipmap},
-                {"color_space", kv.second.color_space.ToString()},
-                {"format", kv.second.format.ToString()},
-                {"mailbox", kv.second.mailbox.ToDebugString()},
-                {"is_root", kv.second.is_root},
-                {"is_scanout", kv.second.is_scanout},
-                {"scanout_dcomp_surface", kv.second.scanout_dcomp_surface},
+                {"size", backing.size.ToString()},
+                {"generate_mipmap", backing.generate_mipmap},
+                {"color_space", backing.color_space.ToString()},
+                {"alpha_type",
+                 backing.alpha_type == RenderPassAlphaType::kPremul ? "premul"
+                                                                    : "opaque"},
+                {"format", backing.format.ToString()},
+                {"mailbox", backing.mailbox.ToDebugString()},
+                {"is_root", backing.is_root},
+                {"is_scanout", backing.is_scanout},
+                {"scanout_dcomp_surface", backing.scanout_dcomp_surface},
+                {"drawn_rect", backing.drawn_rect.ToString()},
             })
             .WriteToValue(&value);
         DBG_LOG("renderer.skia.render_pass_backings", "%" PRIu64 ": %s",
-                kv.first.value(), value.ToFormattedJSON().c_str());
+                render_pass_id.value(), value.ToFormattedJSON().c_str());
       }
       DBG_LOG("renderer.skia.render_pass_backings", "]");
     }
@@ -2999,7 +3003,7 @@ void SkiaRenderer::ScheduleOverlays() {
       if (auto backing = GetRenderPassBackingForDirectScanout(
               overlay.rpdq->render_pass_id);
           backing) {
-        DBG_LOG("delegated.overlays.log",
+        DBG_LOG("delegated.overlay.log",
                 "Pass %" PRIu64 ": RPDQ overlay can scanout directly",
                 overlay.rpdq->render_pass_id.value());
 
