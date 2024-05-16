@@ -132,7 +132,13 @@ public class TabStateFileManager {
         // opportunity to save any FlatBuffer based {@link TabState} files yet. So we
         // always have a fallback to regular hand-written based TabState.
         if (isFlatBufferSchemaEnabled()) {
-            TabState tabState = restoreTabState(stateFolder, id, true);
+            TabState tabState = null;
+            try {
+                tabState = restoreTabState(stateFolder, id, true);
+            } catch (Exception e) {
+                // TODO(crbug.com/341122002) Add in metrics
+                Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
+            }
             if (tabState != null) {
                 RecordHistogram.recordEnumeratedHistogram(
                         "Tabs.TabState.RestoreMethod",
@@ -456,8 +462,13 @@ public class TabStateFileManager {
      */
     public static void migrateTabState(
             File directory, TabState tabState, int tabId, boolean isEncrypted) {
-        saveStateInternal(
-                getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
+        try {
+            saveStateInternal(
+                    getTabStateFile(directory, tabId, isEncrypted, true), tabState, isEncrypted);
+        } catch (Exception e) {
+            // TODO(crbug.com/341122002) Add in metrics
+            Log.d(TAG, "Error saving TabState FlatBuffer file", e);
+        }
     }
 
     /**
