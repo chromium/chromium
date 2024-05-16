@@ -455,6 +455,10 @@ struct AutocompleteMatch {
   // Checks if this match is a trend suggestion based on the match subtypes.
   bool IsTrendSuggestion() const;
 
+  // Checks if this match is an informational IPH suggestion based on the match
+  // and provider type.
+  bool IsIPHSuggestion() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).

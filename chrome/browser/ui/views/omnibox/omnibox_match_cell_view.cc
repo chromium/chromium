@@ -18,6 +18,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -247,8 +248,10 @@ OmniboxMatchCellView::OmniboxMatchCellView(OmniboxResultView* result_view) {
 OmniboxMatchCellView::~OmniboxMatchCellView() = default;
 
 // static
-int OmniboxMatchCellView::GetTextIndent() {
-  return 52;
+int OmniboxMatchCellView::GetTextIndent(bool is_iph_type) {
+  // The IPH row left inset is +8 from other suggestions, so the text indent
+  // should be -8 to keep the text aligned.
+  return is_iph_type ? 44 : 52;
 }
 
 // static
@@ -265,6 +268,7 @@ bool OmniboxMatchCellView::ShouldDisplayImage(const AutocompleteMatch& match) {
 void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
                                          const AutocompleteMatch& match) {
   is_search_type_ = AutocompleteMatch::IsSearchType(match.type);
+  is_iph_type = match.IsIPHSuggestion();
   has_image_ = ShouldDisplayImage(match);
   // Decide layout style once before Layout, while match data is available.
   layout_style_ = has_image_ && !OmniboxFieldTrial::IsUniformRowHeightEnabled()
@@ -487,7 +491,8 @@ void OmniboxMatchCellView::Layout(PassKey) {
       has_image_ ? answer_image_view_.get() : icon_view_.get();
   image_view->SetBounds(image_x, y, kImageBoundsWidth, row_height);
 
-  const int text_indent = GetTextIndent() + tail_suggest_common_prefix_width_;
+  const int text_indent =
+      GetTextIndent(is_iph_type) + tail_suggest_common_prefix_width_;
   x += text_indent;
   const int text_width = child_area.width() - text_indent;
 
@@ -542,9 +547,10 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize(
   int height = GetEntityImageSize() +
                2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
-    height += description_view_->GetHeightForWidth(width() - GetTextIndent());
+    height += description_view_->GetHeightForWidth(width() -
+                                                   GetTextIndent(is_iph_type));
 
-  int width = GetInsets().width() + GetTextIndent() +
+  int width = GetInsets().width() + GetTextIndent(is_iph_type) +
               tail_suggest_common_prefix_width_ +
               content_view_->GetPreferredSize().width();
 

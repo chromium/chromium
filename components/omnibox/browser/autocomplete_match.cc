@@ -594,9 +594,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::NULL_RESULT_MESSAGE: {
       // The IPH suggestion uses the spark icon. Otherwise (for No Results
       // Found), fallthrough to use the empty icon.
-      if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
-          provider->type() ==
-              AutocompleteProvider::Type::TYPE_FEATURED_SEARCH) {
+      if (IsIPHSuggestion()) {
         return omnibox::kSparkIcon;
       }
       ABSL_FALLTHROUGH_INTENDED;
@@ -1460,6 +1458,15 @@ bool AutocompleteMatch::IsUrlScoringEligible() const {
 
 bool AutocompleteMatch::IsTrendSuggestion() const {
   return subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
+}
+
+bool AutocompleteMatch::IsIPHSuggestion() const {
+  if (!OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
+    return false;
+  }
+
+  return type == AutocompleteMatchType::NULL_RESULT_MESSAGE &&
+         provider->type() == AutocompleteProvider::TYPE_FEATURED_SEARCH;
 }
 
 void AutocompleteMatch::FilterOmniboxActions(

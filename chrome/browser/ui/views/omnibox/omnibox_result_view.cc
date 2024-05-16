@@ -358,11 +358,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     suggestion_view_->content()->ApplyTextColor(default_id);
     suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    bool is_iph = OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
-                  match_.provider->type() ==
-                      AutocompleteProvider::Type::TYPE_FEATURED_SEARCH;
     suggestion_view_->content()->ApplyTextColor(
-        is_iph ? kColorOmniboxResultsTextDimmed : kColorOmniboxText);
+        match_.IsIPHSuggestion() ? kColorOmniboxResultsTextDimmed
+                                 : kColorOmniboxText);
   } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of

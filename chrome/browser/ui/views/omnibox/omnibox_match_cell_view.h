@@ -58,7 +58,7 @@ class OmniboxMatchCellView : public views::View {
   OmniboxTextView* description() { return description_view_; }
   OmniboxTextView* separator() { return separator_view_; }
 
-  static int GetTextIndent();
+  static int GetTextIndent(bool is_iph_type);
 
   // Determines if `match` should display an answer, calculator, or entity
   // image.
@@ -98,6 +98,7 @@ class OmniboxMatchCellView : public views::View {
 
   void SetTailSuggestCommonPrefixWidth(const std::u16string& common_prefix);
 
+  bool is_iph_type = false;
   bool is_search_type_ = false;
   bool has_image_ = false;
   LayoutStyle layout_style_ = LayoutStyle::ONE_LINE_SUGGESTION;
