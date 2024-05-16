@@ -1279,6 +1279,49 @@
         },
         "test": "telemetry_perf_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
+      },
+      {
+        "args": [
+          "--jobs=1",
+          "--browser=cros-chrome",
+          "--remote=127.0.0.1",
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3",
+          "--magic-vm-cache=magic_cros_vm_cache"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "telemetry_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests"
+          },
+          "idempotent": false,
+          "named_caches": [
+            {
+              "name": "cros_vm",
+              "path": "magic_cros_vm_cache"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "cros_vm"
+            }
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 24
+        },
+        "test": "telemetry_unittests",
+        "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       }
     ]
   },
