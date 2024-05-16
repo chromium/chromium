@@ -300,7 +300,8 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   auto validate_labels = [&](bool active, const std::string& trace_name) {
     SCOPED_TRACE(trace_name);
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
-    EXPECT_EQ(active ? u"Focusing" : u"Focus", GetToggleRowLabel()->GetText());
+    EXPECT_EQ(active ? u"Focus is on" : u"Focus",
+              GetToggleRowLabel()->GetText());
 
     EXPECT_EQ(active, IsToggleRowSubLabelVisible());
 

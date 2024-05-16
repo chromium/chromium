@@ -771,7 +771,7 @@ Style notes:
         <ph name="REMAINING_TIME">$1<ex>1 hr, 4 min</ex></ph> left
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_FIRST_TIME_USER_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for focus mode detailed view for first time user.">
-        Focus settings. Set a timer, task, and music to get in the flow
+        Focus settings. Set a timer, task, and music to get in the flow.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DETAILED_VIEW_EXPERIENCED_USER_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for focus mode detailed view for experienced user.">
         Focus settings
@@ -783,7 +783,7 @@ Style notes:
         minutes
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD" translateable="false" desc="The accessible name for the textfield that the user can use to input a specific time value for a focus session.">
-        Edit timer. <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
+        Edit timer. <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON" translateable="false" desc="The accessible name for the button that the user can press to increase focus session duration.">
         Add <ph name="FOCUS_DURATION_DELTA">$1<ex>5 minutes</ex></ph>
@@ -792,22 +792,22 @@ Style notes:
         Reduce <ph name="FOCUS_DURATION_DELTA">$1<ex>5 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUBHEADER" translateable="false" desc="The text used for the subheader of the task section of the focus mode detailed view.">
-        Task to focus on
+        Google Tasks
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER" translateable="false" desc="The text used for the placeholder for the textfield in the task section of the focus mode detailed view.">
         What would you like to focus on?
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON" translateable="false" desc="The accessible name for the radio button of a selected task view in contextual panel.">
-        Mark task <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> as completed
+        Mark task as completed: <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON" translateable="false" desc="The accessible name for the radio button of a selected task view in focus panel.">
         Mark task as completed
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_DESELECT_BUTTON" translateable="false" desc="The text used for the deselect button accessible name for a selected task view.">
-        Remove task as goal for the focus session
+        Stop focusing on task
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON" translateable="false" desc="The text on the label slider button used for showing music playlists that help users relax and improve focus.">
-        Soundscape
+        Focus sounds
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON" translateable="false" desc="The text on the label slider button used for showing personalized YouTube music playlists to help users relax and focus.">
         YouTube Music
@@ -819,25 +819,22 @@ Style notes:
         Learn more
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" translateable="false" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
-        Do not disturb while in Focus
+        Do Not Disturb while in Focus
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL" translateable="false" desc="The text used for the label of the add ten minutes button in the countdown view.">
         +10 min
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the add ten minutes button in the countdown view.">
-        Increase the current session by 10 minutes
+        Add 10 minutes
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ALERT" translateable="false" desc="The accessibility alert for the add ten minutes button in the countdown view.">
-        10 minutes added. <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the add ten minutes button in the ending moment.">
-        Extend the current session by 10 minutes
+        10 minutes added. <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ALERT" translateable="false" desc="The accessibility alert for the add ten minutes button in the ending moment.">
-        10 minutes left
+        Focus is on, 10 minutes left
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL" translateable="false" desc="The text used for the label of the focus mode toggle row in the focus mode detailed view when focus mode is active.">
-        Focusing
+        Focus is on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the toggle row in the focus mode detailed view.">
         Until <ph name="END_TIME_EXPRESSION">$1<ex>1:00 PM</ex></ph>
@@ -849,76 +846,61 @@ Style notes:
         Finish
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FIRST_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the detailed view toggle row for when a user has never used focus mode before.">
-        Set a timer and task to focus
+        Set a timer, task, and music to get in the flow
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" translateable="false" desc="The text used for the feedback button.">
         Send feedback
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE" translateable="false" desc="The text used for the ending moment nudge, as well as the tooltip.">
-        Time's up! Great job!🎉
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" translateable="false" desc="The text used for the ending moment, as well as the tooltip.">
+        Time's up. Great job! 🎉
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT" translateable="false" desc="The accessibility alert for the ending moment nudge.">
-        Time's up! Great job! You've just focused for <ph name="FOCUSED_TIME">$1<ex>24 minutes</ex></ph>. Open Quick settings to start a new session
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" translateable="false" desc="The title for the ending moment panel.">
-        You are an inspiration!
+        <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> You've just focused for <ph name="FOCUSED_TIME">$2<ex>24 minutes</ex></ph>. Open Quick settings to focus again.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY" translateable="false" desc="The message for the ending moment panel.">
-        Congratulations on another productive session!
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK" translateable="false" desc="The message for the ending moment panel if the user has an unfinished task.">
-        Congratulations on another productive session! Check off your task if it's done!
+        You can add a little more time if you need it, or end your focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG" translateable="false" desc="The annoucement for the ending moment panel.">
-        <ph name="TITLE">$1<ex>You are an inspiration!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
+        <ph name="TITLE">$1<ex>Time's up. Great job!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DONE_BUTTON" translateable="false" desc="The text for the button that dismisses the ending moment panel.">
         Done
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INACTIVE" translateable="false" desc="The accessible name for the focus mode feature tile in the quick settings menu when focus mode is not active.">
-        Show Focus session settings. Duration set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
+        Show Focus settings. Timer set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_ACTIVE" translateable="false" desc="The accessible name for the focus mode feature tile in the quick settings menu when focus mode is active.">
-        Show Focus session settings. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left for the current Focus session
+        Show Focus settings. Focus is on, <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INITIAL" translateable="false" desc="The accessible name for the focus mode feature tile in the quick settings menu when focus mode has never been used before.">
-        Show Focus session settings
+        Show Focus settings
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_INACTIVE" translateable="false" desc="The accessible name for the toggle button in the focus mode feature tile in the quick settings menu when focus mode is not active.">
-        Toggle Focus session. Duration set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE" translateable="false" desc="The accessible name for the toggle button in the focus mode feature tile in the quick settings menu or the focus panel when focus mode is not active.">
+        Start Focus. Timer set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE" translateable="false" desc="The accessible name for the toggle button in the focus mode feature tile in the quick settings menu when focus mode is active.">
-        Toggle Focus session. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left for the current Focus session
+        Finish Focus. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is not active.">
         Start Focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view for when focus mode is active.">
-        Finish Focus session
+        Finish Focus
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the task textfield in the focus mode detailed view.">
-        Focusing on <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> Press enter to edit task
+        Task set to focus on: <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph>. Press enter to edit the task.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_UNSELECTED_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the task textfield in the focus mode detailed view.">
-        Enter a task you'd like to focus on. Press enter to add the task
+        What would you like to focus on? Press enter to add the task.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_CHIP_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the task chip in the chip carousel in the focus mode detailed view.">
-        <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> (List item) Suggested tasks to focus on
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_ENABLED" translateable="false" desc="The accessible name for the do not disturb switch when enabled in the focus mode detailed view.">
-        Enable Do not disturb while in Focus. Do not disturb is enabled
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_DISABLED" translateable="false" desc="The accessible name for the do not disturb switch when disabled in the focus mode detailed view.">
-        Enable Do not disturb while in Focus. Do not disturb is disabled
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the focus mode tray icon.">
-        Focus settings, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the do not disturb switch in the focus mode detailed view.">
+        Enable Do Not Disturb while in Focus
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the tray bubble contextual panel when there is a selected task.">
-        Focus session in progress, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left, focusing on <ph name="TASK_NAME">$2<ex>Plan for trip to Paris</ex></ph>
+        Focus is on, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left, focusing on: <ph name="TASK_NAME">$2<ex>Plan for trip to Paris</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the tray bubble contextual panel when there is no selected task.">
-        Focus session in progress, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
+        Focus is on, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">

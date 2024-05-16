@@ -6,10 +6,8 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -54,13 +52,11 @@ void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
   chip->SetMinSize(gfx::Size(0, kChipHeight));
   chip->SetMaxSize(gfx::Size(kChipMaxWidth, kChipHeight));
-  chip->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_CHIP_ACCESSIBLE_NAME,
-      chip->GetText()));
   views::FocusRing::Get(chip)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(1),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
+  chip->SetAccessibleName(chip->GetText());
   chip->SetTooltipText(chip->GetText());
 }
 

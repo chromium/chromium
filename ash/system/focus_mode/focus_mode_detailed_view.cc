@@ -182,13 +182,6 @@ bool IsValidTimeNumber(const std::u16string& contents) {
   return true;
 }
 
-std::u16string GetAccessibleNameForDndButton(bool do_not_disturb_enabled) {
-  return l10n_util::GetStringUTF16(
-      do_not_disturb_enabled
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_ENABLED
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_DISABLED);
-}
-
 }  // namespace
 
 // Handles input validation and events for the textfield in
@@ -512,9 +505,14 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
       views::AsViewClass<PillButton>(toggle_view_->right_view());
 
   if (!in_focus_session) {
-    toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
+    const std::u16string duration_string = focus_mode_util::GetDurationString(
+        FocusModeController::Get()->session_duration(),
+        /*digital_format=*/false);
+    toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE,
+        duration_string));
+    toggle_button->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON_ACCESSIBLE_NAME));
-    toggle_button->SetTooltipText(toggle_button->GetAccessibleName());
     return;
   }
 
@@ -791,8 +789,8 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
                           weak_factory_.GetWeakPtr()));
   auto* controller = FocusModeController::Get();
   const bool do_not_disturb_enabled = controller->turn_on_do_not_disturb();
-  toggle->SetAccessibleName(
-      GetAccessibleNameForDndButton(do_not_disturb_enabled));
+  toggle->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME));
   toggle->SetIsOn(do_not_disturb_enabled);
   do_not_disturb_toggle_button_ = toggle.get();
   toggle_row->AddRightView(toggle.release(),
@@ -813,9 +811,6 @@ void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {
 
   controller->set_turn_on_do_not_disturb(
       do_not_disturb_toggle_button_->GetIsOn());
-
-  do_not_disturb_toggle_button_->SetAccessibleName(
-      GetAccessibleNameForDndButton(controller->turn_on_do_not_disturb()));
 }
 
 void FocusModeDetailedView::CreateFeedbackButton() {

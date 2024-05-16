@@ -203,8 +203,11 @@ FocusModeTaskView::FocusModeTaskView() {
   radio_button_ = textfield_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &FocusModeTaskView::OnCompleteTask, base::Unretained(this))));
-  radio_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON));
+  const std::u16string radio_text = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON);
+  radio_button_->SetAccessibleName(radio_text);
+  radio_button_->SetTooltipText(radio_text);
+
   views::FocusRing::Install(radio_button_);
   views::FocusRing::Get(radio_button_)
       ->SetColorId(cros_tokens::kCrosSysFocusRing);

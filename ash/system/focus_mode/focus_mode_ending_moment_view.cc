@@ -64,17 +64,14 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
 
-  auto* focus_mode_controller = FocusModeController::Get();
   text_container->AddChildView(
       CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosHeadline1,
                       cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/false,
                       IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE));
-  text_container->AddChildView(CreateTextLabel(
-      gfx::ALIGN_LEFT, TypographyToken::kCrosAnnotation1,
-      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/true,
-      focus_mode_controller->HasSelectedTask()
-          ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY));
+  text_container->AddChildView(
+      CreateTextLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosAnnotation1,
+                      cros_tokens::kCrosSysOnSurface, /*allow_multiline=*/true,
+                      IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY));
 
   // Add a top level spacer in first layout manager, between the text container
   // and button container.
@@ -95,6 +92,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
 
+  auto* focus_mode_controller = FocusModeController::Get();
   button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&FocusModeController::ResetFocusSession,
                           base::Unretained(focus_mode_controller)),
@@ -111,7 +109,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
           PillButton::Type::kSecondaryWithoutIcon,
           /*icon=*/nullptr));
   extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
 }
 
 void FocusModeEndingMomentView::SetExtendButtonEnabled(bool enabled) {

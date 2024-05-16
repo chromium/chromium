@@ -96,7 +96,7 @@ void ShowEndingMomentNudge() {
       focus_mode_util::kFocusModeEndingMomentNudgeId,
       NudgeCatalogName::kFocusModeEndingMomentNudge,
       l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE),
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE),
       tray->image_view());
   nudge_data.arrow = views::BubbleBorder::BOTTOM_CENTER;
   nudge_data.duration = NudgeDuration::kDefaultDuration;
@@ -110,10 +110,12 @@ void ShowEndingMomentNudge() {
   const std::u16string duration_string =
       focus_mode_util::GetDurationString(current_session->session_duration(),
                                          /*digital_format=*/false);
+  std::u16string title = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
   Shell::Get()
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT,
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE_ALERT, title,
           duration_string));
 }
 

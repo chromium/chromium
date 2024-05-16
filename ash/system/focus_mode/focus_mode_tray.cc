@@ -54,32 +54,30 @@ std::u16string GetAccessibleTrayName(
     const FocusModeSession::Snapshot& session_snapshot) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
     return l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE);
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
   }
 
   const std::u16string time_remaining =
       focus_mode_util::GetDurationString(session_snapshot.remaining_time,
                                          /*digital_format=*/false);
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_ACCESSIBLE_NAME, time_remaining);
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+      time_remaining);
 }
 
 std::u16string GetAccessibleBubbleName(
     const FocusModeSession::Snapshot& session_snapshot) {
-  const std::u16string task_title =
-      base::UTF8ToUTF16(FocusModeController::Get()->selected_task_title());
-
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
     std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE);
     std::u16string body = l10n_util::GetStringUTF16(
-        task_title.empty()
-            ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY
-            : IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK);
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY);
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG, title, body);
   }
 
+  const std::u16string task_title =
+      base::UTF8ToUTF16(FocusModeController::Get()->selected_task_title());
   const std::u16string time_remaining =
       focus_mode_util::GetDurationString(session_snapshot.remaining_time,
                                          /*digital_format=*/false);
@@ -114,6 +112,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                      cros_tokens::kCrosSysPrimary, kIconSize));
     radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
+    radio_button_->SetTooltipText(radio_button_->GetAccessibleName());
 
     task_title_ = AddChildView(std::make_unique<views::Label>());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,

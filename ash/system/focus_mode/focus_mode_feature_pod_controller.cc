@@ -120,10 +120,7 @@ void FocusModeFeaturePodController::UpdateUI(
 
   const bool in_focus_session =
       session_snapshot.state == FocusModeSession::State::kOn;
-  const std::u16string label_text = l10n_util::GetStringUTF16(
-      in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
-                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE);
-  tile_->SetLabel(label_text);
+  tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE));
 
   // As part of the first time user flow, if the user has never started a
   // session before, we hide the session duration sublabel since they are not
@@ -155,7 +152,7 @@ void FocusModeFeaturePodController::UpdateUI(
   tile_->SetIconClickable(true);
   tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE
-                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_INACTIVE,
+                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE,
       duration_string));
 }
 
