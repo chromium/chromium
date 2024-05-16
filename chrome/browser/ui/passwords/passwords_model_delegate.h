@@ -161,7 +161,9 @@ class PasswordsModelDelegate {
       password_manager::PasswordCheckReferrer referrer) = 0;
   // Called by the view when the "Sign in to Chrome" button or the "Sync to"
   // button in the promo bubble are clicked.
-  virtual void SignIn(const AccountInfo& account) = 0;
+  virtual void SignIn(
+      const AccountInfo& account,
+      const password_manager::PasswordForm& password_to_move) = 0;
 
   // Called from the dialog controller when the dialog is hidden.
   virtual void OnDialogHidden() = 0;

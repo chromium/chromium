@@ -761,8 +761,6 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
         ->NotifyEvent("passwords_account_storage_used");
   }
 
-  // TODO(crbug/333709971): Decide whether the post save compromised bubble or
-  // the sign in promo bubble should be shown.
   post_save_compromised_helper_ =
       std::make_unique<password_manager::PostSaveCompromisedHelper>(
           passwords_data_.form_manager()->GetInsecureCredentials(), username);
@@ -921,12 +919,11 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
+void ManagePasswordsUIController::SignIn(
+    const AccountInfo& account,
+    const password_manager::PasswordForm& password_to_move) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
-
-  const password_manager::PasswordForm pending_password =
-      passwords_data_.form_manager()->GetPendingCredentials();
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -942,7 +939,7 @@ void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
       !identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account.account_id)) {
     MoveJustSavedPasswordAfterAccountStoreOptIn(
-        pending_password,
+        password_to_move,
         password_manager::PasswordManagerClient::ReauthSucceeded(true));
   } else {
     content::WebContents* sign_in_tab_contents =
@@ -959,7 +956,7 @@ void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
     autofill::AutofillSigninPromoTabHelper::GetForWebContents(
         *sign_in_tab_contents)
         ->InitializeDataMoveAfterSignIn(
-            pending_password,
+            password_to_move,
             signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
