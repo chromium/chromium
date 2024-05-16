@@ -232,12 +232,6 @@ SharedImageFactory::SharedImageFactory(
         auto supported_format = GetFormatPixmapSupport(supported_formats);
         base::UmaHistogramEnumeration("GPU.SharedImage.FormatPixmapSupport",
                                       supported_format);
-
-        // Check if hardware GMBs with RG88 format are ever created.
-        bool is_rg88_supported =
-            base::Contains(supported_formats, gfx::BufferFormat::RG_88);
-        base::UmaHistogramBoolean("GPU.SharedImage.IsRG88HardwareGMBSupported",
-                                  is_rg88_supported);
       }
     }
     set_format_supported_metric = true;
