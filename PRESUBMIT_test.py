@@ -3164,6 +3164,9 @@ class CheckUniquePtrTest(unittest.TestCase):
       ]),
       MockFile('dir/nested.cc', ['set<std::unique_ptr<T>>();']),
       MockFile('dir/nested2.cc', ['map<U, std::unique_ptr<T>>();']),
+      # Changed line is inside a multiline template block.
+      MockFile('dir/template.cc', [' std::unique_ptr<T>>(']),
+      MockFile('dir/template2.cc', [' std::unique_ptr<T>>()']),
 
       # Two-argument invocation of std::unique_ptr is exempt because there is
       # no equivalent using std::make_unique.
@@ -3172,7 +3175,7 @@ class CheckUniquePtrTest(unittest.TestCase):
     ]
 
     results = PRESUBMIT.CheckUniquePtrOnUpload(mock_input_api, MockOutputApi())
-    self.assertEqual(0, len(results))
+    self.assertEqual([], results)
 
 class CheckNoDirectIncludesHeadersWhichRedefineStrCat(unittest.TestCase):
   def testBlocksDirectIncludes(self):
