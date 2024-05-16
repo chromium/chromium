@@ -132,6 +132,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   static constexpr CountType kMemoryHeldByAllocatorBit =
       BitField<CountType>::Bit(0);
   static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 29);
+  // The most significant bit of the refcount is reserved to prevent races with
+  // overflow detection.
+  static constexpr CountType kMaxPtrCount = BitField<CountType>::Mask(1, 28);
   static constexpr CountType kRequestQuarantineBit =
       BitField<CountType>::Bit(30);
   static constexpr CountType kNeedsMac11MallocSizeHackBit =
@@ -144,6 +147,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   using CountType = uint64_t;
   static constexpr auto kMemoryHeldByAllocatorBit = BitField<CountType>::Bit(0);
   static constexpr auto kPtrCountMask = BitField<CountType>::Mask(1, 31);
+  // The most significant bit of the refcount is reserved to prevent races with
+  // overflow detection.
+  static constexpr auto kMaxPtrCount = BitField<CountType>::Mask(1, 30);
   static constexpr auto kDanglingRawPtrDetectedBit =
       BitField<CountType>::Bit(32);
   static constexpr auto kNeedsMac11MallocSizeHackBit =
@@ -152,6 +158,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       BitField<CountType>::Bit(34);
   static constexpr auto kUnprotectedPtrCountMask =
       BitField<CountType>::Mask(35, 63);
+  // The most significant bit of the refcount is reserved to prevent races with
+  // overflow detection.
+  static constexpr auto kMaxUnprotectedPtrCount =
+      BitField<CountType>::Mask(35, 62);
 #endif  // !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
   // Quick check to assert these masks do not overlap.
@@ -183,7 +193,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
     CountType old_count = count_.fetch_add(kPtrInc, std::memory_order_relaxed);
     // Check overflow.
-    PA_CHECK((old_count & kPtrCountMask) != kPtrCountMask);
+    PA_CHECK((old_count & kPtrCountMask) != kMaxPtrCount);
   }
 
   // Similar to |Acquire()|, but for raw_ptr<T, DisableDanglingPtrDetection>
@@ -194,8 +204,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     CountType old_count =
         count_.fetch_add(kUnprotectedPtrInc, std::memory_order_relaxed);
     // Check overflow.
-    PA_CHECK((old_count & kUnprotectedPtrCountMask) !=
-             kUnprotectedPtrCountMask);
+    PA_CHECK((old_count & kUnprotectedPtrCountMask) != kMaxUnprotectedPtrCount);
 #else
     Acquire();
 #endif
