@@ -5856,7 +5856,7 @@
                         "group_name": "enabled-v1-arm-2",
                         "max_prompt_count": "5",
                         "reprompt_duration": "7d",
-                        "reprompt_duration_multiplier ": "2",
+                        "reprompt_duration_multiplier": "2",
                         "show_app_menu_chip": "false",
                         "show_info_bar": "true",
                         "updated_info_bar_copy": "true"
