@@ -60,19 +60,9 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
     @Override
     public ByteBuffer serialize(TabState state) {
         FlatBufferBuilder fbb = new FlatBufferBuilder();
-        ByteBuffer byteBuffer =
-                state.contentsState.buffer() != null
-                        ? state.contentsState.buffer().asReadOnlyBuffer()
-                        : null;
-        if (byteBuffer != null) {
-            byteBuffer.rewind();
-        }
+        byte[] contentsStateBytes = getContentStateByteArray(state.contentsState);
         int webContentsState =
-                TabStateFlatBufferV1.createWebContentsStateBytesVector(
-                        fbb,
-                        byteBuffer == null
-                                ? ByteBuffer.allocate(0).put(new byte[] {})
-                                : byteBuffer);
+                TabStateFlatBufferV1.createWebContentsStateBytesVector(fbb, contentsStateBytes);
         int openerAppId =
                 fbb.createString(
                         state.openerAppId == null ? NULL_OPENER_APP_ID : state.openerAppId);
@@ -99,6 +89,19 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
+    }
+
+    private static byte[] getContentStateByteArray(WebContentsState webContentsState) {
+        if (webContentsState == null
+                || webContentsState.buffer() == null
+                || webContentsState.buffer().limit() == 0) {
+            return new byte[] {};
+        }
+        ByteBuffer buffer = webContentsState.buffer();
+        byte[] contentsStateBytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(contentsStateBytes);
+        return contentsStateBytes;
     }
 
     @Override
