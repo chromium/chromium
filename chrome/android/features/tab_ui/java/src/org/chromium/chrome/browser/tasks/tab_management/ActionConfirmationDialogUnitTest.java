@@ -79,7 +79,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
@@ -88,7 +88,7 @@ public class ActionConfirmationDialogUnitTest {
                 .showDialog(mPropertyModelArgumentCaptor.capture(), eq(ModalDialogType.APP));
         PropertyModel propertyModel = mPropertyModelArgumentCaptor.getValue();
 
-        assertEquals("Close tab and delete group?", propertyModel.get(ModalDialogProperties.TITLE));
+        assertEquals("Delete tab group?", propertyModel.get(ModalDialogProperties.TITLE));
         assertEquals("Delete group", propertyModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
@@ -102,7 +102,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 syncResolver(R.string.delete_tab_group_description, "test@gmail.com"),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
@@ -123,7 +123,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
@@ -143,7 +143,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
@@ -163,7 +163,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);
@@ -187,7 +187,7 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mProfile, mActivity, mModalDialogManager);
         dialog.show(
-                R.string.close_from_group_dialog_title,
+                R.string.delete_tab_group_dialog_title,
                 noSyncResolver(R.string.delete_tab_group_no_sync_description),
                 R.string.delete_tab_group_action,
                 mConfirmationDialogResult);

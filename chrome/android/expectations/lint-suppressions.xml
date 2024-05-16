@@ -275,16 +275,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <!-- TODO(crbug.com/324935631): Remove this once tab group sync is using these. -->
     <ignore regexp="The resource `R.string.close_all_tabs_and_groups_dialog_message` appears to be unused"/>
     <ignore regexp="The resource `R.string.close_all_tabs_and_groups_action` appears to be unused"/>
-    <ignore regexp="The resource `R.string.remove_from_group_dialog_message` appears to be unused"/>
-    <ignore regexp="The resource `R.string.remove_from_group_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.close_from_group_dialog_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.close_from_group_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.remove_last_tab_action` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_group_creation_dialog_sync_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_groups_category` appears to be unused"/>
     <ignore regexp="The resource `R.string.saved_tab_groups_data_summary` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_groups_empty_header` appears to be unused"/>
-    <ignore regexp="The resource `R.string.tab_groups_empty_state_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_group_surface_iph_with_sync` appears to be unused"/>
     <ignore regexp="The resource `R.string.tab_group_surface_iph_no_sync` appears to be unused"/>
     <ignore regexp="The resource `R.string.newly_synced_tab_group_iph` appears to be unused"/>

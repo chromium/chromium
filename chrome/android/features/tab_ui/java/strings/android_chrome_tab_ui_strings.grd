@@ -774,9 +774,6 @@
       <message name="IDS_REMOVE_FROM_GROUP_DESCRIPTION" desc="Descirotion of the action of removing all tabs in a group, shown in a confirmation dialog.">
         This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
-      <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
-        Close tab and delete group?
-      </message>
       <message name="IDS_CLOSE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to close a tab group.">
         Close
       </message>
@@ -785,9 +782,6 @@
       </message>
       <message name="IDS_ACCESSIBILITY_OPEN_TAB_GROUP_OVERFLOW_MENU_WITH_GROUP_NAME" desc="Accessibility string for opening the overflow menu on a tab group, which will allow the user to perform several actions on the tab group. TITLE_OF_GROUP is the title of the group.">
         Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>
-      </message>
-      <message name="IDS_CLOSE_FROM_GROUP_DESCRIPTION" desc="Description of the ation of deleting a tab and a group, shown in a confirmation dialog.">
-        This will delete the group from all devices signed into <ph name="USER_EMAIL">%1$s<ex>test@gmail.com</ex></ph>
       </message>
       <message name="IDS_REMOVE_LAST_TAB_ACTION" desc="The text shown on the bottom bar when the user is dragging the last tab of a group around. Indicates removing this tab will also delete the group.">
         Remove tab and delete group

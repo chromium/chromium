@@ -92,7 +92,7 @@ public class ActionConfirmationManager {
                 onResult);
     }
 
-    /** Ungroup is an action taken on tab groups that ungroups every tab within then, */
+    /** Ungroup is an action taken on tab groups that ungroups every tab within them. */
     public void processUngroupAttempt(Callback<Integer> onResult) {
         processGenericAction(
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP,
@@ -100,6 +100,20 @@ public class ActionConfirmationManager {
                 R.string.ungroup_tab_group_description,
                 R.string.ungroup_tab_group_no_sync_description,
                 R.string.ungroup_tab_group_action,
+                onResult);
+    }
+
+    /**
+     * Removing tabs either moving to no group or to a different group. The caller needs to ensure
+     * this action will delete the group.
+     */
+    public void processRemoveTabAttempt(Callback<Integer> onResult) {
+        processGenericAction(
+                Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE,
+                R.string.remove_from_group_dialog_message,
+                R.string.remove_from_group_description,
+                R.string.delete_tab_group_no_sync_description,
+                R.string.delete_tab_group_action,
                 onResult);
     }
 
@@ -113,24 +127,6 @@ public class ActionConfirmationManager {
                     Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE,
                     R.string.remove_from_group_dialog_message,
                     R.string.remove_from_group_description,
-                    R.string.delete_tab_group_no_sync_description,
-                    R.string.delete_tab_group_action,
-                    onResult);
-        } else {
-            onResult.onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
-        }
-    }
-
-    /**
-     * This processes closing tabs within groups. Warns when the last tab(s) are being closed. The
-     * list of tabs should all be in the same group.
-     */
-    public void processCloseTabAttempt(List<Integer> tabIdList, Callback<Integer> onResult) {
-        if (isFullGroup(tabIdList)) {
-            processGenericAction(
-                    Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_CLOSE,
-                    R.string.close_from_group_dialog_title,
-                    R.string.close_from_group_description,
                     R.string.delete_tab_group_no_sync_description,
                     R.string.delete_tab_group_action,
                     onResult);

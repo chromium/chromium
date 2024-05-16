@@ -2893,7 +2893,7 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+                .processRemoveTabAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
         // Verify tab is moved out of group as user chooses delete tab group without showing the
@@ -2918,7 +2918,7 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+                .processRemoveTabAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Verify tab is moved out of group as user confirms tab group delete.
@@ -2942,7 +2942,7 @@ public class StripLayoutHelperTest {
 
         // Verify action confirmation dialog shows.
         verify(mActionConfirmationManager)
-                .processDeleteGroupAttempt(mConfirmationResultCaptor.capture());
+                .processRemoveTabAttempt(mConfirmationResultCaptor.capture());
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Verify tab is not moved out of group as user cancels tab group delete.

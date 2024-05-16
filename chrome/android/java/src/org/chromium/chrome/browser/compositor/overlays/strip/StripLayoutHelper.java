@@ -4483,7 +4483,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      *     delete.
      */
     private void showActionConfirmationDialog(Runnable moveTabOutOfGroup) {
-        mActionConfirmationManager.processDeleteGroupAttempt(
+        mActionConfirmationManager.processRemoveTabAttempt(
                 (@ConfirmationResult Integer result) -> {
                     if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
                         mTabGroupIdToHide = Tab.INVALID_TAB_ID;
