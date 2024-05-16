@@ -456,9 +456,19 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     // Set the number of column tiles in encoding an input frame, with number of
     // tile columns (in Log2 unit) as the parameter.
     // The minimum width of a tile column is 256 pixels, the maximum is 4096.
+    unsigned int tile_columns = (codec_config_.g_w + 255) / 256;
+    // The valid range of VP9E_SET_TILE_COLUMNS is [0..6].
     int log2_tile_columns =
-        static_cast<int>(std::log2(codec_config_.g_w / 256));
-    vpx_codec_control(codec.get(), VP9E_SET_TILE_COLUMNS, log2_tile_columns);
+        std::min(static_cast<int>(std::log2(tile_columns)), 6);
+    vpx_error = vpx_codec_control(codec.get(), VP9E_SET_TILE_COLUMNS,
+                                  log2_tile_columns);
+    if (vpx_error != VPX_CODEC_OK) {
+      auto msg = LogVpxErrorMessage(
+          codec.get(), "VPX encoder VP9E_SET_TILE_COLUMNS error", vpx_error);
+      std::move(done_cb).Run(EncoderStatus(
+          EncoderStatus::Codes::kEncoderInitializationError, msg));
+      return;
+    }
 
     // Turn on row level multi-threading.
     vpx_codec_control(codec.get(), VP9E_SET_ROW_MT, 1);

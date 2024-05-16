@@ -358,6 +358,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   }
 
   // Keep in mind that AV1E_SET_TILE_[COLUMNS|ROWS] uses log2 units.
+  CHECK_NE(config_.g_threads, 0u);
   int log2_threads = std::log2(config_.g_threads);
   int tile_columns_log2 = 0;
   int tile_rows_log2 = 0;
