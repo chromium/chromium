@@ -333,6 +333,8 @@ bool StructTraits<
     out->set_user_input(std::move(user_input));
   }
 
+  out->set_allows_writing_suggestions(data.allows_writing_suggestions());
+
   {
     std::vector<autofill::SelectOption> options;
     if (!data.ReadOptions(&options)) {

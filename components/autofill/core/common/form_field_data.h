@@ -479,6 +479,17 @@ class FormFieldData {
     user_input_ = std::move(user_input);
   }
 
+  // The computed writingsuggestions value. See
+  // https://html.spec.whatwg.org/multipage/interaction.html#writing-suggestions
+  // for spec.
+  // TODO(crbug.com/338590542): Extract on iOS.
+  bool allows_writing_suggestions() const {
+    return allows_writing_suggestions_;
+  }
+  void set_allows_writing_suggestions(bool allows_writing_suggestions) {
+    allows_writing_suggestions_ = allows_writing_suggestions;
+  }
+
   // The options of a select box.
   const std::vector<SelectOption>& options() const { return options_; }
   void set_options(std::vector<SelectOption> options) {
@@ -550,6 +561,7 @@ class FormFieldData {
   bool is_enabled_ = false;
   bool is_readonly_ = false;
   std::u16string user_input_;
+  bool allows_writing_suggestions_ = true;
   std::vector<SelectOption> options_;
   LabelSource label_source_ = LabelSource::kUnknown;
   gfx::RectF bounds_;

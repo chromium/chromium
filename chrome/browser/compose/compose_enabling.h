@@ -69,6 +69,7 @@ class ComposeEnabling {
 
   base::expected<void, compose::ComposeNudgeDenyReason> ShouldTriggerPopup(
       std::string_view autocomplete_attribute,
+      bool allows_writing_suggestions,
       Profile* profile,
       PrefService* prefs,
       translate::TranslateManager* translate_manager,
@@ -96,6 +97,7 @@ class ComposeEnabling {
 
   base::expected<void, compose::ComposeShowStatus> ShouldTriggerNoStatePopup(
       std::string_view autocomplete_attribute,
+      bool writingsuggestions_attribute,
       Profile* profile,
       PrefService* prefs,
       translate::TranslateManager* translate_manager,

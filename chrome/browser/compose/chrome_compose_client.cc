@@ -512,7 +512,8 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   bool ongoing_session = HasSession(form_field_data.global_id());
 
   auto should_show_nudge = compose_enabling_->ShouldTriggerPopup(
-      form_field_data.autocomplete_attribute(), profile_, pref_service_,
+      form_field_data.autocomplete_attribute(),
+      form_field_data.allows_writing_suggestions(), profile_, pref_service_,
       translate_manager, ongoing_session,
       top_level_frame->GetLastCommittedOrigin(), form_field_data.origin(), url,
       trigger_source, GetMSBBStateFromPrefs());

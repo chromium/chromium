@@ -1918,6 +1918,34 @@ TEST_F(FormAutofillUtilsTest, GetMaxLength) {
   }
 }
 
+TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalseInherited) {
+  LoadHTML(
+      R"(<body writingsuggestions=false>
+         <div id=my-id contenteditable></div>
+         </body>)");
+  WebElement content_editable =
+      GetMainFrame()->GetDocument().GetElementById("my-id");
+  ASSERT_FALSE(content_editable.IsNull());
+  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  ASSERT_EQ(form->fields.size(), 1u);
+  const FormFieldData& field = form->fields[0];
+  EXPECT_FALSE(field.allows_writing_suggestions());
+}
+
+TEST_F(FormAutofillUtilsTest, ContentEditableWritingSuggestionsFalse) {
+  LoadHTML(
+      R"(<body>
+         <div id=my-id writingsuggestions=false contenteditable></div>
+         </body>)");
+  WebElement content_editable =
+      GetMainFrame()->GetDocument().GetElementById("my-id");
+  ASSERT_FALSE(content_editable.IsNull());
+  std::optional<FormData> form = FindFormForContentEditable(content_editable);
+  ASSERT_EQ(form->fields.size(), 1u);
+  const FormFieldData& field = form->fields[0];
+  EXPECT_FALSE(field.allows_writing_suggestions());
+}
+
 TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   LoadHTML(
       R"(<body>
@@ -1945,6 +1973,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_EQ(field.css_classes(), u"my-class");
   EXPECT_EQ(field.value(),
             u"\n            This is the textContent!\n         ");
+  EXPECT_TRUE(field.allows_writing_suggestions());
 }
 
 TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {

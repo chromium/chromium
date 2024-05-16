@@ -2082,6 +2082,7 @@ void WebFormControlElementToFormField(
   field->set_value(std::move(value).substr(0, kMaxStringLength));
   field->set_selected_text(
       element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
+  field->set_allows_writing_suggestions(element.WritingSuggestions());
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
@@ -2226,6 +2227,7 @@ std::optional<FormData> FindFormForContentEditable(
   DCHECK_LE(field.value().length(), kMaxStringLength);
   field.set_selected_text(content_editable.SelectedText().Utf16().substr(
       0, kMaxSelectedTextLength));
+  field.set_allows_writing_suggestions(content_editable.WritingSuggestions());
   return form;
 }
 

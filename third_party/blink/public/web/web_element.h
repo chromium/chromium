@@ -88,6 +88,10 @@ class BLINK_EXPORT WebElement : public WebNode {
   // https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
   bool IsContentEditable() const;
 
+  // Returns true if the element's computed writing suggestions value is true.
+  // https://html.spec.whatwg.org/#writing-suggestions:computed-writing-suggestions-value
+  bool WritingSuggestions() const;
+
   // Returns true if the frame's selection is inside this editable element.
   bool ContainsFrameSelection() const;
 

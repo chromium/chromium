@@ -320,6 +320,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.user_input();
   }
 
+  static bool allows_writing_suggestions(const autofill::FormFieldData& r) {
+    return r.allows_writing_suggestions();
+  }
+
   static const std::vector<autofill::SelectOption>& options(
       const autofill::FormFieldData& r) {
     return r.options();
