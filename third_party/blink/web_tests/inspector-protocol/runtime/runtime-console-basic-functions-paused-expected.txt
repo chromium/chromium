@@ -39,6 +39,7 @@ Testing console.log with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -102,6 +103,7 @@ Testing console.debug with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -165,6 +167,7 @@ Testing console.info with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -228,6 +231,7 @@ Testing console.error with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -291,6 +295,7 @@ Testing console.warn with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -354,6 +359,7 @@ Testing console.dir with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -417,6 +423,7 @@ Testing console.dirxml with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -480,6 +487,7 @@ Testing console.table with required args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -543,6 +551,7 @@ Testing console.trace with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -576,6 +585,7 @@ Testing console.trace with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -639,6 +649,7 @@ Testing console.clear with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -672,6 +683,7 @@ Testing console.clear with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -735,6 +747,7 @@ Testing console.group with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -768,6 +781,7 @@ Testing console.group with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -831,6 +845,7 @@ Testing console.groupCollapsed with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -864,6 +879,7 @@ Testing console.groupCollapsed with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -927,6 +943,7 @@ Testing console.groupEnd with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
@@ -960,6 +977,7 @@ Testing console.groupEnd with optional args while paused
             }
         ]
         executionContextId : <number>
+        executionContextUniqueId : <string>
         stackTrace : {
             callFrames : [
                 [0] : {
