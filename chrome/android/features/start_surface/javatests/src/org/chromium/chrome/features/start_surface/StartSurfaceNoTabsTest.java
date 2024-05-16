@@ -114,11 +114,7 @@ public class StartSurfaceNoTabsTest {
         onView(withId(R.id.single_tab_view)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
         onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
-        if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            onViewWaiting(withId(R.id.search_provider_logo)).check(matches(isDisplayed()));
-        } else {
-            onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
-        }
+        onViewWaiting(withId(R.id.search_provider_logo)).check(matches(isDisplayed()));
 
         StartSurfaceTestUtils.launchFirstMVTile(cta, 0);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);

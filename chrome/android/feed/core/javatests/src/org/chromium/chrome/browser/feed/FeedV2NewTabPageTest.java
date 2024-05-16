@@ -54,7 +54,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -67,7 +66,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -200,12 +198,6 @@ public class FeedV2NewTabPageTest {
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
         SignInPromo.setDisablePromoForTesting(mDisableSigninPromoCard);
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
-        FeatureList.setTestValues(testValuesOverride);
 
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
@@ -420,10 +412,9 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/1467377")
-    public void testFakeOmniboxPolishOnNtp() throws IOException {
+    public void testFakeOmniboxOnNtp() throws IOException {
         openNewTabPage();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

@@ -48,7 +48,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SU
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -70,7 +69,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -813,58 +811,16 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void initializeStartSurfaceTopMargins_SurfacePolish() {
-        int tasksSurfaceBodyTopMarginPolished = 0;
+    public void initializeStartSurfaceTopMargins() {
+        int tasksSurfaceBodyTopMargin = 0;
 
         createStartSurfaceMediatorWithoutInit(
 
                 /* hadWarmStart= */ false, /* useMagicStack= */ false);
         assertThat(
                 mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMarginPolished));
+                equalTo(tasksSurfaceBodyTopMargin));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testStartSurfaceTopMarginsWithSingleTabCardVisibility() {
-        doReturn(TabSwitcherType.SINGLE)
-                .when(mSingleTabSwitcherModuleController)
-                .getTabSwitcherType();
-
-        Resources resources = ContextUtils.getApplicationContext().getResources();
-        int tasksSurfaceBodyTopMarginWithTab =
-                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin);
-        int tasksSurfaceBodyTopMarginWithoutTab =
-                resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bottom_margin);
-        int mvTilesContainerTopMargin =
-                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin);
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediatorWithoutInit(
-
-                        /* hadWarmStart= */ false, /* useMagicStack= */ false);
-
-        // Tasks surface body top margin should be updated when tab single card visibility
-        // is changed.
-        doReturn(0).when(mNormalTabModel).getCount();
-        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
-        showHomepageAndVerify(mediator);
-        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(false));
-        assertThat(
-                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMarginWithoutTab));
-
-        doReturn(2).when(mNormalTabModel).getCount();
-        showHomepageAndVerify(mediator);
-        assertThat(mPropertyModel.get(IS_TAB_CARD_VISIBLE), equalTo(true));
-        assertThat(
-                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMarginWithTab));
-        assertThat(
-                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
-                equalTo(mvTilesContainerTopMargin));
     }
 
     @Test
@@ -920,21 +876,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testNotInitializeLogoWhenShownHomepage() {
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-
-        StartSurfaceMediator mediator =
-                createStartSurfaceMediator(/* hadWarmStart= */ false, /* useMagicStack= */ false);
-        showHomepageAndVerify(mediator);
-
-        verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
-        Assert.assertFalse(mediator.isLogoVisible());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    public void testInitializeLogoWhenSurfacePolished() {
+    public void testInitializeLogo() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         StartSurfaceMediator mediator =
@@ -1065,14 +1007,13 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void testDefaultSearchEngineChanged() {
-        boolean isMoveDownLogoEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mProfileSupplier = new ObservableSupplierImpl<>();
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(/* hadWarmStart= */ false, /* useMagicStack= */ false);
         showHomepageAndVerify(mediator);
 
         mProfileSupplier.set(mProfile);
-        verify(mTemplateUrlService, times(isMoveDownLogoEnabled ? 2 : 1))
+        verify(mTemplateUrlService, times(2))
                 .addObserver(mTemplateUrlServiceObserverCaptor.capture());
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
         mTemplateUrlServiceObserverCaptor.getValue().onTemplateURLServiceChanged();
@@ -1083,17 +1024,13 @@ public class StartSurfaceMediatorUnitTest {
         assertFalse(mPropertyModel.get(IS_LENS_BUTTON_VISIBLE));
 
         mediator.destroy();
-        verify(mTemplateUrlService, times(isMoveDownLogoEnabled ? 2 : 1))
+        verify(mTemplateUrlService, times(2))
                 .removeObserver(mTemplateUrlServiceObserverCaptor.capture());
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.MAGIC_STACK_ANDROID
-    })
-    public void testObserverWithSurfacePolish() {
-        Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
+    public void testObserver() {
         Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -1158,12 +1095,8 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.SURFACE_POLISH,
-        ChromeFeatureList.MAGIC_STACK_ANDROID
-    })
-    public void testShowAndOnHideWithSurfacePolish() {
-        Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
+    public void testShowAndOnHideForMagicStack() {
         Assert.assertTrue(ChromeFeatureList.sMagicStackAndroid.isEnabled());
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -1207,9 +1140,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testUpdateStartSurfaceBackgroundColor() {
-        Assert.assertTrue(ChromeFeatureList.sSurfacePolish.isEnabled());
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         // Make sure the background color is not set.
         assertEquals(0, mPropertyModel.get(BACKGROUND_COLOR));
@@ -1231,7 +1162,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH, ChromeFeatureList.MAGIC_STACK_ANDROID})
+    @EnableFeatures({ChromeFeatureList.MAGIC_STACK_ANDROID})
     public void testSetMagicStackVisibility() {
         assertTrue(StartSurfaceConfiguration.useMagicStack());
         StartSurfaceMediator mediator =

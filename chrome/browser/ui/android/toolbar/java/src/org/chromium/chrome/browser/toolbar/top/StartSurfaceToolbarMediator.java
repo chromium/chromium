@@ -484,14 +484,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         return mLayoutType;
     }
 
-    boolean isLogoVisibleForTesting() {
-        return mLogoCoordinator != null && mLogoCoordinator.isLogoVisible();
-    }
-
-    LogoCoordinator getLogoCoordinatorForTesting() {
-        return mLogoCoordinator;
-    }
-
     @Override
     public void buttonDataChanged(boolean canShowHint) {
         // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.

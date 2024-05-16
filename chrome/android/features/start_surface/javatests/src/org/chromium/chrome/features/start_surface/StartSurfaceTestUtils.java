@@ -482,10 +482,10 @@ public class StartSurfaceTestUtils {
 
     /**
      * Scroll the start surface to make toolbar scrolled off.
+     *
      * @param cta The ChromeTabbedActivity under test.
      */
     public static void scrollToolbar(ChromeTabbedActivity cta) {
-        boolean isSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         // Toolbar layout should be hidden if start surface toolbar is shown on the top of the
         // screen.
         onView(withId(R.id.toolbar))
@@ -501,7 +501,7 @@ public class StartSurfaceTestUtils {
             logoInSurfaceHeight =
                     LogoUtils.getLogoTotalHeightForLogoPolish(
                             resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
-        } else if (isSurfacePolishEnabled) {
+        } else {
             logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolished(resources);
         }
         float toY =
@@ -529,10 +529,7 @@ public class StartSurfaceTestUtils {
         // Check the toolbar's background color.
         ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
         int expectedToolbarColor =
-                isSurfacePolishEnabled
-                        ? ChromeColors.getSurfaceColor(
-                                cta, R.dimen.home_surface_background_color_elevation)
-                        : toolbar.getToolbarDataProvider().getPrimaryColor();
+                ChromeColors.getSurfaceColor(cta, R.dimen.home_surface_background_color_elevation);
         Assert.assertEquals(expectedToolbarColor, toolbar.getBackgroundDrawable().getColor());
     }
 

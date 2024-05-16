@@ -224,14 +224,6 @@ public class MostVisitedTilesGridLayout extends FrameLayout {
                 getResources().getDimensionPixelOffset(getGridMVTVerticalSpacingResourcesId());
     }
 
-    public int getMinHorizontalSpacingForTesting() {
-        return mMinHorizontalSpacing;
-    }
-
-    public int getMaxHorizontalSpacingForTesting() {
-        return mMaxHorizontalSpacing;
-    }
-
     // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is cleaned up.
     private int getGridMVTVerticalSpacingResourcesId() {
         if (!LibraryLoader.getInstance().isInitialized() || !mSearchProviderHasLogo) {

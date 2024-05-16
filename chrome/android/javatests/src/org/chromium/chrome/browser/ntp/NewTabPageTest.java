@@ -49,7 +49,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
@@ -60,7 +59,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UrlUtils;
@@ -184,13 +182,6 @@ public class NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
-        FeatureList.setTestValues(testValuesOverride);
-
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
         TemplateUrlService originalService =
@@ -933,7 +924,6 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);
@@ -1172,9 +1162,8 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
-    public void testMvtOnNtpAfterPolish() {
-        verifyMostVisitedTileMarginPolish();
+    public void testMvtContainerOnNtp() {
+        verifyMostVisitedTileMargin();
 
         Resources res = mActivityTestRule.getActivity().getResources();
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
@@ -1190,7 +1179,7 @@ public class NewTabPageTest {
                         .topMargin);
     }
 
-    private void verifyMostVisitedTileMarginPolish() {
+    private void verifyMostVisitedTileMargin() {
         Resources res = mActivityTestRule.getActivity().getResources();
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
         View mvTilesContainer =

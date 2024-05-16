@@ -62,8 +62,6 @@ public class SearchResumptionModuleUtilsUnitTest {
         FeatureList.setTestValues(mFeatureListValues);
         mFeatureListValues.addFeatureFlagOverride(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -74,8 +72,6 @@ public class SearchResumptionModuleUtilsUnitTest {
     @Test
     @SmallTest
     public void testShouldShowSearchResumptionModule() {
-        Assert.assertTrue(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID));
         Assert.assertTrue(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID));
 

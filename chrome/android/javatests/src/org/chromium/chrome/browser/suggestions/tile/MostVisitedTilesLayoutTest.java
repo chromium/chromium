@@ -34,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -84,10 +83,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Instrumentation tests for the {@link MostVisitedTilesGridLayout} and {@link
- * MostVisitedTilesCarouselLayout} on the New Tab Page.
- */
+/** Instrumentation tests for the {@link MostVisitedTilesCarouselLayout} on the New Tab Page. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -150,12 +146,6 @@ public class MostVisitedTilesLayoutTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
-            FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-            testValuesOverride.addFeatureFlagOverride(
-                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, true);
-            FeatureList.setTestValues(testValuesOverride);
-        }
     }
 
     @Test
