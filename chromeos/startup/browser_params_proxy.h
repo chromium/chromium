@@ -176,6 +176,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCrosMallEnabled() const;
 
+  bool IsMagicBoostEnabled() const;
+
   bool IsMahiEnabled() const;
 
   bool IsContainerAppPreinstallEnabled() const;

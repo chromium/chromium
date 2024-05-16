@@ -381,6 +381,10 @@ bool BrowserParamsProxy::IsCrosMallEnabled() const {
   return BrowserInitParams::Get()->is_cros_mall_enabled;
 }
 
+bool BrowserParamsProxy::IsMagicBoostEnabled() const {
+  return BrowserInitParams::Get()->is_magic_boost_enabled;
+}
+
 bool BrowserParamsProxy::IsMahiEnabled() const {
   return BrowserInitParams::Get()->is_mahi_enabled;
 }
