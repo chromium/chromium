@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.Sur
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -849,13 +848,8 @@ public class FeedSurfaceCoordinator
                                     return AppCompatResources.getDrawable(mActivity, resId);
                                 }));
             }
-            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-                view.setBackground(
-                        AppCompatResources.getDrawable(
-                                mActivity, R.drawable.home_surface_background));
-            } else {
-                view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
-            }
+            view.setBackground(
+                    AppCompatResources.getDrawable(mActivity, R.drawable.home_surface_background));
 
             // Work around https://crbug.com/943873 where default focus highlight shows up after
             // toggling dark mode.
@@ -964,27 +958,23 @@ public class FeedSurfaceCoordinator
         for (View header : headerViews) {
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
-            if (header == mSectionHeaderView) {
-                lateralPaddingsPx = 0;
-            }
 
-            if (ChromeFeatureList.sSurfacePolish.isEnabled()) {
-                if (header instanceof NewTabPageLayout) {
-                    lateralPaddingsPx = 0;
-                } else if (header == mSectionHeaderView) {
-                    if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-                        mSectionHeaderView.setBackground(
-                                AppCompatResources.getDrawable(
-                                        mActivity, R.drawable.home_surface_background));
-                    }
-                } else if (header == mSigninPromoView) {
-                    lateralPaddingsPx =
-                            mActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(R.dimen.signin_promo_lateral_paddings);
-                    ((PersonalizedSigninPromoView) mSigninPromoView)
-                            .setCardBackgroundResource(R.drawable.home_surface_ui_background);
+            if (header instanceof NewTabPageLayout) {
+                lateralPaddingsPx = 0;
+            } else if (header == mSectionHeaderView) {
+                lateralPaddingsPx = 0;
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
+                    mSectionHeaderView.setBackground(
+                            AppCompatResources.getDrawable(
+                                    mActivity, R.drawable.home_surface_background));
                 }
+            } else if (header == mSigninPromoView) {
+                lateralPaddingsPx =
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.signin_promo_lateral_paddings);
+                ((PersonalizedSigninPromoView) mSigninPromoView)
+                        .setCardBackgroundResource(R.drawable.home_surface_ui_background);
             }
 
             FeedListContentManager.NativeViewContent content =

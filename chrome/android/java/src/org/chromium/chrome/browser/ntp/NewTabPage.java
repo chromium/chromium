@@ -426,13 +426,9 @@ public class NewTabPage
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        if (mIsSurfacePolishEnabled) {
-            mBackgroundColor =
-                    ChromeColors.getSurfaceColor(
-                            mContext, R.dimen.home_surface_background_color_elevation);
-        } else {
-            mBackgroundColor = SemanticColorUtils.getDefaultBgColor(mContext);
-        }
+        mBackgroundColor =
+                ChromeColors.getSurfaceColor(
+                        mContext, R.dimen.home_surface_background_color_elevation);
         mIsTablet = isTablet;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this);

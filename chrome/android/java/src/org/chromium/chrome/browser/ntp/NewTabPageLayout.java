@@ -317,11 +317,6 @@ public class NewTabPageLayout extends LinearLayout {
         mInitialized = true;
 
         TraceEvent.end(TAG + ".initialize()");
-
-        if (mIsSurfacePolishEnabled) {
-            setBackground(
-                    AppCompatResources.getDrawable(mContext, R.drawable.home_surface_background));
-        }
     }
 
     public void reload() {

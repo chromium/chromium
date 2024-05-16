@@ -26,7 +26,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_ST
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
@@ -1210,10 +1209,6 @@ class StartSurfaceMediator
         if (mIsSurfacePolishEnabled) return;
 
         Resources resources = mContext.getResources();
-        mPropertyModel.set(
-                TASKS_SURFACE_BODY_TOP_MARGIN,
-                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
-
         // TODO(crbug.com/40221888): Clean up this code when the refactor is enabled.
         mPropertyModel.set(
                 MV_TILES_CONTAINER_TOP_MARGIN,
@@ -1341,13 +1336,13 @@ class StartSurfaceMediator
     }
 
     /**
-     * Update the background color of the start surface based on whether it is polished or not ,
-     * in the incognito mode or non-incognito mode.
+     * Update the background color of the start surface based on whether it is polished or not , in
+     * the incognito mode or non-incognito mode.
      */
     @VisibleForTesting
     void updateBackgroundColor(PropertyModel propertyModel) {
         @ColorInt int surfaceBackgroundColor;
-        if (mIsSurfacePolishEnabled && !mIsIncognito) {
+        if (!mIsIncognito) {
             surfaceBackgroundColor =
                     ChromeColors.getSurfaceColor(
                             mContext, R.dimen.home_surface_background_color_elevation);

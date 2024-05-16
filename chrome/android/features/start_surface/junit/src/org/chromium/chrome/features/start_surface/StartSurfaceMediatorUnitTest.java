@@ -44,7 +44,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_C
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.app.Activity;
@@ -812,14 +811,8 @@ public class StartSurfaceMediatorUnitTest {
 
     @Test
     public void initializeStartSurfaceTopMargins() {
-        int tasksSurfaceBodyTopMargin = 0;
-
         createStartSurfaceMediatorWithoutInit(
-
                 /* hadWarmStart= */ false, /* useMagicStack= */ false);
-        assertThat(
-                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
-                equalTo(tasksSurfaceBodyTopMargin));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
     }
 

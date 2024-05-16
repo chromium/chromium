@@ -308,16 +308,8 @@ public class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
-     * Set the top margin for the tasks surface body.
-     * @param topMargin The top margin to set.
-     */
-    void setTasksSurfaceBodyTopMargin(int topMargin) {
-        MarginLayoutParams params = (MarginLayoutParams) getBodyViewContainer().getLayoutParams();
-        params.topMargin = topMargin;
-    }
-
-    /**
      * Set the top margin for the mv tiles container.
+     *
      * @param topMargin The top margin to set.
      */
     void setMVTilesContainerTopMargin(int topMargin) {

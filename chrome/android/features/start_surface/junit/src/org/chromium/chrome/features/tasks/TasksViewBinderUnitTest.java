@@ -25,7 +25,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUT
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
@@ -288,18 +287,6 @@ public class TasksViewBinderUnitTest {
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
         assertTrue(isViewVisible(R.id.tracking_protection_card_title));
         assertFalse(isViewVisible(R.id.cookie_controls_card_toggle));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetTasksSurfaceBodyTopMargin() {
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.getBodyViewContainer().getLayoutParams();
-        assertEquals(0, params.topMargin);
-
-        mTasksViewPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN, 16);
-
-        assertEquals(16, params.topMargin);
     }
 
     @Test
