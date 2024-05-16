@@ -1145,18 +1145,22 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
     OriginState& origin_state = origin_it->second;
     for (auto& grant : origin_state.read_grants) {
       if (file_path.empty() || grant.first == file_path) {
-        grant.second->SetStatus(
-            PermissionStatus::ASK,
-            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-        grant_revoked = true;
+        if (grant.second) {
+          grant.second->SetStatus(
+              PermissionStatus::ASK,
+              PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+          grant_revoked = true;
+        }
       }
     }
     for (auto& grant : origin_state.write_grants) {
       if (file_path.empty() || grant.first == file_path) {
-        grant.second->SetStatus(
-            PermissionStatus::ASK,
-            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-        grant_revoked = true;
+        if (grant.second) {
+          grant.second->SetStatus(
+              PermissionStatus::ASK,
+              PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+          grant_revoked = true;
+        }
       }
     }
     // Only update `persisted_grant_status` if the state has not already been
@@ -2494,7 +2498,8 @@ bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
 
 bool ChromeFileSystemAccessPermissionContext::HasGrantedActivePermissionStatus(
     PermissionGrantImpl* grant) const {
-  return grant->GetActivePermissionStatus() == PermissionStatus::GRANTED;
+  return grant &&
+         grant->GetActivePermissionStatus() == PermissionStatus::GRANTED;
 }
 
 bool ChromeFileSystemAccessPermissionContext::
