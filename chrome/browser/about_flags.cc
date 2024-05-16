@@ -2502,8 +2502,6 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchResumption_use_new_service), nullptr},
 };
 
-const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
-    {"enable_v2", "true"}};
 const FeatureEntry::FeatureParam kTabResumptionModules_defaul_app_filter[] = {
     {"show_see_more", "true"},
     {"use_default_app_filter", "true"},
@@ -2520,9 +2518,21 @@ const FeatureEntry::FeatureParam
         {"use_default_app_filter", "true"},
         {"use_salient_image", "true"},
 };
+const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2[] = {
+    {"enable_v2", "true"}};
+const FeatureEntry::FeatureParam kTabResumptionModules_v2_salient_image[] = {
+    {"enable_v2", "true"},
+    {"show_see_more", "true"},
+    {"use_salient_image", "true"},
+};
+const FeatureEntry::FeatureParam
+    kTabResumptionModule_v2_single_tile_with_salient_image[] = {
+        {"enable_v2", "true"},
+        {"max_tiles_number", "1"},
+        {"show_see_more", "true"},
+        {"use_salient_image", "true"},
+};
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
-    {"V2", kTabResumptionModule_enable_v2,
-     std::size(kTabResumptionModule_enable_v2), nullptr},
     {"Default app filter", kTabResumptionModules_defaul_app_filter,
      std::size(kTabResumptionModules_defaul_app_filter), nullptr},
     {"Default app filter + Salient image", kTabResumptionModules_salient_image,
@@ -2530,6 +2540,14 @@ const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter + Salient image + single tile",
      kTabResumptionModule_single_tile_with_salient_image,
      std::size(kTabResumptionModule_single_tile_with_salient_image), nullptr},
+    {"V2", kTabResumptionModule_enable_v2,
+     std::size(kTabResumptionModule_enable_v2), nullptr},
+    {"V2 + Salient image", kTabResumptionModules_v2_salient_image,
+     std::size(kTabResumptionModules_v2_salient_image), nullptr},
+    {"V2 + Salient image + single tile",
+     kTabResumptionModule_v2_single_tile_with_salient_image,
+     std::size(kTabResumptionModule_v2_single_tile_with_salient_image),
+     nullptr},
 };
 const FeatureEntry::FeatureParam
     kNotificationPermissionRationale_show_dialog_next_start[] = {
