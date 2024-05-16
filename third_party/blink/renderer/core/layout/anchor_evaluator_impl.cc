@@ -56,6 +56,33 @@ CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
   }
 }
 
+// https://drafts.csswg.org/css-anchor-position-1/#valdef-anchor-inside
+// https://drafts.csswg.org/css-anchor-position-1/#valdef-anchor-outside
+CSSAnchorValue PhysicalAnchorValueFromInsideOutside(CSSAnchorValue anchor_value,
+                                                    bool is_y_axis,
+                                                    bool is_right_or_bottom) {
+  switch (anchor_value) {
+    case CSSAnchorValue::kInside: {
+      if (is_y_axis) {
+        return is_right_or_bottom ? CSSAnchorValue::kBottom
+                                  : CSSAnchorValue::kTop;
+      }
+      return is_right_or_bottom ? CSSAnchorValue::kRight
+                                : CSSAnchorValue::kLeft;
+    }
+    case CSSAnchorValue::kOutside: {
+      if (is_y_axis) {
+        return is_right_or_bottom ? CSSAnchorValue::kTop
+                                  : CSSAnchorValue::kBottom;
+      }
+      return is_right_or_bottom ? CSSAnchorValue::kLeft
+                                : CSSAnchorValue::kRight;
+    }
+    default:
+      return anchor_value;
+  }
+}
+
 }  // namespace
 
 PhysicalAnchorReference::PhysicalAnchorReference(
@@ -228,6 +255,8 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
   anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
       anchor_value, container_converter.GetWritingDirection(),
       self_writing_direction, is_y_axis);
+  anchor_value = PhysicalAnchorValueFromInsideOutside(anchor_value, is_y_axis,
+                                                      is_right_or_bottom);
   LayoutUnit value;
   switch (anchor_value) {
     case CSSAnchorValue::kCenter: {
@@ -286,6 +315,10 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
       value += LayoutUnit::FromFloatRound(size * percentage / 100);
       break;
     }
+    case CSSAnchorValue::kInside:
+    case CSSAnchorValue::kOutside:
+      // Should have been handled by `PhysicalAnchorValueFromInsideOutside`.
+      [[fallthrough]];
     case CSSAnchorValue::kStart:
     case CSSAnchorValue::kEnd:
     case CSSAnchorValue::kSelfStart:

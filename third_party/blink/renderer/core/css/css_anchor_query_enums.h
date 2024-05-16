@@ -20,6 +20,8 @@ constexpr CSSAnchorQueryTypes kCSSAnchorQueryTypesAll =
     ~kCSSAnchorQueryTypesNone;
 
 enum class CSSAnchorValue {
+  kInside,
+  kOutside,
   kTop,
   kLeft,
   kRight,
