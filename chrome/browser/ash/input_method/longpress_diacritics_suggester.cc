@@ -13,8 +13,6 @@
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/system/tray/system_nudge.h"
-#include "ash/system/tray/system_nudge_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/containers/fixed_flat_map.h"
@@ -44,49 +42,9 @@ class WebContents;
 namespace ash::input_method {
 
 namespace {
-// The size of the clipboard icon in px.
-constexpr int kIconSize = 20;
-
-// The minimum width of the label in px.
-constexpr int kMinLabelWidth = 200;
-
-// The spacing between the icon and label in the nudge view in px.
-constexpr int kIconLabelSpacing = 16;
-
-// The padding which separates the nudge's border with its inner contents in px.
-constexpr int kNudgePadding = 16;
 
 // The id used for the diacritics nudge.
 constexpr char kDiacriticsNudgeId[] = "DiacriticsNudge";
-
-class DiacriticsNudge : public ash::SystemNudge {
- public:
-  DiacriticsNudge()
-      : SystemNudge(kDiacriticsNudgeId,
-                    ash::NudgeCatalogName::kDisableDiacritics,
-                    kIconSize,
-                    kIconLabelSpacing,
-                    kNudgePadding) {}
-  DiacriticsNudge(const DiacriticsNudge&) = delete;
-  DiacriticsNudge& operator=(const DiacriticsNudge&) = delete;
-  ~DiacriticsNudge() override = default;
-
- protected:
-  // SystemNudge:
-  std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override {
-    std::u16string label_text =
-        l10n_util::GetStringUTF16(IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT);
-    // Set the label's text.
-    auto label = std::make_unique<SystemNudgeLabel>(label_text, kMinLabelWidth);
-    label->set_font_size_delta(2);
-
-    return label;
-  }
-  const gfx::VectorIcon& GetIcon() const override {
-    return kNotificationKeyboardIcon;
-  }
-  std::u16string GetAccessibilityText() const override { return u""; }
-};
 
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
 
@@ -174,10 +132,6 @@ void RecordAcceptanceCharCodeMetric(const std::u16string diacritic) {
 }
 
 }  // namespace
-
-std::unique_ptr<SystemNudge> DiacriticsNudgeController::CreateSystemNudge() {
-  return std::make_unique<DiacriticsNudge>();
-}
 
 LongpressDiacriticsSuggester::LongpressDiacriticsSuggester(
     SuggestionHandlerInterface* suggestion_handler)
@@ -373,16 +327,10 @@ AssistiveType LongpressDiacriticsSuggester::GetProposeActionType() {
 }
 
 void LongpressDiacriticsSuggester::ShowDiacriticsNudge() {
-  if (features::IsSystemNudgeMigrationEnabled()) {
-    AnchoredNudgeData nudge_data(
-        kDiacriticsNudgeId, ash::NudgeCatalogName::kDisableDiacritics,
-        l10n_util::GetStringUTF16(IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT));
-    // TODO: Set an `image_model` in `nudge_data`.
-
-    AnchoredNudgeManager::Get()->Show(nudge_data);
-  } else {
-    nudge_controller_.ShowNudge();
-  }
+  AnchoredNudgeData nudge_data(
+      kDiacriticsNudgeId, ash::NudgeCatalogName::kDisableDiacritics,
+      l10n_util::GetStringUTF16(IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT));
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index,
