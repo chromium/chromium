@@ -397,7 +397,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   bool use_blocklist() const;
 
-  void ClearSharedImage(const Mailbox& mailbox);
+  bool ClearSharedImageWithSkia(const Mailbox& mailbox);
 
   scoped_refptr<SharedContextState> shared_context_state_;
 
@@ -2139,15 +2139,15 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
       dawn::native::IsTextureSubresourceInitialized(texture.Get(), 0, 1, 0, 1);
 
   associated_shared_image_map_.erase(it);
-  if (!is_initialized) {
-    // The compositor renders uninitialized textures as red. If the texture is
-    // not initialized, we need to explicitly clear its contents to black.
-    ClearSharedImage(mailbox);
+  // The compositor renders uninitialized textures as red. If the texture is
+  // not initialized, we need to explicitly clear its contents to black.
+  if (!is_initialized && !ClearSharedImageWithSkia(mailbox)) {
+    return error::kInvalidArguments;
   }
   return error::kNoError;
 }
 
-void WebGPUDecoderImpl::ClearSharedImage(const Mailbox& mailbox) {
+bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
   // Before using the shared context, ensure it is current if we're on GL.
   if (shared_context_state_->GrContextIsGL()) {
     shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
@@ -2156,6 +2156,10 @@ void WebGPUDecoderImpl::ClearSharedImage(const Mailbox& mailbox) {
   std::unique_ptr<SkiaImageRepresentation> representation =
       shared_image_representation_factory_->ProduceSkia(
           mailbox, shared_context_state_.get());
+  if (!representation) {
+    return false;
+  }
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
   auto scoped_write_access = representation->BeginScopedWriteAccess(
@@ -2163,7 +2167,7 @@ void WebGPUDecoderImpl::ClearSharedImage(const Mailbox& mailbox) {
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!scoped_write_access) {
     DLOG(ERROR) << "ClearSharedImage: Couldn't begin shared image access";
-    return;
+    return false;
   }
 
   auto* surface = scoped_write_access->surface();
@@ -2213,6 +2217,8 @@ void WebGPUDecoderImpl::ClearSharedImage(const Mailbox& mailbox) {
     DCHECK(flush_result == GrSemaphoresSubmitted::kYes);
     shared_context_state_->gr_context()->submit();
   }
+
+  return true;
 }
 
 void WebGPUDecoderImpl::OnGetIsolationKey(const std::string& isolation_key) {
