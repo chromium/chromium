@@ -324,7 +324,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
     const GURL& url,
     const webapps::AppId& app_id,
     ManifestUpdateCheckResult check_result,
-    std::optional<WebAppInstallInfo> install_info) {
+    std::unique_ptr<WebAppInstallInfo> install_info) {
   auto update_stage_it = update_stages_.find(app_id);
   if (update_stage_it == update_stages_.end()) {
     // If the web_app already has already been uninstalled after the
@@ -356,7 +356,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
     return;
   }
 
-  CHECK(install_info.has_value());
+  CHECK(install_info);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -368,7 +368,7 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   }
 
   provider_->scheduler().ScheduleManifestUpdateFinalize(
-      url, app_id, std::move(install_info.value()), std::move(keep_alive),
+      url, app_id, std::move(install_info), std::move(keep_alive),
       std::move(profile_keep_alive),
       base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
                      weak_factory_.GetWeakPtr()));

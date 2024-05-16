@@ -155,7 +155,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       const GURL& url,
       const webapps::AppId& app_id,
       ManifestUpdateCheckResult check_result,
-      std::optional<WebAppInstallInfo> install_info);
+      std::unique_ptr<WebAppInstallInfo> install_info);
 
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,

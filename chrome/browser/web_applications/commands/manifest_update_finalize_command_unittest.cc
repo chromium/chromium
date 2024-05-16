@@ -44,7 +44,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   std::unique_ptr<ManifestUpdateFinalizeCommand> CreateCommand(
       const GURL& url,
       const webapps::AppId& app_id,
-      WebAppInstallInfo install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       ManifestUpdateFinalizeCommand::ManifestWriteCallback callback) {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
@@ -55,9 +55,10 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
         std::move(keep_alive), std::move(profile_keep_alive));
   }
 
-  ManifestUpdateResult RunCommandAndGetResult(const GURL& url,
-                                              const webapps::AppId& app_id,
-                                              WebAppInstallInfo install_info) {
+  ManifestUpdateResult RunCommandAndGetResult(
+      const GURL& url,
+      const webapps::AppId& app_id,
+      std::unique_ptr<WebAppInstallInfo> install_info) {
     ManifestUpdateResult output_result;
     base::RunLoop loop;
     provider().command_manager().ScheduleCommand(CreateCommand(
@@ -83,14 +84,15 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     return test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
-  WebAppInstallInfo GetNewInstallInfoWithTitle(std::u16string new_title) {
-    WebAppInstallInfo info;
-    info.start_url = app_url();
-    info.manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
-    info.scope = app_url().GetWithoutFilename();
-    info.user_display_mode = mojom::UserDisplayMode::kStandalone;
-    info.title = new_title;
-    info.validated_scope_extensions.emplace();
+  std::unique_ptr<WebAppInstallInfo> GetNewInstallInfoWithTitle(
+      std::u16string new_title) {
+    auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url());
+    info->start_url = app_url();
+    info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
+    info->scope = app_url().GetWithoutFilename();
+    info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+    info->title = new_title;
+    info->validated_scope_extensions.emplace();
     return info;
   }
 

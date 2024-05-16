@@ -368,13 +368,13 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
  protected:
   struct RunResult {
     ManifestUpdateCheckResult check_result;
-    std::optional<WebAppInstallInfo> new_install_info;
+    std::unique_ptr<WebAppInstallInfo> new_install_info;
   };
 
   RunResult RunCommandAndGetResult(const GURL& url,
                                    const webapps::AppId& app_id) {
     base::test::TestFuture<ManifestUpdateCheckResult,
-                           std::optional<WebAppInstallInfo>>
+                           std::unique_ptr<WebAppInstallInfo>>
         manifest_update_check_future;
     RunResult output_result;
     provider().scheduler().ScheduleManifestUpdateCheck(
@@ -447,7 +447,8 @@ TEST_F(ManifestUpdateCheckCommandTest, Verify) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
-  EXPECT_EQ(result.new_install_info.value().title, u"New Name");
+  ASSERT_TRUE(result.new_install_info);
+  EXPECT_EQ(result.new_install_info->title, u"New Name");
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulScopeUpdate) {
@@ -468,7 +469,8 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulScopeUpdate) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
-  EXPECT_EQ(result.new_install_info.value().scope,
+  ASSERT_TRUE(result.new_install_info);
+  EXPECT_EQ(result.new_install_info->scope,
             GURL("https://foo.bar.com/new_scope/"));
 }
 
@@ -490,8 +492,8 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulDisplayModeUpdate) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
-  EXPECT_EQ(result.new_install_info.value().display_mode,
-            DisplayMode::kMinimalUi);
+  ASSERT_TRUE(result.new_install_info);
+  EXPECT_EQ(result.new_install_info->display_mode, DisplayMode::kMinimalUi);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, MultiDataUpdate) {
@@ -512,11 +514,11 @@ TEST_F(ManifestUpdateCheckCommandTest, MultiDataUpdate) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
-  EXPECT_EQ(result.new_install_info.value().display_mode,
-            DisplayMode::kMinimalUi);
-  EXPECT_EQ(result.new_install_info.value().scope,
+  ASSERT_TRUE(result.new_install_info);
+  EXPECT_EQ(result.new_install_info->display_mode, DisplayMode::kMinimalUi);
+  EXPECT_EQ(result.new_install_info->scope,
             GURL("https://foo.bar.com/new_scope/"));
-  EXPECT_EQ(result.new_install_info.value().title, u"Foo App 2");
+  EXPECT_EQ(result.new_install_info->title, u"Foo App 2");
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, NoAppUpdateNeeded) {
@@ -537,6 +539,7 @@ TEST_F(ManifestUpdateCheckCommandTest, NoAppUpdateNeeded) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpToDate);
+  EXPECT_FALSE(result.new_install_info);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, AppNotEligibleNoManifest) {
@@ -557,6 +560,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppNotEligibleNoManifest) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppNotEligible);
+  EXPECT_FALSE(result.new_install_info);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, AppIdMismatch) {
@@ -579,6 +583,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppIdMismatch) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppIdMismatch);
+  EXPECT_FALSE(result.new_install_info);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, AppNameReverted) {
@@ -603,6 +608,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppNameReverted) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpdateNeeded);
+  ASSERT_TRUE(result.new_install_info);
   EXPECT_EQ(result.new_install_info->theme_color, SK_ColorGREEN);
   EXPECT_EQ(result.new_install_info->title, u"Foo App");
 }
@@ -631,6 +637,7 @@ TEST_F(ManifestUpdateCheckCommandTest, IconReadFromDiskFailed) {
 
   EXPECT_EQ(result.check_result,
             ManifestUpdateCheckResult::kIconReadFromDiskFailed);
+  EXPECT_FALSE(result.new_install_info);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest, DoNotAcceptAppUpdateDialog) {
@@ -653,6 +660,7 @@ TEST_F(ManifestUpdateCheckCommandTest, DoNotAcceptAppUpdateDialog) {
   RunResult result = RunCommandAndGetResult(app_url(), app_id);
 
   EXPECT_EQ(result.check_result, ManifestUpdateCheckResult::kAppUpToDate);
+  EXPECT_FALSE(result.new_install_info);
 }
 
 TEST_F(ManifestUpdateCheckCommandTest,
@@ -671,7 +679,7 @@ TEST_F(ManifestUpdateCheckCommandTest,
 
   base::test::TestFuture<void> manifest_fetch_future;
   base::test::TestFuture<ManifestUpdateCheckResult,
-                         std::optional<WebAppInstallInfo>>
+                         std::unique_ptr<WebAppInstallInfo>>
       manifest_update_check_future;
 
   SetupPageState(*new_info);
@@ -713,7 +721,7 @@ TEST_F(ManifestUpdateCheckCommandTest,
 
   base::test::TestFuture<void> manifest_fetch_future;
   base::test::TestFuture<ManifestUpdateCheckResult,
-                         std::optional<WebAppInstallInfo>>
+                         std::unique_ptr<WebAppInstallInfo>>
       manifest_update_check_future;
 
   SetupPageState(*new_info);
@@ -733,10 +741,10 @@ TEST_F(ManifestUpdateCheckCommandTest,
   EXPECT_EQ(manifest_update_check_future.Get<ManifestUpdateCheckResult>(),
             ManifestUpdateCheckResult::kAppUpdateNeeded);
 
-  EXPECT_EQ(manifest_update_check_future.Get<std::optional<WebAppInstallInfo>>()
-                .value()
-                .title,
-            u"New Name");
+  EXPECT_EQ(
+      manifest_update_check_future.Get<std::unique_ptr<WebAppInstallInfo>>()
+          ->title,
+      u"New Name");
 }
 
 }  // namespace web_app

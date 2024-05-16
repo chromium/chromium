@@ -161,11 +161,11 @@ class WebAppCommandScheduler {
       const base::Location& location = FROM_HERE);
 
   // Schedules a command that performs the data writes into the DB for
-  // completion of the manifest update.
+  // completion of the manifest update. `install_info` must be non-null.
   void ScheduleManifestUpdateFinalize(
       const GURL& url,
       const webapps::AppId& app_id,
-      WebAppInstallInfo install_info,
+      std::unique_ptr<WebAppInstallInfo> install_info,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ManifestWriteCallback callback,

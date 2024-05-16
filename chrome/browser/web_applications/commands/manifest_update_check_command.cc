@@ -43,13 +43,13 @@ ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     std::unique_ptr<WebAppIconDownloader> icon_downloader)
     : WebAppCommand<AppLock,
                     ManifestUpdateCheckResult,
-                    std::optional<WebAppInstallInfo>>(
+                    std::unique_ptr<WebAppInstallInfo>>(
           "ManifestUpdateCheckCommand",
           AppLockDescription(app_id),
           std::move(callback),
           /*args_for_shutdown=*/
           std::make_tuple(ManifestUpdateCheckResult::kSystemShutdown,
-                          /*new_install_info=*/std::nullopt)),
+                          /*new_install_info=*/nullptr)),
       url_(url),
       app_id_(app_id),
       check_time_(check_time),
@@ -597,8 +597,8 @@ void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
   CompleteAndSelfDestruct(
       command_result, check_result,
       check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
-          ? std::make_optional<WebAppInstallInfo>(std::move(*new_install_info_))
-          : std::nullopt);
+          ? std::move(new_install_info_)
+          : nullptr);
 }
 
 }  // namespace web_app
