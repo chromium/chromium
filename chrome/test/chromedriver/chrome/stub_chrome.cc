@@ -22,10 +22,6 @@ bool StubChrome::HasCrashedWebView() {
   return false;
 }
 
-Status StubChrome::GetWebViewCount(size_t* web_view_count, bool w3c_compliant) {
-  return Status(kOk);
-}
-
 Status StubChrome::GetWebViewIdForFirstTab(std::string* web_view_id,
                                            bool w3c_compliant) {
   return Status(kOk);
