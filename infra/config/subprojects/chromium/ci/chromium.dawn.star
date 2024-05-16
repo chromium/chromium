@@ -580,6 +580,57 @@ ci.thin_tester(
     ),
 )
 
+ci.gpu.linux_builder(
+    name = "Dawn ChromeOS Skylab Release (volteer)",
+    description_html = "Runs ToT Dawn tests on Skylab-hosted volteer devices",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "volteer",
+            ],
+        ),
+        run_tests_serially = True,
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "chromium-ci-skylab",
+            gs_extra = "chromeos_gpu",
+        ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "dawn_enable_opengles",
+            "gpu_tests",
+            "chromeos_device",
+            "volteer",
+            "ozone_headless",
+            "release_builder",
+            "try_builder",
+            "reclient",
+            "dcheck_off",
+            "no_symbols",
+            "is_skylab",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ChromeOS|Intel",
+        short_name = "vlt",
+    ),
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+)
+
 ci.thin_tester(
     name = "Dawn Linux x64 Experimental Release (Intel UHD 630)",
     description_html = "Runs ToT Dawn tests on experimental Linux/UHD 630 configs",

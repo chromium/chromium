@@ -2460,6 +2460,17 @@
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
+      'Dawn ChromeOS Skylab Release (volteer)': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'use_swarming': False,
+        # TODO(crbug.com/340815322): Enable tests.
+        'test_suites': {},
+      },
       'Dawn Linux TSAN Release': {
         # This bot doesn't run any Telemetry-based tests so doesn't
         # need the browser_config parameter.

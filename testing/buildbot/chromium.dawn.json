@@ -1360,6 +1360,11 @@
       }
     ]
   },
+  "Dawn ChromeOS Skylab Release (volteer)": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  },
   "Dawn Linux TSAN Release": {
     "gtest_tests": [
       {
