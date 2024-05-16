@@ -12,9 +12,8 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/growth/metrics.h"
-#include "chrome/browser/ash/growth/ui_action_performer.h"
+#include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,16 +24,6 @@ constexpr char kNudgePayloadTemplate[] = R"(
       "%s": "text"
     }
 )";
-
-class MockUiPerformerObserver : public UiActionPerformer::Observer {
- public:
-  // UiActionPerformer::Observer:
-  MOCK_METHOD(void, OnReadyToLogImpression, (int), (override));
-
-  MOCK_METHOD(void, OnDismissed, (int), (override));
-
-  MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId, bool), (override));
-};
 
 }  // namespace
 

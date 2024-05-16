@@ -13,10 +13,9 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/growth/ui_action_performer.h"
+#include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/message_center.h"
 #include "url/gurl.h"
@@ -36,17 +35,6 @@ constexpr char kTestTitle[] = "test title";
 constexpr char kTestMessage[] = "test message";
 constexpr int kTestCampaignId = 10;
 constexpr char kNotificationIdTemplate[] = "growth_campaign_%d";
-
-// TODO: b/331504244 - Refactor to UiActionPerformerTestBase.
-class MockUiPerformerObserver : public UiActionPerformer::Observer {
- public:
-  // UiActionPerformer::Observer:
-  MOCK_METHOD(void, OnReadyToLogImpression, (int), (override));
-
-  MOCK_METHOD(void, OnDismissed, (int), (override));
-
-  MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId, bool), (override));
-};
 
 }  // namespace
 

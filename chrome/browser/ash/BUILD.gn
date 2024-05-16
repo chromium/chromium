@@ -5779,6 +5779,8 @@ source_set("unit_tests") {
     "growth/campaigns_manager_client_unittest.cc",
     "growth/campaigns_manager_session_unittest.cc",
     "growth/install_web_app_action_unittest.cc",
+    "growth/mock_ui_performer_observer.cc",
+    "growth/mock_ui_performer_observer.h",
     "growth/open_url_action_performer_unittest.cc",
     "growth/show_notification_action_performer_unittest.cc",
     "growth/show_nudge_action_performer_unittest.cc",
