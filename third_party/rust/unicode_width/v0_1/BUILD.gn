@@ -12,17 +12,16 @@ cargo_crate("lib") {
   crate_name = "unicode_width"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.11/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.12/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.11/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.11/src/tables.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.11/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.12/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.12/src/tables.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2015"
-  cargo_pkg_version = "0.1.11"
+  edition = "2021"
+  cargo_pkg_version = "0.1.12"
   cargo_pkg_authors =
       "kwantam <kwantam@gmail.com>, Manish Goregaokar <manishsmail@gmail.com>"
   cargo_pkg_name = "unicode-width"
