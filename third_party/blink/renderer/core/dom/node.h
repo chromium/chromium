@@ -998,20 +998,6 @@ class CORE_EXPORT Node : public EventTarget {
   }
   void SetCachedDirectionality(TextDirection direction);
 
-  bool DirAutoInheritsFromParent() const {
-    return GetFlag(kDirAutoInheritsFromParent);
-  }
-  void SetDirAutoInheritsFromParent() {
-    // When we remove the DirAutoNoInheritance feature flag (by enabling
-    // the code permanently), we can remove the
-    // kDirAutoInheritsFromParent node flag.
-    CHECK(!RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled());
-    return SetFlag(kDirAutoInheritsFromParent);
-  }
-  void ClearDirAutoInheritsFromParent() {
-    return ClearFlag(kDirAutoInheritsFromParent);
-  }
-
   void Trace(Visitor*) const override;
 
   bool IsModifiedBySoftNavigation() const {
@@ -1065,15 +1051,14 @@ class CORE_EXPORT Node : public EventTarget {
 
     kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
     kCachedDirectionalityIsRtl = 1 << 28,
-    kDirAutoInheritsFromParent = 1u << 29,
 
     // Indicates that the node was added in a task descendant of a potential
     // soft navigation.
-    kModifiedBySoftNavigation = 1u << 30,
+    kModifiedBySoftNavigation = 1u << 29,
 
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 1 bit(s) remaining.
+    // 2 bit(s) remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

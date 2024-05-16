@@ -4677,8 +4677,7 @@ bool Element::DoesChildTextNodesDirectionMatchThis(const Node& node) const {
   if (node.IsTextNode()) {
     const std::optional<TextDirection> new_text_direction =
         BidiParagraph::BaseDirectionForString(node.textContent(true));
-    if (!new_text_direction || (*new_text_direction == CachedDirectionality() &&
-                                !DirAutoInheritsFromParent())) {
+    if (!new_text_direction || *new_text_direction == CachedDirectionality()) {
       return true;
     }
   }

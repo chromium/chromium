@@ -2609,11 +2609,6 @@ bool HTMLElement::ElementAffectsDirectionality(const Node* node) {
          (input_element && input_element->IsTelephone());
 }
 
-bool HTMLElement::ElementInheritsDirectionality(const Node* node) {
-  return !HTMLElement::ElementAffectsDirectionality(node) ||
-         node->DirAutoInheritsFromParent();
-}
-
 bool HTMLElement::HasDirectionAuto() const {
   // <bdi> defaults to dir="auto"
   // https://html.spec.whatwg.org/C/#the-bdi-element
@@ -2640,12 +2635,8 @@ bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
       ResolveAutoDirectionality(is_deferred);
   if (resolve_result) {
     text_direction = *resolve_result;
-    ClearDirAutoInheritsFromParent();
-  } else if (RuntimeEnabledFeatures::DirAutoNoInheritanceEnabled()) {
-    text_direction = TextDirection::kLtr;
   } else {
-    text_direction = ParentDirectionality();
-    SetDirAutoInheritsFromParent();
+    text_direction = TextDirection::kLtr;
   }
   if (CachedDirectionality() != text_direction && !is_deferred) {
     UpdateDirectionalityAndDescendant(text_direction);
@@ -3079,8 +3070,6 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   if (is_new_auto) {
     CalculateAndAdjustAutoDirectionality();
   } else {
-    ClearDirAutoInheritsFromParent();
-
     std::optional<TextDirection> text_direction;
     if (EqualIgnoringASCIICase(params.new_value, "ltr")) {
       text_direction = TextDirection::kLtr;

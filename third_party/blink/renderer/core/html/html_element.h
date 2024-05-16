@@ -162,7 +162,10 @@ class CORE_EXPORT HTMLElement : public Element {
 
   static bool IsValidDirAttribute(const AtomicString& value);
   static bool ElementAffectsDirectionality(const Node* node);
-  static bool ElementInheritsDirectionality(const Node* node);
+  static bool ElementInheritsDirectionality(const Node* node) {
+    return !HTMLElement::ElementAffectsDirectionality(node);
+  }
+
   static const TextControlElement*
   ElementIfAutoDirectionalityFormAssociatedOrNull(const Element* element);
   static TextControlElement* ElementIfAutoDirectionalityFormAssociatedOrNull(

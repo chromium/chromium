@@ -1217,12 +1217,6 @@
       },
     },
     {
-      // Shipping in M123.  Flag should be removed after M123 has been
-      // shipping to stable for a few weeks.
-      name: "DirAutoNoInheritance",
-      status: "stable",
-    },
-    {
       name: "DirectSockets",
       public: true,
       status: "experimental",
