@@ -6,7 +6,9 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {Destination, DestinationProvider, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
+import {Capabilities, Destination, DestinationProvider, FakeDestinationObserverInterface, PrinterType} from '../utils/print_preview_cros_app_types.js';
+
+import {getFakeCapabilities} from './fake_data.js';
 
 /**
  * @fileoverview
@@ -17,6 +19,7 @@ import {Destination, DestinationProvider, FakeDestinationObserverInterface} from
 export const GET_LOCAL_DESTINATIONS_METHOD = 'getLocalDestinations';
 export const FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY = [];
 export const OBSERVE_DESTINATION_CHANGES_METHOD = 'observeDestinationChanges';
+export const FETCH_CAPABILITIES_METHOD = 'fetchCapabilities';
 const OBSERVABLE_ON_DESTINATIONS_CHANGED_METHOD = 'onDestinationsChanged';
 
 // Fake implementation of the DestinationProvider for tests and UI.
@@ -37,6 +40,9 @@ export class FakeDestinationProvider implements DestinationProvider {
         GET_LOCAL_DESTINATIONS_METHOD,
         FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY);
     this.callCount.set(GET_LOCAL_DESTINATIONS_METHOD, 0);
+    this.methods.register(FETCH_CAPABILITIES_METHOD);
+    this.callCount.set(FETCH_CAPABILITIES_METHOD, 0);
+    this.methods.setResult(FETCH_CAPABILITIES_METHOD, getFakeCapabilities());
   }
 
   private registerObservables(): void {
@@ -106,5 +112,16 @@ export class FakeDestinationProvider implements DestinationProvider {
 
   setLocalDestinationResult(destinations: Destination[]): void {
     this.methods.setResult(GET_LOCAL_DESTINATIONS_METHOD, destinations);
+  }
+
+  fetchCapabilities(_destinationId: string, _printerType: PrinterType):
+      Promise<Capabilities> {
+    this.incrementCallCount(FETCH_CAPABILITIES_METHOD);
+    return this.methods.resolveMethodWithDelay(
+        FETCH_CAPABILITIES_METHOD, this.testDelayMs);
+  }
+
+  setCapabiltiies(capabilities: Capabilities): void {
+    this.methods.setResult(FETCH_CAPABILITIES_METHOD, capabilities);
   }
 }

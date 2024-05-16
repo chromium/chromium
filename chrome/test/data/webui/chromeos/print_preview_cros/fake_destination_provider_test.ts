@@ -5,8 +5,9 @@
 import 'chrome://os-print/js/fakes/fake_destination_provider.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
+import {getFakeCapabilities} from 'chrome://os-print/js/fakes/fake_data.js';
 import {FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY, FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
-import {Destination, FakeDestinationObserverInterface} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {Destination, FakeDestinationObserverInterface, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 // Test implementation of FakeDestinationObserverInterface used to verify
@@ -107,4 +108,22 @@ suite('FakeDestinationProvider', () => {
             expectedCallCount, testObserver.getCallCount(),
             `Observer called multiple times`);
       });
+
+  // Verify the fake DestinationProvider returns the expected capabilities
+  // when fetchCapabilities() is called.
+  test('call fetch capabilities', async () => {
+    const capabilities = await destinationProvider.fetchCapabilities(
+        /*destinationId=*/ '', PrinterType.LOCAL_PRINTER);
+    assertDeepEquals(getFakeCapabilities(), capabilities);
+  });
+
+  // Verify the fetchCapabilities() returns the set capabilities.
+  test('set capabilities', async () => {
+    const expectedCapabilities = getFakeCapabilities('New Destination');
+    destinationProvider.setCapabiltiies(expectedCapabilities);
+
+    const capabilities = await destinationProvider.fetchCapabilities(
+        /*destinationId=*/ '', PrinterType.LOCAL_PRINTER);
+    assertDeepEquals(expectedCapabilities, capabilities);
+  });
 });

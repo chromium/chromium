@@ -332,6 +332,159 @@ export interface PreviewTicket {
   isFirstRequest: boolean;
 }
 
+export interface ColorOption {
+  optionType?: string;
+
+  vendorId?: string;
+
+  customDisplayName?: string;
+
+  isDefault?: boolean;
+}
+
+export interface ColorCapability {
+  options: ColorOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface CollateCapability {
+  valueDefault?: boolean;
+}
+
+export interface CopiesCapability {
+  valueDefault?: number;
+
+  max?: number;
+}
+
+export interface DuplexOption {
+  type?: string;
+
+  isDefault?: boolean;
+}
+
+export interface DuplexCapability {
+  options: DuplexOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface PageOrientationOption {
+  type?: string;
+
+  isDefault?: boolean;
+}
+
+export interface PageOrientationCapability {
+  options: PageOrientationOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface LocalizedString {
+  locale: string;
+
+  value: string;
+}
+
+export interface SelectOption {
+  customDisplayName?: string;
+
+  customDisplayNameLocalized?: LocalizedString[];
+
+  name?: string;
+
+  isDefault?: boolean;
+}
+
+export interface MediaSizeOption {
+  // TODO(b/323421684): Verify if `type` is still needed in capabilities.
+  optionType?: string;
+
+  vendorId?: string;
+
+  heightMicrons: number;
+
+  widthMicrons: number;
+
+  imageableAreaLeftMicrons?: number;
+
+  imageableAreaBottomMicrons?: number;
+
+  imageableAreaRightMicrons?: number;
+
+  imageableAreaTopMicrons?: number;
+
+  hasBorderlessVariant?: boolean;
+
+  selectOption: SelectOption;
+}
+
+export interface MediaSizeCapability {
+  options: MediaSizeOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface MediaTypeOption {
+  vendorId: string;
+
+  selectOption: SelectOption;
+}
+
+export interface MediaTypeCapability {
+  options: MediaTypeOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface DpiOption {
+  vendorId?: string;
+
+  horizontalDpi: number;
+
+  verticalDpi: number;
+
+  isDefault?: boolean;
+}
+
+export interface DpiCapability {
+  options: DpiOption[];
+
+  resetToDefault?: boolean;
+}
+
+export interface PinCapability {
+  supported?: boolean;
+}
+
+/**
+ * Capabilities of a print destination.
+ */
+export interface Capabilities {
+  destinationId: string;
+
+  collate?: CollateCapability;
+
+  color?: ColorCapability;
+
+  copies?: CopiesCapability;
+
+  duplex?: DuplexCapability;
+
+  pageOrientation?: PageOrientationCapability;
+
+  mediaSize?: MediaSizeCapability;
+
+  mediaType?: MediaTypeCapability;
+
+  dpi?: DpiCapability;
+
+  pin?: PinCapability;
+  // TODO(b/323421684): Support vendor_capability.
+}
+
 // Immutable session configuration details for the current CrOS preview request.
 export interface SessionContext {
   // ID used to map a CrOS preview session to the responsible PrintViewManager
@@ -378,4 +531,8 @@ export interface DestinationProvider {
   // destinations are appended or updated;
   // TODO(b/323421684): Replace observer type with observer mojo interface.
   observeDestinationChanges(observer: FakeDestinationObserverInterface): void;
+
+  // Fetch the printing capabilities for a specific destination.
+  fetchCapabilities(destinationId: string, printerType: PrinterType):
+      Promise<Capabilities>;
 }
