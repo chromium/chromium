@@ -497,9 +497,12 @@ void WorkerGlobalScope::RunWorkerScript() {
   DCHECK(!IsContextPaused());
   CHECK(GetExecutionContext()) << "crbug.com/1045818: attempted to evaluate "
                                   "script but no execution context";
-  CHECK(!GetExecutionContext()->IsContextDestroyed())
-      << "crbug.com/1045818: attempted to evaluate script but worker global "
-         "scope was already destroyed";
+  // If the context has already been destroyed, it should be a orphan worker.
+  // It should be fine to close the worker.
+  if (GetExecutionContext()->IsContextDestroyed()) {
+    close();
+    return;
+  }
 
   DCHECK(worker_script_);
   DCHECK_EQ(script_eval_state_, ScriptEvalState::kReadyToEvaluate);
