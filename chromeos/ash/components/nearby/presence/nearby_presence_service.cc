@@ -31,7 +31,9 @@ NearbyPresenceService::ScanSession::ScanSession(
     : remote_(std::move(pending_remote)),
       on_disconnect_callback_(std::move(on_disconnect_callback)) {}
 
-NearbyPresenceService::ScanSession::~ScanSession() {}
+NearbyPresenceService::ScanSession::~ScanSession() {
+  std::move(on_disconnect_callback_).Run();
+}
 
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyPresenceService::StatusCode status_code) {
