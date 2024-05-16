@@ -23,6 +23,10 @@ const char kWebViewSafebrowsingBlockAllResources[] =
 // tint. This is useful for identifying WebViews in an Android application.
 const char kHighlightAllWebViews[] = "highlight-all-webviews";
 
+// Enable net logging from WebView. This captures network activity for debugging
+// purposes, and stores the files in DevUi.
+const char kNetLog[] = "net-log";
+
 // WebView will log additional debugging information to logcat, such as
 // variations and commandline state.
 const char kWebViewVerboseLogging[] = "webview-verbose-logging";

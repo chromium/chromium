@@ -85,6 +85,8 @@ source_set("browser") {
     "aw_media_url_interceptor.h",
     "aw_metrics_service_client_delegate.cc",
     "aw_metrics_service_client_delegate.h",
+    "aw_net_logs_connection.cc",
+    "aw_net_logs_connection.h",
     "aw_pac_processor.cc",
     "aw_pac_processor.h",
     "aw_pdf_exporter.cc",

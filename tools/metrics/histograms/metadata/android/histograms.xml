@@ -5406,6 +5406,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DevUi.NetLogsCalled" enum="Boolean"
+    expires_after="2025-04-26">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>thomasbull@chromium.org</owner>
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the number of times the Net Logs were captured. This only ever logs
+    the value &quot;true&quot; because we only care about the total count. This
+    is logged in the nonembedded AwNetLogService when the net-logs flag is
+    enabled and a webview is launched.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Android.WebView.DevUi.SessionDuration2" units="ms"
     expires_after="2025-01-16">
 <!-- Name completed by histogram_suffixes

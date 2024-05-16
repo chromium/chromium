@@ -7,7 +7,9 @@ package org.chromium.android_webview;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.CommandLine;
 
 /** Controller for Remote Web Debugging (Developer Tools). */
 @Lifetime.Singleton
@@ -28,6 +30,13 @@ public class AwDevToolsServer {
     }
 
     public void setRemoteDebuggingEnabled(boolean enabled) {
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.NET_LOG)) {
+            if (enabled) {
+                AwNetLogsConnection.startConnectNetLogService();
+            } else {
+                AwNetLogsConnection.stopNetLogService();
+            }
+        }
         AwDevToolsServerJni.get()
                 .setRemoteDebuggingEnabled(AwDevToolsServer.this, mNativeDevToolsServer, enabled);
     }

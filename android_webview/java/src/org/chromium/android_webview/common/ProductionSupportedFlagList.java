@@ -64,6 +64,11 @@ public final class ProductionSupportedFlagList {
                         + "tint. This is useful for identifying WebViews in an Android "
                         + "application."),
         Flag.commandLine(
+                AwSwitches.NET_LOG,
+                "Enables net logs for WebViews within an application, all network activity"
+                        + " will be recorded to a JSON file. Can only"
+                        + " be used when WebContentsDebuggingEnabled is enabled."),
+        Flag.commandLine(
                 AwSwitches.WEBVIEW_VERBOSE_LOGGING,
                 "WebView will log additional debugging information to logcat, such as "
                         + "variations and commandline state."),

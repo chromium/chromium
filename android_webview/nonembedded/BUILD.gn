@@ -105,6 +105,7 @@ android_library("services_java") {
   sources = [
     "java/src/org/chromium/android_webview/services/AwMinidumpUploadJobService.java",
     "java/src/org/chromium/android_webview/services/AwMinidumpUploaderDelegate.java",
+    "java/src/org/chromium/android_webview/services/AwNetLogService.java",
     "java/src/org/chromium/android_webview/services/AwVariationsSeedFetcher.java",
     "java/src/org/chromium/android_webview/services/ComponentUpdaterResetSafeModeAction.java",
     "java/src/org/chromium/android_webview/services/ComponentUpdaterSafeModeUtils.java",

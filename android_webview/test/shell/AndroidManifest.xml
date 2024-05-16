@@ -94,6 +94,9 @@
     <service android:name="org.chromium.android_webview.services.VariationsSeedServer"
              android:exported="true"
              android:process=":webview_service" />
+    <service android:name="org.chromium.android_webview.services.AwNetLogService"
+             android:exported="true"
+             android:process=":webview_service" />
     <service android:name="org.chromium.android_webview.services.MetricsUploadService"
              android:exported="true"/>
     <service android:name="org.chromium.android_webview.services.MetricsBridgeService"
