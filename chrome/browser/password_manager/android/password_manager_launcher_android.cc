@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/PasswordManagerLauncher_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "content/public/browser/web_contents.h"
 
@@ -33,8 +32,7 @@ bool CanManagePasswordsWhenPasskeysPresent(Profile* profile) {
     return g_manage_password_when_passkeys_present_override;
   }
   return Java_PasswordManagerLauncher_canManagePasswordsWhenPasskeysPresent(
-      base::android::AttachCurrentThread(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
 void OverrideManagePasswordWhenPasskeysPresentForTesting(bool can_manage) {

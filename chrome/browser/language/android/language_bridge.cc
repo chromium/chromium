@@ -9,7 +9,6 @@
 #include "chrome/browser/language/android/jni_headers/LanguageBridge_jni.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/language_prefs.h"
@@ -22,7 +21,7 @@ using base::android::ToJavaArrayOfStrings;
 namespace {
 
 PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
-  return ProfileAndroid::FromProfileAndroid(j_profile)->GetPrefs();
+  return Profile::FromJavaObject(j_profile)->GetPrefs();
 }
 
 }  // namespace

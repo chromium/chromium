@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
@@ -55,8 +55,7 @@ void ShowWarning(
   SaveWarningShownTimestamp(profile->GetPrefs());
 
   Java_PasswordMigrationWarningBridge_showWarning(
-      AttachCurrentThread(), window->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      AttachCurrentThread(), window->GetJavaObject(), profile->GetJavaObject(),
       static_cast<int>(trigger_source));
 
   RecordPasswordMigrationWarningTriggerSource(trigger_source);
@@ -75,8 +74,7 @@ void ShowWarningWithActivity(
 
   Java_PasswordMigrationWarningBridge_showWarningWithActivity(
       AttachCurrentThread(), activity, bottom_sheet_controller,
-      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
-      static_cast<int>(trigger_source));
+      profile->GetJavaObject(), static_cast<int>(trigger_source));
 
   RecordPasswordMigrationWarningTriggerSource(trigger_source);
 }
@@ -146,8 +144,7 @@ void MaybeShowPostMigrationSheet(const gfx::NativeWindow window,
   }
 
   Java_PasswordMigrationWarningBridge_maybeShowPostMigrationSheet(
-      AttachCurrentThread(), window->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      AttachCurrentThread(), window->GetJavaObject(), profile->GetJavaObject());
 }
 
 bool ShouldShowPostMigrationSheet(Profile* profile) {

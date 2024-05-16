@@ -6,7 +6,6 @@
 
 #include "chrome/android/chrome_jni_headers/PasswordManagerErrorMessageHelperBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -24,7 +23,7 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startUpdateAccountCredentialsFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      profile->GetJavaObject());
 }
 
 void PasswordManagerErrorMessageHelperBridgeImpl::
@@ -39,7 +38,7 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startTrustedVaultKeyRetrievalFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      profile->GetJavaObject());
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
@@ -47,8 +46,7 @@ bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   return Java_PasswordManagerErrorMessageHelperBridge_shouldShowSignInErrorUI(
-      base::android::AttachCurrentThread(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::
@@ -56,8 +54,7 @@ bool PasswordManagerErrorMessageHelperBridgeImpl::
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   return Java_PasswordManagerErrorMessageHelperBridge_shouldShowUpdateGMSCoreErrorUI(
-      base::android::AttachCurrentThread(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
 void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
@@ -65,8 +62,7 @@ void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   Java_PasswordManagerErrorMessageHelperBridge_saveErrorUiShownTimestamp(
-      base::android::AttachCurrentThread(),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject());
+      base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
 void PasswordManagerErrorMessageHelperBridgeImpl::LaunchGmsUpdate(

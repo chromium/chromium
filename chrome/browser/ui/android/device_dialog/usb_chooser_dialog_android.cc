@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/UsbChooserDialog_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/permissions/permission_util.h"
@@ -89,7 +88,7 @@ UsbChooserDialogAndroid::CreateInternal(
   DCHECK(profile);
 
   base::android::ScopedJavaLocalRef<jobject> j_profile_android =
-      ProfileAndroid::FromProfile(profile)->GetJavaObject();
+      profile->GetJavaObject();
   DCHECK(!j_profile_android.is_null());
 
   auto dialog = std::make_unique<UsbChooserDialogAndroid>(std::move(controller),

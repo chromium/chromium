@@ -18,7 +18,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
 #include "chrome/browser/share/jni_headers/ShareHistoryBridge_jni.h"

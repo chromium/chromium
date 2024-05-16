@@ -156,7 +156,7 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
@@ -677,9 +677,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       }
 
 #if BUILDFLAG(IS_ANDROID)
-      Java_PackageHash_onCookiesDeleted(
-          base::android::AttachCurrentThread(),
-          ProfileAndroid::FromProfile(profile_)->GetJavaObject());
+      Java_PackageHash_onCookiesDeleted(base::android::AttachCurrentThread(),
+                                        profile_->GetJavaObject());
 #endif
     }
 

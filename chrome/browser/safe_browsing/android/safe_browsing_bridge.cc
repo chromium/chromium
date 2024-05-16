@@ -8,7 +8,6 @@
 // NOTE: This target is transitively depended on by //chrome/browser and thus
 // can't depend on it.
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
@@ -23,7 +22,7 @@ using base::android::JavaParamRef;
 namespace {
 
 PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
-  return ProfileAndroid::FromProfileAndroid(j_profile)->GetPrefs();
+  return Profile::FromJavaObject(j_profile)->GetPrefs();
 }
 
 }  // namespace
@@ -86,7 +85,7 @@ static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
 static jboolean JNI_SafeBrowsingBridge_IsUnderAdvancedProtection(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  Profile* profile = Profile::FromJavaObject(j_profile);
   return profile &&
          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
              profile)

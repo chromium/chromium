@@ -15,7 +15,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
@@ -119,11 +118,8 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
-    ProfileAndroid* profile_android =
-        ProfileAndroid::FromProfile(profile_.get());
     return Java_FamilyInfoFeedbackSourceTestBridge_createFamilyInfoFeedbackSource(
-        env_, base::android::JavaParamRef<jobject>(
-                  env_, profile_android->GetJavaObject().Release()));
+        env_, profile_.get()->GetJavaObject());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -251,11 +247,8 @@ class FamilyInfoFeedbackSourceTest
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
-    ProfileAndroid* profile_android =
-        ProfileAndroid::FromProfile(profile_.get());
     return Java_FamilyInfoFeedbackSourceTestBridge_createFamilyInfoFeedbackSource(
-        env_, base::android::JavaParamRef<jobject>(
-                  env_, profile_android->GetJavaObject().Release()));
+        env_, profile_.get()->GetJavaObject());
   }
 
   content::BrowserTaskEnvironment task_environment_;

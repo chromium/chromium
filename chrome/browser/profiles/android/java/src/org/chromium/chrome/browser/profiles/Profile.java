@@ -17,14 +17,14 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Wrapper that allows passing a Profile reference around in the Java layer. */
 public class Profile implements BrowserContextHandle {
-    /** Pointer to the Native-side ProfileAndroid. */
-    private long mNativeProfileAndroid;
+    /** Pointer to the Native-side Profile. */
+    private long mNativeProfile;
 
     private final @Nullable OTRProfileID mOtrProfileId;
 
     @CalledByNative
-    private Profile(long nativeProfileAndroid, @Nullable OTRProfileID otrProfileId) {
-        mNativeProfileAndroid = nativeProfileAndroid;
+    private Profile(long nativeProfile, @Nullable OTRProfileID otrProfileId) {
+        mNativeProfile = nativeProfile;
         mOtrProfileId = otrProfileId;
     }
 
@@ -61,7 +61,7 @@ public class Profile implements BrowserContextHandle {
     }
 
     public Profile getOriginalProfile() {
-        return ProfileJni.get().getOriginalProfile(mNativeProfileAndroid);
+        return ProfileJni.get().getOriginalProfile(mNativeProfile);
     }
 
     /**
@@ -73,8 +73,7 @@ public class Profile implements BrowserContextHandle {
      */
     public Profile getOffTheRecordProfile(OTRProfileID profileID, boolean createIfNeeded) {
         assert profileID != null;
-        return ProfileJni.get()
-                .getOffTheRecordProfile(mNativeProfileAndroid, profileID, createIfNeeded);
+        return ProfileJni.get().getOffTheRecordProfile(mNativeProfile, profileID, createIfNeeded);
     }
 
     /**
@@ -84,7 +83,7 @@ public class Profile implements BrowserContextHandle {
      * @param createIfNeeded Boolean indicating the profile should be created if doesn't exist.
      */
     public Profile getPrimaryOTRProfile(boolean createIfNeeded) {
-        return ProfileJni.get().getPrimaryOTRProfile(mNativeProfileAndroid, createIfNeeded);
+        return ProfileJni.get().getPrimaryOTRProfile(mNativeProfile, createIfNeeded);
     }
 
     /**
@@ -101,12 +100,12 @@ public class Profile implements BrowserContextHandle {
      */
     public boolean hasOffTheRecordProfile(OTRProfileID profileID) {
         assert profileID != null;
-        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfileAndroid, profileID);
+        return ProfileJni.get().hasOffTheRecordProfile(mNativeProfile, profileID);
     }
 
     /** Returns if primary OffTheRecord profile exists. */
     public boolean hasPrimaryOTRProfile() {
-        return ProfileJni.get().hasPrimaryOTRProfile(mNativeProfileAndroid);
+        return ProfileJni.get().hasPrimaryOTRProfile(mNativeProfile);
     }
 
     /** Returns if the profile is a primary OTR Profile. */
@@ -115,7 +114,7 @@ public class Profile implements BrowserContextHandle {
     }
 
     public ProfileKey getProfileKey() {
-        return ProfileJni.get().getProfileKey(mNativeProfileAndroid);
+        return ProfileJni.get().getProfileKey(mNativeProfile);
     }
 
     public boolean isOffTheRecord() {
@@ -130,12 +129,12 @@ public class Profile implements BrowserContextHandle {
      */
     @Deprecated
     public boolean isChild() {
-        return ProfileJni.get().isChild(mNativeProfileAndroid);
+        return ProfileJni.get().isChild(mNativeProfile);
     }
 
     /** Wipes all data for this profile. */
     public void wipe() {
-        ProfileJni.get().wipe(mNativeProfileAndroid);
+        ProfileJni.get().wipe(mNativeProfile);
     }
 
     /**
@@ -143,7 +142,7 @@ public class Profile implements BrowserContextHandle {
      */
     @VisibleForTesting
     public boolean isNativeInitialized() {
-        return mNativeProfileAndroid != 0;
+        return mNativeProfile != 0;
     }
 
     /**
@@ -151,19 +150,19 @@ public class Profile implements BrowserContextHandle {
      * get a more debuggable stacktrace than failing on native-side when dereferencing.
      */
     public void ensureNativeInitialized() {
-        if (mNativeProfileAndroid == 0) {
+        if (mNativeProfile == 0) {
             throw new RuntimeException("Native profile pointer not initialized.");
         }
     }
 
     @Override
     public long getNativeBrowserContextPointer() {
-        return mNativeProfileAndroid;
+        return mNativeProfile;
     }
 
     @CalledByNative
     private void onNativeDestroyed() {
-        mNativeProfileAndroid = 0;
+        mNativeProfile = 0;
 
         if (isPrimaryOTRProfile()) {
             CookiesFetcher.scheduleDeleteCookies();
@@ -174,7 +173,7 @@ public class Profile implements BrowserContextHandle {
 
     @CalledByNative
     private long getNativePointer() {
-        return mNativeProfileAndroid;
+        return mNativeProfile;
     }
 
     @NativeMethods

@@ -7,7 +7,6 @@
 #include "chrome/android/chrome_jni_headers/CardUnmaskBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
@@ -168,9 +167,7 @@ CardUnmaskPromptViewAndroid::GetOrCreateJavaObject() {
 
   return java_object_internal_ = Java_CardUnmaskBridge_create(
              env, reinterpret_cast<intptr_t>(this),
-             ProfileAndroid::FromProfile(
-                 Profile::FromBrowserContext(
-                     web_contents_->GetBrowserContext()))
+             Profile::FromBrowserContext(web_contents_->GetBrowserContext())
                  ->GetJavaObject(),
              dialog_title, instructions,
              ResourceMapper::MapToJavaDrawableId(

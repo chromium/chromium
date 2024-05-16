@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/ui/android/hats/internal/jni_headers/SurveyClientBridge_jni.h"
 #include "chrome/browser/ui/android/hats/survey_config_android.h"
 #include "ui/android/window_android.h"
@@ -38,8 +37,7 @@ SurveyClientAndroid::SurveyClientAndroid(
                                        : std::string_view());
   jobj_ = Java_SurveyClientBridge_create(
       env, reinterpret_cast<int64_t>(this), java_trigger,
-      ui_delegate->GetJavaObject(env),
-      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+      ui_delegate->GetJavaObject(env), profile->GetJavaObject(),
       java_supplied_trigger_id);
 }
 

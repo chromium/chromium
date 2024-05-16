@@ -26,7 +26,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
@@ -60,7 +60,7 @@ void OnBrowsingDataRemoverDone(const ScopedJavaGlobalRef<jobject>& callback,
 }
 
 PrefService* GetPrefService(const JavaParamRef<jobject>& jprofile) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   return profile->GetOriginalProfile()->GetPrefs();
 }
 
@@ -97,7 +97,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
     const JavaParamRef<jintArray>& jignoring_domain_reasons) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearBrowsingData");
 
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   BrowsingDataRemover* browsing_data_remover =
       profile->GetBrowsingDataRemover();
 
@@ -191,7 +191,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
       "browsing_data",
       "BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory");
   // The one-time notice in the dialog.
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
       SyncServiceFactory::GetForProfile(profile),
       WebHistoryServiceFactory::GetForProfile(profile), chrome::GetChannel(),
@@ -204,7 +204,7 @@ static void JNI_BrowsingDataBridge_FetchImportantSites(
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
       important_sites =
           site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
@@ -246,7 +246,7 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
   GURL origin(base::android::ConvertJavaStringToUTF8(jorigin));
   CHECK(origin.is_valid());
   site_engagement::ImportantSitesUtil::MarkOriginAsImportantForTesting(
-      ProfileAndroid::FromProfileAndroid(jprofile), origin);
+      Profile::FromJavaObject(jprofile), origin);
 }
 
 static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
@@ -347,7 +347,7 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jobject>& java_callback) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+  Profile* profile = Profile::FromJavaObject(jprofile);
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,

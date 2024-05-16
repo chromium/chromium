@@ -19,7 +19,6 @@ source_set("profiles") {
   if (is_android) {
     sources += [
       "profile_android.cc",
-      "profile_android.h",
       "profile_key_android.cc",
       "profile_key_android.h",
     ]

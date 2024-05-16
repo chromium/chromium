@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/messages/android/message_enums.h"

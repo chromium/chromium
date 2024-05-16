@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -23,7 +23,7 @@ namespace jni_zero {
 
 template <>
 Profile* FromJniType<Profile*>(JNIEnv* env, const JavaRef<jobject>& j_profile) {
-  return Profile::FromProfileAndroid(j_profile);
+  return Profile::FromJavaObject(j_profile);
 }
 
 template <>
@@ -38,7 +38,7 @@ ScopedJavaLocalRef<jobject> ToJniType<Profile*>(JNIEnv* env,
 }  // namespace jni_zero
 
 // static
-Profile* Profile::FromProfileAndroid(const JavaRef<jobject>& obj) {
+Profile* Profile::FromJavaObject(const JavaRef<jobject>& obj) {
   if (!obj) {
     return nullptr;
   }

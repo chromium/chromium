@@ -516,9 +516,7 @@ class Profile : public content::BrowserContext {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(agrieve): Delete this no-op.
-  static Profile* FromProfile(Profile* profile) { return profile; }
-  static Profile* FromProfileAndroid(const jni_zero::JavaRef<jobject>& obj);
+  static Profile* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
   jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 #endif  // BUILDFLAG(IS_ANDROID)
  protected:

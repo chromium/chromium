@@ -5,6 +5,7 @@
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
 
 #include <jni.h>
+
 #include <memory>
 
 #include "base/android/callback_android.h"
@@ -15,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/android/favicon_fetcher.h"
 #include "chrome/browser/supervised_user/website_parent_approval_jni_headers/WebsiteParentApproval_jni.h"
@@ -67,8 +67,7 @@ void WebsiteParentApproval::RequestLocalApproval(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_WebsiteParentApproval_requestLocalApproval(
       env, window_android->GetJavaObject(),
-      url::GURLAndroid::FromNativeGURL(env, url),
-      ProfileAndroid::FromProfile(&profile)->GetJavaObject());
+      url::GURLAndroid::FromNativeGURL(env, url), profile.GetJavaObject());
 }
 
 void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,

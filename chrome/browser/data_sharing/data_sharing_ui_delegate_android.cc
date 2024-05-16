@@ -6,7 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "chrome/browser/data_sharing/jni_headers/DataSharingUIDelegateAndroid_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -14,7 +14,7 @@ namespace data_sharing {
 
 DataSharingUIDelegateAndroid::DataSharingUIDelegateAndroid(Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_profile = ProfileAndroid::FromProfile(profile)->GetJavaObject();
+  auto j_profile = profile->GetJavaObject();
   java_obj_.Reset(
       env, Java_DataSharingUIDelegateAndroid_create(env, j_profile).obj());
 }

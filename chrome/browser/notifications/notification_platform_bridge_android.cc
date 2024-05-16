@@ -22,7 +22,7 @@
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/notifications/notification_constants.h"
@@ -281,8 +281,7 @@ void NotificationPlatformBridgeAndroid::Display(
   if (!scope_url.is_valid())
     scope_url = origin_url;
 
-  ScopedJavaLocalRef<jobject> android_profile =
-      ProfileAndroid::FromProfile(profile)->GetJavaObject();
+  ScopedJavaLocalRef<jobject> android_profile = profile->GetJavaObject();
 
   SkBitmap image_bitmap = notification.image().AsBitmap();
 

@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/commerce/price_tracking/android/jni_headers/PriceTrackingNotificationBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "content/public/browser/browser_context.h"
 
 using OptimizationType = optimization_guide::proto::OptimizationType;
@@ -31,11 +30,10 @@ PriceTrackingNotificationBridge::GetForBrowserContext(
 PriceTrackingNotificationBridge::PriceTrackingNotificationBridge(
     Profile* profile) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  java_obj_.Reset(env,
-                  Java_PriceTrackingNotificationBridge_create(
-                      env, reinterpret_cast<intptr_t>(this),
-                      ProfileAndroid::FromProfile(profile)->GetJavaObject())
-                      .obj());
+  java_obj_.Reset(
+      env, Java_PriceTrackingNotificationBridge_create(
+               env, reinterpret_cast<intptr_t>(this), profile->GetJavaObject())
+               .obj());
 }
 
 PriceTrackingNotificationBridge::~PriceTrackingNotificationBridge() = default;

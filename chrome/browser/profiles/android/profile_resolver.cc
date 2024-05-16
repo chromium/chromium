@@ -17,7 +17,6 @@
 #include "chrome/browser/android/proto/profile_token.pb.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -85,8 +84,7 @@ void ProfileToProfileKey(ProfileKeyCallback callback, Profile* profile) {
 void OnResolvedProfile(const JavaRef<jobject>& j_callback, Profile* profile) {
   ScopedJavaLocalRef<jobject> j_profile;
   if (profile) {
-    ProfileAndroid* profile_android = ProfileAndroid::FromProfile(profile);
-    j_profile = profile_android->GetJavaObject();
+    j_profile = profile->GetJavaObject();
   }
   base::android::RunObjectCallbackAndroid(j_callback, j_profile);
 }

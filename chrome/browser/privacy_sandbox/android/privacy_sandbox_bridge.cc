@@ -17,7 +17,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,7 +34,7 @@ namespace {
 PrivacySandboxService* GetPrivacySandboxService(
     const base::android::JavaRef<jobject>& j_profile) {
   return PrivacySandboxServiceFactory::GetForProfile(
-      ProfileAndroid::FromProfileAndroid(j_profile));
+      Profile::FromJavaObject(j_profile));
 }
 
 std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaTopicsArray(
@@ -227,6 +226,6 @@ JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   PrivacySandboxSettingsFactory::GetForProfile(
-      ProfileAndroid::FromProfileAndroid(j_profile))
+      Profile::FromJavaObject(j_profile))
       ->SetAllPrivacySandboxAllowedForTesting();  // IN-TEST
 }

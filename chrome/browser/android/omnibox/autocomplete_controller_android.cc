@@ -7,6 +7,7 @@
 #include <jni.h>
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
@@ -133,7 +133,7 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
     : profile_{profile},
       java_controller_{Java_AutocompleteController_Constructor(
           AttachCurrentThread(),
-          ProfileAndroid::FromProfile(profile)->GetJavaObject(),
+          profile->GetJavaObject(),
           reinterpret_cast<intptr_t>(this))},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),
