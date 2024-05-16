@@ -82,4 +82,7 @@ found in the LICENSE file.
         android:key="manage_accounts_on_this_device"
         android:title="@string/manage_accounts_on_this_device"/>
 
+    <org.chromium.chrome.browser.ui.signin.SignoutButtonPreference
+        android:key="sign_out_button"/>
+
 </PreferenceScreen>
