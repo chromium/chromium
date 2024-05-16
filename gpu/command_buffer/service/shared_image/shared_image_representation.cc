@@ -439,7 +439,9 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
 sk_sp<SkImage>
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
     int plane_index,
-    SharedContextState* context_state) {
+    SharedContextState* context_state,
+    SkImages::TextureReleaseProc texture_release_proc,
+    SkImages::ReleaseContext release_context) {
   auto format = representation()->format();
   DCHECK(format.is_multi_plane());
   DCHECK_EQ(static_cast<int>(promise_image_textures_.size()),
@@ -452,7 +454,8 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
   return SkImages::BorrowTextureFrom(
       context_state->gr_context(),
       promise_image_texture(plane_index)->backendTexture(), surface_origin,
-      color_type, alpha_type, /*sk_color_space=*/nullptr);
+      color_type, alpha_type, /*sk_color_space=*/nullptr, texture_release_proc,
+      release_context);
 }
 
 bool SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
@@ -668,7 +671,10 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
 }
 
 sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
-    CreateSkImageForPlane(int plane_index, SharedContextState* context_state) {
+    CreateSkImageForPlane(int plane_index,
+                          SharedContextState* context_state,
+                          SkImages::TextureReleaseProc texture_release_proc,
+                          SkImages::ReleaseContext release_context) {
   auto format = representation()->format();
   CHECK(format.is_multi_plane());
   CHECK_EQ(static_cast<int>(graphite_textures_.size()),
@@ -678,7 +684,8 @@ sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
   return SkImages::AdoptTextureFrom(context_state->gpu_main_graphite_recorder(),
                                     graphite_texture(plane_index), color_type,
-                                    alpha_type, /*colorSpace=*/nullptr);
+                                    alpha_type, /*colorSpace=*/nullptr,
+                                    texture_release_proc, release_context);
 }
 
 bool SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::

@@ -418,7 +418,9 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     // multiplanar formats.
     virtual sk_sp<SkImage> CreateSkImageForPlane(
         int plane_index,
-        SharedContextState* context_state) = 0;
+        SharedContextState* context_state,
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) = 0;
 
     // NOTE: Implemented only for Ganesh.
     // Checks if there's a need to apply skgpu::MutableTextureState.
@@ -537,7 +539,9 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
     // multiplanar formats.
     sk_sp<SkImage> CreateSkImageForPlane(
         int plane_index,
-        SharedContextState* context_state) override;
+        SharedContextState* context_state,
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) override;
 
     // Checks if there's a need to apply skgpu::MutableTextureState.
     bool HasBackendSurfaceEndState() override;
@@ -684,7 +688,9 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
     // multiplanar formats.
     sk_sp<SkImage> CreateSkImageForPlane(
         int plane_index,
-        SharedContextState* context_state) override;
+        SharedContextState* context_state,
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) override;
 
     bool HasBackendSurfaceEndState() override;
     void ApplyBackendSurfaceEndState() override;
