@@ -2475,9 +2475,6 @@ class ComputedStyle final : public ComputedStyleBase {
                                         uint32_t field_diff) const;
   bool DiffCompositingReasonsChanged(const ComputedStyle& other,
                                      uint32_t field_diff) const;
-  void UpdatePropertySpecificDifferences(const ComputedStyle& other,
-                                         uint32_t field_diff,
-                                         StyleDifference&) const;
   bool PotentialCompositingReasonsFor3DTransformChanged(
       const ComputedStyle& other) const;
 

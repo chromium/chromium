@@ -877,6 +877,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
       other.IsStackingContextWithoutContainment()) {
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
+    diff.SetZIndexChanged();
   }
 
   if ((!diff.NeedsFullLayout() || !diff.NeedsNormalPaintInvalidation()) &&
@@ -898,26 +899,66 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
     }
   }
 
+  if (!diff.NeedsNormalPaintInvalidation() &&
+      DiffNeedsNormalPaintInvalidation(document, other, field_diff)) {
+    diff.SetNeedsNormalPaintInvalidation();
+  }
+
+  if (ComputedStyleBase::UpdatePropertySpecificDifferencesOtherTransform(
+          *this, other)) {
+    diff.SetOtherTransformPropertyChanged();
+  }
+
+  if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
+    diff.SetNeedsRecomputeVisualOverflow();
+  }
+
+  bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
+  bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
+  if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
+    diff.SetCSSClipChanged();
+  }
+
+  if (DiffCompositingReasonsChanged(other, field_diff)) {
+    diff.SetCompositingReasonsChanged();
+  }
+
+  if (field_diff & kBackgroundColor) {
+    // If the background color change is not due to a composited animation,
+    // then paint invalidation is required; but we can defer the decision until
+    // we know whether the color change will be rendered by the compositor.
+    diff.SetBackgroundColorChanged();
+  }
+  if (field_diff & kBlendMode) {
+    diff.SetBlendModeChanged();
+  }
   if (field_diff & kBorderRadius) {
     diff.SetBorderRadiusChanged();
   }
   if (field_diff & kClipPath) {
     diff.SetClipPathChanged();
   }
-
-  // If the background color change is not due to a composited animation, then
-  // paint invalidation is required; but we can defer the decision until we
-  // know whether the color change will be rendered by the compositor.
-  if (field_diff & kBackgroundColor) {
-    diff.SetBackgroundColorChanged();
+  if (field_diff & kColor) {
+    diff.SetTextDecorationOrColorChanged();
   }
-
-  if (!diff.NeedsNormalPaintInvalidation() &&
-      DiffNeedsNormalPaintInvalidation(document, other, field_diff)) {
-    diff.SetNeedsNormalPaintInvalidation();
+  if (field_diff & kFilterData) {
+    diff.SetFilterChanged();
   }
-
-  UpdatePropertySpecificDifferences(other, field_diff, diff);
+  if (field_diff & kMask) {
+    diff.SetMaskChanged();
+  }
+  if (field_diff & kOpacity) {
+    diff.SetOpacityChanged();
+  }
+  if (field_diff & kTextDecoration) {
+    diff.SetTextDecorationOrColorChanged();
+  }
+  if (field_diff & kTransformProperty) {
+    diff.SetTransformPropertyChanged();
+  }
+  if (field_diff & kZIndex) {
+    diff.SetZIndexChanged();
+  }
 
   // The following condition needs to be at last, because it may depend on
   // conditions in diff computed above.
@@ -1280,62 +1321,6 @@ bool ComputedStyle::DiffCompositingReasonsChanged(const ComputedStyle& other,
   }
 
   return false;
-}
-
-void ComputedStyle::UpdatePropertySpecificDifferences(
-    const ComputedStyle& other,
-    uint32_t field_diff,
-    StyleDifference& diff) const {
-  if ((field_diff & kZIndex) || (IsStackingContextWithoutContainment() !=
-                                 other.IsStackingContextWithoutContainment())) {
-    diff.SetZIndexChanged();
-  }
-
-  if (field_diff & kTransformProperty) {
-    diff.SetTransformPropertyChanged();
-  }
-
-  if (ComputedStyleBase::UpdatePropertySpecificDifferencesOtherTransform(
-          *this, other)) {
-    diff.SetOtherTransformPropertyChanged();
-  }
-
-  if (field_diff & kOpacity) {
-    diff.SetOpacityChanged();
-  }
-
-  if (field_diff & kFilterData) {
-    diff.SetFilterChanged();
-  }
-
-  if (DiffNeedsRecomputeVisualOverflow(other, field_diff)) {
-    diff.SetNeedsRecomputeVisualOverflow();
-  }
-
-  if (field_diff & kTextDecoration) {
-    diff.SetTextDecorationOrColorChanged();
-  }
-  if (field_diff & kColor) {
-    diff.SetTextDecorationOrColorChanged();
-  }
-
-  if (field_diff & kMask) {
-    diff.SetMaskChanged();
-  }
-
-  bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
-  bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
-  if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip())) {
-    diff.SetCSSClipChanged();
-  }
-
-  if (field_diff & kBlendMode) {
-    diff.SetBlendModeChanged();
-  }
-
-  if (DiffCompositingReasonsChanged(other, field_diff)) {
-    diff.SetCompositingReasonsChanged();
-  }
 }
 
 bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
