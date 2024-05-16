@@ -72,8 +72,8 @@ suite('DestinationManager', () => {
     assertNotEquals(notFoundIndex, pdfIndex, 'PDF destination available');
   });
 
-  // Verify getLocalPrinters is called on construction of manager.
-  test('on create getLocalPrinters is called', () => {
+  // Verify getLocalDestinations is called on construction of manager.
+  test('on create getLocalDestinations is called', () => {
     const expectedCallCount = 1;
     assertEquals(
         expectedCallCount,
@@ -81,10 +81,10 @@ suite('DestinationManager', () => {
         `${GET_LOCAL_DESTINATIONS_METHOD} called in construction of manager`);
   });
 
-  // Verify destination manager state updated called when getLocalPrinters
+  // Verify destination manager state updated called when getLocalDestinations
   // resolves.
   test(
-      'starting and resolving getLocalPrinters triggers state update',
+      'starting and resolving getLocalDestinations triggers state update',
       async () => {
         assertEquals(
             DestinationManagerState.FETCHING, instance.getState(),
@@ -103,7 +103,7 @@ suite('DestinationManager', () => {
   // Verify destination manager sets fallback destination to PDF if no other
   // destinations are returned in local printer fetch.
   test(
-      'starting and resolving getLocalPrinters triggers state active' +
+      'starting and resolving getLocalDestinations triggers state active' +
           ' destination update',
       async () => {
         assertEquals(

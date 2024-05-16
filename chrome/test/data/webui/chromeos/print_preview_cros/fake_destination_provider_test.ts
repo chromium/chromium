@@ -53,7 +53,7 @@ suite('FakeDestinationProvider', () => {
   // Verify default return value is
   // FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY.
   test(
-      'getLocalPrinters returns FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY',
+      'getLocalDestinations returns successful result with no destinations',
       async () => {
         const expectedCallCount = 1;
         const result = await destinationProvider.getLocalDestinations();
