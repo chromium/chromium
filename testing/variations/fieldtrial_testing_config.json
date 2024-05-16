@@ -3005,21 +3005,6 @@
             ]
         }
     ],
-    "CCTPrewarmTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CCTPrewarmTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS-V2-Android": [
         {
             "platforms": [
