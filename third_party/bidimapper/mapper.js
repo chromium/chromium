@@ -1088,6 +1088,46 @@ var mapperTab = (function () {
 
 	var ActionDispatcher$1 = {};
 
+	var GraphemeTools = {};
+
+	/*
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(GraphemeTools, "__esModule", { value: true });
+	GraphemeTools.isSingleGrapheme = GraphemeTools.isSingleComplexGrapheme = void 0;
+	/**
+	 * Check if the given string is a single complex grapheme. A complex grapheme is one that
+	 * is made up of multiple characters.
+	 */
+	function isSingleComplexGrapheme(value) {
+	    return isSingleGrapheme(value) && value.length > 1;
+	}
+	GraphemeTools.isSingleComplexGrapheme = isSingleComplexGrapheme;
+	/**
+	 * Check if the given string is a single grapheme.
+	 */
+	function isSingleGrapheme(value) {
+	    // Theoretically there can be some strings considered a grapheme in some locales, like
+	    // slovak "ch" digraph. Use english locale for consistency.
+	    // https://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
+	    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+	    return [...segmenter.segment(value)].length === 1;
+	}
+	GraphemeTools.isSingleGrapheme = isSingleGrapheme;
+
 	var InputSource = {};
 
 	/**
@@ -1257,6 +1297,10 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(keyUtils, "__esModule", { value: true });
 	keyUtils.getKeyLocation = keyUtils.getKeyCode = keyUtils.getNormalizedKey = void 0;
+	/**
+	 * Returns the normalized key value for a given key according to the table:
+	 * https://w3c.github.io/webdriver/#dfn-normalized-key-value
+	 */
 	function getNormalizedKey(value) {
 	    switch (value) {
 	        case '\uE000':
@@ -1271,8 +1315,9 @@ var mapperTab = (function () {
 	            return 'Tab';
 	        case '\uE005':
 	            return 'Clear';
+	        // Specification declares the '\uE006' to be `Return`, but it is not supported by
+	        // Chrome, so fall back to `Enter`, which aligns with WPT.
 	        case '\uE006':
-	            return 'Return';
 	        case '\uE007':
 	            return 'Enter';
 	        case '\uE008':
@@ -1404,6 +1449,10 @@ var mapperTab = (function () {
 	    }
 	}
 	keyUtils.getNormalizedKey = getNormalizedKey;
+	/**
+	 * Returns the key code for a given key according to the table:
+	 * https://w3c.github.io/webdriver/#dfn-shifted-character
+	 */
 	function getKeyCode(key) {
 	    switch (key) {
 	        case '`':
@@ -1456,6 +1505,10 @@ var mapperTab = (function () {
 	        case '=':
 	        case '+':
 	            return 'Equal';
+	        // The spec declares the '<' to be `IntlBackslash` as well, but it is already covered
+	        // in the `Comma` above.
+	        case '>':
+	            return 'IntlBackslash';
 	        case 'a':
 	        case 'A':
 	            return 'KeyA';
@@ -1558,6 +1611,8 @@ var mapperTab = (function () {
 	            return 'ControlRight';
 	        case '\uE006':
 	            return 'Enter';
+	        case '\uE00B':
+	            return 'Pause';
 	        case '\uE03D':
 	            return 'MetaLeft';
 	        case '\uE053':
@@ -1619,6 +1674,8 @@ var mapperTab = (function () {
 	            return 'F11';
 	        case '\uE03C':
 	            return 'F12';
+	        case '\uE019':
+	            return 'NumpadEqual';
 	        case '\uE01A':
 	        case '\uE05C':
 	            return 'Numpad0';
@@ -1668,6 +1725,10 @@ var mapperTab = (function () {
 	    }
 	}
 	keyUtils.getKeyCode = getKeyCode;
+	/**
+	 * Returns the location of the key according to the table:
+	 * https://w3c.github.io/webdriver/#dfn-key-location
+	 */
 	function getKeyLocation(key) {
 	    switch (key) {
 	        case '\uE007':
@@ -1676,6 +1737,7 @@ var mapperTab = (function () {
 	        case '\uE00A':
 	        case '\uE03D':
 	            return 1;
+	        case '\uE019':
 	        case '\uE01A':
 	        case '\uE01B':
 	        case '\uE01C':
@@ -2009,6 +2071,7 @@ var mapperTab = (function () {
 	ActionDispatcher$1.ActionDispatcher = void 0;
 	const protocol_js_1$k = protocol;
 	const assert_js_1$6 = assert$1;
+	const GraphemeTools_1 = GraphemeTools;
 	const InputSource_js_1$1 = InputSource;
 	const keyUtils_js_1 = keyUtils;
 	const USKeyboardLayout_js_1 = USKeyboardLayout;
@@ -2375,10 +2438,13 @@ var mapperTab = (function () {
 	        } while (!last);
 	    }
 	    async #dispatchKeyDownAction(source, action) {
-	        if ([...action.value].length > 1) {
-	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${action.value}`);
-	        }
 	        const rawKey = action.value;
+	        if (!(0, GraphemeTools_1.isSingleGrapheme)(rawKey)) {
+	            // https://w3c.github.io/webdriver/#dfn-process-a-key-action
+	            // WebDriver spec allows a grapheme to be used.
+	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${rawKey}`);
+	        }
+	        const isGrapheme = (0, GraphemeTools_1.isSingleComplexGrapheme)(rawKey);
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
 	        const repeat = source.pressed.has(key);
 	        const code = (0, keyUtils_js_1.getKeyCode)(rawKey);
@@ -2402,7 +2468,7 @@ var mapperTab = (function () {
 	        // --- Platform-specific code begins here ---
 	        // The spread is a little hack so JS gives us an array of unicode characters
 	        // to measure.
-	        const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+	        const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
 	        const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
 	        let command;
 	        // The following commands need to be declared because Chromium doesn't
@@ -2455,10 +2521,13 @@ var mapperTab = (function () {
 	        // --- Platform-specific code ends here ---
 	    }
 	    #dispatchKeyUpAction(source, action) {
-	        if ([...action.value].length > 1) {
-	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${action.value}`);
-	        }
 	        const rawKey = action.value;
+	        if (!(0, GraphemeTools_1.isSingleGrapheme)(rawKey)) {
+	            // https://w3c.github.io/webdriver/#dfn-process-a-key-action
+	            // WebDriver spec allows a grapheme to be used.
+	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${rawKey}`);
+	        }
+	        const isGrapheme = (0, GraphemeTools_1.isSingleComplexGrapheme)(rawKey);
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
 	        if (!source.pressed.has(key)) {
 	            return;
@@ -2484,7 +2553,7 @@ var mapperTab = (function () {
 	        // --- Platform-specific code begins here ---
 	        // The spread is a little hack so JS gives us an array of unicode characters
 	        // to measure.
-	        const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+	        const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
 	        const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
 	        return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
 	            type: 'keyUp',
@@ -2502,10 +2571,20 @@ var mapperTab = (function () {
 	    }
 	}
 	ActionDispatcher$1.ActionDispatcher = ActionDispatcher;
-	const getKeyEventUnmodifiedText = (key, source) => {
+	/**
+	 * Translates a non-grapheme key to either an `undefined` for a special keys, or a single
+	 * character modified by shift if needed.
+	 */
+	const getKeyEventUnmodifiedText = (key, source, isGrapheme) => {
+	    if (isGrapheme) {
+	        // Graphemes should be presented as text in the CDP command.
+	        return key;
+	    }
 	    if (key === 'Enter') {
 	        return '\r';
 	    }
+	    // If key is not a single character, it is a normalized key value, and should be
+	    // presented as key, not text in the CDP command.
 	    return [...key].length === 1
 	        ? source.shift
 	            ? key.toLocaleUpperCase('en-US')
@@ -6332,8 +6411,10 @@ var mapperTab = (function () {
 	                return {
 	                    functionDeclaration: String((cssSelector, maxNodeCount, ...startNodes) => {
 	                        const locateNodesUsingCss = (element) => {
-	                            if (!(element instanceof HTMLElement)) {
-	                                throw new Error('startNodes in css selector should be HTMLElement');
+	                            if (!(element instanceof HTMLElement ||
+	                                element instanceof Document ||
+	                                element instanceof DocumentFragment)) {
+	                                throw new Error('startNodes in css selector should be HTMLElement, Document or DocumentFragment');
 	                            }
 	                            return [...element.querySelectorAll(cssSelector)];
 	                        };
@@ -6579,8 +6660,8 @@ var mapperTab = (function () {
 	            }
 	            // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
 	            if (locatorResult.exceptionDetails.text ===
-	                'Error: startNodes in css selector should be HTMLElement') {
-	                throw new protocol_js_1$9.InvalidArgumentException(`startNodes in css selector should be HTMLElement`);
+	                'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment') {
+	                throw new protocol_js_1$9.InvalidArgumentException('startNodes in css selector should be HTMLElement, Document or DocumentFragment');
 	            }
 	            throw new protocol_js_1$9.UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
 	        }
