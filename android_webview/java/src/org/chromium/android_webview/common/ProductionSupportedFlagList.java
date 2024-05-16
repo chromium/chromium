@@ -879,6 +879,9 @@ public final class ProductionSupportedFlagList {
                 "MojoChannelAssociatedSendUsesRunOrPostTask",
                 "Enables optimization for sending messages on channel-associated interfaces"),
         Flag.baseFeature(
+                "MojoChannelAssociatedCrashesOnSendError",
+                "Enable a CHECK to verify if there are Mojo send errors in the field"),
+        Flag.baseFeature(
                 "MojoBindingsInlineSLS",
                 "Enable small value optimization for current Mojo dispatch context storage"),
         Flag.baseFeature(
