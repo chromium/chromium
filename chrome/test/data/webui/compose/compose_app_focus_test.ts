@@ -4,6 +4,7 @@
 
 import 'chrome-untrusted://compose/app.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement} from 'chrome-untrusted://compose/app.js';
 import { StyleModifier, UserFeedback } from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
@@ -66,6 +67,11 @@ suite('ComposeApp', function() {
   });
 
   test('FocusesRefreshButtonAfterRefreshRewrite', async () => {
+    // This test is only useful for non-refinement UI.
+    loadTimeData.overrideValues({
+      enableRefinedUi: false,
+    });
+
     const app = await createApp();
     app.$.textarea.value = 'test value one';
     app.$.submitButton.click();
@@ -90,6 +96,11 @@ suite('ComposeApp', function() {
   });
 
   test('FocusesLengthMenuAfterLengthRewrite', async () => {
+    // This test is only useful for non-refinement UI.
+    loadTimeData.overrideValues({
+      enableRefinedUi: false,
+    });
+
     const app = await createApp();
     app.$.textarea.value = 'test value';
     app.$.submitButton.click();

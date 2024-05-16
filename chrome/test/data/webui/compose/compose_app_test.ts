@@ -148,64 +148,6 @@ suite('ComposeApp', () => {
         appWithNoTextSelected.$.acceptButton.textContent!, 'Insert');
   });
 
-  test('RefreshesResult', async () => {
-    // Submit the input once so the refresh button shows up.
-    mockInput('Input to refresh.');
-    app.$.submitButton.click();
-    await mockResponse();
-
-    testProxy.resetResolver('rewrite');
-    assertTrue(
-        isVisible(app.$.refreshButton), 'Refresh button should be visible.');
-
-    // Click the refresh button and assert compose is called with the same args.
-    app.$.refreshButton.click();
-    assertTrue(
-        isVisible(app.$.loading), 'Loading indicator should be visible.');
-
-    const args = await testProxy.whenCalled('rewrite');
-    await mockResponse('Refreshed output.');
-
-    assertEquals(StyleModifier.kRetry, args);
-
-    // Verify UI has updated with refreshed results.
-    assertFalse(isVisible(app.$.loading));
-    assertTrue(
-        isVisible(app.$.resultContainer),
-        'App result container should be visible.');
-    assertStringContains(
-        app.$.resultText.$.root.innerText, 'Refreshed output.');
-  });
-
-  test('UpdatesScrollableBodyAfterResize', async () => {
-    assertTrue(app.$.body.hasAttribute('scrollable'));
-
-    mockInput('Some fake input.');
-    app.$.submitButton.click();
-
-    // Mock a height on results to get body to scroll. The body should not yet
-    // be scrollable though because result has not been fetched yet.
-    app.$.resultContainer.style.minHeight = '500px';
-    assertFalse(app.$.body.classList.contains('can-scroll'));
-
-    await testProxy.whenCalled('compose');
-    await mockResponse();
-    await whenCheck(
-        app.$.body, () => app.$.body.classList.contains('can-scroll'));
-    assertEquals(220, app.$.body.offsetHeight);
-    assertTrue(220 < app.$.body.scrollHeight);
-
-    // Mock resizing result container down to a 50px height. This should result
-    // in the body changing height, triggering the updates to the CSS classes.
-    // At this point, 50px is too short to scroll, so it should not have the
-    // 'can-scroll' class.
-    app.$.resultContainer.style.minHeight = '50px';
-    app.$.resultContainer.style.height = '50px';
-    app.$.resultContainer.style.overflow = 'hidden';
-    await whenCheck(
-        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
-  });
-
   test('FirstRunAndMsbbStateDetermineViewState', async () => {
     // Check correct visibility for FRE view state.
     const appWithFirstRunDialog =
@@ -628,41 +570,6 @@ suite('ComposeApp', () => {
     assertStringContains(app.$.resultText.$.root.innerText, 'new response');
   });
 
-  test('ComposeWithLengthToneOptionResult', async () => {
-    // Submit the input once so the refresh button shows up.
-    mockInput('Input to refresh.');
-    app.$.submitButton.click();
-    await mockResponse();
-
-    testProxy.resetResolver('rewrite');
-
-    assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
-    assertEquals(
-        2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
-
-    app.$.lengthMenu.value = `${StyleModifier.kShorter}`;
-    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
-
-    const args = await testProxy.whenCalled('rewrite');
-    await mockResponse();
-
-    assertEquals(StyleModifier.kShorter, args);
-
-    testProxy.resetResolver('rewrite');
-
-    assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
-    assertEquals(
-        2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
-
-    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
-    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
-
-    const args2 = await testProxy.whenCalled('rewrite');
-    await mockResponse();
-
-    assertEquals(StyleModifier.kCasual, args2);
-  });
-
   test('Undo', async () => {
     // Set up initial state to show undo button and mock up a previous state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -826,5 +733,249 @@ suite('ComposeApp', () => {
         isVisible(app.$.onDeviceUsedFooter),
         'on-device footer should be shown');
     assertEquals(app.$.resultText.$.root.innerText.trim(), 'some response');
+  });
+});
+
+suite('ComposeAppLegacyUi', () => {
+  let app: ComposeAppElement;
+  let testProxy: TestComposeApiProxy;
+
+  suiteSetup(function() {
+    if (loadTimeData.getBoolean('enableRefinedUi')) {
+      this.skip();
+    }
+  });
+
+  setup(async () => {
+    testProxy = new TestComposeApiProxy();
+    ComposeApiProxyImpl.setInstance(testProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('compose-app');
+    document.body.appendChild(app);
+
+    await testProxy.whenCalled('requestInitialState');
+    return flushTasks();
+  });
+
+  function mockInput(input: string) {
+    app.$.textarea.value = input;
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+  }
+
+  function mockResponse(
+      result: string = 'some response',
+      status: ComposeStatus = ComposeStatus.kOk, onDeviceEvaluationUsed = false,
+      triggeredFromModifier = false): Promise<void> {
+    testProxy.remote.responseReceived({
+      status: status,
+      undoAvailable: false,
+      redoAvailable: false,
+      providedByUser: false,
+      result,
+      onDeviceEvaluationUsed,
+      triggeredFromModifier,
+    });
+    return testProxy.remote.$.flushForTesting();
+  }
+
+  test('RefreshesResult', async () => {
+    // Submit the input once so the refresh button shows up.
+    mockInput('Input to refresh.');
+    app.$.submitButton.click();
+    await mockResponse();
+
+    testProxy.resetResolver('rewrite');
+    assertTrue(
+        isVisible(app.$.refreshButton), 'Refresh button should be visible.');
+
+    // Click the refresh button and assert compose is called with the same args.
+    app.$.refreshButton.click();
+    assertTrue(
+        isVisible(app.$.loading), 'Loading indicator should be visible.');
+
+    const args = await testProxy.whenCalled('rewrite');
+    await mockResponse('Refreshed output.');
+
+    assertEquals(StyleModifier.kRetry, args);
+
+    // Verify UI has updated with refreshed results.
+    assertFalse(isVisible(app.$.loading));
+    assertTrue(
+        isVisible(app.$.resultContainer),
+        'App result container should be visible.');
+    assertStringContains(
+        app.$.resultText.$.root.innerText, 'Refreshed output.');
+  });
+
+  test('UpdatesScrollableBodyAfterResize', async () => {
+    assertTrue(app.$.body.hasAttribute('scrollable'));
+
+    mockInput('Some fake input.');
+    app.$.submitButton.click();
+
+    // Mock a height on results to get body to scroll. The body should not yet
+    // be scrollable though because result has not been fetched yet.
+    app.$.resultContainer.style.minHeight = '500px';
+    assertFalse(app.$.body.classList.contains('can-scroll'));
+
+    await testProxy.whenCalled('compose');
+    await mockResponse();
+    await whenCheck(
+        app.$.body, () => app.$.body.classList.contains('can-scroll'));
+    assertEquals(220, app.$.body.offsetHeight);
+    assertTrue(220 < app.$.body.scrollHeight);
+
+    // Mock resizing result container down to a 50px height. This should result
+    // in the body changing height, triggering the updates to the CSS classes.
+    // At this point, 50px is too short to scroll, so it should not have the
+    // 'can-scroll' class.
+    app.$.resultContainer.style.minHeight = '50px';
+    app.$.resultContainer.style.height = '50px';
+    app.$.resultContainer.style.overflow = 'hidden';
+    await whenCheck(
+        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
+  });
+
+  test('ComposeWithLengthToneOptionResult', async () => {
+    // Submit the input once so the refresh button shows up.
+    mockInput('Input to refresh.');
+    app.$.submitButton.click();
+    await mockResponse();
+
+    testProxy.resetResolver('rewrite');
+
+    assertTrue(isVisible(app.$.lengthMenu), 'Length menu should be visible.');
+    assertEquals(
+        2, app.$.lengthMenu.querySelectorAll('option:not([disabled])').length);
+
+    app.$.lengthMenu.value = `${StyleModifier.kShorter}`;
+    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
+
+    const args = await testProxy.whenCalled('rewrite');
+    await mockResponse();
+
+    assertEquals(StyleModifier.kShorter, args);
+
+    testProxy.resetResolver('rewrite');
+
+    assertTrue(isVisible(app.$.toneMenu), 'Tone menu should be visible.');
+    assertEquals(
+        2, app.$.toneMenu.querySelectorAll('option:not([disabled])').length);
+
+    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
+    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
+
+    const args2 = await testProxy.whenCalled('rewrite');
+    await mockResponse();
+
+    assertEquals(StyleModifier.kCasual, args2);
+  });
+});
+
+
+suite('ComposeAppRefinedUi', () => {
+  let app: ComposeAppElement;
+  let testProxy: TestComposeApiProxy;
+
+  suiteSetup(function() {
+    if (!loadTimeData.getBoolean('enableRefinedUi')) {
+      this.skip();
+    }
+  });
+
+  setup(async () => {
+    testProxy = new TestComposeApiProxy();
+    ComposeApiProxyImpl.setInstance(testProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('compose-app');
+    document.body.appendChild(app);
+
+    await testProxy.whenCalled('requestInitialState');
+    return flushTasks();
+  });
+
+  function mockInput(input: string) {
+    app.$.textarea.value = input;
+    app.$.textarea.dispatchEvent(new CustomEvent('value-changed'));
+  }
+
+  function mockResponse(
+      result: string = 'some response',
+      status: ComposeStatus = ComposeStatus.kOk, onDeviceEvaluationUsed = false,
+      triggeredFromModifier = false): Promise<void> {
+    testProxy.remote.responseReceived({
+      status: status,
+      undoAvailable: false,
+      redoAvailable: false,
+      providedByUser: false,
+      result,
+      onDeviceEvaluationUsed,
+      triggeredFromModifier,
+    });
+    return testProxy.remote.$.flushForTesting();
+  }
+
+  test('RefreshesResult', async () => {
+    // Submit the input once so that modifier menu is visible.
+    mockInput('Input to retry.');
+    app.$.submitButton.click();
+    await mockResponse();
+
+    testProxy.resetResolver('rewrite');
+    assertTrue(
+        isVisible(app.$.modifierMenu), 'Modifier menu should be visible.');
+
+    // Select the retry option from the modifier menu and assert compose is
+    // called with the same args.
+    app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
+    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
+    assertTrue(
+        isVisible(app.$.loading), 'Loading indicator should be visible.');
+
+    const args = await testProxy.whenCalled('rewrite');
+    await mockResponse('Refreshed output.');
+
+    assertEquals(StyleModifier.kRetry, args);
+
+    // Verify UI has updated with refreshed results.
+    assertFalse(isVisible(app.$.loading));
+    assertTrue(
+        isVisible(app.$.resultContainer),
+        'App result container should be visible.');
+    assertStringContains(
+        app.$.resultText.$.root.innerText, 'Refreshed output.');
+  });
+
+  test('UpdatesScrollableResultContainerAfterResize', async () => {
+    assertTrue(app.$.resultTextContainer.hasAttribute('scrollable'));
+    mockInput('Some fake input.');
+    app.$.submitButton.click();
+
+    // The results text should not yet be scrollable because the result has not
+    // been fetched yet.
+    assertFalse(app.$.resultTextContainer.classList.contains('can-scroll'));
+
+    // Results text should be scrollable when a long response is received.
+    await testProxy.whenCalled('compose');
+    const longResponse = 'x'.repeat(1000);
+    await mockResponse(longResponse);
+    await whenCheck(
+        app.$.resultTextContainer,
+        () => app.$.resultTextContainer.classList.contains('can-scroll'));
+    assertEquals(220, app.$.body.offsetHeight);
+    assertTrue(
+        220 < app.$.resultTextContainer.scrollHeight,
+        'Scroll height (' + app.$.resultTextContainer.scrollHeight +
+            ' should be bigger than 220.');
+
+    // Results text should not be scrollable when a short response is received.
+    app.$.modifierMenu.value = `${StyleModifier.kRetry}`;
+    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
+    await testProxy.whenCalled('rewrite');
+    await mockResponse('Refreshed output.');
+    await whenCheck(
+        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
   });
 });

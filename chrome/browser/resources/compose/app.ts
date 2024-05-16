@@ -67,6 +67,7 @@ export interface ComposeAppElement {
     redoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
+    resultTextContainer: HTMLElement,
     resultFooter: HTMLElement,
     submitButton: CrButtonElement,
     submitEditButton: CrButtonElement,
