@@ -23,6 +23,10 @@ import {
   type Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import {
+  isSingleComplexGrapheme,
+  isSingleGrapheme,
+} from '../../../utils/GraphemeTools';
 import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 
 import type {ActionOption} from './ActionOption.js';
@@ -562,10 +566,13 @@ export class ActionDispatcher {
     source: KeySource,
     action: Readonly<Input.KeyDownAction>
   ) {
-    if ([...action.value].length > 1) {
-      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
-    }
     const rawKey = action.value;
+    if (!isSingleGrapheme(rawKey)) {
+      // https://w3c.github.io/webdriver/#dfn-process-a-key-action
+      // WebDriver spec allows a grapheme to be used.
+      throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
+    }
+    const isGrapheme = isSingleComplexGrapheme(rawKey);
     const key = getNormalizedKey(rawKey);
     const repeat = source.pressed.has(key);
     const code = getKeyCode(rawKey);
@@ -590,7 +597,7 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+    const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     let command: string | undefined;
     // The following commands need to be declared because Chromium doesn't
@@ -649,10 +656,13 @@ export class ActionDispatcher {
   }
 
   #dispatchKeyUpAction(source: KeySource, action: Readonly<Input.KeyUpAction>) {
-    if ([...action.value].length > 1) {
-      throw new InvalidArgumentException(`Invalid key value: ${action.value}`);
-    }
     const rawKey = action.value;
+    if (!isSingleGrapheme(rawKey)) {
+      // https://w3c.github.io/webdriver/#dfn-process-a-key-action
+      // WebDriver spec allows a grapheme to be used.
+      throw new InvalidArgumentException(`Invalid key value: ${rawKey}`);
+    }
+    const isGrapheme = isSingleComplexGrapheme(rawKey);
     const key = getNormalizedKey(rawKey);
     if (!source.pressed.has(key)) {
       return;
@@ -679,7 +689,7 @@ export class ActionDispatcher {
     // --- Platform-specific code begins here ---
     // The spread is a little hack so JS gives us an array of unicode characters
     // to measure.
-    const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+    const unmodifiedText = getKeyEventUnmodifiedText(key, source, isGrapheme);
     const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
     return this.#context.cdpTarget.cdpClient.sendCommand(
       'Input.dispatchKeyEvent',
@@ -700,10 +710,26 @@ export class ActionDispatcher {
   }
 }
 
-const getKeyEventUnmodifiedText = (key: string, source: KeySource) => {
+/**
+ * Translates a non-grapheme key to either an `undefined` for a special keys, or a single
+ * character modified by shift if needed.
+ */
+const getKeyEventUnmodifiedText = (
+  key: string,
+  source: KeySource,
+  isGrapheme: boolean
+) => {
+  if (isGrapheme) {
+    // Graphemes should be presented as text in the CDP command.
+    return key;
+  }
+
   if (key === 'Enter') {
     return '\r';
   }
+
+  // If key is not a single character, it is a normalized key value, and should be
+  // presented as key, not text in the CDP command.
   return [...key].length === 1
     ? source.shift
       ? key.toLocaleUpperCase('en-US')
