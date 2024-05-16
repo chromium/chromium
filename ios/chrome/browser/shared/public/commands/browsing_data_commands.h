@@ -26,6 +26,15 @@ class ChromeBrowserState;
                                removeMask:(BrowsingDataRemoveMask)removeMask
                           completionBlock:(ProceduralBlock)completionBlock;
 
+// Similar to `removeBrowsingDataForBrowserState` above, but removes browsing
+// data for the time period between `startTime` and `endTime`.
+- (void)
+    removeBrowsingDataInRangeForBrowserState:(ChromeBrowserState*)browserState
+                                   startTime:(base::Time)startTime
+                                     endTime:(base::Time)endTime
+                                  removeMask:(BrowsingDataRemoveMask)removeMask
+                             completionBlock:(ProceduralBlock)completionBlock;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BROWSING_DATA_COMMANDS_H_
