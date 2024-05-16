@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/on_device_translation/public/cpp/features.h"
 #include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "chrome/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,7 +24,9 @@ class MockOnDeviceTranslationServiceTest : public testing::Test {
  public:
   MockOnDeviceTranslationServiceTest()
       : service_impl_(service_remote_.BindNewPipeAndPassReceiver()),
-        weak_factory_(this) {}
+        weak_factory_(this) {
+    feature_list_.InitAndDisableFeature(kUseTranslateKitForTranslationAPI);
+  }
 
   mojo::PendingReceiver<mojom::Translator>
   BindNewPipeAndPassTranslatorReceiver() {
@@ -86,6 +90,7 @@ class MockOnDeviceTranslationServiceTest : public testing::Test {
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
   mojo::Remote<mojom::Translator> translator_remote_;
   OnDeviceTranslationService service_impl_;
+  base::test::ScopedFeatureList feature_list_;
 
   base::WeakPtrFactory<MockOnDeviceTranslationServiceTest> weak_factory_;
 };

@@ -4,14 +4,22 @@
 
 source_set("on_device_translation_service") {
   sources = [
-    "on_device_translation_service.cc",
-    "on_device_translation_service.h",
     "mock_translator.cc",
     "mock_translator.h",
+    "on_device_translation_service.cc",
+    "on_device_translation_service.h",
   ]
-  deps = []
+  if (!is_win) {
+    sources += [
+      "translate_kit_translator.cc",
+      "translate_kit_translator.h",
+      "translate_kit_wrapper.cc",
+      "translate_kit_wrapper.h",
+    ]
+  }
   public_deps = [
     "//base",
+    "//chrome/services/on_device_translation/public/cpp",
     "//chrome/services/on_device_translation/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
@@ -24,6 +32,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//chrome/services/on_device_translation:on_device_translation_service",
+    "//chrome/services/on_device_translation/public/cpp",
     "//chrome/services/on_device_translation/public/mojom",
     "//testing/gmock",
     "//testing/gtest",

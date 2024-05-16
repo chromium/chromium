@@ -27,11 +27,11 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
       const std::string& source_lang,
       const std::string& target_lang,
       mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
-      CreateTranslatorCallback callback) override;
+      CreateTranslatorCallback create_translator_callback) override;
 
   void CanTranslate(const std::string& source_lang,
                     const std::string& target_lang,
-                    CanTranslateCallback callback) override;
+                    CanTranslateCallback can_translate_callback) override;
 
  private:
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_;

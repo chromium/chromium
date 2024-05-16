@@ -9,8 +9,9 @@ import "sandbox/policy/mojom/sandbox.mojom";
 
 // The service that provides translation capabilities through
 // various implementation.
-// TODO(https://crbug.com/331733060): fix the sandbox type.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+// TODO(https://crbug.com/340778819): fix the sandbox type as we cannot load the
+// library from sandbox.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
 interface OnDeviceTranslationService {
   // Binds the receiver to a `Translator` implementation that could
   // do translation from `source_lang` to `target_lang`.

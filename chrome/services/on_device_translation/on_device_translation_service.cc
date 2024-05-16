@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "chrome/services/on_device_translation/mock_translator.h"
+#include "chrome/services/on_device_translation/public/cpp/features.h"
 #include "chrome/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "chrome/services/on_device_translation/translate_kit_translator.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {
@@ -18,25 +20,60 @@ OnDeviceTranslationService::OnDeviceTranslationService(
 
 OnDeviceTranslationService::~OnDeviceTranslationService() = default;
 
+void CreateTranslatorAfterCheckingCanTranslate(
+    const std::string& source_lang,
+    const std::string& target_lang,
+    mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
+    OnDeviceTranslationService::CreateTranslatorCallback
+        create_translator_callback,
+    bool can_translate) {
+  if (!can_translate) {
+    std::move(create_translator_callback).Run(false);
+    return;
+  }
+
+#if BUILDFLAG(IS_WIN)
+  MockTranslator::Create(source_lang, target_lang, std::move(receiver),
+                         std::move(create_translator_callback));
+#else
+  if (base::FeatureList::IsEnabled(kUseTranslateKitForTranslationAPI)) {
+    TranslateKitTranslator::Create(source_lang, target_lang,
+                                   std::move(receiver),
+                                   std::move(create_translator_callback));
+  } else {
+    MockTranslator::Create(source_lang, target_lang, std::move(receiver),
+                           std::move(create_translator_callback));
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 void OnDeviceTranslationService::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
     mojo::PendingReceiver<on_device_translation::mojom::Translator> receiver,
-    CreateTranslatorCallback callback) {
-  if (!MockTranslator::CanTranslate(source_lang, target_lang)) {
-    std::move(callback).Run(false);
-    return;
-  }
-  mojo::MakeSelfOwnedReceiver(std::make_unique<MockTranslator>(),
-                              std::move(receiver));
-  std::move(callback).Run(true);
+    CreateTranslatorCallback create_translator_callback) {
+  CanTranslate(source_lang, target_lang,
+               base::BindOnce(CreateTranslatorAfterCheckingCanTranslate,
+                              source_lang, target_lang, std::move(receiver),
+                              std::move(create_translator_callback)));
 }
 
-void OnDeviceTranslationService::CanTranslate(const std::string& source_lang,
-                                              const std::string& target_lang,
-                                              CanTranslateCallback callback) {
-  std::move(callback).Run(
-      MockTranslator::CanTranslate(source_lang, target_lang));
+void OnDeviceTranslationService::CanTranslate(
+    const std::string& source_lang,
+    const std::string& target_lang,
+    CanTranslateCallback can_translate_callback) {
+#if BUILDFLAG(IS_WIN)
+  MockTranslator::CanTranslate(source_lang, target_lang,
+                               std::move(can_translate_callback));
+#else
+  if (base::FeatureList::IsEnabled(kUseTranslateKitForTranslationAPI)) {
+    TranslateKitTranslator::CanTranslate(source_lang, target_lang,
+                                         std::move(can_translate_callback));
+  } else {
+    MockTranslator::CanTranslate(source_lang, target_lang,
+                                 std::move(can_translate_callback));
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace on_device_translation
