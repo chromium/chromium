@@ -7,7 +7,6 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -89,7 +88,6 @@ public class BoundaryInterfaceReflectionUtil {
      *     method calls to.
      * @return an InvocationHandlerWithDelegateGetter wrapping {@code delegate}
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static InvocationHandler createInvocationHandlerFor(@Nullable final Object delegate) {
         if (delegate == null) return null;
@@ -106,10 +104,9 @@ public class BoundaryInterfaceReflectionUtil {
      * {@link InvocationHandler}.
      *
      * @param delegates an array of objects to which to delegate.
-     * @return an array of InvocationHandlerWithDelegateGetter instances, each delegating to
-     *     the corresponding member of {@code delegates}.
+     * @return an array of InvocationHandlerWithDelegateGetter instances, each delegating to the
+     *     corresponding member of {@code delegates}.
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static InvocationHandler[] createInvocationHandlersForArray(
             @Nullable final Object[] delegates) {
@@ -132,7 +129,6 @@ public class BoundaryInterfaceReflectionUtil {
      * @param invocationHandler a {@link Nullable} InvocationHandlerWithDelegateGetter.
      * @return the corresponding delegate.
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @Nullable
     public static Object getDelegateFromInvocationHandler(
             @Nullable InvocationHandler invocationHandler) {
@@ -143,11 +139,10 @@ public class BoundaryInterfaceReflectionUtil {
     }
 
     /**
-     * An InvocationHandler storing the original object that method calls are delegated to.
-     * This allows us to pass InvocationHandlers across the support library boundary and later
-     * unwrap the objects used as delegates within those InvocationHandlers.
+     * An InvocationHandler storing the original object that method calls are delegated to. This
+     * allows us to pass InvocationHandlers across the support library boundary and later unwrap the
+     * objects used as delegates within those InvocationHandlers.
      */
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private static class InvocationHandlerWithDelegateGetter implements InvocationHandler {
         private final Object mDelegate;
 
