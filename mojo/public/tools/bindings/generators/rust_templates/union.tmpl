@@ -1,0 +1,7 @@
+#[allow(non_camel_case_types, unused)]
+#[derive(Debug)]
+pub enum {{union.name}} {
+{%- for field in union.fields %}
+    r#{{field.name}}({{field.kind|rust_field_type}}),
+{%- endfor %}
+}

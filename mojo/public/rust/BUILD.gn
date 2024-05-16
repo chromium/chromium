@@ -5,6 +5,7 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_static_library.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
 # Meta target to build everything
@@ -31,6 +32,10 @@ test("mojo_rust_unittests") {
     "//mojo/public/rust/tests:mojo_rust_encoding_tests",
     "//testing/gtest",
   ]
+
+  if (enable_rust_mojom_bindings) {
+    deps += [ "//mojo/public/rust/tests:mojo_rust_bindings_tests" ]
+  }
 }
 
 source_set("mojo_c_system_wrapper") {

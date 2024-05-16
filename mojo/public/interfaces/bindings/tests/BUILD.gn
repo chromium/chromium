@@ -280,6 +280,7 @@ mojom("test_export2") {
 mojom("test_mojom_import") {
   testonly = true
   generate_java = true
+  generate_rust = true
   sources = [ "sample_import.mojom" ]
 }
 

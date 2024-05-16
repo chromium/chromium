@@ -1,0 +1,7 @@
+#[allow(unused)]
+#[derive(Debug)]
+pub struct {{struct.name}} {
+{%- for field in struct.fields %}
+    pub r#{{field.name}}: {{field.kind|rust_field_type}},
+{%- endfor %}
+}

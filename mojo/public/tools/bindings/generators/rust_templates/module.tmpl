@@ -1,0 +1,11 @@
+{%- for enum in module.enums %}
+{%   include "enum.tmpl" %}
+{% endfor %}
+
+{%- for struct in module.structs %}
+{%   include "struct.tmpl" %}
+{% endfor %}
+
+{%- for union in module.unions %}
+{%   include "union.tmpl" %}
+{% endfor %}

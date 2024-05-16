@@ -54,6 +54,7 @@ _BUILTIN_GENERATORS = {
     "javascript": "mojom_js_generator",
     "java": "mojom_java_generator",
     "mojolpm": "mojom_mojolpm_generator",
+    "rust": "mojom_rust_generator",
     "typescript": "mojom_ts_generator",
 }
 

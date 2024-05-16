@@ -1,0 +1,8 @@
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct {{enum.name}}(pub i32);
+
+impl {{enum.name}} {
+{%- for field in enum.fields %}
+    pub const r#{{field.name}}: Self = Self({{field.numeric_value}});
+{%- endfor %}
+}

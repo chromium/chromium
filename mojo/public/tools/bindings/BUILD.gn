@@ -92,6 +92,10 @@ action("precompile_templates") {
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_macros.tmpl",
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_to_proto_macros.tmpl",
     "$mojom_generator_root/generators/mojolpm_templates/mojolpm_traits_specialization_macros.tmpl",
+    "$mojom_generator_root/generators/rust_templates/enum.tmpl",
+    "$mojom_generator_root/generators/rust_templates/module.tmpl",
+    "$mojom_generator_root/generators/rust_templates/struct.tmpl",
+    "$mojom_generator_root/generators/rust_templates/union.tmpl",
     "$mojom_generator_root/generators/ts_templates/enum_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/interface_definition.tmpl",
     "$mojom_generator_root/generators/ts_templates/module_definition.tmpl",
@@ -106,6 +110,7 @@ action("precompile_templates") {
     "$target_gen_dir/java_templates.zip",
     "$target_gen_dir/js_templates.zip",
     "$target_gen_dir/mojolpm_templates.zip",
+    "$target_gen_dir/rust_templates.zip",
     "$target_gen_dir/ts_templates.zip",
   ]
   args = [
