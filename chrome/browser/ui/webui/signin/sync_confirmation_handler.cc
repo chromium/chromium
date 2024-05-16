@@ -353,10 +353,14 @@ void SyncConfirmationHandler::OnScreenModeChanged(
 }
 
 void SyncConfirmationHandler::OnDeadline() {
-  if (!screen_mode_notified_) {
-    AllowJavascript();
-    OnScreenModeChanged(SyncConfirmationScreenMode::kDeadlined);
+  if (screen_mode_notified_ || !IsJavascriptAllowed()) {
+    // Do not override already configured screen mode, and ignore update attempt
+    // when the UI is no longer present. Note: this is called from a timer
+    // routine rather than directly from being handled from the UI app.
+    return;
   }
+
+  OnScreenModeChanged(SyncConfirmationScreenMode::kDeadlined);
 }
 
 void SyncConfirmationHandler::DispatchAccountInfoUpdate(
@@ -378,6 +382,7 @@ void SyncConfirmationHandler::DispatchAccountInfoUpdate(
     return;
   }
 
+  // Subsequent code will send updates to the UI.
   AllowJavascript();
 
   if (info.IsValid() && !avatar_notified_) {
