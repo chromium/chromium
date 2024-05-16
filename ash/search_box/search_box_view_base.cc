@@ -657,7 +657,7 @@ gfx::Size SearchBoxViewBase::CalculatePreferredSize(
                                    .height()
                              : 0;
   return gfx::Size(kSearchBoxPreferredWidth,
-                   kSearchBoxPreferredHeight + iph_height);
+                   kSearchBoxPreferredHeight + insets.height() + iph_height);
 }
 
 void SearchBoxViewBase::OnEnabledChanged() {
