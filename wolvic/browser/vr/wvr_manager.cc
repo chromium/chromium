@@ -456,6 +456,10 @@ static void PopulateProfiles(
       input_source->description->profiles = {
           "pico-neo2", "generic-trigger-squeeze-thumbstick"};
       break;
+    case mozilla::gfx::VRControllerType::PicoNeo3:
+      input_source->description->profiles = {
+          "pico-neo3", "generic-trigger-squeeze-thumbstick"};
+      break;
     case mozilla::gfx::VRControllerType::Pico4:
       input_source->description->profiles = {
           "pico-4", "generic-trigger-squeeze-thumbstick"};
