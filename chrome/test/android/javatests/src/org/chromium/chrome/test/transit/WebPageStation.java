@@ -12,7 +12,6 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
@@ -52,7 +51,7 @@ public class WebPageStation extends PageStation {
         assert !mIncognito;
 
         WebPageRegularAppMenuFacility menu = new WebPageRegularAppMenuFacility(this);
-        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
@@ -60,7 +59,7 @@ public class WebPageStation extends PageStation {
         assert mIncognito;
 
         WebPageIncognitoAppMenuFacility menu = new WebPageIncognitoAppMenuFacility(this);
-        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     private static class WebContentsPresentCondition extends InstrumentationThreadCondition

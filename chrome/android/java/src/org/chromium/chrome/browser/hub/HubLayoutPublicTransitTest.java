@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -145,8 +144,7 @@ public class HubLayoutPublicTransitTest {
                         .withIsOpeningTabs(0)
                         .withIsSelectingTabs(1)
                         .build();
-        Trip.travelSync(
-                currentStation,
+        currentStation.travelToSync(
                 destination,
                 () -> {
                     ChromeTabbedActivity cta = sActivityTestRule.getActivity();

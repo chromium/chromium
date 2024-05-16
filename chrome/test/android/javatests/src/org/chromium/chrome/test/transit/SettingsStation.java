@@ -10,7 +10,6 @@ import androidx.test.espresso.Espresso;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
@@ -28,6 +27,6 @@ public class SettingsStation extends Station {
 
     /** Press back to leave the SettingsActivity back to the previous state. */
     public <T extends Station> T pressBack(T station) {
-        return Trip.travelSync(this, station, () -> Espresso.pressBack());
+        return travelToSync(station, () -> Espresso.pressBack());
     }
 }

@@ -30,7 +30,6 @@ import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -137,7 +136,7 @@ public abstract class TabSwitcherStation extends Station {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
+        return travelToSync(page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 
     public <T extends TabSwitcherStation> T closeTabAtIndex(
@@ -165,8 +164,7 @@ public abstract class TabSwitcherStation extends Station {
                             new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
         }
 
-        return Trip.travelSync(
-                this,
+        return travelToSync(
                 tabSwitcher,
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
@@ -182,8 +180,7 @@ public abstract class TabSwitcherStation extends Station {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return Trip.travelSync(
-                this,
+        return travelToSync(
                 page,
                 () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(

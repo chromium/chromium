@@ -12,7 +12,6 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 
@@ -60,6 +59,6 @@ public class BlankCTATabInitialStatePublicTransitRule implements TestRule {
                         .build();
 
         // Wait for the Conditions to be met to return an active PageStation.
-        return Trip.travelSync(homeStation, entryPageStation, /* trigger= */ null);
+        return homeStation.travelToSync(entryPageStation, /* trigger= */ null);
     }
 }

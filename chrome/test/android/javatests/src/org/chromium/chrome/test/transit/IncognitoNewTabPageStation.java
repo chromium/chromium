@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 
@@ -39,7 +38,7 @@ public class IncognitoNewTabPageStation extends PageStation {
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public NewTabPageIncognitoAppMenuFacility openAppMenu() {
-        return Facility.enterSync(
+        return enterFacilitySync(
                 new NewTabPageIncognitoAppMenuFacility(this), () -> MENU_BUTTON.perform(click()));
     }
 }

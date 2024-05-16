@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.action.ViewActions.click;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 
 /** Represents a "Pop-up blocked" message. */
@@ -44,6 +43,6 @@ public class PopupBlockedMessageFacility extends MessageFacility {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(mHostStation, popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
+        return mHostStation.travelToSync(popupPage, () -> ALWAYS_SHOW_BUTTON.perform(click()));
     }
 }

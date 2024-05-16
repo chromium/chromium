@@ -208,6 +208,7 @@ public abstract class AppMenuFacility<HostStationT extends Station>
                             return new float[] {clickX, clickY};
                         },
                         Press.FINGER);
-        Facility.exitSync(this, () -> onView(MENU_LIST).perform(clickBetweenViewAndLeftEdge));
+        mHostStation.exitFacilitySync(
+                this, () -> onView(MENU_LIST).perform(clickBetweenViewAndLeftEdge));
     }
 }

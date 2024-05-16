@@ -28,7 +28,6 @@ import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TravelException;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -118,7 +117,7 @@ public abstract class HubBaseStation extends Station {
                         .withIsOpeningTabs(0)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(this, destination, () -> Espresso.pressBack());
+        return travelToSync(destination, () -> Espresso.pressBack());
     }
 
     /**
@@ -146,8 +145,7 @@ public abstract class HubBaseStation extends Station {
 
         @StringRes
         int contentDescriptionId = HubStationUtils.getContentDescriptionForIdPaneSelection(paneId);
-        return Trip.travelSync(
-                this,
+        return travelToSync(
                 destinationStation,
                 () -> {
                     clickPaneSwitcherForPaneWithContentDescription(contentDescriptionId);

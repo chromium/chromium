@@ -11,7 +11,6 @@ import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -44,7 +43,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
     public IncognitoTabSwitcherStation selectIncognitoTabList() {
         IncognitoTabSwitcherStation tabSwitcher =
                 new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule);
-        return Trip.travelSync(
-                this, tabSwitcher, () -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
+        return travelToSync(tabSwitcher, () -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

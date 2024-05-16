@@ -104,7 +104,7 @@ public class MessageFacility extends Facility<PageStation> {
                                                     GeneralLocation.TOP_CENTER,
                                                     Press.FINGER)));
         }
-        exitSync(this, dismissTrigger);
+        mHostStation.exitFacilitySync(this, dismissTrigger);
     }
 
     /** Create a ViewElement expecting the message's |title|. */

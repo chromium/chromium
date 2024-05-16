@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -37,8 +36,8 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
                         .withActivityTestRule(mActivityTestRule)
                         .withEntryPoint()
                         .build();
-        return Trip.travelSync(
-                sentinel, entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
+        return sentinel.travelToSync(
+                entryPageStation, mActivityTestRule::startMainActivityOnBlankPage);
     }
 
     /**

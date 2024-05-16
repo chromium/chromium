@@ -4,6 +4,7 @@
 
 package org.chromium.base.test.transit;
 
+import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
 
 import java.util.ArrayList;
@@ -104,5 +105,72 @@ public abstract class Station extends ConditionalState {
                 facility.setStateFinished();
             }
         }
+    }
+
+    /**
+     * Starts a transition from this origin {@link Station} to another destination {@link Station}.
+     * Runs the transition |trigger|, and blocks until the destination {@link Station} is considered
+     * ACTIVE (enter Conditions are fulfilled), the origin {@link Station} is considered FINISHED
+     * (exit Conditions are fulfilled), and the {@link Trip}'s transition conditions are fulfilled.
+     *
+     * @param destination the {@link Facility} to arrive at.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the destination {@link Station}, now ACTIVE.
+     * @param <T> the type of the destination {@link Station}.
+     */
+    public final <T extends Station> T travelToSync(T destination, Trigger trigger) {
+        Trip trip = new Trip(this, destination, TransitionOptions.DEFAULT, trigger);
+        trip.transitionSync();
+        return destination;
+    }
+
+    /** Version of #travelToSync() with extra TransitionOptions. */
+    public final <T extends Station> T travelToSync(
+            T destination, TransitionOptions options, Trigger trigger) {
+        Trip trip = new Trip(this, destination, options, trigger);
+        trip.transitionSync();
+        return destination;
+    }
+
+    /**
+     * Starts a transition into the {@link Facility}, runs the transition |trigger| and blocks until
+     * the facility is considered ACTIVE (enter Conditions are fulfilled).
+     *
+     * @param facility the {@link Facility} to enter.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the {@link Facility} entered, now ACTIVE.
+     * @param <F> the type of {@link Facility} entered.
+     */
+    public <F extends Facility> F enterFacilitySync(F facility, Trigger trigger) {
+        return enterFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of #enterFacilitySync() with extra TransitionOptions. */
+    public <F extends Facility> F enterFacilitySync(
+            F facility, TransitionOptions options, Trigger trigger) {
+        FacilityCheckIn checkIn = new FacilityCheckIn(facility, options, trigger);
+        checkIn.transitionSync();
+        return facility;
+    }
+
+    /**
+     * Starts a transition out of the {@link Facility}, runs the transition |trigger| and blocks
+     * until the facility is considered FINISHED (exit Conditions are fulfilled).
+     *
+     * @param facility the {@link Facility} to exit.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     * @return the {@link Facility} exited, now DONE.
+     * @param <F> the type of {@link Facility} exited.
+     */
+    public <F extends Facility> F exitFacilitySync(F facility, Trigger trigger) {
+        return exitFacilitySync(facility, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of #exitFacilitySync() with extra TransitionOptions. */
+    public <F extends Facility> F exitFacilitySync(
+            F facility, TransitionOptions options, Trigger trigger) {
+        FacilityCheckOut checkOut = new FacilityCheckOut(facility, options, trigger);
+        checkOut.transitionSync();
+        return facility;
     }
 }

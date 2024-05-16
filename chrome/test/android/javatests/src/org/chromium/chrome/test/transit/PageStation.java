@@ -19,11 +19,9 @@ import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -292,7 +290,7 @@ public class PageStation extends Station {
         recheckActiveConditions();
 
         TabSwitcherActionMenuFacility menu = new TabSwitcherActionMenuFacility(this);
-        return Facility.enterSync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
+        return enterFacilitySync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
@@ -300,7 +298,7 @@ public class PageStation extends Station {
         recheckActiveConditions();
 
         PageAppMenuFacility<PageStation> menu = new PageAppMenuFacility<>(this);
-        return Facility.enterSync(menu, () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
@@ -317,7 +315,7 @@ public class PageStation extends Station {
                     expectedDestination.cast(
                             new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
         }
-        return Trip.travelSync(this, destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
+        return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     /** Opens the hub by pressing the toolbar tab switcher button. */
@@ -330,7 +328,7 @@ public class PageStation extends Station {
                                 isIncognito() ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
                                 getTestRule()));
 
-        return Trip.travelSync(this, destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
+        return travelToSync(destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     /** Loads a |url| in the same tab and waits to transition to the given |destination|. */
@@ -354,11 +352,8 @@ public class PageStation extends Station {
                     int transitionType = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
                     getActivity().getActivityTab().loadUrl(new LoadUrlParams(url, transitionType));
                 };
-        return Trip.travelSync(
-                this,
-                destination,
-                Transition.timeoutOption(10000),
-                () -> ThreadUtils.runOnUiThread(r));
+        return travelToSync(
+                destination, Transition.timeoutOption(10000), () -> ThreadUtils.runOnUiThread(r));
     }
 
     /**

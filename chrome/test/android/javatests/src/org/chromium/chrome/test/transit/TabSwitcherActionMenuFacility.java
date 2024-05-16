@@ -17,7 +17,6 @@ import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
@@ -107,8 +106,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                                     .build());
         }
 
-        return Trip.travelSync(
-                mHostStation, destination, () -> CLOSE_TAB_MENU_ITEM.perform(click()));
+        return mHostStation.travelToSync(destination, () -> CLOSE_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -119,7 +117,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(mHostStation, destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
+        return mHostStation.travelToSync(destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -130,7 +128,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(
-                mHostStation, destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
+        return mHostStation.travelToSync(
+                destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }
 }

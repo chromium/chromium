@@ -21,8 +21,6 @@ import android.view.View;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubToolbarView;
@@ -92,7 +90,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
         HubTabSwitcherAppMenuFacility menu = new HubTabSwitcherAppMenuFacility(this, mIsIncognito);
 
-        return Facility.enterSync(menu, () -> HUB_MENU_BUTTON.perform(click()));
+        return enterFacilitySync(menu, () -> HUB_MENU_BUTTON.perform(click()));
     }
 
     /**
@@ -110,8 +108,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         .withIsSelectingTabs(1)
                         .build();
 
-        return Trip.travelSync(
-                this,
+        return travelToSync(
                 destination,
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
@@ -148,8 +145,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                                         : PaneId.TAB_SWITCHER,
                                 mChromeTabbedActivityTestRule));
 
-        return Trip.travelSync(
-                this,
+        return travelToSync(
                 tabSwitcher,
                 () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
@@ -171,6 +167,6 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         .withIsOpeningTabs(1)
                         .withIsSelectingTabs(1)
                         .build();
-        return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
+        return travelToSync(page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 }

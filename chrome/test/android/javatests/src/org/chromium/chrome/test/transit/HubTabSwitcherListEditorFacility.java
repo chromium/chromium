@@ -47,7 +47,7 @@ public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBas
 
     /** Presses back to exit the facility. */
     public void pressBackToExit() {
-        Facility.exitSync(
+        mHostStation.exitFacilitySync(
                 this,
                 () -> {
                     Espresso.pressBack();

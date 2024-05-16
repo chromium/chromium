@@ -19,7 +19,7 @@ import java.util.Set;
  * A {@link Transition} into a {@link Station}, either from another {@link Station} or as an entry
  * point.
  */
-public class Trip extends Transition {
+class Trip extends Transition {
     private static final String TAG = "Transit";
     private final int mId;
 
@@ -30,41 +30,14 @@ public class Trip extends Transition {
 
     private static int sLastTripId;
 
-    private Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
+    Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
         super(options, trigger);
         mOrigin = origin;
         mDestination = destination;
         mId = ++sLastTripId;
     }
 
-    /**
-     * Starts a transition from a {@link Station} to another (or from no {@link Station} if at an
-     * entry point). Runs the transition |trigger|, and blocks until the destination {@link Station}
-     * is considered ACTIVE (enter Conditions are fulfilled), the origin {@link Station} is
-     * considered FINISHED (exit Conditions are fulfilled), and the {@link Trip}'s transition
-     * conditions are fulfilled.
-     *
-     * @param origin the {@link Facility} to depart from.
-     * @param destination the {@link Facility} to arrive at.
-     * @param trigger the trigger to start the transition (e.g. clicking a view).
-     * @return the destination {@link Station}, now ACTIVE.
-     * @param <T> the type of the destination {@link Station}.
-     */
-    public static <T extends Station> T travelSync(Station origin, T destination, Trigger trigger) {
-        Trip trip = new Trip(origin, destination, TransitionOptions.DEFAULT, trigger);
-        trip.travelSyncInternal();
-        return destination;
-    }
-
-    /** Version of #travelSync() with extra TransitionOptions. */
-    public static <T extends Station> T travelSync(
-            Station origin, T destination, TransitionOptions options, Trigger trigger) {
-        Trip trip = new Trip(origin, destination, options, trigger);
-        trip.travelSyncInternal();
-        return destination;
-    }
-
-    private void travelSyncInternal() {
+    void transitionSync() {
         // TODO(crbug.com/333735412): Unify Trip#travelSyncInternal(), FacilityCheckIn#enterSync()
         // and FacilityCheckOut#exitSync().
         embark();
