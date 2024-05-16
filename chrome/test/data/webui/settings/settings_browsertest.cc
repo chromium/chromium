@@ -744,87 +744,42 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/339683762): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PrivacyGuidePage DISABLED_PrivacyGuidePage
-#else
-#define MAYBE_PrivacyGuidePage PrivacyGuidePage
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_PrivacyGuidePage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuidePage) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuidePage')");
 }
 
-// TODO(crbug.com/339560873): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_FlowLength DISABLED_FlowLength
-#else
-#define MAYBE_FlowLength FlowLength
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_FlowLength) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, FlowLength) {
   RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('FlowLength')");
 }
 
-// TODO(crbug.com/339565567): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MsbbCardNavigations DISABLED_MsbbCardNavigations
-#else
-#define MAYBE_MsbbCardNavigations MsbbCardNavigations
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_MsbbCardNavigations) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MsbbCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('MsbbCardNavigations')");
 }
 
-// TODO(crbug.com/339547056): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncCardNavigations DISABLED_HistorySyncCardNavigations
-#else
-#define MAYBE_HistorySyncCardNavigations HistorySyncCardNavigations
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
-                       MAYBE_HistorySyncCardNavigations) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('HistorySyncCardNavigations')");
 }
 
-// TODO(crbug.com/339689754): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SafeBrowsingCardNavigations DISABLED_SafeBrowsingCardNavigations
-#else
-#define MAYBE_SafeBrowsingCardNavigations SafeBrowsingCardNavigations
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
-                       MAYBE_SafeBrowsingCardNavigations) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, afeBrowsingCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('SafeBrowsingCardNavigations')");
 }
 
-// TODO(crbug.com/339681742): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CookiesCardNavigations DISABLED_CookiesCardNavigations
-#else
-#define MAYBE_CookiesCardNavigations CookiesCardNavigations
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_CookiesCardNavigations) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('CookiesCardNavigations')");
 }
 
-// TODO(crbug.com/339574104): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PrivacyGuideDialog DISABLED_PrivacyGuideDialog
-#else
-#define MAYBE_PrivacyGuideDialog PrivacyGuideDialog
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_PrivacyGuideDialog) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuideDialog')");
 }
 
 // TODO(crbug.com/40942110): Re-enable when no longer flaky.
-// TODO(crbug.com/339568232): Flaky on Windows.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_3pcdOff DISABLED_3pcdOff
 #else
 #define MAYBE_3pcdOff 3pcdOff
