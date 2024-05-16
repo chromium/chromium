@@ -6,7 +6,9 @@
 #define GPU_COMMAND_BUFFER_CLIENT_RASTER_INTERFACE_H_
 
 #include <GLES2/gl2.h>
+
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "gpu/command_buffer/client/interface_base.h"
@@ -22,11 +24,13 @@
 namespace cc {
 class DisplayItemList;
 class ImageProvider;
+struct ElementId;
 }  // namespace cc
 
 namespace gfx {
 class ColorSpace;
 class Point;
+class PointF;
 class Rect;
 class Size;
 class Vector2dF;
@@ -121,15 +125,18 @@ class RasterInterface : public InterfaceBase {
   // Heuristic decided on UMA data. This covers 85% of the cases where we need
   // to serialize ops > 512k.
   static constexpr size_t kDefaultMaxOpSizeHint = 600 * 1024;
-  virtual void RasterCHROMIUM(const cc::DisplayItemList* list,
-                              cc::ImageProvider* provider,
-                              const gfx::Size& content_size,
-                              const gfx::Rect& full_raster_rect,
-                              const gfx::Rect& playback_rect,
-                              const gfx::Vector2dF& post_translate,
-                              const gfx::Vector2dF& post_scale,
-                              bool requires_clear,
-                              size_t* max_op_size_hint) = 0;
+  using ScrollOffsetMap = base::flat_map<cc::ElementId, gfx::PointF>;
+  virtual void RasterCHROMIUM(
+      const cc::DisplayItemList* list,
+      cc::ImageProvider* provider,
+      const gfx::Size& content_size,
+      const gfx::Rect& full_raster_rect,
+      const gfx::Rect& playback_rect,
+      const gfx::Vector2dF& post_translate,
+      const gfx::Vector2dF& post_scale,
+      bool requires_clear,
+      const ScrollOffsetMap* raster_inducing_scroll_offsets,
+      size_t* max_op_size_hint) = 0;
 
   // Schedules a hardware-accelerated image decode and a sync token that's
   // released when the image decode is complete. If the decode could not be

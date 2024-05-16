@@ -18,6 +18,7 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/recording_source.h"
 #include "cc/paint/image_id.h"
+#include "cc/paint/scroll_offset_map.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
@@ -58,6 +59,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     float hdr_headroom = 1.f;
 
     raw_ptr<ImageProvider> image_provider = nullptr;
+    raw_ptr<const ScrollOffsetMap> raster_inducing_scroll_offsets = nullptr;
   };
 
   RasterSource(const RasterSource&) = delete;
@@ -172,8 +174,9 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // This function will replace pixels in the clip region without blending.
   //
   // Virtual for testing.
-  virtual void PlaybackDisplayListToCanvas(SkCanvas* canvas,
-                                           ImageProvider* image_provider) const;
+  virtual void PlaybackDisplayListToCanvas(
+      SkCanvas* canvas,
+      const PlaybackSettings& settings) const;
 
   // The serialized size for the largest op in this RasterSource. This is
   // accessed only on the raster threads with the context lock acquired.

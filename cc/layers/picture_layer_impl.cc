@@ -1016,6 +1016,19 @@ void PictureLayerImpl::OnTilesAdded() {
   SetNeedsPushProperties();
 }
 
+ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
+  ScrollOffsetMap map;
+  if (raster_source_) {
+    const ScrollTree& scroll_tree =
+        layer_tree_impl()->property_trees()->scroll_tree();
+    for (ElementId element_id :
+         raster_source_->GetDisplayItemList()->raster_inducing_scrolls()) {
+      map[element_id] = scroll_tree.current_scroll_offset(element_id);
+    }
+  }
+  return map;
+}
+
 gfx::Rect PictureLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   return GetScaledEnclosingVisibleRectInTargetSpace(
       MaximumTilingContentsScale());

@@ -99,7 +99,8 @@ class RasterTaskImpl : public TileTask {
                  TileTask::Vector* dependencies,
                  bool is_gpu_rasterization,
                  DispatchingImageProvider image_provider,
-                 GURL url)
+                 GURL url,
+                 ScrollOffsetMap raster_inducing_scroll_offsets)
       : TileTask(
             is_gpu_rasterization ? TileTask::SupportsConcurrentExecution::kNo
                                  : TileTask::SupportsConcurrentExecution::kYes,
@@ -123,9 +124,13 @@ class RasterTaskImpl : public TileTask {
         source_frame_number_(tile->source_frame_number()),
         raster_buffer_(std::move(raster_buffer)),
         image_provider_(std::move(image_provider)),
-        url_(std::move(url)) {
+        url_(std::move(url)),
+        raster_inducing_scroll_offsets_(
+            std::move(raster_inducing_scroll_offsets)) {
     DCHECK(origin_thread_checker_.CalledOnValidThread());
     playback_settings_.image_provider = &image_provider_;
+    playback_settings_.raster_inducing_scroll_offsets =
+        &raster_inducing_scroll_offsets_;
   }
   RasterTaskImpl(const RasterTaskImpl&) = delete;
   RasterTaskImpl& operator=(const RasterTaskImpl&) = delete;
@@ -173,25 +178,26 @@ class RasterTaskImpl : public TileTask {
   // The following members are needed for processing completion of this task on
   // origin thread. These are not thread-safe and should be accessed only in
   // origin thread. Ensure their access by checking CalledOnValidThread().
-  raw_ptr<TileManager> tile_manager_;
-  Tile::Id tile_id_;
+  const raw_ptr<TileManager> tile_manager_;
+  const Tile::Id tile_id_;
   ResourcePool::InUsePoolResource resource_;
 
   // The following members should be used for running the task.
   scoped_refptr<RasterSource> raster_source_;
-  gfx::Rect content_rect_;
-  gfx::Rect invalid_content_rect_;
-  gfx::AxisTransform2d raster_transform_;
+  const gfx::Rect content_rect_;
+  const gfx::Rect invalid_content_rect_;
+  const gfx::AxisTransform2d raster_transform_;
   RasterSource::PlaybackSettings playback_settings_;
-  TileResolution tile_resolution_;
-  int layer_id_;
-  uint64_t source_prepare_tiles_id_;
-  raw_ptr<void, AcrossTasksDanglingUntriaged> tile_tracing_id_;
-  uint64_t new_content_id_;
-  int source_frame_number_;
+  const TileResolution tile_resolution_;
+  const int layer_id_;
+  const uint64_t source_prepare_tiles_id_;
+  const raw_ptr<void, AcrossTasksDanglingUntriaged> tile_tracing_id_;
+  const uint64_t new_content_id_;
+  const int source_frame_number_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
   DispatchingImageProvider image_provider_;
-  GURL url_;
+  const GURL url_;
+  const ScrollOffsetMap raster_inducing_scroll_offsets_;
 };
 
 TaskCategory TaskCategoryForTileTask(TileTask* task,
@@ -1523,7 +1529,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
       playback_settings, prioritized_tile.priority().resolution,
       invalidated_rect, prepare_tiles_count_, std::move(raster_buffer),
       &decode_tasks, use_gpu_rasterization_,
-      std::move(dispatching_image_provider), active_url_);
+      std::move(dispatching_image_provider), active_url_,
+      prioritized_tile.GetRasterInducingScrollOffsets());
 }
 
 void TileManager::ResetSignalsForTesting() {

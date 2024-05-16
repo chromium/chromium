@@ -135,6 +135,10 @@ class FixedInvalidationPictureLayerTilingClient
 
   void OnTilesAdded() override { return base_client_->OnTilesAdded(); }
 
+  ScrollOffsetMap GetRasterInducingScrollOffsets() const override {
+    return ScrollOffsetMap();
+  }
+
  private:
   raw_ptr<PictureLayerTilingClient> base_client_;
   Region invalidation_;

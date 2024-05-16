@@ -455,4 +455,10 @@ DisplayItemList::GetDirectlyCompositedImageInfo() const {
   return DirectlyCompositedImageInfoForPaintOpBuffer(paint_op_buffer_);
 }
 
+void DisplayItemList::ProcessNewOp(const DrawScrollingContentsOp& op) {
+  auto sub_scrolls = std::move(op.display_item_list->raster_inducing_scrolls_);
+  raster_inducing_scrolls_.insert(sub_scrolls.begin(), sub_scrolls.end());
+  raster_inducing_scrolls_.insert(op.scroll_element_id);
+}
+
 }  // namespace cc

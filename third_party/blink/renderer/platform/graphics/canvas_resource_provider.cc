@@ -1663,9 +1663,10 @@ void CanvasResourceProvider::RasterRecordOOP(cc::PaintRecord last_recording,
                           can_use_lcd_text, /*visible=*/true, GetColorSpace(),
                           /*hdr_headroom=*/1.f, mailbox.name);
 
-  ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
-                     full_raster_rect, playback_rect, post_translate,
-                     post_scale, false /* requires_clear */, &max_op_size_hint);
+  ri->RasterCHROMIUM(
+      list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,
+      playback_rect, post_translate, post_scale, /*requires_clear=*/false,
+      /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint);
 
   ri->EndRasterCHROMIUM();
 }

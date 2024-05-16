@@ -351,6 +351,7 @@ void RasterImplementationGLES::RasterCHROMIUM(
     const gfx::Vector2dF& post_translate,
     const gfx::Vector2dF& post_scale,
     bool requires_clear,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets,
     size_t* max_op_size_hint) {
   NOTREACHED_IN_MIGRATION();
 }

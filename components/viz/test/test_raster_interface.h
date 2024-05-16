@@ -121,6 +121,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                       const gfx::Vector2dF& post_translate,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
+                      const ScrollOffsetMap* raster_inducing_scroll_offsets,
                       size_t* max_op_size_hint) override {}
   void EndRasterCHROMIUM() override {}
   gpu::SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,

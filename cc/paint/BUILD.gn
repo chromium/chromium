@@ -88,6 +88,7 @@ cc_component("paint") {
     "render_surface_filters.h",
     "scoped_raster_flags.cc",
     "scoped_raster_flags.h",
+    "scroll_offset_map.h",
     "shader_transfer_cache_entry.cc",
     "shader_transfer_cache_entry.h",
     "skia_paint_canvas.cc",

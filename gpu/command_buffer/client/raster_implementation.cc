@@ -1428,15 +1428,17 @@ void RasterImplementation::BeginRasterCHROMIUM(
                              color_space.ToSkColorSpace());
 }
 
-void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
-                                          cc::ImageProvider* provider,
-                                          const gfx::Size& content_size,
-                                          const gfx::Rect& full_raster_rect,
-                                          const gfx::Rect& playback_rect,
-                                          const gfx::Vector2dF& post_translate,
-                                          const gfx::Vector2dF& post_scale,
-                                          bool requires_clear,
-                                          size_t* max_op_size_hint) {
+void RasterImplementation::RasterCHROMIUM(
+    const cc::DisplayItemList* list,
+    cc::ImageProvider* provider,
+    const gfx::Size& content_size,
+    const gfx::Rect& full_raster_rect,
+    const gfx::Rect& playback_rect,
+    const gfx::Vector2dF& post_translate,
+    const gfx::Vector2dF& post_scale,
+    bool requires_clear,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets,
+    size_t* max_op_size_hint) {
   TRACE_EVENT1("gpu", "RasterImplementation::RasterCHROMIUM",
                "raster_chromium_id", ++raster_chromium_id_);
   DCHECK(max_op_size_hint);
@@ -1489,7 +1491,7 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
           raster_properties_->color_space, &skottie_serialization_history_,
           raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
-          capabilities().max_texture_size));
+          capabilities().max_texture_size, raster_inducing_scroll_offsets));
   serializer.Serialize(list->paint_op_buffer_, &temp_raster_offsets_, preamble);
   // TODO(piman): raise error if !serializer.valid()?
   op_serializer.SendSerializedData();

@@ -24,14 +24,6 @@
 namespace cc {
 namespace {
 
-PlaybackParams MakeParams(const SkCanvas* canvas) {
-  // We don't use an ImageProvider here since the ops are played onto a no-draw
-  // canvas for state tracking and don't need decoded images.
-  PlaybackParams params(nullptr, canvas->getLocalToDevice());
-  params.is_analyzing = true;
-  return params;
-}
-
 std::unique_ptr<SkCanvas> MakeAnalysisCanvas(
     const PaintOp::SerializeOptions& options) {
   // Use half of the max int as the extent for the SkNoDrawCanvas. The correct
@@ -61,6 +53,17 @@ PaintOpBufferSerializer::PaintOpBufferSerializer(
 }
 
 PaintOpBufferSerializer::~PaintOpBufferSerializer() = default;
+
+PlaybackParams PaintOpBufferSerializer::MakeParams(
+    const SkCanvas* canvas) const {
+  // We don't use an ImageProvider here since the ops are played onto a no-draw
+  // canvas for state tracking and don't need decoded images.
+  PlaybackParams params(nullptr, canvas->getLocalToDevice());
+  params.raster_inducing_scroll_offsets =
+      options_.raster_inducing_scroll_offsets;
+  params.is_analyzing = true;
+  return params;
+}
 
 void PaintOpBufferSerializer::Serialize(const PaintOpBuffer& buffer,
                                         const std::vector<size_t>* offsets,

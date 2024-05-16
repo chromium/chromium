@@ -46,6 +46,7 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   bool ScrollInteractionInProgress() const override;
   bool CurrentScrollCheckerboardsDueToNoRecording() const override;
   void OnTilesAdded() override;
+  ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
 
   void set_twin_tiling_set(PictureLayerTilingSet* set) {
     twin_set_ = set;

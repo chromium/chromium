@@ -116,18 +116,22 @@ void RasterSource::PlaybackToCanvas(
     raster_canvas->clear(SK_ColorTRANSPARENT);
   }
 
-  PlaybackDisplayListToCanvas(raster_canvas, settings.image_provider);
+  PlaybackDisplayListToCanvas(raster_canvas, settings);
   raster_canvas->restore();
 }
 
 void RasterSource::PlaybackDisplayListToCanvas(
     SkCanvas* raster_canvas,
-    ImageProvider* image_provider) const {
+    const PlaybackSettings& settings) const {
   // TODO(enne): Temporary CHECK debugging for http://crbug.com/823835
   CHECK(display_list_.get());
   int repeat_count = std::max(1, slow_down_raster_scale_factor_for_debug_);
-  for (int i = 0; i < repeat_count; ++i)
-    display_list_->Raster(raster_canvas, image_provider);
+  PlaybackParams params(settings.image_provider, SkM44());
+  params.raster_inducing_scroll_offsets =
+      settings.raster_inducing_scroll_offsets;
+  for (int i = 0; i < repeat_count; ++i) {
+    display_list_->Raster(raster_canvas, params);
+  }
 }
 
 bool RasterSource::PerformSolidColorAnalysis(gfx::Rect layer_rect,

@@ -84,6 +84,7 @@ class CC_EXPORT PictureLayerImpl
   bool ScrollInteractionInProgress() const override;
   bool CurrentScrollCheckerboardsDueToNoRecording() const override;
   void OnTilesAdded() override;
+  ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
 
   // ImageAnimationController::AnimationDriver overrides.
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;

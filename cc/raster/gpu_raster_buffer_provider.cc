@@ -434,6 +434,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.image_provider, content_size, raster_full_rect,
       playback_rect, transform.translation(), recording_to_raster_scale,
       raster_source->requires_clear(),
+      playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
 

@@ -170,6 +170,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                       const gfx::Vector2dF& post_translate,
                       const gfx::Vector2dF& post_scale,
                       bool requires_clear,
+                      const ScrollOffsetMap* raster_inducing_scroll_offsets,
                       size_t* max_op_size_hint) override;
   SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
                                 const gfx::Size& output_size,

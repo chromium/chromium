@@ -80,6 +80,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   bool valid() const { return valid_; }
 
  private:
+  PlaybackParams MakeParams(const SkCanvas* canvas) const;
   void SerializePreamble(SkCanvas* canvas,
                          const Preamble& preamble,
                          const PlaybackParams& params);

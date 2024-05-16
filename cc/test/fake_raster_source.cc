@@ -157,10 +157,10 @@ FakeRasterSource::~FakeRasterSource() = default;
 
 void FakeRasterSource::PlaybackDisplayListToCanvas(
     SkCanvas* canvas,
-    ImageProvider* image_provider) const {
+    const PlaybackSettings& settings) const {
   if (playback_allowed_event_)
     playback_allowed_event_->Wait();
-  RasterSource::PlaybackDisplayListToCanvas(canvas, image_provider);
+  RasterSource::PlaybackDisplayListToCanvas(canvas, settings);
 }
 
 void FakeRasterSource::SetDirectlyCompositedImageDefaultRasterScale(

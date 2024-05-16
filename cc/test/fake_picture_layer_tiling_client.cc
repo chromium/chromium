@@ -91,6 +91,10 @@ bool FakePictureLayerTilingClient::CurrentScrollCheckerboardsDueToNoRecording()
     const {
   return false;
 }
+ScrollOffsetMap FakePictureLayerTilingClient::GetRasterInducingScrollOffsets()
+    const {
+  return ScrollOffsetMap();
+}
 
 void FakePictureLayerTilingClient::OnTilesAdded() {}
 

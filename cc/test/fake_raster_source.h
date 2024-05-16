@@ -51,7 +51,7 @@ class FakeRasterSource : public RasterSource {
 
   void PlaybackDisplayListToCanvas(
       SkCanvas* canvas,
-      ImageProvider* image_provider) const override;
+      const PlaybackSettings& settings) const override;
 
  private:
   raw_ptr<base::WaitableEvent> playback_allowed_event_;

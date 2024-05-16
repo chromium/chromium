@@ -87,6 +87,7 @@ class CC_PAINT_EXPORT DisplayItemList
     size_t offset = paint_op_buffer_.next_op_offset();
     offsets_.push_back(offset);
     const T& op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
+    ProcessNewOp(op);
     DCHECK(op.IsValid());
     return offset;
   }
@@ -216,6 +217,10 @@ class CC_PAINT_EXPORT DisplayItemList
 
   std::optional<gfx::Rect> bounds() const { return rtree_.bounds(); }
 
+  const base::flat_set<ElementId>& raster_inducing_scrolls() const {
+    return raster_inducing_scrolls_;
+  }
+
  private:
   friend class DisplayItemListTest;
   friend class PaintOpBufferSerializer;
@@ -243,9 +248,14 @@ class CC_PAINT_EXPORT DisplayItemList
 
   void GenerateDiscardableImagesMetadata() const;
 
+  void ProcessNewOp(const PaintOp& op) {}
+  void ProcessNewOp(const DrawScrollingContentsOp& op);
+
   mutable std::optional<DiscardableImageMap> image_map_
       GUARDED_BY_CONTEXT(image_generation_lock_);
   mutable base::Lock image_generation_lock_;
+
+  base::flat_set<ElementId> raster_inducing_scrolls_;
 
   // RTree stores offsets into the paint op buffer.
   RTree<size_t> rtree_;

@@ -17,6 +17,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/scroll_offset_map.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -81,6 +82,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   SkM44 original_ctm;
   PlaybackCallbacks callbacks;
   std::optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
   bool is_analyzing = false;
 };
 
@@ -110,15 +112,17 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
    public:
     SerializeOptions();
-    SerializeOptions(ImageProvider* image_provider,
-                     TransferCacheSerializeHelper* transfer_cache,
-                     ClientPaintCache* paint_cache,
-                     SkStrikeServer* strike_server,
-                     sk_sp<SkColorSpace> color_space,
-                     SkottieSerializationHistory* skottie_serialization_history,
-                     bool can_use_lcd_text,
-                     bool context_supports_distance_field_text,
-                     int max_texture_size);
+    SerializeOptions(
+        ImageProvider* image_provider,
+        TransferCacheSerializeHelper* transfer_cache,
+        ClientPaintCache* paint_cache,
+        SkStrikeServer* strike_server,
+        sk_sp<SkColorSpace> color_space,
+        SkottieSerializationHistory* skottie_serialization_history,
+        bool can_use_lcd_text,
+        bool context_supports_distance_field_text,
+        int max_texture_size,
+        const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr);
     SerializeOptions(const SerializeOptions&);
     SerializeOptions& operator=(const SerializeOptions&);
     ~SerializeOptions();
@@ -133,6 +137,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
+    const ScrollOffsetMap* raster_inducing_scroll_offsets = nullptr;
 
     // TODO(crbug.com/40136055): Cleanup after study completion.
     //

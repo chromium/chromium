@@ -26,6 +26,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/paint/scroll_offset_map.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/mutator_host.h"
@@ -624,7 +625,6 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   using PropertyTree::needs_update;
   using PropertyTree::set_needs_update;
 
-  using ScrollOffsetMap = base::flat_map<ElementId, gfx::PointF>;
   using SyncedScrollOffsetMap =
       base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 

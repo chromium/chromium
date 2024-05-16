@@ -47,7 +47,8 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
     SkottieSerializationHistory* skottie_serialization_history,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
-    int max_texture_size)
+    int max_texture_size,
+    const ScrollOffsetMap* raster_inducing_scroll_offsets)
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
@@ -57,7 +58,8 @@ PaintOpBuffer::SerializeOptions::SerializeOptions(
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
-      max_texture_size(max_texture_size) {}
+      max_texture_size(max_texture_size),
+      raster_inducing_scroll_offsets(raster_inducing_scroll_offsets) {}
 
 PaintOpBuffer::SerializeOptions::SerializeOptions() = default;
 PaintOpBuffer::SerializeOptions::SerializeOptions(const SerializeOptions&) =
@@ -188,13 +190,12 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
   // translate(x, y), then draw a paint record with a SetMatrix(identity),
   // the translation should be preserved instead of clobbering the top level
   // transform.  This could probably be done more efficiently.
-  PlaybackParams new_params(
-      params.image_provider,
-      local_ctm ? canvas->getLocalToDevice() : params.original_ctm,
-      params.callbacks);
+  PlaybackParams new_params = params;
+  if (local_ctm) {
+    new_params.original_ctm = canvas->getLocalToDevice();
+  }
   new_params.save_layer_alpha_should_preserve_lcd_text =
       save_layer_alpha_should_preserve_lcd_text;
-  new_params.is_analyzing = params.is_analyzing;
   for (PlaybackFoldingIterator iter(*this, offsets); iter; ++iter) {
     const PaintOp* op = iter.get();
     if (params.callbacks.convert_op_callback) {

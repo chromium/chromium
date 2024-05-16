@@ -2404,8 +2404,14 @@ bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
 
 gfx::PointF DrawScrollingContentsOp::GetScrollOffset(
     const PlaybackParams& params) const {
-  // TODO(wangxianzhu): Plumb impl-side scroll offset here.
-  return main_scroll_offset;
+  gfx::PointF scroll_offset = main_scroll_offset;
+  if (params.raster_inducing_scroll_offsets) {
+    auto it = params.raster_inducing_scroll_offsets->find(scroll_element_id);
+    if (it != params.raster_inducing_scroll_offsets->end()) {
+      scroll_offset = it->second;
+    }
+  }
+  return scroll_offset;
 }
 
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}
