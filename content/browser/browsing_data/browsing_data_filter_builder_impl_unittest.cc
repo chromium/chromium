@@ -1155,4 +1155,62 @@ TEST(BrowsingDataFilterBuilderImplTest, CopyAndEquality) {
   EXPECT_EQ(builder, *builder.Copy());
 }
 
+TEST(BrowsingDataFilterBuilderImplTest, DeleteModeDoesntMatchMost) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+
+  EXPECT_FALSE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_FALSE(builder.MatchesMostOriginsAndDomains());
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, PreserveModeMatchesAll) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+
+  EXPECT_TRUE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_TRUE(builder.MatchesMostOriginsAndDomains());
+}
+
+TEST(BrowsingDataFilterBuilderImplTest,
+     PreserveModeWithOriginsOrDomainsMatchesMost) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  builder.AddOrigin(url::Origin::Create(GURL("http://example.test")));
+  builder.AddRegisterableDomain("example.test");
+
+  EXPECT_FALSE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_TRUE(builder.MatchesMostOriginsAndDomains());
+}
+
+TEST(BrowsingDataFilterBuilderImplTest,
+     PreserveModeWithCookiePartitionKeysMatchesMost) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  builder.SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection());
+
+  EXPECT_FALSE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_TRUE(builder.MatchesMostOriginsAndDomains());
+}
+
+TEST(BrowsingDataFilterBuilderImplTest,
+     PreserveModeWithStorageKeyDoesntMatchMost) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  builder.SetStorageKey(
+      blink::StorageKey::CreateFromStringForTesting("http://example.test"));
+
+  EXPECT_FALSE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_FALSE(builder.MatchesMostOriginsAndDomains());
+}
+
+TEST(BrowsingDataFilterBuilderImplTest,
+     PreserveModePartitionedCookiesOnlyDoesntMatchMost) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  builder.SetPartitionedCookiesOnly(true);
+
+  EXPECT_FALSE(builder.MatchesAllOriginsAndDomains());
+  EXPECT_FALSE(builder.MatchesMostOriginsAndDomains());
+}
+
 }  // namespace content

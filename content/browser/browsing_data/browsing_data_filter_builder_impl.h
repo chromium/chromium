@@ -42,6 +42,7 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   bool MatchesWithSavedStorageKey(
       const blink::StorageKey& other_key) const override;
   bool MatchesAllOriginsAndDomains() override;
+  bool MatchesMostOriginsAndDomains() override;
   bool MatchesNothing() override;
   void SetPartitionedCookiesOnly(bool value) override;
   bool PartitionedCookiesOnly() const override;

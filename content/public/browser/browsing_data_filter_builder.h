@@ -114,6 +114,11 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 
+  // Returns true if we're deleting everything or nearly everything -- the mode
+  // is kPreserve, we're not restricted to partitioned cookies, and no
+  // StorageKey is set.
+  virtual bool MatchesMostOriginsAndDomains() = 0;
+
   // Returns true if we're an empty delete list, where we delete nothing.
   virtual bool MatchesNothing() = 0;
 
