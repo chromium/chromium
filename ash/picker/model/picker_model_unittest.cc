@@ -24,11 +24,8 @@ TEST(PickerModel, AvailableCategoriesWithNoFocusHasCorrectOrdering) {
                     PickerModel::EditorStatus::kEnabled);
   EXPECT_THAT(
       model.GetAvailableCategories(),
-      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kEditorWrite,
-                  PickerCategory::kLinks, PickerCategory::kExpressions,
-                  PickerCategory::kClipboard, PickerCategory::kDriveFiles,
-                  PickerCategory::kLocalFiles, PickerCategory::kDatesTimes,
-                  PickerCategory::kUnitsMaths));
+      ElementsAre(PickerCategory::kCapsOn, PickerCategory::kLinks,
+                  PickerCategory::kDriveFiles, PickerCategory::kLocalFiles));
 }
 
 TEST(PickerModel, AvailableCategoriesWithNoSelectedTextHasCorrectOrdering) {

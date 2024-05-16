@@ -29,11 +29,23 @@ std::u16string GetSelectedText(ui::TextInputClient* client) {
 PickerModel::PickerModel(ui::TextInputClient* focused_client,
                          input_method::ImeKeyboard* ime_keyboard,
                          EditorStatus editor_status)
-    : selected_text_(GetSelectedText(focused_client)),
+    : has_focus_(focused_client != nullptr),
+      selected_text_(GetSelectedText(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
       editor_status_(editor_status) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
+  if (!has_focus_) {
+    std::vector<PickerCategory> categories{
+        is_caps_lock_enabled_ ? PickerCategory::kCapsOff
+                              : PickerCategory::kCapsOn,
+        PickerCategory::kLinks,
+        PickerCategory::kDriveFiles,
+        PickerCategory::kLocalFiles,
+    };
+    return categories;
+  }
+
   if (HasSelectedText()) {
     std::vector<PickerCategory> categories;
     if (editor_status_ == EditorStatus::kEnabled) {

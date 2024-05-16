@@ -481,6 +481,11 @@ TEST_F(PickerControllerTest, ShowEditorCallsCallbackFromClient) {
 }
 
 TEST_F(PickerControllerTest, AvailableCategoriesContainsEditorWhenEnabled) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_field.Focus();
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
   EXPECT_CALL(client, CacheEditorContext).WillOnce(Return(base::DoNothing()));

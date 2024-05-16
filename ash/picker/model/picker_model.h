@@ -40,6 +40,7 @@ class ASH_EXPORT PickerModel {
   bool HasSelectedText() const;
 
  private:
+  bool has_focus_;
   std::u16string selected_text_;
   bool is_caps_lock_enabled_;
   EditorStatus editor_status_;
