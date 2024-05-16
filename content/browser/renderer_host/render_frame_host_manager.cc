@@ -377,6 +377,12 @@ void RecordProcessPerSiteWithMainFrameThresholdBlockReason(
 void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
     SiteInstanceImpl* site_instance,
     FrameTreeNode* frame_tree_node) {
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldAllowProcessPerSiteForMultipleMainFrames(
+               site_instance->GetBrowserContext())) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold)) {
     return;

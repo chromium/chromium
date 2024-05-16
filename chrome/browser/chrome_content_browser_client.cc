@@ -1460,6 +1460,25 @@ MaybeCreateVisitedLinkNavigationThrottleFor(
 ChromeContentBrowserClient::PopupNavigationDelegateFactory
     g_popup_navigation_delegate_factory = &CreatePopupNavigationDelegate;
 
+bool DetermineIfDevtoolsUserForProcessPerSite() {
+  bool is_devtools_user = false;
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    std::vector<Profile*> profiles = profile_manager->GetLoadedProfiles();
+    for (auto* profile : profiles) {
+      if (profile->GetPrefs()->HasPrefPath(
+              prefs::kDevToolsSyncedPreferencesSyncDisabled) ||
+          profile->GetPrefs()->HasPrefPath(prefs::kDevToolsPreferences)) {
+        is_devtools_user = true;
+        break;
+      }
+    }
+  }
+  base::UmaHistogramBoolean(
+      "SiteIsolation.ProcessPerSiteWithMainFrameThreshold.IsDevToolsUser",
+      is_devtools_user);
+  return is_devtools_user;
+}
+
 }  // namespace
 
 // static
@@ -1954,6 +1973,18 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
   // Non-extension, non-NTP URLs should generally use process-per-site-instance
   // (rather than process-per-site).
   return false;
+}
+
+bool ChromeContentBrowserClient::ShouldAllowProcessPerSiteForMultipleMainFrames(
+    content::BrowserContext* browser_context) {
+  static bool is_devtools_user = DetermineIfDevtoolsUserForProcessPerSite();
+
+  // TODO(dtapuska): Implement enterprise policy support here.
+  if (is_devtools_user && base::FeatureList::IsEnabled(
+                              features::kProcessPerSiteSkipDevtoolsUsers)) {
+    return false;
+  }
+  return true;
 }
 
 bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(

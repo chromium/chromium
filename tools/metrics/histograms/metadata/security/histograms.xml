@@ -921,13 +921,25 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
     enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
-    expires_after="2024-06-30">
+    expires_after="2024-10-30">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The reason why process sharing is disallowed when
     ProcessPerSiteUpToMainFrameThreshold feature is enabled. Recorded when
     initializing a frame tree or getting a site instance for navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.IsDevToolsUser"
+    enum="Boolean" expires_after="2024-10-30">
+  <owner>dtapuska@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Whether any profile exists with devtools preferences and
+    ProcessPerSiteWithMainFrameThreshold feature will be opted out because of
+    this. This is logged once per browser process launch.
   </summary>
 </histogram>
 

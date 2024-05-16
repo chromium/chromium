@@ -404,6 +404,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldUseProcessPerSite(BrowserContext* browser_context,
                                        const GURL& site_url);
 
+  // Returns true if process-per-site feature could be used for multiple main
+  // frames. Actual usage of the feature may depend a number of heuristics.
+  // This is different than `ShouldUseProcessPerSite` where process-per-siste
+  // is required for the correct functionality of the site.
+  virtual bool ShouldAllowProcessPerSiteForMultipleMainFrames(
+      BrowserContext* context);
+
   // Returns whether a spare RenderProcessHost should be used for navigating to
   // the specified site URL.
   //
