@@ -7,14 +7,20 @@
 #include <memory>
 #include <utility>
 
+#include "ash/birch/birch_icon_cache.h"
+#include "ash/birch/birch_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -459,7 +465,12 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
 // The icon downloader requires ash::Shell, so use AshTestBase.
 class BirchItemIconTest : public AshTestBase {
  public:
+  BirchItemIconTest() {
+    feature_list_.InitAndEnableFeature(features::kForestFeature);
+  }
+
   TestImageDownloader image_downloader_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
@@ -482,8 +493,14 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
 
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+  base::test::TestFuture<const ui::ImageModel&> future;
+  item.LoadIcon(future.GetCallback());
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get().IsEmpty());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get("http://attachment.icon/").isNull());
 }
 
 TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
@@ -494,8 +511,13 @@ TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
                            /*end_time=*/base::Time(),
                            /*file_id=*/"");
 
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+  base::test::TestFuture<const ui::ImageModel&> future;
+  item.LoadIcon(future.GetCallback());
+  // The icon is empty.
+  EXPECT_TRUE(future.Get().IsEmpty());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 0u);
 }
 
 TEST_F(BirchItemIconTest, Tab_LoadIcon) {
@@ -504,8 +526,14 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon) {
                     /*favicon_url=*/GURL("http://icon.com/"),
                     /*session_name=*/"",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+  base::test::TestFuture<const ui::ImageModel&> future;
+  item.LoadIcon(future.GetCallback());
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get().IsEmpty());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get("http://icon.com/").isNull());
 }
 
 TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
@@ -514,8 +542,13 @@ TEST_F(BirchItemIconTest, Tab_LoadIcon_InvalidUrl) {
                     /*favicon_url=*/GURL("invalid-url"),
                     /*session_name=*/"",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
+  base::test::TestFuture<const ui::ImageModel&> future;
+  item.LoadIcon(future.GetCallback());
+  // The icon is empty.
+  EXPECT_TRUE(future.Get().IsEmpty());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 0u);
 }
 
 TEST_F(BirchItemIconTest, Weather_LoadIcon) {
@@ -542,8 +575,14 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
                      base::Time(), "id_1", icon_url);
 
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+  base::test::TestFuture<const ui::ImageModel&> future;
+  item.LoadIcon(future.GetCallback());
+  // The icon is not empty.
+  EXPECT_FALSE(future.Get().IsEmpty());
+
+  auto* icon_cache = Shell::Get()->birch_model()->icon_cache();
+  EXPECT_EQ(icon_cache->size_for_test(), 1u);
+  EXPECT_FALSE(icon_cache->Get(icon_url).isNull());
 }
 
 }  // namespace

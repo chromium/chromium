@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 
+#include "ash/birch/birch_icon_cache.h"
+#include "ash/birch/birch_model.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -32,8 +34,11 @@ namespace {
 
 // Handles when an `image` is downloaded, by converting it to a ui::ImageModel
 // and running `callback`.
-void OnImageDownloaded(base::OnceCallback<void(const ui::ImageModel&)> callback,
+void OnImageDownloaded(const GURL& url,
+                       base::OnceCallback<void(const ui::ImageModel&)> callback,
                        const gfx::ImageSkia& image) {
+  // Add the image to the cache.
+  Shell::Get()->birch_model()->icon_cache()->Put(url.spec(), image);
   std::move(callback).Run(ui::ImageModel::FromImageSkia(image));
 }
 
@@ -47,6 +52,16 @@ void DownloadImageFromUrl(
     return;
   }
 
+  // Look for the icon in the cache.
+  gfx::ImageSkia icon =
+      Shell::Get()->birch_model()->icon_cache()->Get(url.spec());
+  if (!icon.isNull()) {
+    // Use the cached icon.
+    std::move(callback).Run(ui::ImageModel::FromImageSkia(icon));
+    return;
+  }
+
+  // Download the icon.
   const UserSession* active_user_session =
       Shell::Get()->session_controller()->GetUserSession(0);
   CHECK(active_user_session);
@@ -55,7 +70,7 @@ void DownloadImageFromUrl(
   ImageDownloader::Get()->Download(
       url, MISSING_TRAFFIC_ANNOTATION,
       active_user_session->user_info.account_id,
-      base::BindOnce(&OnImageDownloaded, std::move(callback)));
+      base::BindOnce(&OnImageDownloaded, url, std::move(callback)));
 }
 
 }  // namespace
