@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/file_manager/indexing/file_index_service.h"
 
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/file_manager/indexing/file_index.h"
 #include "chrome/browser/ash/file_manager/indexing/sql_storage.h"
 
 namespace file_manager {

@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#include "search_results.h"
-
 namespace file_manager {
 
 SearchResults::SearchResults() : total_matches(0) {}

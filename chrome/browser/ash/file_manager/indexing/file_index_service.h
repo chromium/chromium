@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_SERVICE_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INDEX_SERVICE_H_
 
-#include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/threading/sequence_bound.h"
