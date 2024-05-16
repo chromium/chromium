@@ -54,6 +54,7 @@ build_webui("build") {
     "dialogs/auth_timed_out_dialog.ts",
     "dialogs/delete_password_disclaimer_dialog.ts",
     "dialogs/delete_passkey_dialog.ts",
+    "dialogs/disconnect_cloud_authenticator_dialog.ts",
     "dialogs/edit_passkey_dialog.ts",
     "dialogs/edit_password_dialog.ts",
     "dialogs/edit_password_disclaimer_dialog.ts",

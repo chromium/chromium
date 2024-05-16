@@ -19,6 +19,7 @@ export {PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, PasswordDetailsCardElement} fro
 export {AddPasswordDialogElement, PASSWORD_NOTE_MAX_CHARACTER_COUNT} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
 export {DeletePasskeyDialogElement} from './dialogs/delete_passkey_dialog.js';
+export {DisconnectCloudAuthenticatorDialogElement} from './dialogs/disconnect_cloud_authenticator_dialog.js';
 export {EditPasskeyDialogElement} from './dialogs/edit_passkey_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
 // <if expr="is_win or is_macosx">

@@ -8,6 +8,7 @@ import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import './dialogs/move_passwords_dialog.js';
+import './dialogs/disconnect_cloud_authenticator_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -140,6 +141,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         type: Boolean,
         value: false,
       },
+
+      showDisconnectCloudAuthenticatorDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -164,7 +170,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private isConnectedToCloudAuthenticator_: boolean = false;
   private isDisconnectCloudAuthenticatorInProgress_: boolean = false;
   private toastMessage_: string = '';
-
+  private showDisconnectCloudAuthenticatorDialog_: boolean = false;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -423,17 +429,22 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private onDisconnectCloudAuthenticatorClick_() {
-    this.isDisconnectCloudAuthenticatorInProgress_ = true;
-    PasswordManagerImpl.getInstance().disconnectCloudAuthenticator().then(
-        this.processDisconnectCloudAuthenticatorResponse_.bind(this));
+    this.showDisconnectCloudAuthenticatorDialog_ = true;
   }
 
-  private processDisconnectCloudAuthenticatorResponse_(success: boolean): void {
+  private onCloseDisconnectCloudAuthenticatorDialog_(): void {
+    this.showDisconnectCloudAuthenticatorDialog_ = false;
+  }
+
+  private onDisconnectCloudAuthenticator_(e: CustomEvent): void {
     this.isDisconnectCloudAuthenticatorInProgress_ = false;
-    if (!success) {
-      return;
+    this.updateIsCloudAuthenticatorConnected_();
+    if (e.detail.success) {
+      this.showToastForCloudAuthenticatorDisconnected_();
     }
-    this.updateIsCloudAuthenticatorConnected_;
+  }
+
+  private showToastForCloudAuthenticatorDisconnected_(): void {
     this.toastMessage_ = this.i18n('disconnectCloudAuthenticatorToastMessage');
     this.$.toast.show();
   }

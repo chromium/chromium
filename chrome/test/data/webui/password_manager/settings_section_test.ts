@@ -11,7 +11,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+// import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -720,7 +721,7 @@ suite('SettingsSectionTest', function() {
         section.$.toast.textContent!.trim());
   });
 
-  test('Disconnect Cloud Authenticator is available', async function() {
+  test('Disconnect Cloud Authenticator', async function() {
     passwordManager.data.isConnectedToCloudAuthenticator = true;
     passwordManager.data.disconnectCloudAuthenticatorSuccessful = true;
 
@@ -731,7 +732,6 @@ suite('SettingsSectionTest', function() {
     const disconnectCloudAuthenticatorRow =
         section.shadowRoot!.querySelector<HTMLElement>(
             '#disconnectCloudAuthenticatorRow');
-
     assertTrue(!!disconnectCloudAuthenticatorRow);
 
     const disconnectButton =
@@ -739,6 +739,17 @@ suite('SettingsSectionTest', function() {
             '#disconnectCloudAuthenticatorButton');
     assertTrue(!!disconnectButton);
     disconnectButton.click();
+
+    await eventToPromise('cr-dialog-open', section);
+    const dialog = section.shadowRoot!.querySelector<HTMLElement>(
+        '#disconnectCloudAuthenticatorDialog');
+    assertTrue(!!dialog);
+
+    const confirmButton =
+        dialog?.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+    assertTrue(!!confirmButton);
+
+    confirmButton.click();
     await passwordManager.whenCalled('disconnectCloudAuthenticator');
 
     assertTrue(section.$.toast.open);

@@ -1,0 +1,17 @@
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title" class="dialog-title">
+    $i18n{disconnectCloudAuthenticatorConfirmationDialogTitle}
+  </div>
+  <div slot="body">
+    $i18n{disconnectCloudAuthenticatorConfirmationDialogDescription}
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"
+        autofocus>
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirm_" id="confirmButton">
+      $i18n{confirm}
+    </cr-button>
+  </div>
+</cr-dialog>
