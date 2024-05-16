@@ -563,6 +563,12 @@ class MemorySaverFaviconTreatmentTest
   MemorySaverFaviconTreatmentTest() = default;
   ~MemorySaverFaviconTreatmentTest() override = default;
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        performance_manager::features::kDiscardRingImprovements);
+    InteractiveBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     MemorySaverInteractiveTestMixin::SetUpOnMainThread();
     SetMemorySaverModeEnabled(true);
@@ -574,6 +580,9 @@ class MemorySaverFaviconTreatmentTest
   TabIcon* GetTabIcon(int tab_index) {
     return GetTabStrip()->tab_at(tab_index)->GetTabIconForTesting();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySaverFaviconTreatmentTest,
@@ -633,7 +642,7 @@ class MemorySaverImprovedFaviconTreatmentTest
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         performance_manager::features::kDiscardRingImprovements);
-    MemorySaverFaviconTreatmentTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
 
   static auto IsShowingDiscardIndicator(bool showing) {
@@ -641,9 +650,6 @@ class MemorySaverImprovedFaviconTreatmentTest
       return showing == tab_icon->GetShowingDiscardIndicator();
     };
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MemorySaverImprovedFaviconTreatmentTest,
