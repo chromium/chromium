@@ -3762,6 +3762,27 @@
             ]
         }
     ],
+    "ChromeOSHoldingSpaceSuggestions": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "HoldingSpaceSuggestions"
+                    ]
+                },
+                {
+                    "name": "Enabled_Teamfood",
+                    "enable_features": [
+                        "HoldingSpaceSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceWallpaperNudge": [
         {
             "platforms": [
