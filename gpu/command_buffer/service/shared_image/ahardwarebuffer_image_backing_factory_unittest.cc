@@ -30,6 +30,13 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
+
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#include <dawn/native/DawnNative.h>
+#include <dawn/native/OpenGLBackend.h>
+#include <dawn/webgpu_cpp.h>
+#endif
 
 namespace gpu {
 namespace {
@@ -174,6 +181,100 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
 
   factory_ref.reset();
 }
+
+// Test ProduceDawn via OpenGLES Compat backend
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+TEST_F(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
+  // Create a backing using mailbox.
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(1, 1);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                   SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT;
+  gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, surface_handle, size, color_space, surface_origin,
+      alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+  EXPECT_TRUE(backing);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  dawn::native::Instance instance;
+
+  wgpu::RequestAdapterOptions adapter_options;
+  adapter_options.backendType = wgpu::BackendType::OpenGLES;
+  adapter_options.compatibilityMode = true;
+
+  dawn::native::opengl::RequestAdapterOptionsGetGLProc
+      adapter_options_get_gl_proc = {};
+  adapter_options_get_gl_proc.getProc =
+      reinterpret_cast<void* (*)(const char*)>(gl::GetGLProcAddress);
+  gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  if (gl_display) {
+    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
+  } else {
+    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
+  }
+  adapter_options.nextInChain = &adapter_options_get_gl_proc;
+
+  std::vector<dawn::native::Adapter> adapters =
+      instance.EnumerateAdapters(&adapter_options);
+  if (adapters.empty()) {
+    GTEST_SKIP() << "Dawn OpenGLES backend not available";
+  }
+  wgpu::Adapter adapter = wgpu::Adapter(adapters[0].Get());
+
+  wgpu::DeviceDescriptor device_descriptor;
+  wgpu::Device device = adapter.CreateDevice(&device_descriptor);
+
+  auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
+      mailbox, device, wgpu::BackendType::OpenGLES, {}, context_state_);
+  EXPECT_TRUE(dawn_representation);
+
+  wgpu::Color color{0, 255, 0, 255};
+  {
+    auto scoped_access = dawn_representation->BeginScopedAccess(
+        wgpu::TextureUsage::RenderAttachment,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_access);
+
+    wgpu::Texture texture(scoped_access->texture());
+
+    wgpu::RenderPassColorAttachment color_desc;
+    color_desc.view = texture.CreateView();
+    color_desc.resolveTarget = nullptr;
+    color_desc.loadOp = wgpu::LoadOp::Clear;
+    color_desc.storeOp = wgpu::StoreOp::Store;
+    color_desc.clearValue = color;
+
+    wgpu::RenderPassDescriptor renderPassDesc = {};
+    renderPassDesc.colorAttachmentCount = 1;
+    renderPassDesc.colorAttachments = &color_desc;
+    renderPassDesc.depthStencilAttachment = nullptr;
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&renderPassDesc);
+    pass.End();
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+  }
+  auto dst_pixels = ReadPixels(mailbox, size, context_state_.get(),
+                               &shared_image_representation_factory_);
+  // Compare the pixel values.
+  EXPECT_EQ(dst_pixels[0], color.r);
+  EXPECT_EQ(dst_pixels[1], color.g);
+  EXPECT_EQ(dst_pixels[2], color.b);
+  EXPECT_EQ(dst_pixels[3], color.a);
+
+  factory_ref.reset();
+}
+#endif  // BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 
 TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
   auto mailbox = Mailbox::GenerateForSharedImage();
