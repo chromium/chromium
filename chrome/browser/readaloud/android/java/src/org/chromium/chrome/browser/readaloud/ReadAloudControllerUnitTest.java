@@ -2447,14 +2447,60 @@ public class ReadAloudControllerUnitTest {
         verify(mHooksImpl, times(1))
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
         // if somehow an empty url sneaks into the readability maps
+        boolean failed = false;
         try {
             mCallbackCaptor.getValue().onSuccess("", true, true);
         } catch (AssertionError e) {
-
+            failed = true;
         }
+        assertTrue(failed);
         when(mTab.getUrl()).thenReturn(new GURL(""));
         // empty urls should not be returned as readable
         assertFalse(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void testMetricRecorded_EmptyUrlPlayback() {
+        final String histogramName = ReadAloudMetrics.EMPTY_URL_PLAYBACK;
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL(""));
+
+        boolean failed = false;
+        try {
+            mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        } catch (AssertionError e) {
+            failed = true;
+        }
+        assertTrue(failed);
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_EmptyUrlPlayback_RestoreState() {
+        final String histogramName = ReadAloudMetrics.EMPTY_URL_PLAYBACK;
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, ReadAloudController.Entrypoint.RESTORED_PLAYBACK);
+
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        var data = Mockito.mock(PlaybackData.class);
+        ReadAloudController.RestoreState restoreState =
+                mController.new RestoreState(mTab, data, true, false, 0L);
+        mController.setStateToRestoreOnBringingToForegroundForTests(restoreState);
+        // for some reason the tab url goes null
+        mTab.setGurlOverrideForTesting(new GURL(""));
+        boolean failed = false;
+        try {
+            restoreState.restore();
+        } catch (AssertionError e) {
+            failed = true;
+        }
+        assertTrue(failed);
+        histogram.assertExpected();
     }
 
     private void requestAndStartPlayback() {

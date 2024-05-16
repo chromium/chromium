@@ -168,7 +168,8 @@ public class ReadAloudController
     // Information about a tab playback necessary for resuming later. Does not
     // include language or voice which should come from current tab state or
     // settings respectively.
-    private class RestoreState implements UserData {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public class RestoreState implements UserData {
         // Tab to play.
         private final Tab mTab;
         // Paragraph index to resume from.
@@ -243,6 +244,8 @@ public class ReadAloudController
         /** Apply the saved playback state. */
         void restore() {
             if (GURL.isEmptyOrInvalid(mTab.getUrl())) {
+                ReadAloudMetrics.recordEmptyURLPlayback(
+                        Entrypoint.RESTORED_PLAYBACK, Entrypoint.NUM_ENTRIES);
                 assert false;
                 return;
             }
@@ -741,6 +744,9 @@ public class ReadAloudController
         if (!isReadable(tab)) {
             ReadAloudMetrics.recordPlaybackWithoutReadabilityCheck(
                     entrypoint, Entrypoint.NUM_ENTRIES);
+            if (GURL.isEmptyOrInvalid(tab.getUrl())) {
+                ReadAloudMetrics.recordEmptyURLPlayback(entrypoint, Entrypoint.NUM_ENTRIES);
+            }
         }
         // Should rarely ever happen since the profile has to be established for a readability check
         // to show the entrypoint.
@@ -1415,6 +1421,10 @@ public class ReadAloudController
 
     public void setTimepointsSupportedForTest(String url, boolean supported) {
         mTimepointsSupportedMap.put(urlToHash(url), supported);
+    }
+
+    public void setStateToRestoreOnBringingToForegroundForTests(RestoreState restoreState) {
+        mStateToRestoreOnBringingToForeground = restoreState;
     }
 
     public TabModelTabObserver getTabModelTabObserverforTests() {

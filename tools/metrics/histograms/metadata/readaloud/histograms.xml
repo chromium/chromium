@@ -5,7 +5,7 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Compose histograms
+This file is used to generate a comprehensive list of ReadAloud histograms
 along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
@@ -73,6 +73,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android only. Histogram for recording if a user is eligible for ReadAloud.
     Emitted when the user profile is available. Don't use data from before M123.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.EmptyURLPlayback" enum="ReadAloudEntrypoint"
+    expires_after="2024-10-06">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Android only. Records entrypoint from which a request to play an empty URL
+    was executed. Recorded for each empty URL that had a playback requested.
   </summary>
 </histogram>
 
