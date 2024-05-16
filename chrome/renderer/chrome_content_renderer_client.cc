@@ -202,7 +202,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/controlled_frame/controlled_frame.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "chrome/renderer/extensions/api/chrome_extensions_renderer_api_provider.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
@@ -385,8 +384,7 @@ ChromeContentRendererClient::ChromeContentRendererClient()
 #endif
       ) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  EnsureExtensionsClientInitialized(
-      controlled_frame::CreateAvailabilityCheckMap());
+  EnsureExtensionsClientInitialized();
   extensions::ExtensionsRendererClient::Set(
       ChromeExtensionsRendererClient::GetInstance());
 #endif

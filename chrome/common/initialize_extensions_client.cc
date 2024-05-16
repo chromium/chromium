@@ -9,9 +9,11 @@
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/apps/platform_apps/chrome_apps_api_provider.h"
+#include "chrome/common/controlled_frame/controlled_frame.h"
 #include "chrome/common/controlled_frame/controlled_frame_api_provider.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/common/features/feature.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
@@ -27,13 +29,6 @@ base::span<const char* const> GetControlledFrameFeatureList() {
 }
 
 void EnsureExtensionsClientInitialized() {
-  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
-  EnsureExtensionsClientInitialized(std::move(map));
-}
-
-void EnsureExtensionsClientInitialized(
-    extensions::Feature::FeatureDelegatedAvailabilityCheckMap
-        delegated_availability_map) {
   static bool initialized = false;
 
   static base::NoDestructor<extensions::ChromeExtensionsClient>
@@ -41,8 +36,9 @@ void EnsureExtensionsClientInitialized(
 
   if (!initialized) {
     initialized = true;
+
     extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
-        std::move(delegated_availability_map));
+        controlled_frame::CreateAvailabilityCheckMap());
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
     extensions_client->AddAPIProvider(
