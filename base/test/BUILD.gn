@@ -677,3 +677,12 @@ if (is_android) {
     ]
   }
 }
+
+source_set("fuzztest_support") {
+  testonly = true
+  sources = [ "fuzztest_support.h" ]
+  deps = [
+    "//base",
+    "//third_party/fuzztest:fuzztest_internal",
+  ]
+}
