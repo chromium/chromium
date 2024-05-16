@@ -216,7 +216,7 @@ TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
 
   // Check that a pin was added for the gmail app.
   ASSERT_TRUE(syncable_service()
-                  .item_map_[extension_misc::kGmailAppId]
+                  .item_map_[web_app::kGmailAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -231,7 +231,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   EXPECT_EQ(pinned_apps_strs[0], app_constants::kChromeAppId);
 
   // Pinned apps should have the gmail app.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, extension_misc::kGmailAppId));
+  EXPECT_TRUE(base::Contains(pinned_apps_strs, web_app::kGmailAppId));
 
   // Migration is no longer necessary.
   ASSERT_FALSE(shelf_prefs_->ShouldPerformConsistencyMigrations());
@@ -257,7 +257,7 @@ TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
   EXPECT_EQ(pinned_apps_strs[0], app_constants::kLacrosAppId);
 
   // Pinned apps should have the gmail app.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, extension_misc::kGmailAppId));
+  EXPECT_TRUE(base::Contains(pinned_apps_strs, web_app::kGmailAppId));
 }
 
 // When moving from ash-only to lacros-only, the shelf position of the chrome
