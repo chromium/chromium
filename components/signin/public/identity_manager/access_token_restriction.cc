@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/signin/public/identity_manager/access_token_constants.h"
+#include "components/signin/public/identity_manager/access_token_restriction.h"
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/plus_addresses/features.h"
@@ -17,36 +20,56 @@ namespace {
 const char* const kExtensionsIdentityAPIOAuthConsumerName =
     "extensions_identity_api";
 
-}  // namespace
-
-const std::set<std::string> GetUnconsentedOAuth2Scopes() {
+// Returns true if `scope` is a Google OAuth2 API scope that do not require user
+// to be signed in to the browser.
+bool IsUnrestrictedOAuth2Scopes(const std::string& scope) {
   // clang-format off
-  std::set<std::string> allowlist = {
-      // Used to fetch account information.
+
+  static const base::NoDestructor<base::flat_set<std::string_view>> scopes(
+    {
       GaiaConstants::kGoogleUserInfoEmail,
       GaiaConstants::kGoogleUserInfoProfile,
 
+      // Required to fetch the ManagedAccounsSigninRestriction policy during
+      //sign in.
+      GaiaConstants::kSecureConnectOAuth2Scope,
+
+      // TODO(b/321900823): Fix tests and move below scopes to require the
+      // browser to be signed in.
+
+      // Required by cloud policy.
+      GaiaConstants::kDeviceManagementServiceOAuth,
+      // Required for password leak detection.
+      GaiaConstants::kPasswordsLeakCheckOAuth2Scope,
       // The "ChromeSync" scope is used by Sync-the-transport, which does
       // not require consent. Instead, features built on top of it (e.g., tab
       // sharing, account-scoped passwords, or Sync-the-feature) have their own
       // in-feature consent.
       GaiaConstants::kChromeSyncOAuth2Scope,
+
+  });
+  // clang-format on
+
+  return scopes->contains(scope);
+}
+
+// Returns true if `scope` is a Google OAuth2 API scopes that requires the user
+// to be signed in with ConsentLevel::kSignin. Sync or explicit consent is not
+// required.
+bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
+  // clang-format off
+  static const base::NoDestructor<base::flat_set<std::string_view>> scopes (
+    {
       GaiaConstants::kFCMOAuthScope,
 
       // Google Pay is accessible as it has its own consent dialogs.
       GaiaConstants::kPaymentsOAuth2Scope,
-
-      // Required for password leak detection.
-      GaiaConstants::kPasswordsLeakCheckOAuth2Scope,
 
       // Required by Zuul.
       GaiaConstants::kCryptAuthOAuth2Scope,
 
       // Required by safe browsing.
       GaiaConstants::kChromeSafeBrowsingOAuth2Scope,
-
-      // Required by cloud policy.
-      GaiaConstants::kDeviceManagementServiceOAuth,
 
       // Required by Permission Request Creator.
       GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
@@ -64,9 +87,6 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required for displaying information about parents on supervised child
       // devices.  Consent is obtained outside Chrome within Family Link flows.
       GaiaConstants::kKidFamilyReadonlyOAuth2Scope,
-
-      // Required to fetch the ManagedAccounsSigninRestriction policy.
-      GaiaConstants::kSecureConnectOAuth2Scope,
 
       // Required for requesting Discover feed with personalization without
       // sync consent. Sync consent isn't required for personalization but can
@@ -115,26 +135,43 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       GaiaConstants::kPhotosOAuth2Scope,
       GaiaConstants::kTachyonOAuthScope,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  };
-// clang-format on
+      // clang-format on
+  });
+
   std::string plus_address_scope =
       plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get();
-  if (!plus_address_scope.empty()) {
-    allowlist.insert(plus_address_scope);
+  return scopes->contains(scope) ||
+         (!plus_address_scope.empty() && plus_address_scope == scope);
+}
+
+// Returns true if `scope` is a Google OAuth2 API scopes that require privileged
+// access - these scopes are accessible by consumers listed in
+// `GetPrivilegedOAuth2Consumers()`.
+bool IsPrivilegedOAuth2Scopes(const std::string& scope) {
+  return GaiaConstants::kAnyApiOAuth2Scope == scope;
+}
+
+}  // namespace
+
+OAuth2ScopeRestriction GetOAuth2ScopeRestriction(const std::string& scope) {
+  if (IsUnrestrictedOAuth2Scopes(scope)) {
+    return OAuth2ScopeRestriction::kNoRestriction;
   }
-  return allowlist;
+
+  if (IsUnconsentedSignedInOAuth2Scopes(scope)) {
+    return OAuth2ScopeRestriction::kSignedIn;
+  }
+
+  if (IsPrivilegedOAuth2Scopes(scope)) {
+    return OAuth2ScopeRestriction::kPrivilegedOAuth2Consumer;
+  }
+
+  // By default, OAuth2 access token requires explicit consent.
+  return OAuth2ScopeRestriction::kExplicitConsent;
 }
 
-const std::set<std::string> GetPrivilegedOAuth2Scopes() {
-  return {
-      GaiaConstants::kAnyApiOAuth2Scope,
-  };
-}
-
-const std::set<std::string> GetPrivilegedOAuth2Consumers() {
-  return {
-      kExtensionsIdentityAPIOAuthConsumerName,
-  };
+bool IsPrivilegedOAuth2Consumer(const std::string& consumer_name) {
+  return consumer_name == kExtensionsIdentityAPIOAuthConsumerName;
 }
 
 }  // namespace signin

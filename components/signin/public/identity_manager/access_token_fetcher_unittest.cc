@@ -15,12 +15,13 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
+#include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
-#include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/access_token_restriction.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -51,6 +52,9 @@ const char kIdTokenEmptyServices[] =
     "dummy-header."
     "eyAic2VydmljZXMiOiBbXSB9"  // payload: { "services": [] }
     ".dummy-signature";
+
+const char kPriviligedConsumerName[] = "extensions_identity_api";
+
 }  // namespace
 
 class AccessTokenFetcherTest
@@ -175,6 +179,10 @@ class AccessTokenFetcherTest
     // deleted. See ConsentLevel::kSync documentation for details.
     return RequireSyncConsentForScopeVerification() ? ConsentLevel::kSync
                                                     : ConsentLevel::kSignin;
+  }
+
+  const PrimaryAccountManager& primary_account_manager() {
+    return primary_account_manager_;
   }
 
  private:
@@ -738,6 +746,14 @@ TEST_P(AccessTokenFetcherTest, FetcherWithCustomURLLoaderFactory) {
 
 // APIs consent tests.
 
+TEST_P(AccessTokenFetcherTest, FetcherWithUnrestrictedOAuth2Scope) {
+  CoreAccountInfo account = AddAccount(kTestGaiaId, kTestEmail);
+  EXPECT_FALSE(primary_account_manager().HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  VerifyScopeAccess(account.account_id, "test_consumer",
+                    {GaiaConstants::kGoogleUserInfoEmail});
+}
+
 // Tests that a request with a consented client accessing an OAuth2 API
 // that requires sync consent is fulfilled.
 TEST_P(AccessTokenFetcherTest, FetcherWithConsentedClientAccessToConsentAPI) {
@@ -770,39 +786,30 @@ TEST_P(AccessTokenFetcherTest,
 // Tests that a request with a privileged client accessing a privileged OAuth2
 // API is fulfilled.
 TEST_P(AccessTokenFetcherTest,
-       FetcherWithPriveledgedClientAccessToPriveledgedAPI) {
-  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
-  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
-    CoreAccountId account_id =
-        SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
-    VerifyScopeAccess(account_id, privileged_client,
-                      {GaiaConstants::kAnyApiOAuth2Scope});
-  }
+       FetcherWithPriviledgedClientAccessToPriveledgedAPI) {
+  CoreAccountId account_id =
+      SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
+  VerifyScopeAccess(account_id, kPriviligedConsumerName,
+                    {GaiaConstants::kAnyApiOAuth2Scope});
 }
 
 // Tests that a request with a privileged client accessing an OAuth2 API
 // that requires sync consent is fulfilled.
 TEST_P(AccessTokenFetcherTest, FetcherWithPriveledgedClientAccessToConsentAPI) {
-  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
-  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
-    CoreAccountId account_id =
-        SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
-    VerifyScopeAccess(account_id, privileged_client,
-                      {GaiaConstants::kOAuth1LoginScope});
-  }
+  CoreAccountId account_id =
+      SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
+  VerifyScopeAccess(account_id, kPriviligedConsumerName,
+                    {GaiaConstants::kOAuth1LoginScope});
 }
 
 // Tests that a request with a privileged client accessing an OAuth2 API
 // that does not require consent is fulfilled.
 TEST_P(AccessTokenFetcherTest,
        FetcherWithPriveledgedClientAccessToUnconsentedAPI) {
-  EXPECT_FALSE(GetPrivilegedOAuth2Consumers().empty());
-  for (const std::string& privileged_client : GetPrivilegedOAuth2Consumers()) {
-    CoreAccountId account_id =
-        SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
-    VerifyScopeAccess(account_id, privileged_client,
-                      {GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
-  }
+  CoreAccountId account_id =
+      SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
+  VerifyScopeAccess(account_id, kPriviligedConsumerName,
+                    {GaiaConstants::kChromeSafeBrowsingOAuth2Scope});
 }
 
 // Tests that a request with an unconsented client accessing an OAuth2 API
@@ -811,8 +818,10 @@ TEST_P(AccessTokenFetcherTest,
        FetcherWithUnconsentedClientAccessToPrivelegedAPI) {
   CoreAccountId account_id =
       SetPrimaryAccount(kTestGaiaId, kTestEmail, ConsentLevel::kSignin);
-  EXPECT_CHECK_DEATH(VerifyScopeAccess(account_id, "test_consumer",
-                                       {GaiaConstants::kAnyApiOAuth2Scope}));
+  EXPECT_CHECK_DEATH_WITH(
+      VerifyScopeAccess(account_id, "test_consumer",
+                        {GaiaConstants::kAnyApiOAuth2Scope}),
+      "You are attempting to access a privileged scope");
 }
 
 // Tests that a request with a consented client accessing a privileged OAuth2
@@ -821,8 +830,10 @@ TEST_P(AccessTokenFetcherTest,
        FetcherWithConsentedClientAccessToPrivilegedAPI) {
   CoreAccountId account_id =
       SetPrimaryAccount(kTestGaiaId, kTestEmail, GetTargetConsentLevel());
-  EXPECT_CHECK_DEATH(VerifyScopeAccess(account_id, "test_consumer",
-                                       {GaiaConstants::kAnyApiOAuth2Scope}));
+  EXPECT_CHECK_DEATH_WITH(
+      VerifyScopeAccess(account_id, "test_consumer",
+                        {GaiaConstants::kAnyApiOAuth2Scope}),
+      "You are attempting to access a privileged scope");
 }
 
 }  // namespace signin
