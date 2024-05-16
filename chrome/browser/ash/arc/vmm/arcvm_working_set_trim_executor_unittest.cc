@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/mojom/memory.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -35,6 +36,7 @@ class DelayedMemoryInstance : public mojom::MemoryInstance {
 
   // mojom::MemoryInstance:
   void DropCaches(DropCachesCallback callback) override {
+    drop_caches_count_++;
     if (timer_.IsRunning()) {
       return;
     }
@@ -42,12 +44,15 @@ class DelayedMemoryInstance : public mojom::MemoryInstance {
                  base::BindOnce(std::move(callback), true));
   }
 
+  int GetDropCachesCount() const { return drop_caches_count_; }
+
   // mojom::MemoryInstance:
   void Reclaim(mojom::ReclaimRequestPtr request,
                ReclaimCallback callback) override {}
 
  private:
   base::OneShotTimer timer_;
+  int drop_caches_count_ = 0;
 };
 
 }  // namespace
@@ -82,6 +87,10 @@ class ArcVmWorkingSetTrimExecutorTest : public testing::Test {
     testing_profile_.reset();
     arc_session_manager_.reset();
     ash::ConciergeClient::Shutdown();
+  }
+
+  int GetDropCachesCount() const {
+    return memory_instance_.GetDropCachesCount();
   }
 
   TestingProfile* testing_profile() { return testing_profile_.get(); }
@@ -146,6 +155,50 @@ TEST_F(ArcVmWorkingSetTrimExecutorTest, TrimAllGuestOnlyDoesNotTrimVmMemory) {
                      ArcVmReclaimType::kReclaimAllGuestOnly, 0));
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(DELAYED_TIME_DELTA);
+}
+
+TEST_F(ArcVmWorkingSetTrimExecutorTest, TestSkipDropCachesFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(arc::kSkipDropCaches);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ArcVmWorkingSetTrimExecutor::Trim, testing_profile(),
+                     base::BindOnce([](bool result, const std::string& msg) {
+                       // When the skip drop caches feature is enabled, Trim
+                       // should report success even though DropCaches() was not
+                       // called.
+                       EXPECT_TRUE(result);
+                     }),
+                     ArcVmReclaimType::kReclaimGuestPageCaches, 0));
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(DELAYED_TIME_DELTA);
+
+  // The skip drop caches feature is disabled, so DropCaches() should have been
+  // called.
+  ASSERT_EQ(GetDropCachesCount(), 1);
+}
+
+TEST_F(ArcVmWorkingSetTrimExecutorTest, TestSkipDropCachesFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(arc::kSkipDropCaches);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ArcVmWorkingSetTrimExecutor::Trim, testing_profile(),
+                     base::BindOnce([](bool result, const std::string& msg) {
+                       // When the skip drop caches feature is enabled, Trim
+                       // should report success even though DropCaches() was not
+                       // called.
+                       EXPECT_TRUE(result);
+                     }),
+                     ArcVmReclaimType::kReclaimGuestPageCaches, 0));
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(DELAYED_TIME_DELTA);
+
+  // Even though Trim() was called, when the skip drop caches feature is
+  // enabled, DropCaches() should not be called.
+  ASSERT_EQ(GetDropCachesCount(), 0);
 }
 
 }  // namespace arc

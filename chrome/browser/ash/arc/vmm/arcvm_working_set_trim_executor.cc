@@ -64,6 +64,16 @@ void ArcVmWorkingSetTrimExecutor::Trim(content::BrowserContext* context,
     return;
   }
 
+  if (base::FeatureList::IsEnabled(arc::kSkipDropCaches)) {
+    // If the feature to skip dropping caches is enabled, continue without
+    // dropping them.
+    VLOG(1) << "ARC skip drop caches feature enabled. Proceeding without "
+               "forced cache drop.";
+    OnDropArcVmCaches(context, std::move(callback), reclaim_type, page_limit,
+                      /*result=*/true);
+    return;
+  }
+
   bridge->DropCaches(
       base::BindOnce(&ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches, context,
                      std::move(callback), reclaim_type, page_limit));
