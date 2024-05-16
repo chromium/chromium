@@ -81,7 +81,11 @@ String InlineItemResult::ToString(const String& ifc_text_content,
         ifc_text_content.Substring(TextOffset().start, TextOffset().Length())
             .EncodeForDebugging());
   } else if (IsRubyColumn()) {
-    builder.Append(item->GetLayoutObject()->ToString());
+    if (item->GetLayoutObject()) {
+      builder.Append(item->GetLayoutObject()->ToString());
+    } else {
+      builder.Append("(anonymous)");
+    }
     builder.Append(", base_line: [\n");
     String child_indent = indent + "\t";
     for (const auto& r : ruby_column->base_line.Results()) {
