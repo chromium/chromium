@@ -266,9 +266,12 @@ const CGFloat kIPHVerticalOffset = -5;
 // Starts the password coordinator and displays its view controller.
 - (void)startPasswordsFromButton:(UIButton*)button
         invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  DCHECK(webStateList->GetActiveWebState());
-  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+
+  const GURL& URL = activeWebState->GetLastCommittedURL();
   autofill::FormActivityParams lastSeenParams =
       self.formInputAccessoryMediator.lastSeenParams;
 
@@ -493,11 +496,14 @@ const CGFloat kIPHVerticalOffset = -5;
                                              requiresHTTPS:NO]) {
     return;
   }
-  web::WebState* active_web_state =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  DCHECK(active_web_state);
+
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+
   id<PasswordGenerationProvider> generationProvider =
-      PasswordTabHelper::FromWebState(active_web_state)
+      PasswordTabHelper::FromWebState(activeWebState)
           ->GetPasswordGenerationProvider();
   [generationProvider triggerPasswordGeneration];
 }
@@ -592,6 +598,20 @@ const CGFloat kIPHVerticalOffset = -5;
 
 #pragma mark - Private
 
+// Returns the active web state. May return nil.
+- (web::WebState*)activeWebState {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    // TODO: b/40940511 - The web state should not be nil, but we have seen
+    // cases of it being nil in the wild, so, for now, we handle the nil case
+    // gracefully, but still dump the information we need to find the root
+    // cause. This can be removed once the root cause has been fixed.
+    base::debug::DumpWithoutCrashing();
+  }
+  return webState;
+}
+
 - (void)stopManualFillAllPasswordCoordinator {
   [self.allPasswordCoordinator stop];
   self.allPasswordCoordinator.manualFillAllPasswordCoordinatorDelegate = nil;
@@ -620,8 +640,12 @@ const CGFloat kIPHVerticalOffset = -5;
 
 // Shows confirmation dialog before opening Other passwords.
 - (void)showConfirmationDialogToUseOtherPassword {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+
+  const GURL& URL = activeWebState->GetLastCommittedURL();
   std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(URL)));
 
