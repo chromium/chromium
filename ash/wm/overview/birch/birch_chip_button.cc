@@ -57,8 +57,6 @@ constexpr int kWeatherImageSize = 32;
 // The colors of icons.
 constexpr ui::ColorId kIconBackgroundColorId =
     cros_tokens::kCrosSysSystemOnBase;
-constexpr ui::ColorId kWeatherImageBackgroundColorId =
-    cros_tokens::kCrosSysOnSurface;
 
 // The colors and fonts of title and subtitle.
 constexpr int kTitleSpacing = 2;
@@ -70,7 +68,7 @@ constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
 void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
   int icon_size;
   int rounded_corners;
-  ui::ColorId background_color_id;
+  std::optional<ui::ColorId> background_color_id;
 
   switch (type) {
     case BirchItemType::kCalendar:
@@ -80,8 +78,6 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
       break;
     case BirchItemType::kWeather:
       icon_size = kWeatherImageSize;
-      rounded_corners = 0;
-      background_color_id = kWeatherImageBackgroundColorId;
       break;
     case BirchItemType::kReleaseNotes:
       icon_size = kIllustrationSize;
@@ -98,12 +94,10 @@ void StylizeIconForItemType(views::ImageView* icon, BirchItemType type) {
   icon->SetImageSize(gfx::Size(icon_size, icon_size));
   icon->SetBorder(
       views::CreateEmptyBorder(gfx::Insets((kIconViewSize - icon_size) / 2)));
-  if (rounded_corners) {
+
+  if (background_color_id) {
     icon->SetBackground(views::CreateThemedRoundedRectBackground(
-        background_color_id, rounded_corners));
-  } else {
-    icon->SetBackground(
-        views::CreateThemedSolidBackground(background_color_id));
+        background_color_id.value(), rounded_corners));
   }
 }
 
