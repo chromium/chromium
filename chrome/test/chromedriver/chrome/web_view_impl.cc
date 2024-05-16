@@ -373,10 +373,11 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateTopLevelWebView(
     const BrowserInfo* browser_info,
     std::unique_ptr<DevToolsClient> client,
     std::optional<MobileDevice> mobile_device,
-    std::string page_load_strategy) {
+    std::string page_load_strategy,
+    bool autoaccept_beforeunload) {
   return std::make_unique<WebViewImpl>(
       id, w3c_compliant, nullptr, browser_info, std::move(client),
-      std::move(mobile_device), page_load_strategy);
+      std::move(mobile_device), page_load_strategy, autoaccept_beforeunload);
 }
 
 WebViewImpl::WebViewImpl(const std::string& id,
@@ -407,7 +408,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
                          const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
                          std::optional<MobileDevice> mobile_device,
-                         std::string page_load_strategy)
+                         std::string page_load_strategy,
+                         bool autoaccept_beforeunload)
     : id_(id),
       w3c_compliant_(w3c_compliant),
       browser_info_(browser_info),
@@ -416,7 +418,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
       parent_(parent),
       client_(std::move(client)),
       frame_tracker_(new FrameTracker(client_.get(), this)),
-      dialog_manager_(new JavaScriptDialogManager(client_.get())),
+      dialog_manager_(
+          new JavaScriptDialogManager(client_.get(), autoaccept_beforeunload)),
       mobile_emulation_override_manager_(
           new MobileEmulationOverrideManager(client_.get(),
                                              std::move(mobile_device),
@@ -426,7 +429,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
       network_conditions_override_manager_(
           new NetworkConditionsOverrideManager(client_.get())),
       heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())),
-      is_service_worker_(false) {
+      is_service_worker_(false),
+      autoaccept_beforeunload_(autoaccept_beforeunload) {
   // Downloading in headless mode requires the setting of
   // Browser.setDownloadBehavior. This is handled by the
   // DownloadDirectoryOverrideManager, which is only instantiated
@@ -481,7 +485,7 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateChild(
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
   std::unique_ptr<WebViewImpl> child = std::make_unique<WebViewImpl>(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      std::nullopt, "");
+      std::nullopt, "", autoaccept_beforeunload_);
   const WebViewImpl* root_view = this;
   while (root_view->parent_ != nullptr) {
     root_view = root_view->parent_;
@@ -1380,7 +1384,8 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   Status status{kOk};
   while (keep_waiting) {
     status = client_->HandleEventsUntil(not_pending_navigation, timeout);
-    keep_waiting = status.code() == kNoSuchExecutionContext;
+    keep_waiting = status.code() == kNoSuchExecutionContext ||
+                   status.code() == kNavigationDetectedByRemoteEnd;
   }
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
@@ -1396,7 +1401,8 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
       new_status = client_->HandleEventsUntil(
           not_pending_navigation,
           Timeout(base::Seconds(kWaitForNavigationStopSeconds)));
-      keep_waiting = new_status.code() == kNoSuchExecutionContext;
+      keep_waiting = status.code() == kNoSuchExecutionContext ||
+                     status.code() == kNavigationDetectedByRemoteEnd;
     }
     navigation_tracker_->set_timed_out(false);
     if (new_status.IsError())
@@ -1733,63 +1739,37 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   async_args.Append(args.Clone());
   /*is_user_supplied=*/
   async_args.Append(true);
+  /*timeout=*/
+  async_args.Append(timeout.InMicrosecondsF());
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);
+  std::unique_ptr<base::Value> query_value;
   Status status = CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript,
-                                          async_args, timeout, &tmp);
-  if (status.IsError())
+                                          async_args, timeout, &query_value);
+  if (status.IsError()) {
     return status;
-
-  const char kDocUnloadError[] = "document unloaded while waiting for result";
-  std::string kQueryResult = base::StringPrintf(
-      "function() {"
-      "  var info = document.$chrome_asyncScriptInfo;"
-      "  if (!info)"
-      "    return {status: %d, value: '%s'};"
-      "  var result = info.result;"
-      "  if (!result)"
-      "    return {status: 0};"
-      "  delete info.result;"
-      "  return result;"
-      "}",
-      kJavaScriptError,
-      kDocUnloadError);
-  const base::TimeDelta kOneHundredMs = base::Milliseconds(100);
-
-  while (true) {
-    base::Value::List no_args;
-    std::unique_ptr<base::Value> query_value;
-    status = CallFunction(frame, kQueryResult, no_args, &query_value);
-    if (status.IsError()) {
-      if (status.code() == kNoSuchFrame)
-        return Status(kJavaScriptError, kDocUnloadError);
-      return status;
-    }
-
-    base::Value::Dict* result_info = query_value->GetIfDict();
-    if (!result_info)
-      return Status(kUnknownError, "async result info is not a dictionary");
-    std::optional<int> status_code = result_info->FindInt("status");
-    if (!status_code)
-      return Status(kUnknownError, "async result info has no int 'status'");
-    if (*status_code != kOk) {
-      const std::string* message = result_info->FindString("value");
-      return Status(static_cast<StatusCode>(*status_code),
-                    message ? *message : "");
-    }
-
-    if (base::Value* value = result_info->Find("value")) {
-      *result = base::Value::ToUniquePtrValue(value->Clone());
-      return Status(kOk);
-    }
-
-    // Since async-scripts return immediately, need to time period here instead.
-    if (local_timeout.IsExpired())
-      return Status(kTimeout);
-
-    base::PlatformThread::Sleep(
-        std::min(kOneHundredMs, local_timeout.GetRemainingTime()));
   }
+
+  base::Value::Dict* result_info = query_value->GetIfDict();
+  if (!result_info) {
+    return Status(kUnknownError, "async result info is not a dictionary");
+  }
+  std::optional<int> status_code = result_info->FindInt("status");
+  if (!status_code) {
+    return Status(kUnknownError, "async result info has no int 'status'");
+  }
+  if (*status_code != kOk) {
+    const std::string* message = result_info->FindString("value");
+    return Status(static_cast<StatusCode>(*status_code),
+                  message ? *message : "");
+  }
+  base::Value* value = result_info->Find("value");
+  if (!value) {
+    return Status{kJavaScriptError,
+                  "no value field in Reuntime.callFunctionOn result"};
+  }
+  *result = base::Value::ToUniquePtrValue(value->Clone());
+  return Status(kOk);
 }
 
 void WebViewImpl::SetFrame(const std::string& new_frame_id) {

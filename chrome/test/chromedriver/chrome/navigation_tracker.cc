@@ -6,6 +6,9 @@
 
 #include <unordered_map>
 
+#include "base/debug/stack_trace.h"
+#include "base/logging.h"
+#include "base/sequence_checker_impl.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -22,6 +25,7 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
   // Report specific errors to callers for proper handling
   if (command_status.code() == kUnexpectedAlertOpen ||
       command_status.code() == kTimeout ||
+      command_status.code() == kNavigationDetectedByRemoteEnd ||
       command_status.code() == kNoSuchExecutionContext) {
     return command_status;
   }

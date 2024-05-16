@@ -23,6 +23,7 @@
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
+#include "chrome/test/chromedriver/net/stub_sync_websocket.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -440,6 +441,9 @@ class MockSyncWebSocket : public SyncWebSocket {
   SyncWebSocket::StatusCode ReceiveNextMessage(
       std::string* message,
       const Timeout& timeout) override {
+    if (timeout.IsExpired()) {
+      return SyncWebSocket::StatusCode::kTimeout;
+    }
     if (next_status_ == SyncWebSocket::StatusCode::kOk && !messages_.empty()) {
       *message = messages_.front();
       messages_.pop();
@@ -467,7 +471,7 @@ TEST(CreateChild, MultiLevel) {
   BrowserInfo browser_info;
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
                      std::move(client_uptr), std::nullopt,
-                     PageLoadStrategy::kEager);
+                     PageLoadStrategy::kEager, true);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
   std::string sessionid = "2";
@@ -493,7 +497,7 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
-                          PageLoadStrategy::kEager);
+                          PageLoadStrategy::kEager, true);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
   ASSERT_FALSE(parent_view.IsNonBlocking());
@@ -515,7 +519,7 @@ TEST(CreateChild, Load_NoErrors) {
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
-                          PageLoadStrategy::kNone);
+                          PageLoadStrategy::kNone, true);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
   std::string sessionid = "2";
@@ -535,7 +539,7 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
-                          PageLoadStrategy::kNone);
+                          PageLoadStrategy::kNone, true);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
   std::string sessionid = "2";
@@ -558,7 +562,7 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   BrowserInfo browser_info;
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), std::nullopt,
-                          PageLoadStrategy::kNormal);
+                          PageLoadStrategy::kNormal, true);
   EXPECT_TRUE(socket_holder.ConnectSocket());
   EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
   std::string sessionid = "2";
@@ -578,7 +582,7 @@ TEST(ManageCookies, AddCookie_SameSiteTrue) {
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
-                   PageLoadStrategy::kEager);
+                   PageLoadStrategy::kEager, true);
   std::string samesite = "Strict";
   base::Value::Dict dict;
   dict.Set("success", true);
@@ -595,7 +599,7 @@ TEST(GetBackendNodeId, ElementW3C) {
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
-                   PageLoadStrategy::kEager);
+                   PageLoadStrategy::kEager, true);
   {
     // Good 1
     base::Value::Dict node_ref;
@@ -647,7 +651,7 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
-                   PageLoadStrategy::kEager);
+                   PageLoadStrategy::kEager, true);
   {
     // Good 1
     base::Value::Dict node_ref;
@@ -696,7 +700,7 @@ TEST(GetBackendNodeId, NonW3C) {
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), false, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
-                   PageLoadStrategy::kEager);
+                   PageLoadStrategy::kEager, true);
   {
     base::Value::Dict node_ref;
     node_ref.Set(kElementKey, ElementReference("root", "root_loader", 25));
@@ -723,7 +727,7 @@ TEST(CallUserSyncScript, ElementIdAsResultRootFrame) {
       std::make_unique<FakeDevToolsClient>("root");
   client_uptr->SetResult(GenerateResponse(4321));
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
@@ -761,7 +765,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrame) {
       std::make_unique<FakeDevToolsClient>("good");
   client_uptr->SetResult(GenerateResponse(4321));
   WebViewImpl view("good", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
@@ -799,7 +803,7 @@ TEST(CallUserSyncScript, ElementIdAsResultChildFrameErrors) {
       std::make_unique<FakeDevToolsClient>("root");
   FakeDevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   view.GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -891,7 +895,7 @@ TEST(GetFedCmTracker, OK) {
   BrowserInfo browser_info;
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
-                   PageLoadStrategy::kEager);
+                   PageLoadStrategy::kEager, true);
   FedCmTracker* tracker = nullptr;
   Status status = view.GetFedCmTracker(&tracker);
   EXPECT_TRUE(StatusOk(status));
@@ -907,7 +911,7 @@ class CallUserSyncScriptArgs
     client_ptr = client_uptr.get();
     view = std::make_unique<WebViewImpl>(
         "root", IsW3C(), nullptr, &browser_info, std::move(client_uptr),
-        std::nullopt, PageLoadStrategy::kEager);
+        std::nullopt, PageLoadStrategy::kEager, true);
     view->GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
     view->GetFrameTracker()->SetContextIdForFrame("bad", "irrelevant");
@@ -1104,7 +1108,7 @@ TEST(CallUserSyncScript, WeakReference) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1145,7 +1149,7 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1183,7 +1187,7 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
 
   BrowserInfo browser_info;
   WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
-                   std::nullopt, PageLoadStrategy::kEager);
+                   std::nullopt, PageLoadStrategy::kEager, true);
   view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
 
   std::unique_ptr<base::Value> result;
@@ -1192,3 +1196,53 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
                               base::TimeDelta::Max(), &result);
   EXPECT_TRUE(status.IsError());
 }
+
+namespace {
+
+bool ReturnError(int code,
+                 const std::string& message,
+                 int cmd_id,
+                 const base::Value::Dict& params,
+                 base::Value::Dict& response) {
+  response.Set("id", cmd_id);
+  base::Value::Dict error;
+  error.Set("code", code);
+  error.Set("message", message);
+  response.Set("error", std::move(error));
+  return true;
+}
+
+}  // namespace
+
+class WaitForPendingNavigations : public testing::TestWithParam<std::string> {
+ public:
+  const std::string& Message() { return GetParam(); }
+};
+
+TEST_P(WaitForPendingNavigations, NavigationDetection) {
+  SocketHolder<StubSyncWebSocket> socket_holder;
+  std::unique_ptr<DevToolsClientImpl> client_uptr =
+      std::make_unique<DevToolsClientImpl>("", "");
+  DevToolsClientImpl* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kNormal, true);
+  EXPECT_TRUE(socket_holder.ConnectSocket());
+  EXPECT_TRUE(StatusOk(client_ptr->SetSocket(socket_holder.Wrapper())));
+
+  socket_holder.Socket().AddCommandHandler(
+      "Runtime.evaluate", base::BindRepeating(&ReturnError, -32000, Message()));
+  Timeout timeout{base::Milliseconds(100)};
+  Status status = view.WaitForPendingNavigations("", timeout, false);
+  EXPECT_EQ(kTimeout, status.code());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Timeout,
+    WaitForPendingNavigations,
+    ::testing::Values("uniqueContextId not found",
+                      "Cannot find default execution context",
+                      "Cannot find context with specified id",
+                      "Execution context was destroyed.",
+                      "Inspected target navigated or closed"));

@@ -1468,6 +1468,26 @@ TEST(ParseInspectorError, SessionNotFoundError) {
   ASSERT_EQ("no such frame: SOME MESSAGE", status.message());
 }
 
+TEST(ParseInspectorError, ExecutionContextWasDestroyed) {
+  const std::string error(
+      "{\"code\":-32000,\"message\":\"Execution context was destroyed.\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kNavigationDetectedByRemoteEnd, status.code());
+  ASSERT_EQ(
+      "navigation detected by remote end: Execution context was destroyed.",
+      status.message());
+}
+
+TEST(ParseInspectorError, InspectedTargetNavigatedOrClosed) {
+  const std::string error(
+      "{\"code\":-32000,\"message\":\"Inspected target navigated or closed\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kNavigationDetectedByRemoteEnd, status.code());
+  ASSERT_EQ(
+      "navigation detected by remote end: Inspected target navigated or closed",
+      status.message());
+}
+
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
   MockListener listener;
   SocketHolder<MockSyncWebSocket> socket_holder;

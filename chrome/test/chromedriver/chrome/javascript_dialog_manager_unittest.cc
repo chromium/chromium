@@ -17,7 +17,7 @@
 
 TEST(JavaScriptDialogManager, NoDialog) {
   StubDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   std::string message("HI");
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
   ASSERT_FALSE(manager.IsDialogOpen());
@@ -27,7 +27,7 @@ TEST(JavaScriptDialogManager, NoDialog) {
 
 TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
   RecorderDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "prompt");
@@ -45,7 +45,7 @@ TEST(JavaScriptDialogManager, HandleDialogPassesParams) {
 
 TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
   RecorderDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "prompt");
@@ -60,7 +60,7 @@ TEST(JavaScriptDialogManager, HandleDialogNullPrompt) {
 
 TEST(JavaScriptDialogManager, ReconnectClearsStateAndSendsEnable) {
   RecorderDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");
@@ -122,7 +122,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
 TEST(JavaScriptDialogManager, OneDialog) {
   FakeDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");
@@ -150,7 +150,7 @@ TEST(JavaScriptDialogManager, OneDialog) {
 
 TEST(JavaScriptDialogManager, TwoDialogs) {
   FakeDevToolsClient client;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "1");
   params.Set("type", "confirm");
@@ -189,7 +189,7 @@ TEST(JavaScriptDialogManager, TwoDialogs) {
 TEST(JavaScriptDialogManager, OneDialogManualClose) {
   StubDevToolsClient client;
   BrowserInfo browser_info;
-  JavaScriptDialogManager manager(&client);
+  JavaScriptDialogManager manager(&client, true);
   base::Value::Dict params;
   params.Set("message", "hi");
   params.Set("type", "alert");
@@ -212,6 +212,53 @@ TEST(JavaScriptDialogManager, OneDialogManualClose) {
       kOk,
       manager.OnEvent(&client, "Page.javascriptDialogClosed", params).code());
   ASSERT_FALSE(manager.IsDialogOpen());
+  ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
+}
+
+TEST(JavaScriptDialogManager, BeforeunloadIsAutoAccepted) {
+  FakeDevToolsClient client;
+  JavaScriptDialogManager manager(&client, true);
+  base::Value::Dict params;
+  params.Set("message", "hi");
+  params.Set("type", "beforeunload");
+  params.Set("defaultPrompt", "");
+  ASSERT_FALSE(manager.IsDialogOpen());
+  std::string message;
+  ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
+
+  client.set_closing_count(1);
+  ASSERT_EQ(
+      kOk,
+      manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
+
+  ASSERT_FALSE(manager.IsDialogOpen());
+  ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
+  ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
+}
+
+TEST(JavaScriptDialogManager, AlertAndBeforeunloadAreAutoAccepted) {
+  FakeDevToolsClient client;
+  JavaScriptDialogManager manager(&client, true);
+  base::Value::Dict params;
+  params.Set("message", "1");
+  params.Set("type", "alert");
+  params.Set("defaultPrompt", "");
+  ASSERT_EQ(
+      kOk,
+      manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
+  params.Set("message", "2");
+  params.Set("type", "beforeunload");
+  // If a beforeunload dialog is detected all the previous dialogs are
+  // auto-accepted because a navigation has started after after their
+  // appearance.
+  client.set_closing_count(1);
+  ASSERT_EQ(
+      kOk,
+      manager.OnEvent(&client, "Page.javascriptDialogOpening", params).code());
+
+  ASSERT_FALSE(manager.IsDialogOpen());
+  std::string message;
   ASSERT_EQ(kNoSuchAlert, manager.GetDialogMessage(&message).code());
   ASSERT_EQ(kNoSuchAlert, manager.HandleDialog(false, nullptr).code());
 }

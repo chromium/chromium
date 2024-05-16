@@ -183,7 +183,7 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         } else {
           web_views_.push_back(WebViewImpl::CreateTopLevelWebView(
               view.id, w3c_compliant, &browser_info_, std::move(client),
-              mobile_device_, page_load_strategy_));
+              mobile_device_, page_load_strategy_, autoaccept_beforeunload_));
         }
         status = web_views_.back()->AttachTo(devtools_websocket_client_.get());
         if (status.IsError()) {
@@ -689,11 +689,13 @@ ChromeImpl::ChromeImpl(BrowserInfo browser_info,
                        std::vector<std::unique_ptr<DevToolsEventListener>>
                            devtools_event_listeners,
                        std::optional<MobileDevice> mobile_device,
-                       std::string page_load_strategy)
+                       std::string page_load_strategy,
+                       bool autoaccept_beforeunload)
     : mobile_device_(std::move(mobile_device)),
       browser_info_(std::move(browser_info)),
       window_types_(std::move(window_types)),
       devtools_websocket_client_(std::move(websocket_client)),
+      autoaccept_beforeunload_(autoaccept_beforeunload),
       devtools_event_listeners_(std::move(devtools_event_listeners)),
       page_load_strategy_(page_load_strategy) {
   window_types_.insert(WebViewInfo::kPage);

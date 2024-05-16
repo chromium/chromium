@@ -131,8 +131,8 @@ TEST(NavigationTracker, FrameLoadStartStop) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   base::Value::Dict params;
@@ -159,8 +159,8 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   base::Value::Dict params;
@@ -188,8 +188,8 @@ TEST(NavigationTracker, MultipleFramesLoad) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   base::Value::Dict params;
@@ -241,8 +241,8 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view, &dialog_manager);
 
@@ -263,7 +263,7 @@ TEST(NavigationTracker, CurrentFrameLoading) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
@@ -314,7 +314,7 @@ TEST(NavigationTracker, FrameAttachDetach) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
@@ -353,7 +353,7 @@ TEST(NavigationTracker, SetFrameNoFrame) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
@@ -423,8 +423,8 @@ TEST(NavigationTracker, UnknownStateFailsToDetermineState) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   bool is_pending;
@@ -441,8 +441,8 @@ TEST(NavigationTracker, UnknownStatePageNotLoadAtAll) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
@@ -454,7 +454,7 @@ TEST(NavigationTracker, UnknownStateForcesStart) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
@@ -470,8 +470,8 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   base::Value::Dict params;
@@ -487,7 +487,7 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view, &dialog_manager);
@@ -509,7 +509,7 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view, &dialog_manager);
@@ -532,7 +532,7 @@ TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  JavaScriptDialogManager dialog_manager(client_ptr);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view, &dialog_manager);
@@ -573,8 +573,8 @@ TEST(NavigationTracker, TargetClosedInIsPendingNavigation) {
   DevToolsClient* client_ptr = client_uptr.get();
   WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
                        std::move(client_uptr), std::nullopt,
-                       PageLoadStrategy::kNormal);
-  JavaScriptDialogManager dialog_manager(client_ptr);
+                       PageLoadStrategy::kNormal, true);
+  JavaScriptDialogManager dialog_manager(client_ptr, true);
   NavigationTracker tracker(client_ptr, &web_view, &dialog_manager);
 
   bool is_pending;

@@ -47,6 +47,9 @@ const char kUniqueContextIdNotFoundError[] = "uniqueContextId not found";
 const char kNoNodeForBackendNodeIdError[] =
     "No node found for given backend id";
 const char kNoNodeWithGivenIdFoundError[] = "No node with given id found";
+const char kExecutionContextWasDestroyed[] = "Execution context was destroyed.";
+const char kInspectedTargetNavigatedOrClosed[] =
+    "Inspected target navigated or closed";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -1061,7 +1064,8 @@ Status DevToolsClientImpl::ProcessEvent(const InspectorEvent& event) {
     crashed_ = true;
     return Status(kTabCrashed);
   }
-  if (event.method == "Page.javascriptDialogOpening") {
+  if ((owner_ && owner_->GetJavaScriptDialogManager()->IsDialogOpen()) ||
+      (!owner_ && event.method == "Page.javascriptDialogOpening")) {
     // A command may have opened the dialog, which will block the response.
     // To find out which one (if any), do a round trip with a simple command
     // to the renderer and afterwards see if any of the commands still haven't
@@ -1388,6 +1392,11 @@ Status ParseInspectorError(const std::string& error_json) {
       // The error message that arises during DOM.resolveNode code.
       // This means that the node with given BackendNodeId is not found.
       return Status{kNoSuchElement, error_message};
+    } else if (error_message == kExecutionContextWasDestroyed ||
+               error_message == kInspectedTargetNavigatedOrClosed) {
+      // The error messages that arise if navigation was started by the
+      // asynchronous script before the script execution was finished..
+      return Status{kNavigationDetectedByRemoteEnd, error_message};
     }
     std::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {

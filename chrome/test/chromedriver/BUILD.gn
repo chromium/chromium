@@ -562,6 +562,8 @@ test("chromedriver_unittests") {
     "net/adb_client_socket_unittest.cc",
     "net/net_util_unittest.cc",
     "net/pipe_builder_unittest.cc",
+    "net/stub_sync_websocket.cc",
+    "net/stub_sync_websocket.h",
     "net/sync_websocket_impl_unittest.cc",
     "net/test_http_server.cc",
     "net/test_http_server.h",
