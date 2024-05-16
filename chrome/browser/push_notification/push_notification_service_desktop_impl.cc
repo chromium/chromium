@@ -68,7 +68,19 @@ void PushNotificationServiceDesktopImpl::OnStoreReset() {
 void PushNotificationServiceDesktopImpl::OnMessage(
     const std::string& app_id,
     const gcm::IncomingMessage& message) {
-  // TODO(b/321305014): Handle message here.
+  PushNotificationClientManager::PushNotificationMessage
+      push_notification_message;
+  push_notification_message.sender_id = message.sender_id;
+  push_notification_message.message_id = message.message_id;
+  push_notification_message.collapse_key = message.collapse_key;
+  push_notification_message.raw_data = message.raw_data;
+
+  for (const auto& data : message.data) {
+    push_notification_message.data.insert_or_assign(data.first, data.second);
+  }
+
+  client_manager_->NotifyPushNotificationClientOfMessage(
+      push_notification_message);
 }
 
 void PushNotificationServiceDesktopImpl::OnMessagesDeleted(

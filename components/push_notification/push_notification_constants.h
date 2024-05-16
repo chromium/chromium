@@ -9,6 +9,7 @@ namespace push_notification {
 
 const char kNotificationTypeIdKey[] = "type_id";
 const char kNotificationClientIdKey[] = "client_id";
+const char kNotificationPayloadKey[] = "payload";
 
 }  // namespace push_notification
 

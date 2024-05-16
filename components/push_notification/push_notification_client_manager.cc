@@ -81,6 +81,8 @@ PushNotificationClientManager::PushNotificationMessage::
     PushNotificationMessage() = default;
 PushNotificationClientManager::PushNotificationMessage::PushNotificationMessage(
     PushNotificationMessage&& other) = default;
+PushNotificationClientManager::PushNotificationMessage::PushNotificationMessage(
+    const PushNotificationMessage& other) = default;
 PushNotificationClientManager::PushNotificationMessage&
 PushNotificationClientManager::PushNotificationMessage::operator=(
     PushNotificationMessage&& other) = default;

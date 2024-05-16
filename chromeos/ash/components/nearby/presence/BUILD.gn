@@ -93,7 +93,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
-    "//components/push_notification:unit_tests",
+    "//components/push_notification:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//mojo/public/cpp/bindings:bindings",

@@ -14,16 +14,19 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/push_notification/fake_push_notification_client.h"
+#include "components/push_notification/push_notification_constants.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 const char kPushNotificationAppId[] = "com.google.chrome.push_notification";
 const char kSenderIdFCMToken[] = "sharing_fcm_token";
 const char kSharingSenderID[] = "745476177629";
-
-namespace {
+const char kTestMessage[] = "This is a test message";
 
 class FakeInstanceID : public instance_id::InstanceID {
  public:
@@ -225,6 +228,37 @@ TEST_F(PushNotificationServiceDesktopImplTest,
       ->InvokeRegisterWithPushNotificationServiceErrorCallback(
           PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
               kAuthenticationError);
+}
+
+TEST_F(PushNotificationServiceDesktopImplTest, OnMessageRecieved) {
+  push_notification_service_ =
+      std::make_unique<PushNotificationServiceDesktopImpl>(
+          pref_service_.get(), &fake_instance_id_driver_,
+          identity_test_env_->identity_manager(),
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_));
+
+  // No need to do a Wait() here because we aren't performing any
+  // actions that require initialization to be complete.
+
+  auto* client_manager =
+      push_notification_service_->GetPushNotificationClientManager();
+  auto fake_push_notification_client =
+      std::make_unique<FakePushNotificationClient>(
+          push_notification::ClientId::kNearbyPresence);
+  client_manager->AddPushNotificationClient(
+      fake_push_notification_client.get());
+  gcm::IncomingMessage message;
+  message.data.insert_or_assign(kNotificationTypeIdKey,
+                                push_notification::kNearbyPresenceClientId);
+  message.data.insert_or_assign(kNotificationPayloadKey, kTestMessage);
+
+  push_notification_service_->OnMessage(kPushNotificationAppId,
+                                        std::move(message));
+  EXPECT_EQ(
+      kTestMessage,
+      fake_push_notification_client->GetMostRecentMessageDataRecieved().at(
+          kNotificationPayloadKey));
 }
 
 }  // namespace push_notification

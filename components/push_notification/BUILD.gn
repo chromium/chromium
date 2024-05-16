@@ -16,13 +16,23 @@ source_set("push_notification") {
   deps = [ "//base" ]
 }
 
-source_set("unit_tests") {
+source_set("test_support") {
   testonly = true
   sources = [
+    "fake_push_notification_client.cc",
+    "fake_push_notification_client.h",
     "fake_push_notification_service.cc",
     "fake_push_notification_service.h",
-    "push_notification_client_manager_unittest.cc",
   ]
+  deps = [
+    ":push_notification",
+    "//base/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "push_notification_client_manager_unittest.cc" ]
   deps = [
     ":push_notification",
     "//base/test:test_support",
