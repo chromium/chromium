@@ -3525,25 +3525,6 @@
             ]
         }
     ],
-    "ChromeDesktopFishfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Fishfood",
-                    "enable_features": [
-                        "LensOverlay"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeHomeFrequency": [
         {
             "platforms": [
@@ -4080,6 +4061,29 @@
                     },
                     "enable_features": [
                         "ChromeWideEchoCancellation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "Chromnient": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "endpoint-url": "https://lensfrontend-pa.googleapis.com/v1/crupload",
+                        "use-oauth-for-requests": "true"
+                    },
+                    "enable_features": [
+                        "LensOverlay"
                     ]
                 }
             ]
