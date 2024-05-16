@@ -200,6 +200,10 @@ template("single_gcc_toolchain") {
       compiler_prefix = "${rbe_bin_dir}/rewrapper -cfg=${toolchain_rbe_cc_cfg_file}${rbe_bug_326584510_missing_inputs} -exec_root=${rbe_exec_root} "
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
+
+      # Prevent warning about unused variable since it is not read in the code
+      # paths when reclient is not needed.
+      not_needed(invoker, [ "needs_rewrapper_path_arg" ])
     }
 
     if (toolchain_uses_remoteexec_links) {
