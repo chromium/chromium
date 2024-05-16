@@ -116,6 +116,9 @@ std::string MediumSelectionToString(
   if (mediums.wifi_lan) {
     ss << "wifilan ";
   }
+  if (mediums.wifi_direct) {
+    ss << "wifidirect ";
+  }
   ss << "}";
 
   return ss.str();
@@ -167,7 +170,9 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
       /*wifi_lan=*/
       ShouldEnableWifiLan(data_usage,
                           NearbyConnectionsManager::PowerLevel::kHighPower) &&
-          kIsWifiLanAdvertisingSupported);
+          kIsWifiLanAdvertisingSupported,
+      /*wifi_direct=*/
+      base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "is_high_power=" << (is_high_power ? "yes" : "no")
       << "use_ble=" << (use_ble ? "yes" : "no") << ", data_usage=" << data_usage
@@ -246,9 +251,10 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
       ShouldEnableWebRtc(data_usage,
                          NearbyConnectionsManager::PowerLevel::kHighPower),
       /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage,
-                          NearbyConnectionsManager::PowerLevel::kHighPower) &&
-          kIsWifiLanDiscoverySupported);
+      ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
+          kIsWifiLanDiscoverySupported,
+      /*wifi_direct=*/
+      base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
@@ -304,12 +310,10 @@ void NearbyConnectionsManagerImpl::Connect(
 
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
-      /*ble=*/false,
-      ShouldEnableWebRtc(data_usage,
-                         NearbyConnectionsManager::PowerLevel::kHighPower),
-      /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage,
-                          NearbyConnectionsManager::PowerLevel::kHighPower));
+      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower),
+      /*wifi_direct=*/
+      base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
@@ -580,9 +584,11 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
     return;
   }
 
-  // The only bandwidth upgrade mediums at this point are WebRTC and WifiLan.
+  // The only bandwidth upgrade mediums at this point are WebRTC, WifiLan, and
+  // WifiDirect.
   if (!base::FeatureList::IsEnabled(features::kNearbySharingWebRtc) &&
-      !base::FeatureList::IsEnabled(features::kNearbySharingWifiLan)) {
+      !base::FeatureList::IsEnabled(features::kNearbySharingWifiLan) &&
+      !base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect)) {
     return;
   }
 
@@ -618,12 +624,10 @@ void NearbyConnectionsManagerImpl::ConnectV3(
   // TODO(b/287340241): Enable BLE connections as an allowed medium.
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/true,
-      /*ble=*/false,
-      ShouldEnableWebRtc(data_usage,
-                         NearbyConnectionsManager::PowerLevel::kHighPower),
-      /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage,
-                          NearbyConnectionsManager::PowerLevel::kHighPower));
+      /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower),
+      /*wifi_direct=*/
+      base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);

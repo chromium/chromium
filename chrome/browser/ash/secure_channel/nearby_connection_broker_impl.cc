@@ -329,7 +329,8 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
       ConnectionOptions::New(MediumSelection::New(/*bluetooth=*/true,
                                                   /*ble=*/false,
                                                   /*webrtc=*/true,
-                                                  /*wifi_lan=*/false),
+                                                  /*wifi_lan=*/false,
+                                                  /*wifi_direct=*/false),
                              /*remote_bluetooth_mac_address=*/std::nullopt,
                              features::IsNearbyKeepAliveFixEnabled()
                                  ? std::make_optional(kKeepAliveInterval)

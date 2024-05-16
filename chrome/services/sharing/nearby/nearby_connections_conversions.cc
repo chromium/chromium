@@ -136,6 +136,7 @@ BooleanMediumSelector MediumSelectorFromMojom(
       .ble = allowed_mediums->ble,
       .web_rtc = allowed_mediums->web_rtc,
       .wifi_lan = allowed_mediums->wifi_lan,
+      .wifi_direct = allowed_mediums->wifi_direct,
   };
 }
 

@@ -75,7 +75,8 @@ mojom::AdvertisingOptionsPtr CreateAdvertisingOptions() {
   auto allowed_mediums = mojom::MediumSelection::New(/* bluetooth= */ true,
                                                      /* ble= */ use_ble,
                                                      /* web_rtc= */ false,
-                                                     /* wifi_lan= */ true);
+                                                     /* wifi_lan= */ true,
+                                                     /* wifi_direct= */ true);
   return mojom::AdvertisingOptions::New(
       mojom::Strategy::kP2pPointToPoint, std::move(allowed_mediums),
       /* auto_upgrade_bandwidth= */ true,
@@ -93,7 +94,8 @@ mojom::ConnectionOptionsPtr CreateConnectionOptions(
   auto allowed_mediums = mojom::MediumSelection::New(/* bluetooth= */ true,
                                                      /* ble= */ false,
                                                      /* web_rtc= */ false,
-                                                     /* wifi_lan= */ true);
+                                                     /* wifi_lan= */ true,
+                                                     /* wifi_direct= */ true);
   return mojom::ConnectionOptions::New(std::move(allowed_mediums),
                                        std::move(bluetooth_mac_address),
                                        keep_alive_interval, keep_alive_timeout);
@@ -434,7 +436,8 @@ class NearbyConnectionsTest : public testing::Test {
             mojom::MediumSelection::New(/* bluetooth= */ true,
                                         /* ble= */ false,
                                         /* web_rtc= */ false,
-                                        /* wifi_lan= */ true),
+                                        /* wifi_lan= */ true,
+                                        /* wifi_direct= */ true),
             device::BluetoothUUID(kFastAdvertisementServiceUuid),
             is_out_of_band_connection),
         fake_discovery_listener.receiver.BindNewPipeAndPassRemote(),
