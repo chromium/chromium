@@ -87,8 +87,10 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   bool res =
       CreateOrUpdateShortcutLink(shortcut_path, target_and_args_properties,
                                  base::win::ShortcutOperation::kCreateAlways);
-  std::move(complete).Run(res ? ShortcutCreatorResult::kSuccess
-                              : ShortcutCreatorResult::kError);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(complete), res ? ShortcutCreatorResult::kSuccess
+                                              : ShortcutCreatorResult::kError));
 }
 
 scoped_refptr<base::SequencedTaskRunner> GetShortcutsTaskRunner() {

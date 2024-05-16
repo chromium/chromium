@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
@@ -68,6 +69,7 @@ class ShortcutCreatorWinTest : public testing::Test {
   base::ScopedTempDir default_profile_path_;
   base::ScopedPathOverride desktop_override_{base::DIR_USER_DESKTOP};
   base::win::ScopedCOMInitializer com_initializer_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 void ShortcutCreatorWinTest::VerifyShortcut() const {
