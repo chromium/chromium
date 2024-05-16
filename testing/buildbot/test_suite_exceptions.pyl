@@ -4451,6 +4451,9 @@
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
 
+      # TODO(b/336609443): Restore when 1588* LKGM lands.
+      'chromeos-betty-pi-arc-chrome',
+
       'Win10 Tests x64',
       'Win11 Tests x64',
       'win10-rel-no-external-ip',
