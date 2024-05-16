@@ -84,7 +84,6 @@ component("views") {
     "accessibility/ax_virtual_view.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
-    "accessibility/views_ax_tree_manager.h",
     "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "actions/action_view_controller.h",
@@ -822,10 +821,7 @@ component("views") {
       "windows_stationarity_monitor_aura.cc",
     ]
     if (!is_chromeos_ash) {
-      sources += [
-        "accessibility/views_ax_tree_manager.cc",
-        "accessibility/widget_ax_tree_id_map.cc",
-      ]
+      sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
     }
     if (is_chromeos_lacros) {
       public += [ "corewm/tooltip_lacros.h" ]
@@ -1438,10 +1434,6 @@ test("views_unittests") {
       "accessibility/ax_virtual_view_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
     ]
-
-    if (use_aura) {
-      sources += [ "accessibility/views_ax_tree_manager_unittest.cc" ]
-    }
   }
 
   if (skia_support_skottie) {

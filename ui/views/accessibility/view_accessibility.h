@@ -32,7 +32,6 @@ namespace views {
 
 class AtomicViewAXTreeManager;
 class View;
-class ViewsAXTreeManager;
 class Widget;
 
 // An object that manages the accessibility interface for a View.
@@ -344,7 +343,6 @@ class VIEWS_EXPORT ViewAccessibility {
 
   View* view() const { return view_; }
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }
-  ViewsAXTreeManager* AXTreeManager() const;
 
   virtual AtomicViewAXTreeManager* GetAtomicViewAXTreeManagerForTesting() const;
 
@@ -485,12 +483,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // Prevents accessibility events from being fired during initialization of
   // the owning View.
   bool pause_accessibility_events_ = false;
-
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Each instance of ViewAccessibility that's associated with a root View
-  // owns an ViewsAXTreeManager. For other Views, this should be nullptr.
-  std::unique_ptr<views::ViewsAXTreeManager> ax_tree_manager_;
-#endif
 
   bool ignore_missing_widget_for_testing_ = false;
 };

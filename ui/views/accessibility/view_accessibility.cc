@@ -20,7 +20,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
-#include "ui/views/accessibility/views_ax_tree_manager.h"
+#include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/widget_ax_tree_id_map.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
@@ -61,20 +61,7 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
 #endif
 
 ViewAccessibility::ViewAccessibility(View* view)
-    : view_(view), focused_virtual_child_(nullptr) {
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (features::IsAccessibilityTreeForViewsEnabled()) {
-    Widget* widget = view_->GetWidget();
-    if (widget && widget->is_top_level() &&
-        !WidgetAXTreeIDMap::GetInstance().HasWidget(widget)) {
-      View* root_view = static_cast<View*>(widget->GetRootView());
-      if (root_view && root_view == view) {
-        ax_tree_manager_ = std::make_unique<views::ViewsAXTreeManager>(widget);
-      }
-    }
-  }
-#endif
-}
+    : view_(view), focused_virtual_child_(nullptr) {}
 
 ViewAccessibility::~ViewAccessibility() = default;
 
@@ -790,30 +777,6 @@ void ViewAccessibility::AnnounceText(const std::u16string& text) {
 
 const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
   return unique_id_;
-}
-
-ViewsAXTreeManager* ViewAccessibility::AXTreeManager() const {
-  ViewsAXTreeManager* manager = nullptr;
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  Widget* widget = view_->GetWidget();
-
-  // Don't return managers for closing Widgets.
-  if (!widget || !widget->widget_delegate() || widget->IsClosed())
-    return nullptr;
-
-  manager = ax_tree_manager_.get();
-
-  // ViewsAXTreeManagers are only created for top-level windows (Widgets). For
-  // non top-level Views, look up the Widget's tree ID to retrieve the manager.
-  if (!manager) {
-    ui::AXTreeID tree_id =
-        WidgetAXTreeIDMap::GetInstance().GetWidgetTreeID(widget);
-    DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-    manager = static_cast<views::ViewsAXTreeManager*>(
-        ui::AXTreeManager::FromID(tree_id));
-  }
-#endif
-  return manager;
 }
 
 AtomicViewAXTreeManager*
