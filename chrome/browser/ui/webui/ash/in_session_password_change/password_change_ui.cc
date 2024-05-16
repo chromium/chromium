@@ -157,7 +157,8 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 
   source->AddResourcePaths(
       base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
-  source->SetDefaultResource(IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_HTML);
+  source->SetDefaultResource(
+      IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_APP_HTML);
 
   // The ConfirmPasswordChangeHandler is added by the dialog, so no need to add
   // it here.

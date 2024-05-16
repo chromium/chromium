@@ -50,6 +50,8 @@ preprocess_if_expr("preprocess_src") {
   in_files = [
     "confirm_password_change.html",
     "confirm_password_change.js",
+    "confirm_password_change_app.html",
+    "confirm_password_change_app.js",
     "password_change.js",
     "password_change_app.html",
     "password_change_app.js",
@@ -64,6 +66,7 @@ preprocess_if_expr("preprocess_gen") {
   out_folder = preprocess_folder
   out_manifest = gen_files_manifest
   in_files = [
+    "confirm_password_change.html.js",
     "password_change.html.js",
     "urgent_password_expiry_notification_app.html.js",
   ]
@@ -71,6 +74,7 @@ preprocess_if_expr("preprocess_gen") {
 
 html_to_wrapper("html_wrapper_files") {
   in_files = [
+    "confirm_password_change.html",
     "password_change.html",
     "urgent_password_expiry_notification_app.html",
   ]
