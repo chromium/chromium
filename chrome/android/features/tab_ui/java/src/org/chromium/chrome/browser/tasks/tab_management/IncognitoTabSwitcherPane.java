@@ -50,7 +50,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                                 : "isFocused requires a non-null PaneHubController.";
                         controller.focusPane(PaneId.TAB_SWITCHER);
                     }
-                    resetWithTabList(null, false);
+                    destroyTabSwitcherPaneCoordinator();
                 }
             };
 
@@ -189,6 +189,11 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public int getCurrentTabId() {
         return TabModelUtils.getCurrentTabId(mIncognitoTabModelFilterSupplier.get().getTabModel());
+    }
+
+    @Override
+    public boolean shouldEagerlyCreateCoordinator() {
+        return mReferenceButtonDataSupplier.get() != null;
     }
 
     @Override

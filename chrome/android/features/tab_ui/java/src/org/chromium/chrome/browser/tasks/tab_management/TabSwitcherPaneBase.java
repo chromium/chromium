@@ -180,7 +180,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         if (loadHint == LoadHint.WARM) {
             if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) {
                 mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
-            } else {
+            } else if (shouldEagerlyCreateCoordinator()) {
                 createTabSwitcherPaneCoordinator();
             }
         }
@@ -413,6 +413,9 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
     /** Returns the current selected tab ID. */
     protected abstract int getCurrentTabId();
+
+    /** Returns whether to eagerly create the coordinator in the {@link LoadHint.WARM} state. */
+    protected abstract boolean shouldEagerlyCreateCoordinator();
 
     /** Requests accessibility focus on the currently selected tab in the tab switcher. */
     protected void requestAccessibilityFocusOnCurrentTab() {

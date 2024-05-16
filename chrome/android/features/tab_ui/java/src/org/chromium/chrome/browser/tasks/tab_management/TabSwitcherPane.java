@@ -139,6 +139,11 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public boolean shouldEagerlyCreateCoordinator() {
+        return true;
+    }
+
+    @Override
     public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
         if (coordinator == null) {

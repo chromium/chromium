@@ -297,6 +297,31 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     @Test
     @SmallTest
+    public void testLoadHintColdWarmHotCold() {
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        verify(coordinator).softCleanup();
+        verify(coordinator).hardCleanup();
+    }
+
+    @Test
+    @SmallTest
     public void testLoadHintColdHot_TabStateNotInitialized() {
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         when(mTabModelFilter.isTabModelRestored()).thenReturn(false);
@@ -392,16 +417,15 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     private void checkIncognitoTabModelObserverAndButtonData() {
         mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
-        TabSwitcherPaneCoordinator coordinator =
-                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
         mIncognitoTabSwitcherPane.setPaneHubController(mPaneHubController);
 
         IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
 
         observer.didBecomeEmpty();
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
-        verify(coordinator).resetWithTabList(null);
         verify(mPaneHubController).focusPane(PaneId.TAB_SWITCHER);
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
 
         // TODO(crbug.com/40946413): These resources need to be updated.
         observer.wasFirstTabCreated();
@@ -417,7 +441,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         observer.didBecomeEmpty();
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
-        verify(coordinator, times(2)).resetWithTabList(null);
         verify(mPaneHubController, times(2)).focusPane(PaneId.TAB_SWITCHER);
+        assertNull(mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator());
     }
 }
