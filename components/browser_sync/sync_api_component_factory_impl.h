@@ -101,9 +101,13 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       syncer::DataTypeManagerObserver* observer) override;
   std::unique_ptr<syncer::SyncEngine> CreateSyncEngine(
       const std::string& name,
+      const signin::GaiaIdHash& gaia_id_hash,
       syncer::SyncInvalidationsService* sync_invalidation_service) override;
-  bool HasTransportDataIncludingFirstSync() override;
-  void ClearAllTransportData() override;
+  bool HasTransportDataIncludingFirstSync(
+      const signin::GaiaIdHash& gaia_id_hash) override;
+  void CleanupOnDisableSync() override;
+  void ClearTransportDataForAccount(
+      const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
   // Factory function for ModelTypeControllerDelegate instances for models

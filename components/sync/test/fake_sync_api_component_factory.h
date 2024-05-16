@@ -47,9 +47,13 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
       DataTypeManagerObserver* observer) override;
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
+      const signin::GaiaIdHash& gaia_id_hash,
       syncer::SyncInvalidationsService* sync_invalidations_service) override;
-  bool HasTransportDataIncludingFirstSync() override;
-  void ClearAllTransportData() override;
+  bool HasTransportDataIncludingFirstSync(
+      const signin::GaiaIdHash& gaia_id_hash) override;
+  void CleanupOnDisableSync() override;
+  void ClearTransportDataForAccount(
+      const signin::GaiaIdHash& gaia_id_hash) override;
 
  private:
   base::WeakPtr<DataTypeManagerImpl> last_created_data_type_manager_;

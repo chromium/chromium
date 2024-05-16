@@ -6,10 +6,13 @@
 #define COMPONENTS_SYNC_SERVICE_GLUE_SYNC_TRANSPORT_DATA_PREFS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -27,20 +30,46 @@ class SyncTransportDataPrefs {
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // |pref_service| must not be null and must outlive this object.
-  explicit SyncTransportDataPrefs(PrefService* pref_service);
+  SyncTransportDataPrefs(PrefService* pref_service,
+                         const signin::GaiaIdHash& gaia_id_hash);
   SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;
   SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
   ~SyncTransportDataPrefs();
 
-  // Clears all preferences in this class.
-  void ClearAll();
+  // Clears all legacy (non-account-keyed) preferences in this class.
+  // TODO(crbug.com/337034860): Remove once the account-keyed version of the
+  // transport prefs is rolled out.
+  void ClearAllLegacy();
+  static void ClearAllLegacy(PrefService* pref_service);
 
-  void SetGaiaId(const std::string& gaia_id);
-  std::string GetGaiaId() const;
+  // Clears all account-keyed preferences for the current account (i.e. the one
+  // passed into the constructor).
+  void ClearForCurrentAccount();
+
+  // Clears all account-keyed preferences for all accounts that are NOT in
+  // `available_gaia_ids`.
+  static void KeepAccountSettingsPrefsOnlyForUsers(
+      PrefService* pref_service,
+      const std::vector<signin::GaiaIdHash>& available_gaia_ids);
+
+  // The Gaia ID for which the sync machinery was last active, and for which
+  // there may be data around. Cleared when sync gets disabled (typically on
+  // signout) and data was removed.
+  void SetCurrentSyncingGaiaId(const std::string& gaia_id);
+  std::string GetCurrentSyncingGaiaId() const;
+  void ClearCurrentSyncingGaiaId();
+  static bool HasCurrentSyncingGaiaId(const PrefService* pref_service);
+  static void ClearCurrentSyncingGaiaId(PrefService* pref_service);
+
+  // All of the following prefs are Gaia-keyed (to the `gaia_id_hash`) passed
+  // to the constructor):
+
   void SetCacheGuid(const std::string& cache_guid);
   std::string GetCacheGuid() const;
+
   void SetBirthday(const std::string& birthday);
   std::string GetBirthday() const;
+
   void SetBagOfChips(const std::string& bag_of_chips);
   std::string GetBagOfChips() const;
 
@@ -56,6 +85,8 @@ class SyncTransportDataPrefs {
  private:
   // Never null.
   const raw_ptr<PrefService> pref_service_;
+
+  const signin::GaiaIdHash gaia_id_hash_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

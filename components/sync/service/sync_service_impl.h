@@ -290,6 +290,9 @@ class SyncServiceImpl : public SyncService,
   static ShutdownReason ShutdownReasonForResetEngineReason(
       ResetEngineReason reset_reason);
 
+  static bool ShouldClearTransportDataForAccount(
+      ResetEngineReason reset_reason);
+
   // Records UMA histograms related to download status during browser startup.
   class DownloadStatusRecorder : public SyncServiceObserver {
    public:

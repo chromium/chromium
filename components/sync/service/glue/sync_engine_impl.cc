@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -81,12 +83,18 @@ SyncTransportDataStartupState ValidateSyncTransportData(
     return SyncTransportDataStartupState::kEmptyBirthday;
   }
 
-  // Make sure the cached account information (gaia ID) is equal to the current
+  // Make sure the previously-syncing account (gaia ID) is equal to the current
   // one (otherwise the data may be corrupt). Note that, for local sync, the
   // authenticated account is always empty.
-  if (prefs.GetGaiaId() != core_account_info.gaia) {
-    DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
-    return SyncTransportDataStartupState::kGaiaIdMismatch;
+  if (prefs.GetCurrentSyncingGaiaId() != core_account_info.gaia) {
+    // Note that if kSyncAccountKeyedTransportPrefs is enabled, an empty
+    // last-syncing-GaiaID is fine and expected if the user signed out and back
+    // in again.
+    if (!prefs.GetCurrentSyncingGaiaId().empty() ||
+        !base::FeatureList::IsEnabled(kSyncAccountKeyedTransportPrefs)) {
+      DLOG(WARNING) << "Found mismatching gaia ID in sync preferences";
+      return SyncTransportDataStartupState::kGaiaIdMismatch;
+    }
   }
 
   // All good: local sync data looks initialized and valid.
@@ -131,13 +139,18 @@ void SyncEngineImpl::Initialize(InitParams params) {
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
-    prefs_->ClearAll();
+    prefs_->ClearAllLegacy();
+    prefs_->ClearForCurrentAccount();
+
     prefs_->SetCacheGuid(GenerateCacheGUID());
-    prefs_->SetGaiaId(params.authenticated_account_info.gaia);
+    prefs_->SetCurrentSyncingGaiaId(params.authenticated_account_info.gaia);
   }
 
+  cached_cache_guid_ = prefs_->GetCacheGuid();
+  cached_birthday_ = prefs_->GetBirthday();
+
   // Clear host here to avoid holding a dangling pointer in case the task
-  // outlives the SyncEngineHost. It is safe to clear host here since because
+  // outlives the SyncEngineHost. It is safe to clear host here since
   // SyncEngineBackend doesn't actually need it.
   params.host = nullptr;
   sync_task_runner_->PostTask(
@@ -170,11 +183,17 @@ void SyncEngineImpl::InvalidateCredentials() {
 }
 
 std::string SyncEngineImpl::GetCacheGuid() const {
-  return prefs_->GetCacheGuid();
+  // The cached cache GUID should usually be identical to the one stored in
+  // prefs, but in some cases (when an account got removed from the device) the
+  // one in prefs may have been cleared.
+  return cached_cache_guid_;
 }
 
 std::string SyncEngineImpl::GetBirthday() const {
-  return prefs_->GetBirthday();
+  // The cached birthday should usually be identical to the one stored in
+  // prefs, but in some cases (when an account got removed from the device) the
+  // one in prefs may have been cleared.
+  return cached_birthday_;
 }
 
 base::Time SyncEngineImpl::GetLastSyncedTimeForDebugging() const {
@@ -290,7 +309,8 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
   if (reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-    prefs_->ClearAll();
+    prefs_->ClearAllLegacy();
+    prefs_->ClearCurrentSyncingGaiaId();
   }
 }
 
@@ -399,6 +419,7 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
 
   // Save initialization data to preferences.
   prefs_->SetBirthday(birthday);
+  cached_birthday_ = prefs_->GetBirthday();
   prefs_->SetBagOfChips(bag_of_chips);
 
   // The very first time the backend initializes is effectively the first time

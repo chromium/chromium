@@ -47,6 +47,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
@@ -614,6 +615,7 @@ SyncApiComponentFactoryImpl::CreateDataTypeManager(
 std::unique_ptr<syncer::SyncEngine>
 SyncApiComponentFactoryImpl::CreateSyncEngine(
     const std::string& name,
+    const signin::GaiaIdHash& gaia_id_hash,
     syncer::SyncInvalidationsService* sync_invalidation_service) {
   return std::make_unique<syncer::SyncEngineImpl>(
       name, sync_invalidation_service,
@@ -621,29 +623,29 @@ SyncApiComponentFactoryImpl::CreateSyncEngine(
           sync_client_->GetDeviceInfoSyncService()->GetDeviceInfoTracker(),
           base::DefaultClock::GetInstance()),
       std::make_unique<syncer::SyncTransportDataPrefs>(
-          sync_client_->GetPrefService()),
+          sync_client_->GetPrefService(), gaia_id_hash),
       sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
       engines_and_directory_deletion_thread_);
 }
 
-bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync() {
+bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync(
+    const signin::GaiaIdHash& gaia_id_hash) {
   syncer::SyncTransportDataPrefs sync_transport_data_prefs(
-      sync_client_->GetPrefService());
+      sync_client_->GetPrefService(), gaia_id_hash);
   // NOTE: Keep this logic consistent with how SyncEngineImpl reports
   // is-first-sync.
   return !sync_transport_data_prefs.GetLastSyncedTime().is_null();
 }
 
-void SyncApiComponentFactoryImpl::ClearAllTransportData() {
-  syncer::SyncTransportDataPrefs sync_transport_data_prefs(
-      sync_client_->GetPrefService());
-
+void SyncApiComponentFactoryImpl::CleanupOnDisableSync() {
+  PrefService* pref_service = sync_client_->GetPrefService();
   // Clearing the Directory via DeleteLegacyDirectoryFilesAndNigoriStorage()
   // means there's IO involved which may be considerable overhead if
   // triggered consistently upon browser startup (which is the case for
   // certain codepaths such as the user being signed out). To avoid that, prefs
   // are used to determine whether it's worth it.
-  if (!sync_transport_data_prefs.GetCacheGuid().empty()) {
+  if (syncer::SyncTransportDataPrefs::HasCurrentSyncingGaiaId(pref_service)) {
+    syncer::SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(pref_service);
     engines_and_directory_deletion_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -651,7 +653,14 @@ void SyncApiComponentFactoryImpl::ClearAllTransportData() {
             sync_client_->GetModelTypeStoreService()->GetSyncDataPath()));
   }
 
-  sync_transport_data_prefs.ClearAll();
+  syncer::SyncTransportDataPrefs::ClearAllLegacy(pref_service);
+}
+
+void SyncApiComponentFactoryImpl::ClearTransportDataForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) {
+  syncer::SyncTransportDataPrefs prefs(sync_client_->GetPrefService(),
+                                       gaia_id_hash);
+  prefs.ClearForCurrentAccount();
 }
 
 std::unique_ptr<syncer::ModelTypeControllerDelegate>

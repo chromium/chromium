@@ -28,6 +28,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/account_pref_utils.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 
 namespace syncer {
@@ -453,6 +454,12 @@ void SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(
   KeepAccountKeyedPrefValuesOnlyForUsers(
       pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
       available_gaia_ids);
+
+  // TODO(crbug.com/337034860): This is not the right place for clearing
+  // transport-data-related prefs - ideally there'd be an observer API for
+  // "accounts on this device".
+  SyncTransportDataPrefs::KeepAccountSettingsPrefsOnlyForUsers(
+      pref_service_, available_gaia_ids);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -48,23 +48,28 @@ FakeSyncApiComponentFactory::CreateDataTypeManager(
 
 std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
     const std::string& name,
+    const signin::GaiaIdHash& gaia_id_hash,
     syncer::SyncInvalidationsService* sync_invalidations_service) {
   auto engine = std::make_unique<FakeSyncEngine>(
       allow_fake_engine_init_completion_,
       /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_,
       /*sync_transport_data_cleared_cb=*/
-      base::BindRepeating(&FakeSyncApiComponentFactory::ClearAllTransportData,
+      base::BindRepeating(&FakeSyncApiComponentFactory::CleanupOnDisableSync,
                           weak_factory_.GetWeakPtr()));
   last_created_engine_ = engine->AsWeakPtr();
   return engine;
 }
 
-bool FakeSyncApiComponentFactory::HasTransportDataIncludingFirstSync() {
+bool FakeSyncApiComponentFactory::HasTransportDataIncludingFirstSync(
+    const signin::GaiaIdHash& gaia_id_hash) {
   return is_first_time_sync_configure_done_;
 }
 
-void FakeSyncApiComponentFactory::ClearAllTransportData() {
+void FakeSyncApiComponentFactory::CleanupOnDisableSync() {
   is_first_time_sync_configure_done_ = false;
 }
+
+void FakeSyncApiComponentFactory::ClearTransportDataForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) {}
 
 }  // namespace syncer

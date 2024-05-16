@@ -60,16 +60,14 @@ class SingleClientPollingSyncTestNoIpProt : public SingleClientPollingSyncTest {
 // This test verifies that the poll interval in prefs gets initialized if no
 // data is available yet.
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
-  // Setup clients and verify no poll interval is present yet.
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs());
-  EXPECT_TRUE(transport_data_prefs.GetPollInterval().is_zero());
-  ASSERT_TRUE(transport_data_prefs.GetLastPollTime().is_null());
 
   // Execute a sync cycle and verify the client set up (and persisted) the
   // default value.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   EXPECT_THAT(transport_data_prefs.GetPollInterval(),
               Eq(syncer::kDefaultPollInterval));
 }
@@ -95,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTestNoIpProt,
   ASSERT_TRUE(checker.Wait());
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs());
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   EXPECT_THAT(transport_data_prefs.GetPollInterval().InSeconds(), Eq(67));
 }
 
@@ -117,15 +116,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
                        PRE_ShouldPollWhenIntervalExpiredAcrossRestarts) {
   base::Time start = base::Time::Now();
 
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-
-  syncer::SyncTransportDataPrefs remote_prefs(GetProfile(0)->GetPrefs());
-  // Set small polling interval to make random delays introduced in
-  // SyncSchedulerImpl::ComputeLastPollOnStart() negligible, but big enough to
-  // avoid periodic polls during a test run.
-  remote_prefs.SetPollInterval(base::Seconds(300));
-
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  syncer::SyncTransportDataPrefs remote_prefs(
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
 
   // Trigger a sync-cycle.
   ASSERT_TRUE(CheckInitialState(0));
@@ -150,7 +145,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
-  syncer::SyncTransportDataPrefs remote_prefs(GetProfile(0)->GetPrefs());
+  syncer::SyncTransportDataPrefs remote_prefs(
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   ASSERT_FALSE(remote_prefs.GetLastPollTime().is_null());
 
   // After restart, the last sync cycle snapshot should be empty.

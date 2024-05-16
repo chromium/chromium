@@ -20,6 +20,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +41,9 @@ class SyncPrefsTest : public testing::Test {
  protected:
   SyncPrefsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // TODO(crbug.com/337034860): This is required due to a workaround in
+    // KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
+    SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
     // Pref is registered in signin internal `PrimaryAccountManager`.
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);

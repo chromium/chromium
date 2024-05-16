@@ -35,6 +35,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/test/fake_server.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -150,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/40275935): Deflake and reenable the test.
+// TODO(crbug.com/40280848): Deflake and reenable the test.
 #define MAYBE_ShouldGetTypesWithUnsyncedDataFromSyncService \
   DISABLED_ShouldGetTypesWithUnsyncedDataFromSyncService
 #else
@@ -238,6 +239,107 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
     loop.Run();
   }
 }
+
+class SingleClientReuseCacheGuidSyncTest : public SyncTest {
+ public:
+  SingleClientReuseCacheGuidSyncTest() : SyncTest(SINGLE_CLIENT) {
+    override_features_.InitAndEnableFeature(
+        syncer::kSyncAccountKeyedTransportPrefs);
+  }
+  ~SingleClientReuseCacheGuidSyncTest() override = default;
+  SingleClientReuseCacheGuidSyncTest(
+      const SingleClientReuseCacheGuidSyncTest&) = delete;
+  SingleClientReuseCacheGuidSyncTest& operator=(
+      const SingleClientReuseCacheGuidSyncTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+// ChromeOS-Ash doesn't support primary account signout.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Note: See also SyncErrorTest.ClientDataObsoleteTest, which ensures the cache
+// GUID does *not* get reused if the client's data needs to be reset.
+IN_PROC_BROWSER_TEST_F(SingleClientReuseCacheGuidSyncTest,
+                       ReusesCacheGuidAfterSignoutAndSignin) {
+  ASSERT_TRUE(SetupSync());
+
+  std::string cache_guid;
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    cache_guid = prefs.GetCacheGuid();
+  }
+  ASSERT_FALSE(cache_guid.empty());
+
+  GetClient(0)->SignOutPrimaryAccount();
+  {
+    // At this point there's no GaiaId, and thus no cache GUID either.
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    ASSERT_TRUE(prefs.GetCacheGuid().empty());
+  }
+
+  // When enabling Sync again, the cache GUID should get reused.
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    EXPECT_EQ(prefs.GetCacheGuid(), cache_guid);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientReuseCacheGuidSyncTest,
+                       ReusesCacheGuidOnlyForSameAccount) {
+  ASSERT_TRUE(SetupClients());
+
+  GetClient(0)->SetUsernameForFutureSignins("account1@gmail.com");
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+
+  std::string cache_guid1;
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    cache_guid1 = prefs.GetCacheGuid();
+  }
+  ASSERT_FALSE(cache_guid1.empty());
+
+  // Enable Sync with a different account.
+  GetClient(0)->SignOutPrimaryAccount();
+  GetClient(0)->SetUsernameForFutureSignins("account2@gmail.com");
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+
+  std::string cache_guid2;
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    cache_guid2 = prefs.GetCacheGuid();
+  }
+  ASSERT_FALSE(cache_guid2.empty());
+  // The cache GUID should *not* be reused for the second account.
+  EXPECT_NE(cache_guid1, cache_guid2);
+
+  // Enable Sync with the first account again.
+  GetClient(0)->SignOutPrimaryAccount();
+  GetClient(0)->SetUsernameForFutureSignins("account1@gmail.com");
+  ASSERT_TRUE(GetClient(0)->SetupSync());
+
+  // The first cache GUID should have been reused.
+  {
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
+    EXPECT_EQ(prefs.GetCacheGuid(), cache_guid1);
+  }
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.
 #if !BUILDFLAG(IS_ANDROID)

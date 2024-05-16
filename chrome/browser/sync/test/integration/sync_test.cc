@@ -1087,7 +1087,9 @@ arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
 }
 
 std::string SyncTest::GetCacheGuid(size_t profile_index) const {
-  syncer::SyncTransportDataPrefs prefs(GetProfile(profile_index)->GetPrefs());
+  syncer::SyncTransportDataPrefs prefs(
+      GetProfile(profile_index)->GetPrefs(),
+      GetClient(profile_index)->GetGaiaIdHashForPrimaryAccount());
   return prefs.GetCacheGuid();
 }
 

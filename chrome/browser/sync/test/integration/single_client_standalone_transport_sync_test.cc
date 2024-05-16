@@ -215,7 +215,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs());
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   const std::string cache_guid = transport_data_prefs.GetCacheGuid();
   ASSERT_FALSE(cache_guid.empty());
 
@@ -246,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   syncer::SyncTransportDataPrefs transport_data_prefs(
-      GetProfile(0)->GetPrefs());
+      GetProfile(0)->GetPrefs(),
+      GetClient(0)->GetGaiaIdHashForPrimaryAccount());
   ASSERT_FALSE(transport_data_prefs.GetCacheGuid().empty());
 
   std::string old_cache_guid;

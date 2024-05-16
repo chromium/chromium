@@ -42,12 +42,12 @@ using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::ServerBookmarksEqualityChecker;
 using syncer::ModelType;
 using testing::AllOf;
+using testing::Contains;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Not;
 using testing::NotNull;
 using testing::SizeIs;
-using testing::UnorderedElementsAre;
 
 constexpr char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
 constexpr char kSyncedBookmarkTitle[] = "Title";
@@ -286,7 +286,9 @@ class SingleClientSyncInvalidationsTest : public SyncTest {
   }
 
   std::string GetLocalCacheGuid() {
-    syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
+    syncer::SyncTransportDataPrefs prefs(
+        GetProfile(0)->GetPrefs(),
+        GetClient(0)->GetGaiaIdHashForPrimaryAccount());
     return prefs.GetCacheGuid();
   }
 
@@ -683,12 +685,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
            ->GetFCMRegistrationToken();
   EXPECT_NE(new_token, old_token);
   EXPECT_FALSE(new_token.empty());
-  // New device info should eventually be committed to the server (but the old
-  // device info will remain on the server). The FCM token should be present.
-  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  UnorderedElementsAre(HasInstanceIdToken(old_token),
-                                       HasInstanceIdToken(new_token)))
-                  .Wait());
+  // The new device info (including the new FCM token) should eventually be
+  // committed to the server.
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(Contains(HasInstanceIdToken(new_token)))
+          .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

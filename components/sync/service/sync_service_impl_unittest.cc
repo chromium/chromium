@@ -136,6 +136,14 @@ class SyncServiceImplTest : public ::testing::Test {
     ShutdownAndReleaseService();
   }
 
+  signin::GaiaIdHash gaia_id_hash() {
+    return signin::GaiaIdHash::FromGaiaId(
+        identity_test_env()
+            ->identity_manager()
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia);
+  }
+
   void SignInWithoutSyncConsent() {
     identity_test_env()->MakePrimaryAccountAvailable(
         kTestUser, signin::ConsentLevel::kSignin);
@@ -578,7 +586,8 @@ TEST_F(SyncServiceImplTest,
   ASSERT_TRUE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
-  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_TRUE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Sign-out.
   signin::PrimaryAccountMutator* account_mutator =
@@ -593,7 +602,8 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(SyncService::DisableReasonSet(
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
-  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  EXPECT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 
 TEST_F(SyncServiceImplTest,
@@ -619,7 +629,8 @@ TEST_F(SyncServiceImplTest,
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  EXPECT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -924,11 +935,13 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_TRUE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   service()->StopAndClear();
 
-  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  EXPECT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Even though Sync-the-feature is disabled, there's still an (unconsented)
   // signed-in account, so Sync-the-transport should still be running.
@@ -964,12 +977,14 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
   // loading the list of accounts, so wait for it to complete.
   identity_test_env()->WaitForRefreshTokensLoaded();
 
-  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_TRUE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // Don't sign-in before creating the service.
   InitializeService();
 
-  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  EXPECT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

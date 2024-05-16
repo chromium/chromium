@@ -441,7 +441,8 @@ void SyncServiceImpl::Initialize() {
 
   if (IsEngineAllowedToRun()) {
     if (!sync_client_->GetSyncApiComponentFactory()
-             ->HasTransportDataIncludingFirstSync()) {
+             ->HasTransportDataIncludingFirstSync(
+                 signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia))) {
       // Sync never initialized before on this profile, so let's try immediately
       // the very first time. This is particularly useful for Chrome Ash (where
       // the user is signed in to begin with) and local sync (where sign-in
@@ -516,6 +517,26 @@ ShutdownReason SyncServiceImpl::ShutdownReasonForResetEngineReason(
     case ResetEngineReason::kEnterprisePolicy:
     case ResetEngineReason::kDisableSyncOnClient:
       return ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
+  }
+}
+
+bool SyncServiceImpl::ShouldClearTransportDataForAccount(
+    ResetEngineReason reset_reason) {
+  switch (reset_reason) {
+    case ResetEngineReason::kShutdown:
+    case ResetEngineReason::kDisabledAccount:
+    case ResetEngineReason::kStopAndClear:
+    case ResetEngineReason::kCredentialsChanged:
+    case ResetEngineReason::kNotSignedIn:
+    case ResetEngineReason::kEnterprisePolicy:
+      // Regular/benign cases; no need to clear.
+      return false;
+    case ResetEngineReason::kUnrecoverableError:
+    case ResetEngineReason::kResetLocalData:
+    case ResetEngineReason::kDisableSyncOnClient:
+      // Weird error, or explicit request to reset. Clear transport data to
+      // start over fresh.
+      return true;
   }
 }
 
@@ -642,7 +663,9 @@ void SyncServiceImpl::TryStartImpl() {
   }
 
   engine_ = sync_client_->GetSyncApiComponentFactory()->CreateSyncEngine(
-      debug_identifier_, sync_client_->GetSyncInvalidationsService());
+      debug_identifier_,
+      signin::GaiaIdHash::FromGaiaId(authenticated_account_info.gaia),
+      sync_client_->GetSyncInvalidationsService());
   DCHECK(engine_);
 
   // Clear any old errors the first time sync starts.
@@ -730,7 +753,7 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
     // If the engine hasn't started or is already shut down when a DISABLE_SYNC
     // happens, the Directory needs to be cleaned up here.
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
-      sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
+      sync_client_->GetSyncApiComponentFactory()->CleanupOnDisableSync();
     }
     if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       // Call controller's Stop() to inform them to clear the metadata.
@@ -741,6 +764,12 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
       for (auto& [type, controller] : model_type_controllers_) {
         controller->Stop(fate, base::DoNothing());
       }
+    }
+    // Depending on the `reset_reason`, maybe clear account-keyed transport
+    // data.
+    if (ShouldClearTransportDataForAccount(reset_reason)) {
+      sync_client_->GetSyncApiComponentFactory()->ClearTransportDataForAccount(
+          signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
     }
     return nullptr;
   }
@@ -786,6 +815,12 @@ std::unique_ptr<SyncEngine> SyncServiceImpl::ResetEngine(
   // Clear various state.
   crypto_.Reset();
   last_snapshot_ = SyncCycleSnapshot();
+
+  // Depending on the `reset_reason`, maybe clear account-keyed transport data.
+  if (ShouldClearTransportDataForAccount(reset_reason)) {
+    sync_client_->GetSyncApiComponentFactory()->ClearTransportDataForAccount(
+        signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia));
+  }
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionClosed();
@@ -1562,7 +1597,8 @@ ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
 
   if (GetTransportState() == TransportState::INITIALIZING &&
       !sync_client_->GetSyncApiComponentFactory()
-           ->HasTransportDataIncludingFirstSync()) {
+           ->HasTransportDataIncludingFirstSync(
+               signin::GaiaIdHash::FromGaiaId(GetAccountInfo().gaia))) {
     // The engine is initializing for the very first sync (usually after
     // sign-in). In this case all types are reported as pending download,
     // optimistically assuming datatype preconditions will be met.

@@ -52,6 +52,14 @@ class SyncServiceImplStartupTest : public testing::Test {
 
   ~SyncServiceImplStartupTest() override { sync_service_->Shutdown(); }
 
+  signin::GaiaIdHash gaia_id_hash() {
+    return signin::GaiaIdHash::FromGaiaId(
+        sync_service_impl_bundle_.identity_test_env()
+            ->identity_manager()
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia);
+  }
+
   void CreateSyncService(ModelTypeSet registered_types = {BOOKMARKS}) {
     ModelTypeController::TypeVector controllers;
     for (ModelType type : registered_types) {
@@ -391,7 +399,8 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // We've never completed startup.
-  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
@@ -416,7 +425,8 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
 
 TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
   // We've never completed Sync startup.
-  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   // There is already a signed-in user.
   SignInWithSyncConsent();
@@ -584,7 +594,8 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
 TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   CreateSyncService();
   SignInWithSyncConsent();
-  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
@@ -613,7 +624,8 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
-  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+  ASSERT_FALSE(
+      component_factory()->HasTransportDataIncludingFirstSync(gaia_id_hash()));
 
   CreateSyncService({SESSIONS});
   sync_service()->Initialize();
