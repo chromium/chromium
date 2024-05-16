@@ -176,6 +176,9 @@ class PageSpecificContentSettings
     // Notifies the delegate a particular content settings type was blocked.
     virtual void OnContentBlocked(ContentSettingsType type) = 0;
 
+    // Returns `true` if ContentSettingsType is blocked on the system level.
+    virtual bool IsBlockedOnSystemLevel(ContentSettingsType type) = 0;
+
     // Returns true if `render_frame_host` should be allowlisted for using
     // JavaScript.
     virtual bool IsFrameAllowlistedForJavaScript(

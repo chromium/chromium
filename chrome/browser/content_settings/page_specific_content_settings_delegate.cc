@@ -41,6 +41,10 @@
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#endif
+
 using content_settings::PageSpecificContentSettings;
 
 namespace chrome {
@@ -254,6 +258,29 @@ void PageSpecificContentSettingsDelegate::OnContentBlocked(
     content_settings::RecordPopupsAction(
         content_settings::POPUPS_ACTION_DISPLAYED_BLOCKED_ICON_IN_OMNIBOX);
   }
+}
+
+bool PageSpecificContentSettingsDelegate::IsBlockedOnSystemLevel(
+    ContentSettingsType type) {
+  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+         type == ContentSettingsType::MEDIASTREAM_CAMERA);
+
+#if BUILDFLAG(IS_MAC)
+  switch (type) {
+    case ContentSettingsType::MEDIASTREAM_CAMERA: {
+      return system_media_permissions::CheckSystemVideoCapturePermission() ==
+             system_media_permissions::SystemPermission::kDenied;
+    }
+    case ContentSettingsType::MEDIASTREAM_MIC: {
+      return system_media_permissions::CheckSystemAudioCapturePermission() ==
+             system_media_permissions::SystemPermission::kDenied;
+    }
+    default:
+      return false;
+  }
+#else
+  return false;
+#endif
 }
 
 bool PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript(
