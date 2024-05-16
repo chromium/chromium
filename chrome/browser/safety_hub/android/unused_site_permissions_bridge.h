@@ -25,4 +25,15 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
 
 std::vector<PermissionsData> GetRevokedPermissions(Profile* profile);
 
+void RegrantPermissions(Profile* profile, std::string& primary_pattern);
+
+void UndoRegrantPermissions(Profile* profile,
+                            PermissionsData& permissions_data);
+
+void ClearRevokedPermissionsReviewList(Profile* profile);
+
+void RestoreRevokedPermissionsReviewList(
+    Profile* profile,
+    std::vector<PermissionsData>& permissions_data_list);
+
 #endif  // CHROME_BROWSER_SAFETY_HUB_ANDROID_UNUSED_SITE_PERMISSIONS_BRIDGE_H_

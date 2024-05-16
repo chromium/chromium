@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -94,6 +95,7 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {
+  // Populate revoked permissions.
   AddRevokedPermissions();
   std::vector<PermissionsData> revoked_permissions_list =
       GetRevokedPermissions(profile());
@@ -101,4 +103,43 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {
 
   PermissionsData& permissions_data = revoked_permissions_list[0];
   EXPECT_EQ(permissions_data.permission_types, kUnusedPermissionList);
+}
+
+TEST_F(UnusedSitePermissionsBridgeTest, TestRegrantAndUndoRegrantPermissions) {
+  // Populate revoked permissions.
+  AddRevokedPermissions();
+  std::vector<PermissionsData> revoked_permissions_list =
+      GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 1UL);
+  PermissionsData revoked_permissions_data = revoked_permissions_list[0];
+
+  // Regrant the revoked permissions.
+  std::string primary_pattern(kUnusedTestSite);
+  RegrantPermissions(profile(), primary_pattern);
+  revoked_permissions_list = GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 0UL);
+
+  // Undo the previous regranting and revoke the permissions again.
+  UndoRegrantPermissions(profile(), revoked_permissions_data);
+  revoked_permissions_list = GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 1UL);
+}
+
+TEST_F(UnusedSitePermissionsBridgeTest, TestAckAndUndoAckPermissionsList) {
+  // Populate revoked permissions.
+  AddRevokedPermissions();
+  std::vector<PermissionsData> revoked_permissions_list =
+      GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 1UL);
+
+  // Acknowledge the revoked permissions list
+  ClearRevokedPermissionsReviewList(profile());
+  std::vector<PermissionsData> empty_permissions_list =
+      GetRevokedPermissions(profile());
+  EXPECT_EQ(empty_permissions_list.size(), 0UL);
+
+  // Undo the previous acknowledgement and restore the revoked permissions list.
+  RestoreRevokedPermissionsReviewList(profile(), revoked_permissions_list);
+  revoked_permissions_list = GetRevokedPermissions(profile());
+  EXPECT_EQ(revoked_permissions_list.size(), 1UL);
 }

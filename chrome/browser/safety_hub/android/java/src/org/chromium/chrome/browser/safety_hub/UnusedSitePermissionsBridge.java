@@ -14,5 +14,19 @@ public class UnusedSitePermissionsBridge {
     interface Natives {
         @JniType("std::vector<PermissionsData>")
         PermissionsData[] getRevokedPermissions(@JniType("Profile*") Profile profile);
+
+        void regrantPermissions(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::string") String primaryPattern);
+
+        void undoRegrantPermissions(
+                @JniType("Profile*") Profile profile,
+                @JniType("PermissionsData") PermissionsData permissionsData);
+
+        void clearRevokedPermissionsReviewList(@JniType("Profile*") Profile profile);
+
+        void restoreRevokedPermissionsReviewList(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::vector<PermissionsData>") PermissionsData[] permissionsDataList);
     }
 }
