@@ -153,13 +153,13 @@ void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
       sessions::SessionTabHelper::IdForTab(web_contents));
 }
 
-bool IsDesktopDataControlsEnabled() {
+bool IsScreenshotProtectionEnabled() {
   return base::FeatureList::IsEnabled(
-      data_controls::kEnableDesktopDataControls);
+      data_controls::kEnableScreenshotProtection);
 }
 
 bool IsDataProtectionEnabled(Profile* profile) {
-  return IsEnterpriseLookupEnabled(profile) || IsDesktopDataControlsEnabled();
+  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
 }
 
 std::string GetIdentifier(content::BrowserContext* browser_context) {
@@ -239,7 +239,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
 
   std::string identifier = GetIdentifier(profile);
 
-  if (IsDesktopDataControlsEnabled()) {
+  if (IsScreenshotProtectionEnabled()) {
     DataProtectionPageUserData::UpdateScreenshotState(
         GetPageFromWebContents(web_contents), identifier,
         IsScreenshotAllowedByDataControls(profile,

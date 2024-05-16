@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/enterprise/data_controls/and_condition.h"
 #include "components/enterprise/data_controls/attributes_condition.h"
+#include "components/enterprise/data_controls/features.h"
 #include "components/enterprise/data_controls/not_condition.h"
 #include "components/enterprise/data_controls/or_condition.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -96,6 +98,15 @@ policy::PolicyErrorPath CreateErrorPath(
   return new_error_path;
 }
 
+// Helper to check if a restriction is allowed to be applied to a rule given
+// the currently enabled features.
+bool IgnoreRestriction(Rule::Restriction restriction) {
+  if (restriction == Rule::Restriction::kScreenshot) {
+    return !base::FeatureList::IsEnabled(kEnableScreenshotProtection);
+  }
+  return !base::FeatureList::IsEnabled(kEnableDesktopDataControls);
+}
+
 }  // namespace
 
 Rule::Rule(Rule&& other) = default;
@@ -128,6 +139,15 @@ std::optional<Rule> Rule::Create(const base::Value::Dict& value) {
   }
 
   auto restrictions = GetRestrictions(value);
+
+  // To avoid create a `Rule` object with restrictions for disabled features,
+  // `restrictions` is first filtered. This is done here instead of in
+  // `GetRestrictions()` so that it can still be used by policy handler code to
+  // parse the policy correctly.
+  base::EraseIf(restrictions, [](const auto& entry) {
+    return IgnoreRestriction(entry.first);
+  });
+
   if (restrictions.empty()) {
     return std::nullopt;
   }

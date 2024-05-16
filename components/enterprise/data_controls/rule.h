@@ -145,7 +145,7 @@ class Rule {
   // }
   // For compatibility, unrecognized values are ignored and valid values are
   // still included in the output.
-  static base::flat_map<Rule::Restriction, Rule::Level> GetRestrictions(
+  static base::flat_map<Restriction, Level> GetRestrictions(
       const base::Value::Dict& value);
 
   // Helper used to recursively validate a rule. This should only be called by
@@ -153,7 +153,7 @@ class Rule {
   static bool ValidateRuleSubValues(
       const char* policy_name,
       const base::Value::Dict& value,
-      const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
+      const base::flat_map<Restriction, Level>& restrictions,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);
 
@@ -172,7 +172,7 @@ class Rule {
   static bool AddUnsupportedAttributeErrors(
       const std::vector<std::string_view>& oneof_conditions,
       const std::vector<std::string_view>& anyof_conditions,
-      base::flat_map<Rule::Restriction, Rule::Level> restrictions,
+      base::flat_map<Restriction, Level> restrictions,
       const char* policy_name,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);
@@ -182,7 +182,7 @@ class Rule {
   // if at least one error was added.
   static bool AddUnsupportedRestrictionErrors(
       const char* policy_name,
-      const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
+      const base::flat_map<Restriction, Level>& restrictions,
       policy::PolicyErrorPath error_path,
       policy::PolicyErrorMap* errors);
 

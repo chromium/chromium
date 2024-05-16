@@ -10,7 +10,8 @@
 namespace data_controls {
 
 RulesService::RulesService(PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
+  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls) ||
+      base::FeatureList::IsEnabled(kEnableScreenshotProtection)) {
     pref_registrar_.Init(pref_service);
     pref_registrar_.Add(
         kDataControlsRulesPref,
@@ -24,7 +25,8 @@ RulesService::~RulesService() = default;
 
 Verdict RulesService::GetVerdict(Rule::Restriction restriction,
                                  const ActionContext& context) const {
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
+  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls) &&
+      !base::FeatureList::IsEnabled(kEnableScreenshotProtection)) {
     return Verdict::NotSet();
   }
 
@@ -56,10 +58,6 @@ Verdict RulesService::GetVerdict(Rule::Restriction restriction,
 
 void RulesService::OnDataControlsRulesUpdate() {
   DCHECK(pref_registrar_.prefs());
-  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
-    return;
-  }
-
   rules_.clear();
 
   const base::Value::List& rules_list =

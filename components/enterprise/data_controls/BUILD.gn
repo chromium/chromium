@@ -70,6 +70,7 @@ source_set("test_support") {
   ]
   public_deps = [
     ":data_controls",
+    ":features",
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

@@ -148,7 +148,7 @@ class DataProtectionNavigationObserverTest
     content::RenderViewHostTestHarness::SetUp();
 
     scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
+        data_controls::kEnableScreenshotProtection);
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());

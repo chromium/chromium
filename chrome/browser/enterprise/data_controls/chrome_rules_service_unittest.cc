@@ -24,13 +24,26 @@ constexpr char kFirstRuleID[] = "1234";
 
 class DataControlsRulesServiceTest : public testing::Test {
  public:
-  explicit DataControlsRulesServiceTest(bool feature_enabled = true)
+  explicit DataControlsRulesServiceTest(bool desktop_feature_enabled = true,
+                                        bool screenshot_feature_enabled = true)
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    if (feature_enabled) {
-      scoped_features_.InitAndEnableFeature(kEnableDesktopDataControls);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (desktop_feature_enabled) {
+      enabled_features.push_back(kEnableDesktopDataControls);
     } else {
-      scoped_features_.InitAndDisableFeature(kEnableDesktopDataControls);
+      disabled_features.push_back(kEnableDesktopDataControls);
     }
+
+    if (screenshot_feature_enabled) {
+      enabled_features.push_back(kEnableScreenshotProtection);
+    } else {
+      disabled_features.push_back(kEnableScreenshotProtection);
+    }
+
+    scoped_features_.InitWithFeatures(enabled_features, disabled_features);
+
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user-1");
     other_profile_ = profile_manager_.CreateTestingProfile("test-user-2");
@@ -137,16 +150,102 @@ class DataControlsRulesServiceTest : public testing::Test {
   std::unique_ptr<content::WebContents> incognito_web_contents_;
 };
 
-class DataControlsRulesServiceFeatureDisabledTest
+class DataControlsRulesServiceDesktopFeatureDisabledTest
     : public DataControlsRulesServiceTest {
  public:
-  DataControlsRulesServiceFeatureDisabledTest()
-      : DataControlsRulesServiceTest(false) {}
+  DataControlsRulesServiceDesktopFeatureDisabledTest()
+      : DataControlsRulesServiceTest(false, true) {}
+};
+
+class DataControlsRulesServiceScreenshotFeatureDisabledTest
+    : public DataControlsRulesServiceTest {
+ public:
+  DataControlsRulesServiceScreenshotFeatureDisabledTest()
+      : DataControlsRulesServiceTest(true, false) {}
+};
+
+class DataControlsRulesServiceAllFeaturesDisabledTest
+    : public DataControlsRulesServiceTest {
+ public:
+  DataControlsRulesServiceAllFeaturesDisabledTest()
+      : DataControlsRulesServiceTest(false, false) {}
 };
 
 }  // namespace
 
-TEST_F(DataControlsRulesServiceFeatureDisabledTest, NoVerdicts) {
+TEST_F(DataControlsRulesServiceDesktopFeatureDisabledTest,
+       NoVerdictsForDesktopRestrictions) {
+  SetDataControls(profile()->GetPrefs(), {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "PRINTING", "level": "BLOCK"},
+                      {"class": "CLIPBOARD", "level": "BLOCK"},
+                      {"class": "SCREENSHOT", "level": "BLOCK"}
+                    ]
+                  })"});
+  ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetPrintVerdict(google_url()));
+  ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetPasteVerdict(
+                          /*source*/ google_url_endpoint(),
+                          /*destination*/ empty_endpoint(),
+                          /*metadata*/ {}));
+  ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetCopyToOSClipboardVerdict(
+                          /*source*/ google_url()));
+  ExpectNoVerdict(ChromeRulesServiceFactory::GetInstance()
+                      ->GetForBrowserContext(profile())
+                      ->GetCopyRestrictedBySourceVerdict(
+                          /*source*/ google_url()));
+  EXPECT_TRUE(ChromeRulesServiceFactory::GetInstance()
+                  ->GetForBrowserContext(profile())
+                  ->BlockScreenshots(google_url()));
+}
+
+TEST_F(DataControlsRulesServiceScreenshotFeatureDisabledTest,
+       NoVerdictsForScreenshotRestriction) {
+  SetDataControls(profile()->GetPrefs(), {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "PRINTING", "level": "BLOCK"},
+                      {"class": "CLIPBOARD", "level": "BLOCK"},
+                      {"class": "SCREENSHOT", "level": "BLOCK"}
+                    ]
+                  })"});
+  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
+                         ->GetForBrowserContext(profile())
+                         ->GetPrintVerdict(google_url()));
+  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
+                         ->GetForBrowserContext(profile())
+                         ->GetPasteVerdict(
+                             /*source*/ google_url_endpoint(),
+                             /*destination*/ empty_endpoint(),
+                             /*metadata*/ {}));
+  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
+                         ->GetForBrowserContext(profile())
+                         ->GetCopyToOSClipboardVerdict(
+                             /*source*/ google_url()));
+  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
+                         ->GetForBrowserContext(profile())
+                         ->GetCopyRestrictedBySourceVerdict(
+                             /*source*/ google_url()));
+  EXPECT_FALSE(ChromeRulesServiceFactory::GetInstance()
+                   ->GetForBrowserContext(profile())
+                   ->BlockScreenshots(google_url()));
+}
+
+TEST_F(DataControlsRulesServiceAllFeaturesDisabledTest, NoVerdicts) {
   SetDataControls(profile()->GetPrefs(), {R"({
                     "name": "block",
                     "rule_id": "1234",
