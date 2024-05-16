@@ -5424,6 +5424,10 @@ const char kCupsIppPrintingBackendDescription[] =
     "that calls the PPD API.";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+const char kEnableExtensibleEnterpriseSSOName[] = "Extensible Enterprise SSO";
+const char kEnableExtensibleEnterpriseSSODescription[] =
+    "Enables support for extensible enterprise SSO in Chrome";
+
 const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";

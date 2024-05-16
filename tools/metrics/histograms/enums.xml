@@ -16759,6 +16759,7 @@ from previous Chrome versions.
   <int value="-1980328793" label="trace-upload-url"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1978116081" label="SeaPen:disabled"/>
+  <int value="-1978003156" label="EnableExtensibleEnterpriseSSO:disabled"/>
   <int value="-1977496883" label="ViewPasswords:enabled"/>
   <int value="-1976050618" label="AppDeduplicationService:disabled"/>
   <int value="-1975970208" label="(Obsolete) TranslateSubFrames:disabled"/>
@@ -19009,6 +19010,7 @@ from previous Chrome versions.
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
+  <int value="-997652636" label="EnableExtensibleEnterpriseSSO:enabled"/>
   <int value="-997491100" label="ShareUsageRanking:disabled"/>
   <int value="-997185008" label="LensFullscreenSearch:disabled"/>
   <int value="-996868396" label="SmartDimNewMlAgent:enabled"/>

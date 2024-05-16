@@ -307,6 +307,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -5626,12 +5627,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickOfficeForceFileDownload)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
+    {"enable-extensible-enterprise-sso",
+     flag_descriptions::kEnableExtensibleEnterpriseSSOName,
+     flag_descriptions::kEnableExtensibleEnterpriseSSODescription, kOsMac,
+     FEATURE_VALUE_TYPE(enterprise_auth::kEnableExtensibleEnterpriseSSO)},
     {"enable-retry-capture-device-enumeration-on-crash",
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosName,
      flag_descriptions::kRetryGetVideoCaptureDeviceInfosDescription, kOsMac,
      FEATURE_VALUE_TYPE(features::kRetryGetVideoCaptureDeviceInfos)},
-#endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(IS_MAC)
     {"enable-immersive-fullscreen-toolbar",
      flag_descriptions::kImmersiveFullscreenName,
      flag_descriptions::kImmersiveFullscreenDescription, kOsMac,

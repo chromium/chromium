@@ -3154,6 +3154,9 @@ extern const char kCupsIppPrintingBackendName[];
 extern const char kCupsIppPrintingBackendDescription[];
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+extern const char kEnableExtensibleEnterpriseSSOName[];
+extern const char kEnableExtensibleEnterpriseSSODescription[];
+
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
