@@ -186,10 +186,6 @@ bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
 // tailored experiment is enabled.
 bool IsDefaultBrowserPromoOnlyGenericArmTrain();
 
-// Returns true if default Browser full-screen promo should be shown on omnibox
-// copy-paste instead of non-modal promo.
-bool IsFullScreenPromoOnOmniboxCopyPasteEnabled();
-
 // Returns true if client is in default browser video in settings experiment.
 bool IsDefaultBrowserVideoInSettingsEnabled();
 
