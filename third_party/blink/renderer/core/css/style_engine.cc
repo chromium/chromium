@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
@@ -741,6 +742,7 @@ void StyleEngine::UpdateActiveStyle() {
   DCHECK(GetDocument().IsActive());
   DCHECK(IsMainThread());
   TRACE_EVENT0("blink", "Document::updateActiveStyle");
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded();
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();

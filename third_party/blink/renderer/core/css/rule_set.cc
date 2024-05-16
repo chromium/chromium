@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -630,10 +631,14 @@ void RuleSet::AddRule(StyleRule* rule,
   RuleData rule_data(rule, selector_index, rule_count_, style_scope,
                      add_rule_flags, bloom_hash_backing_);
   ++rule_count_;
-  if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
-                                            style_scope) ==
-      RuleFeatureSet::kSelectorNeverMatches) {
-    return;
+  {
+    InvalidationSetToSelectorMap::SelectorScope selector_scope(rule,
+                                                               selector_index);
+    if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
+                                              style_scope) ==
+        RuleFeatureSet::kSelectorNeverMatches) {
+      return;
+    }
   }
 
   FindBestRuleSetAndAdd<BucketCoverage::kCompute>(rule_data.MutableSelector(),

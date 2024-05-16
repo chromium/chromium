@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -192,6 +193,7 @@ void InvalidationSet::Combine(const InvalidationSet& other) {
   }
 
   CHECK_NE(&other, this);
+  InvalidationSetToSelectorMap::CombineScope combine_scope(this, &other);
 
   if (auto* invalidation_set = DynamicTo<SiblingInvalidationSet>(this)) {
     SiblingInvalidationSet& siblings = *invalidation_set;
@@ -328,6 +330,9 @@ void InvalidationSet::AddClass(const AtomicString& class_name) {
     return;
   }
   CHECK(!class_name.empty());
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      this, InvalidationSetToSelectorMap::SelectorFeatureType::kClass,
+      class_name);
   classes_.Add(backing_flags_, class_name);
 }
 
@@ -336,6 +341,8 @@ void InvalidationSet::AddId(const AtomicString& id) {
     return;
   }
   CHECK(!id.empty());
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      this, InvalidationSetToSelectorMap::SelectorFeatureType::kId, id);
   ids_.Add(backing_flags_, id);
 }
 
@@ -344,6 +351,9 @@ void InvalidationSet::AddTagName(const AtomicString& tag_name) {
     return;
   }
   CHECK(!tag_name.empty());
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      this, InvalidationSetToSelectorMap::SelectorFeatureType::kTagName,
+      tag_name);
   tag_names_.Add(backing_flags_, tag_name);
 }
 
@@ -352,6 +362,9 @@ void InvalidationSet::AddAttribute(const AtomicString& attribute) {
     return;
   }
   CHECK(!attribute.empty());
+  InvalidationSetToSelectorMap::RecordInvalidationSetEntry(
+      this, InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute,
+      attribute);
   attributes_.Add(backing_flags_, attribute);
 }
 

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_animation_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -634,6 +635,22 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
   SetNodeInfo(dict, &node, "nodeId", "nodeName");
   dict.Add("reason", reason);
 }
+void FillSelectors(
+    perfetto::TracedDictionary& dict,
+    const InvalidationSet& invalidation_set,
+    InvalidationSetToSelectorMap::SelectorFeatureType feature_type,
+    const AtomicString& feature_value) {
+  const InvalidationSetToSelectorMap::IndexedSelectorList* selectors =
+      InvalidationSetToSelectorMap::Lookup(&invalidation_set, feature_type,
+                                           feature_value);
+  if (selectors != nullptr && selectors->size() > 0) {
+    dict.Add("selectorCount", selectors->size());
+    auto array = dict.AddArray("selectors");
+    for (auto selector : *selectors) {
+      array.Append(selector->GetSelectorText());
+    }
+  }
+}
 }  // namespace inspector_style_invalidator_invalidate_event
 
 void inspector_style_invalidator_invalidate_event::Data(
@@ -652,6 +669,24 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
     const String& selector_part) {
   auto dict = std::move(context).WriteDictionary();
   FillCommonPart(dict, element, reason);
+  InvalidationSetToSelectorMap::SelectorFeatureType feature_type =
+      InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown;
+  if (reason == kInvalidationSetMatchedClass) {
+    feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kClass;
+  } else if (reason == kInvalidationSetMatchedId) {
+    feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kId;
+  } else if (reason == kInvalidationSetMatchedTagName) {
+    feature_type = InvalidationSetToSelectorMap::SelectorFeatureType::kTagName;
+  } else if (reason == kInvalidationSetMatchedAttribute) {
+    feature_type =
+        InvalidationSetToSelectorMap::SelectorFeatureType::kAttribute;
+  }
+  if (feature_type !=
+      InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown) {
+    FillSelectors(dict, invalidation_set, feature_type,
+                  AtomicString(selector_part));
+  }
+
   {
     auto array = dict.AddArray("invalidationList");
     array.Append(invalidation_set);
