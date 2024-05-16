@@ -545,6 +545,17 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void updatesTitle_OnTabGroupTitleChange_Empty() {
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), "");
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(mTab1.getRootId(), "");
+        assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo("2 tabs"));
+    }
+
+    @Test
     public void updatesTitle_OnTabGroupColorChange_Tab() {
         doReturn(mock(TabListFaviconProvider.TabFaviconFetcher.class))
                 .when(mTabGroupColorFaviconProvider)

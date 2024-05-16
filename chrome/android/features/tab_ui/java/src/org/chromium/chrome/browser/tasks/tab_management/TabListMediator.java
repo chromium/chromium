@@ -592,6 +592,9 @@ class TabListMediator {
                     Tab tab = indexAndTab.second;
                     PropertyModel model = mModel.get(indexAndTab.first).model;
 
+                    // Do not blindly trust the model, need to potentially apply default/fallback.
+                    newTitle = getLatestTitleForTab(tab, /* useDefault= */ true);
+
                     model.set(TabProperties.TITLE, newTitle);
                     updateDescriptionString(tab, model);
                     updateActionButtonDescriptionString(tab, model);
@@ -2131,7 +2134,7 @@ class TabListMediator {
         }
 
         String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(tab.getRootId());
-        if (storedTitle == null) {
+        if (TextUtils.isEmpty(storedTitle)) {
             if (useDefault) {
                 TabGroupModelFilter filter =
                         (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
