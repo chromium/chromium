@@ -1187,8 +1187,7 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
 SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     const FormData& form,
     const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source,
-    std::vector<Suggestion>* suggestions) {
+    AutofillSuggestionTriggerSource trigger_source) {
   SuggestionsContext context;
 
   // When Compose suggestions or manual fallback for plus addresses are
@@ -1255,10 +1254,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     if (field.DidUserType()) {
       context.suppress_reason = SuppressReason::kInsecureForm;
     } else {
-      Suggestion warning_suggestion(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
-      warning_suggestion.type = SuggestionType::kMixedFormMessage;
-      suggestions->emplace_back(warning_suggestion);
+      context.should_show_mixed_content_warning = true;
     }
     return context;
   }
@@ -1290,10 +1286,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->SetCurrentDataListValues(field.datalist_options());
   external_delegate_->OnQuery(form, field, trigger_source);
 
-  std::vector<Suggestion> suggestions;
   SuggestionsContext context =
-      BuildSuggestionsContext(form, field, trigger_source, &suggestions);
+      BuildSuggestionsContext(form, field, trigger_source);
 
+  std::vector<Suggestion> suggestions;
   GetAvailableSuggestions(form, field, trigger_source, &suggestions, &context);
 
   const bool form_element_was_clicked =
@@ -1673,9 +1669,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 #endif
 
   // TODO(crbug.com/41392130): Add metrics for performance impact.
-  std::vector<Suggestion> suggestions;
   SuggestionsContext context = BuildSuggestionsContext(
-      form, field, AutofillSuggestionTriggerSource::kUnspecified, &suggestions);
+      form, field, AutofillSuggestionTriggerSource::kUnspecified);
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -1684,6 +1679,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // suggestions generated, but only the way suggestions behave when they are
   // accepted. For this reason, checking whether suggestions are available can
   // be done with the `kUnspecified` suggestion trigger source.
+  std::vector<Suggestion> suggestions;
   GetAvailableSuggestions(form, field,
                           AutofillSuggestionTriggerSource::kUnspecified,
                           &suggestions, &context);
@@ -2724,6 +2720,14 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         client().ClassifyAsPasswordForm(*this, form.global_id(),
                                         field.global_id()),
         field.value(), trigger_source);
+    return;
+  }
+
+  if (context->should_show_mixed_content_warning) {
+    Suggestion warning_suggestion(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
+    warning_suggestion.type = SuggestionType::kMixedFormMessage;
+    suggestions->emplace_back(warning_suggestion);
     return;
   }
 

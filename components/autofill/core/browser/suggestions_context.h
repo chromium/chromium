@@ -45,6 +45,7 @@ struct SuggestionsContext {
   RAW_PTR_EXCLUSION AutofillField* focused_field = nullptr;
   bool is_autofill_available = false;
   bool is_context_secure = false;
+  bool should_show_mixed_content_warning = false;
   FillingProduct filling_product = FillingProduct::kNone;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
   // Indicates whether generating autofill suggestions (Meaning Address and
