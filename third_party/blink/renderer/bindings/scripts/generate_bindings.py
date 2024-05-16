@@ -17,7 +17,7 @@ def parse_output_reldirs(reldirs):
     valid = required + ['extensions_chromeos', 'extensions_webview']
     result = {}
     for key_value_pair in reldirs:
-        key, value = key_value_pair.split("=", 1)
+        key, value = key_value_pair.split('=', 1)
         key = key.strip()
         result[key] = value
 
@@ -33,33 +33,39 @@ def parse_output_reldirs(reldirs):
 def parse_options(valid_tasks):
     parser = argparse.ArgumentParser(
         description='Generator for Blink bindings.')
-    parser.add_argument("--web_idl_database",
+    parser.add_argument('--web_idl_database',
                         required=True,
                         type=str,
-                        help="filepath of the input database")
-    parser.add_argument("--root_src_dir",
+                        help='filepath of the input database')
+    parser.add_argument('--root_src_dir',
                         required=True,
                         type=str,
                         help='root directory of chromium project, i.e. "//"')
-    parser.add_argument("--root_gen_dir",
+    parser.add_argument('--root_gen_dir',
                         required=True,
                         type=str,
                         help='root directory of generated code files, i.e. '
                         '"//out/Default/gen"')
     parser.add_argument(
-        "--output_reldir",
-        metavar="KEY=VALUE",
-        action="append",
-        help="output directory of KEY component relative to root_gen_dir.")
+        '--output_reldir',
+        metavar='KEY=VALUE',
+        action='append',
+        help='output directory of KEY component relative to root_gen_dir.')
     parser.add_argument(
         '--format_generated_files',
-        action="store_true",
+        action='store_true',
         default=False,
-        help=("format the resulting generated files by applying clang-format, "
-              "etc."))
+        help=('format the resulting generated files by applying clang-format, '
+              'etc.'))
+    parser.add_argument(
+        '--enable_code_generation_tracing',
+        action='store_true',
+        default=False,
+        help='output debug info in generated code to help track down which '
+        'line of Python code has generated which line of generated code.')
     parser.add_argument(
         '--single_process',
-        action="store_true",
+        action='store_true',
         default=False,
         help=('run everything in a single process, which makes debugging '
               'easier'))
@@ -96,11 +102,13 @@ def main():
     for component, reldir in output_reldirs.items():
         component_reldirs[web_idl.Component(component)] = reldir
 
-    bind_gen.init(web_idl_database_path=options.web_idl_database,
-                  root_src_dir=options.root_src_dir,
-                  root_gen_dir=options.root_gen_dir,
-                  component_reldirs=component_reldirs,
-                  enable_style_format=options.format_generated_files)
+    bind_gen.init(
+        web_idl_database_path=options.web_idl_database,
+        root_src_dir=options.root_src_dir,
+        root_gen_dir=options.root_gen_dir,
+        component_reldirs=component_reldirs,
+        enable_style_format=options.format_generated_files,
+        enable_code_generation_tracing=options.enable_code_generation_tracing)
 
     task_queue = bind_gen.TaskQueue(single_process=options.single_process)
 
@@ -117,11 +125,11 @@ def main():
     def report_progress(total, done):
         percentage = (int(float(done) / float(total) *
                           100) if total != 0 else 100)
-        message = "Blink-V8 bindings generation: {}% done\r".format(percentage)
+        message = 'Blink-V8 bindings generation: {}% done\r'.format(percentage)
         print_to_console(message)
 
     task_queue.run(report_progress)
-    print_to_console("\n")
+    print_to_console('\n')
 
 
 if __name__ == '__main__':

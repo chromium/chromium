@@ -81,8 +81,7 @@ def main():
     bind_gen.init(web_idl_database_path=options.web_idl_database,
                   root_src_dir=options.root_src_dir,
                   root_gen_dir=options.root_gen_dir,
-                  component_reldirs=component_reldirs,
-                  enable_style_format=False)
+                  component_reldirs=component_reldirs)
     web_idl_database = bind_gen.package_initializer.package_initializer(
     ).web_idl_database()
     idl_definitions = {

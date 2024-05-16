@@ -402,3 +402,47 @@ You can register SymbolNodes only into a SymbolScopeNode. Registered symbols
 are effective only inside the SymbolScopeNode. This behavior reflects that
 C++ variables are effective only inside the closest containing C++ block
 (`{...}`).
+
+## Tips for debugging and code reading
+
+The driver script
+[`generate_bindings.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/generate_bindings.py)
+supports two useful command line flags:
+`--format_generated_files` and `--enable_code_generation_tracing`.
+
+`--format_generated_files` runs clang-format for the generated files so that
+they are easy for developers to read.
+
+`--enable_code_generation_tracing` outputs code comments (e.g.
+`/* make_wrapper_type_info:6304 */` in addition to the regular output in order
+to clarify which line of the code generator code generated which line of
+generated code.
+This is useful to understand the correspondence between the code generator and
+generated code.
+
+When the tracing comments show functions which are too common and uninteresting
+to you (e.g. `make_blink_to_v8_value`), you can exclude such functions
+module-by-module basis by using
+[`CodeGenTracing.add_modules_to_be_ignored`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/scripts/bind_gen/package_initializer.py?q=CodeGenTracing%5C.add_modules_to_be_ignored&ss=chromium).
+
+Here is an example command line to run the script with the options
+(working fine as of 2024 May).
+```shell
+# Run generate_bindings.py with --format_generated_files and
+# --enable_code_generation_tracing.
+#
+# web_idl_database.pickle must have already been generated and updated.
+# Or, run 'autoninja -C out/Default web_idl_database' in advance.
+
+$ cd out/Default
+$ python3 ../../third_party/blink/renderer/bindings/scripts/generate_bindings.py \
+async_iterator callback_function callback_interface dictionary enumeration interface namespace observable_array sync_iterator typedef union \
+--web_idl_database gen/third_party/blink/renderer/bindings/web_idl_database.pickle \
+--root_src_dir=../.. \
+--root_gen_dir=gen \
+--output_reldir=core=third_party/blink/renderer/bindings/core/v8/ \
+--output_reldir=modules=third_party/blink/renderer/bindings/modules/v8/ \
+--output_reldir=extensions_chromeos=third_party/blink/renderer/bindings/extensions_chromeos/v8/ \
+--format_generated_files \
+--enable_code_generation_tracing
+```
