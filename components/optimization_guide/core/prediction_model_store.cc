@@ -166,6 +166,14 @@ void PredictionModelStore::Initialize(const base::FilePath& base_store_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!base_store_dir.empty());
 
+  if (!background_task_runner_) {
+    // In unit tests, to avoid leaking a task runner between test runs, the task
+    // runner can be reset at the end of each test. In that case, we'll need to
+    // recreate it here.
+    background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  }
+
   // Should not be initialized already.
   DCHECK(base_store_dir_.empty());
 
@@ -507,8 +515,7 @@ void PredictionModelStore::ResetForTesting() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base_store_dir_ = base::FilePath();
-  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  background_task_runner_.reset();
 }
 
 }  // namespace optimization_guide
