@@ -30,7 +30,11 @@ constexpr UrlIdentity::FormatOptions options = {
 PermissionPromptBaseView::PermissionPromptBaseView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
-    : url_identity_(GetUrlIdentity(browser, *delegate)),
+    : BubbleDialogDelegateView(/*anchor_view=*/nullptr,
+                               views::BubbleBorder::TOP_LEFT,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               /*autosize=*/true),
+      url_identity_(GetUrlIdentity(browser, *delegate)),
       is_for_picture_in_picture_window_(browser &&
                                         browser->is_type_picture_in_picture()) {
   // To prevent permissions being accepted accidentally, and as a security

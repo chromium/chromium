@@ -141,7 +141,6 @@ void ExclusiveAccessPermissionPromptView::PrepareToClose() {
 
 void ExclusiveAccessPermissionPromptView::ShowWidget() {
   GetWidget()->Show();
-  SizeToContents();
 }
 
 void ExclusiveAccessPermissionPromptView::UpdateAnchor(views::Widget* widget) {

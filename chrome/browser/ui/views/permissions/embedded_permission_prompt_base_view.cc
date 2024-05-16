@@ -187,7 +187,6 @@ void EmbeddedPermissionPromptBaseView::PrepareToClose() {
 
 void EmbeddedPermissionPromptBaseView::ShowWidget() {
   GetWidget()->Show();
-  SizeToContents();
 }
 
 void EmbeddedPermissionPromptBaseView::UpdateAnchor(views::Widget* widget) {

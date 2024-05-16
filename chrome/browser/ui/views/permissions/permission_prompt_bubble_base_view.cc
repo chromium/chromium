@@ -204,8 +204,6 @@ void PermissionPromptBubbleBaseView::ShowWidget() {
   } else {
     GetWidget()->ShowInactive();
   }
-
-  SizeToContents();
 }
 
 void PermissionPromptBubbleBaseView::UpdateAnchorPosition() {

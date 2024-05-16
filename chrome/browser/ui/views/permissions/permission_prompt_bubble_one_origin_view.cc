@@ -202,13 +202,6 @@ void PermissionPromptBubbleOneOriginView::RunButtonCallback(int button_id) {
   PermissionPromptBubbleBaseView::RunButtonCallback(button_id);
 }
 
-void PermissionPromptBubbleOneOriginView::ChildPreferredSizeChanged(
-    views::View* child) {
-  if (GetBubbleFrameView()) {
-    SizeToContents();
-  }
-}
-
 void PermissionPromptBubbleOneOriginView::AddRequestLine(
     permissions::PermissionRequest* request,
     std::size_t index) {

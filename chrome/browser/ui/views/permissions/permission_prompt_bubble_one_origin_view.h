@@ -64,9 +64,6 @@ class PermissionPromptBubbleOneOriginView :
 #endif
 
  private:
-  // PermissionPromptBubbleBaseView:
-  void ChildPreferredSizeChanged(views::View* child) override;
-
   // Add a line for the |request| at |index| of the view.
   void AddRequestLine(permissions::PermissionRequest* request,
                       std::size_t index);
