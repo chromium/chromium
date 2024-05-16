@@ -78,6 +78,10 @@ BrowserState* ContentWebFrame::GetBrowserState() {
   ;
 }
 
+base::WeakPtr<WebFrame> ContentWebFrame::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool ContentWebFrame::CallJavaScriptFunction(
     const std::string& name,
     const base::Value::List& parameters) {

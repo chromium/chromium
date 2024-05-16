@@ -9,6 +9,7 @@
 #import <string>
 
 #import "base/cancelable_callback.h"
+#import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -43,6 +44,7 @@ class ContentWebFrame : public WebFrame,
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
+  base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   bool CallJavaScriptFunction(const std::string& name,
                               const base::Value::List& parameters) override;
@@ -91,6 +93,8 @@ class ContentWebFrame : public WebFrame,
 
   // The RenderFrameHost corresponding to this frame.
   raw_ptr<content::RenderFrameHost> render_frame_host_;
+
+  base::WeakPtrFactory<ContentWebFrame> weak_ptr_factory_{this};
 };
 
 }  // namespace web
