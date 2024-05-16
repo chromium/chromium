@@ -18,7 +18,6 @@ namespace blink {
 class CSSValue;
 class CSSParserContext;
 class CSSParserLocalContext;
-class CSSParserTokenRange;
 class CSSParserTokenStream;
 
 class Longhand : public CSSProperty {
@@ -36,7 +35,9 @@ class Longhand : public CSSProperty {
   virtual const CSSValue* ParseSingleValue(
       CSSParserTokenStream& stream,
       const CSSParserContext& context,
-      const CSSParserLocalContext& local_tokenizer) const;
+      const CSSParserLocalContext& local_tokenizer) const {
+    return nullptr;
+  }
   virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyValue(StyleResolverState&,
@@ -60,16 +61,6 @@ class Longhand : public CSSProperty {
   }
   virtual const CSSValue* InitialValue() const {
     return CSSInitialValue::Create();
-  }
-
- private:
-  // Parses and consumes a longhand property value from the token range.
-  // Returns nullptr if the input is invalid.
-  virtual const CSSValue* ParseSingleValueFromRange(
-      CSSParserTokenRange&,
-      const CSSParserContext&,
-      const CSSParserLocalContext&) const {
-    return nullptr;
   }
 
  protected:

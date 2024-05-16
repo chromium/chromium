@@ -51,9 +51,6 @@
       valid_type: "list",
       valid_values: [
         "ParseSingleValue",
-        // For legacy use only. Do not use if possible; prefer ParseSingleValue
-        // (which uses the streaming parser).
-        "ParseSingleValueFromRange",
         "ParseShorthand",
         "CSSValueFromComputedStyleInternal",
         "ColorIncludingFallback",
