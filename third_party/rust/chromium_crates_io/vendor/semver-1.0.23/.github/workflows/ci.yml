@@ -128,6 +128,7 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1
       - run: cargo outdated --manifest-path fuzz/Cargo.toml --exit-code 1

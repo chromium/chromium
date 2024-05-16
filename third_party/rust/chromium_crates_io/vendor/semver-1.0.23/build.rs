@@ -10,6 +10,19 @@ fn main() {
         None => return,
     };
 
+    if compiler >= 80 {
+        println!("cargo:rustc-check-cfg=cfg(doc_cfg)");
+        println!("cargo:rustc-check-cfg=cfg(no_alloc_crate)");
+        println!("cargo:rustc-check-cfg=cfg(no_const_vec_new)");
+        println!("cargo:rustc-check-cfg=cfg(no_exhaustive_int_match)");
+        println!("cargo:rustc-check-cfg=cfg(no_non_exhaustive)");
+        println!("cargo:rustc-check-cfg=cfg(no_nonzero_bitscan)");
+        println!("cargo:rustc-check-cfg=cfg(no_str_strip_prefix)");
+        println!("cargo:rustc-check-cfg=cfg(no_track_caller)");
+        println!("cargo:rustc-check-cfg=cfg(no_unsafe_op_in_unsafe_fn_lint)");
+        println!("cargo:rustc-check-cfg=cfg(test_node_semver)");
+    }
+
     if compiler < 33 {
         // Exhaustive integer patterns. On older compilers, a final `_` arm is
         // required even if every possible integer value is otherwise covered.

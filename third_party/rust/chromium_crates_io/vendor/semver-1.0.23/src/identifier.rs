@@ -248,7 +248,7 @@ impl Drop for Identifier {
         let size = bytes_for_varint(len) + len.get();
         let align = 2;
         // SAFETY: align is not zero, align is a power of two, and rounding
-        // size up to align does not overflow usize::MAX. These guarantees were
+        // size up to align does not overflow isize::MAX. These guarantees were
         // made when originally allocating this memory.
         let layout = unsafe { Layout::from_size_align_unchecked(size, align) };
         // SAFETY: ptr was previously allocated by the same allocator with the

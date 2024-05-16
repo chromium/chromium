@@ -209,7 +209,7 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."ryu:1.0.18"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."semver:1.0.22"]
+[policy."semver:1.0.23"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
 [policy."serde:1.0.198"]

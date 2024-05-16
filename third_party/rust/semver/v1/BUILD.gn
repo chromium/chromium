@@ -13,23 +13,23 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/backport.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/display.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/eval.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/identifier.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/impls.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/backport.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/display.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/identifier.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/src/serde.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.22"
+  cargo_pkg_version = "1.0.23"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "semver"
   cargo_pkg_description =
@@ -42,9 +42,9 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   features = [ "std" ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/build.rs"
   build_sources =
-      [ "//third_party/rust/chromium_crates_io/vendor/semver-1.0.22/build.rs" ]
+      [ "//third_party/rust/chromium_crates_io/vendor/semver-1.0.23/build.rs" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
