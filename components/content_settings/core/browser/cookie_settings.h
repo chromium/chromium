@@ -157,7 +157,7 @@ class CookieSettings
   // - Cases like WebUIs, allowlisted internal apps, and extension iframes are
   // usually being exempted from storage partitioning or are allowlisted. Thus,
   // not covered by user bypass at this state of art.
-  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url);
+  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
 
   const ContentSettingsForOneType GetTpcdMetadataGrants() const {
     return tpcd_metadata_manager_ ? tpcd_metadata_manager_->GetGrants()
@@ -239,11 +239,11 @@ class CookieSettings
  private:
   // Evaluates if third-party cookies are blocked. Should only be called
   // when the preference changes to update the internal state.
-  bool ShouldBlockThirdPartyCookiesInternal();
+  bool ShouldBlockThirdPartyCookiesInternal() const;
 
   // Evaluates whether third party cookies deprecation mitigations should be
   // enabled.
-  bool MitigationsEnabledFor3pcdInternal();
+  bool MitigationsEnabledFor3pcdInternal() const;
 
   void OnCookiePreferencesChanged();
 

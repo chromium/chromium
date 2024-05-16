@@ -192,7 +192,7 @@ void CookieSettings::SetCookieSettingForUserBypass(
 }
 
 bool CookieSettings::IsStoragePartitioningBypassEnabled(
-    const GURL& first_party_url) {
+    const GURL& first_party_url) const {
   SettingInfo info;
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
@@ -354,12 +354,10 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
 
 CookieSettings::~CookieSettings() = default;
 
+bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() const {
 #if BUILDFLAG(IS_IOS)
-bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   return false;
-}
 #else
-bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(pref_change_registrar_);
 
@@ -385,11 +383,10 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
     case CookieControlsMode::kOff:
       return false;
   }
-  return false;
-}
 #endif
+}
 
-bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
+bool CookieSettings::MitigationsEnabledFor3pcdInternal() const {
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
     // Mitigations should be on iff we are not blocking or allowing all 3PC.
