@@ -580,10 +580,10 @@ void DisplayLockContext::Unlock() {
         blocked_child_recalc_change_.ForceRecalcDescendants();
   }
 
-  // We also need to notify the AX cache (if it exists) to update the childrens
+  // We also need to notify the AX cache (if it exists) to update the children
   // of |element_| in the AX cache.
   if (auto* ax_cache = element_->GetDocument().ExistingAXObjectCache()) {
-    ax_cache->RemoveSubtreeWhenSafe(element_);
+    ax_cache->RemoveSubtree(element_);
   }
 
   // Schedule ContentVisibilityAutoStateChange event if needed.

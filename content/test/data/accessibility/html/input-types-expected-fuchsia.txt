@@ -32,16 +32,18 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='Image: '
 ++++++++++UNKNOWN label='Image: '
 ++++++++BUTTON focusable label='Image:' actions='{DEFAULT}'
-++++++++++IMAGE
-++++++++++STATIC_TEXT label='Submit'
-++++++++++++UNKNOWN label='Submit'
+++++++++++UNKNOWN hidden
+++++++++++++IMAGE
+++++++++++++STATIC_TEXT label='Submit'
+++++++++++++++UNKNOWN label='Submit'
 ++++++STATIC_TEXT label=' '
 ++++++++UNKNOWN label=' '
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Number: '
 ++++++++++UNKNOWN label='Number: '
 ++++++++UNKNOWN focusable label='Number:' actions='{DEFAULT, SET_VALUE}'
-++++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Password: '
 ++++++++++UNKNOWN label='Password: '
@@ -68,7 +70,8 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='Search: '
 ++++++++++UNKNOWN label='Search: '
 ++++++++SEARCH_BOX focusable label='Search:' actions='{DEFAULT, SET_VALUE}'
-++++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
 ++++++UNKNOWN
 ++++++++STATIC_TEXT label='Submit: '
 ++++++++++UNKNOWN label='Submit: '

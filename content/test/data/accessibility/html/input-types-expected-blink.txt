@@ -32,16 +32,18 @@ rootWebArea
 ++++++++staticText name='Image: '
 ++++++++++inlineTextBox name='Image: '
 ++++++++button name='Image:'
-++++++++++image
-++++++++++staticText name='Submit'
-++++++++++++inlineTextBox name='Submit'
+++++++++++genericContainer ignored
+++++++++++++image
+++++++++++++staticText name='Submit'
+++++++++++++++inlineTextBox name='Submit'
 ++++++staticText name=' '
 ++++++++inlineTextBox name=' '
 ++++++labelText
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
@@ -68,7 +70,8 @@ rootWebArea
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Submit: '
 ++++++++++inlineTextBox name='Submit: '

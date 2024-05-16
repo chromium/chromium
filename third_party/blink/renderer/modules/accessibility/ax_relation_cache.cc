@@ -1026,24 +1026,9 @@ Node* AXRelationCache::LabelChanged(HTMLLabelElement& label) {
 }
 
 void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXID removed_child_axid) {
-  AXObject* child = object_cache_->ObjectFromAXID(removed_child_axid);
-  if (child && !child->IsDetached()) {
-    AXObject* old_parent = child->ParentObjectIfPresent();
-    if (object_cache_->IsProcessingDeferredEvents()) {
-      if (AXObject* new_parent =
-              object_cache_->RestoreParentOrPruneWithCleanLayout(child)) {
-        object_cache_->ChildrenChangedWithCleanLayout(new_parent);
-      }
-      object_cache_->ChildrenChangedWithCleanLayout(old_parent);
-    } else if (AXObject* new_parent =
-                   object_cache_->RestoreParentOrPrune(child)) {
-      object_cache_->ChildrenChanged(new_parent);
-      object_cache_->ChildrenChanged(old_parent);
-    }
-  }
-
   // This works because AXIDs are equal to the DOMNodeID for their DOM nodes.
   if (Node* child_node = DOMNodeIds::NodeForId(removed_child_axid)) {
+    object_cache_->RestoreParentOrPrune(child_node);
     // Handle case where there were multiple elements aria-owns=|child|,
     // by making sure they are updated in the next round, in case one of them
     // can now own it because of the removal the old_parent.

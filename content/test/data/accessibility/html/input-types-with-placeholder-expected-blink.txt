@@ -11,7 +11,9 @@ rootWebArea
 ++++++++staticText name='Number: '
 ++++++++++inlineTextBox name='Number: '
 ++++++++spinButton editable name='Number:' placeholder='3'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Password: '
 ++++++++++inlineTextBox name='Password: '
@@ -26,7 +28,9 @@ rootWebArea
 ++++++++staticText name='Search: '
 ++++++++++inlineTextBox name='Search: '
 ++++++++searchBox editable name='Search:' placeholder='search'
-++++++++++genericContainer editable
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer editable
 ++++++labelText
 ++++++++staticText name='Tel: '
 ++++++++++inlineTextBox name='Tel: '

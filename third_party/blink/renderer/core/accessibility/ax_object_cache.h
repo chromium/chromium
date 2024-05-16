@@ -106,9 +106,9 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // parent will recompute its children and be reserialized.
   virtual void Remove(AccessibleNode*) = 0;
   virtual void Remove(Node*) = 0;
-  virtual void RemoveSubtreeWhenSafe(Node*, bool remove_root = true) = 0;
+  virtual void RemoveSubtree(const Node*) = 0;
+  virtual void RemoveSubtree(const Node*, bool remove_root) = 0;
   virtual void RemoveAXObjectsInLayoutSubtree(LayoutObject*) = 0;
-  virtual void RemoveAXObjectsInLayoutSubtree(Node*) = 0;
   virtual void RemovePopup(Document*) = 0;
   virtual void Remove(AbstractInlineTextBox*) = 0;
 
@@ -131,7 +131,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void SubtreeIsAttached(Node*) = 0;
 
   // Called to process queued subtree removals when flat tree traversal is safe.
-  virtual void ProcessSubtreeRemovals() = 0;
   virtual void HandleAttributeChanged(const QualifiedName& attr_name,
                                       Element*) = 0;
   virtual void HandleFocusedUIElementChanged(Element* old_focused_node,

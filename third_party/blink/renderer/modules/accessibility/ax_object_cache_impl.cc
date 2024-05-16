@@ -1628,7 +1628,7 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object,
               DynamicTo<LayoutImage>(node->GetLayoutObject())) {
         if (auto* map = layout_image->ImageMap()) {
           if (map->ImageElement() == node) {
-            RemoveSubtreeWithFlatTraversal(map, /*remove_root*/ false);
+            RemoveSubtree(map, /*remove_root*/ false);
           }
         }
       }
@@ -1691,7 +1691,7 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
     return;
   }
   DCHECK(IsPopup(*popup_document)) << "Use Dispose() to remove main document.";
-  RemoveSubtreeWhenSafe(popup_document);
+  RemoveSubtree(popup_document);
 
   popup_document_ = nullptr;
   notifications_to_post_popup_.clear();
@@ -1743,74 +1743,32 @@ void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(
   }
 }
 
-void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(Node* subtree_root) {
-  // Remove the root immediately in order to avoid DCHECK(!has_ax_object_)
-  // in LayoutObject::Destroy() when removing a subtrree from
-  // DetachLayoutSubtree().
-  Remove(subtree_root);
-
-  // Remove the rest when safe (when flat tree traversal is allowed, and
-  // slot assignments are complete).
-  RemoveSubtreeWhenSafe(subtree_root, /*remove_root*/ false);
-}
-
-void AXObjectCacheImpl::ProcessSubtreeRemovals() {
-  for (auto& node : nodes_for_subtree_removal_) {
-    ProcessSubtreeRemoval(node.first, node.second);
-  }
-  nodes_for_subtree_removal_.clear();
-}
-
-void AXObjectCacheImpl::ProcessSubtreeRemoval(Node* node, bool remove_root) {
-  if (remove_root) {
-    RemoveSubtreeWithFlatTraversal(node, /* remove root */ true,
-                                   /* notify_parent */ true);
-  } else {
-    if (IsA<ShadowRoot>(node)) {
-      node = &To<ShadowRoot>(node)->host();
-    }
-    for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
-         child_node;
-         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
-      RemoveSubtreeWithFlatTraversal(child_node, /* remove root */ true,
-                                     /* notify_parent */ true);
-    }
-  }
-}
-
-void AXObjectCacheImpl::RemoveSubtreeWhenSafe(Node* node, bool remove_root) {
+void AXObjectCacheImpl::RemoveSubtree(const Node* node, bool remove_root) {
   if (!node || !node->isConnected()) {
     return;
   }
-  if (AXObject::CanSafelyUseFlatTreeTraversalNow(node->GetDocument())) {
-    ProcessSubtreeRemoval(node, remove_root);
-    return;
-  }
-  nodes_for_subtree_removal_.push_back(std::make_pair(node, remove_root));
+  RemoveSubtree(node, remove_root, /*notify_parent*/ true);
 }
 
-void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
-                                                       bool remove_root,
-                                                       bool notify_parent) {
+void AXObjectCacheImpl::RemoveSubtree(const Node* node) {
+  RemoveSubtree(node, /*remove_root*/ true);
+}
+
+void AXObjectCacheImpl::RemoveSubtree(const Node* node,
+                                      bool remove_root,
+                                      bool notify_parent) {
   DCHECK(node);
-  // Previously used DCHECK(AXObject::CanSafelyUseFlatTreeTraversalNow()) but
-  // failed because document had pending slot assignment in
-  // external/wpt/dom/nodes/node-appendchild-crash.html.
-  DCHECK(!node->GetDocument().IsFlatTreeTraversalForbidden());
   AXObject* object = Get(node);
   if (!object && !remove_root) {
     // Nothing remaining to do for this subtree. Already removed.
     return;
   }
 
-  if (!IsA<ShadowRoot>(node)) {
-    // Remove children found through flat traversal.
-    for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
-         child_node;
-         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
-      RemoveSubtreeWithFlatTraversal(child_node, /* remove_root */ true,
-                                     /* notify_parent */ false);
-    }
+  // Remove children found through dom traversal.
+  for (Node* child_node = NodeTraversal::FirstChild(*node); child_node;
+       child_node = NodeTraversal::NextSibling(*child_node)) {
+    RemoveSubtree(child_node, /* remove_root */ true,
+                  /* notify_parent */ false);
   }
 
   if (!object) {
@@ -1829,9 +1787,9 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
       Remove(ax_included_child, /* notify_parent */ false);
     } else if (ax_included_child->GetNode()) {
       DCHECK(ax_included_child->GetNode() != node);
-      RemoveSubtreeWithFlatTraversal(ax_included_child->GetNode(),
-                                     /* remove_root */ true,
-                                     /* notify_parent */ false);
+      RemoveSubtree(ax_included_child->GetNode(),
+                    /* remove_root */ true,
+                    /* notify_parent */ false);
     } else {
       RemoveIncludedSubtree(ax_included_child, /* remove_root */ true);
     }
@@ -1840,8 +1798,14 @@ void AXObjectCacheImpl::RemoveSubtreeWithFlatTraversal(const Node* node,
   // The code below uses ChildrenChangedWithCleanLayout() instead of
   // notify_parent param in Remove(), which would be queued, and it needs to
   // happen immediately.
-  AXObject* parent_to_notify =
-      notify_parent ? object->ParentObjectIfPresent() : nullptr;
+  AXObject* parent_to_notify = nullptr;
+  if (notify_parent) {
+    // Find the parent to notify:
+    // If the root is being removed, then it's the root's parent.
+    // If the root isn't being removed, its child subtrees are being removed,
+    // and thus the root itself is the parent who's children are changing.
+    parent_to_notify = remove_root ? object->ParentObjectIfPresent() : object;
+  }
   if (remove_root) {
     Remove(object, /* notify_parent */ false);
   }
@@ -2249,7 +2213,7 @@ void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Node* node) {
     // parents must be updated. We invalidate the entire subtree so that
     // the inclusion state is recomputed for all nodes potentially in a name
     // from contents computation.
-    RemoveSubtreeWhenSafe(node);
+    RemoveSubtree(node);
     return;
   }
 
@@ -2393,7 +2357,7 @@ void AXObjectCacheImpl::SubtreeIsAttached(Node* node) {
   // display-locking (content-visibility) change, since it is only the
   // descendants that gain or lose their objects, but its easier to be
   // consistent here.
-  RemoveSubtreeWithFlatTraversal(node);
+  RemoveSubtree(node);
 }
 
 void AXObjectCacheImpl::NodeIsAttached(Node* node) {
@@ -2450,7 +2414,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
     if (AXObject* obj = Get(node); obj && !obj->GetLayoutObject()) {
       // Had a previous AXObject, but wasn't an AXLayoutObject, even though
       // there is a layout object available.
-      RemoveSubtreeWithFlatTraversal(node);
+      RemoveSubtree(node);
       return;
     }
     if (IsA<HTMLTableElement>(node) && !node->IsFinishedParsingChildren() &&
@@ -4053,8 +4017,8 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
         // objects that may require a specific parent role in order to keep
         // their role. For example, rows and cells require a table ancestor, and
         // list items require a parent list (must be direct DOM parent).
-        RemoveSubtreeWithFlatTraversal(node, /* remove_root */ true,
-                                       /* notify_parent */ false);
+        RemoveSubtree(node, /* remove_root */ true,
+                      /* notify_parent */ false);
       } else {
         // The children of this thing need to detach from parent.
         Remove(obj, /* notify_parent */ false);
@@ -4132,8 +4096,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       // resulting tree structure changes to occur as the subtree is rebuilt,
       // including restoring the natural parent of previously owned children
       // if the owner becomes aria-hidden.
-      RemoveSubtreeWhenSafe(element);
-      MarkElementDirty(element->parentNode());
+      RemoveSubtree(element);
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);
@@ -4990,33 +4953,28 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
   return obj->ParentObjectIncludedInTree();
 }
 
-// TODO(accessibility) Try to get rid of repair situations by addressing
-// partial subtrees and mid-tree object removal directly when they occur.
-AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
-  AXObject* parent = Get(LayoutTreeBuilderTraversal::Parent(*child->GetNode()));
-  if (parent) {
-    child->SetParent(parent);
-  } else {
-    // If no parent is possible, the child is no longer part of the tree.
-    RemoveSubtreeWhenSafe(child->GetNode());
+void AXObjectCacheImpl::RestoreParentOrPrune(Node* child_node) {
+  AXObject* child = Get(child_node);
+  if (child) {
+    ChildrenChangedOnAncestorOf(child);
   }
 
-  return parent;
-}
-
-// TODO(accessibility) Try to get rid of repair situations by addressing
-// partial subtrees and mid-tree object removal directly when they occur.
-AXObject* AXObjectCacheImpl::RestoreParentOrPruneWithCleanLayout(
-    AXObject* child) {
-  AXObject* parent = child->ComputeParentOrNull();
-  if (parent) {
+  AXObject* parent = child ? child->ComputeParentOrNull()
+                           : AXObject::ComputeNonARIAParent(*this, child_node);
+  if (parent && child) {
     child->SetParent(parent);
+    ChildrenChangedOnAncestorOf(child);
   } else {
-    // If no parent is possible, the child is no longer part of the tree.
-    RemoveSubtreeWhenSafe(child->GetNode());
+    // If no parent is currently available, the child may no longer be part of
+    // the tree. Remove the child's subtree and ask the parent (if any) to
+    // rebuild its subtree.
+    RemoveSubtree(child_node);
+    if (IsProcessingDeferredEvents()) {
+      ChildrenChangedWithCleanLayout(parent);
+    } else {
+      ChildrenChanged(parent);
+    }
   }
-
-  return parent;
 }
 
 void AXObjectCacheImpl::HandleFocusedUIElementChanged(
@@ -5906,7 +5864,6 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(permission_observer_receiver_);
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
-  visitor->Trace(nodes_for_subtree_removal_);
   visitor->Trace(render_accessibility_host_);
   visitor->Trace(ax_tree_source_);
   visitor->Trace(dirty_objects_);

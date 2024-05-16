@@ -3176,6 +3176,18 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   bool is_ignored_but_included_in_tree =
       is_ignored && ComputeIsIgnoredButIncludedInTree();
   bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
+#if DCHECK_IS_ON()
+  if (!is_included_in_tree && GetNode()) {
+    Node* dom_parent = NodeTraversal::Parent(*GetNode());
+    DCHECK(dom_parent)
+        << "A node with no DOM parent must be included in the tree, so that it "
+           "can be found while traversing descendants.";
+    Node* flat_tree_parent = LayoutTreeBuilderTraversal::Parent(*GetNode());
+    DCHECK_EQ(dom_parent, flat_tree_parent)
+        << "\nA node with a different flat tree parent must be included in the "
+           "tree, so that it can be found while traversing descendants.";
+  }
+#endif
   bool included_in_tree_changed = is_included_in_tree != was_included_in_tree;
   bool notify_included_in_tree_changed = false;
   if (included_in_tree_changed) {
@@ -3824,28 +3836,37 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
     return true;
   }
 
-  // Custom elements and their children are included in the tree.
-  // <slot>s and their children are included in the tree.
-  // Also children of <label> elements, for accname calculation purposes.
-  // This checks to see whether this is a child of one of those.
-  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*node)) {
-    if (parent_node->IsCustomElement() || IsA<HTMLSlotElement>(parent_node)) {
-      return true;
-    }
-    // <span>s are ignored because they are considered uninteresting. Do not add
-    // them back inside labels.
-    if (IsA<HTMLLabelElement>(parent_node) && !IsA<HTMLSpanElement>(node)) {
-      return true;
-    }
-    // Simplify AXNodeObject::AddImageMapChildren() -- it will only need to deal
-    // with included children.
-    if (IsA<HTMLMapElement>(parent_node)) {
-      return true;
-    }
-    // Necessary to calculate the accessible description of a ruby node.
-    if (parent_node->HasTagName(html_names::kRtTag)) {
-      return true;
-    }
+  Node* dom_parent = NodeTraversal::Parent(*node);
+  if (!dom_parent) {
+    // No DOM parent, so will not be able to reach this node when cleaning uo
+    // subtrees.
+    return true;
+  }
+
+  if (dom_parent != LayoutTreeBuilderTraversal::Parent(*node)) {
+    // If the flat tree parent from LayoutTreeBuilderTraversal is different than
+    // the DOM parent, we must include this object in the tree so that we can
+    // find it using cached children_. Otherwise, the object could be missed --
+    // LayoutTreeBuilderTraversal and its cousin FlatTreeTraversal cannot
+    // always be safely used, e.g. when slot assignments are pending.
+    return true;
+  }
+
+  // Include children of <label> elements, for accname calculation purposes.
+  // <span>s are ignored because they are considered uninteresting. Do not add
+  // them back inside labels.
+  if (IsA<HTMLLabelElement>(dom_parent) && !IsA<HTMLSpanElement>(node)) {
+    return true;
+  }
+
+  // Always include the children of a map.
+  if (IsA<HTMLMapElement>(dom_parent)) {
+    return true;
+  }
+
+  // Necessary to calculate the accessible description of a ruby node.
+  if (dom_parent->HasTagName(html_names::kRtTag)) {
+    return true;
   }
 
   if (const Element* owner = node->OwnerShadowHost()) {
@@ -3874,26 +3895,6 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   }
 
   Element* element = GetElement();
-
-  // Custom elements and their children are included in the tree.
-  if (element && element->IsCustomElement()) {
-    return true;
-  }
-
-  // <slot>s and their children are included in the tree.
-  // Detailed explanation:
-  // <slot> elements are placeholders marking locations in a shadow tree where
-  // users of a web component can insert their own custom nodes. Inserted nodes
-  // (also known as distributed nodes) become children of their respective slots
-  // in the accessibility tree. In other words, the accessibility tree mirrors
-  // the flattened DOM tree or the layout tree, not the original DOM tree.
-  // Distributed nodes still maintain their parent relations and computed style
-  // information with their original location in the DOM. Therefore, we need to
-  // ensure that in the accessibility tree no remnant information from the
-  // unflattened DOM tree remains, such as the cached parent.
-  if (IsA<HTMLSlotElement>(element)) {
-    return true;
-  }
 
   // Include all pseudo element content. Any anonymous subtree is included
   // from above, in the condition where there is no node.
@@ -4719,10 +4720,8 @@ void AXObject::CheckSubtreeIsForLabelOrDescription(const AXObject* obj) const {
 
   if (obj->GetNode()) {
     // Also check unincluded children.
-    for (Node* child_node =
-             LayoutTreeBuilderTraversal::FirstChild(*obj->GetNode());
-         child_node;
-         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+    for (Node* child_node = NodeTraversal::FirstChild(*obj->GetNode());
+         child_node; child_node = NodeTraversal::NextSibling(*child_node)) {
       // Get the child object that should be detached from this parent.
       // Do not invalidate from layout, because it may be unsafe to check layout
       // at this time. However, do allow invalidations if an object changes its
@@ -5799,6 +5798,7 @@ AXObject* AXObject::UnignoredPreviousInPreOrder() const {
 AXObject* AXObject::ParentObject() const {
   DUMP_WILL_BE_CHECK(!IsDetached());
   DUMP_WILL_BE_CHECK(!IsMissingParent()) << "Missing parent: " << this;
+
   return parent_;
 }
 
@@ -5808,7 +5808,7 @@ AXObject* AXObject::ParentObject() {
   // TODO(crbug.com/337178753): this should not be necessary once subtree
   // removals can be immediate, complete and safe.
   if (IsMissingParent()) {
-    AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ true);
+    AXObjectCache().RemoveSubtree(GetNode());
     return nullptr;
   }
   return parent_;
@@ -6088,7 +6088,7 @@ void AXObject::SetChildTree(const ui::AXTreeID& child_tree_id) {
   // A node with a child tree is automatically considered a leaf, and
   // CanHaveChildren() will return false for it.
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
-  AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /*remove_root*/ false);
+  AXObjectCache().RemoveSubtree(GetNode(), /*remove_root*/ false);
   AXObjectCache().UpdateAXForAllDocuments();
 }
 
@@ -6137,42 +6137,15 @@ void AXObject::ClearChildren() {
   children_.clear();
 
   Node* node = GetNode();
-  if (!node)
-    return;
-
-  if (!CanSafelyUseFlatTreeTraversalNow(*GetDocument())) {
-    // Cannot use layout tree builder traversal now, will have to rely on
-    // RepairParent() at a later point.
+  if (!node) {
     return;
   }
-
-  // <slot> content is always included in the tree, so there is no need to
-  // iterate through the nodes. This also protects us against slot use "after
-  // poison", where attempts to access assigned nodes triggers a DCHECK.
-
-  // Detailed explanation:
-  // <slot> elements are placeholders marking locations in a shadow tree where
-  // users of a web component can insert their own custom nodes. Inserted nodes
-  // (also known as distributed nodes) become children of their respective slots
-  // in the accessibility tree. In other words, the accessibility tree mirrors
-  // the flattened DOM tree or the layout tree, not the original DOM tree.
-  // Distributed nodes still maintain their parent relations and computed style
-  // information with their original location in the DOM. Therefore, we need to
-  // ensure that in the accessibility tree no remnant information from the
-  // unflattened DOM tree remains, such as the cached parent.
-
-  // TODO(crbug.com/1209216): Figure out why removing this causes a
-  // use-after-poison and possibly replace it with a better check.
-  HTMLSlotElement* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
-  if (slot)
-    return;
 
   // Detach unincluded children from their parent (this).
   // These are children that were not cleared from first loop, as well as
   // children that will be included once the parent next updates its children.
-  for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*node);
-       child_node;
-       child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+  for (Node* child_node = NodeTraversal::FirstChild(*node); child_node;
+       child_node = NodeTraversal::NextSibling(*child_node)) {
     // Get the child object that should be detached from this parent.
     // Do not invalidate from layout, because it may be unsafe to check layout
     // at this time. However, do allow invalidations if an object changes its
@@ -7829,6 +7802,7 @@ void AXObject::PreSerializationConsistencyCheck() const{
   CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
   CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;
+  CHECK(!IsMissingParent());
   if (!IsIncludedInTree()) {
     AXObject* included_parent = ParentObjectIncludedInTree();
     // TODO(accessibility): Return to CHECK once it has been resolved,

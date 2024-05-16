@@ -4,18 +4,15 @@ rootWebArea focusable
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton collapsed focusable value='Option 1' haspopup=listbox
+++++++++++++genericContainer
+++++++++++++++staticText name='Option 1'
+++++++++++++++++inlineTextBox name='Option 1'
 ++++++++++++genericContainer ignored
-++++++++++++++genericContainer
-++++++++++++++++staticText name='Option 1'
-++++++++++++++++++inlineTextBox name='Option 1'
-++++++++++++genericContainer ignored
-++++++++++++++genericContainer ignored
 ++++++++genericContainer ignored
-++++++++++listBox ignored invisible
-++++++++++++genericContainer ignored invisible
-++++++++++++++listBoxOption focusable ignored invisible selected=true
-++++++++++++++listBoxOption focusable ignored invisible selected=false
-++++++++++++++listBoxOption focusable ignored invisible selected=false
+++++++++++listBoxOption focusable ignored invisible selected=true
+++++++++++listBoxOption focusable ignored invisible selected=false
+++++++++++listBoxOption focusable ignored invisible selected=false
+++++++++genericContainer ignored invisible
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton collapsed focusable value='Option 1' haspopup=listbox
@@ -23,3 +20,4 @@ rootWebArea focusable
 ++++++++++++++inlineTextBox name='Custom selectlist button'
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible
+++++++++genericContainer ignored invisible

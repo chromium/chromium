@@ -12,5 +12,6 @@ rootWebArea
 ++++++++++++cell ignored invisible
 ++++++++++++cell ignored invisible
 ++++++button
+++++++genericContainer ignored invisible
 ++++++button
 ++++++button name='the title' nameFrom=title

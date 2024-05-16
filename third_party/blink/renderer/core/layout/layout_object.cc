@@ -2942,7 +2942,7 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
     if (style_->ContentVisibility() != new_style.ContentVisibility()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         if (GetNode()) {
-          cache->RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ false);
+          cache->RemoveSubtree(GetNode(), /* remove_root */ false);
         }
       }
     }

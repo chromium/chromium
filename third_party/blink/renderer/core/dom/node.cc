@@ -1567,9 +1567,8 @@ void Node::DetachLayoutTree(bool performing_reattach) {
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
   DocumentLifecycle::DetachScope will_detach(GetDocument().Lifecycle());
 
-  // Review: under what conditions should we call this?
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->RemoveAXObjectsInLayoutSubtree(this);
+    cache->RemoveSubtree(this);
   }
 
   if (performing_reattach) {
@@ -3334,11 +3333,6 @@ void Node::RemovedFromFlatTree() {
     DetachLayoutTree();
   }
   GetDocument().GetStyleEngine().FlatTreePositionChanged(*this);
-
-  // Ensure removal from accessibility cache even if it doesn't have layout.
-  if (auto* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->RemoveSubtreeWhenSafe(this);
-  }
 }
 
 void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {

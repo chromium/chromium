@@ -2,6 +2,7 @@ rootWebArea name='done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++comboBoxGrouping ignored invisible
+++++++++genericContainer ignored invisible
 ++++++++listBox ignored invisible
 ++++++++++none ignored invisible
 ++++++++++++none ignored invisible

@@ -2380,9 +2380,6 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     if (!needs_layout_tree_update) {
       // Early out for no-op calls before the UMA/UKM measurement is set up to
       // avoid a large number of close-to-zero samples.
-      if (AXObjectCache* cache = ExistingAXObjectCache()) {
-        cache->ProcessSubtreeRemovals();
-      }
       advance_to_style_clean();
       return;
     }
@@ -2399,10 +2396,6 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
     GetSlotAssignmentEngine().RecalcSlotAssignments();
     DCHECK(!needs_layout_tree_update) << "Should be postponed above";
     needs_layout_tree_update = NeedsLayoutTreeUpdateForThisDocument();
-  }
-
-  if (AXObjectCache* cache = ExistingAXObjectCache()) {
-    cache->ProcessSubtreeRemovals();
   }
 
   if (!needs_layout_tree_update) {
