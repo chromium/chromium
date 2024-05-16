@@ -1,20 +1,85 @@
 {
     "0": {
         "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
             "speedometer2-nominorms": {
                 "abridged": false
             },
+            "speedometer3": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3.0"
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-nominorms": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3.0"
+            }
+        }
+    },
+    "2": {
+        "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-nominorms": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3.0"
+            }
+        }
+    },
+    "3": {
+        "benchmarks": {
+            "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-nominorms": {
+                "abridged": false
+            },
+            "speedometer3": {
+                "abridged": false
+            }
+        },
+        "crossbench": {
+            "speedometer3.crossbench": {
+                "crossbench_name": "speedometer_3.0"
             }
         }
     },
     "extra_infos": {
-        "num_stories": 2,
-        "predicted_min_shard_time": 20,
+        "num_stories": 16,
+        "predicted_min_shard_time": 90,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 20,
+        "predicted_max_shard_time": 90,
         "predicted_max_shard_index": 0,
-        "shard #0": 20
+        "shard #0": 90,
+        "shard #1": 90,
+        "shard #2": 90,
+        "shard #3": 90
     }
 }

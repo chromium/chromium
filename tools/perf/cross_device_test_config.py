@@ -147,6 +147,12 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
     },
+    'linux-perf-fyi': {
+        'speedometer2': 4,
+        'speedometer2-nominorms': 4,
+        'speedometer3': 4,
+        'speedometer3.crossbench': 4,
+    },
     'win-10_laptop_low_end-perf': {
         'jetstream2': {
             'JetStream2': 5,

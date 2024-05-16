@@ -220,7 +220,7 @@ FYI_BUILDERS = {
         'linux',
         'dimension': {
             'gpu': '10de',
-            'os': 'Ubuntu-22.04',
+            'os': 'Ubuntu',
             'pool': 'chrome.tests.perf-fyi',
         },
     },

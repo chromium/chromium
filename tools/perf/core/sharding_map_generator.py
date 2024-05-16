@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import collections
 
+import core.bot_platforms
 import core.path_util
 import core.cli_utils
 
@@ -279,8 +280,18 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
   # Format the benchmark's stories by indices
   benchmarks_in_shard = collections.OrderedDict()
   executables_in_shard = collections.OrderedDict()
+  crossbench_in_shard = collections.OrderedDict()
   for b in benchmarks:
-    if benchmark_name_to_config[b].is_telemetry:
+    config = benchmark_name_to_config[b]
+    if isinstance(config, core.bot_platforms.CrossbenchConfig):
+      crossbench_in_shard[b] = {'crossbench_name': config.crossbench_name}
+      first_story = all_stories[b].index(benchmarks[b][0])
+      last_story = all_stories[b].index(benchmarks[b][-1]) + 1
+      if first_story != 0:
+        crossbench_in_shard[b]['begin'] = first_story
+      if last_story != len(all_stories[b]):
+        crossbench_in_shard[b]['end'] = last_story
+    elif config.is_telemetry:
       benchmarks_in_shard[b] = {}
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
@@ -290,7 +301,6 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
         benchmarks_in_shard[b]['end'] = last_story
       benchmarks_in_shard[b]['abridged'] = benchmark_name_to_config[b].abridged
     else:
-      config = benchmark_name_to_config[b]
       executables_in_shard[b] = {}
       if config.flags:
         executables_in_shard[b]['arguments'] = config.flags
@@ -300,6 +310,8 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
     sharding_map[str(shard_index)]['benchmarks'] = benchmarks_in_shard
   if executables_in_shard:
     sharding_map[str(shard_index)]['executables'] = executables_in_shard
+  if crossbench_in_shard:
+    sharding_map[str(shard_index)]['crossbench'] = crossbench_in_shard
 
 
 def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
@@ -317,7 +329,7 @@ def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
     run_count = b.repeat if repeat else 1
     for s in b.stories:
       test_name = '%s/%s' % (b.name, s)
-      test_duration = DEFAULT_STORY_DURATION
+      test_duration = getattr(b, 'estimated_runtime', DEFAULT_STORY_DURATION)
       if test_name in timing_data_dict:
         test_duration = timing_data_dict[test_name] * run_count
       timing_data_list.append((test_name, test_duration))

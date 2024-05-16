@@ -8,6 +8,7 @@ import json
 import os
 import unittest
 
+from core import bot_platforms
 from core import sharding_map_generator
 
 
@@ -176,3 +177,16 @@ class TestShardingMapGenerator(unittest.TestCase):
     self.assertIn('benchmark_1', sharding_map['2']['benchmarks'])
     self.assertIn('benchmark_1', sharding_map['3']['benchmarks'])
     self.assertIn('benchmark_1', sharding_map['4']['benchmarks'])
+
+  def testGenerateShardingMapWithCrossbench(self):
+    benchmarks_data, timing_data, = self._generate_test_data(
+        [[10, 20, 30], [65, 55, 5, 45], [50, 40, 30, 20, 10]])
+    benchmarks_data.append(
+        bot_platforms.CrossbenchConfig('cb_benchmark_0', 'cb_benchmark_0_name'))
+    sharding_map = sharding_map_generator.generate_sharding_map(
+        benchmarks_data, timing_data, 3, None)
+    self.assertIn('crossbench', sharding_map['2'])
+    self.assertIn('cb_benchmark_0', sharding_map['2']['crossbench'])
+    self.assertEqual(
+        'cb_benchmark_0_name',
+        sharding_map['2']['crossbench']['cb_benchmark_0']['crossbench_name'])
