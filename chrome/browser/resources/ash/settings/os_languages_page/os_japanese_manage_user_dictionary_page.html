@@ -1,17 +1,69 @@
-<style include="settings-shared">
+<style include="settings-shared md-select">
   :host {
     display: flex;
     flex-direction: column;
   }
+
+  .entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+  }
+
+  .entry-input {
+    margin-inline-end: 5px;
+  }
+
+  .category-div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .category-label {
+   font-size: 11px;
+   line-height: 16px;
+  }
+
 </style>
 <div class="cr-row continuation">
-  <div>
-    TODO(b/234790486): Add the correct contents here.
-    This page is hidden under the flag kSystemJapanesePhysicalTyping
-  </div>
   <div>status: [[status]]</div>
   <cr-icon-button class="icon-refresh" on-click="getDictionaries_"
       title="DebugDictionaryLoad">
   </cr-icon-button>
 </div>
-
+<template is="dom-repeat" items="[[dictionaries_]]" as="dict">
+  <cr-expand-button expanded="{{dict.expanded}}" class="cr-row">
+    [[dict.name]]
+  </cr-expand-button>
+  <iron-collapse class="" opened="[[dict.expanded]]">
+    <div class="cr-row continuation">
+      <cr-input value="[[dict.name]]"
+      label="Dictionary name"
+      type="text"></cr-input>
+    </div>
+    <template is="dom-repeat" items="[[dict.entries]]" as="entry">
+      <div class="cr-row continuation entry-row">
+        <cr-input value="[[entry.key]]"
+           label="Reading"
+           type="text" class="entry-input"></cr-input>
+        <cr-input value="[[entry.value]]"
+           label="Word"
+           type="text" class="entry-input"></cr-input>
+        <div class="category-div" >
+          <div class="cr-form-field-label category-label">Category</div>
+          <!-- TODO(b/340393256): Make these options match actual POS values -->
+          <select class="md-select" class="entry-input">
+            <option>POS Type 1</option>
+            <option>POS Type 2</option>
+            <option>POS Type 3</option>
+            <option selected>POS Type 4</option>
+          </select>
+        </div>
+        <cr-input value="[[entry.comment]]"
+           label="Comment"
+           type="text" class="entry-input"></cr-input>
+      </div>
+    </template>
+  </iron-collapse>
+</template>
