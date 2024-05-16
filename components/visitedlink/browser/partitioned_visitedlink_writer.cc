@@ -157,15 +157,21 @@ void PartitionedVisitedLinkWriter::TableBuilder::OnCompleteMainThread() {
 PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
     content::BrowserContext* browser_context,
     VisitedLinkDelegate* delegate)
-    : browser_context_(browser_context), delegate_(delegate) {}
+    : browser_context_(browser_context),
+      delegate_(delegate),
+      listener_(std::make_unique<VisitedLinkEventListener>(browser_context)) {}
 
 PartitionedVisitedLinkWriter::PartitionedVisitedLinkWriter(
+    std::unique_ptr<Listener> listener,
     VisitedLinkDelegate* delegate,
     bool suppress_build,
     int32_t default_table_size)
     : delegate_(delegate),
+      listener_(std::move(listener)),
       suppress_build_(suppress_build),
-      table_size_override_(default_table_size) {}
+      table_size_override_(default_table_size) {
+  DCHECK(listener_);
+}
 
 PartitionedVisitedLinkWriter::~PartitionedVisitedLinkWriter() = default;
 
@@ -183,8 +189,10 @@ bool PartitionedVisitedLinkWriter::Init() {
     return true;
   }
 
-  // TODO(crbug.com/332364003): Notify the listener instance of the new
-  // `mapped_table_memory_` region.
+  // Send the temporary table to the renderer processes via `listener_`
+  if (mapped_table_memory_.region.IsValid()) {
+    listener_->NewTable(&mapped_table_memory_.region);
+  }
 
 #ifndef NDEBUG
   DebugValidate();
@@ -285,10 +293,9 @@ void PartitionedVisitedLinkWriter::ResizeTable(int32_t new_size) {
       }
     }
   }
-
-  // TODO(crbug.com/332364003): Notify the listener instance of the new
-  // `mapped_table_memory_` region. We will send an update notification to all
-  // child processes so they read the new table.
+  // Send an update notification to all child processes so they read the new
+  // table.
+  listener_->NewTable(&mapped_table_memory_.region);
 
 #ifndef NDEBUG
   DebugValidate();
@@ -326,8 +333,10 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
       // End of probe sequence found, insert here.
       hash_table_[cur_hash] = fingerprint;
       used_items_++;
-      // TODO(crbug.com/332364003): if `send_notifications` is true, we would
-      // alert the listener about the added fingerprint here.
+      // If allowed, notify listener that a new visited link was added.
+      if (send_notifications) {
+        listener_->Add(fingerprint);
+      }
       return cur_hash;
     }
 
@@ -452,8 +461,11 @@ void PartitionedVisitedLinkWriter::OnTableBuildComplete(
       }
       deleted_during_build_.clear();
 
-      // TODO(crbug.com/332364003): Notify the listener of the new hashtable
-      // and ask the VisitedLinkReaders to reset their links.
+      // Send an update notification to all child processes.
+      listener_->NewTable(&mapped_table_memory_.region);
+      // All tabs which was loaded when table was being rebuilt
+      // invalidate their links again.
+      listener_->Reset(false);
     }
   }
 
@@ -569,8 +581,8 @@ void PartitionedVisitedLinkWriter::DeleteAllVisitedLinks() {
   // us, otherwise, schedule writing the new table to disk ourselves.
   ResizeTableIfNecessary();
 
-  // TODO(crbug.com/332364003): Notify the listener instance that we reset the
-  // hashtable.
+  // Notify reader instances that hashtable state has changed.
+  listener_->Reset(false);
 }
 
 void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
@@ -579,8 +591,8 @@ void PartitionedVisitedLinkWriter::DeleteVisitedLinks(
     return;
   }
 
-  // TODO(crbug.com/332364003): Notify the listener instance that we reset the
-  // hashtable.
+  // Notify reader instances that hashtable state has changed.
+  listener_->Reset(false);
 
   if (table_builder_.get()) {
     // A build is in progress, save this deletion in the temporary
