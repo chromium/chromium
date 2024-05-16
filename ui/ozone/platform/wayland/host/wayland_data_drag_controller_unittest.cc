@@ -1489,6 +1489,38 @@ TEST_P(WaylandDataDragControllerTest,
       window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
 }
 
+// Regression test for https://crbug.com/336449364.
+TEST_P(WaylandDataDragControllerTest, OutgoingSessionWithoutDndFinished) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Once the drag session effectively starts at server-side, emulate a
+  // data_source.dnd_drop_performed without its subsequent dnd_finished.
+  ScheduleTestTask(
+      base::BindLambdaForTesting([&]() { SendDndDropPerformed(); }));
+
+  // Start the drag session, which spins a nested message loop, and ensure it
+  // quits even without wl_data_source.dnd_finished. In which case, the expected
+  // side effect is drag controller's internal state left inconsistent, ie: not
+  // reset to `kIdle`.
+  RunMouseDragWithSampleData(
+      window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
+  EXPECT_NE(drag_controller_state(), WaylandDataDragController::State::kIdle);
+
+  // Then ensure that, even after such server-side bogus drag events flow,
+  // subsequent drags can start successfully.
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetHtml(sample_text_for_dnd(), {});
+  bool started = drag_controller()->StartSession(
+      os_exchange_data, DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE,
+      DragEventSource::kMouse);
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
+  ASSERT_TRUE(started);
+
+  SendDndFinished();
+  EXPECT_EQ(drag_controller_state(), WaylandDataDragController::State::kIdle);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandDataDragControllerTest,

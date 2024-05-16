@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 struct wl_data_source;
@@ -64,6 +65,10 @@ class DataSource {
     virtual void OnDataSourceSend(DataSource<T>* source,
                                   const std::string& mime_type,
                                   std::string* contents) = 0;
+    // Optional callback intended to be implemented only by dnd-capable delegate
+    // implementations.
+    virtual void OnDataSourceDropPerformed(DataSource<T>* source,
+                                           base::TimeTicks timestamp) {}
 
    protected:
     virtual ~Delegate() = default;
@@ -86,6 +91,7 @@ class DataSource {
 
  private:
   void HandleFinishEvent(bool completed);
+  void HandleDropEvent();
   void HandleSendEvent(const std::string& mime_type, int32_t fd);
 
   // {T}_listener callbacks:

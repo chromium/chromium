@@ -37,6 +37,13 @@ DataSource<T>::~DataSource() {
 }
 
 template <typename T>
+void DataSource<T>::HandleDropEvent() {
+  VLOG(1) << "OnDataSourceDropPerformed in WaylandDataSource";
+  // No timestamp for these events. Use EventTimeForNow(), for now.
+  delegate_->OnDataSourceDropPerformed(this, ui::EventTimeForNow());
+}
+
+template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
   VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
   // No timestamp for these events. Use EventTimeForNow(), for now.
@@ -108,7 +115,8 @@ void DataSource<T>::OnTarget(void* data, T* source, const char* mime_type) {
 
 template <typename T>
 void DataSource<T>::OnDndDropPerformed(void* data, T* source) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<DataSource<T>*>(data);
+  self->HandleDropEvent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
