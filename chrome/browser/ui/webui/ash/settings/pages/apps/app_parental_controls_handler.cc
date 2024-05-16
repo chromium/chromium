@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
@@ -23,6 +24,8 @@ app_parental_controls::mojom::AppPtr CreateAppPtr(
   auto app = app_parental_controls::mojom::App::New();
   app->id = update.AppId();
   app->title = update.Name();
+  app->is_blocked =
+      update.Readiness() == apps::Readiness::kDisabledByLocalSettings;
   return app;
 }
 
@@ -60,6 +63,15 @@ void AppParentalControlsHandler::BindInterface(
 
 void AppParentalControlsHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(GetAppList());
+}
+
+void AppParentalControlsHandler::UpdateApp(const std::string& id,
+                                           bool is_blocked) {
+  if (is_blocked) {
+    blocked_app_registry_->AddApp(id);
+    return;
+  }
+  blocked_app_registry_->RemoveApp(id);
 }
 
 std::vector<app_parental_controls::mojom::AppPtr>

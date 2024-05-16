@@ -14,9 +14,7 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
   private apps_: App[];
 
   constructor() {
-    super([
-      'getApps',
-    ]);
+    super(['getApps', 'updateApp']);
 
     this.apps_ = [];
   }
@@ -24,6 +22,17 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
   getApps(): Promise<{apps: App[]}> {
     this.methodCalled('getApps');
     return Promise.resolve({apps: this.apps_});
+  }
+
+  updateApp(id: string, isBlocked: boolean): Promise<void> {
+    this.methodCalled('updateApp', [id, isBlocked]);
+    // Update the state of the app in the local cache.
+    for (const app of this.apps_) {
+      if (app.id === id) {
+        app.isBlocked = isBlocked;
+      }
+    }
+    return Promise.resolve();
   }
 
   addAppForTesting(app: App) {

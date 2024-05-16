@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,12 +16,15 @@
 #include "base/containers/contains.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +40,10 @@ class BlockedAppRegistryTest : public testing::Test {
 
   BlockedAppRegistry* registry() { return registry_.get(); }
   ArcAppTest& arc_test() { return arc_test_; }
+
+  // Returns app readiness or nullopt if the app with `app_id` was not found in
+  // the app service cache.
+  std::optional<apps::Readiness> GetAppReadiness(const std::string& app_id);
 
  protected:
   // testing::Test:
@@ -58,6 +66,17 @@ class BlockedAppRegistryTest : public testing::Test {
 
   std::unique_ptr<BlockedAppRegistry> registry_;
 };
+
+std::optional<apps::Readiness> BlockedAppRegistryTest::GetAppReadiness(
+    const std::string& app_id) {
+  apps::AppRegistryCache& app_cache =
+      app_service_test_.proxy()->AppRegistryCache();
+  std::optional<apps::Readiness> readiness;
+  app_cache.ForOneApp(app_id, [&readiness](const apps::AppUpdate& update) {
+    readiness = update.Readiness();
+  });
+  return readiness;
+}
 
 void BlockedAppRegistryTest::SetUp() {
   testing::Test::SetUp();
@@ -146,15 +165,18 @@ TEST_F(BlockedAppRegistryTest, ReinstallAvailableApp) {
   const std::string package_name = "com.example.app1", app_name = "app1";
   const std::string app_id = InstallArcApp(package_name, app_name);
   ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 
   UninstallArcApp(package_name);
+  EXPECT_EQ(apps::Readiness::kUninstalledByUser, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 
   // Assuming the same AppService id will be generated upon reinstallation.
   InstallArcApp(package_name, app_name);
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 }
@@ -164,21 +186,25 @@ TEST_F(BlockedAppRegistryTest, ReinstallBlockedApp) {
   const std::string package_name = "com.example.app1", app_name = "app1";
   const std::string app_id = InstallArcApp(package_name, app_name);
   ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 
   // Simulate app being blocked.
   registry()->AddApp(app_id);
+  EXPECT_EQ(apps::Readiness::kDisabledByLocalSettings, GetAppReadiness(app_id));
   EXPECT_EQ(1UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_id));
 
   UninstallArcApp(package_name);
+  EXPECT_EQ(apps::Readiness::kUninstalledByUser, GetAppReadiness(app_id));
   EXPECT_EQ(1UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kBlockedUninstalled,
             registry()->GetAppState(app_id));
 
   // Assuming the same AppService id will be generated upon reinstallation.
   InstallArcApp(package_name, app_name);
+  EXPECT_EQ(apps::Readiness::kDisabledByLocalSettings, GetAppReadiness(app_id));
   EXPECT_EQ(1UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_id));
 }
@@ -189,10 +215,12 @@ TEST_F(BlockedAppRegistryTest, RestoreBlockedApp) {
   const std::string package_name = "com.example.app1", app_name = "app1";
   const std::string app_id = InstallArcApp(package_name, app_name);
   ASSERT_FALSE(app_id.empty());
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 
   UninstallArcApp(package_name);
+  EXPECT_EQ(apps::Readiness::kUninstalledByUser, GetAppReadiness(app_id));
   EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_id));
 
@@ -203,8 +231,23 @@ TEST_F(BlockedAppRegistryTest, RestoreBlockedApp) {
 
   // Simulate app being restored - same path as installed.
   InstallArcApp(package_name, app_name);
+  EXPECT_EQ(apps::Readiness::kDisabledByLocalSettings, GetAppReadiness(app_id));
   EXPECT_EQ(1UL, registry()->GetBlockedApps().size());
   EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_id));
+}
+
+// Tests that app state gets updated when added or removed from the
+// blocked app registry.
+TEST_F(BlockedAppRegistryTest, BlockAndUnblock) {
+  const std::string package_name = "com.example.app1", app_name = "app1";
+  const std::string app_id = InstallArcApp(package_name, app_name);
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
+
+  registry()->AddApp(app_id);
+  EXPECT_EQ(apps::Readiness::kDisabledByLocalSettings, GetAppReadiness(app_id));
+
+  registry()->RemoveApp(app_id);
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(app_id));
 }
 
 }  // namespace ash::on_device_controls

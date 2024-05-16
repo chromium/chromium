@@ -13,6 +13,9 @@ struct App {
   // The title of the app.
   // This field may be null when this struct is used to signal updates.
   string? title;
+
+  // Whether the app is blocked by the local parental controls.
+  bool is_blocked;
 };
 
 // Interface for fetching and setting the state of apps for on-device parental
@@ -20,4 +23,7 @@ struct App {
 interface AppParentalControlsHandler {
   // Get the list of installed apps.
   GetApps() => (array<App> apps);
+
+  // Updates the blocked state of the app identified by `app_id`.
+  UpdateApp(string app_id, bool is_blocked);
 };

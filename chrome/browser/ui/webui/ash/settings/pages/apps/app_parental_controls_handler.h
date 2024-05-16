@@ -41,6 +41,7 @@ class AppParentalControlsHandler
 
   // app_parental_controls::mojom::AppParentalControlsHandler:
   void GetApps(GetAppsCallback callback) override;
+  void UpdateApp(const std::string& id, bool is_blocked) override;
 
   void BindInterface(
       mojo::PendingReceiver<

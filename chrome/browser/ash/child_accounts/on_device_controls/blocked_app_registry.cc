@@ -49,21 +49,29 @@ BlockedAppRegistry::BlockedAppRegistry(apps::AppServiceProxy* app_service,
 BlockedAppRegistry::~BlockedAppRegistry() = default;
 
 void BlockedAppRegistry::AddApp(const std::string& app_id) {
+  VLOG(1) << "app-controls: adding blocked app " << app_id;
+
   if (base::Contains(registry_, app_id)) {
     LOG(WARNING) << app_id << " already in blocked app registry";
     return;
   }
   registry_[app_id] = AppDetails();
 
+  app_service_->BlockApps({app_id});
+
   // TODO(b/338247185): Update pref state.
 }
 
 void BlockedAppRegistry::RemoveApp(const std::string& app_id) {
+  VLOG(1) << "app-controls: removing blocked app " << app_id;
+
   if (!base::Contains(registry_, app_id)) {
     LOG(WARNING) << app_id << " not in blocked app registry";
     return;
   }
   registry_.erase(app_id);
+
+  app_service_->UnblockApps({app_id});
 
   // TODO(b/338247185): Update pref state.
 }
@@ -120,6 +128,8 @@ apps::AppRegistryCache& BlockedAppRegistry::GetAppCache() {
 }
 
 void BlockedAppRegistry::OnAppReady(const std::string& app_id) {
+  VLOG(1) << "app-controls: app ready " << app_id;
+
   if (GetAppState(app_id) == LocalAppState::kAvailable) {
     return;
   }
@@ -127,14 +137,16 @@ void BlockedAppRegistry::OnAppReady(const std::string& app_id) {
   if (GetAppState(app_id) == LocalAppState::kBlockedUninstalled) {
     // Clear the uninstall timestamp, but keep the initial blocked timestamp.
     registry_[app_id].uninstall_timestamp.reset();
-    return;
   }
 
-  // TODO(b/332963662): Call block app in AppService.
+  app_service_->BlockApps({app_id});
+
   // TODO(b/338247185): Update pref state.
 }
 
 void BlockedAppRegistry::OnAppUninstalled(const std::string& app_id) {
+  VLOG(1) << "app-controls: app uninstalled " << app_id;
+
   if (GetAppState(app_id) == LocalAppState::kAvailable) {
     return;
   }

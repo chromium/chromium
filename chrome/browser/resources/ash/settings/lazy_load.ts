@@ -51,6 +51,7 @@ import './os_apps_page/app_management_page/app_management_page.js';
 import './os_apps_page/app_management_page/dom_switch.js';
 import './os_apps_page/app_management_page/main_view.js';
 import './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
+import './os_apps_page/app_parental_controls/block_app_item.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
 import './os_people_page/account_manager_subpage.js';
@@ -270,6 +271,7 @@ export {AppNotificationRowElement} from './os_apps_page/app_notifications_page/a
 export {SettingsAppNotificationsManagerSubpage} from './os_apps_page/app_notifications_page/app_notifications_manager_subpage.js';
 export {AppNotificationsSubpage} from './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 export {SettingsAppParentalControlsSubpageElement} from './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
+export {BlockAppItemElement} from './os_apps_page/app_parental_controls/block_app_item.js';
 export {ManageIsolatedWebAppsSubpageElement} from './os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.js';
 export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
 export {SettingsBluetoothDeviceDetailSubpageElement} from './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
