@@ -55,12 +55,12 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
     return nil;
   }
   unpacker.requiresSecureCoding = YES;
-  NSSet* classes =
-      [NSSet setWithObjects:[NSDictionary class], [KSTicket class],
-                            [KSPathExistenceChecker class],
-                            [KSLaunchServicesExistenceChecker class],
-                            [KSSpotlightExistenceChecker class],
-                            [NSArray class], [NSSet class], [NSURL class], nil];
+  NSSet* classes = [NSSet
+      setWithObjects:[NSDictionary class], [KSTicket class],
+                     [KSPathExistenceChecker class],
+                     [KSLaunchServicesExistenceChecker class],
+                     [KSSpotlightExistenceChecker class], [NSArray class],
+                     [NSSet class], [NSURL class], [NSString class], nil];
   store = [unpacker decodeObjectOfClasses:classes
                                    forKey:NSKeyedArchiveRootObjectKey];
   [unpacker finishDecoding];
