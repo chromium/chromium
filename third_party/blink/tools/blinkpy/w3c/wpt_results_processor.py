@@ -387,8 +387,6 @@ class WPTResultsProcessor:
         if test_name_prefix and not test_name_prefix.endswith('/'):
             test_name_prefix += '/'
         self.test_name_prefix = test_name_prefix
-        self.wpt_manifest = self.port.wpt_manifest('external/wpt')
-        self.internal_manifest = self.port.wpt_manifest('wpt_internal')
         self.path_finder = path_finder.PathFinder(self.fs)
         self._test_uri_mapper = TestURIMapper(self.port)
         # Provide placeholder properties until the `suite_start` events are
@@ -575,7 +573,7 @@ class WPTResultsProcessor:
         self._iteration += 1
 
     def _get_chromium_test_name(self, test: str, subsuite: str):
-        if not self.path_finder.is_wpt_internal_path(test):
+        if self.port.wpt_dir(test) != 'wpt_internal':
             test = self.path_finder.wpt_prefix() + test
         if subsuite:
             test = f'virtual/{subsuite}/{test}'
@@ -601,14 +599,9 @@ class WPTResultsProcessor:
             baseline=baseline)
 
     def get_path_from_test_root(self, test: str) -> str:
-        if self.path_finder.is_wpt_internal_path(test):
-            path_from_test_root = self.internal_manifest.file_path_for_test_url(
-                test[len('wpt_internal/'):])
-        else:
-            test = self.path_finder.strip_wpt_path(test)
-            path_from_test_root = self.wpt_manifest.file_path_for_test_url(
-                test)
-        return path_from_test_root
+        wpt_dir = self.port.wpt_dir(test)
+        manifest = self.port.wpt_manifest(wpt_dir)
+        return manifest.file_path_for_test_url(test[len(f'{wpt_dir}/'):])
 
     @memoized
     def _file_path_for_test(self, test: str) -> str:
@@ -617,20 +610,15 @@ class WPTResultsProcessor:
         if not path_from_test_root:
             raise EventProcessingError(
                 'Test ID %r does not exist in the manifest' % test)
-        if self.path_finder.is_wpt_internal_path(test):
-            prefix = 'wpt_internal'
-        else:
-            prefix = self.fs.join('external', 'wpt')
-        return self.path_finder.path_from_web_tests(prefix,
+        wpt_dir = self.port.wpt_dir(test)
+        return self.path_finder.path_from_web_tests(*posixpath.split(wpt_dir),
                                                     path_from_test_root)
 
     def get_test_type(self, test: str) -> str:
         _, test = self.port.get_suite_name_and_base_test(test)
-        test_path = self.get_path_from_test_root(test)
-        if self.path_finder.is_wpt_internal_path(test):
-            return self.internal_manifest.get_test_type(test_path)
-        else:
-            return self.wpt_manifest.get_test_type(test_path)
+        manifest = self.port.wpt_manifest(self.port.wpt_dir(test))
+        path_from_root = self.get_path_from_test_root(test)
+        return manifest.get_test_type(path_from_root)
 
     def test_status(self,
                     event: Event,

@@ -1311,6 +1311,17 @@ class Port(object):
             hasher.update(f'{changed_file}:{file_digest}\n'.encode())
         return hasher.hexdigest()
 
+    @classmethod
+    def wpt_dir(cls, test: str) -> Optional[str]:
+        """Return which WPT directory (if any) a test belongs to.
+
+        Returns `None` if the test is not a WPT.
+        """
+        for wpt_dir in cls.WPT_DIRS:
+            if test.startswith(wpt_dir):
+                return wpt_dir
+        return None
+
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""
 

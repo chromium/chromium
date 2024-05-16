@@ -253,9 +253,6 @@ class PathFinder(object):
     def is_wpt_path(self, test_path):
         return test_path.startswith(self.wpt_prefix())
 
-    def is_wpt_internal_path(self, test_path):
-        return test_path.startswith('wpt_internal/')
-
     @memoized
     def depot_tools_base(self):
         """Returns the path to depot_tools, or None if not found.
