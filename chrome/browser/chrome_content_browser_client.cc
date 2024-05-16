@@ -4136,10 +4136,8 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->always_show_focus =
       prefs->GetBoolean(ash::prefs::kAccessibilityFocusHighlightEnabled);
 #else
-  if (features::IsAccessibilityFocusHighlightEnabled()) {
-    web_prefs->always_show_focus =
-        prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled);
-  }
+  web_prefs->always_show_focus =
+      prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

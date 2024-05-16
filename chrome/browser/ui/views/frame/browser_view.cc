@@ -234,7 +234,6 @@
 #include "extensions/common/command.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -1343,8 +1342,7 @@ void BrowserView::Show() {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (features::IsAccessibilityFocusHighlightEnabled() &&
-      !accessibility_focus_highlight_) {
+  if (!accessibility_focus_highlight_) {
     accessibility_focus_highlight_ =
         std::make_unique<AccessibilityFocusHighlight>(this);
   }

@@ -43,11 +43,6 @@
 
 namespace features {
 
-// Draw a visual highlight around the focused element on the page
-// briefly whenever focus changes.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFocusHighlight);
-AX_BASE_EXPORT bool IsAccessibilityFocusHighlightEnabled();
-
 // Enable PDF OCR for Select-to-Speak. It will be disabled by default on
 // platforms other than ChromeOS as STS is available only on ChromeOS.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPdfOcrForSelectToSpeak);

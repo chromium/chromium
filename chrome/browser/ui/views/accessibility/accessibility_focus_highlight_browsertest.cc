@@ -27,7 +27,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
@@ -58,8 +57,6 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides:
   void SetUp() override {
     EnablePixelOutput();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAccessibilityFocusHighlight);
     InProcessBrowserTest::SetUp();
   }
 
@@ -125,9 +122,6 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
       return result_image;
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Smoke test that ensures that when a node gets focus, the layer with the
