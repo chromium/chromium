@@ -33,6 +33,11 @@ class OOBEDeviceUseCase {
 
   const std::string& GetDescription() const;
 
+  // Overloading < operator for sorting.
+  bool operator<(const OOBEDeviceUseCase& obj) const {
+    return order_ < obj.order_;
+  }
+
  private:
   std::string id_;
 

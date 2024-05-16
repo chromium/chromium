@@ -104,6 +104,12 @@ export class OobeCategoriesList extends OobeCategoriesListBase {
     this.selectedCategoriesCount = 0;
     this.loadedIconsCount = 0;
     this.itemRendered = 0;
+    this.categoriesList.forEach((category) => {
+      if (category.selected) {
+        this.selectedCategoriesCount++;
+        this.categoriesSelected.push(category.categoryId);
+      }
+    });
   }
 
   itemRenderedChanged(): void {

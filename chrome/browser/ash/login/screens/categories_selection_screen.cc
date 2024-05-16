@@ -20,6 +20,18 @@ namespace {
 constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSkip[] = "skip";
 
+bool HasBeenSelected(std::string category_id) {
+  PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  const base::Value::List& selected_categories =
+      prefs->GetList(prefs::kOobeCategoriesSelected);
+  for (const auto& category : selected_categories) {
+    if (category.GetString() == category_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 // static
@@ -92,24 +104,23 @@ void CategoriesSelectionScreen::OnResponseReceived(
     exit_callback_.Run(Result::kError);
   }
 
-  // PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  // const base::Value::List& selected_categories =
-  // prefs->GetList(prefs::kOobeCategoriesSelected);
-
   base::Value::List categories_list;
   for (OOBEDeviceUseCase category : categories) {
+    // Disregard the category with order 0, as it relates to a general,
+    // non-specific use case (oobe_otheres).
+    if (category.GetOrder() == 0) {
+      continue;
+    }
     base::Value::Dict category_dict;
     category_dict.Set("categoryId", base::Value(std::move(category.GetID())));
     category_dict.Set("title", base::Value(std::move(category.GetLabel())));
     category_dict.Set("subtitle",
                       base::Value(std::move(category.GetDescription())));
     category_dict.Set("icon", base::Value(std::move(category.GetImageURL())));
-    category_dict.Set("selected", false);
-    category_dict.Set("order", base::Value(category.GetOrder()));
+    category_dict.Set("selected", HasBeenSelected(category.GetID()));
     categories_list.Append(std::move(category_dict));
   }
-  //  TODO(b/337674429) : need to sort with order as well as pre select old
-  //  value.
+
   base::Value::Dict data;
   data.Set("categories", std::move(categories_list));
   if (view_) {

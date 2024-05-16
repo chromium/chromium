@@ -64,6 +64,7 @@ void OobeAppsDiscoveryService::OnServerResponse(
   for (oobe::proto::OOBEListResponse::Tag usecase : response->tags()) {
     use_cases_.emplace_back(std::move(usecase));
   }
+  std::sort(use_cases_.begin(), use_cases_.end());
   PropagateResult(std::move(callback_), AppsFetchingResult::kSuccess);
 }
 
