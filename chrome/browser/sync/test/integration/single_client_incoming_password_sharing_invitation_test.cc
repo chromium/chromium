@@ -56,12 +56,22 @@ using testing::AllOf;
 using testing::Contains;
 using testing::Field;
 using testing::IsEmpty;
+using testing::Pointee;
 using testing::SizeIs;
+using testing::UnorderedElementsAre;
 
 namespace {
 
 constexpr char kPasswordValue[] = "password";
 constexpr char kUsernameValue[] = "username";
+
+MATCHER_P(HasPasswordValue, password_value, "") {
+  return base::UTF16ToUTF8(arg.password_value) == password_value;
+}
+
+MATCHER_P(HasUsernameElement, username_element, "") {
+  return base::UTF16ToUTF8(arg.username_element) == username_element;
+}
 
 IncomingPasswordSharingInvitationSpecifics CreateInvitationSpecifics(
     const sync_pb::CrossUserSharingPublicKey& recipient_public_key) {
@@ -246,6 +256,48 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
             sender_display_info.display_name());
   EXPECT_EQ(password_form.sender_profile_image_url,
             GURL(sender_display_info.profile_image_url()));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
+                       ShouldStoreIncomingPasswordGroup) {
+  ASSERT_TRUE(SetupSync());
+
+  sync_pb::PasswordSharingInvitationData invitation_data =
+      CreateDefaultIncomingInvitation(kUsernameValue, kPasswordValue);
+
+  // Create another password data to send in a group with the same password but
+  // different username_element fields.
+  invitation_data.mutable_password_group_data()->add_element_data()->CopyFrom(
+      CreateDefaultIncomingInvitation(kUsernameValue, kPasswordValue)
+          .password_group_data()
+          .element_data(0));
+  invitation_data.mutable_password_group_data()
+      ->mutable_element_data(0)
+      ->set_username_element("username_element_1");
+  invitation_data.mutable_password_group_data()
+      ->mutable_element_data(1)
+      ->set_username_element("username_element_2");
+
+  sync_pb::UserDisplayInfo sender_display_info =
+      CreateDefaultSenderDisplayInfo();
+
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/2);
+  InjectInvitationToServer(CreateEncryptedIncomingInvitationSpecifics(
+      invitation_data, sender_display_info,
+      /*recipient_public_key=*/GetPublicKeyFromServer(),
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()));
+
+  EXPECT_TRUE(password_forms_added_checker.Wait());
+  std::vector<std::unique_ptr<PasswordForm>> passwords =
+      GetAllLogins(GetProfilePasswordStoreInterface(0));
+  EXPECT_THAT(passwords,
+              Contains(Pointee(HasPasswordValue(kPasswordValue))).Times(2));
+  EXPECT_THAT(
+      passwords,
+      UnorderedElementsAre(Pointee(HasUsernameElement("username_element_1")),
+                           Pointee(HasUsernameElement("username_element_2"))));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
