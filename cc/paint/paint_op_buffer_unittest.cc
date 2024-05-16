@@ -1587,7 +1587,8 @@ void PushDrawLineLiteOps(PaintOpBuffer* buffer) {
 }
 
 void PushDrawArcOps(PaintOpBuffer* buffer) {
-  size_t len = std::min(test_angles.size() / 2, test_flags.size());
+  size_t len =
+      std::min({test_rects.size(), test_angles.size() / 2, test_flags.size()});
   for (size_t i = 0; i < len; ++i) {
     buffer->push<DrawArcOp>(test_rects[i], test_angles[2 * i],
                             test_angles[2 * i + 1], test_flags[i]);
@@ -1596,7 +1597,8 @@ void PushDrawArcOps(PaintOpBuffer* buffer) {
 }
 
 void PushDrawArcLiteOps(PaintOpBuffer* buffer) {
-  size_t len = std::min(test_angles.size() / 2, test_flags.size());
+  size_t len =
+      std::min({test_rects.size(), test_angles.size() / 2, test_flags.size()});
   for (size_t i = 0; i < len; ++i) {
     if (test_flags[i].CanConvertToCorePaintFlags()) {
       buffer->push<DrawArcLiteOp>(test_rects[i], test_angles[2 * i],
@@ -1611,7 +1613,7 @@ void PushDrawArcLiteOps(PaintOpBuffer* buffer) {
 }
 
 void PushDrawOvalOps(PaintOpBuffer* buffer) {
-  size_t len = std::min(test_paths.size(), test_flags.size());
+  size_t len = std::min(test_rects.size(), test_flags.size());
   for (size_t i = 0; i < len; ++i)
     buffer->push<DrawOvalOp>(test_rects[i], test_flags[i]);
   EXPECT_THAT(*buffer, Each(PaintOpIs<DrawOvalOp>()));
