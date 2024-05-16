@@ -2529,6 +2529,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/notifications/instance.https.window.html [ Timeout ]
 crbug.com/340657191 [ Linux ] external/wpt/html/semantics/forms/the-select-element/stylable-select/native-popup-with-datalist.tentative.html [ Failure ]
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/request/request-consume.any.serviceworker.html [ Failure Timeout ]
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/request/request-consume.any.worker.html [ Failure Timeout ]
@@ -7138,7 +7139,7 @@ crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversa
 [ Debug Mac14 ] http/tests/webfont/font-display-intervention.html [ Failure Pass ]
 [ Debug Mac14 ] media/controls/closed-captions-dynamic-update.html [ Failure Pass ]
 [ Debug Mac14 ] scrollbars/scrollbar-iframe-click-does-not-blur-content.html [ Failure Pass ]
-[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Timeout Pass ]
+[ Debug Mac14 ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Failure Pass Timeout ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/disallowed-navigations-dangling-markup-urn.https.html [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?13-last [ Failure Pass ]
 [ Debug Mac14 ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?8-8 [ Failure ]
