@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
 #define CHROME_BROWSER_UI_CHROMEOS_MAGIC_BOOST_MAGIC_BOOST_CONTROLLER_H_
 
+#include "base/no_destructor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
@@ -14,6 +15,7 @@ class Widget;
 namespace chromeos {
 
 // The controller that manages the lifetime of opt-in and disclaimer widgets.
+// Some functions in this controller are virtual for testing.
 class MagicBoostController {
  public:
   MagicBoostController(const MagicBoostController&) = delete;
@@ -22,7 +24,10 @@ class MagicBoostController {
   static MagicBoostController* Get();
 
   // Shows Magic Boost opt-in widget.
-  void ShowOptInUi() {}
+  virtual void ShowOptInUi() {}
+
+  // Closes Magic Boost opt-in widget.
+  virtual void CloseOptInUi() {}
 
   // Shows Magic Boost disclaimer widget.
   void ShowDisclaimerUi();
@@ -32,6 +37,22 @@ class MagicBoostController {
     return disclaimer_widget_.get();
   }
 
+  // Closes Magic Boost disclaimer widget.
+  void CloseDisclaimerUi() {}
+
+  // Whether the Quick Answers and Mahi features should show the opt in UI.
+  virtual bool ShouldQuickAnswersAndMahiShowOptIn();
+
+  // Enables or disables all the features (including Quick Answers, Orca, and
+  // Mahi).
+  void SetAllFeaturesState(bool enabled);
+
+  // Enables or disables Quick Answers and Mahi.
+  void SetQuickAnswersAndMahiFeaturesState(bool enabled);
+
+  // Enables or disables Orca.
+  void SetOrcaFeatureState(bool enabled) {}
+
  protected:
   friend class base::NoDestructor<MagicBoostController>;
 
@@ -40,6 +61,15 @@ class MagicBoostController {
 
  private:
   views::UniqueWidgetPtr disclaimer_widget_;
+};
+
+// Helper class to automatically set and reset the `MagicBoostController` global
+// instance for testing.
+class ScopedMagicBoostControllerForTesting {
+ public:
+  explicit ScopedMagicBoostControllerForTesting(
+      MagicBoostController* controller_for_testing);
+  ~ScopedMagicBoostControllerForTesting();
 };
 
 }  // namespace chromeos

@@ -10,8 +10,17 @@
 
 namespace chromeos {
 
+namespace {
+
+MagicBoostController* g_magic_boost_controller_for_testing = nullptr;
+
+}  // namespace
+
 // static
 MagicBoostController* MagicBoostController::Get() {
+  if (g_magic_boost_controller_for_testing) {
+    return g_magic_boost_controller_for_testing;
+  }
   static base::NoDestructor<MagicBoostController> instance;
   return instance.get();
 }
@@ -26,6 +35,29 @@ void MagicBoostController::ShowDisclaimerUi() {
   }
   disclaimer_widget_ = MagicBoostDisclaimerView::CreateWidget();
   disclaimer_widget_->Show();
+}
+
+bool MagicBoostController::ShouldQuickAnswersAndMahiShowOptIn() {
+  // TODO(b/339043693): Implement this function.
+  return false;
+}
+
+void MagicBoostController::SetAllFeaturesState(bool enabled) {
+  SetQuickAnswersAndMahiFeaturesState(enabled);
+  SetOrcaFeatureState(enabled);
+}
+
+void MagicBoostController::SetQuickAnswersAndMahiFeaturesState(bool enabled) {
+  // TODO(b/339043693): Implement this function.
+}
+
+ScopedMagicBoostControllerForTesting::ScopedMagicBoostControllerForTesting(
+    MagicBoostController* controller_for_testing) {
+  g_magic_boost_controller_for_testing = controller_for_testing;
+}
+
+ScopedMagicBoostControllerForTesting::~ScopedMagicBoostControllerForTesting() {
+  g_magic_boost_controller_for_testing = nullptr;
 }
 
 }  // namespace chromeos

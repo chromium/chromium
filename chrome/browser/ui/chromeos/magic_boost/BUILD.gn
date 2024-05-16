@@ -24,3 +24,18 @@ source_set("magic_boost") {
     "//ui/views",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/mock_magic_boost_controller.cc",
+    "test/mock_magic_boost_controller.h",
+  ]
+
+  deps = [
+    ":magic_boost",
+    "//base",
+    "//testing/gmock",
+  ]
+}
