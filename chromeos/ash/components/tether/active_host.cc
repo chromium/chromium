@@ -235,6 +235,8 @@ void ActiveHost::SendActiveHostChangedUpdate(
     std::optional<multidevice::RemoteDeviceRef> new_active_host,
     const std::string& new_tether_network_guid,
     const std::string& new_wifi_network_guid) {
+  PA_LOG(INFO) << "Active host changed from " << static_cast<int>(old_status)
+               << " to " << static_cast<int>(new_status);
   ActiveHostChangeInfo info;
   info.new_status = new_status;
   info.old_status = old_status;
@@ -246,6 +248,7 @@ void ActiveHost::SendActiveHostChangedUpdate(
   info.old_wifi_network_guid = old_wifi_network_guid;
 
   for (auto& observer : observer_list_) {
+    PA_LOG(INFO) << "Notifying observer of active host change";
     observer.OnActiveHostChanged(info);
   }
 }

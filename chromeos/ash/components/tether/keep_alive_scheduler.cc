@@ -47,6 +47,8 @@ KeepAliveScheduler::~KeepAliveScheduler() {
 void KeepAliveScheduler::OnActiveHostChanged(
     const ActiveHost::ActiveHostChangeInfo& change_info) {
   if (change_info.new_status == ActiveHost::ActiveHostStatus::DISCONNECTED) {
+    PA_LOG(INFO) << "Active host changed to disconnected. Stopping "
+                    "KeepAliveTickle timer.";
     DCHECK(!change_info.new_active_host);
     DCHECK(change_info.new_wifi_network_guid.empty());
 
@@ -57,6 +59,8 @@ void KeepAliveScheduler::OnActiveHostChanged(
   }
 
   if (change_info.new_status == ActiveHost::ActiveHostStatus::CONNECTED) {
+    PA_LOG(INFO) << "Active host changed to connect. Starting KeepAliveTickle "
+                    "timer and sending KeepAliveTickle message.";
     DCHECK(change_info.new_active_host);
     active_host_device_ = change_info.new_active_host;
     timer_->Start(FROM_HERE, base::Minutes(kKeepAliveIntervalMinutes),
@@ -105,6 +109,8 @@ void KeepAliveScheduler::OnOperationFinished(
 }
 
 void KeepAliveScheduler::SendKeepAliveTickle() {
+  PA_LOG(INFO) << __func__;
+
   DCHECK(active_host_device_);
 
   keep_alive_operation_ = KeepAliveOperation::Factory::Create(
