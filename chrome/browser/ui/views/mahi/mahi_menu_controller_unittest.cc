@@ -13,6 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/browser/ui/views/mahi/mahi_condensed_menu_view.h"
@@ -35,10 +37,28 @@
 namespace chromeos::mahi {
 
 using ::testing::IsNull;
+using ::testing::Mock;
+using ::testing::NiceMock;
+using ::testing::Return;
 
-class MahiMenuControllerTest : public ChromeViewsTestBase {
+class MahiMenuControllerTest : public ChromeViewsTestBase,
+                               public testing::WithParamInterface<bool> {
  public:
   MahiMenuControllerTest() {
+    if (IsMagicBoostEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kMahi, features::kMagicBoost},
+          /*disabled_features=*/{});
+
+      scoped_magic_boost_controller_ =
+          std::make_unique<ScopedMagicBoostControllerForTesting>(
+              &mock_magic_boost_controller_);
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kMahi},
+          /*disabled_features=*/{features::kMagicBoost});
+    }
+
     menu_controller_ =
         std::make_unique<MahiMenuController>(read_write_cards_ui_controller_);
 
@@ -52,12 +72,18 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
     ChangePrefValue(true);
   }
 
+  bool IsMagicBoostEnabled() const { return GetParam(); }
+
   MahiMenuControllerTest(const MahiMenuControllerTest&) = delete;
   MahiMenuControllerTest& operator=(const MahiMenuControllerTest&) = delete;
 
   ~MahiMenuControllerTest() override = default;
 
   MahiMenuController* menu_controller() { return menu_controller_.get(); }
+
+  MockMagicBoostController& mock_magic_boost_controller() {
+    return mock_magic_boost_controller_;
+  }
 
   void ChangePageDistillability(bool value) {
     fake_mahi_web_contents_manager_.set_focused_web_content_is_distillable(
@@ -72,22 +98,30 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   ReadWriteCardsUiController read_write_cards_ui_controller_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::AutoReset<bool> ignore_mahi_secret_key_ =
+      ash::switches::SetIgnoreMahiSecretKeyForTest();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   std::unique_ptr<MahiMenuController> menu_controller_;
 
   ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
   std::unique_ptr<::mahi::ScopedMahiWebContentsManagerForTesting>
       scoped_mahi_web_contents_manager_;
 
-  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::AutoReset<bool> ignore_mahi_secret_key_ =
-      ash::switches::SetIgnoreMahiSecretKeyForTest();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  NiceMock<MockMagicBoostController> mock_magic_boost_controller_;
+  std::unique_ptr<ScopedMagicBoostControllerForTesting>
+      scoped_magic_boost_controller_;
 };
 
 // Tests the behavior of the controller when there's no text selected when
 // `OnTextAvailable()` is triggered.
-TEST_F(MahiMenuControllerTest, TextNotSelected) {
+TEST_P(MahiMenuControllerTest, TextNotSelected) {
+  ON_CALL(mock_magic_boost_controller(), ShouldQuickAnswersAndMahiShowOptIn)
+      .WillByDefault(Return(false));
+
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed.
@@ -115,7 +149,7 @@ TEST_F(MahiMenuControllerTest, TextNotSelected) {
 
 // Tests the behavior of the controller when `OnAnchorBoundsChanged()` is
 // triggered.
-TEST_F(MahiMenuControllerTest, BoundsChanged) {
+TEST_P(MahiMenuControllerTest, BoundsChanged) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
@@ -140,7 +174,10 @@ TEST_F(MahiMenuControllerTest, BoundsChanged) {
 
 // Tests the behavior of the controller when there's text selected when
 // `OnTextAvailable()` is triggered.
-TEST_F(MahiMenuControllerTest, TextSelected) {
+TEST_P(MahiMenuControllerTest, TextSelected) {
+  ON_CALL(mock_magic_boost_controller(), ShouldQuickAnswersAndMahiShowOptIn)
+      .WillByDefault(Return(false));
+
   EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
 
   // Menu widget should show when text is displayed.
@@ -160,8 +197,75 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiUiForTest());
 }
 
+TEST_P(MahiMenuControllerTest, ShowOptInUiTextNotSelected) {
+  ON_CALL(mock_magic_boost_controller(), ShouldQuickAnswersAndMahiShowOptIn)
+      .WillByDefault(Return(true));
+
+  // `ShowOptInUi` should be called when Magic Boost is enabled.
+  if (IsMagicBoostEnabled()) {
+    EXPECT_CALL(mock_magic_boost_controller(), ShowOptInUi);
+    menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                       /*selected_text=*/"",
+                                       /*surrounding_text=*/"");
+
+    EXPECT_CALL(mock_magic_boost_controller(), CloseOptInUi);
+    menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+
+    Mock::VerifyAndClear(&mock_magic_boost_controller());
+    return;
+  }
+
+  // Otherwise, no opt in UI is shown and `MahiMenuView` is shown.
+  EXPECT_CALL(mock_magic_boost_controller(), ShowOptInUi).Times(0);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test());
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
+  EXPECT_TRUE(views::IsViewClass<MahiMenuView>(
+      menu_controller()->menu_widget_for_test()->GetContentsView()));
+
+  EXPECT_CALL(mock_magic_boost_controller(), CloseOptInUi).Times(0);
+  menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+}
+
+TEST_P(MahiMenuControllerTest, ShowOptInUiTextSelected) {
+  ON_CALL(mock_magic_boost_controller(), ShouldQuickAnswersAndMahiShowOptIn)
+      .WillByDefault(Return(true));
+
+  // `ShowOptInUi` should be called when Magic Boost is enabled.
+  if (IsMagicBoostEnabled()) {
+    EXPECT_CALL(mock_magic_boost_controller(), ShowOptInUi);
+    menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                       /*selected_text=*/"test selected text",
+                                       /*surrounding_text=*/"");
+
+    EXPECT_CALL(mock_magic_boost_controller(), CloseOptInUi);
+    menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+
+    Mock::VerifyAndClear(&mock_magic_boost_controller());
+    return;
+  }
+
+  // Otherwise, no opt in UI is shown and the condense menu view is shown.
+  EXPECT_CALL(mock_magic_boost_controller(), ShowOptInUi).Times(0);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"test selected text",
+                                     /*surrounding_text=*/"");
+
+  EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test());
+  EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test()->IsVisible());
+  EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiUiForTest());
+  EXPECT_TRUE(views::IsViewClass<MahiCondensedMenuView>(
+      read_write_cards_ui_controller_.GetMahiUiForTest()));
+
+  EXPECT_CALL(mock_magic_boost_controller(), CloseOptInUi).Times(0);
+  menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+}
+
 // Tests the behavior of the controller when pref state changed.
-TEST_F(MahiMenuControllerTest, PrefChange) {
+TEST_P(MahiMenuControllerTest, PrefChange) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed as the default is that Mahi
@@ -197,7 +301,7 @@ TEST_F(MahiMenuControllerTest, PrefChange) {
       menu_controller()->menu_widget_for_test()->GetContentsView()));
 }
 
-TEST_F(MahiMenuControllerTest, DistillableMetrics) {
+TEST_P(MahiMenuControllerTest, DistillableMetrics) {
   base::HistogramTester histogram_tester;
 
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram, true,
@@ -226,6 +330,10 @@ TEST_F(MahiMenuControllerTest, DistillableMetrics) {
   histogram_tester.ExpectBucketCount(kMahiContextMenuDistillableHistogram,
                                      false, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MahiMenuControllerTest,
+                         /*IsMagicBoostEnabled()=*/testing::Bool());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class MahiMenuControllerFeatureKeyTest : public ChromeViewsTestBase {
