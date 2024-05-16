@@ -39,7 +39,11 @@ using visited_url_ranking::ResultStatus;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::VisitedURLRankingService;
 
+// FetchOptions::CreateDefaultFetchOptionsForTabResumption() specifies data
+// sources that are currently unavailable. This function returns a simplified
+// FetchOptions instance.
 FetchOptions CreateFetchOptionsForTabResumption(base::Time current_time) {
+  // TODO(crbug.com/337858147): Incorporate Fetcher::kHistory when ready.
   return FetchOptions(
       {
           {Fetcher::kSession, FetchOptions::kOriginSources},
@@ -85,14 +89,9 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
       return;
     }
 
-    PassResults(std::move(aggregates));
-
-    // TODO(crbug.com/337858147): Uncomment to use ranking, once implemented.
-
-    // ranking_service_->RankVisitAggregates(
-    //     config_, std::move(aggregates),
-    //     base::BindOnce(&FetchAndRankFlow::OnRanked,
-    //     base::RetainedRef(this)));
+    ranking_service_->RankURLVisitAggregates(
+        config_, std::move(aggregates),
+        base::BindOnce(&FetchAndRankFlow::OnRanked, base::RetainedRef(this)));
   }
 
   // Continuing after OnFetched()'s call to RankVisitAggregates().
@@ -115,19 +114,23 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
       if (aggregate.fetcher_data_map.empty()) {
         continue;
       }
-      const URLVisitAggregate::TabData& tab_data =
-          std::get<URLVisitAggregate::TabData>(
-              aggregate.fetcher_data_map.begin()->second);
-      Java_VisitedUrlRankingBackend_addSuggestionEntry(
-          env_,
-          base::android::ConvertUTF8ToJavaString(
-              env_, tab_data.last_active_tab.session_name.value_or("?")),
-          url::GURLAndroid::FromNativeGURL(env_,
-                                           tab_data.last_active_tab.visit.url),
-          base::android::ConvertUTF16ToJavaString(
-              env_, tab_data.last_active_tab.visit.title),
-          tab_data.last_active.InMillisecondsSinceUnixEpoch(),
-          tab_data.last_active_tab.id, j_suggestions_);
+      const URLVisitAggregate::TabData* tab_data =
+          std::get_if<URLVisitAggregate::TabData>(
+              &(aggregate.fetcher_data_map.begin()->second));
+      if (tab_data) {
+        Java_VisitedUrlRankingBackend_addSuggestionEntry(
+            env_,
+            base::android::ConvertUTF8ToJavaString(
+                env_, tab_data->last_active_tab.session_name.value_or("?")),
+            url::GURLAndroid::FromNativeGURL(
+                env_, tab_data->last_active_tab.visit.url),
+            base::android::ConvertUTF16ToJavaString(
+                env_, tab_data->last_active_tab.visit.title),
+            tab_data->last_active.InMillisecondsSinceUnixEpoch(),
+            tab_data->last_active_tab.id, j_suggestions_);
+      }
+
+      // TODO(crbug.com/337858147): Handle URLVisitAggregate::HistoryData case.
     }
 
     Java_VisitedUrlRankingBackend_onSuggestions(env_, j_suggestions_,

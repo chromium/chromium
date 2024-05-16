@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/internal/visited_url_ranking_service_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <queue>
@@ -24,6 +25,26 @@
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
 namespace visited_url_ranking {
+
+namespace {
+
+base::Time GetVisitTime(const URLVisitAggregate::URLVisitVariant& visit) {
+  const URLVisitAggregate::TabData* tab_data =
+      std::get_if<URLVisitAggregate::TabData>(&visit);
+  if (tab_data) {
+    return tab_data->last_active;
+  }
+
+  const URLVisitAggregate::HistoryData* history_data =
+      std::get_if<URLVisitAggregate::HistoryData>(&visit);
+  if (history_data) {
+    return history_data->last_visited.visit_row.visit_time;
+  }
+
+  return base::Time::Max();
+}
+
+}  // namespace
 
 // Combines `URLVisitVariant` data obtained from various fetchers into
 // `URLVisitAggregate` objects. Leverages the `URLMergeKey` in order to
@@ -98,6 +119,33 @@ void VisitedURLRankingServiceImpl::RankURLVisitAggregates(
     std::vector<URLVisitAggregate> visits,
     RankVisitAggregatesCallback callback) {
   // TODO(crbug.com/330577142): Implement `URLVisitAggregate` ranking logic.
+
+  // To enable development and testing, below we implement a stub implementation
+  // that simply sorts |visits| by minimal |last_active|.
+  size_t num_visits = visits.size();
+
+  // Extract sort keys (|fetcher_data_map| may have any size) and create sort
+  // permutation, which also avoids object movement churn from direct sort.
+  std::vector<std::pair<base::Time, size_t>> keys;
+  keys.reserve(num_visits);
+  for (size_t i = 0; i < num_visits; ++i) {
+    const auto& aggregate = visits[i];
+    base::Time min_last_visit_time = base::Time::Max();
+    for (auto& key_value : aggregate.fetcher_data_map) {
+      min_last_visit_time =
+          std::min(min_last_visit_time, GetVisitTime(key_value.second));
+    }
+    keys.emplace_back(min_last_visit_time, i);
+  }
+  // Sort from oldest to newest.
+  std::sort(keys.begin(), keys.end());
+
+  // Apply permutation, and reverse, so newest comes first.
+  std::vector<URLVisitAggregate> ranked_visits(num_visits);
+  for (size_t i = 0; i < num_visits; ++i) {
+    ranked_visits[num_visits - 1 - i] = std::move(visits[keys[i].second]);
+  }
+  std::move(callback).Run(ResultStatus::kSuccess, std::move(ranked_visits));
 }
 
 void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
