@@ -59,6 +59,9 @@ Config::Config() {
   auto_submit_with_selection =
       base::FeatureList::IsEnabled(features::kComposeAutoSubmit);
 
+  is_nudge_shown_at_cursor =
+      base::FeatureList::IsEnabled(features::kEnableComposeNudgeAtCursor);
+
   saved_state_nudge_enabled =
       base::FeatureList::IsEnabled(features::kEnableComposeSavedStateNudge);
 

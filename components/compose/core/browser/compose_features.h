@@ -34,6 +34,9 @@ BASE_DECLARE_FEATURE(kEnableComposeProactiveNudge);
 // Controls whether or not the saved state notification is shown.
 BASE_DECLARE_FEATURE(kEnableComposeSavedStateNotification);
 
+// Controls whether or not the nudge displays at the cursor.
+BASE_DECLARE_FEATURE(kEnableComposeNudgeAtCursor);
+
 // Controls whether the language check is bypassed for Compose.
 BASE_DECLARE_FEATURE(kEnableComposeLanguageBypass);
 

@@ -10739,6 +10739,12 @@ const FeatureEntry kFeatureEntries[] = {
          compose::features::kEnableComposeProactiveNudge,
          kComposeProactiveNudgeVariations,
          "ComposeProactiveNudge")},
+
+    {"compose-nudge-display-at-cursor",
+     flag_descriptions::kComposeNudgeAtCursorName,
+     flag_descriptions::kComposeNudgeAtCursorDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kEnableComposeNudgeAtCursor)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -61,6 +61,9 @@ struct Config {
   // Use the compact UI for proactive nudge.
   bool proactive_nudge_compact_ui = false;
 
+  // Whether or not the proactive nudge is shown at the cursor.
+  bool is_nudge_shown_at_cursor = false;
+
   // Used to randomly hide the nudge in order to reduce exposure, experimental
   // flag for triggering research experiments only. If param is greater than
   // `1`, always shows. If param is negative, never shows.

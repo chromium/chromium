@@ -3705,6 +3705,20 @@ TEST_F(ChromeComposeClientTest, TestCloseReasonCanceledWhileWaiting) {
       compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived, 1);
 }
 
+TEST_F(ChromeComposeClientTest, TestShowNudgeAtCursorFeatureFlag) {
+  // Showing nudge at cursor is disabled by default
+  EXPECT_FALSE(compose::GetMutableConfigForTesting().is_nudge_shown_at_cursor);
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{compose::features::kEnableComposeNudgeAtCursor},
+      /*disabled_features=*/{});
+  // Needed for feature params to apply.
+  compose::ResetConfigForTesting();
+
+  EXPECT_TRUE(compose::GetMutableConfigForTesting().is_nudge_shown_at_cursor);
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 // Tests that the Compose client crashes the browser if a webcontents
 // tries to bind mojo without opening the dialog at a non Compose URL.

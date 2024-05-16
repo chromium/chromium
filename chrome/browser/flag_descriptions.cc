@@ -8048,6 +8048,10 @@ const char kComposeUiRefinementDescription[] =
 const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
 const char kComposeProactiveNudgeDescription[] =
     "Enables proactive nudging for Compose";
+
+const char kComposeNudgeAtCursorName[] = "Compose Nudge At Cursor";
+const char kComposeNudgeAtCursorDescription[] =
+    "Shows the Compose proactive nudge at the cursor location";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
