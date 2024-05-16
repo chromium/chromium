@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -305,7 +306,7 @@ FindBarView::FindBarView(FindBarHost* host) {
                   CHECK(controller);
 
                   controller->ShowUI(
-                      LensOverlayController::InvocationSource::kFindInPage);
+                      lens::LensOverlayInvocationSource::kFindInPage);
                   UserEducationService::MaybeNotifyPromoFeatureUsed(
                       web_contents->GetBrowserContext(),
                       lens::features::kLensOverlay);

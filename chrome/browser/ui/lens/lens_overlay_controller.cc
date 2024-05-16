@@ -248,13 +248,14 @@ bool LensOverlayController::IsEnabled(Profile* profile) {
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
-    InvocationSource invocation_source,
+    lens::LensOverlayInvocationSource invocation_source,
     lens::mojom::CenterRotatedBoxPtr region) {
   pending_region_ = std::move(region);
   ShowUI(invocation_source);
 }
 
-void LensOverlayController::ShowUI(InvocationSource invocation_source) {
+void LensOverlayController::ShowUI(
+    lens::LensOverlayInvocationSource invocation_source) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
     return;
@@ -306,7 +307,7 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&LensOverlayController::HandleThumbnailCreated,
                           weak_factory_.GetWeakPtr()),
-      variations_client_, identity_manager_);
+      variations_client_, identity_manager_, invocation_source);
 
   side_panel_coordinator_ =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(tab_browser);
@@ -328,7 +329,8 @@ void LensOverlayController::ShowUI(InvocationSource invocation_source) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
-void LensOverlayController::CloseUIAsync(DismissalSource dismissal_source) {
+void LensOverlayController::CloseUIAsync(
+    lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff || state_ == State::kClosing) {
     return;
   }
@@ -600,7 +602,7 @@ void LensOverlayController::OnSidePanelEntryDeregistered() {
     last_dismissal_source_.reset();
     return;
   }
-  CloseUIAsync(DismissalSource::kSidePanelCloseButton);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kSidePanelCloseButton);
 }
 
 void LensOverlayController::IssueTextSelectionRequestForTesting(
@@ -635,12 +637,13 @@ LensOverlayController::CreateLensQueryController(
     lens::LensOverlayInteractionResponseCallback interaction_data_callback,
     lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
     variations::VariationsClient* variations_client,
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    lens::LensOverlayInvocationSource invocation_source) {
   return std::make_unique<lens::LensOverlayQueryController>(
       std::move(full_image_callback), std::move(url_callback),
       std::move(interaction_data_callback),
       std::move(thumbnail_created_callback), variations_client,
-      identity_manager);
+      identity_manager, invocation_source);
 }
 
 LensOverlayController::OverlayInitializationData::OverlayInitializationData(
@@ -688,7 +691,8 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {
-    lens_overlay_controller_->CloseUIAsync(DismissalSource::kPageChanged);
+    lens_overlay_controller_->CloseUIAsync(
+        lens::LensOverlayDismissalSource::kPageChanged);
   }
 
  private:
@@ -705,7 +709,8 @@ void LensOverlayController::CaptureScreenshot() {
 
   // During initialization and shutdown a capture may not be possible.
   if (!view || !view->IsSurfaceAvailableForCopy()) {
-    CloseUIAsync(DismissalSource::kErrorScreenshotCreationFailed);
+    CloseUIAsync(
+        lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
   }
 
   state_ = State::kScreenshot;
@@ -737,7 +742,8 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
   // this is a multi-process, multi-threaded environment so there may be a
   // TOCTTOU race condition.
   if (bitmap.drawsNothing()) {
-    CloseUIAsync(DismissalSource::kErrorScreenshotCreationFailed);
+    CloseUIAsync(
+        lens::LensOverlayDismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
 
@@ -747,7 +753,8 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
           bitmap, lens::features::GetLensOverlayScreenshotRenderQuality(),
           &data)) {
     // TODO(b/334185985): Handle case when screenshot data URI encoding fails.
-    CloseUIAsync(DismissalSource::kErrorScreenshotEncodingFailed);
+    CloseUIAsync(
+        lens::LensOverlayDismissalSource::kErrorScreenshotEncodingFailed);
     return;
   }
 
@@ -863,7 +870,8 @@ void LensOverlayController::UpdateCornerRadiusForSidePanel() {
   SetWebViewCornerRadii(corner_radii_);
 }
 
-void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
+void LensOverlayController::CloseUIPart2(
+    lens::LensOverlayDismissalSource dismissal_source) {
   if (state_ == State::kOff) {
     return;
   }
@@ -939,7 +947,7 @@ void LensOverlayController::CloseUIPart2(DismissalSource dismissal_source) {
 }
 
 void LensOverlayController::OnBackgroundUnblurred(
-    DismissalSource dismissal_source,
+    lens::LensOverlayDismissalSource dismissal_source,
     const viz::FrameTimingDetails& details) {
   // We only finish the closing process once the background has been unblurred.
   CloseUIPart2(dismissal_source);
@@ -1106,7 +1114,7 @@ void LensOverlayController::OnSidePanelDidOpen() {
   // If a side panel opens that is not ours, we must close the overlay.
   if (side_panel_coordinator_->GetCurrentEntryId() !=
       SidePanelEntry::Id::kLensOverlayResults) {
-    CloseUIAsync(DismissalSource::kUnexpectedSidePanelOpen);
+    CloseUIAsync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
 }
 
@@ -1115,7 +1123,7 @@ void LensOverlayController::OnSidePanelCloseInterrupted() {
   // opened in the process, we need to close the overlay to not show next to the
   // unwanted side panel.
   if (state_ == State::kClosingOpenedSidePanel) {
-    CloseUIAsync(DismissalSource::kUnexpectedSidePanelOpen);
+    CloseUIAsync(lens::LensOverlayDismissalSource::kUnexpectedSidePanelOpen);
   }
 }
 
@@ -1154,7 +1162,8 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // This is still possible when the controller is in state kScreenshot and the
   // tab was backgrounded. We should close the UI as the overlay has not been
   // created yet.
-  CloseUIAsync(DismissalSource::kTabBackgroundedWhileScreenshotting);
+  CloseUIAsync(
+      lens::LensOverlayDismissalSource::kTabBackgroundedWhileScreenshotting);
 }
 
 void LensOverlayController::WillDiscardContents(
@@ -1162,7 +1171,7 @@ void LensOverlayController::WillDiscardContents(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
   // Background tab contents discarded.
-  CloseUIAsync(DismissalSource::kTabContentsDiscarded);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kTabContentsDiscarded);
   old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
   LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
 }
@@ -1202,19 +1211,19 @@ void LensOverlayController::AddBackgroundBlur() {
 }
 
 void LensOverlayController::CloseRequestedByOverlayCloseButton() {
-  CloseUIAsync(DismissalSource::kOverlayCloseButton);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kOverlayCloseButton);
 }
 
 void LensOverlayController::CloseRequestedByOverlayBackgroundClick() {
-  CloseUIAsync(DismissalSource::kOverlayBackgroundClick);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kOverlayBackgroundClick);
 }
 
 void LensOverlayController::CloseRequestedByOverlayEscapeKeyPress() {
-  CloseUIAsync(DismissalSource::kEscapeKeyPress);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
 }
 
 void LensOverlayController::CloseRequestedBySidePanelEscapeKeyPress() {
-  CloseUIAsync(DismissalSource::kEscapeKeyPress);
+  CloseUIAsync(lens::LensOverlayDismissalSource::kEscapeKeyPress);
 }
 
 void LensOverlayController::FeedbackRequestedByOverlay() {

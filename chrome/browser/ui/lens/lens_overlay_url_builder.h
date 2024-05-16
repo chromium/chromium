@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "url/gurl.h"
@@ -23,17 +24,23 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
                                    std::optional<GURL> page_url,
                                    std::optional<std::string> page_title);
 
+GURL AppendInvocationSourceParamToURL(
+    const GURL& url_to_modify,
+    lens::LensOverlayInvocationSource invocation_source);
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
-    std::map<std::string, std::string> additional_search_query_params);
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source);
 
 GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
-    std::map<std::string, std::string> additional_search_query_params);
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source);
 
 // Returns the value of the text query parameter value from the provided search
 // URL if any. Empty string otherwise.

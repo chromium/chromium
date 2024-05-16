@@ -102,13 +102,15 @@ class LensOverlayQueryControllerMock : public LensOverlayQueryController {
       base::RepeatingCallback<void(const std::string&)>
           thumbnail_created_callback,
       variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager)
+      signin::IdentityManager* identity_manager,
+      lens::LensOverlayInvocationSource invocation_source)
       : LensOverlayQueryController(full_image_callback,
                                    url_callback,
                                    interaction_data_callback,
                                    thumbnail_created_callback,
                                    variations_client,
-                                   identity_manager) {}
+                                   identity_manager,
+                                   invocation_source) {}
   ~LensOverlayQueryControllerMock() override = default;
 
   lens::LensOverlayObjectsResponse fake_objects_response_;
@@ -206,7 +208,8 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
       base::NullCallback(), base::NullCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
@@ -261,7 +264,8 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -360,7 +364,8 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -463,7 +468,8 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(
@@ -547,7 +553,8 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
@@ -593,7 +600,8 @@ TEST_F(LensOverlayQueryControllerTest,
       interaction_data_response_future.GetRepeatingCallback(),
       thumbnail_created_future.GetRepeatingCallback(),
       profile()->GetVariationsClient(),
-      IdentityManagerFactory::GetForProfile(profile()));
+      IdentityManagerFactory::GetForProfile(profile()),
+      lens::LensOverlayInvocationSource::kAppMenu);
   query_controller.fake_objects_response_.mutable_cluster_info()
       ->set_server_session_id(kTestServerSessionId);
   query_controller.fake_interaction_response_.set_encoded_response(

@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
@@ -4279,7 +4280,7 @@ void RenderViewContextMenu::OpenLensOverlayWithBounds(
       LensOverlayController::GetController(source_web_contents_);
   CHECK(controller);
   controller->ShowUIWithPendingRegion(
-      LensOverlayController::InvocationSource::kContentAreaContextMenuPage,
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
       lens::GetCenterRotatedBoxFromViewAndImageBounds(view_bounds,
                                                       image_bounds));
 }
@@ -4300,7 +4301,7 @@ void RenderViewContextMenu::ExecRegionSearch(
         LensOverlayController::GetController(source_web_contents_);
     CHECK(controller);
     controller->ShowUI(
-        LensOverlayController::InvocationSource::kContentAreaContextMenuPage);
+        lens::LensOverlayInvocationSource::kContentAreaContextMenuPage);
     UserEducationService::MaybeNotifyPromoFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
     return;

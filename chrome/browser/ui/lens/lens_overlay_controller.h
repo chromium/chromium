@@ -10,6 +10,8 @@
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -102,101 +104,21 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns whether the lens overlay feature is enabled.
   static bool IsEnabled(Profile* profile);
 
-  // Designates the source of any lens overlay invocation (in other words, any
-  // call to `ShowUI()`).
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(InvocationSource)
-  enum class InvocationSource {
-    // The Chrome app ("3-dot") menu entry.
-    kAppMenu = 0,
-
-    // The content area context menu entry that is available when the user
-    // right-clicks on any area of the page that doesn't contain text, links or
-    // media.
-    kContentAreaContextMenuPage = 1,
-
-    // The content area context menu entry that is available when the user
-    // right-clicks on an image.
-    kContentAreaContextMenuImage = 2,
-
-    // The pinned toolbar action button.
-    kToolbar = 3,
-
-    // The find in page (Ctrl/Cmd-f) dialog button.
-    kFindInPage = 4,
-
-    // The button in the omnibox (address bar).
-    kOmnibox = 5,
-
-    kMaxValue = kOmnibox
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayInvocationSource)
-
   // Sets a region to search after the overlay loads, then calls ShowUI().
-  void ShowUIWithPendingRegion(InvocationSource invocation_source,
-                               lens::mojom::CenterRotatedBoxPtr region);
+  void ShowUIWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      lens::mojom::CenterRotatedBoxPtr region);
 
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
-  void ShowUI(InvocationSource invocation_source);
-
-  // Designates the source of any lens overlay dismissal (in other words, any
-  // call to `CloseUI()`).
-  //
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(DismissalSource)
-  enum class DismissalSource {
-    // The overlay close button (shown when in the kOverlay state).
-    kOverlayCloseButton = 0,
-
-    // A click on the background scrim (shown when in the kOverlayAndResults
-    // state).
-    kOverlayBackgroundClick = 1,
-
-    // The close button in the side panel.
-    kSidePanelCloseButton = 2,
-
-    // The pinned toolbar action button.
-    kToolbar = 3,
-
-    // The page in the primary web contents changed (link clicked, back button,
-    // etc.).
-    kPageChanged = 4,
-
-    // The contents of the associated tab were in the background and discarded
-    // to save memory.
-    kTabContentsDiscarded = 5,
-
-    // The current tab was backgrounded before the screenshot was created.
-    kTabBackgroundedWhileScreenshotting = 6,
-
-    // Creating a screenshot from the view of the web contents failed.
-    kErrorScreenshotCreationFailed = 7,
-
-    // Encoding the screenshot failed.
-    kErrorScreenshotEncodingFailed = 8,
-
-    // User pressed the escape key.
-    kEscapeKeyPress = 9,
-
-    // Another side panel opened forcing our overlay to close.
-    kUnexpectedSidePanelOpen = 10,
-
-    kMaxValue = kUnexpectedSidePanelOpen
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
+  void ShowUI(lens::LensOverlayInvocationSource invocation_source);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // because we first must unblur the background, before closing the overlay
   // whether. Eventually Calls CloseUI() asynchronously.
-  void CloseUIAsync(DismissalSource dismissal_source);
+  void CloseUIAsync(lens::LensOverlayDismissalSource dismissal_source);
 
   // Given an instance of `web_ui` created by the LensOverlayController, returns
   // the LensOverlayController. This method is necessary because WebUIController
@@ -423,7 +345,8 @@ class LensOverlayController : public LensSearchboxClient,
       lens::LensOverlayInteractionResponseCallback interaction_data_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      lens::LensOverlayInvocationSource invocation_source);
 
  private:
   // Data class for constructing overlay and storing overlay state for
@@ -529,11 +452,11 @@ class LensOverlayController : public LensSearchboxClient,
   // cleanup of closing the overlay UI and should only be called by
   // CloseUIAsync. Anyone called trying to close the UI should go through
   // CloseUIAsync.
-  void CloseUIPart2(DismissalSource dismissal_source);
+  void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
 
   // Passed into the compositor layer to know when the background is done being
   // unblurred and it is safe to close the overlay.
-  void OnBackgroundUnblurred(DismissalSource dismissal_source,
+  void OnBackgroundUnblurred(lens::LensOverlayDismissalSource dismissal_source,
                              const viz::FrameTimingDetails& details);
 
   // Initializes the overlay UI after it has been created with data fetched
@@ -692,7 +615,7 @@ class LensOverlayController : public LensSearchboxClient,
   // If the side panel needed to be closed before dismissing the overlay, this
   // stores the original dismissal_source so it is properly recorded when the
   // side panel is done closing and the callback is invoked.
-  std::optional<DismissalSource> last_dismissal_source_;
+  std::optional<lens::LensOverlayDismissalSource> last_dismissal_source_;
 
   // Thumbnail URI referencing the data defined by the user image selection on
   // the overlay. If the user hasn't made any selection or has made a text

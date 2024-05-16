@@ -56,6 +56,17 @@ inline constexpr char kTliteSourceLanguageParameterKey[] = "tlitesl";
 inline constexpr char kTliteTargetLanguageParameterKey[] = "tlitetl";
 inline constexpr char kTliteQueryParameterKey[] = "tlitetxt";
 
+// Query parameter for the invocation source.
+inline constexpr char kInvocationSourceParameterKey[] = "source";
+inline constexpr char kInvocationSourceAppMenu[] = "chrome.cr.menu";
+inline constexpr char kInvocationSourcePageSearchContextMenu[] =
+    "chrome.cr.ctxp";
+inline constexpr char kInvocationSourceImageSearchContextMenu[] =
+    "chrome.cr.ctxi";
+inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
+inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
+inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -121,13 +132,44 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
   return new_url;
 }
 
+GURL AppendInvocationSourceParamToURL(
+    const GURL& url_to_modify,
+    lens::LensOverlayInvocationSource invocation_source) {
+  std::string param_value = "";
+  switch (invocation_source) {
+    case lens::LensOverlayInvocationSource::kAppMenu:
+      param_value = kInvocationSourceAppMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
+      param_value = kInvocationSourcePageSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
+      param_value = kInvocationSourceImageSearchContextMenu;
+      break;
+    case lens::LensOverlayInvocationSource::kToolbar:
+      param_value = kInvocationSourceToolbarIcon;
+      break;
+    case lens::LensOverlayInvocationSource::kFindInPage:
+      param_value = kInvocationSourceFindInPage;
+      break;
+    case lens::LensOverlayInvocationSource::kOmnibox:
+      param_value = kInvocationSourceOmniboxIcon;
+      break;
+  }
+  return net::AppendOrReplaceQueryParameter(
+      url_to_modify, kInvocationSourceParameterKey, param_value);
+}
+
 GURL BuildTextOnlySearchURL(
     const std::string& text_query,
     std::optional<GURL> page_url,
     std::optional<std::string> page_title,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendInvocationSourceParamToURL(
+      url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -146,9 +188,12 @@ GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    lens::LensOverlayInvocationSource invocation_source) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
+  url_with_query_params = AppendInvocationSourceParamToURL(
+      url_with_query_params, invocation_source);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params =

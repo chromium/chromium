@@ -8,6 +8,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
+#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -86,10 +88,9 @@ LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
         // Toggle the Lens overlay. There's no need to show or hide the side
         // panel as the overlay controller will handle that.
         if (controller->IsOverlayShowing()) {
-          controller->CloseUIAsync(
-              LensOverlayController::DismissalSource::kToolbar);
+          controller->CloseUIAsync(lens::LensOverlayDismissalSource::kToolbar);
         } else {
-          controller->ShowUI(LensOverlayController::InvocationSource::kToolbar);
+          controller->ShowUI(lens::LensOverlayInvocationSource::kToolbar);
         }
       },
       browser);
