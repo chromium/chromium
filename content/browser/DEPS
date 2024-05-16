@@ -136,7 +136,7 @@ specific_include_rules = {
     "+components/os_crypt/async",
     "+services/network/test",
   ],
-  ".*test_utils\.(h|cc)": [
+  ".*test_utils?(_.+)?\.(h|cc)": [
     "+services/network/test",
   ],
   "browser_interface_binders\.cc": [
