@@ -117,6 +117,8 @@ class CORE_EXPORT Request final : public ScriptWrappable,
   String ContentType() const override;
   String MimeType() const override;
 
+  std::string GetUrl() const override;
+
   const Member<FetchRequestData> request_;
   const Member<Headers> headers_;
   const Member<AbortSignal> signal_;

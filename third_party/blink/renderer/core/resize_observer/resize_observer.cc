@@ -43,6 +43,9 @@ ResizeObserver::ResizeObserver(V8ResizeObserverCallback* callback,
     controller_ = ResizeObserverController::From(*window);
     controller_->AddObserver(*this);
   }
+  record_replay_created_node_id_ = recordreplay::NewDependencyGraphNode(
+    "{\"kind\":\"createResizeObserver\"}"
+  );
 }
 
 ResizeObserver::ResizeObserver(Delegate* delegate, LocalDOMWindow* window)
@@ -156,9 +159,16 @@ void ResizeObserver::DeliverObservations() {
   if (active_observations_.empty())
     return;
 
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "ScriptExecution", "ResizeObserver::DeliverObservations"
-  );
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    int node_id = recordreplay::NewDependencyGraphNode(
+      "{\"kind\":\"observeResize\"}"
+    );
+    recordreplay::AddDependencyGraphEdge(
+      record_replay_created_node_id_, node_id, "{\"kind\":\"creator\"}"
+    );
+    execute.emplace(node_id);
+  }
 
   HeapVector<Member<ResizeObserverEntry>> entries;
 

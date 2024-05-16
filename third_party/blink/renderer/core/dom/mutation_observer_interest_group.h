@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
+
 namespace blink {
 
 class MutationObserverInterestGroup final
@@ -45,6 +47,8 @@ class MutationObserverInterestGroup final
  public:
   static MutationObserverInterestGroup* CreateForChildListMutation(
       Node& target) {
+    RecordReplayOnDOMMutation(target, "childList");
+
     if (!target.GetDocument().HasMutationObserversOfType(
             kMutationTypeChildList))
       return nullptr;
@@ -55,6 +59,8 @@ class MutationObserverInterestGroup final
 
   static MutationObserverInterestGroup* CreateForCharacterDataMutation(
       Node& target) {
+    RecordReplayOnDOMMutation(target, "characterData");
+
     if (!target.GetDocument().HasMutationObserversOfType(
             kMutationTypeCharacterData))
       return nullptr;
@@ -66,6 +72,8 @@ class MutationObserverInterestGroup final
   static MutationObserverInterestGroup* CreateForAttributesMutation(
       Node& target,
       const QualifiedName& attribute_name) {
+    RecordReplayOnDOMMutation(target, "attributes");
+
     if (!target.GetDocument().HasMutationObserversOfType(
             kMutationTypeAttributes))
       return nullptr;

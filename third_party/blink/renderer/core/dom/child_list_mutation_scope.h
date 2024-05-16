@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
+
 namespace blink {
 
 class MutationObserverInterestGroup;
@@ -90,6 +92,8 @@ class ChildListMutationScope final {
 
  public:
   explicit ChildListMutationScope(Node& target) {
+    RecordReplayOnDOMMutation(target, "childList");
+
     if (target.GetDocument().HasMutationObserversOfType(
             kMutationTypeChildList)) {
       accumulator_ = ChildListMutationAccumulator::GetOrCreate(target);

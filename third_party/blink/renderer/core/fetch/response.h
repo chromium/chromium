@@ -125,6 +125,8 @@ class CORE_EXPORT Response final : public ScriptWrappable,
   String MimeType() const override;
   String InternalMIMEType() const;
 
+  std::string GetUrl() const override;
+
   const Vector<KURL>& InternalURLList() const;
 
   FetchHeaderList* InternalHeaderList() const;

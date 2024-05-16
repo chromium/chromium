@@ -61,6 +61,9 @@ class CORE_EXPORT Body : public ExecutionContextClient {
   virtual String ContentType() const = 0;
   virtual String MimeType() const = 0;
 
+  // Needed when recording/replaying for annotating dependency graph nodes.
+  virtual std::string GetUrl() const = 0;
+
   // Body consumption algorithms will reject with a TypeError in a number of
   // error conditions. This method wraps those up into one call which throws
   // an exception if consumption cannot proceed. The caller must check

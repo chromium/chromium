@@ -62,6 +62,8 @@
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
@@ -70,9 +72,17 @@ DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
-  recordreplay::AutoMarkerDependencyExecution execute(
-    "ScriptExecution", "EventDispatcher::DispatchEvent"
-  );
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::DependencyGraphEnabled()) {
+    base::Value::Dict info;
+    info.Set("kind", "dispatchEvent");
+    info.Set("type", event.type().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    execute.emplace(recordreplay::NewDependencyGraphNode(json.c_str()));
+  }
+
   EventDispatcher dispatcher(node, event);
   return event.DispatchEvent(dispatcher);
 }
