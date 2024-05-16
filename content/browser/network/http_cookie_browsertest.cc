@@ -42,6 +42,7 @@ using ::testing::UnorderedElementsAre;
 
 constexpr char kHostA[] = "a.test";
 constexpr char kHostB[] = "b.test";
+constexpr char kHostC[] = "c.test";
 constexpr char kSameSiteNoneCookieName[] = "samesite_none_cookie";
 constexpr char kSameSiteStrictCookieName[] = "samesite_strict_cookie";
 constexpr char kSameSiteLaxCookieName[] = "samesite_lax_cookie";
@@ -885,9 +886,178 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
               net::CookieStringIs(IsEmpty()));
 }
 
+class AncestorChainBitEnabledThirdPartyCookiesBlockedTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  AncestorChainBitEnabledThirdPartyCookiesBlockedTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatureStates(
+        {{net::features::kForceThirdPartyCookieBlocking, true},
+         {net::features::kAncestorChainBitEnabledInPartitionedCookies,
+          AncestorChainBitEnabled()}});
+  }
+
+  bool AncestorChainBitEnabled() { return GetParam(); }
+
+  ~AncestorChainBitEnabledThirdPartyCookiesBlockedTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&HandleEchoCookiesWithCorsRequest));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  GURL EchoCookiesUrl(const std::string& host) const {
+    return https_server_.GetURL(host, "/echoheader?Cookie");
+  }
+
+  std::string ExtractFrameContent(RenderFrameHost* frame) const {
+    return EvalJs(frame, "document.body.textContent").ExtractString();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+                       TestSubresourceRedirects) {
+  // Initial frame tree A->B (B is an iframe)
+  // A cookie is set for site C.
+  // iframe B is navigated to site C.
+  // Frame tree becomes A->C (C is an iframe).
+  // Check if cookie set for C is present in C.
+
+  // Embed an iframe containing B in A to create initial frame tree A->B.
+  ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
+                web_contents(), https_server(), base::StrCat({kHostA, "(%s)"}),
+                {0}, EchoCookiesUrl(kHostB)),
+            "None");
+
+  // Set SameSite=None partitioned cookie for kHostC from embedded iframe B.
+
+  net::CookiePartitionKey partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostC, "/"),
+      base::StrCat(
+          {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;partitioned"}),
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+      &partition_key));
+  // confirm that there is a cookie with kHostC url in the mojom cookie manager
+  // and that the cookie is partitioned and third party.
+  std::vector<net::CanonicalCookie> cookies = GetCanonicalCookies(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostC, "/"),
+      net::CookiePartitionKeyCollection::FromOptional(
+          std::make_optional(partition_key)));
+  ASSERT_EQ(cookies.size(), 1u);
+  ASSERT_TRUE(cookies[0].IsPartitioned());
+  ASSERT_TRUE(cookies[0].PartitionKey()->IsThirdParty());
+
+  // Navigate embedded iframe B to C
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+      EchoCookiesUrl(kHostC)));
+
+  // Extract cookie from C
+  EXPECT_THAT(
+      ExtractFrameContent(
+          ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+                       TestTopLevelRedirects) {
+  // Navigate to Site A and set cookie on site A.
+  // Redirect from site A to site B and back to site A.
+  // Confirm cookie is present on site A after redirection.
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+  // Check to make sure that there are no cookies set on kHostA.
+  ASSERT_THAT(ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+              "None");
+  net::CookiePartitionKey partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kSameSite);
+
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat(
+          {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;partitioned"}),
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+      &partition_key));
+
+  // Perform redirect from site A to site B and back to site A.
+  ASSERT_TRUE(
+      NavigateToURL(web_contents(),
+                    RedirectUrl(https_server(), kHostB, EchoCookiesUrl(kHostA)),
+                    EchoCookiesUrl(kHostA)));
+
+  EXPECT_THAT(
+      ExtractFrameContent(web_contents()->GetPrimaryMainFrame()),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+    TestSameSiteEmbeddedResourceToCrossSiteEmbeddedResource) {
+  // Initial frame tree A1->A2 (A2 is an iframe)
+  // A cookie is set from top-level A1 for site B with kCrossSite ancestor chain
+  // bit. iframe A2 is navigated to site B. Frame tree becomes A1->B (B is an
+  // iframe). Check if cookie set from A1 is present in B.
+
+  // Embed an iframe containing A in A to create initial frame tree A->A.
+  ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
+                web_contents(), https_server(), base::StrCat({kHostA, "(%s)"}),
+                {0}, EchoCookiesUrl(kHostA)),
+            "None");
+
+  net::CookiePartitionKey partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          https_server()->GetURL(kHostA, "/"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite);
+
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostB, "/"),
+      base::StrCat(
+          {kSameSiteNoneCookieName, "=1;Secure;SameSite=None;Partitioned"}),
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+      &partition_key));
+
+  // Navigate embedded iframe A2 to B
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+      EchoCookiesUrl(kHostB)));
+
+  // Extract cookie from B
+  EXPECT_THAT(
+      ExtractFrameContent(
+          ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)),
+      net::CookieStringIs(UnorderedElementsAre(Key(kSameSiteNoneCookieName))));
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no label */,
                          HttpCookieBrowserTest,
                          ::testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    AncestorChainBitEnabledThirdPartyCookiesBlockedTest,
+    ::testing::Bool());
 
 }  // namespace
 }  // namespace content
