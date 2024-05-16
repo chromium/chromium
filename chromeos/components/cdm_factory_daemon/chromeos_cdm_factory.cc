@@ -159,6 +159,25 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+void OnCdmCreated(media::CdmCreatedCB callback,
+                  scoped_refptr<ContentDecryptionModuleAdapter> cdm,
+                  cdm::mojom::CdmFactory::CreateCdmStatus result) {
+  std::string err;
+  switch (result) {
+    case cdm::mojom::CdmFactory::CreateCdmStatus::kSuccess:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(cdm), ""));
+      return;
+    case cdm::mojom::CdmFactory::CreateCdmStatus::kNoMoreInstances:
+      err = "Only one instance allowed";
+      break;
+    case cdm::mojom::CdmFactory::CreateCdmStatus::kInsufficientGpuResources:
+      err = "Insufficient GPU memory available";
+      break;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), nullptr, err));
+}
 }  // namespace
 
 ChromeOsCdmFactory::ChromeOsCdmFactory(
@@ -388,14 +407,12 @@ void ChromeOsCdmFactory::CreateCdm(
           output_protection_remote.InitWithNewPipeAndPassReceiver()));
 
   // Now create the remote CDM instance that links everything up.
-  remote_factory_->CreateCdm(cdm->GetClientInterface(),
-                             std::move(storage_remote),
-                             std::move(output_protection_remote),
-                             base::UnguessableToken::Create().ToString(),
-                             std::move(cros_cdm_pending_receiver));
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(cdm_created_cb), std::move(cdm), ""));
+  remote_factory_->CreateCdm(
+      cdm->GetClientInterface(), std::move(storage_remote),
+      std::move(output_protection_remote),
+      base::UnguessableToken::Create().ToString(),
+      std::move(cros_cdm_pending_receiver),
+      base::BindOnce(&OnCdmCreated, std::move(cdm_created_cb), std::move(cdm)));
 }
 
 void ChromeOsCdmFactory::OnFactoryMojoConnectionError() {
