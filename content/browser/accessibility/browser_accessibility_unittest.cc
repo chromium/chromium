@@ -8,7 +8,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
@@ -752,7 +751,7 @@ TEST_F(BrowserAccessibilityTest, GetAuthorUniqueId) {
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "my_html_id");
+  root.html_attributes.push_back(std::make_pair("id", "my_html_id"));
 
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager(
       BrowserAccessibilityManager::Create(

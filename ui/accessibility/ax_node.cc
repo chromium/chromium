@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_computed_node_data.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -2182,9 +2181,8 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
   // This requirement may need to be removed if ARIA element reflection is
   // implemented. HTML attribute serialization must currently be turned on in
   // order to pass this requirement.
-  if (!HasStringAttribute(ax::mojom::StringAttribute::kHtmlId)) {
+  if (!HasHtmlAttribute("id"))
     return false;
-  }
 
   // Finally, check for the required ancestor.
   for (AXNode* ancestor_node = GetUnignoredParent(); ancestor_node;

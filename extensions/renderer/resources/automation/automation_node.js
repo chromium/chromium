@@ -1493,7 +1493,6 @@ const stringAttributes = [
   'display',
   'doDefaultLabel',
   'fontFamily',
-  'htmlId',
   'htmlTag',
   'imageDataUrl',
   'innerHtml',

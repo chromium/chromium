@@ -666,29 +666,42 @@ BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(
   return nullptr;
 }
 
-BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByStringAttribute(
-    const ax::mojom::StringAttribute attr,
+bool DumpAccessibilityTestBase::HasHtmlAttribute(
+    BrowserAccessibility& node,
+    const char* attr,
+    const std::string& value) const {
+  std::string result;
+  if (node.GetHtmlAttribute(attr, &result))
+    return result == value;
+
+  if (base::EqualsCaseInsensitiveASCII(attr, "class"))
+    return node.GetStringAttribute(ax::mojom::StringAttribute::kClassName) ==
+           value;
+
+  return false;
+}
+
+BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByHTMLAttribute(
+    const char* attr,
     const std::string& value) const {
   BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(root);
-  return FindNodeByStringAttributeInSubtree(*root, attr, value);
+  return FindNodeByHTMLAttributeInSubtree(*root, attr, value);
 }
 
 BrowserAccessibility*
-DumpAccessibilityTestBase::FindNodeByStringAttributeInSubtree(
+DumpAccessibilityTestBase::FindNodeByHTMLAttributeInSubtree(
     BrowserAccessibility& node,
-    const ax::mojom::StringAttribute attr,
+    const char* attr,
     const std::string& value) const {
-  if (node.GetStringAttribute(attr) == value) {
+  if (HasHtmlAttribute(node, attr, value))
     return &node;
-  }
 
   for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    if (BrowserAccessibility* result = FindNodeByStringAttributeInSubtree(
-            *node.PlatformGetChild(i), attr, value)) {
+    if (BrowserAccessibility* result = FindNodeByHTMLAttributeInSubtree(
+            *node.PlatformGetChild(i), attr, value))
       return result;
-    }
   }
   return nullptr;
 }

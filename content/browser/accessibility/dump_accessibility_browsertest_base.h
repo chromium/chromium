@@ -187,9 +187,12 @@ class DumpAccessibilityTestBase
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  BrowserAccessibility* FindNodeByStringAttribute(
-      const ax::mojom::StringAttribute attr,
-      const std::string& value) const;
+  bool HasHtmlAttribute(BrowserAccessibility& node,
+                        const char* attr,
+                        const std::string& value) const;
+
+  BrowserAccessibility* FindNodeByHTMLAttribute(const char* attr,
+                                                const std::string& value) const;
 
  protected:
   ui::AXInspectTestHelper test_helper_;
@@ -230,9 +233,9 @@ class DumpAccessibilityTestBase
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           const std::string& name) const;
 
-  BrowserAccessibility* FindNodeByStringAttributeInSubtree(
+  BrowserAccessibility* FindNodeByHTMLAttributeInSubtree(
       BrowserAccessibility& node,
-      const ax::mojom::StringAttribute attr,
+      const char* attr,
       const std::string& value) const;
 
   // The entries in skip_urls will be omitted from the result. This is used,

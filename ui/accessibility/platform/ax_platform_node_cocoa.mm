@@ -1595,9 +1595,8 @@ void CollectAncestorRoles(
     return nil;
 
   std::string id;
-  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
+  if (_node->GetHtmlAttribute("id", &id))
     return base::SysUTF8ToNSString(id);
-  }
 
   return @"";
 }
