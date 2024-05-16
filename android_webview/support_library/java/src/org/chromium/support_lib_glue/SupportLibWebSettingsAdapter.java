@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.MediaIntegrityApiStatus;
+import org.chromium.android_webview.settings.PreloadingAllowedFlags;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.components.webauthn.WebauthnMode;
@@ -432,5 +433,17 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         }
         // unreached
         throw new IllegalArgumentException("Invalid WebView Media Integrity API status: " + status);
+    }
+
+    @Override
+    public void setPreloadingEnabled(boolean preloadingEnabled) {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_PRELOADING_ENABLED")) {
+            recordApiCall(ApiCall.SET_PRELOADING_ENABLED);
+            mAwSettings.setPreloadingAllowed(
+                    preloadingEnabled
+                            ? PreloadingAllowedFlags.PRERENDER_ENABLED
+                            : PreloadingAllowedFlags.PRELOADING_DISABLED);
+        }
     }
 }

@@ -271,4 +271,7 @@ public class Features {
     // WebViewCompat.setAudioMuted
     // WebViewCompat.isAudioMuted
     public static final String MUTE_AUDIO = "MUTE_AUDIO";
+
+    // WebSettingsCompat.setPreloadingEnabled
+    public static final String ENABLE_PRELOADING = "ENABLE_PRELOADING";
 }

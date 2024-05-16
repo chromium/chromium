@@ -536,6 +536,7 @@ chromium-metrics-reviews@google.com.
   <int value="101" label="WebViewCompat.isAudioMuted"/>
   <int value="102" label="WebSettingsCompat.setWebauthnSupport"/>
   <int value="103" label="WebSettingsCompat.getWebauthnSupport"/>
+  <int value="104" label="WebSettingsCompat.setPreloadingEnabled"/>
 </enum>
 
 <enum name="ArmCpuPart">
