@@ -459,19 +459,27 @@ public class PersonalDataManager implements Destroyable {
             mValue = value;
         }
 
+        // Creates an Iban instance that is not stored on a server nor locally,
+        // yet. This Iban has type IbanRecordType.UNKNOWN and has neither a
+        // Guid nor an instrumentId.
         @CalledByNative("Iban")
-        public static Iban createLocal(
-                String guid,
-                String label,
-                String nickname,
-                @IbanRecordType int recordType,
-                String value) {
-            assert recordType != IbanRecordType.SERVER_IBAN;
+        public static Iban createEphemeral(String label, String nickname, String value) {
+            return new Iban.Builder()
+                    .setGuid("")
+                    .setLabel(label)
+                    .setNickname(nickname)
+                    .setRecordType(IbanRecordType.UNKNOWN)
+                    .setValue(value)
+                    .build();
+        }
+
+        @CalledByNative("Iban")
+        public static Iban createLocal(String guid, String label, String nickname, String value) {
             return new Iban.Builder()
                     .setGuid(guid)
                     .setLabel(label)
                     .setNickname(nickname)
-                    .setRecordType(recordType)
+                    .setRecordType(IbanRecordType.LOCAL_IBAN)
                     .setValue(value)
                     .build();
         }
@@ -490,6 +498,7 @@ public class PersonalDataManager implements Destroyable {
 
         @CalledByNative("Iban")
         public String getGuid() {
+            assert mRecordType != IbanRecordType.SERVER_IBAN;
             return mGuid;
         }
 
@@ -534,12 +543,13 @@ public class PersonalDataManager implements Destroyable {
 
             Iban otherIban = (Iban) obj;
 
-            return Objects.equals(mGuid, otherIban.getGuid())
-                    && Objects.equals(mLabel, otherIban.getLabel())
+            return Objects.equals(mLabel, otherIban.getLabel())
                     && Objects.equals(mNickname, otherIban.getNickname())
                     && mRecordType == otherIban.getRecordType()
                     && (mRecordType != IbanRecordType.SERVER_IBAN
                             || Objects.equals(mInstrumentId, otherIban.getInstrumentId()))
+                    && (mRecordType != IbanRecordType.LOCAL_IBAN
+                            || Objects.equals(mGuid, otherIban.getGuid()))
                     && Objects.equals(mValue, otherIban.getValue());
         }
 

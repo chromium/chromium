@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TouchToFillCreditCardOutcome;
 import org.chromium.components.autofill.AutofillFeatures;
-import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -141,7 +140,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* guid= */ "000000111111",
                     /* label= */ "CH56 **** **** **** *800 9",
                     /* nickname= */ "My brother's IBAN",
-                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
                     /* value= */ "CH5604835012345678009");
 
     private static final Iban LOCAL_IBAN_NO_NICKNAME =
@@ -149,7 +147,6 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* guid= */ "000000222222",
                     /* label= */ "FR76 **** **** **** **** ***0 189",
                     /* nickname= */ "",
-                    /* recordType= */ IbanRecordType.LOCAL_IBAN,
                     /* value= */ "FR7630006000011234567890189");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

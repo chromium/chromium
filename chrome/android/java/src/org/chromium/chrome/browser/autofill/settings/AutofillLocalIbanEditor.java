@@ -25,7 +25,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
-import org.chromium.components.autofill.IbanRecordType;
 
 /**
  * This class creates a view for adding and editing a local IBAN. A local IBAN gets saved to the
@@ -84,14 +83,16 @@ public class AutofillLocalIbanEditor extends AutofillIbanEditor {
         // case of a new IBAN, these values are set right before being written to the autofill
         // table.
         Iban iban =
-                Iban.createLocal(
-                        /* guid= */ mGUID,
-                        /* label= */ "",
-                        /* nickname= */ mNickname.getText().toString().trim(),
-                        /* recordType= */ mGUID.isEmpty()
-                                ? IbanRecordType.UNKNOWN
-                                : IbanRecordType.LOCAL_IBAN,
-                        /* value= */ mValue.getText().toString());
+                mGUID.isEmpty()
+                        ? Iban.createEphemeral(
+                                /* label= */ "",
+                                /* nickname= */ mNickname.getText().toString().trim(),
+                                /* value= */ mValue.getText().toString())
+                        : Iban.createLocal(
+                                /* guid= */ mGUID,
+                                /* label= */ "",
+                                /* nickname= */ mNickname.getText().toString().trim(),
+                                /* value= */ mValue.getText().toString());
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
         String guid = personalDataManager.addOrUpdateLocalIban(iban);
