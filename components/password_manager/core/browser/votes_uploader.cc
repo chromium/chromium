@@ -480,13 +480,6 @@ bool VotesUploader::UploadPasswordVote(
   FormStructure form_structure(form_to_upload.form_data);
   form_structure.set_submission_event(submitted_form.submission_event);
 
-  // Annotate the form with the source language of the page.
-  form_structure.set_current_page_language(client_->GetPageLanguage());
-
-  // Attach the Randomized Encoder.
-  form_structure.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
-
   FieldTypeSet available_field_types;
   // A map from field names to field types.
   FieldTypeMap field_types;
@@ -583,20 +576,9 @@ bool VotesUploader::UploadPasswordVote(
                             password_attributes);
   }
 
-  std::vector<AutofillUploadContents> upload_contents =
-      EncodeUploadRequest(form_structure, available_field_types,
-                          login_form_signature, /*observed_submission=*/true);
-  CHECK(!upload_contents.empty());
-  upload_contents[0].set_passwords_revealed(
-      should_set_passwords_were_revealed && has_passwords_revealed_vote_);
-
-  if (password_attributes) {
-    EncodePasswordAttributesMetadata(*password_attributes, upload_contents[0]);
-  }
-
-  return crowdsourcing_manager->StartUploadRequest(
-      std::move(upload_contents), form_structure.submission_source(),
-      form_structure.active_field_count(), /* prefs=*/nullptr);
+  return SendUploadRequest(form_structure, available_field_types,
+                           login_form_signature, password_attributes,
+                           should_set_passwords_were_revealed);
 }
 
 // TODO(crbug.com/40575167): Share common code with UploadPasswordVote.
@@ -648,7 +630,10 @@ void VotesUploader::UploadFirstLoginVotes(
                             std::nullopt);
   }
 
-  StartUploadRequest(form_structure, available_field_types);
+  SendUploadRequest(form_structure, available_field_types,
+                    /*login_form_signature=*/std::string(),
+                    /*password_attributes=*/std::nullopt,
+                    /*should_set_passwords_were_revealed=*/false);
 }
 
 void VotesUploader::SetInitialHashValueOfUsernameField(
@@ -938,22 +923,50 @@ void VotesUploader::StoreInitialFieldValues(
   }
 }
 
-bool VotesUploader::StartUploadRequest(
+std::vector<autofill::AutofillUploadContents>
+VotesUploader::EncodeUploadRequest(
+    autofill::FormStructure& form,
+    const autofill::FieldTypeSet& available_field_types,
+    std::string_view login_form_signature,
+    std::optional<PasswordAttributesMetadata> password_attributes,
+    bool should_set_passwords_were_revealed) {
+  // Annotate the form with the source language of the page.
+  form.set_current_page_language(client_->GetPageLanguage());
+  // Attach the Randomized Encoder.
+  form.set_randomized_encoder(RandomizedEncoder::Create(client_->GetPrefs()));
+
+  std::vector<AutofillUploadContents> upload_contents =
+      autofill::EncodeUploadRequest(form, available_field_types,
+                                    login_form_signature,
+                                    /*observed_submission=*/true);
+  CHECK(!upload_contents.empty());
+
+  upload_contents[0].set_passwords_revealed(
+      should_set_passwords_were_revealed && has_passwords_revealed_vote_);
+
+  if (password_attributes) {
+    EncodePasswordAttributesMetadata(*password_attributes, upload_contents[0]);
+  }
+
+  return upload_contents;
+}
+
+bool VotesUploader::SendUploadRequest(
     autofill::FormStructure& form_to_upload,
     const FieldTypeSet& available_field_types,
-    const std::string& login_form_signature) {
+    const std::string& login_form_signature,
+    std::optional<PasswordAttributesMetadata> password_attributes,
+    bool should_set_passwords_were_revealed) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
       client_->GetAutofillCrowdsourcingManager();
   if (!crowdsourcing_manager) {
     return false;
   }
 
-  form_to_upload.set_randomized_encoder(
-      RandomizedEncoder::Create(client_->GetPrefs()));
   return crowdsourcing_manager->StartUploadRequest(
       EncodeUploadRequest(form_to_upload, available_field_types,
-                          login_form_signature,
-                          /*observed_submission=*/true),
+                          login_form_signature, password_attributes,
+                          should_set_passwords_were_revealed),
       form_to_upload.submission_source(), form_to_upload.active_field_count(),
       /*pref_service=*/nullptr);
 }
@@ -1134,7 +1147,10 @@ bool VotesUploader::MaybeSendSingleUsernameVote(
                               *form_to_upload, std::nullopt);
     }
 
-    if (StartUploadRequest(*form_to_upload, available_field_types)) {
+    if (SendUploadRequest(*form_to_upload, available_field_types,
+                          /*login_form_signature=*/std::string(),
+                          /*password_attributes=*/std::nullopt,
+                          /*should_set_passwords_were_revealed=*/false)) {
       return true;
     }
   }

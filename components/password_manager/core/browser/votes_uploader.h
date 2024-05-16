@@ -307,10 +307,23 @@ class VotesUploader {
   bool FindUsernameInOtherAlternativeUsernames(const PasswordForm& match,
                                             const std::u16string& username);
 
-  bool StartUploadRequest(
+  // Wrapper around `autofill::EncodeUploadRequest`. Given the form, returns the
+  // information that needs to be sent to the Autofill server.
+  std::vector<autofill::AutofillUploadContents> EncodeUploadRequest(
+      autofill::FormStructure& form,
+      const autofill::FieldTypeSet& available_field_types,
+      std::string_view login_form_signature,
+      std::optional<PasswordAttributesMetadata> password_attributes,
+      bool should_set_passwords_were_revealed);
+
+  // Wrapper around `AutofillCrowdsourcingManager::StartUploadRequest`. Returns
+  // `true` if the vote is sent, `false` otherwise.
+  bool SendUploadRequest(
       autofill::FormStructure& form_to_upload,
       const autofill::FieldTypeSet& available_field_types,
-      const std::string& login_form_signature = std::string());
+      const std::string& login_form_signature,
+      std::optional<PasswordAttributesMetadata> password_attributes,
+      bool should_set_passwords_were_revealed);
 
   // On username first and forgot password flows votes are uploaded both for the
   // single username form and for the single password form. This method sets the
