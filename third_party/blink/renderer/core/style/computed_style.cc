@@ -965,6 +965,12 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kTransformProperty) {
     diff.SetTransformPropertyChanged();
   }
+  if (field_diff & kVisibility) {
+    if ((Visibility() == EVisibility::kCollapse) !=
+        (other.Visibility() == EVisibility::kCollapse)) {
+      diff.SetNeedsFullLayout();
+    }
+  }
   if (field_diff & kZIndex) {
     diff.SetZIndexChanged();
   }
@@ -990,10 +996,6 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
     const ComputedStyle& other,
     uint32_t field_diff) const {
   if (IsDisplayTableType(Display())) {
-    if (field_diff & kTable) {
-      return true;
-    }
-
     // In the collapsing border model, 'hidden' suppresses other borders, while
     // 'none' does not, so these style differences can be width differences.
     if ((BorderCollapse() == EBorderCollapse::kCollapse) &&
@@ -1015,15 +1017,6 @@ bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
           other.BorderRightStyle() == EBorderStyle::kHidden))) {
       return true;
     }
-  } else if (IsDisplayListItem()) {
-    if (field_diff & kListItem) {
-      return true;
-    }
-  }
-
-  if ((Visibility() == EVisibility::kCollapse) !=
-      (other.Visibility() == EVisibility::kCollapse)) {
-    return true;
   }
 
   // Movement of non-static-positioned object is special cased in

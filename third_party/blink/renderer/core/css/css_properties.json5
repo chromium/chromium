@@ -327,7 +327,6 @@
         "filter-data",
         "inset",
         "layout",
-        "list-item",
         "margin",
         "mask",
         "opacity",
@@ -338,9 +337,9 @@
         "scroll-anchor",
         "scrollbar-style",
         "stroke",
-        "table",
         "text-decoration",
         "transform-property",
+        "visibility",
         "visual-overflow",
         "z-index",
       ],
@@ -2202,7 +2201,7 @@
       keywords: ["separate", "collapse"],
       typedom_types: ["Keyword"],
       default_value: "separate",
-      invalidate: ["table"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "border-image-outset",
@@ -2637,7 +2636,7 @@
       keywords: ["top", "bottom"],
       typedom_types: ["Keyword"],
       default_value: "top",
-      invalidate: ["table"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "caret-color",
@@ -3003,7 +3002,7 @@
       keywords: ["show", "hide"],
       typedom_types: ["Keyword"],
       default_value: "show",
-      invalidate: ["table"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "fill",
@@ -3601,7 +3600,7 @@
       keywords: ["outside", "inside"],
       typedom_types: ["Keyword"],
       default_value: "outside",
-      invalidate: ["list-item"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "list-style-type",
@@ -3619,7 +3618,7 @@
         "decimal", "none"
       ],
       style_builder_custom_functions: ["value"],
-      invalidate: ["list-item"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "margin-bottom",
@@ -5353,7 +5352,7 @@
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",
-      invalidate: ["table"],
+      invalidate: ["layout", "paint"],
     },
     {
       name: "tab-size",
@@ -5972,7 +5971,7 @@
       valid_for_cue: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["paint"],
+      invalidate: ["paint", "visibility"],
     },
     {
       name: "x",
