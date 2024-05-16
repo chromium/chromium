@@ -10164,6 +10164,36 @@
             ]
         }
     ],
+    "IOSSegmentationPlatformIosModuleRankerCaching": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformIosModuleRankerCaching"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSSegmentationPlatformIosModuleRankerSplitBySurface": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SegmentationPlatformIosModuleRankerSplitBySurface"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
