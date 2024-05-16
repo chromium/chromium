@@ -32,11 +32,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/fake_events_service_factory.h"
 #include "chrome/browser/profiles/profile.h"         // nogncheck
 #include "chrome/browser/ui/browser_list.h"          // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"  // nogncheck
+#include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

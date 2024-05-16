@@ -31,7 +31,7 @@ source_set("diagnostics") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension/diagnostics" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/diagnostics" ]
   }
 
   if (is_chromeos_lacros) {
@@ -72,7 +72,7 @@ source_set("browser_tests") {
       "fake_diagnostics_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension/diagnostics" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/diagnostics" ]
   }
 
   if (is_chromeos_lacros) {

@@ -28,7 +28,7 @@ source_set("routines") {
   public_deps = [ "//extensions/browser" ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension/routines" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/routines" ]
   }
 
   if (is_chromeos_lacros) {
@@ -58,7 +58,7 @@ source_set("test_support") {
       "fake_diagnostic_routines_service_factory.h",
     ]
 
-    public_deps += [ "//chrome/browser/ash/telemetry_extension/routines" ]
+    public_deps += [ "//chromeos/ash/components/telemetry_extension/routines" ]
   }
 }
 
@@ -109,8 +109,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash/telemetry_extension/routines",
       "//chrome/common/chromeos/extensions",
+      "//chromeos/ash/components/telemetry_extension/routines",
     ]
   }
 

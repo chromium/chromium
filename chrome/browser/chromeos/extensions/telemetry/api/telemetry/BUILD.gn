@@ -61,7 +61,7 @@ source_set("browser_tests") {
       "fake_probe_service_factory.h",
     ]
 
-    deps += [ "//chrome/browser/ash/telemetry_extension/telemetry" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/telemetry" ]
   }
 
   if (is_chromeos_lacros) {

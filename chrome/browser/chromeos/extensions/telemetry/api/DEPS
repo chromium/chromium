@@ -1,7 +1,7 @@
 include_rules = [
   # Guarded by IS_CHROMEOS_ASH or in is_chromeos_ash sources.
   "+ash/webui/shimless_rma/backend/external_app_dialog.h",
-  "+chrome/browser/ash/telemetry_extension",
+  "+chromeos/ash/components/telemetry_extension",
 ]
 
 specific_include_rules = {

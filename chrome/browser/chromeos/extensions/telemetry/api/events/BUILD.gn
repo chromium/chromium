@@ -61,7 +61,7 @@ source_set("event_router") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/events" ]
   }
 
   if (is_chromeos_lacros) {
@@ -127,7 +127,7 @@ source_set("test_support") {
       "fake_events_service_factory.h",
     ]
 
-    public_deps += [ "//chrome/browser/ash/telemetry_extension/events" ]
+    public_deps += [ "//chromeos/ash/components/telemetry_extension/events" ]
   }
 }
 

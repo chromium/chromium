@@ -45,7 +45,7 @@ chrome/browser/ash/ownership 4 2
 chrome/browser/ash/scanning 1 1
 chrome/browser/ash/settings 4 1
 chrome/browser/ash/system_web_apps 1 1
-chrome/browser/ash/telemetry_extension 2 1
+chromeos/ash/components/telemetry_extension 2 1
 chrome/browser/autofill/android/junit/src/org/chromium/chrome/browser/autofill/editors 1 1
 chrome/browser/chromeos/extensions/telemetry 2 1
 chrome/browser/download 1 1

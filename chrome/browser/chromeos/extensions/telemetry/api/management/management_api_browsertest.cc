@@ -16,8 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/management/telemetry_management_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/management/fake_telemetry_management_service_factory.h"
+#include "chromeos/ash/components/telemetry_extension/management/telemetry_management_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

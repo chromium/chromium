@@ -86,7 +86,7 @@ source_set("remote_probe_strategy") {
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/telemetry_extension/telemetry" ]
+    deps += [ "//chromeos/ash/components/telemetry_extension/telemetry" ]
   }
 
   if (is_chromeos_lacros) {
