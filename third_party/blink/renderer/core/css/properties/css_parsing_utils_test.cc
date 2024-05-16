@@ -327,10 +327,10 @@ TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
 TEST(CSSParsingUtilsTest, InternalPositionTryOptionsInUAMode) {
   auto ConsumePositionTryOptionForTest = [](String css_text,
                                             CSSParserMode mode) {
-    auto tokens = CSSTokenizer(css_text).TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
+    CSSTokenizer tokenizer(css_text);
+    CSSParserTokenStream stream(tokenizer);
     return css_parsing_utils::ConsumeSinglePositionTryOption(
-        range, *MakeContext(mode));
+        stream, *MakeContext(mode));
   };
 
   struct {
