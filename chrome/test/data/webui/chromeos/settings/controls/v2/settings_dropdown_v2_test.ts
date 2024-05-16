@@ -11,7 +11,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../../utils.js';
 
-suite('<settings-dropdown-v2>', () => {
+suite(SettingsDropdownV2Element.is, () => {
   let dropdownElement: SettingsDropdownV2Element;
   let internalSelectElement: HTMLSelectElement;
 
@@ -239,15 +239,6 @@ suite('<settings-dropdown-v2>', () => {
       assertTrue(isVisible(policyIndicator));
     });
 
-    test('Selecting an option updates local pref value', () => {
-      for (const testOption of testOptions) {
-        const value = testOption.value;
-        simulateSelectAction(value);
-        assertOptionSelected(value);
-        assertEquals(value, dropdownElement.pref!.value);
-      }
-    });
-
     test('Selecting an option dispatches pref change event', async () => {
       for (const testOption of testOptions) {
         const prefChangeEventPromise =
@@ -261,6 +252,23 @@ suite('<settings-dropdown-v2>', () => {
         assertEquals(value, event.detail.value);
       }
     });
+
+    test(
+        'Selecting an option does not update the pref value directly',
+        async () => {
+          const initialPrefValue = dropdownElement.pref!.value;
+
+          const prefChangeEventPromise =
+              eventToPromise('user-action-setting-pref-change', window);
+          const value = testOptions[0]!.value;
+          simulateSelectAction(value);
+          assertOptionSelected(value);
+          await prefChangeEventPromise;
+
+          // Local pref object should be treated as immutable data and should
+          // not be updated directly.
+          assertEquals(initialPrefValue, dropdownElement.pref!.value);
+        });
 
     test('Selecting an option dispatches change event', async () => {
       for (const testOption of testOptions) {

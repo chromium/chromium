@@ -37,7 +37,8 @@ export const PrefControlMixinInternal = dedupingMixin(
         static get properties() {
           return {
             /**
-             * The PrefObject being controlled by this element.
+             * The PrefObject being controlled by this element. This should be
+             * treated as immutable data.
              */
             pref: {
               type: Object,
@@ -119,9 +120,11 @@ export const PrefControlMixinInternal = dedupingMixin(
         }
 
         /**
-         * Updates the value of `pref` with the given `value` and dispatches
-         * a `user-action-setting-pref-change` event to sync the pref update.
-         * Raises an error if called when `pref` is not defined.
+         * This method treats `pref` as immutable data and does not update its
+         * value directly. Instead, it dispatches a
+         * `user-action-setting-pref-change` event to sync the pref update to
+         * the prefs state. Raises an error if called when `pref` is not
+         * defined.
          * @param value the new value of the pref.
          */
         updatePrefValueFromUserAction(value: any): void {
@@ -130,29 +133,13 @@ export const PrefControlMixinInternal = dedupingMixin(
               'updatePrefValueFromUserAction() requires pref to be defined.');
 
           // Polymer treats the contents of objects as always being available
-          // for two-way binding. That is when updating a subproperty, upward
-          // data flow events are fired, even if the property is not marked as
-          // notifying. Reference:
+          // for two-way binding. That is, when updating a subproperty (e.g.
+          // `this.pref.value = newValue`), upward data flow events are fired,
+          // even if the property is not marked as notifying. Reference:
           // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#data-flow-objects-arrays
-          // Since these components should not support two-way binding, update
-          // the pref value by assigning the whole pref object. The pref update
-          // will be handled by the `user-action-setting-pref-change` event
+          // Since these components should not support two-way binding, the
+          // `user-action-setting-pref-change` event will update the pref
           // instead.
-          this.pref = {...this.pref, value};
-
-          this.dispatchPrefChange_(value);
-        }
-
-        /**
-         * Dispatches a `user-action-setting-pref-change` event to notify the
-         * any subscribing elements (i.e. os-settings-ui) about a pending pref
-         * change. Raises an error if called when `pref` is not defined.
-         * @param value the new value of the pref.
-         */
-        private dispatchPrefChange_(value: any): void {
-          assert(
-              this.pref, 'dispatchPrefChange_() requires pref to be defined.');
-
           const event: UserActionSettingPrefChangeEvent =
               new CustomEvent('user-action-setting-pref-change', {
                 bubbles: true,

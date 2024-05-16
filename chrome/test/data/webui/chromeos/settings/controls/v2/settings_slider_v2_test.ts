@@ -214,11 +214,25 @@ suite(SettingsSliderV2Element.is, () => {
           // should be 64.
           press('ArrowRight');
           const newValue = 64;
-          assertEquals(newValue, slider.pref!.value);
 
           const event = await prefChangeEventPromise;
           assertEquals(fakePrefObject.key, event.detail.prefKey);
           assertEquals(newValue, event.detail.value);
+        });
+
+        test('slider does not update the pref value directly', async () => {
+          slider.ticks = ticks;
+          const initialPrefValue = slider.pref!.value;
+
+          const prefChangeEventPromise =
+              eventToPromise('user-action-setting-pref-change', window);
+          // Drag the knob on slider to the right.
+          press('ArrowRight');
+          await prefChangeEventPromise;
+
+          // Local pref object should be treated as immutable data and should
+          // not be updated directly.
+          assertEquals(initialPrefValue, slider.pref!.value);
         });
 
         suite('Pref type validation', () => {

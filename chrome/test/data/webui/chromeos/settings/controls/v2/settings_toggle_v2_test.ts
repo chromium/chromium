@@ -6,14 +6,14 @@ import 'chrome://os-settings/os_settings.js';
 
 import {SettingsToggleV2Element} from 'chrome://os-settings/os_settings.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNotReached, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../../utils.js';
 
 /** @fileoverview Suite of tests for settings-toggle-v2. */
-suite('SettingsToggleV2', () => {
+suite(SettingsToggleV2Element.is, () => {
   let toggleElement: SettingsToggleV2Element;
   let fakeTogglePref: chrome.settingsPrivate.PrefObject;
 
@@ -157,7 +157,7 @@ suite('SettingsToggleV2', () => {
       });
     });
 
-    test('checked value reflects the pref value', async () => {
+    test('control value reflects the pref value', async () => {
       await initWithPref(true);
 
       assertTrue(toggleElement.pref!.value);
@@ -167,27 +167,23 @@ suite('SettingsToggleV2', () => {
       assertTrue(internalToggle.checked);
     });
 
-    test('checked value reflects the pref value when pref changes', () => {
+    test('checked property reflects the pref value when pref changes', () => {
       assertFalse(toggleElement.pref!.value);
       assertFalse(toggleElement.checked);
-
 
       toggleElement.set('pref.value', true);
       assertTrue(toggleElement.pref!.value);
       assertTrue(toggleElement.checked);
     });
 
-    test('pref value changes on click', () => {
+    test('checked property changes on click', () => {
       assertFalse(toggleElement.checked);
-      assertFalse(toggleElement.pref!.value);
 
       toggleElement.click();
       assertTrue(toggleElement.checked);
-      assertTrue(toggleElement.pref!.value);
 
       toggleElement.click();
       assertFalse(toggleElement.checked);
-      assertFalse(toggleElement.pref!.value);
     });
 
     test(
@@ -211,15 +207,28 @@ suite('SettingsToggleV2', () => {
 
       toggleElement.click();
       assertTrue(toggleElement.checked);
-      assertEquals(toggleElement.checked, toggleElement.pref!.value);
 
       const event = await prefChangeEventPromise;
       assertEquals(fakeTogglePref.key, event.detail.prefKey);
       assertEquals(toggleElement.checked, event.detail.value);
     });
 
+    test('Toggling does not update the pref value directly', async () => {
+      const initialPrefValue = toggleElement.pref!.value;
+
+      const prefChangeEventPromise =
+          eventToPromise('user-action-setting-pref-change', window);
+      toggleElement.click();
+      assertTrue(toggleElement.checked);
+      await prefChangeEventPromise;
+
+      // Local pref object should be treated as immutable data and should not be
+      // updated directly.
+      assertEquals(initialPrefValue, toggleElement.pref!.value);
+    });
+
     test(
-        'changing the pref changes the checked value when the toggle is disabled',
+        'Pref value updates the checked value when the toggle is disabled',
         () => {
           // `disabled` is false by default.
           assertFalse(toggleElement.hasAttribute('disabled'));
@@ -233,41 +242,55 @@ suite('SettingsToggleV2', () => {
           assertTrue(toggleElement.checked);
         });
 
-    suite('when noSetPref is true', () => {
-      setup(async () => {
+    suite('with noSetPref', () => {
+      setup(() => {
         toggleElement.noSetPref = true;
       });
 
-      test('toggling does not change the pref value', () => {
+      test('toggling does not dispatch a pref change event', async () => {
+        const eventPromise =
+            eventToPromise('user-action-setting-pref-change', window)
+                .then(() => {
+                  assertNotReached();
+                });
+
+        const successPromise = new Promise((resolve) => {
+          setTimeout(() => resolve('success'), 500);
+        });
+
         assertFalse(toggleElement.checked);
         assertFalse(toggleElement.pref!.value);
-
         toggleElement.click();
         assertTrue(toggleElement.checked);
-        assertFalse(toggleElement.pref!.value);
 
-        toggleElement.click();
-        assertFalse(toggleElement.checked);
+        // eventPromise should never resolve, else it will fail this test.
+        const value = await Promise.race([eventPromise, successPromise]);
+        assertEquals('success', value);
         assertFalse(toggleElement.pref!.value);
       });
 
       test(
-          'calling commitPrefChange changes the pref property to new value',
-          () => {
+          'commitPrefChange() updates the pref value to the checked value',
+          async () => {
             assertFalse(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
 
-            toggleElement.checked = true;
+            toggleElement.click();
             assertTrue(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
 
-            toggleElement.commitPrefChange(true);
+            const prefChangeEventPromise =
+                eventToPromise('user-action-setting-pref-change', window);
+            toggleElement.commitPrefChange();
             assertTrue(toggleElement.checked);
-            assertTrue(toggleElement.pref!.value);
+
+            const event = await prefChangeEventPromise;
+            assertEquals(fakeTogglePref.key, event.detail.prefKey);
+            assertEquals(toggleElement.checked, event.detail.value);
           });
 
       test(
-          'calling resetToPrefValue changes the checked property to the pref value',
+          'resetToPrefValue() changes the checked property to the pref value',
           () => {
             assertFalse(toggleElement.checked);
             assertFalse(toggleElement.pref!.value);
@@ -321,7 +344,7 @@ suite('SettingsToggleV2', () => {
       assertFalse(toggleElement.checked);
 
       assertThrows(() => {
-        toggleElement.commitPrefChange(true);
+        toggleElement.commitPrefChange();
       }, 'updatePrefValueFromUserAction() requires pref to be defined.');
 
       assertFalse(toggleElement.checked);

@@ -99,7 +99,7 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
     this.checked = !this.checked;
 
     if (this.pref && !this.noSetPref) {
-      this.commitPrefChange(this.checked);
+      this.commitPrefChange();
     }
 
     this.dispatchEvent(new CustomEvent('change', {
@@ -110,12 +110,12 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
   }
 
   /**
-   * Updates the pref to the control element’s current value.
+   * Updates the pref value to the `checked` property value.
    */
-  commitPrefChange(newChecked: boolean): void {
+  commitPrefChange(): void {
     // updatePrefValueFromUserAction() will ensure that the pref is defined
     // before committing the change.
-    this.updatePrefValueFromUserAction(newChecked);
+    this.updatePrefValueFromUserAction(this.checked);
   }
 
   /**
