@@ -310,9 +310,12 @@ FindBarView::FindBarView(FindBarHost* host) {
                   UserEducationService::MaybeNotifyPromoFeatureUsed(
                       web_contents->GetBrowserContext(),
                       lens::features::kLensOverlay);
+
                   find_bar_controller->EndFindSession(
                       find_in_page::SelectionAction::kClear,
                       find_in_page::ResultAction::kClear);
+                  find_in_page::FindTabHelper::FromWebContents(web_contents)
+                      ->set_find_ui_active(false);
                 },
                 base::Unretained(this)))
             .SetStyle(ui::ButtonStyle::kTonal)
