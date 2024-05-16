@@ -43,9 +43,9 @@ class Extension;
 // C1) Registering and starting a background worker:
 //   Upon extension activation, this class registers the extension's
 //   background worker if necessary. After that, if it has queued up tasks
-//   in |pending_tasks_|, then it moves on to starting the worker. Registration
-//   and start are initiated from this class. Once started, the worker is
-//   considered browser process ready. These workers are stored in
+//   in |pending_tasks_map_|, then it moves on to starting the worker.
+//   Registration and start are initiated from this class. Once started, the
+//   worker is considered browser process ready. These workers are stored in
 //   |worker_state_map_| with |browser_ready| = false until we run tasks.
 //
 // C2) Listening for worker's state update from the renderer:
@@ -60,7 +60,7 @@ class Extension;
 //
 // Once a worker reaches readiness in both browser process
 // (DidStartWorkerForScope) and worker process (DidStartServiceWorkerContext),
-// we consider the worker to be ready to run tasks from |pending_tasks_|.
+// we consider the worker to be ready to run tasks from |pending_tasks_map_|.
 // Note that events from #C1 and #C2 are somewhat independent, e.g. it is
 // possible to see an Init state update from #C2 before #C1 has seen a start
 // worker completion.
@@ -69,10 +69,9 @@ class Extension;
 //   This class also assigns a unique activation token to an extension
 //   activation so that it can differentiate between two activations of a
 //   particular extension (e.g. reloading an extension can cause two
-//   activations). |pending_tasks_|, worker registration and start (#C1) have
-//   activation tokens attached to them.
-//   The activation expires upon extension deactivation, and tasks are dropped
-//   from |pending_tasks_|.
+//   activations). |pending_tasks_map_|, worker registration and start (#C1)
+//   have activation tokens attached to them. The activation expires upon
+//   extension deactivation, and tasks are dropped from |pending_tasks_map_|.
 //
 // TODO(lazyboy): Clean up queue when extension is unloaded/uninstalled.
 class ServiceWorkerTaskQueue
@@ -308,10 +307,40 @@ class ServiceWorkerTaskQueue
   // Emit histograms when we know we're going to start the worker.
   void EmitWorkerWillBeStartedHistograms(const ExtensionId& extension_id);
 
+  // Returns the pending tasks for the activated extension. This returns
+  // `nullptr` if the vector has not been created yet for `context_id`. Should
+  // return non-null after activating extension and before deactivating
+  // extension.
+  std::vector<PendingTask>* pending_tasks(const SequencedContextId& context_id);
+
+  // Returns the pending tasks for the activated extension. This creates an
+  // empty `std::vector<PendingTask>` for `context_id` if there is not one yet.
+  // TODO(crbug.com/40276609): Can we ensure `context_id` key has been set
+  // before this is called so we don't need to add it?
+  std::vector<ServiceWorkerTaskQueue::PendingTask>& GetOrAddPendingTasks(
+      const SequencedContextId& context_id);
+
+  // Adds a pending task for the activated extension.
+  void AddPendingTaskForContext(PendingTask&& pending_task,
+                                const SequencedContextId& context_id);
+
+  // Stop tracking any pending tasks for this `context_id` for the activated
+  // extension.
+  void DeleteAllPendingTasks(const SequencedContextId& context_id);
+
+  // Whether there are any pending tasks to run for the activated extension.
+  bool HasPendingTasks(const SequencedContextId& context_id);
+
   std::map<content::ServiceWorkerContext*, int> observing_worker_contexts_;
 
   // The state of worker of each activated extension.
   std::map<SequencedContextId, WorkerState> worker_state_map_;
+
+  // TODO(crbug.com/40276609): Do we need to track this by `SequencedContextId`
+  // or could we use `ExtensionId` instead?
+  // `PendingTasks` for the activated extension that will be run as soon as the
+  // worker is started and ready.
+  std::map<SequencedContextId, std::vector<PendingTask>> pending_tasks_map_;
 
   const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
