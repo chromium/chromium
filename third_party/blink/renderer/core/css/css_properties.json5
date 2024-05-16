@@ -335,6 +335,7 @@
         "paint",
         "reshape",
         "scroll-anchor",
+        "scrollbar-color",
         "scrollbar-style",
         "stroke",
         "text-decoration",
@@ -4675,7 +4676,7 @@
       default_value: "nullptr",
       wrapper_pointer_name: "Member",
       include_paths: ["third_party/blink/renderer/core/style/style_scrollbar_color.h"],
-      invalidate: ["scrollbar-style"],
+      invalidate: ["scrollbar-style", "scrollbar-color"],
       runtime_flag: "ScrollbarColor",
     },
     {

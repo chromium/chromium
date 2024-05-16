@@ -34,16 +34,8 @@
         name: "DiffNeedsPaintInvalidation",
         methods_to_diff: [
           {
-            method: "UsedColorScheme()",
-            field_dependencies: ["color-scheme"]
-          },
-          {
             method: "AccentColorResolved()",
             field_dependencies: ["accent-color", "color"]
-          },
-          {
-            method: "UsedScrollbarColor()",
-            field_dependencies: ["scrollbar-color"]
           },
         ],
     },

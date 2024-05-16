@@ -951,6 +951,11 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kOpacity) {
     diff.SetOpacityChanged();
   }
+  if (field_diff & kScrollbarColor) {
+    if (UsedScrollbarColor() != other.UsedScrollbarColor()) {
+      diff.SetNeedsNormalPaintInvalidation();
+    }
+  }
   if (field_diff & kScrollbarStyle) {
     if (HasPseudoElementStyle(kPseudoIdScrollbar) !=
             other.HasPseudoElementStyle(kPseudoIdScrollbar) ||

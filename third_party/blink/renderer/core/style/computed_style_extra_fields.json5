@@ -931,6 +931,7 @@
       default_value: "false",
       custom_compare: true,
       inherited: true,
+      invalidate: ["paint"],
     },
     {
       name: "ColorSchemeFlagsIsNormal",
@@ -1291,7 +1292,7 @@
       type_name: "bool",
       default_value: "false",
       inherited: true,
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "scrollbar-color"],
     },
   ],
 }
