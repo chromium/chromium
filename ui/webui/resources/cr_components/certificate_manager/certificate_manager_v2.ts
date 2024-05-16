@@ -20,12 +20,16 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './certificate_manager_v2.html.js';
 import type {SummaryCertInfo} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
+
+const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
 
 export interface CertificateManagerV2Element {
   $: {
@@ -35,7 +39,8 @@ export interface CertificateManagerV2Element {
   };
 }
 
-export class CertificateManagerV2Element extends PolymerElement {
+export class CertificateManagerV2Element extends
+    CertificateManagerV2ElementBase {
   static get is() {
     return 'certificate-manager-v2';
   }
@@ -68,9 +73,11 @@ export class CertificateManagerV2Element extends PolymerElement {
   }
 
   private selectedTabIndex_: number = 0;
-  // TODO(crbug.com/40928765): Support localization.
-  private tabNames_: string[] =
-      ['Client Certificates', 'Local Certificates', 'Chrome Root Store'];
+  private tabNames_: string[] = [
+    loadTimeData.getString('certificateManagerV2ClientCerts'),
+    loadTimeData.getString('certificateManagerV2LocalCerts'),
+    loadTimeData.getString('certificateManagerV2CRSCerts'),
+  ];
   private toastMessage_: string;
   private crsCertificates_: SummaryCertInfo[] = [];
   private crsTrustedCertsOpened_: boolean = true;
@@ -101,8 +108,8 @@ export class CertificateManagerV2Element extends PolymerElement {
   }
 
   private onHashCopied_() {
-    // TODO(crbug.com/40928765): Support localization.
-    this.toastMessage_ = 'Hash copied to clipboard';
+    this.toastMessage_ =
+        loadTimeData.getString('certificateManagerV2HashCopiedToast');
     this.$.toast.show();
   }
 
