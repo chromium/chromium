@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
@@ -657,6 +658,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public int getBaseStatusBarColor(Tab tab) {
+        // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after Google Bottom Bar is
+        // launched
+        if (GoogleBottomBarCoordinator.isFeatureEnabled()
+                && CustomTabsConnection.getInstance()
+                        .shouldEnableGoogleBottomBarForIntent(mIntentDataProvider)) {
+            return getWindow().getContext().getColor(R.color.google_bottom_bar_background_color);
+        }
         // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after the Chrome side LE for
         // Page Insights Hub
         if (PageInsightsCoordinator.isFeatureEnabled()
