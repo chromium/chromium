@@ -28,7 +28,7 @@ void OobeAppsDiscoveryService::GetAppsAndUseCases(
     PropagateResult(std::move(callback), AppsFetchingResult::kSuccess);
   } else {
     DownloadAppsAndUseCases();
-    CHECK(!callback_.is_null());
+    CHECK(callback_.is_null());
     callback_ = std::move(callback);
   }
 }
