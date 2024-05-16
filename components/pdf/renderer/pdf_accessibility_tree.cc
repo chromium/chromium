@@ -559,6 +559,9 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
       banner_node_.reset();
       status_node_.reset();
       status_node_text_.reset();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      postamble_page_tree_update_.reset();
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
     return;
   }
@@ -957,6 +960,9 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
   nodes_.clear();
   node_id_to_page_char_index_.clear();
   node_id_to_annotation_info_.clear();
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  postamble_page_tree_update_.reset();
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 std::optional<blink::WebAXObject>
