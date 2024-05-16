@@ -380,7 +380,13 @@ bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
 bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
     content::BrowserContext* context,
     const Extension* extension) const {
-  CHECK(extension);
+  if (!extension) {
+    // TODO(crbug.com/339908207): Create tests for this once crash is confirmed
+    // fixed.
+    // An extension may have been unloaded when this runs.
+    return false;
+  }
+
   auto activation_token = GetCurrentActivationToken(extension->id());
 
   if (!activation_token) {
@@ -426,7 +432,7 @@ void ServiceWorkerTaskQueue::AddPendingTask(
     PendingTask task) {
   DCHECK(lazy_context_id.IsForServiceWorker());
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker2",
+      "Extensions.ServiceWorkerBackground.AddPendingTaskForRunningWorker3",
       IsReadyToRunTasks(
           browser_context_,
           extensions::ExtensionRegistry::Get(browser_context_)
@@ -957,7 +963,7 @@ void ServiceWorkerTaskQueue::EmitWorkerWillBeStartedHistograms(
                             ->GetInstalledExtension(extension_id));
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground."
-      "RequestedWorkerStartForStartedWorker2",
+      "RequestedWorkerStartForStartedWorker3",
       worker_is_ready_to_run_tasks);
 }
 

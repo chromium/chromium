@@ -97,9 +97,8 @@ class ServiceWorkerTaskQueue
   bool ShouldEnqueueTask(content::BrowserContext* context,
                          const Extension* extension) const override;
 
-  // Returns true if the service worker is blink::EmbeddedWorkerStatus::Running.
-  // This could, once service worker start logic is refactored in
-  // crbug.com/1467015, be refactored into `ShouldEnqueueTask()`.
+  // Returns true if the service worker seems ready to run pending tasks. It
+  // only informs metrics data, not task dispatching logic.
   bool IsReadyToRunTasks(content::BrowserContext* context,
                          const Extension* extension) const override;
 

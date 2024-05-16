@@ -144,9 +144,9 @@ void EventAckData::EmitDispatchTimeMetrics(EventInfo& event_info) {
     const char* active_metric_name =
         event_info.lazy_background_active_on_dispatch
             ? "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2."
-              "Active2"
+              "Active3"
             : "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2."
-              "Inactive2";
+              "Inactive3";
     base::UmaHistogramCustomMicrosecondsTimes(
         active_metric_name,
         /*sample=*/base::TimeTicks::Now() - event_info.dispatch_start_time,
