@@ -30,6 +30,7 @@ function getFolderImagesHtml(this: CrUrlListItemElement) {
 export function getHtml(this: CrUrlListItemElement) {
   return html`
 <a id="anchor" .href="${this.url}" ?hidden="${!this.asAnchor}"
+    target="${this.asAnchorTarget}"
     aria-label="${this.getItemAriaLabel_()}"
     aria-description="${this.getItemAriaDescription_() || nothing}">
 </a>

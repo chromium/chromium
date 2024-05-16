@@ -23,7 +23,7 @@ export enum CrUrlListItemSize {
 
 export interface CrUrlListItemElement {
   $: {
-    anchor: HTMLElement,
+    anchor: HTMLAnchorElement,
     badgesContainer: HTMLElement,
     badges: HTMLSlotElement,
     button: HTMLElement,
@@ -117,11 +117,13 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
        * activate.
        */
       asAnchor: {type: Boolean},
+      asAnchorTarget: {type: String},
     };
   }
 
   alwaysShowSuffix: boolean = false;
   asAnchor: boolean = false;
+  asAnchorTarget: string = '_self';
   itemAriaLabel?: string;
   itemAriaDescription?: string;
   count?: number;

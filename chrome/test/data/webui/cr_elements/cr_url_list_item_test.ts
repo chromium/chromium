@@ -183,6 +183,15 @@ suite('CrUrlListItemTest', () => {
         element.$.anchor.getBoundingClientRect());
   });
 
+  test('SetsTargetForAnchor', async () => {
+    element.asAnchor = true;
+    await element.updateComplete;
+    assertEquals('_self', element.$.anchor.target);
+    element.asAnchorTarget = '_blank';
+    await element.updateComplete;
+    assertEquals('_blank', element.$.anchor.target);
+  });
+
   test('PassesAriaProperties', async () => {
     element.title = 'My title';
     element.description = 'My description';
