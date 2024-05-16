@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -3017,24 +3018,14 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   ASSERT_EQ(model->items().size(), 1u);
 
-  const bool is_suggestion = HoldingSpaceItem::IsSuggestionType(GetType());
-  if (is_suggestion) {
-    // For suggestion items, the new suggestions should always replace old ones.
-    EXPECT_NE(model->items()[0].get(), item);
-    EXPECT_NE(id, id2);
-    EXPECT_FALSE(service->ContainsItem(id));
-    EXPECT_TRUE(service->ContainsItem(id2));
-  } else {
-    // For non-suggestion items, attempts to add already represented items
-    // should be ignored.
-    EXPECT_EQ(model->items()[0].get(), item);
-    EXPECT_EQ(id, id2);
-    EXPECT_TRUE(service->ContainsItem(id));
-    EXPECT_TRUE(service->ContainsItem(id2));
-  }
+  // Attempts to add already represented items should be ignored.
+  EXPECT_EQ(model->items()[0].get(), item);
+  EXPECT_EQ(id, id2);
+  EXPECT_TRUE(service->ContainsItem(id));
+  EXPECT_TRUE(service->ContainsItem(id2));
 
   // Remove the holding space item.
-  service->RemoveItem(is_suggestion ? id2 : id);
+  service->RemoveItem(id);
   EXPECT_TRUE(model->items().empty());
   EXPECT_FALSE(service->ContainsItem(id));
   EXPECT_FALSE(service->ContainsItem(id2));
@@ -3580,18 +3571,23 @@ class HoldingSpaceSuggestionsDelegateTest
   void SetUp() override {
     HoldingSpaceKeyedServiceTest::SetUp();
 
-    // Create a mount point to host test files.
+    // Create mount points to host test files.
     TestingProfile* profile = GetProfile();
-    mount_point_ = std::make_unique<ScopedTestMountPoint>(
-        "test_mount", storage::kFileSystemTypeLocal,
+    drive_mount_point_ = std::make_unique<ScopedTestMountPoint>(
+        "drive_test_mount", storage::kFileSystemTypeDriveFs,
         file_manager::VOLUME_TYPE_TESTING);
-    mount_point_->Mount(GetProfile());
+    drive_mount_point_->Mount(profile);
+    local_mount_point_ = std::make_unique<ScopedTestMountPoint>(
+        "local_test_mount", storage::kFileSystemTypeLocal,
+        file_manager::VOLUME_TYPE_TESTING);
+    local_mount_point_->Mount(profile);
 
     HoldingSpaceModelAttachedWaiter(profile).Wait();
   }
 
   void TearDown() override {
-    mount_point_.reset();
+    drive_mount_point_.reset();
+    local_mount_point_.reset();
     HoldingSpaceKeyedServiceTest::TearDown();
   }
 
@@ -3601,23 +3597,26 @@ class HoldingSpaceSuggestionsDelegateTest
             GetProfile()));
   }
 
-  ScopedTestMountPoint* mount_point() { return mount_point_.get(); }
+  ScopedTestMountPoint* drive_mount_point() { return drive_mount_point_.get(); }
+  ScopedTestMountPoint* local_mount_point() { return local_mount_point_.get(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ScopedTestMountPoint> mount_point_;
+  std::unique_ptr<ScopedTestMountPoint> drive_mount_point_;
+  std::unique_ptr<ScopedTestMountPoint> local_mount_point_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceSuggestionsDelegateTest,
                          /*enable_suggestion_feature=*/testing::Bool());
 
-// Verifies that suggestion removal through the holding space client works as
-// expected.
-TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
+// Verifies that suggestion refresh through the holding space client is WAI.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRefresh) {
+  using Type = HoldingSpaceItem::Type;
+
   // Populate drive and local file suggestions.
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
@@ -3642,23 +3641,128 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
            /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
+  // Verify initial suggestions.  Note that suggestions are reversed in the
+  // holding space model to account for the fact that items are presented in
+  // reverse-chronological order.
   const bool suggestion_feature_enabled =
       features::IsHoldingSpaceSuggestionsEnabled();
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  EXPECT_EQ(GetSuggestionsInModel(*model).size(),
-            suggestion_feature_enabled ? 2u : 0u);
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_2),
+                      std::make_pair(Type::kDriveSuggestion, file_path_1)),
+                  ::testing::IsEmpty()));
+
+  // Create additional files to back refreshed suggestions.
+  const base::FilePath file_path_3 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_4 = local_mount_point()->CreateArbitraryFile();
+
+  // Refresh suggestions through the holding space client. Verify that
+  // `FileSuggestKeyedService::GetSuggestFileData()` is called if and only if
+  // the suggestions feature is enabled.
+  EXPECT_CALL(*GetFileSuggestKeyedService(),
+              GetSuggestFileData(FileSuggestionType::kDriveFile, ::testing::_))
+      .Times(suggestion_feature_enabled ? 1u : 0u)
+      .WillOnce(base::test::RunOnceCallback<1u>(
+          std::make_optional(std::vector<FileSuggestData>{
+              {FileSuggestionType::kDriveFile, file_path_3,
+               /*new_prediction_reason=*/std::nullopt,
+               /*modified_time=*/std::nullopt,
+               /*viewed_time=*/std::nullopt,
+               /*shared_time=*/std::nullopt,
+               /*new_score=*/std::nullopt,
+               /*drive_file_id=*/std::nullopt,
+               /*icon_url=*/std::nullopt}})));
+  EXPECT_CALL(*GetFileSuggestKeyedService(),
+              GetSuggestFileData(FileSuggestionType::kLocalFile, ::testing::_))
+      .Times(suggestion_feature_enabled ? 1u : 0u)
+      .WillOnce(base::test::RunOnceCallback<1u>(
+          std::make_optional(std::vector<FileSuggestData>{
+              {FileSuggestionType::kLocalFile, file_path_4,
+               /*new_prediction_reason=*/std::nullopt,
+               /*modified_time=*/std::nullopt,
+               /*viewed_time=*/std::nullopt,
+               /*shared_time=*/std::nullopt,
+               /*new_score=*/std::nullopt,
+               /*drive_file_id=*/std::nullopt,
+               /*icon_url=*/std::nullopt}})));
+  HoldingSpaceController::Get()->client()->RefreshSuggestions();
+
+  // Verify that all suggestions have been updated in the model if and only if
+  // the suggestions feature is enabled.
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_4),
+                      std::make_pair(Type::kDriveSuggestion, file_path_3)),
+                  ::testing::IsEmpty()));
+}
+
+// Verifies that suggestion removal through the holding space client is WAI.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
+  using Type = HoldingSpaceItem::Type;
+
+  // Populate drive and local file suggestions.
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      FileSuggestionType::kDriveFile,
+      /*suggestions=*/std::vector<FileSuggestData>{
+          {FileSuggestionType::kDriveFile, file_path_1,
+           /*new_prediction_reason=*/std::nullopt,
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      FileSuggestionType::kLocalFile,
+      /*suggestions=*/std::vector<FileSuggestData>{
+          {FileSuggestionType::kLocalFile, file_path_2,
+           /*new_prediction_reason=*/std::nullopt,
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Verify initial suggestions.  Note that suggestions are reversed in the
+  // holding space model to account for the fact that items are presented in
+  // reverse-chronological order.
+  const bool suggestion_feature_enabled =
+      features::IsHoldingSpaceSuggestionsEnabled();
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_2),
+                      std::make_pair(Type::kDriveSuggestion, file_path_1)),
+                  ::testing::IsEmpty()));
 
   // Remove all suggestions through the holding space client. Verify that
-  // `HoldingSpaceClient::RemoveFileSuggestions()` is called.
-  HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+  // `FileSuggestKeyedService::RemoveSuggestionsAndNotify()` is called if and
+  // only if the suggestions feature is enabled.
   EXPECT_CALL(*GetFileSuggestKeyedService(),
               RemoveSuggestionsAndNotify(
-                  std::vector<base::FilePath>({file_path_1, file_path_2})));
-  client->RemoveFileSuggestions({file_path_1, file_path_2});
+                  std::vector<base::FilePath>({file_path_1, file_path_2})))
+      .Times(suggestion_feature_enabled ? 1u : 0u);
+  HoldingSpaceController::Get()->client()->RemoveSuggestions(
+      {file_path_1, file_path_2});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Verify that all suggestions have been removed from the `model`.
+  EXPECT_THAT(GetSuggestionsInModel(*model), IsEmpty());
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
 
   // Update Drive file suggestions. Fast-forward to ensure the suggestion fetch
   // completes.
@@ -3690,7 +3794,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
 
   // Update local file suggestions and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
@@ -3712,7 +3816,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   }
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_3 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_3 = drive_mount_point()->CreateArbitraryFile();
 
   // Update Drive file suggestions again and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
@@ -3768,12 +3872,13 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
-  auto downloads_mount = mount_point()->CreateAndMountDownloads(profile());
+  auto downloads_mount =
+      local_mount_point()->CreateAndMountDownloads(GetProfile());
   auto downloads_path =
       file_manager::util::GetDownloadsFolderForProfile(GetProfile());
   auto other_folder_path = downloads_path.Append("contained_folder");
   ASSERT_TRUE(base::CreateDirectory(other_folder_path));
-  const base::FilePath file_path = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path = local_mount_point()->CreateArbitraryFile();
 
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
@@ -3815,7 +3920,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
   const GURL file_system_url_1 = GetFileSystemUrl(GetProfile(), file_path_1);
   const HoldingSpaceFile::FileSystemType file_system_type_1 =
       holding_space_util::ResolveFileSystemType(GetProfile(),
@@ -3851,7 +3956,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
 
   // Update local file suggestions and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
@@ -3938,7 +4043,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
 
 // Verifies the file suggestion update on a profile with restored suggestions.
 TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
-  const base::FilePath drive_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath drive_file = drive_mount_point()->CreateArbitraryFile();
   const GURL drive_file_system_url = GetFileSystemUrl(GetProfile(), drive_file);
   const HoldingSpaceFile::FileSystemType drive_file_system_type =
       holding_space_util::ResolveFileSystemType(GetProfile(),
@@ -3975,7 +4080,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
 
   // Update local file suggestions on the secondary profile. Fast-forward to
   // ensure the suggestion fetch completes.
-  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath local_file = local_mount_point()->CreateArbitraryFile();
   static_cast<MockFileSuggestKeyedService*>(
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           secondary_profile))
@@ -4040,7 +4145,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
             suggestion_feature_enabled ? 1u : 0u);
 
   // Update with a local file suggestion.
-  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath local_file = local_mount_point()->CreateArbitraryFile();
   static_cast<MockFileSuggestKeyedService*>(
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           secondary_profile))

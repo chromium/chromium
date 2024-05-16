@@ -46,6 +46,7 @@ namespace ash {
 
 class HoldingSpaceDownloadsDelegate;
 class HoldingSpaceKeyedServiceDelegate;
+class HoldingSpaceSuggestionsDelegate;
 
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
@@ -95,6 +96,15 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Returns the list of pinned files in the holding space. It returns the files
   // files system URLs as GURLs.
   std::vector<GURL> GetPinnedFiles() const;
+
+  // Refreshes suggestions. Note that this intentionally does *not* invalidate
+  // the file suggest service's item suggest cache which is too expensive for
+  // holding space to invalidate.
+  void RefreshSuggestions();
+
+  // Removes suggestions associated with the specified `absolute_file_paths`.
+  void RemoveSuggestions(
+      const std::vector<base::FilePath>& absolute_file_paths);
 
   // Replaces the existing suggestions with `suggestions`. The order among
   // `suggestions` is respected, which means that if a suggestion A is in front
@@ -232,6 +242,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
 
   // The delegate, owned by `delegates_`, responsible for downloads.
   raw_ptr<HoldingSpaceDownloadsDelegate> downloads_delegate_ = nullptr;
+
+  // The delegate, owned by `delegates_`, responsible for suggestions.
+  raw_ptr<HoldingSpaceSuggestionsDelegate> suggestions_delegate_ = nullptr;
 
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.

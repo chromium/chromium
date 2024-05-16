@@ -540,6 +540,11 @@ TEST_F(HoldingSpaceWallpaperNudgeControllerTest,
             {"//path/to/", std::string(&file_system_url.spec().back())}));
       }));
 
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
+
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
   holding_space_prefs::MarkTimeOfFirstAvailability(
@@ -629,6 +634,11 @@ TEST_F(HoldingSpaceWallpaperNudgeControllerTest, HideBubbleOnHoldingSpaceOpen) {
         return base::FilePath(base::StrCat(
             {"//path/to/", std::string(&file_system_url.spec().back())}));
       }));
+
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
 
   // Needed by the client to create the placeholder.
   EXPECT_CALL(holding_space_client, IsDriveDisabled)
@@ -790,6 +800,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerDragAndDropTest, DragAndDrop) {
               {"//path/to/", std::string(&file_system_url.spec().back())}));
         }));
   }
+
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
 
   // Needed by the client to create the placeholder.
   EXPECT_CALL(holding_space_client, IsDriveDisabled)
@@ -1184,6 +1199,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerEligibilityTest, UserEligibility) {
               {"//path/to/", std::string(&file_system_url.spec().back())}));
         }));
   }
+
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
 
   // Mark the holding space feature as available since there is no holding
   // space keyed service which would otherwise be responsible for doing so.
@@ -1668,6 +1688,11 @@ TEST_P(HoldingSpaceWallpaperNudgeControllerCounterfactualTest,
             {"//path/to/", std::string(&file_system_url.spec().back())}));
       }));
 
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
+
   if (expect_drop_to_pin) {
     // Needed by the client to create the placeholder.
     EXPECT_CALL(holding_space_client, IsDriveDisabled)
@@ -2116,6 +2141,11 @@ TEST_P(HoldingSpaceWallpaperNudgePlaceholderTest, HasPinnedFilesPlaceholder) {
   testing::StrictMock<MockHoldingSpaceClient> holding_space_client;
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id, &holding_space_client, &holding_space_model);
+
+  // Configure the client to handle attempts to refresh suggestions. This occurs
+  // any time holding space is opened.
+  EXPECT_CALL(holding_space_client, RefreshSuggestions)
+      .Times(::testing::AnyNumber());
 
   // Needed by the client to create the placeholder.
   EXPECT_CALL(holding_space_client, IsDriveDisabled)

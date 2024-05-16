@@ -21,8 +21,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
-#include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -334,11 +332,13 @@ void HoldingSpaceClientImpl::PinItems(
   }
 }
 
-void HoldingSpaceClientImpl::RemoveFileSuggestions(
+void HoldingSpaceClientImpl::RefreshSuggestions() {
+  GetHoldingSpaceKeyedService(profile_)->RefreshSuggestions();
+}
+
+void HoldingSpaceClientImpl::RemoveSuggestions(
     const std::vector<base::FilePath>& absolute_file_paths) {
-  FileSuggestKeyedServiceFactory::GetInstance()
-      ->GetService(profile_)
-      ->RemoveSuggestionsAndNotify(absolute_file_paths);
+  GetHoldingSpaceKeyedService(profile_)->RemoveSuggestions(absolute_file_paths);
 }
 
 void HoldingSpaceClientImpl::ShowItemInFolder(

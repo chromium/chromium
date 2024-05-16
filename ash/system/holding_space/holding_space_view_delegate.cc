@@ -539,7 +539,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
             return remove;
           },
           std::cref(items), std::ref(suggested_file_paths)));
-      HoldingSpaceController::Get()->client()->RemoveFileSuggestions(
+      HoldingSpaceController::Get()->client()->RemoveSuggestions(
           suggested_file_paths);
       break;
     }

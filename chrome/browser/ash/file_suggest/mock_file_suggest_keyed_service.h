@@ -38,8 +38,10 @@ class MockFileSuggestKeyedService : public FileSuggestKeyedService {
   ~MockFileSuggestKeyedService() override;
 
   // FileSuggestKeyedService:
-  void GetSuggestFileData(FileSuggestionType type,
-                          GetSuggestFileDataCallback callback) override;
+  MOCK_METHOD(void,
+              GetSuggestFileData,
+              (FileSuggestionType type, GetSuggestFileDataCallback callback),
+              (override));
   MOCK_METHOD(void,
               RemoveSuggestionsAndNotify,
               (const std::vector<base::FilePath>& suggested_file_paths),

@@ -31,6 +31,15 @@ class HoldingSpaceSuggestionsDelegate
       const HoldingSpaceSuggestionsDelegate&) = delete;
   ~HoldingSpaceSuggestionsDelegate() override;
 
+  // Refreshes suggestions.  Note that this intentionally does *not* invalidate
+  // the file suggest service's item suggest cache which is too expensive for
+  // holding space to invalidate.
+  void RefreshSuggestions();
+
+  // Removes suggestions associated with the specified `absolute_file_paths`.
+  void RemoveSuggestions(
+      const std::vector<base::FilePath>& absolute_file_paths);
+
  private:
   // HoldingSpaceKeyedServiceDelegate:
   void OnHoldingSpaceItemsAdded(

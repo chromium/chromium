@@ -2977,8 +2977,17 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsSection) {
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
 }
 
-// Tests the code flow when a suggestion item is removed through the context
-// menu.
+// Tests that suggestions are refreshed when showing holding space.
+TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRefresh) {
+  StartSession();
+
+  // Show holding space.
+  // Verify that `HoldingSpaceClient::RefreshSuggestions()` is called.
+  EXPECT_CALL(*client(), RefreshSuggestions);
+  test_api()->Show();
+}
+
+// Tests that suggestions can be removed via an item's context menu.
 TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRemoval) {
   StartSession();
 
@@ -2986,6 +2995,7 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRemoval) {
   const base::FilePath path("/tmp/fake_1");
   AddItem(GetType(), path);
 
+  // Show holding space.
   test_api()->Show();
   std::vector<views::View*> item_views = test_api()->GetHoldingSpaceItemViews();
   ASSERT_EQ(item_views.size(), 1u);
@@ -2996,10 +3006,10 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRemoval) {
   // Right click the item view to show the context menu.
   RightClick(item_views.front());
 
-  // Click at the menu item of item removal. Verify that
-  // `HoldingSpaceClient::RemoveFileSuggestions()` is called.
+  // Click the menu item corresponding to item removal. Verify that
+  // `HoldingSpaceClient::RemoveSuggestions()` is called.
   EXPECT_CALL(*client(),
-              RemoveFileSuggestions(std::vector<base::FilePath>({path})));
+              RemoveSuggestions(std::vector<base::FilePath>({path})));
   Click(GetMenuItemByCommandId(HoldingSpaceCommandId::kRemoveItem));
 }
 

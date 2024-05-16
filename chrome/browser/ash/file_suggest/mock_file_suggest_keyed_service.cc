@@ -26,6 +26,23 @@ MockFileSuggestKeyedService::MockFileSuggestKeyedService(
     Profile* profile,
     PersistentProto<app_list::RemovedResultsProto> proto)
     : FileSuggestKeyedService(profile, std::move(proto)) {
+  ON_CALL(*this, GetSuggestFileData)
+      .WillByDefault(
+          [this](FileSuggestionType type, GetSuggestFileDataCallback callback) {
+            if (!IsProtoInitialized()) {
+              std::move(callback).Run(/*suggestions=*/std::nullopt);
+              return;
+            }
+
+            // Emulate `FileSuggestKeyedService` that returns data
+            // asynchronously.
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &MockFileSuggestKeyedService::RunGetSuggestFileDataCallback,
+                    weak_factory_.GetWeakPtr(), type, std::move(callback)));
+          });
+
   ON_CALL(*this, RemoveSuggestionsAndNotify)
       .WillByDefault(
           [this](const std::vector<base::FilePath>& suggested_file_paths) {
@@ -35,22 +52,6 @@ MockFileSuggestKeyedService::MockFileSuggestKeyedService(
 }
 
 MockFileSuggestKeyedService::~MockFileSuggestKeyedService() = default;
-
-void MockFileSuggestKeyedService::GetSuggestFileData(
-    FileSuggestionType type,
-    GetSuggestFileDataCallback callback) {
-  if (!IsProtoInitialized()) {
-    std::move(callback).Run(/*suggestions=*/std::nullopt);
-    return;
-  }
-
-  // Emulate `FileSuggestKeyedService` that returns data asynchronously.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MockFileSuggestKeyedService::RunGetSuggestFileDataCallback,
-          weak_factory_.GetWeakPtr(), type, std::move(callback)));
-}
 
 void MockFileSuggestKeyedService::SetSuggestionsForType(
     FileSuggestionType type,

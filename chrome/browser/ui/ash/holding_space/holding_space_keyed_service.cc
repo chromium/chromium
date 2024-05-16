@@ -240,6 +240,19 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
+void HoldingSpaceKeyedService::RefreshSuggestions() {
+  if (suggestions_delegate_) {
+    suggestions_delegate_->RefreshSuggestions();
+  }
+}
+
+void HoldingSpaceKeyedService::RemoveSuggestions(
+    const std::vector<base::FilePath>& absolute_file_paths) {
+  if (suggestions_delegate_) {
+    suggestions_delegate_->RemoveSuggestions(absolute_file_paths);
+  }
+}
+
 void HoldingSpaceKeyedService::SetSuggestions(
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         suggestions) {
@@ -247,21 +260,47 @@ void HoldingSpaceKeyedService::SetSuggestions(
     return;
   }
 
-  // Construct `items` from `suggestions` in the reverse order so that
-  // suggestion views follow the order of `suggestions`. `suggestions` could
-  // have duplicates in the holding space model. In this case, the existing
-  // suggestions are still replaced by newly generated ones because the
-  // suggestion order could change.
+  std::set<std::string> item_ids_to_remove;
+
+  // Gather `existing_suggestions`. Note that suggestions are reversed in the
+  // holding space model to account for the fact that items are presented in
+  // reverse-chronological order.
+  std::vector<const HoldingSpaceItem*> existing_suggestions;
+  for (const auto& item : base::Reversed(holding_space_model_.items())) {
+    if (HoldingSpaceItem::IsSuggestionType(item->type())) {
+      existing_suggestions.emplace_back(item.get());
+      item_ids_to_remove.insert(item->id());
+    }
+  }
+
+  // No-op if `existing_suggestions` are unchanged.
+  if (base::ranges::equal(existing_suggestions, suggestions, /*pred=*/{},
+                          [](const HoldingSpaceItem* item) {
+                            return std::make_pair(item->type(),
+                                                  item->file().file_path);
+                          })) {
+    return;
+  }
+
+  // Construct `items_to_add` from `suggestions`. Note that any pre-existing
+  // items which would ideally be recycled are replaced due to the fact that the
+  // holding space model doesn't currently support reordering.
   std::vector<std::unique_ptr<HoldingSpaceItem>> items_to_add;
   for (const auto& [type, file_path] : base::Reversed(suggestions)) {
     std::unique_ptr<HoldingSpaceItem> item;
-    if (const HoldingSpaceItem* existing_item =
-            holding_space_model_.GetItem(type, file_path);
-        existing_item && !existing_item->IsInitialized()) {
+    if (auto existing_item =
+            base::ranges::find_if(existing_suggestions,
+                                  [&](const HoldingSpaceItem* item) {
+                                    return item->type() == type &&
+                                           item->file().file_path == file_path;
+                                  });
+        existing_item != existing_suggestions.end() &&
+        !(*existing_item)->IsInitialized()) {
       // Reuse the existing uninitialized file suggestion item to avoid
-      // resolving the suggested file's URL. Because `existing_item` is
+      // resolving the suggested file's URL. Because `*existing_item` is
       // uninitialized, its removal does not incur visual changes.
-      item = holding_space_model_.TakeItem(existing_item->id());
+      item = holding_space_model_.TakeItem((*existing_item)->id());
+      item_ids_to_remove.erase(item->id());
     } else {
       item = CreateItemOfType(
           type, file_path,
@@ -273,20 +312,9 @@ void HoldingSpaceKeyedService::SetSuggestions(
       items_to_add.push_back(std::move(item));
   }
 
-  std::set<std::string> item_ids_to_remove;
-  for (const auto& item : holding_space_model_.items()) {
-    if (HoldingSpaceItem::IsSuggestionType(item->type())) {
-      item_ids_to_remove.insert(item->id());
-    }
-  }
-
-  // Allow the duplicate suggestions to be added because the order among
-  // `suggestions` should be respected.
+  // Add new items before removing old items to prevent UI from transitioning to
+  // an empty state if the model is only temporarily becoming empty.
   AddItems(std::move(items_to_add), /*allow_duplicates=*/true);
-
-  // Remove old suggestions after adding new suggestions. Otherwise,
-  // `holding_space_model_` could be empty after removing old suggestions and
-  // before adding new suggestions, which could close the holding space view.
   holding_space_model_.RemoveItems(item_ids_to_remove);
 }
 
@@ -478,8 +506,11 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
   // The `HoldingSpaceSuggestionsDelegate` manages file suggestions (i.e. the
   // files predicted to be used).
   if (features::IsHoldingSpaceSuggestionsEnabled()) {
-    delegates_.push_back(std::make_unique<HoldingSpaceSuggestionsDelegate>(
-        this, &holding_space_model_));
+    auto suggestions_delegate =
+        std::make_unique<HoldingSpaceSuggestionsDelegate>(
+            this, &holding_space_model_);
+    suggestions_delegate_ = suggestions_delegate.get();
+    delegates_.push_back(std::move(suggestions_delegate));
   }
 
   // Initialize all delegates only after they have been added to our collection.
@@ -491,6 +522,7 @@ void HoldingSpaceKeyedService::InitializeDelegates() {
 
 void HoldingSpaceKeyedService::ShutdownDelegates() {
   downloads_delegate_ = nullptr;
+  suggestions_delegate_ = nullptr;
   delegates_.clear();
 }
 
