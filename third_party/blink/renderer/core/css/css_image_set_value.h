@@ -31,6 +31,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSImageSetOptionValue;
@@ -47,7 +51,7 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   const CSSImageSetOptionValue* GetBestOption(const float device_scale_factor);
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool HasFailedOrCanceledSubresources() const;
 

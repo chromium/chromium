@@ -26,6 +26,10 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSIdentifierValue;
@@ -41,7 +45,7 @@ class CORE_EXPORT CSSShadowValue : public CSSValue {
                  CSSIdentifierValue* style,
                  CSSValue* color);
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSShadowValue&) const;
 

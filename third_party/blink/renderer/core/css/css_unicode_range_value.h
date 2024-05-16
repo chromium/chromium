@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 namespace cssvalue {
 
@@ -41,7 +45,7 @@ class CSSUnicodeRangeValue : public CSSValue {
   UChar32 From() const { return from_; }
   UChar32 To() const { return to_; }
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSUnicodeRangeValue&) const;
 
