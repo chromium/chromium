@@ -201,6 +201,17 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
                       CardUnmaskPromptNavigationBarTitle()];
 }
 
+- (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially {
+  [self showAuthenticationSelection];
+
+  // Ensure the "Send" button is present (since the first option, OTP, is pre
+  // selected).
+  [[EarlGrey
+      selectElementWithMatcher:CardUnmaskAuthenticationSelectionSendButton()]
+      assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
+                                   nil)];
+}
+
 - (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel {
   [self showAuthenticationSelection];
 

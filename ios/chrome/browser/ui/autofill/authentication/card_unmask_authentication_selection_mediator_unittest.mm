@@ -116,7 +116,7 @@ class CardUnmaskAuthenticationSelectionMediatorTest : public PlatformTest {
 };
 
 TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
-       SetsHeaderTitleAndHeaderTextAndOptionsAndFooter) {
+       SetsHeaderTitleAndHeaderTextAndOptionsAndFooterAndChallengeAcceptance) {
   OCMExpect([consumer()
       setHeaderTitle:
           l10n_util::GetNSString(
@@ -132,9 +132,35 @@ TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
       setFooterText:
           l10n_util::GetNSString(
               IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT)]);
+  OCMExpect([consumer()
+      setChallengeAcceptanceLabel:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND)]);
 
   InitializeMediator(
       {SmsAutofillChallengeOption(), CvcAutofillChallengeOption()});
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       SetsSendLabelInitiallyWhenSmsIsTheFirstChallengeOption) {
+  OCMExpect([consumer()
+      setChallengeAcceptanceLabel:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_SEND)]);
+
+  InitializeMediator(
+      {SmsAutofillChallengeOption(), CvcAutofillChallengeOption()});
+}
+
+TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,
+       SetsContinueLabelInitiallyWhenCvcIsTheFirstChallengeOption) {
+  OCMExpect([consumer()
+      setChallengeAcceptanceLabel:
+          l10n_util::GetNSString(
+              IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL_CONTINUE)]);
+
+  InitializeMediator(
+      {CvcAutofillChallengeOption(), SmsAutofillChallengeOption()});
 }
 
 TEST_F(CardUnmaskAuthenticationSelectionMediatorTest,

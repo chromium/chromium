@@ -29,7 +29,7 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
   NSString* _headerText;
   NSString* _footerText;
   NSArray<CardUnmaskChallengeOptionIOS*>* _challengeOptions;
-  NSNumber* _selectedChallengeOptionIndex;
+  NSInteger _selectedChallengeOptionIndex;
   UITableViewDiffableDataSource<NSString*, NSNumber*>*
       _challengeOptionsDataSource;
 }
@@ -59,7 +59,7 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
                           NSNumber* itemId) {
              return [weakSelf provideCellForTableView:tableView
                                             indexPath:indexPath
-                                 challengeOptionIndex:itemId];
+                                 challengeOptionIndex:itemId.integerValue];
            }];
   self.tableView.dataSource = _challengeOptionsDataSource;
   NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
@@ -137,8 +137,7 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // Set a checkmark on the cell when being selected.
   CHECK((NSUInteger)indexPath.row < [_challengeOptions count]);
-  [self setSelectedChallengeOptionIndex:[NSNumber
-                                            numberWithInteger:indexPath.row]];
+  [self setSelectedChallengeOptionIndex:indexPath.row];
   [self.mutator didSelectChallengeOption:_challengeOptions[indexPath.row]];
 }
 
@@ -166,17 +165,15 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
 // Deques and sets up a cell for the challenge option at index.
 - (UITableViewCell*)provideCellForTableView:(UITableView*)tableView
                                   indexPath:(NSIndexPath*)indexPath
-                       challengeOptionIndex:(NSNumber*)challengeOptionIndex {
+                       challengeOptionIndex:(NSInteger)challengeOptionIndex {
   TableViewDetailIconCell* cell =
       DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
   cell.textLabel.text = _challengeOptions[indexPath.row].modeLabel;
   [cell setDetailText:_challengeOptions[indexPath.row].challengeInfo];
 
-  BOOL isSelected =
-      (_selectedChallengeOptionIndex != nil &&
-       [_selectedChallengeOptionIndex isEqualToNumber:challengeOptionIndex]);
-  [cell setAccessoryType:isSelected ? UITableViewCellAccessoryCheckmark
-                                    : UITableViewCellAccessoryNone];
+  [cell setAccessoryType:_selectedChallengeOptionIndex == challengeOptionIndex
+                             ? UITableViewCellAccessoryCheckmark
+                             : UITableViewCellAccessoryNone];
   [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   [cell setDetailTextNumberOfLines:0];  // Use as many lines as needed.
@@ -204,19 +201,15 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
 }
 
 // Sets the selected challenge option, updating the circle/checkmark icon.
-- (void)setSelectedChallengeOptionIndex:(NSNumber*)selectedIndex {
-  if ([_selectedChallengeOptionIndex isEqualToNumber:selectedIndex]) {
+- (void)setSelectedChallengeOptionIndex:(NSInteger)selectedIndex {
+  if (_selectedChallengeOptionIndex == selectedIndex) {
     return;
   }
   NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
       [_challengeOptionsDataSource snapshot];
-  if (_selectedChallengeOptionIndex != nil) {
-    [snapshot reloadItemsWithIdentifiers:@[ _selectedChallengeOptionIndex ]];
-  }
+  [snapshot reloadItemsWithIdentifiers:@[ @(_selectedChallengeOptionIndex) ]];
   _selectedChallengeOptionIndex = selectedIndex;
-  if (_selectedChallengeOptionIndex != nil) {
-    [snapshot reloadItemsWithIdentifiers:@[ _selectedChallengeOptionIndex ]];
-  }
+  [snapshot reloadItemsWithIdentifiers:@[ @(_selectedChallengeOptionIndex) ]];
   [_challengeOptionsDataSource applySnapshotUsingReloadData:snapshot];
 }
 

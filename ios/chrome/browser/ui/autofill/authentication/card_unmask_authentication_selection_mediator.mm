@@ -38,6 +38,9 @@ CardUnmaskAuthenticationSelectionMediator::
   [consumer_ setCardUnmaskOptions:ConvertChallengeOptions()];
   [consumer_ setFooterText:base::SysUTF16ToNSString(
                                model_controller_->GetContentFooterText())];
+  [consumer_
+      setChallengeAcceptanceLabel:base::SysUTF16ToNSString(
+                                      model_controller_->GetOkButtonLabel())];
 }
 
 CardUnmaskAuthenticationSelectionMediator::
