@@ -9,6 +9,7 @@ import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropd
 import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.js';
 import {DESTINATION_SELECT_SHOW_LOADING_CHANGED, DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {setDestinationProviderForTesting} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
@@ -72,9 +73,9 @@ suite('DestinationSelect', () => {
   // Verify expected elements display while `controller.shouldShowLoading` is
   // true.
   test('displays expected elements when showLoading is true', async () => {
-    const hasInitialDestinationsFn = mockController.createFunctionMock(
-        destinationManager, 'hasLoadedAnInitialDestination');
-    hasInitialDestinationsFn.returnValue = false;
+    const hasInitialDestinationsFn =
+        mockController.createFunctionMock(controller, 'shouldShowLoading');
+    hasInitialDestinationsFn.returnValue = true;
 
     // Move time forward to resolve getLocalDestinations in manager.
     const changeEvent =
@@ -93,9 +94,9 @@ suite('DestinationSelect', () => {
   // Verify expected elements display while `controller.shouldShowLoading` is
   // false.
   test('displays expected loading UX', async () => {
-    const hasInitialDestinationsFn = mockController.createFunctionMock(
-        destinationManager, 'hasLoadedAnInitialDestination');
-    hasInitialDestinationsFn.returnValue = true;
+    const hasInitialDestinationsFn =
+        mockController.createFunctionMock(controller, 'shouldShowLoading');
+    hasInitialDestinationsFn.returnValue = false;
 
     // Move time forward to resolve getLocalDestinations in manager.
     const changeEvent =
@@ -124,7 +125,10 @@ suite('DestinationSelect', () => {
             isChildVisible(element, loadingSelector),
             `${loadingSelector} should be visible`);
 
-        // Move time forward to resolve getLocalDestinations in manager.
+        // Move time forward to resolve getLocalDestinations in manager and
+        // ensure manager is initialized.
+        destinationManager.initializeSession(
+            FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         const changeEvent =
             eventToPromise(DESTINATION_SELECT_SHOW_LOADING_CHANGED, controller);
         mockTimer.tick(testDelay);
