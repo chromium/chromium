@@ -6,9 +6,9 @@
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "media/gpu/windows/format_utils.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
+#include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
 namespace media {
 
@@ -58,15 +58,6 @@ Microsoft::WRL::ComPtr<ID3D12Device> CreateD3D12Device(IDXGIAdapter* adapter) {
   }
 
   return device;
-}
-
-constexpr UINT D3D12CalcSubresource(UINT mip_slice,
-                                    UINT array_slice,
-                                    UINT plane_slice,
-                                    UINT mip_levels,
-                                    UINT array_size) {
-  return mip_slice + array_slice * mip_levels +
-         plane_slice * mip_levels * array_size;
 }
 
 absl::InlinedVector<D3D12_RESOURCE_BARRIER, 2>

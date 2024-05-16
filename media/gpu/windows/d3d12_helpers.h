@@ -64,12 +64,6 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
 MEDIA_GPU_EXPORT Microsoft::WRL::ComPtr<ID3D12Device> CreateD3D12Device(
     IDXGIAdapter* adapter);
 
-MEDIA_GPU_EXPORT constexpr UINT D3D12CalcSubresource(UINT mip_slice,
-                                                     UINT array_slice,
-                                                     UINT plane_slice,
-                                                     UINT mip_levels,
-                                                     UINT array_size);
-
 // In D3D12 resource barriers, subresource id is not only being composed of mip
 // level id and array index id, but also plane id. This method is to create an
 // vector of transition barriers for all planes if there is more than one (like
