@@ -534,6 +534,15 @@ class BrowserAutofillManager : public AutofillManager {
                                std::vector<Suggestion>* suggestions,
                                SuggestionsContext* context);
 
+  // Populates all the fields (except for ablation stuy related fields) in
+  // `SuggestionsContext` based on the given params. A suggestion warning might
+  // be included in `suggestions` for mixed content forms.
+  SuggestionsContext BuildSuggestionsContext(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      std::vector<Suggestion>* suggestions);
+
   // For each submitted field in the |form_structure|, it determines whether
   // |ADDRESS_HOME_STATE| is a possible matching type.
   // This method is intended to run matching type detection on the browser UI

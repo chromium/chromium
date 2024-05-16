@@ -7,7 +7,9 @@
 namespace autofill {
 
 SuggestionsContext::SuggestionsContext() = default;
-
+SuggestionsContext::SuggestionsContext(const SuggestionsContext&) = default;
+SuggestionsContext& SuggestionsContext::operator=(const SuggestionsContext&) =
+    default;
 SuggestionsContext::~SuggestionsContext() = default;
 
 }  // namespace autofill

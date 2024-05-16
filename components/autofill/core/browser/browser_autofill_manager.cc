@@ -1184,6 +1184,94 @@ bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
   return IsFormOrClientNonSecure(client(), form);
 }
 
+SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
+    const FormData& form,
+    const FormFieldData& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    std::vector<Suggestion>* suggestions) {
+  SuggestionsContext context;
+
+  // When Compose suggestions or manual fallback for plus addresses are
+  // requested, there is no need to load Autofill suggestions.
+  if (IsTriggerSourceOnlyRelevantForCompose(trigger_source) ||
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
+    context.do_not_generate_autofill_suggestions = true;
+    return context;
+  }
+
+  // Need to refresh models before using the form_event_loggers.
+  RefreshDataModels();
+
+  const bool got_autofillable_form =
+      GetCachedFormAndField(form, field, &context.form_structure,
+                            &context.focused_field) &&
+      // Don't send suggestions or track forms that should not be parsed.
+      context.form_structure->ShouldBeParsed();
+
+  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
+      got_autofillable_form &&
+      context.focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    // Pre-`AutofillPredictionsForAutocompleteUnrecognized`, autocomplete
+    // suggestions were shown if all types of the form were suppressed or
+    // unknown. If at least a single field had predictions (and the form was
+    // thus considered autofillable), autocomplete suggestions were suppressed
+    // for fields with a suppressed prediction.
+    // To retain this behavior, the `suppress_reason` is only set if the form
+    // contains a field that triggers (non-fallback) suggestions.
+    // By not setting it, the autocomplete suggestion logic downstream is
+    // triggered, since no Autofill `suggestions` are available.
+    if (!base::ranges::all_of(*context.form_structure, [](const auto& field) {
+          return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
+                 field->Type().GetStorableType() == UNKNOWN_TYPE;
+        })) {
+      context.suppress_reason = SuppressReason::kAutocompleteUnrecognized;
+    }
+    context.do_not_generate_autofill_suggestions = true;
+    return context;
+  }
+  if (got_autofillable_form) {
+    auto* logger = GetEventFormLogger(*context.focused_field);
+    if (logger) {
+      logger->OnDidInteractWithAutofillableForm(*context.form_structure,
+                                                signin_state_for_metrics_);
+    }
+  }
+
+  context.filling_product = GetPreferredSuggestionFillingProduct(
+      got_autofillable_form ? context.focused_field->Type().GetStorableType()
+                            : UNKNOWN_TYPE,
+      trigger_source);
+
+  // If this is a mixed content form, we show a warning message and don't offer
+  // autofill. The warning is shown even if there are no autofill suggestions
+  // available.
+  if (IsFormMixedContent(client(), form) &&
+      client().GetPrefs()->FindPreference(
+          ::prefs::kMixedFormsWarningsEnabled) &&
+      client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
+    context.do_not_generate_autofill_suggestions = true;
+    // If the user begins typing, we interpret that as dismissing the warning.
+    // No suggestions are allowed, but the warning is no longer shown.
+    if (field.DidUserType()) {
+      context.suppress_reason = SuppressReason::kInsecureForm;
+    } else {
+      Suggestion warning_suggestion(
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
+      warning_suggestion.type = SuggestionType::kMixedFormMessage;
+      suggestions->emplace_back(warning_suggestion);
+    }
+    return context;
+  }
+  context.is_context_secure = !IsFormNonSecure(form);
+
+  context.is_autofill_available =
+      IsAutofillEnabled() &&
+      (IsAutofillManuallyTriggered(trigger_source) || got_autofillable_form);
+
+  return context;
+}
+
 void BrowserAutofillManager::OnAskForValuesToFillImpl(
     const FormData& form,
     const FormFieldData& field,
@@ -1204,7 +1292,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->OnQuery(form, field, trigger_source);
 
   std::vector<Suggestion> suggestions;
-  SuggestionsContext context;
+  SuggestionsContext context =
+      BuildSuggestionsContext(form, field, trigger_source, &suggestions);
+
   GetAvailableSuggestions(form, field, trigger_source, &suggestions, &context);
 
   const bool form_element_was_clicked =
@@ -1585,7 +1675,8 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
 
   // TODO(crbug.com/41392130): Add metrics for performance impact.
   std::vector<Suggestion> suggestions;
-  SuggestionsContext context;
+  SuggestionsContext context = BuildSuggestionsContext(
+      form, field, AutofillSuggestionTriggerSource::kUnspecified, &suggestions);
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -2626,11 +2717,6 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   DCHECK(suggestions);
   DCHECK(context);
 
-  // Compose suggestions are not populated in this method.
-  if (IsTriggerSourceOnlyRelevantForCompose(trigger_source)) {
-    return;
-  }
-
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
     *suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
@@ -2642,73 +2728,8 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     return;
   }
 
-  // Need to refresh models before using the form_event_loggers.
-  RefreshDataModels();
-
-  bool got_autofillable_form =
-      GetCachedFormAndField(form, field, &context->form_structure,
-                            &context->focused_field) &&
-      // Don't send suggestions or track forms that should not be parsed.
-      context->form_structure->ShouldBeParsed();
-
-  if (!ShouldShowSuggestionsForAutocompleteUnrecognizedFields(trigger_source) &&
-      got_autofillable_form &&
-      context->focused_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-    // Pre-`AutofillPredictionsForAutocompleteUnrecognized`, autocomplete
-    // suggestions were shown if all types of the form were suppressed or
-    // unknown. If at least a single field had predictions (and the form was
-    // thus considered autofillable), autocomplete suggestions were suppressed
-    // for fields with a suppressed prediction.
-    // To retain this behavior, the `suppress_reason` is only set if the form
-    // contains a field that triggers (non-fallback) suggestions.
-    // By not setting it, the autocomplete suggestion logic downstream is
-    // triggered, since no Autofill `suggestions` are available.
-    if (!base::ranges::all_of(*context->form_structure, [](const auto& field) {
-          return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-                 field->Type().GetStorableType() == UNKNOWN_TYPE;
-        })) {
-      context->suppress_reason = SuppressReason::kAutocompleteUnrecognized;
-    }
-    suggestions->clear();
-    return;
-  }
-  if (got_autofillable_form) {
-    auto* logger = GetEventFormLogger(*context->focused_field);
-    if (logger) {
-      logger->OnDidInteractWithAutofillableForm(*(context->form_structure),
-                                                signin_state_for_metrics_);
-    }
-  }
-  context->filling_product = GetPreferredSuggestionFillingProduct(
-      got_autofillable_form ? context->focused_field->Type().GetStorableType()
-                            : UNKNOWN_TYPE,
-      trigger_source);
-  // If this is a mixed content form, we show a warning message and don't offer
-  // autofill. The warning is shown even if there are no autofill suggestions
-  // available.
-  if (IsFormMixedContent(client(), form) &&
-      client().GetPrefs()->FindPreference(
-          ::prefs::kMixedFormsWarningsEnabled) &&
-      client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
-    suggestions->clear();
-    // If the user begins typing, we interpret that as dismissing the warning.
-    // No suggestions are allowed, but the warning is no longer shown.
-    if (field.DidUserType()) {
-      context->suppress_reason = SuppressReason::kInsecureForm;
-    } else {
-      Suggestion warning_suggestion(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
-      warning_suggestion.type = SuggestionType::kMixedFormMessage;
-      suggestions->emplace_back(warning_suggestion);
-    }
-    return;
-  }
-  context->is_context_secure = !IsFormNonSecure(form);
-
-  context->is_autofill_available =
-      IsAutofillEnabled() &&
-      (IsAutofillManuallyTriggered(trigger_source) || got_autofillable_form);
-  if (!context->is_autofill_available) {
+  if (!context->is_autofill_available ||
+      context->do_not_generate_autofill_suggestions) {
     return;
   }
 

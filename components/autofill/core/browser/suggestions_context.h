@@ -33,6 +33,8 @@ enum class SuppressReason {
 // The context for the list of suggestions available for a given field.
 struct SuggestionsContext {
   SuggestionsContext();
+  SuggestionsContext(const SuggestionsContext&);
+  SuggestionsContext& operator=(const SuggestionsContext&);
   ~SuggestionsContext();
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -45,6 +47,11 @@ struct SuggestionsContext {
   bool is_context_secure = false;
   FillingProduct filling_product = FillingProduct::kNone;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;
+  // Indicates whether generating autofill suggestions (Meaning Address and
+  // Credit Card suggestions shown on Autofill's default popup UI) should be
+  // avoided. This can happen in multiple scenarios (e.g. During manual
+  // fallbacks for plus addresses or if the form is a mixed content form).
+  bool do_not_generate_autofill_suggestions = false;
   // Indicates whether the form filling is under ablation, meaning that
   // autofill popups are suppressed.
   AblationGroup ablation_group = AblationGroup::kDefault;
