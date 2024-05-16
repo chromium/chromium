@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom.h"
 #include "chromeos/ash/services/ime/user_data/japanese_dictionary.h"
 #include "chromeos/ash/services/ime/user_data/japanese_legacy_config.h"
+#include "chromeos/ash/services/ime/user_data_c_api_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {
@@ -21,15 +22,8 @@ namespace ime {
 InputMethodUserDataServiceImpl::~InputMethodUserDataServiceImpl() = default;
 
 InputMethodUserDataServiceImpl::InputMethodUserDataServiceImpl(
-    ImeCrosPlatform* platform,
-    ImeSharedLibraryWrapper::EntryPoints shared_library_entry_points)
-    : shared_library_entry_points_(shared_library_entry_points) {
-  if (shared_library_entry_points_.init_user_data_service) {
-    shared_library_entry_points_.init_user_data_service(platform);
-  } else {
-    LOG(ERROR) << "sharedlib init_user_data_service not intialized";
-  }
-}
+    std::unique_ptr<UserDataCApiInterface> c_api)
+    : c_api_(std::move(c_api)) {}
 
 void InputMethodUserDataServiceImpl::FetchJapaneseLegacyConfig(
     FetchJapaneseLegacyConfigCallback callback) {
@@ -37,7 +31,7 @@ void InputMethodUserDataServiceImpl::FetchJapaneseLegacyConfig(
   chromeos_input::FetchJapaneseLegacyConfigRequest fetch_request;
   *request.mutable_fetch_japanese_legacy_config() = fetch_request;
   chromeos_input::UserDataResponse user_data_response =
-      ProcessUserDataRequest(request);
+      c_api_->ProcessUserDataRequest(request);
 
   if (user_data_response.status().success() &&
       user_data_response.has_fetch_japanese_legacy_config()) {
@@ -63,7 +57,7 @@ void InputMethodUserDataServiceImpl::FetchJapaneseDictionary(
   *request.mutable_fetch_japanese_dictionary() = fetch_request;
 
   chromeos_input::UserDataResponse user_data_response =
-      ProcessUserDataRequest(request);
+      c_api_->ProcessUserDataRequest(request);
 
   mojom::JapaneseDictionaryResponsePtr response =
       mojom::JapaneseDictionaryResponse::NewDictionaries({});
@@ -80,27 +74,6 @@ void InputMethodUserDataServiceImpl::FetchJapaneseDictionary(
 void InputMethodUserDataServiceImpl::AddReceiver(
     mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
   receiver_set_.Add(this, std::move(receiver));
-}
-
-chromeos_input::UserDataResponse
-InputMethodUserDataServiceImpl::ProcessUserDataRequest(
-    chromeos_input::UserDataRequest request_proto) {
-  std::vector<uint8_t> bytes;
-  bytes.resize(request_proto.ByteSizeLong());
-  request_proto.SerializeToArray(
-      bytes.data(), static_cast<int>(request_proto.ByteSizeLong()));
-  C_SerializedProto request{/* buffer= */ bytes.data(),
-                            /* size= */ bytes.size()};
-
-  // This response needs to be deleted manually to avoid a memory leak.
-  // The buffer has to be made persistent in order to be read by chromium.
-  C_SerializedProto response =
-      shared_library_entry_points_.process_user_data_request(request);
-  chromeos_input::UserDataResponse response_proto;
-  response_proto.ParseFromArray(response.buffer, response.size);
-  shared_library_entry_points_.delete_serialized_proto(response);
-
-  return response_proto;
 }
 
 }  // namespace ime

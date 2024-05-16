@@ -47,6 +47,9 @@ source_set("lib") {
     "user_data/japanese_dictionary.h",
     "user_data/japanese_legacy_config.cc",
     "user_data/japanese_legacy_config.h",
+    "user_data_c_api_impl.cc",
+    "user_data_c_api_impl.h",
+    "user_data_c_api_interface.h",
   ]
 
   deps = [
@@ -98,6 +101,7 @@ source_set("services_unittests") {
     "input_method_user_data_service_impl_unittest.cc",
     "user_data/japanese_dictionary_unittest.cc",
     "user_data/japanese_legacy_config_unittest.cc",
+    "user_data_c_api_impl_unittest.cc",
   ]
 }
 

@@ -4,18 +4,32 @@
 
 #include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/proto/fetch_japanese_legacy_config.pb.h"
+#include "chromeos/ash/services/ime/user_data_c_api_impl.h"
+#include "chromeos/ash/services/ime/user_data_c_api_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::ime {
 namespace {
 
+class MockCApi : public UserDataCApiInterface {
+ public:
+  MOCK_METHOD(chromeos_input::UserDataResponse,
+              ProcessUserDataRequest,
+              (const chromeos_input::UserDataRequest& request),
+              (override));
+};
+
+using ::base::test::EqualsProto;
 using base::test::TestFuture;
 using chromeos_input::JapaneseDictionary;
+using ::testing::_;
+using ::testing::Return;
 
 void SetEntry(JapaneseDictionary::Entry& entry,
               const std::string& key,
@@ -29,35 +43,21 @@ void SetEntry(JapaneseDictionary::Entry& entry,
 }
 
 TEST(InputMethodUserDataServiceTest, FetchJapaneseLegacyConfig) {
-  ImeSharedLibraryWrapper::EntryPoints entry_points;
+  chromeos_input::UserDataRequest request_pb;
+  *request_pb.mutable_fetch_japanese_legacy_config() =
+      chromeos_input::FetchJapaneseLegacyConfigRequest();
+  chromeos_input::UserDataResponse response_pb;
+  response_pb.mutable_status()->set_success(true);
+  response_pb.mutable_fetch_japanese_legacy_config()->set_preedit_method(
+      chromeos_input::PREEDIT_KANA);
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .Times(1)
+      .WillOnce(Return(response_pb));
 
-  entry_points.init_user_data_service = [](ImeCrosPlatform* platform) {};
-  entry_points.process_user_data_request =
-      [](C_SerializedProto request) -> C_SerializedProto {
-    chromeos_input::UserDataResponse response;
-    chromeos_input::Status status;
-    status.set_success(true);
-    *response.mutable_status() = status;
-    chromeos_input::FetchJapaneseLegacyConfigResponse japanese_response;
-    japanese_response.set_preedit_method(chromeos_input::PREEDIT_KANA);
-    *response.mutable_fetch_japanese_legacy_config() = japanese_response;
-
-    const size_t resp_byte_size = response.ByteSizeLong();
-    auto* const resp_bytes = new uint8_t[resp_byte_size]();
-    response.SerializeToArray(resp_bytes, static_cast<int>(resp_byte_size));
-    return C_SerializedProto{/* buffer= */ resp_bytes,
-                             /* size= */ resp_byte_size};
-  };
-  entry_points.delete_serialized_proto = [](C_SerializedProto proto) {
-    delete[] proto.buffer;
-  };
-
+  InputMethodUserDataServiceImpl service(std::move(c_api));
   TestFuture<mojom::JapaneseLegacyConfigResponsePtr> config_future;
-  InputMethodUserDataServiceImpl service(nullptr, entry_points);
-
   service.FetchJapaneseLegacyConfig(config_future.GetCallback());
-
-  const mojom::JapaneseLegacyConfigResponsePtr& response = config_future.Get();
 
   mojom::JapaneseLegacyConfigPtr expected_config =
       mojom::JapaneseLegacyConfig::New();
@@ -66,59 +66,47 @@ TEST(InputMethodUserDataServiceTest, FetchJapaneseLegacyConfig) {
   mojom::JapaneseLegacyConfigResponsePtr expected =
       mojom::JapaneseLegacyConfigResponse::NewResponse(
           std::move(expected_config));
-
-  EXPECT_TRUE(response.Equals(expected));
+  EXPECT_TRUE(config_future.Get().Equals(expected));
 }
 
 TEST(InputMethodUserDataServiceTest, FetchJapaneseDictionary) {
-  ImeSharedLibraryWrapper::EntryPoints entry_points;
+  chromeos_input::UserDataRequest request_pb;
+  *request_pb.mutable_fetch_japanese_dictionary() =
+      chromeos_input::FetchJapaneseDictionaryRequest();
+  chromeos_input::UserDataResponse response_pb;
+  chromeos_input::Status status;
+  status.set_success(true);
+  *response_pb.mutable_status() = status;
+  chromeos_input::FetchJapaneseDictionaryResponse& fetch_response =
+      *response_pb.mutable_fetch_japanese_dictionary();
+  // Dictionary 1
+  chromeos_input::JapaneseDictionary& personal_dictionary =
+      *fetch_response.add_dictionaries();
+  personal_dictionary.set_id(1);
+  personal_dictionary.set_name("Personal Dictionary");
+  SetEntry(/*entry=*/*personal_dictionary.add_entries(), /*key=*/"めーる",
+           /*value=*/"non.example@gmail.com", /*comment=*/"My email",
+           /*pos=*/JapaneseDictionary::ABBREVIATION);
+  SetEntry(/*entry=*/*personal_dictionary.add_entries(), /*key=*/"そうし",
+           /*value=*/"草詩", /*comment=*/"My name",
+           /*pos=*/JapaneseDictionary::PERSONAL_NAME);
+  // Dictionary 2
+  chromeos_input::JapaneseDictionary& writing_dictionary =
+      *fetch_response.add_dictionaries();
+  writing_dictionary.set_id(2);
+  writing_dictionary.set_name("Writing Dictionary");
+  SetEntry(
+      /*entry=*/*writing_dictionary.add_entries(), /*key=*/"その",
+      /*value=*/"その違いを日本語で解説してください（表形式）。",
+      /*comment=*/"Please explain the difference in Japanese (table format).",
+      /*pos=*/JapaneseDictionary::ABBREVIATION);
+  std::unique_ptr<MockCApi> c_api = std::make_unique<MockCApi>();
+  EXPECT_CALL(*c_api, ProcessUserDataRequest(EqualsProto(request_pb)))
+      .Times(1)
+      .WillOnce(Return(response_pb));
 
-  entry_points.init_user_data_service = [](ImeCrosPlatform* platform) {};
-  entry_points.process_user_data_request =
-      [](C_SerializedProto request) -> C_SerializedProto {
-    chromeos_input::UserDataResponse response;
-    chromeos_input::Status status;
-    status.set_success(true);
-    *response.mutable_status() = status;
-    chromeos_input::FetchJapaneseDictionaryResponse fetch_response;
-
-    // Dictionary 1
-    chromeos_input::JapaneseDictionary& personal_dictionary =
-        *fetch_response.add_dictionaries();
-    personal_dictionary.set_id(1);
-    personal_dictionary.set_name("Personal Dictionary");
-    SetEntry(/*entry=*/*personal_dictionary.add_entries(), /*key=*/"めーる",
-             /*value=*/"non.example@gmail.com", /*comment=*/"My email",
-             /*pos=*/JapaneseDictionary::ABBREVIATION);
-    SetEntry(/*entry=*/*personal_dictionary.add_entries(), /*key=*/"そうし",
-             /*value=*/"草詩", /*comment=*/"My name",
-             /*pos=*/JapaneseDictionary::PERSONAL_NAME);
-
-    // Dictionary 2
-    chromeos_input::JapaneseDictionary& writing_dictionary =
-        *fetch_response.add_dictionaries();
-    writing_dictionary.set_id(2);
-    writing_dictionary.set_name("Writing Dictionary");
-    SetEntry(
-        /*entry=*/*writing_dictionary.add_entries(), /*key=*/"その",
-        /*value=*/"その違いを日本語で解説してください（表形式）。",
-        /*comment=*/"Please explain the difference in Japanese (table format).",
-        /*pos=*/JapaneseDictionary::ABBREVIATION);
-
-    *response.mutable_fetch_japanese_dictionary() = fetch_response;
-
-    const size_t resp_byte_size = response.ByteSizeLong();
-    auto* const resp_bytes = new uint8_t[resp_byte_size]();
-    response.SerializeToArray(resp_bytes, static_cast<int>(resp_byte_size));
-    return C_SerializedProto{/* buffer= */ resp_bytes,
-                             /* size= */ resp_byte_size};
-  };
-  entry_points.delete_serialized_proto = [](C_SerializedProto proto) {
-    delete[] proto.buffer;
-  };
+  InputMethodUserDataServiceImpl service(std::move(c_api));
   TestFuture<mojom::JapaneseDictionaryResponsePtr> config_future;
-  InputMethodUserDataServiceImpl service(nullptr, entry_points);
-
   service.FetchJapaneseDictionary(config_future.GetCallback());
 
   mojom::JapaneseDictionaryResponsePtr expected =
@@ -148,8 +136,7 @@ TEST(InputMethodUserDataServiceTest, FetchJapaneseDictionary) {
       /*pos=*/mojom::JpPosType::kAbbreviation,
       /*comment=*/"Please explain the difference in Japanese (table format)."));
   expected->get_dictionaries().push_back(std::move(dict_2));
-  const mojom::JapaneseDictionaryResponsePtr& response = config_future.Get();
-  EXPECT_EQ(response, expected);
+  EXPECT_EQ(config_future.Get(), expected);
 }
 
 }  // namespace
