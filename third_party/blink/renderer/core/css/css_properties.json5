@@ -336,6 +336,7 @@
         "paint",
         "reshape",
         "scroll-anchor",
+        "scrollbar-style",
         "stroke",
         "table",
         "text-decoration",
@@ -4669,6 +4670,7 @@
       default_value: "nullptr",
       wrapper_pointer_name: "Member",
       include_paths: ["third_party/blink/renderer/core/style/style_scrollbar_color.h"],
+      invalidate: ["scrollbar-style"],
       runtime_flag: "ScrollbarColor",
     },
     {
@@ -4696,7 +4698,7 @@
       keywords: ["auto", "thin", "none"],
       default_value: "auto",
       typedom_types: ["Keyword"],
-      invalidate: ["layout", "paint"],
+      invalidate: ["layout", "paint", "scrollbar-style"],
       runtime_flag: "ScrollbarWidth",
     },
     {

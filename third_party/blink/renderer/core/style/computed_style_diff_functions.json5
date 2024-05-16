@@ -31,19 +31,6 @@
   },
   data: [
     {
-        name: "DiffNeedsFullLayoutAndPaintInvalidation",
-        methods_to_diff: [
-          {
-            method: "HasPseudoElementStyle(kPseudoIdScrollbar)",
-            field_dependencies: ["StyleType"]
-          },
-          {
-            method: "UsesStandardScrollbarStyle()",
-            field_dependencies: ["StyleType"]
-          },
-        ],
-    },
-    {
         name: "DiffNeedsPaintInvalidation",
         methods_to_diff: [
           {

@@ -951,6 +951,14 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kOpacity) {
     diff.SetOpacityChanged();
   }
+  if (field_diff & kScrollbarStyle) {
+    if (HasPseudoElementStyle(kPseudoIdScrollbar) !=
+            other.HasPseudoElementStyle(kPseudoIdScrollbar) ||
+        UsesStandardScrollbarStyle() != other.UsesStandardScrollbarStyle()) {
+      diff.SetNeedsFullLayout();
+      diff.SetNeedsNormalPaintInvalidation();
+    }
+  }
   if (field_diff & kTextDecoration) {
     diff.SetTextDecorationOrColorChanged();
   }
@@ -981,18 +989,6 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
     const ComputedStyle& other,
     uint32_t field_diff) const {
-  // FIXME: Not all cases in this method need both full layout and paint
-  // invalidation.
-  // Should move cases into DiffNeedsFullLayout() if
-  // - don't need paint invalidation at all;
-  // - or the layoutObject knows how to exactly invalidate paints caused by the
-  //   layout change instead of forced full paint invalidation.
-
-  if (ComputedStyleBase::DiffNeedsFullLayoutAndPaintInvalidation(*this,
-                                                                 other)) {
-    return true;
-  }
-
   if (IsDisplayTableType(Display())) {
     if (field_diff & kTable) {
       return true;

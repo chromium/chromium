@@ -245,6 +245,7 @@
       reset_on_new_style: true,
       custom_compare: true,
       computed_style_custom_functions: ["getter"],
+      invalidate: ["scrollbar-style"],
     },
     // Whether any non-universal highlight selectors were found when collecting
     // rules for the originating element. Stored in the *originating* style, and
