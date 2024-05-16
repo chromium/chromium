@@ -81,6 +81,7 @@ ts_modules = [
   "common/key_sequence.ts",
   "common/key_util.ts",
   "common/msgs.ts",
+  "common/spannable.ts",
   "common/tts_types.ts",
   "learn_mode/learn_mode.ts",
   "log_page/log.ts",
@@ -168,7 +169,6 @@ js_modules = [
   "common/panel_menu_data.js",
   "common/permission_checker.js",
   "common/role_type.js",
-  "common/spannable.js",
   "common/settings_manager.js",
   "common/tree_dumper.js",
 ]
