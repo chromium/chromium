@@ -524,13 +524,7 @@ IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, DISABLED_BasicPage) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('BasicPage')");
 }
 
-// TODO(crbug.com/339552353): Flaky on Windows.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_WIN)
-#define MAYBE_PrivacyGuidePromo DISABLED_PrivacyGuidePromo
-#else
-#define MAYBE_PrivacyGuidePromo PrivacyGuidePromo
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, MAYBE_PrivacyGuidePromo) {
+IN_PROC_BROWSER_TEST_F(SettingsBasicPageTest, PrivacyGuidePromo) {
   RunTest("settings/basic_page_test.js", "runMochaSuite('PrivacyGuidePromo')");
 }
 
