@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 
 namespace base {
@@ -67,8 +68,9 @@ class BASE_EXPORT ConcurrentClosures {
 
     void Run();
 
-    size_t pending_ = 0u;
-    OnceClosure done_closure_;
+    size_t pending_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
+    OnceClosure done_closure_ GUARDED_BY_CONTEXT(sequence_checker_);
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   RepeatingClosure info_run_closure_;

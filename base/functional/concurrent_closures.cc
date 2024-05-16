@@ -18,6 +18,7 @@ ConcurrentClosures::~ConcurrentClosures() = default;
 
 OnceClosure ConcurrentClosures::CreateClosure() {
   CHECK(info_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(info_->sequence_checker_);
   ++info_->pending_;
   return info_run_closure_;
 }
@@ -25,6 +26,7 @@ OnceClosure ConcurrentClosures::CreateClosure() {
 void ConcurrentClosures::Done(OnceClosure done_closure,
                               const Location& location) && {
   CHECK(info_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(info_->sequence_checker_);
   info_->done_closure_ = BindPostTask(SequencedTaskRunner::GetCurrentDefault(),
                                       std::move(done_closure), location);
   if (info_->pending_ == 0u) {
@@ -38,6 +40,7 @@ ConcurrentClosures::Info::Info() = default;
 ConcurrentClosures::Info::~Info() = default;
 
 void ConcurrentClosures::Info::Run() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_GT(pending_, 0u);
   --pending_;
   if (done_closure_ && pending_ == 0u) {
