@@ -15,10 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -28,7 +25,6 @@ import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.ContentJUnit4RunnerDelegate;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CountDownLatch;
@@ -38,11 +34,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Part of the test suite for the WebView's Java Bridge.
  *
- * Ensures that injected objects are exposed to child frames as well as the
- * main frame.
+ * <p>Ensures that injected objects are exposed to child frames as well as the main frame.
  */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(ContentJUnit4RunnerDelegate.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeChildFrameTest {
     @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
@@ -63,11 +57,6 @@ public class JavaBridgeChildFrameTest {
         }
     }
 
-    @UseMethodParameterBefore(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void setupMojoTest(boolean useMojo) {
-        mActivityTestRule.setupMojoTest(useMojo);
-    }
-
     TestController mTestController;
 
     @Before
@@ -76,12 +65,10 @@ public class JavaBridgeChildFrameTest {
         mActivityTestRule.injectObjectAndReload(mTestController, "testController");
     }
 
-    // TODO(crbug.com/40144856): Fix flakiness when using MojoTestParams.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
-    public void testInjectedObjectPresentInChildFrame(boolean useMojo) throws Throwable {
+    public void testInjectedObjectPresentInChildFrame() throws Throwable {
         loadDataSync(
                 mActivityTestRule.getWebContents().getNavigationController(),
                 "<html><body><iframe></iframe></body></html>",
@@ -105,8 +92,7 @@ public class JavaBridgeChildFrameTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void testMainPageWrapperIsNotBrokenByChildFrame(boolean useMojo) throws Throwable {
+    public void testMainPageWrapperIsNotBrokenByChildFrame() throws Throwable {
         loadDataSync(
                 mActivityTestRule.getWebContents().getNavigationController(),
                 "<html><body><iframe></iframe></body></html>",
@@ -131,12 +117,10 @@ public class JavaBridgeChildFrameTest {
 
     // Verify that parent page and child frame each has own JS wrapper object.
     // Failing to do so exposes parent's context to the child.
-    // TODO(crbug.com/40144856): Fix flakiness when using MojoTestParams.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
-    public void testWrapperIsNotSharedWithChildFrame(boolean useMojo) throws Throwable {
+    public void testWrapperIsNotSharedWithChildFrame() throws Throwable {
         // Test by setting a custom property on the parent page's injected
         // object and then checking that child frame doesn't see the property.
         loadDataSync(
@@ -169,8 +153,7 @@ public class JavaBridgeChildFrameTest {
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @DisabledTest(message = "https://crbug.com/677053")
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void testRemovingTransientObjectHolders(boolean useMojo) throws Throwable {
+    public void testRemovingTransientObjectHolders() throws Throwable {
         class Test {
             private Object mInner = new Object();
             // Expecting the inner object to be retrieved twice.
@@ -241,8 +224,7 @@ public class JavaBridgeChildFrameTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @CommandLineFlags.Add("js-flags=--expose-gc")
     @DisabledTest(message = "https://crbug.com/646843")
-    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
-    public void testHolderFrame(boolean useMojo) throws Throwable {
+    public void testHolderFrame() throws Throwable {
         class Test {
             WeakReference<Object> mWeakRefForInner;
             private CountDownLatch mLatch = new CountDownLatch(1);

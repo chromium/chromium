@@ -106,11 +106,6 @@ BASE_FEATURE(kWebViewExtraHeadersSameOriginOnly,
              "WebViewExtraHeadersSameOriginOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable the new Java/JS Bridge code path with mojo implementation.
-BASE_FEATURE(kWebViewJavaJsBridgeMojo,
-             "WebViewJavaJsBridgeMojo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Whether to record size of the embedding app's data directory to the UMA
 // histogram Android.WebView.AppDataDirectorySize.
 BASE_FEATURE(kWebViewRecordAppDataDirectorySize,

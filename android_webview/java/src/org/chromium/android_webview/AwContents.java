@@ -2067,10 +2067,7 @@ public class AwContents implements SmartClipProvider {
 
     private JavascriptInjector getJavascriptInjector() {
         if (mJavascriptInjector == null) {
-            mJavascriptInjector =
-                    JavascriptInjector.fromWebContents(
-                            mWebContents,
-                            AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO));
+            mJavascriptInjector = JavascriptInjector.fromWebContents(mWebContents);
         }
         return mJavascriptInjector;
     }

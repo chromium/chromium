@@ -26,7 +26,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewInvokeZoomPickerOnGSU,
     &features::kWebViewMixedContentAutoupgrades,
     &features::kWebViewTestFeature,
-    &features::kWebViewJavaJsBridgeMojo,
     &features::kWebViewUseMetricsUploadService,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewXRequestedWithHeaderControl,

@@ -228,18 +228,14 @@ public class ContentShellActivityTestRule extends BaseActivityTestRule<ContentSh
     }
 
     public JavascriptInjector getJavascriptInjector() {
-        return getJavascriptInjector(false);
-    }
-
-    public JavascriptInjector getJavascriptInjector(boolean useMojo) {
-        return JavascriptInjector.fromWebContents(getWebContents(), useMojo);
+        return JavascriptInjector.fromWebContents(getWebContents());
     }
 
     /**
-     * Waits for the Active shell to finish loading.  This times out after
-     * WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT milliseconds and it shouldn't be used for long
-     * loading pages. Instead it should be used more for test initialization. The proper way
-     * to wait is to use a TestCallbackHelperContainer after the initial load is completed.
+     * Waits for the Active shell to finish loading. This times out after
+     * WAIT_FOR_ACTIVE_SHELL_LOADING_TIMEOUT milliseconds and it shouldn't be used for long loading
+     * pages. Instead it should be used more for test initialization. The proper way to wait is to
+     * use a TestCallbackHelperContainer after the initial load is completed.
      */
     public void waitForActiveShellToBeDoneLoading() {
         // Wait for the Content Shell to be initialized.

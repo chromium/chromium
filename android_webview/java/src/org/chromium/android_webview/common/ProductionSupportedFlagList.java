@@ -208,9 +208,6 @@ public final class ProductionSupportedFlagList {
                 "Enables autoupgrades for audio/video/image mixed content when mixed content "
                         + "mode is set to MIXED_CONTENT_COMPATIBILITY_MODE"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO,
-                "Enables the new Java/JS Bridge code path with mojo implementation."),
-        Flag.baseFeature(
                 BlinkFeatures.GMS_CORE_EMOJI,
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),

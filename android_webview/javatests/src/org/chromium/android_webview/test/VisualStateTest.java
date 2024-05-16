@@ -502,7 +502,7 @@ public class VisualStateTest extends AwParameterizedTest {
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
-                            JavascriptInjector.fromWebContents(awContents.getWebContents(), false)
+                            JavascriptInjector.fromWebContents(awContents.getWebContents())
                                     .addPossiblyUnsafeInterface(
                                             pageChangeNotifier, "pageChangeNotifier", null);
                             awContents.loadUrl(WAIT_FOR_JS_DETACHED_TEST_URL);
