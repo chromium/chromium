@@ -8,15 +8,37 @@
 
 #include "base/android/jni_android.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "chrome/android/chrome_jni_headers/SettingsLauncherImpl_jni.h"
 #include "chrome/browser/password_manager/android/account_storage_notice/jni/AccountStorageNoticeCoordinator_jni.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
 
 using base::android::AttachCurrentThread;
 
+// static
+bool AccountStorageNotice::ShouldShow(PrefService* pref_service,
+                                      syncer::SyncService* sync_service) {
+  // TODO(crbug.com/338576301): Consider checking UPM predicates here too.
+  return sync_service && !sync_service->HasSyncConsent() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords) &&
+         !pref_service->GetBoolean(
+             password_manager::prefs::kAccountStorageNoticeShown) &&
+         base::FeatureList::IsEnabled(
+             syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
+}
+
 AccountStorageNotice::AccountStorageNotice(content::WebContents* web_contents,
+                                           PrefService* pref_service,
+                                           syncer::SyncService* sync_service,
                                            base::OnceClosure closed_cb)
     : java_coordinator_(Java_AccountStorageNoticeCoordinator_Constructor(
           AttachCurrentThread(),
@@ -25,6 +47,9 @@ AccountStorageNotice::AccountStorageNotice(content::WebContents* web_contents,
           reinterpret_cast<intptr_t>(this))),
       closed_cb_(std::move(closed_cb)) {
   CHECK(closed_cb_);
+  CHECK(ShouldShow(pref_service, sync_service));
+  pref_service->SetBoolean(password_manager::prefs::kAccountStorageNoticeShown,
+                           true);
 }
 
 AccountStorageNotice::~AccountStorageNotice() {

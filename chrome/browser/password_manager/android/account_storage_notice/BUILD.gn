@@ -17,6 +17,9 @@ static_library("account_storage_notice") {
     ":jni",
     "//base",
     "//chrome/android:chrome_jni_headers",
+    "//components/prefs",
+    "//components/sync/base",
+    "//components/sync/service",
     "//content/public/browser",
     "//ui/android",
     "//ui/gfx:native_widget_types",
@@ -67,6 +70,21 @@ android_resources("resources") {
 generate_jni("jni") {
   sources = [ "java/src/org/chromium/chrome/browser/password_manager/account_storage_notice/AccountStorageNoticeCoordinator.java" ]
   visibility = [ ":*" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "account_storage_notice_unittest.cc" ]
+  deps = [
+    ":account_storage_notice",
+    "//base/test:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//testing/gtest",
+  ]
 }
 
 android_library("javatests") {

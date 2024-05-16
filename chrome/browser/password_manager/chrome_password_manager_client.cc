@@ -81,6 +81,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -88,6 +89,8 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -292,8 +295,15 @@ bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   if (form_to_save->IsBlocklisted())
     return false;
 
-  save_update_password_message_delegate_.DisplaySaveUpdatePasswordPrompt(
-      web_contents(), std::move(form_to_save), update_password, this);
+  // base::Unretained() is safe: the callback is only invoked if
+  // `account_storage_notice_` is still alive. Then so is its parent
+  // ChromePasswordManagerClient, and so is web_contents() (the client is per
+  // web_contents()).
+  MaybeShowAccountStorageNotice(base::BindOnce(
+      &SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPrompt,
+      base::Unretained(&save_update_password_message_delegate_),
+      base::Unretained(web_contents()), std::move(form_to_save),
+      update_password, base::Unretained(this)));
 #else
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
@@ -475,6 +485,10 @@ bool ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
           password_filling_params.focused_field_renderer_id_,
           TouchToFillControllerAutofillDelegate::ShowHybridOption(
               should_show_hybrid_option));
+
+  // TODO(crbug.com/338576301): Call MaybeShowAccountStorageNotice() here too.
+  // Figure out whether the bool must be returned async, or if sync is good
+  // enough.
   return GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(URLToOrigin(driver->GetLastCommittedURL()))
@@ -1399,6 +1413,30 @@ ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
         profile_, GetOrCreateKeyboardReplacingSurfaceVisibilityController());
   }
   return touch_to_fill_controller_.get();
+}
+
+void ChromePasswordManagerClient::MaybeShowAccountStorageNotice(
+    base::OnceClosure callback) {
+  PrefService* pref_service = profile_->GetPrefs();
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (!AccountStorageNotice::ShouldShow(pref_service, sync_service)) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // `account_storage_notice_` must be null, since ShouldShow() is true and
+  // this is a one-off notice.
+  CHECK(!account_storage_notice_);
+  // Unretained() is safe because `this` outlives `account_storage_notice_`.
+  auto destroy_notice_cb = base::BindOnce(
+      [](ChromePasswordManagerClient* client) {
+        client->account_storage_notice_.reset();
+      },
+      base::Unretained(this));
+  account_storage_notice_ = std::make_unique<AccountStorageNotice>(
+      web_contents(), pref_service, sync_service,
+      std::move(destroy_notice_cb).Then(std::move(callback)));
 }
 
 password_manager::CredManController*

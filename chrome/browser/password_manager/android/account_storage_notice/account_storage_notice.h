@@ -15,6 +15,12 @@ namespace content {
 class WebContents;
 }
 
+namespace syncer {
+class SyncService;
+}
+
+class PrefService;
+
 // A bottom sheet that informs the user they are now saving & filling passwords
 // to/from their signed-in account. The sheet contains:
 //   - A "Got it" button, which closes the sheet on click.
@@ -24,12 +30,20 @@ class WebContents;
 // The sheet can also be closed by swiping, pressing back or navigating away.
 class AccountStorageNotice : public CoordinatorObserver {
  public:
-  // Shows the notice. `closed_cb` must be non-null and will be invoked once the
+  // Whether the one-off notice should be shown.
+  static bool ShouldShow(PrefService* pref_service,
+                         syncer::SyncService* sync_service);
+
+  // Shows the notice (embedders are responsible for checking ShouldShow()
+  // first). `closed_cb` must be non-null and will be invoked once the
   // sheet is closed by user interaction. It will not be invoked if the object
   // is prematurely destroyed, see note in the destructor.
   // The object does nothing else after invoking the callback, so it's safe for
   // the callback to destroy the object.
+  // After calling this, ShouldShow() returns false forever.
   AccountStorageNotice(content::WebContents* web_contents,
+                       PrefService* pref_service,
+                       syncer::SyncService* sync_service,
                        base::OnceClosure closed_cb);
 
   AccountStorageNotice(const AccountStorageNotice&) = delete;

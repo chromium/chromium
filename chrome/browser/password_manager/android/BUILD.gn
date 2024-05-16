@@ -547,6 +547,7 @@ source_set("unit_tests") {
     ":backend_public",
     ":unified_password_manager_proto",
     ":utils",
+    "account_storage_notice:unit_tests",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
