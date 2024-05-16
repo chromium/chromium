@@ -24,6 +24,9 @@ class FakeWebAppProvider;
 
 // Consider to implement web app specific test harness independent of
 // RenderViewHost.
+// When inheriting from this class, the FakeWebAppProvider doesn't automatically
+// start the WebAppProvider system. To do so, try using a helper method like
+// `test::AwaitStartWebAppProviderAndSubsystems`.
 class WebAppTest : public content::RenderViewHostTestHarness {
  public:
   struct WithTestUrlLoaderFactory {};

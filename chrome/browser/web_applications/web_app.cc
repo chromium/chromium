@@ -456,8 +456,18 @@ void WebApp::SetStartUrl(const GURL& start_url) {
 }
 
 void WebApp::SetScope(const GURL& scope) {
-  DCHECK(scope.is_empty() || scope.is_valid());
-  scope_ = scope;
+  // TODO(crbug.com/339718933): Remove this after shortcut apps are fully
+  // removed.
+  if (scope.is_empty()) {
+    scope_ = scope;
+    return;
+  }
+  CHECK(scope.is_valid());
+  // Ensure that the scope can never include queries or fragments, as per spec.
+  GURL::Replacements scope_replacements;
+  scope_replacements.ClearRef();
+  scope_replacements.ClearQuery();
+  scope_ = scope.ReplaceComponents(scope_replacements);
 }
 
 void WebApp::SetThemeColor(std::optional<SkColor> theme_color) {
