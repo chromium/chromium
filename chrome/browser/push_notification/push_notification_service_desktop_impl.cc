@@ -5,7 +5,27 @@
 #include "chrome/browser/push_notification/push_notification_service_desktop_impl.h"
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "chrome/browser/push_notification/protos/notifications_multi_login_update.pb.h"
+#include "chrome/browser/push_notification/server_client/push_notification_desktop_api_call_flow_impl.h"
+#include "chrome/browser/push_notification/server_client/push_notification_server_client.h"
+#include "chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.h"
+#include "components/gcm_driver/gcm_driver.h"
+#include "components/gcm_driver/gcm_profile_service.h"
+#include "components/gcm_driver/instance_id/instance_id.h"
+#include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+const char kPushNotificationAppId[] = "com.google.chrome.push_notification";
+const char kPushNotificationScope[] = "GCM";
+const char kPushNotificationSenderId[] = "745476177629";
+const char kClientId[] = "ChromeDesktop";
+
+}  // namespace
 
 namespace push_notification {
 
@@ -13,15 +33,21 @@ PushNotificationServiceDesktopImpl::PushNotificationServiceDesktopImpl(
     PrefService* pref_service,
     instance_id::InstanceIDDriver* instance_id_driver,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::OnceCallback<void(bool)> unittest_initialization_callback)
     : pref_service_(pref_service),
       instance_id_driver_(instance_id_driver),
       identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {
+      url_loader_factory_(url_loader_factory),
+      unittest_initialization_callback_(
+          std::move(unittest_initialization_callback)) {
   CHECK(pref_service_);
   CHECK(instance_id_driver_);
   CHECK(identity_manager_);
   CHECK(url_loader_factory_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PushNotificationServiceDesktopImpl::Initialize,
+                                base::Unretained(this)));
 }
 
 PushNotificationServiceDesktopImpl::~PushNotificationServiceDesktopImpl() =
@@ -73,9 +99,100 @@ bool PushNotificationServiceDesktopImpl::CanHandle(
 }
 
 void PushNotificationServiceDesktopImpl::Shutdown() {
-  // TODO(b/306398998): Once fetching GCM token is implemented, reset the token
-  // here.
   client_manager_.reset();
+  token_.clear();
+  instance_id_driver_->GetInstanceID(kPushNotificationAppId)
+      ->gcm_driver()
+      ->RemoveAppHandler(kPushNotificationAppId);
+}
+
+void PushNotificationServiceDesktopImpl::Initialize() {
+  if (is_initialized_) {
+    return;
+  }
+
+  instance_id_driver_->GetInstanceID(kPushNotificationAppId)
+      ->GetToken(
+          kPushNotificationSenderId, kPushNotificationScope,
+          /*time_to_live=*/base::TimeDelta(), /*flags=*/{},
+          base::BindOnce(&PushNotificationServiceDesktopImpl::OnTokenReceived,
+                         base::Unretained(this)));
+}
+
+void PushNotificationServiceDesktopImpl::OnTokenReceived(
+    const std::string& token,
+    instance_id::InstanceID::Result result) {
+  if (result != instance_id::InstanceID::Result::SUCCESS) {
+    LOG(ERROR) << "Failed to retrieve GCM token: " << result;
+
+    // This is always a no-op in production, it is only used in testing to
+    // signal when the initialization flow is ready for the next step.
+    std::move(unittest_initialization_callback_).Run(false);
+    return;
+  }
+
+  VLOG(1) << "Successfully retrieved GCM token. ";
+  token_ = token;
+
+  // Add `PushNotificationService` as a GCM app handler.
+  instance_id_driver_->GetInstanceID(kPushNotificationAppId)
+      ->gcm_driver()
+      ->AddAppHandler(kPushNotificationAppId, this);
+
+  // Create the `NotificationsMultiLoginUpdateRequest` proto which is used to
+  // make the registration API call.
+  push_notification::proto::NotificationsMultiLoginUpdateRequest request_proto;
+  request_proto.mutable_target()->set_channel_type(
+      push_notification::proto::ChannelType::GCM_DEVICE_PUSH);
+  request_proto.mutable_target()
+      ->mutable_delivery_address()
+      ->mutable_gcm_device_address()
+      ->set_registration_id(token_);
+  request_proto.mutable_target()
+      ->mutable_delivery_address()
+      ->mutable_gcm_device_address()
+      ->set_application_id(kPushNotificationAppId);
+  request_proto.add_registrations();
+  request_proto.set_registration_reason(
+      push_notification::proto::RegistrationReason::COLLABORATOR_API_CALL);
+  request_proto.set_client_id(kClientId);
+
+  // Construct a HTTP client for the request. The HTTP client lifetime is
+  // tied to a single request.
+  server_client_ = PushNotificationServerClientDesktopImpl::Factory::Create(
+      std::make_unique<PushNotificationDesktopApiCallFlowImpl>(),
+      identity_manager_, url_loader_factory_);
+
+  server_client_->RegisterWithPushNotificationService(
+      request_proto,
+      base::BindOnce(&PushNotificationServiceDesktopImpl::
+                         OnPushNotificationRegistrationSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PushNotificationServiceDesktopImpl::
+                         OnPushNotificationRegistrationFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // This is always a no-op in production, it is only used in testing to signal
+  // when the initialization flow is ready for the next step.
+  std::move(unittest_initialization_callback_).Run(true);
+}
+
+void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationSuccess(
+    const proto::NotificationsMultiLoginUpdateResponse& response) {
+  VLOG(1) << __func__ << ": Push notification service registration successful";
+  is_initialized_ = true;
+  server_client_.reset();
+  // TODO(b/321305351): Use response proto to update prefs with response
+  // information for later calls.
+}
+
+void PushNotificationServiceDesktopImpl::OnPushNotificationRegistrationFailure(
+    PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError
+        error) {
+  LOG(ERROR) << __func__
+             << ": Push notification service registration failure: " << error;
+  server_client_.reset();
+  // TODO(b/323949082): Initiate retry logic.
 }
 
 }  // namespace push_notification

@@ -200,6 +200,7 @@ void PushNotificationServerClientDesktopImpl::OnAccessTokenFetched(
   }
   access_token_used_ = access_token_info.token;
   CHECK(access_token_used_.has_value());
+  proto::NotificationsMultiLoginUpdateRequest request_proto;
 
   switch (request_type) {
     case RequestType::kGet:
@@ -217,8 +218,17 @@ void PushNotificationServerClientDesktopImpl::OnAccessTokenFetched(
       break;
     case RequestType::kPost:
       CHECK(serialized_request && !request_as_query_parameters);
+
+      // Copy a new `NotificationsMultiLoginUpdateRequest` proto so we can add
+      // the access token as the oauth token.
+      request_proto.ParseFromString(serialized_request.value());
+      request_proto.mutable_registrations(0)
+          ->mutable_user_id()
+          ->mutable_gaia_credentials()
+          ->set_oauth_token(access_token_used_.value());
+
       api_call_flow_->StartPostRequest(
-          request_url_, *serialized_request, url_loader_factory_,
+          request_url_, request_proto.SerializeAsString(), url_loader_factory_,
           access_token_used_.value(),
           base::BindOnce(
               &PushNotificationServerClientDesktopImpl::OnFlowSuccess<

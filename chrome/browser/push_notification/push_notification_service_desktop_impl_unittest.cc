@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/push_notification/server_client/fake_push_notification_server_client.h"
+#include "chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -86,15 +89,15 @@ class FakeInstanceIDDriver : public instance_id::InstanceIDDriver {
   ~FakeInstanceIDDriver() override = default;
 
   instance_id::InstanceID* GetInstanceID(const std::string& app_id) override {
-    return fake_instance_id_.get();
+    return fake_instance_id_;
   }
 
-  void SetFakeInstanceID(std::unique_ptr<FakeInstanceID> fake_instance_id) {
+  void SetFakeInstanceID(raw_ptr<FakeInstanceID> fake_instance_id) {
     fake_instance_id_ = std::move(fake_instance_id);
   }
 
  private:
-  std::unique_ptr<FakeInstanceID> fake_instance_id_;
+  raw_ptr<FakeInstanceID> fake_instance_id_;
 };
 
 }  // namespace
@@ -117,18 +120,14 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    PushNotificationServerClientDesktopImpl::Factory::SetFactoryForTesting(
+        &fake_client_factory_);
     fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
     fake_instance_id_ =
         std::make_unique<FakeInstanceID>(fake_gcm_driver_.get());
-    fake_instance_id_driver_.SetFakeInstanceID(std::move(fake_instance_id_));
+    fake_instance_id_driver_.SetFakeInstanceID(fake_instance_id_.get());
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>(
         &test_url_loader_factory_, nullptr, nullptr);
-    push_notification_service_ =
-        std::make_unique<PushNotificationServiceDesktopImpl>(
-            pref_service_.get(), &fake_instance_id_driver_,
-            identity_test_env_->identity_manager(),
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_));
   }
 
   void TearDown() override {
@@ -145,13 +144,87 @@ class PushNotificationServiceDesktopImplTest : public testing::Test {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  FakeInstanceIDDriver fake_instance_id_driver_;
   std::unique_ptr<FakeInstanceID> fake_instance_id_;
   std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
+  FakeInstanceIDDriver fake_instance_id_driver_;
+  FakePushNotificationServerClient::Factory fake_client_factory_;
 };
 
 TEST_F(PushNotificationServiceDesktopImplTest, StartService) {
-  EXPECT_TRUE(push_notification_service_);
+  fake_instance_id_->SetFCMResult(instance_id::InstanceID::Result::SUCCESS);
+  fake_instance_id_->SetFCMToken(kSenderIdFCMToken);
+  base::test::TestFuture<bool> future;
+  push_notification_service_ =
+      std::make_unique<PushNotificationServiceDesktopImpl>(
+          pref_service_.get(), &fake_instance_id_driver_,
+          identity_test_env_->identity_manager(),
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_),
+          future.GetCallback());
+
+  // Wait for initialization to complete before performing checks.
+  EXPECT_TRUE(future.Take());
+
+  EXPECT_TRUE(fake_client_factory_.fake_server_client()
+                  ->HasRegisterWithPushNotificationServiceCallback());
+  EXPECT_TRUE(fake_client_factory_.fake_server_client()->HasErrorCallback());
+  push_notification::proto::NotificationsMultiLoginUpdateResponse
+      response_proto;
+  push_notification::proto::NotificationsMultiLoginUpdateResponse::
+      RegistrationResult* registration_result =
+          response_proto.add_registration_results();
+  push_notification::proto::StatusProto* status =
+      registration_result->mutable_status();
+  status->set_code(0);
+  status->set_message("OK");
+  fake_client_factory_.fake_server_client()
+      ->InvokeRegisterWithPushNotificationServiceSuccessCallback(
+          response_proto);
+  EXPECT_TRUE(push_notification_service_->IsServiceInitialized());
+}
+
+TEST_F(PushNotificationServiceDesktopImplTest, StartServiceTokenFailure) {
+  fake_instance_id_->SetFCMResult(
+      instance_id::InstanceID::Result::SERVER_ERROR);
+  base::test::TestFuture<bool> future;
+  push_notification_service_ =
+      std::make_unique<PushNotificationServiceDesktopImpl>(
+          pref_service_.get(), &fake_instance_id_driver_,
+          identity_test_env_->identity_manager(),
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_),
+          future.GetCallback());
+
+  // Wait for initialization to complete before performing checks.
+  EXPECT_FALSE(future.Take());
+  EXPECT_FALSE(fake_client_factory_.fake_server_client());
+  EXPECT_FALSE(push_notification_service_->IsServiceInitialized());
+}
+
+TEST_F(PushNotificationServiceDesktopImplTest,
+       StartServiceAuthenticationFailure) {
+  fake_instance_id_->SetFCMResult(instance_id::InstanceID::Result::SUCCESS);
+  fake_instance_id_->SetFCMToken(kSenderIdFCMToken);
+
+  base::test::TestFuture<bool> future;
+  push_notification_service_ =
+      std::make_unique<PushNotificationServiceDesktopImpl>(
+          pref_service_.get(), &fake_instance_id_driver_,
+          identity_test_env_->identity_manager(),
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_),
+          future.GetCallback());
+
+  // Wait for initialization to complete before performing checks.
+  EXPECT_TRUE(future.Take());
+
+  EXPECT_TRUE(fake_client_factory_.fake_server_client()
+                  ->HasRegisterWithPushNotificationServiceCallback());
+  EXPECT_TRUE(fake_client_factory_.fake_server_client()->HasErrorCallback());
+  fake_client_factory_.fake_server_client()
+      ->InvokeRegisterWithPushNotificationServiceErrorCallback(
+          PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError::
+              kAuthenticationError);
 }
 
 }  // namespace push_notification

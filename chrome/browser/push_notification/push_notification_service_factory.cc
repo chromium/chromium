@@ -92,12 +92,14 @@ PushNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
 
   VLOG(1) << __func__ << ": creating PushNotificationService.";
 
+  // Create the service object.
   auto service = std::make_unique<PushNotificationServiceDesktopImpl>(
       Profile::FromBrowserContext(context)->GetPrefs(),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory());
+
   return service;
 }
 

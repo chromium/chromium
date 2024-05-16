@@ -38,11 +38,16 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
                                            public KeyedService,
                                            public gcm::GCMAppHandler {
  public:
-  explicit PushNotificationServiceDesktopImpl(
+  // This `unittest_initialization_callback` should only be a `DoNothing()` in
+  // production, its usage is for testing only.
+  PushNotificationServiceDesktopImpl(
       PrefService* pref_service,
       instance_id::InstanceIDDriver* instance_id_driver,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::OnceCallback<void(bool)> unittest_initialization_callback =
+          base::DoNothing());
+
   PushNotificationServiceDesktopImpl(
       const PushNotificationServiceDesktopImpl&) = delete;
   PushNotificationServiceDesktopImpl& operator=(
@@ -65,15 +70,41 @@ class PushNotificationServiceDesktopImpl : public PushNotificationService,
                                  const std::string& error_message) override;
   bool CanHandle(const std::string& app_id) const override;
 
+  bool IsServiceInitialized() const { return is_initialized_; }
+
  private:
   // KeyedService:
   void Shutdown() override;
 
+  // Initialize the service. Initialization is async however it is safe to
+  // add/remove clients immediately so clients can interact with object without
+  // waiting for initialization to complete.
+  void Initialize();
+  void OnTokenReceived(const std::string& token,
+                       instance_id::InstanceID::Result result);
+
+  void OnPushNotificationRegistrationSuccess(
+      const proto::NotificationsMultiLoginUpdateResponse& response);
+  void OnPushNotificationRegistrationFailure(
+      PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError
+          error);
+
+  bool is_initialized_ = false;
+
+  // Constructed per RPC request, and destroyed on RPC response (server
+  // interaction completed). This field is reused by multiple RPCs during the
+  // lifetime of the `PushNotificationServerClient` object.
+  std::unique_ptr<PushNotificationServerClient> server_client_;
+  std::string token_;
   raw_ptr<const PrefService> pref_service_;
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Callback should only be a `DoNothing()` in production, its usage is for
+  // testing only.
+  base::OnceCallback<void(bool)> unittest_initialization_callback_;
 
   base::WeakPtrFactory<PushNotificationServiceDesktopImpl> weak_ptr_factory_{
       this};
