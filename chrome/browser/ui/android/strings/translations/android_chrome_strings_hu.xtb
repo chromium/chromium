@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">A nyomon követett termékeket a Könyvjelzők között rendszerezheti</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
 <translation id="1477626028522505441">A következő fájl letöltése szerverproblémák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
+<translation id="1480287803138246127">Előfordulhat, hogy az előzményeinek egy része nem jelenik meg itt. Az összes Chrome-előzmény megtekintéséhez nyissa meg a teljes Chrome-előzményeket.</translation>
 <translation id="148482509007564431">Könyvjelzőmentési folyamat</translation>
 <translation id="1492417797159476138">Már elmentette ezt a felhasználónevet ehhez a webhelyhez</translation>
 <translation id="1493287004536771723">Követi a következő webhelyet: <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3226612997184048185">Ha Google-fiókjába is menti könyvjelzőit, a Chrome-ban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="3227557059438308877">A Google Chrome mint biztonsági kulcs</translation>
 <translation id="3232293466644486101">Böngészési adatok törlése…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> lap törölve</translation>
 <translation id="3232754137068452469">Internetes alkalmazás</translation>
 <translation id="3236059992281584593">1 perc van hátra</translation>
 <translation id="3237087289225714896">Normál előtöltés:</translation>
@@ -766,6 +768,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4961107849584082341">Bármely nyelvre lefordíthatja ezt az oldalt</translation>
 <translation id="496607651705915226">Ha új jelszavakat szeretne menteni és használni Google-fiókjában, frissítse a Google Play-szolgáltatásokat.</translation>
 <translation id="4971735654804503942">Gyorsabb, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen. Figyelmezteti Önt a jelszavakkal kapcsolatos problémákra. Igénybevételéhez el kell küldeni a böngészési adatokat a Google-nak.</translation>
+<translation id="4971753085054504448">További találatok megjelenítéséhez próbáljon valami másra keresni, vagy nyissa meg a teljes Chrome-előzményeket.</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4987271110129728827">A keresett oldal nem található. Ellenőrizze, hogy helyesen írta-e be, vagy próbáljon rákeresni az interneten.</translation>
 <translation id="4988526792673242964">Oldal</translation>
@@ -861,6 +864,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5515439363601853141">Oldja fel a képernyőzárat a jelszó megtekintéséhez</translation>
 <translation id="5517095782334947753">Vannak könyvjelzői, előzményei, jelszavai és más beállításai a(z) <ph name="FROM_ACCOUNT" /> fiókból.</translation>
 <translation id="5524843473235508879">Átirányítás letiltva.</translation>
+<translation id="5526281268548144413">Nem zárható be több ablakban</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# perce}other{# perce}}</translation>
 <translation id="5548606607480005320">Biztonsági ellenőrzés</translation>
 <translation id="5554520618550346933">Amikor Ön jelszavakat használ, a Chrome figyelmezteti, ha közzé lettek téve az interneten. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
@@ -1004,6 +1008,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>
 <translation id="6233974827872475843">A szinkronizálás bekapcsolásával mentheti az eszközön lévő jelszavait a Google-fiókjába</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>
+<translation id="6251449557817521191">Itt tekintheti meg Chrome-előzményeit</translation>
 <translation id="6255794742848779505">Módosítjuk az új jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
@@ -1051,6 +1056,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6459045781120991510">Felmérések</translation>
 <translation id="6461962085415701688">A fájlt nem lehet megnyitni</translation>
 <translation id="6464977750820128603">Megnézheti a Chrome böngészővel felkeresett webhelyeket, és beállíthat hozzájuk időzítéseket.\n\nAz időzítéssel ellátott webhelyek adatait és a látogatás hosszát megkapja a Google. Ezek az adatok a digitális jóllét funkció továbbfejlesztésére szolgálnak.</translation>
+<translation id="6470181189905173055">Itt jelennek majd meg a(z) <ph name="APP_LABEL" /> használata közben a Chrome-ban megnyitott oldalai.</translation>
 <translation id="6473086018775716761">A megosztási lehetőségek listája félmagasságban van megnyitva.</translation>
 <translation id="6475951671322991020">Videó letöltése</translation>
 <translation id="6477928892249167417">Úgy tűnik, ezek a webhelyek fontosak Önnek:</translation>
@@ -1334,6 +1340,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7759809451544302770">Nem kötelező</translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> lap törölve</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772375229873196092">A(z) <ph name="APP_NAME" /> bezárása</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1387,6 +1394,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7975379999046275268">Oldal előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Figyelmezteti Önt, ha adatvédelmi incidensben érintett jelszót használ.</translation>
 <translation id="7986497153528221272">A jelszavak megtekintéséhez először képernyőzárat kell beállítania az eszközön</translation>
+<translation id="7988531104457683216">Előfordulhat, hogy az előzményeinek egy része nem jelenik meg itt. Az összes Chrome-előzmény megtekintéséhez nyissa meg a teljes Chrome-előzményeket. Előfordulhat továbbá, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>
 <translation id="7995059495660416932">A tartalmakat akkor láthatja, amikor hozzáférhetővé válnak</translation>
 <translation id="799576009106109668">Gyorsabban böngészhet, mivel a rendszer proaktív módon tölti be a tartalmat az aktuálisan felkeresett weboldal alapján.</translation>
 <translation id="8004582292198964060">Böngésző</translation>

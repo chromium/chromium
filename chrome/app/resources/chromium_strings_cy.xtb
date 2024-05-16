@@ -60,6 +60,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="2018879682492276940">Methwyd â gosod. Rhowch gynnig arall arni.</translation>
 <translation id="2020032459870799438">I wirio a yw'ch cyfrineiriau eraill yn ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Dewiswch a ddylid cynnwys hanes Chromium i gael profiadau mwy personol yng ngwasanaethau Google</translation>
+<translation id="2065461321550902389">I gadw a defnyddio cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chromium. Bydd y cyfrinair hwn yn cael ei gadw yn eich Cyfrif Google ar ôl i chi fewngofnodi.</translation>
 <translation id="2086476982681781442">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn dwyllodrus a gallai wneud newidiadau annisgwyl i'ch dyfais</translation>
 <translation id="2088953378266246249">Gwybodaeth am sut mae Chromium yn rheoli ei dystysgrifau gwraidd</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am 1 funud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}zero{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}two{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # funud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}few{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}many{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}other{Mae eich sefydliad yn dileu data pori yn awtomatig pan nad yw Chromium yn cael ei ddefnyddio am # munud. Gallai hyn gynnwys hanes, awtolenwi a lawrlwythiadau. Bydd eich tabiau yn aros ar agor.}}</translation>
@@ -146,6 +147,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="3474745554856756813">Bydd hyn yn dileu <ph name="ITEMS_COUNT" /> eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chromium</translation>
 <translation id="3509308970982693815">Caewch bob ffenestr Chromium a rhowch gynnig arall arni.</translation>
+<translation id="3530103706039034513">Mae <ph name="EXISTING_USER" /> eisoes wedi mewngofnodi.  I gadw'ch pori ar wahân, mewngofnodwch i Chromium yn eich proffil eich hun fel <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
 <translation id="3567254597502212821">Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chromium ar y ddyfais hon.</translation>
 <translation id="3639635944603682591">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
@@ -313,6 +315,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6327105987658262776">Nid oes diweddariad ar gael.</translation>
 <translation id="6333502561965082103">Mae gweithred arall ar Chromium ar y gweill. Rhowch gynnig arall arni nes ymlaen.</translation>
 <translation id="6334986366598267305">Mae hi bellach yn haws defnyddio Chromium gyda'ch Cyfrif Google ar gyfrifiaduron cyffredin.</translation>
+<translation id="6347933965114150440">Llwybr Byr Chromium</translation>
 <translation id="6366160072964553914">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd nid yw'r ffeil yn cael ei lawrlwytho'n aml a gall fod yn beryglus</translation>
 <translation id="6373523479360886564">Ydych chi'n siŵr eich bod am ddadosod Chromium?</translation>
 <translation id="6375219077595103062">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau</translation>
@@ -377,7 +380,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="718435575166326686">Mae angen caniatâd camera ar Chromium ar gyfer y wefan hon</translation>
 <translation id="7196312274710523067">Methu â lansio Chromium. Rhowch gynnig arall arni.</translation>
 <translation id="7197677400338048821">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr.</translation>
-<translation id="7198365860059291213">Mae angen caniatâd deall golygfa ac olrhain llaw ar Chromium i ddechrau sesiwn ymdrochol</translation>
 <translation id="7213407614656404070">Defnyddiwch Chromium unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="7223968959479464213">Rheolydd Tasgau - Chromium</translation>
 <translation id="7246575524853130370">Eich diddordebau fel yr amcangyfrifir gan Chromium</translation>
@@ -434,6 +436,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="81770708095080097">Mae'r ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
 <translation id="8232193495299001329">Nid yw Chromium yn gallu dilysu o ble mae'r estyniad hwn yn dod, ac mae'n bosib ei fod yn anniogel. Tynnwch ef o Chromium fel na all weld na newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys gwybodaeth bersonol.</translation>
 <translation id="8248265253516264921">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chromium yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau. Gallwch ddiffodd hyn yn y gosodiadau ar unrhyw adeg.</translation>
+<translation id="8254601181414348851">Mewngofnodi i Chromium mewn proffil newydd?</translation>
 <translation id="8266560134891435528">Ni all Chromium wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Mae Chromuim yn eich rhybuddio<ph name="END_LINK" /> am wefannau a lawrlwythiadau anniogel</translation>
 <translation id="8290862415967981663">Mae'n bosib bod y ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
@@ -447,7 +450,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ail-lansiwch Chromium o fewn un diwrnod}zero{Ail-lansiwch Chromium o fewn # diwrnod}two{Ail-lansiwch Chromium o fewn # ddiwrnod}few{Ail-lansiwch Chromium o fewn # diwrnod}many{Ail-lansiwch Chromium o fewn # diwrnod}other{Ail-lansiwch Chromium o fewn # diwrnod}}</translation>
 <translation id="8453117565092476964">Mae'r archif gosodwr wedi'i lygru neu'n annilys. Lawrlwythwch Chromium eto.</translation>
 <translation id="8458614432758743027">Mae Chromium yn gofyn am Windows 10 neu uwch.</translation>
-<translation id="8461326814397467035">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto. Rhowch gynnig ar aros ychydig funudau cyn allgofnodi.</translation>
+<translation id="8461326814397467035">Nid yw peth o'ch data Chromium wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi.</translation>
 <translation id="8463672209299734063">Dewisol: Helpu i wella nodweddion a pherfformiad ChromiumOS drwy anfon data diagnostig a defnydd at Google yn awtomatig.</translation>
 <translation id="8493179195440786826">Mae Chromium yn Hen</translation>
 <translation id="8522801943730206384">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
@@ -455,7 +458,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
-<translation id="858822505990366713">Addasu Eich Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chromium. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8619360774459241877">Wrthi'n lansio Chromium...</translation>
 <translation id="8621669128220841554">Methwyd y gosodiad oherwydd gwall amhenodol. Lawrlwythwch Chromium eto.</translation>
@@ -474,7 +476,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8907580949721785412">Mae Chromium yn ceisio dangos cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8931379085695076764">Gall Chromium amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>
-<translation id="895999862145835951">Addasu eich Chromium</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8986207147630327271">Rydych yn ychwanegu proffil gwaith i'r porwr hwn ac yn rhoi rheolaeth i'ch gweinyddwr dros y proffil gwaith yn unig.</translation>
 <translation id="8988036198400390003">Rheoli proffiliau Chromium</translation>

@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kartice na novoj kartici preglednika</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228">Ukloni <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Blokirana je jedna web-lokacija}one{Blokirana je # web-lokacija}few{Blokirane su # web-lokacije}other{Blokirano je # web-lokacija}}</translation>
 <translation id="228293613124499805">Većina web-lokacija koje posjećujete vjerojatno sprema podatke na vaš uređaj, često radi poboljšanja vašeg doživljaja spremanjem vaših preferencija ili podataka koje dijelite s tim web-lokacijama. Preporučujemo da ta postavka ostane uključena.</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sustav ne podržava odabir klijentskog certifikata.</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">Kontrolirajte pristup ove web-lokacije vašem uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6042308850641462728">Više</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Vaša posljednja kartica</translation>
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
 <translation id="6071501408666570960">Možda ste odjavljeni s ove web-lokacije</translation>
 <translation id="6120483543004435978">Kad je ta postavka uključena, web-lokacije mogu tražiti informacije kada aktivno koristite uređaj. Kad je ta postavka isključena, web-lokacije ne mogu znati kad aktivno koristite uređaj.</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu mikrofona. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Izvor: <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8042586301629853791">Kriterij razvrstavanja:</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za traženje Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu tražiti Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8730621377337864115">Gotovo</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Dopuštena je jedna web-lokacija}one{Dopuštena je # web-lokacija}few{Dopuštene su # web-lokacije}other{Dopušteno je # web-lokacija}}</translation>
 <translation id="8751914237388039244">Odaberite sliku</translation>
 <translation id="8800034312320686233">Web-lokacija ne funkcionira?</translation>
 <translation id="8801436777607969138">Blokiranje JavaScripta za određenu web-lokaciju.</translation>

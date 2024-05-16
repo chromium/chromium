@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
 <translation id="1466383950273130737">የChromeን ቋንቋ ይምረጡ</translation>
 <translation id="1477626028522505441">በአገልጋይ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
+<translation id="1480287803138246127">አንዳንድ ታሪክዎ እዚህ ላይታይ ይችላል። ሁሉንም የChrome ታሪክዎ ለማየት ሙሉ የChrome ታሪክን ይክፈቱ።</translation>
 <translation id="148482509007564431">የዕልባት ማስቀመጥ ፍሰት</translation>
 <translation id="1492417797159476138">ይህንን የተጠቃሚ ስም ለዚህ ጣቢያ ቀድሞውኑ አስቀምጠዋል</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" />ን እየተከተሉ ነው</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">እንዲሁም ዕልባቶችዎን በእርስዎ Google መለያ ውስጥ ካስቀመጡ Chrome ውስጥ የምርት ዋጋዎችን መከታተል እና ዋጋው ሲቀንስ ማሳወቂያ ማግኘት ይችላሉ</translation>
 <translation id="3227557059438308877">Google Chrome እንደ የደህንነት ቁልፍ</translation>
 <translation id="3232293466644486101">የአሰሳ ውሂብን ሰርዝ…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ትሮች ተሰርዘዋል</translation>
 <translation id="3232754137068452469">የድር መተግበሪያ</translation>
 <translation id="3236059992281584593">1 ደቂቃ ይቀራል</translation>
 <translation id="3237087289225714896">መደበኛ ቅድሚያ መጫን፦</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">የይለፍ ቃልዎን ለመመልከት ይክፈቱ</translation>
 <translation id="5517095782334947753">ከ<ph name="FROM_ACCOUNT" /> የመጡ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት  እና ሌሎች ቅንብሮች አለዎት።</translation>
 <translation id="5524843473235508879">አቅጣጫ ማዞር ታግዷል።</translation>
+<translation id="5526281268548144413">በብዙ መስኮቶች ላይ መዝጋት አልተቻለም</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{ከ# ደቂቃ በፊት}one{ከ# ደቂቃ በፊት}other{ከ# ደቂቃ በፊት}}</translation>
 <translation id="5548606607480005320">የደህንነት ፍተሻ</translation>
 <translation id="5554520618550346933">የይለፍ ቃል ሲጠቀሙ Chrome በመስመር ላይ ታትሞ ከነበረ ያስጠነቅቅዎታል። ይህን በሚያደርግበት ጊዜ የእርስዎ የይለፍ ቃሎች እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንኛውም ሰው እንዳይነበቡ ይመሰጠራሉ።</translation>
@@ -1005,6 +1008,7 @@
 ለምሳሌ፣ አንዳንድ ድር ጣቢያዎች ሌሎች በጎበኟቸው ድር ጣቢያዎች ላይ ያልተመሠረቱ ማስታወቂያዎችን በማሳየት ለዚህ ጥያቄ ምላሽ ሊሰጡ ይችላሉ። ብዙ ድር ጣቢያዎች አሁንም የአሰሳ ውሂብዎን ይሰበስቡና ይጠቀሙበታል — ለምሳሌ ደህንነትን ለማሻሻል፤ ይዘት፣ ማስታወቂያዎችና ምክሮች በድር ጣቢያዎች ላይ ለማቅረብ፤ እና የሪፖርት አደራረግ ስታቲስቲክስን ለማመንጨት።</translation>
 <translation id="6233974827872475843">ማስመርን በማብራት በዚህ መሣሪያ ላይ የይለፍ ቃላትን በGoogle መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="6247557882553405851">Google የይለፍ ቃል አስተዳዳሪ</translation>
+<translation id="6251449557817521191">የChrome ታሪክዎን እዚህ ይመልከቱ</translation>
 <translation id="6255794742848779505">የይለፍ ቃላት በዚህ መሣሪያ ላይ እንዴት እንደሚቀመጡ እየለወጥን ነው</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
 <translation id="6277522088822131679">ገጹን ማተም ላይ ችግር ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">አስገዳጅ ያልሆነ</translation>
 <translation id="7762668264895820836">ኤስዲ ካርድ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">አድራሻ አክል</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> ትር ተሰርዟል</translation>
 <translation id="7772032839648071052">የይለፍ ሐረግ ያረጋግጡ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ን ዝጋ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ተጨማሪ}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268">ገፅ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ቅድሚያ ይመልከቱ</translation>
 <translation id="7977451675950311423">በውሂብ ጥሰት ውስጥ የተጠለፈ የይለፍ ቃል ከተጠቀሙ ያስጠነቅቅዎታል።</translation>
 <translation id="7986497153528221272">የይለፍ ቃላትን ለማየት መጀመሪያ በመሣሪያዎ ላይ የማያ ገፅ መቆለፊያ ያቀናብሩ</translation>
+<translation id="7988531104457683216">አንዳንድ ታሪክዎ እዚህ ላይታይ ይችላል። ሁሉንም የChrome ታሪክዎ ለማየት ሙሉ የChrome ታሪክን ይክፈቱ። በተጨማሪም፣ የእርስዎ የGoogle መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="7995059495660416932">ይዘት የሚገኝ ሲሆን ይመለከቱታል</translation>
 <translation id="799576009106109668">አሁን ባለው የድረ-ገፅ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="8004582292198964060">አሳሽ</translation>

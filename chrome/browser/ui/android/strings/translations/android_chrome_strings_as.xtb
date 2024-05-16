@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384704387250346179">Google Lensৰে প্ৰতিচ্ছবি অনুবাদ কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
+<translation id="1390418506739274310">আপুনি Chromeত লিংক খোলা অন্য এপ্‌সমূহৰ পৰা ইতিহাস চাব পাৰে। আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="13931502444227376">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> চাওক।</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />ৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="1407069428457324124">গাঢ় ৰঙৰ থীম</translation>
@@ -96,6 +97,7 @@
 <translation id="1448440926884431741">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহ বুকমাৰ্কত শৃংখলাবদ্ধ কৰক</translation>
 <translation id="1466383950273130737">Chromeৰ ভাষা বাছনি কৰক</translation>
 <translation id="1477626028522505441">ছার্ভাৰৰ সমস্যাৰ বাবে <ph name="FILE_NAME" /> ডাউনল'ড কৰিব পৰা নগ'ল।</translation>
+<translation id="1480287803138246127">আপোনাৰ কিছুমান ইতিহাস ইয়াত প্ৰদৰ্শন কৰা নহ’ব পাৰে। আপোনাৰ Chromeৰ আটাইবোৰ ইতিহাস চাবলৈ, Chromeৰ সম্পূৰ্ণ ইতিহাস খোলক।</translation>
 <translation id="148482509007564431">বুকমাৰ্ক ছেভ কৰাৰ ফ্ল’</translation>
 <translation id="1492417797159476138">এই ছাইটটোৰ বাবে আপুনি ইতিমধ্যে এই ব্যৱহাৰকাৰীৰ নামটো ছেভ কৰিছে</translation>
 <translation id="1493287004536771723">আপুনি <ph name="SITE_NAME" />ক ফ'ল’ কৰি আছে</translation>
@@ -387,6 +389,7 @@
 <translation id="3003253259757197230">আপুনি ইয়াৰ পাছত কি ছাইট চাব সেয়া অনুমান কৰিবলৈ আৰু আপুনি চোৱা পৃষ্ঠাখনৰ অতিৰিক্ত তথ্য দেখুৱাবলৈ আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
 <translation id="3026955690410463085">লিংক অন্তৰ্ভুক্ত কৰক</translation>
 <translation id="3027644380269727216">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অন হৈ আছে।</translation>
+<translation id="3027950907978057636"><ph name="APP_LABEL" />ৰ পৰা</translation>
 <translation id="3029276696788198026">কোনো আগতীয়া ল’ডিং নাই</translation>
 <translation id="3029704984691124060">পাছফ্ৰেজ নিমিলে</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায় লওক<ph name="END_LINK" /></translation>
@@ -424,6 +427,7 @@
 <translation id="3226612997184048185">যদি আপুনি নিজৰ Google একাউণ্টত নিজৰ বুকমাৰ্কসমূহো ছেভ কৰে, আপুনি Chromeত প্ৰ’ডাক্টৰ দামসমূহ ট্ৰেক কৰিব পাৰে আৰু দাম কৰিলে জাননী পাব পাৰে</translation>
 <translation id="3227557059438308877">এটা সুৰক্ষা সম্পৰ্কীয় চাবি হিচাপে Google Chrome</translation>
 <translation id="3232293466644486101">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> টা টেব মচা হৈছে</translation>
 <translation id="3232754137068452469">ৱেব এপ্‌</translation>
 <translation id="3236059992281584593">১ মিনিট বাকী আছে</translation>
 <translation id="3237087289225714896">মান্য আগতীয়া ল’ডিং:</translation>
@@ -862,6 +866,7 @@
 <translation id="5515439363601853141">আপোনাৰ পাছৱৰ্ডটো চাবলৈ আনলক কৰক</translation>
 <translation id="5517095782334947753">আপোনাৰ ওচৰত <ph name="FROM_ACCOUNT" />ৰ বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহ আছে।</translation>
 <translation id="5524843473235508879">পুনর্নির্দেশক অৱৰোধ কৰা হৈছে।</translation>
+<translation id="5526281268548144413">একাধিক ৱিণ্ড’ত বন্ধ কৰিব নোৱাৰি</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# মিনিট পূৰ্বে}one{# মিনিট পূৰ্বে}other{# মিনিট পূৰ্বে}}</translation>
 <translation id="5548606607480005320">সুৰক্ষা পৰীক্ষা</translation>
 <translation id="5554520618550346933">যেতিয়া আপুনি এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেতিয়া সেইটো অনলাইনত প্ৰকাশ কৰা হৈছে নেকি সেই বিষয়ে Chromeএ আপোনাক সকীয়নি দিয়ে। এনে কৰোঁতে আপোনাৰ পাছৱৰ্ডসমূহ আৰু ব্যৱহাৰকাৰীৰ নামসমূহ এনক্ৰিপ্ট কৰা হয়, যাতে সেইবোৰ Googleকে ধৰি অন্য কোনেও পঢ়িব নোৱাৰে।</translation>
@@ -1005,6 +1010,7 @@
 উদাহৰণস্বৰূপে, কিছুমান ৱেবছাইটে আপোনাক আপুনি চোৱা অন্য ৱেবছাইটসমূহৰ ওপৰত আধাৰিত নোহোৱা কিছুমান বিজ্ঞাপন প্ৰদর্শন কৰি এই অনুৰোধলৈ সঁহাৰি জনাব পাৰে। বহুতো ৱেবছাইটে তথাপিও আপোনাৰ ব্ৰাউজিং ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব - উদাহৰণস্বৰূপে সুৰক্ষা উন্নত কৰিবলৈ, সমলৰ লগতে বিজ্ঞাপন তথা চুপাৰিছ প্ৰদান কৰিবলৈ আৰু ৰিপ’র্টিং কৰা পৰিসংখ্যা সৃষ্টি কৰিবলৈ ডেটা সংগ্ৰহ আৰু ব্যৱহাৰ কৰিব।</translation>
 <translation id="6233974827872475843">ছিংক অন কৰি এই ডিভাইচৰ পাছৱৰ্ডসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
 <translation id="6247557882553405851">Google পাছৱৰ্ড পৰিচালক</translation>
+<translation id="6251449557817521191">ইয়াত আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="6255794742848779505">এইটো ডিভাইচত পাছৱৰ্ড কেনেদৰে ছেভ কৰা হয় সেয়া আমি সলনি কৰি আছোঁ</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6277522088822131679">এই পৃষ্ঠাটো প্ৰিণ্ট কৰোঁতে কিবা সমস্যা হৈছিল। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক।</translation>
@@ -1336,6 +1342,7 @@
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7762668264895820836">এছডি কাৰ্ড <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ঠিকনা যোগ কৰক</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" />টা টেব মচা হৈছে</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ কৰক</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টা}}</translation>
@@ -1389,6 +1396,7 @@
 <translation id="7975379999046275268">পৃষ্ঠাটো পূৰ্বদৰ্শন কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">যদি আপুনি কোনো ডেটা উলংঘনত আপোচ কৰা হোৱা এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেন্তে আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="7986497153528221272">পাছৱৰ্ডসমূহ চাবলৈ, আপোনাৰ ডিভাইচত প্ৰথমে এটা স্ক্ৰীন লক ছেট কৰক</translation>
+<translation id="7988531104457683216">আপোনাৰ কিছুমান ইতিহাস ইয়াত প্ৰদৰ্শন কৰা নহ’ব পাৰে। আপোনাৰ Chromeৰ আটাইবোৰ ইতিহাস চাবলৈ, Chromeৰ সম্পূৰ্ণ ইতিহাস খোলক। লগতে, আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="7995059495660416932">সমল উপলব্ধ হ’লে আপুনি সেয়া দেখা পাব</translation>
 <translation id="799576009106109668">আপোনাৰ বৰ্তমান চোৱা ৱেবপৃষ্ঠাখনৰ ভিত্তিত সমল আগতীয়াকৈ ল’ড কৰা হয় বাবে আপুনি দ্ৰুতভাৱে ব্ৰাউজ কৰিব পাৰিব</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>

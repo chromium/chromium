@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">Цената е висока</translation>
 <translation id="2122719317867821810">Правилово работи како што е предвидено, но конфликтна вредност е поставена некаде на друго место и е отфрлена од правилово.</translation>
 <translation id="2126374524350484896">Приказ во PDF:</translation>
+<translation id="2127090458081644412">Лозинката е зачувана на уредов</translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Пребарувачиве се прикажани по случаен редослед. Може да го промените вашиот стандарден пребарувач кога сакате.</translation>
@@ -678,6 +679,7 @@
 <translation id="2227758700723188171">Грантови и стипендии за студирање</translation>
 <translation id="2228057197024893428">Во моментов, адресава е зачувана на Chrome. За да ја користите на производите на Google, зачувајте ја во вашата сметка на Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Игнорирана неединствена кратенка: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
 <translation id="2233745931693710080">Компактен диск</translation>
 <translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
@@ -721,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> бара корисничко име и лозинка.</translation>
 <translation id="2318594867107319532">Временски печат за последното освежување на правилото:</translation>
 <translation id="2320564945062300737">Производи за нега на лице</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}one{# прозорец}other{# прозорци}}</translation>
 <translation id="2328651992442742497">Дозволено (стандардно)</translation>
 <translation id="2328955282645810595">Алати за градежништво и електрични алати</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, истекува на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1009,6 @@
 <translation id="2928905813689894207">Адреса за наплата</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
-<translation id="2932085390869194046">Предложете лозинка…</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2941878205777356567">Плик 9 x 12 in</translation>
@@ -1063,7 +1065,7 @@
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037605927509011580">По ѓаволите!</translation>
 <translation id="3039406992698062762">Семејно патување</translation>
-<translation id="3041176923638368519">Погледнете ги условите за поволности за картички</translation>
+<translation id="3041176923638368519">Погледнете ги условите за поволностите од картичката</translation>
 <translation id="3041612393474885105">Информации за сертификат</translation>
 <translation id="3045769629416806687">Екстремни спортови</translation>
 <translation id="305162504811187366">Историја на „Пристап оддалеку за Chrome“, вклучително временски печати, хостови и ID на сесии на клиент</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">Зачувај…</translation>
 <translation id="4901952598169637881">Секојдневни чевли</translation>
 <translation id="4905659621780993806">Вашиот администратор ќе го рестартира уредот автоматски во <ph name="TIME" /> на <ph name="DATE" /> Зачувајте ги отворените ставки пред да се рестартира уредот.</translation>
+<translation id="4913784027728226227">За да ја зачувате и користите лозинкава на сите ваши уреди, потврдете го вашиот идентитет</translation>
 <translation id="4913987521957242411">Дупка горе лево</translation>
 <translation id="4916389289686916969">Реални ТВ-емисии</translation>
 <translation id="4917064667437236721">Цилиндар за слики</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">&amp;Повтори уредување</translation>
 <translation id="547963486735802022">Обидете се да ги префрлите датотеките повторно</translation>
 <translation id="5481076368049295676">Содржинава може да се обиде да инсталира опасен софтвер на вашиот уред што ги краде или брише вашите информации. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Нудење помош при пишување</translation>
 <translation id="54817484435770891">Додавање важечка адреса</translation>
 <translation id="5483838506518938965">Подготвени сте</translation>
 <translation id="5485973315555778056">Компјутер во облак</translation>
@@ -2443,6 +2447,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Да се избришат зачуваните безбедносни кодови?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> од <ph name="WINDOW_COUNT" /> на уредов</translation>
 <translation id="5717509257172454543">Уметничко лизгање</translation>
 <translation id="5720705177508910913">Тековен корисник</translation>
 <translation id="5720895412771013401">Компјутери</translation>
@@ -2953,6 +2958,7 @@
 <translation id="6709133671862442373">Вести</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6710594484020273272">&lt;Внесете поим за пребарување&gt;</translation>
+<translation id="6710648923880003133">Предложи силна лозинка</translation>
 <translation id="671076103358959139">Токен за регистрација:</translation>
 <translation id="6711464428925977395">Нешто не е во ред со прокси-серверот или адресата е неточна.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> сака да создаде 3D-карта на опкружувањето и да ја следи позицијата на камерата</translation>
@@ -3406,6 +3412,7 @@
 <translation id="7564667064360547717">Кошули и блузи</translation>
 <translation id="7567204685887185387">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е издаден лажно. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="7568616151991626879">Google Chrome се обидува да ја пополни вашата лозинка на <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Нема}=1{1 картичка на уредов}one{# картичка на уредов}other{# картички на уредов}}</translation>
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569952961197462199">Отстрани ја кредитната картичка од Chrome?</translation>
 <translation id="7569983096843329377">Црна</translation>

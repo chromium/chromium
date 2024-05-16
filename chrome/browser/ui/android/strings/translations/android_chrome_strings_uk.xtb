@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Впорядковуйте відстежувані товари в закладках</translation>
 <translation id="1466383950273130737">Виберіть мову Chrome</translation>
 <translation id="1477626028522505441">Файл <ph name="FILE_NAME" /> не завантажено через проблеми із сервером.</translation>
+<translation id="1480287803138246127">Деякі дані з історії можуть тут не відображатися. Щоб переглянути всю історію Chrome, відкрийте її.</translation>
 <translation id="148482509007564431">Вікно зберігання закладки</translation>
 <translation id="1492417797159476138">Ви вже зберегли це ім'я користувача для цього сайту</translation>
 <translation id="1493287004536771723">Ви підписалися на сайт <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">Щоб відстежувати ціни на товари в Chrome і отримувати сповіщення, якщо вони знизяться, також збережіть закладки в обліковому записі Google</translation>
 <translation id="3227557059438308877">Google Chrome як ключ безпеки</translation>
 <translation id="3232293466644486101">Видалити дані вебперегляду…</translation>
+<translation id="3232459301230493791">Видалено стільки вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3236059992281584593">Залишилась 1 хв</translation>
 <translation id="3237087289225714896">Стандартне попереднє завантаження:</translation>
@@ -766,6 +768,7 @@
 <translation id="4961107849584082341">Перекладіть цю сторінку будь-якою мовою</translation>
 <translation id="496607651705915226">Щоб зберігати й використовувати нові паролі в обліковому записі Google, оновіть сервіси Google Play</translation>
 <translation id="4971735654804503942">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень. Попереджає про розкриття паролів через порушення безпеки даних.  Дані веб-перегляду потрібно надсилати в Google.</translation>
+<translation id="4971753085054504448">Введіть інший пошуковий запит або відкрийте повну історію Chrome, щоб побачити більше результатів.</translation>
 <translation id="497421865427891073">Перейти вперед</translation>
 <translation id="4987271110129728827">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в Інтернеті.</translation>
 <translation id="4988526792673242964">Сторінки</translation>
@@ -861,6 +864,7 @@
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
 <translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Переспрямування заблоковано.</translation>
+<translation id="5526281268548144413">Не можна закрити в кількох вікнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# хв тому}one{# хв тому}few{# хв тому}many{# хв тому}other{# хв тому}}</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
 <translation id="5554520618550346933">Коли ви використовуєте пароль, Chrome попереджає вас, якщо його опубліковано в Інтернеті. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
@@ -1004,6 +1008,7 @@
 Наприклад, деякі веб-сайти можуть реагувати на такий запит, показуючи вам рекламу, не пов’язану з іншими веб-сайтами, які ви відвідали. Багато веб-сайтів і надалі збиратимуть та використовуватимуть ваші дані веб-перегляду, наприклад, щоб покращувати систему безпеки, пропонувати вміст, рекламу й рекомендації, а також генерувати статистику для звітів.</translation>
 <translation id="6233974827872475843">Щоб зберегти паролі на цьому пристрої, увімкніть синхронізацію в обліковому записі Google</translation>
 <translation id="6247557882553405851">Менеджер паролів Google</translation>
+<translation id="6251449557817521191">Тут можна переглянути історію Chrome</translation>
 <translation id="6255794742848779505">Ми змінюємо спосіб зберігання паролів на цьому пристрої</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
 <translation id="6277522088822131679">Виникла проблема з друком цієї сторінки. Повторіть спробу.</translation>
@@ -1051,6 +1056,7 @@
 <translation id="6459045781120991510">Опитування</translation>
 <translation id="6461962085415701688">Не вдається відкрити файл</translation>
 <translation id="6464977750820128603">Ви можете переглянути відвідані в Chrome сайти та встановити таймери для них.\n\nGoogle отримує дані про те, для яких сайтів ви встановлюєте таймери, а також відомості про тривалість перебування на них. Ця інформація використовується для покращення Цифрового добробуту.</translation>
+<translation id="6470181189905173055">Тут відображатимуться сторінки, які ви відкриваєте в Chrome, коли використовуєте додаток <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Список параметрів спільного доступу відкрито на половину висоти.</translation>
 <translation id="6475951671322991020">Завантажити відео</translation>
 <translation id="6477928892249167417">Схоже, ці сайти є важливими для вас:</translation>
@@ -1334,6 +1340,7 @@
 <translation id="7759809451544302770">Необов’язково</translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Додати адресу</translation>
+<translation id="776533689993750361">Видалено <ph name="TAB_COUNT" /> вкладку</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772375229873196092">Закрити додаток <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1387,6 +1394,7 @@
 <translation id="7975379999046275268">Переглянути сторінку <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
 <translation id="7986497153528221272">Щоб переглянути паролі, спершу налаштуйте блокування екрана на пристрої</translation>
+<translation id="7988531104457683216">Деякі дані з історії можуть тут не відображатися. Щоб переглянути всю історію Chrome, відкрийте її. Крім того, історія вебперегляду може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Контент почне відображатися, коли стане доступним</translation>
 <translation id="799576009106109668">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
 <translation id="8004582292198964060">Переглядач</translation>

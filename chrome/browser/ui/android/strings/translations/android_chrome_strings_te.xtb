@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">ట్రాక్ చేసిన మీ ప్రోడక్ట్‌లను బుక్‌మార్క్‌లలో ఆర్గనైజ్ చేయండి</translation>
 <translation id="1466383950273130737">Chrome భాషను ఎంపిక చేయండి</translation>
 <translation id="1477626028522505441">సర్వర్ సమస్యల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="1480287803138246127">మీ హిస్టరీలోని కొన్ని ఇక్కడ చూపబడకపోవచ్చు. మీ మొత్తం Chrome హిస్టరీని చూడటానికి, మొత్తం Chrome హిస్టరీని తెరవండి.</translation>
 <translation id="148482509007564431">బుక్‌మార్క్‌ను సేవ్ చేయడానికి దశలు</translation>
 <translation id="1492417797159476138">మీరు ఇప్పటికే ఈ సైట్ కోసం ఈ యూజర్‌నేమ్‌ను సేవ్ చేశారు</translation>
 <translation id="1493287004536771723">మీరు <ph name="SITE_NAME" />ను ఫాలో చేస్తున్నారు</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">మీ బుక్‌మార్క్‌లను Google ఖాతాలో కూడా సేవ్ చేస్తే, మీరు Chromeలో ప్రోడక్ట్ ధరలను ట్రాక్ చేయవచ్చు, ధర తగ్గినప్పుడు తెలియజేయబడుతుంది</translation>
 <translation id="3227557059438308877">'సెక్యూరిటీ కీ'గా Google Chrome</translation>
 <translation id="3232293466644486101">బ్రౌజింగ్ డేటాను తొలగించండి…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ట్యాబ్‌లను తొలగించారు</translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
 <translation id="3236059992281584593">1 నిమిషం మిగిలి ఉంది</translation>
 <translation id="3237087289225714896">స్టాండర్డ్ ప్రీ - లోడింగ్:</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">మీ పాస్‌వర్డ్‌ను చూడడానికి అన్‌లాక్ చేయండి</translation>
 <translation id="5517095782334947753">మీరు <ph name="FROM_ACCOUNT" /> నుండి బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లను కలిగి ఉన్నారు.</translation>
 <translation id="5524843473235508879">మళ్లింపు బ్లాక్ చేయబడింది.</translation>
+<translation id="5526281268548144413">పలు విండోలలో మూసివేయడం సాధ్యపడదు</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# నిమి. క్రితం}other{# నిమి. క్రితం}}</translation>
 <translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
 <translation id="5554520618550346933">మీరు పాస్‌వర్డ్‌ను ఉపయోగించినప్పుడు, అది ఆన్‌లైన్‌లో పబ్లిష్ చేయబడితే Chrome మిమ్మల్ని హెచ్చరిస్తుంది. Chrome ఈ ప్రాసెస్‌ను చేస్తున్నప్పుడు, మీ పాస్‌వర్డ్‌లు, యూజర్‌నేమ్‌లు ఎన్‌క్రిప్ట్ చేయబడతాయి, కాబట్టి వాటిని Googleతో సహా ఎవరు చదవలేరు.</translation>
@@ -1005,6 +1008,7 @@
 ఉదాహరణకు, కొన్ని వెబ్‌సైట్‌లు ఈ రిక్వెస్ట్‌కు ప్రతిస్పందనగా మీరు సందర్శించిన ఇతర వెబ్‌సైట్‌ల ఆధారితం కాని ప్రకటనలను మీకు చూపుతాయి. అనేక వెబ్‌సైట్‌లు భద్రతను మెరుగుపరచడం, కంటెంట్, ప్రకటనలు మరియు సిఫార్సులను అందించడం మరియు నివేదన గణాంకాలను రూపొందించడం మొదలైనవాటి కోసం ఇప్పటికీ మీ బ్రౌజింగ్ డేటాను సేకరించి, ఉపయోగిస్తాయి.</translation>
 <translation id="6233974827872475843">సింక్‌ను ఆన్ చేసి, ఈ పరికరంలోని మీ Google ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251449557817521191">మీ Chrome హిస్టరీని ఇక్కడ చూడండి</translation>
 <translation id="6255794742848779505">ఈ పరికరంలో పాస్‌వర్డ్‌లు ఎలా సేవ్ అవ్వాలి అనే దానిని మేము మారుస్తున్నాము</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> ట్యాబ్‌ను తొలగించారు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయండి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> పేజీని ప్రివ్యూ చేయండి</translation>
 <translation id="7977451675950311423">మీరు డేటా ఉల్లంఘనలో చోరీకి గురైన పాస్‌వర్డ్‌ని ఉపయోగిస్తే అది మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="7986497153528221272">పాస్‌వర్డ్‌లను చూడటానికి, ముందుగా మీ పరికరంపై స్క్రీన్ లాక్‍ను సెట్ చేయండి</translation>
+<translation id="7988531104457683216">మీ హిస్టరీలోని కొన్ని ఇక్కడ చూపబడకపోవచ్చు. మీ మొత్తం Chrome హిస్టరీని చూడటానికి, మొత్తం Chrome హిస్టరీని తెరవండి. అలాగే, మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> వెబ్‌సైట్‌లో ఇతర ఫారమ్‌లలో ఉన్న బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="7995059495660416932">కంటెంట్ అందుబాటులోకి వచ్చినప్పుడు దానిని మీరు చూడవచ్చు</translation>
 <translation id="799576009106109668">మీ ప్రస్తుత వెబ్‌పేజీ సందర్శన ఆధారంగా కంటెంట్ ముందస్తుగా లోడ్ చేయబడినందున మీరు వేగంగా బ్రౌజ్ చేస్తారు</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>

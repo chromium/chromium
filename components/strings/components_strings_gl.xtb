@@ -154,6 +154,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1273592791152866347">O seguimento de prezos está desactivado</translation>
 <translation id="127777513559587977">Programas televisivos de debate</translation>
 <translation id="1281476433249504884">Amontoador 1</translation>
+<translation id="1281536351321444151">Para que a próxima vez se autocomplete este IBAN, gárdao na túa conta de Google</translation>
 <translation id="1282358575813748144">Barcos e embarcacións</translation>
 <translation id="1283977499362032052">Currículos e carteiras</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
@@ -293,6 +294,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1529789484829130889">Bandexa 8</translation>
 <translation id="1530707389502320859">O sitio que acabas de tentar visitar parece falso. Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
 <translation id="1532118530259321453">Esta páxina di</translation>
+<translation id="1533966801397200693">O perfil no que tes a sesión iniciada é un perfil xestionado. A persoa administradora pode facer cambios na súa configuración de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
 <translation id="1537807545287921620">Non se pode acceder a este PDF. Abre o menú contextual e activa a opción Extraer texto do PDF</translation>
 <translation id="1539840569003678498">Envío do informe:</translation>
@@ -679,6 +681,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2227758700723188171">Bolsas de estudo e prácticas</translation>
 <translation id="2228057197024893428">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Ignorouse o atallo duplicado: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 pestana}other{# pestanas}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
@@ -722,6 +725,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2317259163369394535"><ph name="DOMAIN" /> require un nome de usuario e un contrasinal.</translation>
 <translation id="2318594867107319532">Última marca de tempo da política:</translation>
 <translation id="2320564945062300737">Produtos de coidado facial</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 ventá}other{# ventás}}</translation>
 <translation id="2328651992442742497">Permiso concedido (opción predeterminada)</translation>
 <translation id="2328955282645810595">Ferramentas de construción e eléctricas</translation>
 <translation id="2330137317877982892">A tarxeta <ph name="CREDIT_CARD" /> caduca o <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2928905813689894207">Enderezo de facturación</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> máis}}</translation>
 <translation id="2930577230479659665">Recorte despois de cada copia</translation>
-<translation id="2932085390869194046">Suxerir contrasinal…</translation>
 <translation id="2933624813161016821">Lámina en relevo</translation>
 <translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
 <translation id="2941878205777356567">Sobre 9 x 12 polgadas</translation>
@@ -1185,6 +1188,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3272091146646336650">Súper B</translation>
 <translation id="3272112314896217187">Escribe o código de verificación de <ph name="NUMBER_OF_DIGITS" /> díxitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. Algúns sitios pode que carguen máis lentamente a próxima vez que os visites.</translation>
+<translation id="3273738040255912340">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chromium. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador non recomenda abrir este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda abrir estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A túa organización, <ph name="ENROLLMENT_DOMAIN" />, enviou algúns datos (por exemplo, opcións de configuración ou políticas) aos seguintes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -2446,6 +2450,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinaria</translation>
 <translation id="5715150588940290235">Queres eliminar os códigos de seguranza gardados?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> e <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5717509257172454543">Patinaxe sobre xeo</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5720895412771013401">Ordenadores de escritorio</translation>
@@ -2956,6 +2961,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe un termo de busca&gt;</translation>
+<translation id="6710648923880003133">Suxerir contrasinal seguro</translation>
 <translation id="671076103358959139">Token de inscrición:</translation>
 <translation id="6711464428925977395">Produciuse un erro co servidor proxy ou o enderezo é incorrecto.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
@@ -3409,6 +3415,7 @@ Detalles adicionais:
 <translation id="7564667064360547717">Camisetas</translation>
 <translation id="7567204685887185387">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque é probable que o seu certificado de seguranza se emitise fraudulentamente. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="7568616151991626879">Google Chrome está tentando completar o teu contrasinal en <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Ningunha}=1{1 pestana neste dispositivo}other{# pestanas neste dispositivo}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Queres eliminar a tarxeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
@@ -3888,6 +3895,7 @@ Detalles adicionais:
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8449155699563577224">17 x 24 polgadas</translation>
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
+<translation id="84561192812921051">A persoa administradora pode facer cambios no teu perfil e no teu navegador de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. A actividade deste dispositivo tamén se pode xestionar fóra de Chrome.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8458202188076138974">Carta extra</translation>
 <translation id="8460854335417802511">Activar</translation>

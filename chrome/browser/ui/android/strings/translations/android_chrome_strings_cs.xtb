@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Sledované produkty můžete třídit v záložkách</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
 <translation id="1477626028522505441">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu problémů se serverem.</translation>
+<translation id="1480287803138246127">Část vaší historie se zde nemusí zobrazovat. Pokud chcete zobrazit celou historii Chromu, otevřete celou historii Chromu.</translation>
 <translation id="148482509007564431">Postup uložení záložky</translation>
 <translation id="1492417797159476138">Toto uživatelské jméno jste pro tento web už uložili</translation>
 <translation id="1493287004536771723">Sledujete web <ph name="SITE_NAME" /></translation>
@@ -766,6 +767,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4961107849584082341">Nechte si tuto stránku přeložit do libovolného jazyka</translation>
 <translation id="496607651705915226">Pokud chcete používat hesla ze svého účtu Google a ukládat do něj nová, aktualizujte služby Google Play.</translation>
 <translation id="4971735654804503942">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními. Upozorňuje vás na úniky hesel. Vyžaduje odesílání údajů o prohlížení do Googlu.</translation>
+<translation id="4971753085054504448">Zkuste vyhledat něco jiného nebo otevřete celou historii Chromu, abyste viděli více výsledků.</translation>
 <translation id="497421865427891073">Vpřed</translation>
 <translation id="4987271110129728827">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste vyhledat na webu.</translation>
 <translation id="4988526792673242964">Stránky</translation>
@@ -1004,6 +1006,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 Některé weby mohou například na tento požadavek reagovat tak, že vám zobrazí reklamy, které nejsou založeny na ostatních navštívených webových stránkách. Řada webů bude i nadále shromažďovat vaše údaje o prohlížení a používat je například ke zlepšení zabezpečení, poskytování obsahu, reklam a doporučení a ke generování statistik pro přehledy.</translation>
 <translation id="6233974827872475843">Uložte si hesla na tomto zařízení do svého účtu Google tím, že zapnete synchronizaci</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
+<translation id="6251449557817521191">Zde si můžete prohlédnout svou historii Chromu</translation>
 <translation id="6255794742848779505">Měníme způsob ukládání hesel na tomto zařízení</translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
 <translation id="6277522088822131679">Při tištění stránky došlo k problému. Zkuste to prosím znovu.</translation>
@@ -1051,6 +1054,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6459045781120991510">Průzkumy</translation>
 <translation id="6461962085415701688">Soubor nelze otevřít</translation>
 <translation id="6464977750820128603">Můžete se podívat, které stránky v Chromu navštěvujete, a nastavit pro ně časovače.\n\nGoogle obdrží informace o webech, pro které nastavíte časovače, a o tom, jak dlouho jste na nich byli. Tyto informace slouží ke zlepšování digitální rovnováhy.</translation>
+<translation id="6470181189905173055">Zde se zobrazí stránky, které jste otevřeli v Chromu při používání aplikace <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Seznam možností sdílení otevřený na poloviční výšku.</translation>
 <translation id="6475951671322991020">Stáhnout video</translation>
 <translation id="6477928892249167417">Tyto weby jsou pro vás zřejmě důležité:</translation>
@@ -1387,6 +1391,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7975379999046275268">Zobrazit náhled stránky <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
 <translation id="7986497153528221272">Chcete-li zobrazit hesla, nejdříve na zařízení nastavte zámek obrazovky</translation>
+<translation id="7988531104457683216">Část vaší historie se zde nemusí zobrazovat. Pokud chcete zobrazit celou historii Chromu, otevřete celou historii Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici také další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="7995059495660416932">Obsah se zobrazí, až bude k dispozici</translation>
 <translation id="799576009106109668">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>

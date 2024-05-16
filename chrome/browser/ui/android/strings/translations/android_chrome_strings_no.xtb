@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
+<translation id="1480287803138246127">Det kan hende at deler av loggen din ikke vises her. For å se hele Chrome-loggen din, åpne hele Chrome-loggen.</translation>
 <translation id="148482509007564431">Flyt for lagring av bokmerke</translation>
 <translation id="1492417797159476138">Du har allerede lagret dette brukernavnet for dette nettstedet</translation>
 <translation id="1493287004536771723">Du følger <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3226612997184048185">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chrome og bli varslet om avslag</translation>
 <translation id="3227557059438308877">Google Chrome som sikkerhetsnøkkel</translation>
 <translation id="3232293466644486101">Slett nettlesingsdata…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> faner er slettet</translation>
 <translation id="3232754137068452469">Nettprogram</translation>
 <translation id="3236059992281584593">1 minutt igjen</translation>
 <translation id="3237087289225714896">Standard forhåndslasting:</translation>
@@ -766,6 +768,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4961107849584082341">Oversett denne siden til hvilket som helst språk</translation>
 <translation id="496607651705915226">For å lagre og bruke nye passord i Google-kontoen din, oppdater Google Play-tjenester</translation>
 <translation id="4971735654804503942">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser. Advarer deg om passordbrudd. Krever at nettlesingsdata sendes til Google.</translation>
+<translation id="4971753085054504448">Prøv å søke etter noe annet eller åpne hele Chrome-loggen for å se flere resultater.</translation>
 <translation id="497421865427891073">Gå til neste</translation>
 <translation id="4987271110129728827">Finner ikke den siden. Kontroller stavemåten, eller prøv et søk på nettet.</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -861,6 +864,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5515439363601853141">Lås opp for å se passordet ditt</translation>
 <translation id="5517095782334947753">Du har bokmerker, loggen, passord og andre innstillinger fra <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Viderekobling blokkert.</translation>
+<translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{for # min siden}other{for # min siden}}</translation>
 <translation id="5548606607480005320">Sikkerhetssjekk</translation>
 <translation id="5554520618550346933">Når du bruker et passord, advarer Chrome deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
@@ -1004,6 +1008,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
 <translation id="6233974827872475843">Lagre passordene på denne enheten i Google-kontoen din ved å slå på synkronisering</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
+<translation id="6251449557817521191">Se Chrome-loggen din her</translation>
 <translation id="6255794742848779505">Vi endrer måten passord lagres på denne enheten på</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
@@ -1051,6 +1056,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6459045781120991510">Undersøkelser</translation>
 <translation id="6461962085415701688">Kan ikke åpne filen</translation>
 <translation id="6464977750820128603">Du kan se nettstedene du besøker i Chrome, og angi tidtakere for dem.\n\nGoogle får informasjon om nettstedene du angir tidtakere for, og hvor lenge du besøker dem. Denne informasjonen brukes til å gjøre Digital balanse bedre.</translation>
+<translation id="6470181189905173055">Sidene du har åpnet i Chrome mens du har brukt <ph name="APP_LABEL" />, vises her.</translation>
 <translation id="6473086018775716761">Listen over delingsalternativer er åpnet i halv høyde.</translation>
 <translation id="6475951671322991020">Last ned videoen</translation>
 <translation id="6477928892249167417">Disse nettstedene ser ut til å være viktige for deg:</translation>
@@ -1334,6 +1340,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7759809451544302770">Valgfritt</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> fane er slettet</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
 <translation id="7772375229873196092">Lukk <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
@@ -1387,6 +1394,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Advarer deg hvis du bruker passord som er utsatt for databrudd.</translation>
 <translation id="7986497153528221272">For å se passord må du først angi en skjermlås på enheten din</translation>
+<translation id="7988531104457683216">Det kan hende at deler av loggen din ikke vises her. For å se hele Chrome-loggen din, åpne hele Chrome-loggen. I tillegg kan det hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Du ser innhold når det blir tilgjengelig</translation>
 <translation id="799576009106109668">Du kan surfe raskere, siden innholdet lastes inn proaktivt basert på nettsiden du er på for øyeblikket</translation>
 <translation id="8004582292198964060">Nettleser</translation>

@@ -1196,6 +1196,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5587506661873751671">Mendownload <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Tarik untuk memilih area yang akan diambil gambarnya</translation>
 <translation id="5590609058453685222">Pengingat aktifkan mikrofon diaktifkan. Anda akan mendapatkan notifikasi jika berbicara saat mikrofon dibisukan.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5599242528220103262">Pintasan keyboard nonaktif</translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk menonaktifkan respons lisan.</translation>
@@ -1372,6 +1373,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon Anda</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Daya baterai lemah. Penghemat Baterai diaktifkan.</translation>
+<translation id="6240603910551255087">Tombol Atas</translation>
 <translation id="6247728804802644171">Buka notifikasi</translation>
 <translation id="6249795363855770621">Tidak dapat menandai sebagai selesai. Coba lagi saat online.</translation>
 <translation id="6254629735336163724">Terkunci ke horizontal</translation>
@@ -2074,6 +2076,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="906458777597946297">Memaksimalkan jendela</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9070640332319875144">Setelan Asisten</translation>
+<translation id="9071966355747967534"><ph name="FEATURE_NAME" /> tidak tersedia</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> hingga baterai kosong.</translation>
 <translation id="9074432941673450836">Gunakan aplikasi untuk melakukan semua hal yang Anda perlukan di <ph name="PRODUCT_NAME" />. Anda dapat menemukan aplikasi di Peluncur. Anda juga dapat menekan tombol Peluncur (di atas tombol Shift kiri) di keyboard.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

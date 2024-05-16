@@ -615,6 +615,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2122214041802369259">El precio es alto</translation>
 <translation id="2122719317867821810">Esta política se comporta según lo esperado, pero anuló un valor en conflicto que se configuró en otro lugar.</translation>
 <translation id="2126374524350484896">Generador de PDF:</translation>
+<translation id="2127090458081644412">Se guardó la contraseña en este dispositivo</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Las opciones se muestran en orden aleatorio. Puedes cambiar la opción predeterminada en cualquier momento.</translation>
@@ -678,6 +679,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2227758700723188171">Subvenciones y becas para estudiantes</translation>
 <translation id="2228057197024893428">Actualmente, esta dirección se guarda en Chrome. Para usarla en todos los productos de Google, guárdala en tu Cuenta de Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Se ignoró el atajo duplicado: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
@@ -721,6 +723,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
 <translation id="2320564945062300737">Productos para el cuidado facial</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 entana}other{# ventanas}}</translation>
 <translation id="2328651992442742497">Se permite (predeterminado).</translation>
 <translation id="2328955282645810595">Herramientas eléctricas y de construcción</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, fecha de vencimiento: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1009,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2928905813689894207">Dirección de facturación</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
 <translation id="2930577230479659665">Cortar después de cada copia</translation>
-<translation id="2932085390869194046">Sugerir contraseña…</translation>
 <translation id="2933624813161016821">Lámina con relieve</translation>
 <translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Sobre de 22.8 × 30.4 cm</translation>
@@ -1980,7 +1982,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4800132727771399293">Verifica la fecha de vencimiento y el CVC, y vuelve a intentarlo.</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="4809079943450490359">Instrucciones del administrador de tu dispositivo:</translation>
-<translation id="4811450222531576619">Obtén más información sobre el tema y la fuente de la página</translation>
+<translation id="4811450222531576619">Más información sobre el tema y la fuente</translation>
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4814114628197290459">Borrar IBAN</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
@@ -2032,6 +2034,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4901952598169637881">Calzado informal</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
+<translation id="4913784027728226227">Para guardar y usar esta contraseña en todos tus dispositivos, verifica tu identidad</translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4916389289686916969">Reality shows de TV</translation>
 <translation id="4917064667437236721">Cilindro de impresión</translation>
@@ -2305,6 +2308,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5447765697759493033">Este sitio no se traducirá</translation>
 <translation id="5452270690849572955">No se encuentra esta página <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
+<translation id="5456428544444655325">No mostrar nunca</translation>
 <translation id="5456839782162429664">Verificar manualmente cada vez que pagues con la función Autocompletar</translation>
 <translation id="5457113250005438886">Sin validez</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
@@ -2315,6 +2319,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5470861586879999274">&amp;Rehacer Editar</translation>
 <translation id="547963486735802022">Intenta volver a transferir tus archivos</translation>
 <translation id="5481076368049295676">Es posible que este contenido intente instalar software peligroso que robe o borre tu información en tu dispositivo . <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Ofrecer ayuda para escribir</translation>
 <translation id="54817484435770891">Agregar una dirección válida</translation>
 <translation id="5483838506518938965">Terminaste</translation>
 <translation id="5485973315555778056">Máquina en la nube</translation>
@@ -2444,6 +2449,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarios</translation>
 <translation id="5715150588940290235">¿Quieres borrar los códigos de seguridad guardados?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> en este dispositivo</translation>
 <translation id="5717509257172454543">Patinaje sobre hielo</translation>
 <translation id="5720705177508910913">Usuario actual</translation>
 <translation id="5720895412771013401">Computadoras de escritorio</translation>
@@ -2954,6 +2960,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Escribe el término de búsqueda&gt;</translation>
+<translation id="6710648923880003133">Sugerir contraseña segura</translation>
 <translation id="671076103358959139">Token de inscripción:</translation>
 <translation id="6711464428925977395">Hay un error en el servidor proxy o la dirección es incorrecta.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> desea crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
@@ -3407,6 +3414,7 @@ Detalles adicionales:
 <translation id="7564667064360547717">Camisetas y tops</translation>
 <translation id="7567204685887185387">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad podría haberse emitido de forma fraudulenta. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="7568616151991626879">Google Chrome está intentando completar tu contraseña en <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Ninguna}=1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">¿Confirmas que quieres quitar la tarjeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>

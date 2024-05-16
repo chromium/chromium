@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> arhiviranu karticu}one{Imate <ph name="TABS_COUNT_MANY" /> arhiviranu karticu}few{Imate <ph name="TABS_COUNT_MANY" /> arhivirane kartice}other{Imate <ph name="TABS_COUNT_MANY" /> arhiviranih kartica}}</translation>
 <translation id="3194464645767632461">ocjena</translation>
 <translation id="3291470810748040983">Kad niža cijena bude dostupna, primit ćete obavijest u otvorenoj kartici</translation>
+<translation id="3322827343001922122">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
 <translation id="3547352561153509682">Time će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

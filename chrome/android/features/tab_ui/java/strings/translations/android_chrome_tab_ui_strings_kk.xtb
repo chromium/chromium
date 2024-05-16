@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> мұрағатталған қойынды бар.}other{<ph name="TABS_COUNT_MANY" /> мұрағатталған қойынды бар.}}</translation>
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
+<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> қойындылар тобының әрекеттер мәзірін ашу</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
 <translation id="3547352561153509682">Бұл жағдайда топ <ph name="USER_EMAIL" /> аккаунтына кірген барлық құрылғыдан жойылады.</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

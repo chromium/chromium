@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Tvarkykite stebimus produktus Žymėse</translation>
 <translation id="1466383950273130737">„Chrome“ kalbos pasirinkimas</translation>
 <translation id="1477626028522505441">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl serverio problemų.</translation>
+<translation id="1480287803138246127">Dalis istorijos čia gali būti nerodoma. Jei norite peržiūrėti visą „Chrome“ istoriją, atidarykite visą „Chrome“ istoriją.</translation>
 <translation id="148482509007564431">Žymių išsaugojimo srautas</translation>
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
 <translation id="1493287004536771723">Stebite „<ph name="SITE_NAME" />“</translation>
@@ -1005,6 +1006,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos jums skelbimus, nepagrįstus kitomis svetainėmis, kuriose lankėtės. Daugelis svetainių vis tiek rinks ir naudos jūsų naršymo duomenis, kad, pvz., patobulintų saugą, teiktų turinį, skelbimus bei rekomendacijas ir sugeneruotų ataskaitų teikimo statistiką.</translation>
 <translation id="6233974827872475843">Išsaugokite slaptažodžius šiame įrenginyje „Google“ paskyroje įjungę sinchronizavimą</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
+<translation id="6251449557817521191">Peržiūrėkite „Chrome“ istoriją čia</translation>
 <translation id="6255794742848779505">Keičiame slaptažodžių išsaugojimo šiame įrenginyje būdą</translation>
 <translation id="6264376385120300461">Vis tiek atsisiųsti</translation>
 <translation id="6277522088822131679">Spausdinant puslapį kilo problema. Bandykite dar kartą.</translation>
@@ -1389,6 +1391,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7975379999046275268">Peržiūrėti puslapį <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Įspėjama, jei naudojate slaptažodį, kuris pažeistas dėl duomenų saugos pažeidimo.</translation>
 <translation id="7986497153528221272">Jei norite peržiūrėti slaptažodžius, pirmiausia nustatykite įrenginio ekrano užraktą</translation>
+<translation id="7988531104457683216">Dalis istorijos čia gali būti nerodoma. Jei norite peržiūrėti visą „Chrome“ istoriją, atidarykite visą „Chrome“ istoriją. Taip pat „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Matysite turinį, kai jis bus pasiekiamas</translation>
 <translation id="799576009106109668">Naršysite greičiau, nes turinys įkeliamas proaktyviai remiantis tinklalapiu, kuriame šiuo metu lankotės</translation>
 <translation id="8004582292198964060">Naršyklė</translation>

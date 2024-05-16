@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Бақыланатын өнімдерді "Бетбелгілер" бөлімінен реттеңіз.</translation>
 <translation id="1466383950273130737">Chrome тілін таңдаңыз</translation>
 <translation id="1477626028522505441">Сервердегі ақаулықтар себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
+<translation id="1480287803138246127">Тарих бұл жерде толық көрсетілмеуі мүмкін. Барлық дерек көру үшін толық Chrome тарихын ашыңыз.</translation>
 <translation id="148482509007564431">Бетбелгілерді сақтау ағыны</translation>
 <translation id="1492417797159476138">Бұл сайт үшін осы пайдаланушы аты сақтап қойылған.</translation>
 <translation id="1493287004536771723">Сіз <ph name="SITE_NAME" /> сайтына жазылғансыз</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">Бетбелгілерді Google аккаунтыңызда да сақтасаңыз, Chrome-да өнім бағаларын бақылап, баға төмендеген кезде, хабарландыру аласыз.</translation>
 <translation id="3227557059438308877">Google Chrome браузерін қауіпсіздік кілті ретінде пайдалану</translation>
 <translation id="3232293466644486101">Браузерді пайдалану деректерін жою…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> қойынды жойылды.</translation>
 <translation id="3232754137068452469">Веб-қолданба</translation>
 <translation id="3236059992281584593">1 мин қалды</translation>
 <translation id="3237087289225714896">Стандартты алдын ала жүктеу:</translation>
@@ -862,6 +864,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5515439363601853141">Құпия сөзді көру үшін құлыпты ашыңыз</translation>
 <translation id="5517095782334947753">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы, құпия сөздері және басқа да параметрлері бар.</translation>
 <translation id="5524843473235508879">Баcқа бетке бағыттау бөгелді.</translation>
+<translation id="5526281268548144413">Бірнеше терезеде жабу мүмкін емес.</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# минут бұрын}other{# минут бұрын}}</translation>
 <translation id="5548606607480005320">Қауіпсіздік тексерісі</translation>
 <translation id="5554520618550346933">Құпия сөзді пайдаланған кезде, ол онлайн жарияланған болса, Chrome сізге ескертеді. Тексеру кезінде құпия сөздер мен пайдаланушылар аты шифрланады. Сондықтан оларды ешкім, тіпті Google да оқи алмайды.</translation>
@@ -1005,6 +1008,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 Мысалы, кейбір веб-сайттар бұл сұрауға сіз кірген басқа веб-сайттарға негізделмеген жарнамаларды көрсету арқылы жауап беруі мүмкін. Көптеген веб-сайттар әлі де шолу деректеріңізді жинап, пайдаланатын болады (мысалы, қауіпсіздікті жақсарту, контент, жарнама және ұсыныстарды қамтамасыз ету және статистикалық есептерді құру мақсатында).</translation>
 <translation id="6233974827872475843">Синхрондауды қосу арқылы осы құрылғыдағы құпия сөздерді Google аккаунтыңызға сақтаңыз</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251449557817521191">Chrome тарихын осы жерден көру</translation>
 <translation id="6255794742848779505">Құпия сөздердің осы құрылғыда сақталу жолын өзгертеміз</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
 <translation id="6277522088822131679">Бетті басып шығаруда қиындық туындады. Тағы да қайталап көріңіз.</translation>
@@ -1336,6 +1340,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7759809451544302770">Қосымша</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-ші SD картасы</translation>
 <translation id="7764225426217299476">Мекенжай қосу</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> қойынды жойылды.</translation>
 <translation id="7772032839648071052">Құпия фразаны растау</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> қолданбасын жабу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1389,6 +1394,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7975379999046275268">Бетті алдын ала көру <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Деректер қолды болған кезде ұрланған құпия сөзді пайдалансаңыз, сізге ескертеді.</translation>
 <translation id="7986497153528221272">Құпия сөздерді көру үшін алдымен құрылғыңызда экран құлпын орнатыңыз.</translation>
+<translation id="7988531104457683216">Тарих бұл жерде толық көрсетілмеуі мүмкін. Барлық дерек көру үшін толық Chrome тарихын ашыңыз. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> мекенжайында Google аккаунтымен браузерді қолдану тарихының басқа да түрлері болуы мүмкін.</translation>
 <translation id="7995059495660416932">Контент қолжетімді болған кезде, оны көресіз.</translation>
 <translation id="799576009106109668">Кіріп отырған веб-бетке сәйкес контент алдын ала жүктелетіндіктен, шолу барысы жылдамдайды.</translation>
 <translation id="8004582292198964060">Браузер</translation>

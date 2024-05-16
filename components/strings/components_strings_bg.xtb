@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">Стипендии и безвъзмездна помощ за обучение</translation>
 <translation id="2228057197024893428">Понастоящем този адрес е запазен в Chrome. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Дублираният пряк път „<ph name="SHORTCUT_NAME" />“ е пренебрегнат</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="2233745931693710080">Компактдиск</translation>
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2239100178324503013">Изпращане сега</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535">Изискват се потребителско име и парола за <ph name="DOMAIN" />.</translation>
 <translation id="2318594867107319532">Клеймо за дата и час на най-новата версия на правилата:</translation>
 <translation id="2320564945062300737">Продукти за грижа за лицето</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 прозорец}other{# прозореца}}</translation>
 <translation id="2328651992442742497">Разрешено (по подразбиране)</translation>
 <translation id="2328955282645810595">Ръчни и електрически строителни инструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">Адрес за фактуриране</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Отрязване след всяко копие</translation>
-<translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2933624813161016821">Фолио за гравиране</translation>
 <translation id="2938225289965773019">Да отваря връзки от типа „<ph name="PROTOCOL" />“.</translation>
 <translation id="2941878205777356567">Плик 9 x 12 инча</translation>
@@ -2306,6 +2307,7 @@
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
 <translation id="5455374756549232013">Невалидно клеймо за дата и час на правилото</translation>
+<translation id="5456428544444655325">Да не се показва никога</translation>
 <translation id="5456839782162429664">Ръчно потвърждаване при всяко плащане чрез автоматично попълване</translation>
 <translation id="5457113250005438886">Невалидно</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2446,6 +2448,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Да се изтрият ли запазените кодове за сигурност?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> от <ph name="WINDOW_COUNT" /> на това устройство</translation>
 <translation id="5717509257172454543">Фигурно пързаляне</translation>
 <translation id="5720705177508910913">Текущият потребител</translation>
 <translation id="5720895412771013401">Настолни компютри</translation>
@@ -2956,6 +2959,7 @@
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6710594484020273272">&lt;Въведете дума за търсене&gt;</translation>
+<translation id="6710648923880003133">Предложение за надеждна парола</translation>
 <translation id="671076103358959139">Означение за регистриране:</translation>
 <translation id="6711464428925977395">Нещо не е наред с прокси сървъра или адресът е неправилен.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> иска да създаде триизмерна карта на заобикалящата ви среда и да следи позицията на камерата</translation>
@@ -3409,6 +3413,7 @@
 <translation id="7564667064360547717">Ризи и блузи</translation>
 <translation id="7567204685887185387">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е издаден измамнически. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="7568616151991626879">Google Chrome се опитва да попълни паролата ви в(ъв) <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Няма}=1{1 раздел на това устройство}other{# раздела на това устройство}}</translation>
 <translation id="7569490014721427265">Голф</translation>
 <translation id="7569952961197462199">Кредитната карта да се премахне ли от Chrome?</translation>
 <translation id="7569983096843329377">черно</translation>

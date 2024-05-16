@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{നിങ്ങൾക്ക് ആർക്കൈവ് ചെയ്ത <ph name="TABS_COUNT_ONE" /> ടാബുണ്ട്}other{നിങ്ങൾക്ക് ആർക്കൈവ് ചെയ്ത <ph name="TABS_COUNT_MANY" /> ടാബുകളുണ്ട്}}</translation>
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
 <translation id="3291470810748040983">തുറന്നിരിക്കുന്ന ടാബിൽ, വിലക്കുറവുള്ളപ്പോൾ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും</translation>
+<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പിനുള്ള ടാബ് ഗ്രൂപ്പ് ആക്ഷൻ മെനു തുറക്കുക</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3547352561153509682">ഇത്, <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഗ്രൂപ്പ് ഇല്ലാതാക്കും</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

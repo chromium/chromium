@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
+<translation id="1480287803138246127">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。</translation>
 <translation id="148482509007564431">书签保存流程</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1493287004536771723">您已关注 <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="3227557059438308877">使用 Google Chrome 作为安全密钥</translation>
 <translation id="3232293466644486101">删除浏览数据…</translation>
+<translation id="3232459301230493791">已删除 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3236059992281584593">还剩 1 分钟</translation>
 <translation id="3237087289225714896">标准预加载：</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">需解锁才能查看您的密码</translation>
 <translation id="5517095782334947753">您有来自 <ph name="FROM_ACCOUNT" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="5524843473235508879">已禁止重定向。</translation>
+<translation id="5526281268548144413">无法在多个窗口中关闭</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
@@ -1005,6 +1008,7 @@
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
 <translation id="6233974827872475843">开启同步功能，将此设备上的密码保存到您的 Google 账号中</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
+<translation id="6251449557817521191">在此处查看您的 Chrome 历史记录</translation>
 <translation id="6255794742848779505">我们即将更改此设备上的密码保存方式</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
@@ -1334,6 +1338,7 @@
 <translation id="7759809451544302770">可选</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>
+<translation id="776533689993750361">已删除 <ph name="TAB_COUNT" /> 个标签页</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772375229873196092">关闭<ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
@@ -1387,6 +1392,7 @@
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
 <translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
+<translation id="7988531104457683216">您的部分历史记录可能不会在此处显示。如需查看您的所有 Chrome 历史记录，请打开完整的 Chrome 历史记录。此外，您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="7995059495660416932">待内容可显示后，您即会看到相应内容</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="8004582292198964060">浏览器</translation>

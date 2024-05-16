@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
 <translation id="1466383950273130737">Izvēlieties pārlūka Chrome valodu</translation>
 <translation id="1477626028522505441">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās servera problēmas.</translation>
+<translation id="1480287803138246127">Šeit var nebūt redzama daļa jūsu vēstures. Lai skatītu visu savu Chrome vēsturi, atveriet pilno Chrome vēsturi.</translation>
 <translation id="148482509007564431">Grāmatzīmes saglabāšanas plūsma</translation>
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
 <translation id="1493287004536771723">Jūs sekojat vietnei <ph name="SITE_NAME" />.</translation>
@@ -766,6 +767,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4961107849584082341">Tulkojiet šīs lapas saturu jebkurā valodā.</translation>
 <translation id="496607651705915226">Lai saglabātu un izmantotu jaunas paroles savā Google kontā, atjauniniet Google Play pakalpojumus.</translation>
 <translation id="4971735654804503942">Ātrāka, aktīva aizsardzība pret bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem. Jūs saņemat brīdinājumus par paroļu pārkāpumiem. Pārlūkošanas dati ir jāsūta uzņēmumam Google.</translation>
+<translation id="4971753085054504448">Mēģiniet meklēt kaut ko citu vai atveriet visu Chrome vēsturi, lai skatītu vairāk rezultātu.</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
 <translation id="4987271110129728827">Nevar atrast šo lapu. Pārbaudiet pareizrakstību vai meklējiet tīmeklī.</translation>
 <translation id="4988526792673242964">Lapas</translation>
@@ -1004,6 +1006,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums reklāmas, kuru pamatā nav citas jūsu apmeklētās vietnes. Tomēr daudzas vietnes vāks un izmantos jūsu pārlūkošanas datus, piemēram, lai uzlabotu drošību, nodrošinātu saturu, reklāmas un ieteikumus un ģenerētu pārskatu statistiku.</translation>
 <translation id="6233974827872475843">Ieslēgt sinhronizāciju, lai šajā ierīcē saglabātu paroles savā Google kontā</translation>
 <translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
+<translation id="6251449557817521191">Skatīt savu Chrome vēsturi šeit</translation>
 <translation id="6255794742848779505">Tiek mainīts paroļu saglabāšanas veids šajā ierīcē</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6277522088822131679">Drukājot lapu, radās problēma. Lūdzu, mēģiniet vēlreiz.</translation>
@@ -1051,6 +1054,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6459045781120991510">Aptaujas</translation>
 <translation id="6461962085415701688">Nevar atvērt failu.</translation>
 <translation id="6464977750820128603">Varat skatīt pārlūkā Chrome apmeklētās vietnes un iestatīt tām taimerus.\n\nGoogle saņem informāciju par vietnēm, kurām iestatāt taimerus, kā arī šo vietņu apmeklēšanas ilgumu. Šī informācija tiek izmantota, lai uzlabotu Digitālo labjutību.</translation>
+<translation id="6470181189905173055">Šeit tiks parādītas lapas, kuras atvērāt pārlūkā Chrome, izmantojot pakalpojumu <ph name="APP_LABEL" />.</translation>
 <translation id="6473086018775716761">Kopīgošanas opciju saraksts ir atvērts pusekrāna augstumā.</translation>
 <translation id="6475951671322991020">Lejupielādēt videoklipu</translation>
 <translation id="6477928892249167417">Šķiet, ka šīs vietnes jums ir svarīgas:</translation>
@@ -1387,6 +1391,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7986497153528221272">Lai skatītu paroles, vispirms iestatiet ierīcei ekrāna bloķēšanu</translation>
+<translation id="7988531104457683216">Šeit var nebūt redzama daļa jūsu vēstures. Lai skatītu visu savu Chrome vēsturi, atveriet pilno Chrome vēsturi. Turklāt jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Kad saturs būs pieejams, jūs to redzēsiet.</translation>
 <translation id="799576009106109668">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>

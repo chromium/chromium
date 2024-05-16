@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1384704387250346179">แปลรูปภาพด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ใช้งานเมื่อ <ph name="LAST_UPDATED" /> วันที่ผ่านมา</translation>
+<translation id="1390418506739274310">คุณอาจเห็นประวัติการเข้าชมจากแอปอื่นๆ ที่เปิดลิงก์ใน Chrome บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="13931502444227376">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการ<ph name="END_LINK1" />ของเว็บไซต์</translation>
 <translation id="1397811292916898096">ค้นหาด้วย <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
@@ -96,6 +97,7 @@
 <translation id="1448440926884431741">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์ก</translation>
 <translation id="1466383950273130737">เลือกภาษาของ Chrome</translation>
 <translation id="1477626028522505441">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเซิร์ฟเวอร์มีปัญหา</translation>
+<translation id="1480287803138246127">ประวัติการเข้าชมเว็บบางส่วนอาจไม่แสดงที่นี่ หากต้องการดูประวัติการเข้าชมใน Chrome ทั้งหมด ให้เปิดประวัติการเข้าชมใน Chrome แบบเต็ม</translation>
 <translation id="148482509007564431">ขั้นตอนการบันทึกบุ๊กมาร์ก</translation>
 <translation id="1492417797159476138">คุณบันทึกชื่อผู้ใช้นี้สำหรับเว็บไซต์นี้แล้ว</translation>
 <translation id="1493287004536771723">คุณกำลังติดตาม <ph name="SITE_NAME" /></translation>
@@ -387,6 +389,7 @@
 <translation id="3003253259757197230">ระบบจะส่ง URL ที่ได้เข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชมและแสดงข้อมูลเพิ่มเติมเกี่ยวกับหน้าที่กำลังเข้าชม</translation>
 <translation id="3026955690410463085">รวมลิงก์</translation>
 <translation id="3027644380269727216">อิงตามกิจกรรมของคุณในเว็บไซต์ การตั้งค่านี้เปิดอยู่</translation>
+<translation id="3027950907978057636">จาก <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">ไม่ต้องโหลดล่วงหน้า</translation>
 <translation id="3029704984691124060">รหัสผ่านไม่ตรงกัน</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ขอความช่วยเหลือ<ph name="END_LINK" /></translation>
@@ -424,6 +427,7 @@
 <translation id="3226612997184048185">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณจะติดตามราคาผลิตภัณฑ์ใน Chrome และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="3227557059438308877">ใช้ Google Chrome เป็นคีย์ความปลอดภัย</translation>
 <translation id="3232293466644486101">ลบข้อมูลการท่องเว็บ…</translation>
+<translation id="3232459301230493791">ลบ <ph name="TAB_COUNT" /> แท็บแล้ว</translation>
 <translation id="3232754137068452469">เว็บแอป</translation>
 <translation id="3236059992281584593">เหลือ 1 นาที</translation>
 <translation id="3237087289225714896">การโหลดล่วงหน้าแบบมาตรฐาน:</translation>
@@ -862,6 +866,7 @@
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>
 <translation id="5524843473235508879">การเปลี่ยนเส้นทางถูกบล็อก</translation>
+<translation id="5526281268548144413">ปิดในหลายหน้าต่างไม่ได้</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="5548606607480005320">การตรวจสอบความปลอดภัย</translation>
 <translation id="5554520618550346933">เมื่อใช้รหัสผ่าน Chrome จะเตือนคุณหากมีการเผยแพร่รหัสผ่านออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
@@ -1005,6 +1010,7 @@
 ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณเพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา โฆษณา และคำแนะนำ และเพื่อสร้างสถิติในการรายงาน เป็นต้น</translation>
 <translation id="6233974827872475843">บันทึกรหัสผ่านไว้ในอุปกรณ์นี้ในบัญชี Google โดยเปิดการซิงค์</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
+<translation id="6251449557817521191">ดูประวัติการเข้าชมใน Chrome ที่นี่</translation>
 <translation id="6255794742848779505">เรากําลังจะเปลี่ยนวิธีบันทึกรหัสผ่านในอุปกรณ์นี้</translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
 <translation id="6277522088822131679">เกิดปัญหาในการพิมพ์หน้านี้ โปรดลองอีกครั้ง</translation>
@@ -1336,6 +1342,7 @@
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7762668264895820836">การ์ด SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
+<translation id="776533689993750361">ลบ <ph name="TAB_COUNT" /> แท็บแล้ว</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772375229873196092">ปิด <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>
@@ -1389,6 +1396,7 @@
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">เตือนคุณหากใช้รหัสผ่านที่ถูกละเมิดในการละเมิดข้อมูล</translation>
 <translation id="7986497153528221272">หากต้องการดูรหัสผ่าน ให้ตั้งค่าการล็อกหน้าจอในอุปกรณ์ก่อน</translation>
+<translation id="7988531104457683216">ประวัติการเข้าชมเว็บบางส่วนอาจไม่แสดงที่นี่ หากต้องการดูประวัติการเข้าชมใน Chrome ทั้งหมด ให้เปิดประวัติการเข้าชมใน Chrome แบบเต็ม นอกจากนี้ บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="7995059495660416932">คุณจะเห็นเนื้อหาเมื่อพร้อมให้บริการ</translation>
 <translation id="799576009106109668">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>

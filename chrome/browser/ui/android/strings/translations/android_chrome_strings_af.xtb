@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organiseer jou nagespoorde produkte in Boekmerke</translation>
 <translation id="1466383950273130737">Kies Chrome se taal</translation>
 <translation id="1477626028522505441">Kon <ph name="FILE_NAME" /> weens bedienerkwessies nie aflaai nie.</translation>
+<translation id="1480287803138246127">Sommige van jou geskiedenis sal dalk nie hier verskyn nie. Maak die volle Chrome-geskiedenis oop om al jou Chrome-geskiedenis te sien.</translation>
 <translation id="148482509007564431">Boekmerkstoorvloei</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1493287004536771723">Jy volg tans <ph name="SITE_NAME" /></translation>
@@ -1005,6 +1006,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advertensies te wys wat nie gegrond is op ander webwerwe wat jy besoek het nie. Baie webwerwe sal steeds jou blaaidata insamel en gebruik – byvoorbeeld om sekuriteit te verbeter, om inhoud, advertensies en aanbevelings te verskaf en om verslagdoeningstatistiek te genereer.</translation>
 <translation id="6233974827872475843">Skakel sinkronisering aan om die wagwoorde op hierdie toestel in jou Google-rekening te stoor</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
+<translation id="6251449557817521191">Bekyk hier jou Chrome-geskiedenis</translation>
 <translation id="6255794742848779505">Ons verander hoe wagwoorde op hierdie toestel gestoor word</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
 <translation id="6277522088822131679">Kon nie die bladsy uitdruk nie. Probeer asseblief weer.</translation>
@@ -1389,6 +1391,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="7986497153528221272">Stel eers 'n skermslot op jou toestel om wagwoorde te bekyk</translation>
+<translation id="7988531104457683216">Sommige van jou geskiedenis sal dalk nie hier verskyn nie. Maak die volle Chrome-geskiedenis oop om al jou Chrome-geskiedenis te sien. Jou Google-rekening kan dalk ook ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Jy sal inhoud sien wanneer dit beskikbaar word</translation>
 <translation id="799576009106109668">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
 <translation id="8004582292198964060">Blaaier</translation>

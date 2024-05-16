@@ -147,6 +147,7 @@
 <translation id="3474745554856756813">ይሄ <ph name="ITEMS_COUNT" /> ንጥሎችን ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> በChromium መገለጫዎች መካከል መቀያየር ይችላል</translation>
 <translation id="3509308970982693815">እባክዎ ሁሉንም የChromium መስኮቶችን ይዝጉና እንደገና ይሞክሩ።</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል።  አሰሳዎን ለያይተው ለመጠቀም በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="3533435340678213462">የእርስዎን ግላዊነት ለመጠበቅ ከ4 ሳምንታት በላይ የቆዩ ዝንባሌዎችዎን በራስ-ሰር እንሰርዛለን። ማሰስዎን በሚቀጥሉበት ጊዜ ዝንባሌ እንደገና በዝርዝሩ ላይ ሊታይ ይችላል። ወይም Chromium ከግምት ውስጥ እንዳያስገባቸው የማይፈልጓቸውን ዝንባሌዎች ማስወገድ ይችላሉ።</translation>
 <translation id="3567254597502212821">የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromiumን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="3639635944603682591">ይህ ሰው የአሰሳ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ውሂቡን መልሶ ለማግኘት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
@@ -378,7 +379,6 @@
 <translation id="718435575166326686">Chromium ለዚህ ጣቢያ የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="7196312274710523067">Chromiumን ማስጀመር አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="7197677400338048821">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ከ24 ሰዓቶች በኋላ እንደገና ይሞክሩ።</translation>
-<translation id="7198365860059291213">Chromium መሳጭ ክፍለ ጊዜ ለመጀመር የትዕይንት ግንዛቤ እና የእጅ ክትትል ፈቃድ ያስፈልገዋል</translation>
 <translation id="7213407614656404070">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በሚያደርጉበት ማንኛውም ጊዜ Chromium ይጠቀሙ</translation>
 <translation id="7223968959479464213">ተግባር መሪ - Chromium</translation>
 <translation id="7246575524853130370">በChromium የተገመቱ የእርስዎ ዝንባሌዎች</translation>
@@ -435,6 +435,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="81770708095080097">ይህ ፋይል አደገኛ ስለሆነ Chromium አግዶታል።</translation>
 <translation id="8232193495299001329">Chromium ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም፣ እና ደህንነቱ ያልተጠበቀ ሊሆን ይችላል። የግል መረጃን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎትን ውሂብ ማየት እና መለወጥ እንዳይችል ከChromium ያስወግዱት።</translation>
 <translation id="8248265253516264921">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chromium ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ ሊያጠፉት ይችላሉ።</translation>
+<translation id="8254601181414348851">በአዲስ መገለጫ ወደ Chromium ይግቡ?</translation>
 <translation id="8266560134891435528">እርስዎ በመለያ ስላልገቡ ስለሆኑ Chromium የይለፍ ቃላትዎን መፈተሽ አይችልም</translation>
 <translation id="8286943863733751221">ደህንነታቸው ስላልተጠበቁ ጣቢያዎች እና ውርዶች <ph name="BEGIN_LINK" />Chromium ያስጠነቅቅዎታል<ph name="END_LINK" /></translation>
 <translation id="8290862415967981663">ይህ ፋይል አደገኛ ሊሆን ስለሚችል Chromium አግዶታል።</translation>
@@ -456,7 +457,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8555465886620020932">የአገልግሎት ስህተት፡ <ph name="SERVICE_ERROR" />።</translation>
 <translation id="8568283329061645092">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
-<translation id="858822505990366713">የእርስዎን Chromium ያብጁ</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />ይህንን ውሂብ እንዴት እንደሚጠቀሙበት፦<ph name="END_BOLD" /> ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChromium አማካኝነት ማከማቸት ይችላሉ። ለምሳሌ፣ ለማራቶን ጫማ ለመግዛት ጣቢያን ከጎበኙ ጣቢያው ዝንባሌዎን እንደ ማራቶን መሮጥ ሊገልጽ ይችላል። በኋላ ላይ ለሩጫ ለመመዝገብ ሌላ ጣቢያ ከጎበኙ ይህ ጣቢያ በዝንባሌዎችዎ ላይ ተመስርቶ የመሮጫ ጫማ ማስታወቂያ ሊያሳየዎት ይችላል።</translation>
 <translation id="8619360774459241877">Chromiumን በማስጀመር ላይ...</translation>
 <translation id="8621669128220841554">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። እባክዎ Chromiumን እንደገና ያውርዱ።</translation>
@@ -475,7 +475,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8907580949721785412">Chromium የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="8931379085695076764">Chromium ካለፉት ጥቂት ሳምንታት የአሰሳ ታሪክዎ ላይ በመመስረት ዝንባሌዎችዎን ሊገምት ይችላል። ይህ መረጃ በመሣሪያዎ ላይ ይቆያል።</translation>
 <translation id="8941642502866065432">Chromiumን ማዘመን አልተቻለም</translation>
-<translation id="895999862145835951">የእርስዎን Chromium ያብጁ</translation>
 <translation id="897581876605952338">የChromium Enterprise ዓርማ</translation>
 <translation id="8986207147630327271">የስራ መገለጫን ወደዚህ አሳሽ እያከሉ እና ለአስተዳዳሪዎ በስራ መገለጫው ላይ ብቻ ቁጥጥር እየሰጡ ነው።</translation>
 <translation id="8988036198400390003">የChromium መገለጫዎችን ያስተዳድሩ</translation>

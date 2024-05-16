@@ -1196,6 +1196,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5587506661873751671">Laster ned <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Dra for å velge området du vil ta bilde av</translation>
 <translation id="5590609058453685222">Varsel om avslått mikrofon er på. Du blir varslet hvis du snakker mens mikrofonen er avslått.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5599242528220103262">Hurtigtasten er avslått</translation>
 <translation id="5600837773213129531">Trykk på Ctrl + Alt + Z for å slå av taletilbakemelding.</translation>
@@ -1372,6 +1373,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din for øyeblikket</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Lavt batterinivå. Batterisparing er slått på.</translation>
+<translation id="6240603910551255087">Øverste knapp</translation>
 <translation id="6247728804802644171">Åpne varsler</translation>
 <translation id="6249795363855770621">Kunne ikke merke som fullført. Prøv på nytt når du er på nett.</translation>
 <translation id="6254629735336163724">Låst til horisontal</translation>
@@ -2074,6 +2076,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="906458777597946297">Maksimer vinduet</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9070640332319875144">Assistent-innstillinger</translation>
+<translation id="9071966355747967534"><ph name="FEATURE_NAME" /> er ikke tilgjengelig</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> til batteriet er tomt.</translation>
 <translation id="9074432941673450836">Bruk apper til å gjøre alt du trenger, på <ph name="PRODUCT_NAME" />. Du finner appene dine i appoversikten. Du kan også trykke på Appoversikt-tasten (over den venstre Shift-tasten) på tastaturet.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

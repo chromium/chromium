@@ -246,7 +246,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1433225466058025572">Dosyalarınızı tekrar taşımayı deneyin</translation>
 <translation id="1434317006812369578">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="1435940442311036198">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
-<translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek isteyebilir</translation>
+<translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek için izin isteyebilir</translation>
 <translation id="1441816242347931036">Devam etmek için açın</translation>
 <translation id="1442386063175183758">Sağa doğru iki kırımlı katlama</translation>
 <translation id="1442987760062738829">Delik</translation>
@@ -615,6 +615,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2122214041802369259">Yüksek Fiyatlı</translation>
 <translation id="2122719317867821810">Bu politika beklendiği gibi çalışıyor, ancak başka bir yerde ayarlanmış çakışan bir değeri geçersiz kılıyor.</translation>
 <translation id="2126374524350484896">PDF üreticisi:</translation>
+<translation id="2127090458081644412">Şifre bu cihaza kaydedildi</translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Bunlar rastgele sırada gösterilir. Varsayılan ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
@@ -678,6 +679,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2227758700723188171">Eğitim Yardımları ve Burslar</translation>
 <translation id="2228057197024893428">Bu adres şu anda Chrome'da kayıtlı. Adresi diğer Google ürünlerinde kullanmak için Google Hesabınıza (<ph name="ACCOUNT" />) kaydedin.</translation>
 <translation id="2229456043301340598">Benzersiz olmayan kısayol yoksayıldı: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="2233745931693710080">Kompakt Disk</translation>
 <translation id="2235344399760031203">Üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
@@ -721,6 +723,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2317259163369394535"><ph name="DOMAIN" /> için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="2318594867107319532">Son politika zaman damgası:</translation>
 <translation id="2320564945062300737">Yüz Bakım Ürünleri</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 pencere}other{# pencere}}</translation>
 <translation id="2328651992442742497">İzin veriliyor (varsayılan)</translation>
 <translation id="2328955282645810595">El Aletleri ve Elektrikli Aletler</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> için kullanım süresi sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1009,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2928905813689894207">Fatura Adresi</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> adres daha}}</translation>
 <translation id="2930577230479659665">Her kopyadan sonra kırp</translation>
-<translation id="2932085390869194046">Şifre Öner...</translation>
 <translation id="2933624813161016821">Kabartma Folyosu</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> bağlantılarını açma</translation>
 <translation id="2941878205777356567">Zarf 9 x 12 inç</translation>
@@ -1277,7 +1279,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3447644283769633681">Tüm üçüncü taraf çerezlerini engelle</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozor oyununu kapattı.</translation>
 <translation id="3447884698081792621">Sertifikayı göster (yayınlayan: <ph name="ISSUER" />)</translation>
-<translation id="3450323514459570273">MIDI cihazlarınızı kontrol etmek ve yeniden programlamak isteyebilir</translation>
+<translation id="3450323514459570273">MIDI cihazlarınızı kontrol etmek ve yeniden programlamak için izin isteyebilir</translation>
 <translation id="3451429106322189478"><ph name="PERMISSION" /> için izin verildi</translation>
 <translation id="3452404311384756672">Getirme aralığı:</translation>
 <translation id="3453962258458347894">Deneme sayısı</translation>
@@ -1391,7 +1393,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3646643500201740985">Bir reklamın ne kadar iyi performans gösterdiğini ölçme</translation>
 <translation id="3647286794400715637">Her URL dizesi girişinde 1-2 URL bulunmalıdır.</translation>
 <translation id="3650584904733503804">Doğrulama başarılı</translation>
-<translation id="3650594806107685466">Kartınızı güvende tutmak için <ph name="SIDE_OF_CARD" /> yer alan CVC kodunu girin</translation>
+<translation id="3650594806107685466">Kartınızı güvende tutmak için <ph name="SIDE_OF_CARD" /> yer alan CVC'yi girin</translation>
 <translation id="3650917416636556301">Gezi ve Kampçılık</translation>
 <translation id="3655241534245626312">İzin ayarlarına git</translation>
 <translation id="3655670868607891010">Bunu çok sık görüyorsanız, şunları deneyin: <ph name="HELP_LINK" />.</translation>
@@ -2031,6 +2033,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4901778704868714008">Kaydet...</translation>
 <translation id="4901952598169637881">Gündelik Ayakkabılar</translation>
 <translation id="4905659621780993806">Yöneticiniz cihazınızı <ph name="DATE" /> tarihinde saat <ph name="TIME" /> olunca otomatik olarak yeniden başlatacak. Cihazınız yeniden başlatılmadan önce tüm açık öğeleri kaydedin.</translation>
+<translation id="4913784027728226227">Bu şifreyi tüm cihazlarınızda kaydedip kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="4913987521957242411">Sol üstte delik</translation>
 <translation id="4916389289686916969">TV Realite Şovları</translation>
 <translation id="4917064667437236721">Görüntüleme Silindiri</translation>
@@ -2304,6 +2307,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5447765697759493033">Bu site çevrilmeyecek</translation>
 <translation id="5452270690849572955">Bu <ph name="HOST_NAME" /> sayfası bulunamıyor</translation>
 <translation id="5455374756549232013">Politika zaman damgası yanlış</translation>
+<translation id="5456428544444655325">Bir daha gösterme</translation>
 <translation id="5456839782162429664">Otomatik doldurma özelliğini kullanarak her ödeme yaptığımda manuel olarak doğrulat</translation>
 <translation id="5457113250005438886">Geçersiz</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}other{<ph name="CONTACT_PREVIEW" /> ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}}</translation>
@@ -2314,6 +2318,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5470861586879999274">Düzenlemeyi &amp;yeniden yap</translation>
 <translation id="547963486735802022">Dosyalarınızı tekrar aktarmayı deneyin</translation>
 <translation id="5481076368049295676">Bu içerik, cihazınıza bilgilerinizi çalabilecek veya silebilecek tehlikeli yazılımlar yüklemeye çalışabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Yazma konusunda yardım sun</translation>
 <translation id="54817484435770891">Geçerli adres ekleyin</translation>
 <translation id="5483838506518938965">Artık hazırsınız</translation>
 <translation id="5485973315555778056">Bulut makinesi</translation>
@@ -2443,6 +2448,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinerler</translation>
 <translation id="5715150588940290235">Kayıtlı güvenlik kodları silinsin mi?</translation>
+<translation id="5715918316982363436">Bu cihazda <ph name="WINDOW_COUNT" /> içinde <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">Buz Pateni</translation>
 <translation id="5720705177508910913">Geçerli kullanıcı</translation>
 <translation id="5720895412771013401">Masaüstü Bilgisayarlar</translation>
@@ -2953,6 +2959,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6709133671862442373">Haberler</translation>
 <translation id="6710213216561001401">Önceki</translation>
 <translation id="6710594484020273272">&lt;Arama terimini yazın&gt;</translation>
+<translation id="6710648923880003133">Güçlü Şifre Öner</translation>
 <translation id="671076103358959139">Kayıt Jetonu:</translation>
 <translation id="6711464428925977395">Proxy sunucusunda bir sorun var veya adres yanlış.</translation>
 <translation id="6716672519412350405"><ph name="URL" />, çevrenizin 3D haritasını oluşturmak ve kamera konumunu takip etmek istiyor</translation>
@@ -3406,6 +3413,7 @@ Ek ayrıntılar:
 <translation id="7564667064360547717">Gömlekler ve Üst Giyim</translation>
 <translation id="7567204685887185387">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası hileli bir şekilde yayınlanmış olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="7568616151991626879">Google Chrome, <ph name="APP_NAME" /> adresinde şifrenizi doldurmaya çalışıyor.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Yok}=1{Bu cihazda 1 sekme}other{Bu cihazda # sekme var}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kredi kartı Chrome'dan kaldırılsın mı?</translation>
 <translation id="7569983096843329377">Siyah</translation>

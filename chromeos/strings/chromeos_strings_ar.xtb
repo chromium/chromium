@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">اسم مضيف الخادم</translation>
 <translation id="5089810972385038852">الولاية</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">‏عليك فصل كابل USB في <ph name="DEVICE_NAME" /> ثم إعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5099354524039520280">لأعلى</translation>
 <translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">المرادفات المشابهة:</translation>

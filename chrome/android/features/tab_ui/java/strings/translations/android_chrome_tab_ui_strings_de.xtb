@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Du hast <ph name="TABS_COUNT_ONE" /> archivierten Tab}other{Du hast <ph name="TABS_COUNT_MANY" /> archivierte Tabs}}</translation>
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3291470810748040983">Du erhältst eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
+<translation id="3322827343001922122">Aktionsmenü für die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ öffnen</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

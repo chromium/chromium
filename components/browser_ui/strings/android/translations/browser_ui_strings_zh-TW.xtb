@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{已封鎖 1 個網站}other{已封鎖 # 個網站}}</translation>
 <translation id="228293613124499805">你造訪的大多數網站可能會在裝置上儲存資料 (偏好設定或你與網站分享的資訊)，通常是為了改善使用體驗。建議你將這項設定保持開啟。</translation>
 <translation id="2289270750774289114">當網站要搜尋附近的藍牙裝置時，必須先詢問你 (建議)</translation>
 <translation id="2315043854645842844">作業系統不允許您在用戶端選取憑證。</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">如果啟用，網站就可以要求尋找藍牙裝置。如果停用，網站將無法尋找藍牙裝置。</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站的 JavaScript。</translation>

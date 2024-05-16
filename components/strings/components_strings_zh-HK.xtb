@@ -679,6 +679,7 @@
 <translation id="2227758700723188171">助學金和獎學金</translation>
 <translation id="2228057197024893428">此地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2229456043301340598">已忽略非專屬快速指令：<ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="2233745931693710080">光碟</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2239100178324503013">立即傳送</translation>
@@ -722,6 +723,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
 <translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2320564945062300737">面部護理產品</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="2328651992442742497">已允許 (預設)</translation>
 <translation id="2328955282645810595">建築和電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@
 <translation id="2928905813689894207">帳單地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
-<translation id="2932085390869194046">建議密碼…</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2941878205777356567">9 x 12 吋信封</translation>
@@ -2305,6 +2306,7 @@
 <translation id="5447765697759493033">系統不會翻譯此網站</translation>
 <translation id="5452270690849572955">找不到此 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
+<translation id="5456428544444655325">永不顯示</translation>
 <translation id="5456839782162429664">每次透過自動填入功能付款時都要手動驗證</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資料}}</translation>
@@ -2445,6 +2447,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">獸醫</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
+<translation id="5715918316982363436">此裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5717509257172454543">溜冰</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5720895412771013401">桌面電腦</translation>
@@ -2955,6 +2958,7 @@
 <translation id="6709133671862442373">新聞</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
+<translation id="6710648923880003133">建議安全性強的密碼</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或地址不正確。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>
@@ -3408,6 +3412,7 @@
 <translation id="7564667064360547717">恤衫和上衣</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證或許曾以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="7568616151991626879">Google Chrome 正在嘗試在「<ph name="APP_NAME" />」中填入密碼。</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{無}=1{此裝置上的 1 個分頁}other{此裝置上的 # 個分頁}}</translation>
 <translation id="7569490014721427265">高爾夫球</translation>
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡資料嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>

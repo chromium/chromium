@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
 <translation id="1466383950273130737">Velja tungumál Chrome</translation>
 <translation id="1477626028522505441">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna vandamála á netþjóni.</translation>
+<translation id="1480287803138246127">Ekki er víst að hluti af ferlinum þínum birtist hér. Til að sjá allan Chrome-ferilinn skaltu opna Chrome-feril í heild sinni.</translation>
 <translation id="148482509007564431">Vistun bókamerkja</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1493287004536771723">Þú fylgist með <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3226612997184048185">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chrome og fengið tilkynningar þegar verð lækka</translation>
 <translation id="3227557059438308877">Google Chrome sem öryggislykill</translation>
 <translation id="3232293466644486101">Eyða vefskoðunargögnum…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> flipum var eytt</translation>
 <translation id="3232754137068452469">Vefforrit</translation>
 <translation id="3236059992281584593">Ein mín. eftir</translation>
 <translation id="3237087289225714896">Hefðbundin forhleðsla:</translation>
@@ -862,6 +864,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5515439363601853141">Opnaðu til að skoða aðgangsorðið þitt</translation>
 <translation id="5517095782334947753">Þú ert með bókamerki, feril, aðgangsorð og aðrar stillingar frá <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Lokað á framsendingu.</translation>
+<translation id="5526281268548144413">Ekki hægt að loka í mörgum gluggum</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Fyrir # mín.}one{Fyrir # mín.}other{Fyrir # mín.}}</translation>
 <translation id="5548606607480005320">Öryggisathugun</translation>
 <translation id="5554520618550346933">Þegar þú notar aðgangsorð varar Chrome þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
@@ -1005,6 +1008,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að birta þér auglýsingar sem ekki byggja á öðrum vefsvæðum sem þú hefur heimsótt. Mörg vefsvæði munu áfram safna vefnotkunargögnunum þínum og nota þau, til dæmis til að auka öryggi, birta efni, auglýsingar og tillögur og útbúa talnagögn um notkun.</translation>
 <translation id="6233974827872475843">Vistaðu aðgangsorð í þessu tæki á Google-reikningnum þínum með því að kveikja á samstillingu</translation>
 <translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
+<translation id="6251449557817521191">Skoða Chrome-ferilinn hér</translation>
 <translation id="6255794742848779505">Við erum að breyta því hvernig aðgangsorð eru vistuð í þessu tæki</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6277522088822131679">Vandamál kom upp við að prenta síðuna. Reyndu aftur.</translation>
@@ -1336,6 +1340,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7759809451544302770">Valfrjálst</translation>
 <translation id="7762668264895820836">SD-kort <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Bæta við heimilisfangi</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> flipa var eytt</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7772375229873196092">Loka <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}}</translation>
@@ -1389,6 +1394,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7975379999046275268">Forskoða síðu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varar þig við ef þú notar aðgangsorð í hættu vegna öryggisbrots.</translation>
 <translation id="7986497153528221272">Til að sjá aðgangsorð þarftu fyrst að stilla á skjálás í tækinu</translation>
+<translation id="7988531104457683216">Ekki er víst að hluti af ferlinum þínum birtist hér. Til að sjá allan Chrome-ferilinn skaltu opna Chrome-feril í heild sinni. Google-reikningurinn þinn kann auk þess að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Þú sérð efni þegar það verður tiltækt</translation>
 <translation id="799576009106109668">Þú getur vafrað hraðar því að efni er hlaðið forvirkt í samræmi við vefsíðuna sem þú ert að skoða í hvert skipti</translation>
 <translation id="8004582292198964060">Vafri</translation>

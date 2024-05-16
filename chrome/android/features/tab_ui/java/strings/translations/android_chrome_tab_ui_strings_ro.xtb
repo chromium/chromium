@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă arhivată}few{Ai <ph name="TABS_COUNT_MANY" /> file arhivate}other{Ai <ph name="TABS_COUNT_MANY" /> de file arhivate}}</translation>
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>
+<translation id="3322827343001922122">Deschide meniul de acțiuni pentru grupul de file <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="3547352561153509682">Astfel, grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Az Új lap oldal kártyái</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> eltávolítása</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 letiltott webhely}other{# letiltott webhely}}</translation>
 <translation id="228293613124499805">A legtöbb felkeresett webhely valószínűleg ment adatokat az eszközére, gyakran azért, hogy a beállításai vagy a webhellyel megosztott adatai mentésével javítsa a felhasználói élményt. Javasoljuk, hogy tartsa bekapcsolva ezt a beállítást.</translation>
 <translation id="2289270750774289114">Kérdezzen rá, ha valamelyik webhely szeretné felfedezni a közeli Bluetooth-eszközöket (ajánlott)</translation>
 <translation id="2315043854645842844">Az ügyféloldali tanúsítványválasztást az operációs rendszer nem támogatja.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek Bluetooth-eszközök keresésére. Ha ki van kapcsolva, a webhelyek nem tudnak Bluetooth-eszközöket keresni.</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 engedélyezett webhely}other{# engedélyezett webhely}}</translation>
 <translation id="8751914237388039244">Válasszon képet</translation>
 <translation id="8800034312320686233">Nem működik a webhely?</translation>
 <translation id="8801436777607969138">JavaScript letiltása adott webhelynél.</translation>

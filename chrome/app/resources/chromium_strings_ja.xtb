@@ -145,6 +145,7 @@
 <translation id="3474745554856756813">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="3497319089134299931">Chromium プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>
 <translation id="3509308970982693815">すべての Chromium ウィンドウを閉じてからもう一度お試しください。</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。</translation>
 <translation id="3533435340678213462">ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chromium に認識してほしくない興味 / 関心は削除できます。</translation>
 <translation id="3567254597502212821">閲覧履歴（このデバイスで Chromium を使用してアクセスしたサイトの記録）。</translation>
 <translation id="3639635944603682591">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
@@ -376,7 +377,6 @@
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
-<translation id="7198365860059291213">没入型セッションを開始するには、Chromium でシーン認識とハンド トラッキングの権限が必要です</translation>
 <translation id="7213407614656404070">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chromium で開くよう設定できます</translation>
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
 <translation id="7246575524853130370">Chromium が推定したお客様の興味 / 関心</translation>
@@ -433,6 +433,7 @@
 <translation id="81770708095080097">このファイルは危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="8232193495299001329">Chromium では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
+<translation id="8254601181414348851">新しいプロフィールで Chromium にログインしますか？</translation>
 <translation id="8266560134891435528">ログインしていないため、Chromium でパスワードを確認できません</translation>
 <translation id="8286943863733751221">安全でないサイトやダウンロードが見つかると <ph name="BEGIN_LINK" />Chromium が警告<ph name="END_LINK" />します</translation>
 <translation id="8290862415967981663">このファイルは危険なファイルの可能性があるため、Chromium でブロックしました。</translation>
@@ -454,7 +455,6 @@
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">Google アカウントでログインすると、Chromium がパスワードを確認できます。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
-<translation id="858822505990366713">Chromium をカスタマイズ</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chromium に保存できます。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
 <translation id="8619360774459241877">Chromium を起動しています...</translation>
 <translation id="8621669128220841554">原因不明のエラーによりインストールに失敗しました。Chromium をもう一度ダウンロードしてください。</translation>
@@ -473,7 +473,6 @@
 <translation id="8907580949721785412">Chromium でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="8931379085695076764">Chromium は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>
 <translation id="8941642502866065432">Chromium を更新できません</translation>
-<translation id="895999862145835951">Chromium をカスタマイズ</translation>
 <translation id="897581876605952338">Chromium Enterprise ロゴ</translation>
 <translation id="8986207147630327271">このブラウザに仕事用プロファイルを追加し、管理者がこの仕事用プロファイルのみを管理できるようにします。</translation>
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>

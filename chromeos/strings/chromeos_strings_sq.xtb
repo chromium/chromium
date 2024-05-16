@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
 <translation id="5089810972385038852">Shteti</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Hiq kabllon USB të "<ph name="DEVICE_NAME" />" dhe më pas fute sërish për të vazhduar procesin e përditësimit</translation>
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Të ngjashme:</translation>

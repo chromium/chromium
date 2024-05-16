@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Uusi välilehti ‐sivun kortit</translation>
 <translation id="2241634353105152135">Vain kerran</translation>
 <translation id="2253414712144136228">Poista <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
 <translation id="228293613124499805">Useimmat avaamasi sivustot tallentavat todennäköisesti dataa laitteellesi. Tarkoituksena on yleensä parantaa kokemustasi tallentamalla sivustolle jakamiasi asetuksia tai tietoja. Suosittelemme pitämään asetuksen päällä.</translation>
 <translation id="2289270750774289114">Kysy aina, kun sivusto pyytää lupaa löytää lähellä olevat Bluetooth-laitteet (suositus)</translation>
 <translation id="2315043854645842844">Käyttöjärjestelmä ei tue palvelimen varmennevalintaa.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Kun tämä on päällä, sivustot voivat pyytää lupaa etsiä Bluetooth-laitteita. Kun tämä on pois päältä, sivustot eivät voi etsiä Bluetooth-laitteita.</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8730621377337864115">Valmis</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 sivusto sallittu}other{# sivustoa sallittu}}</translation>
 <translation id="8751914237388039244">Valitse kuva</translation>
 <translation id="8800034312320686233">Eikö sivusto toimi?</translation>
 <translation id="8801436777607969138">Estä JavaScript tietyllä sivustolla.</translation>

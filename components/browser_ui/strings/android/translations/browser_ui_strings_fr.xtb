@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Cartes de la page "Nouvel onglet"</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
 <translation id="2253414712144136228">Supprimer <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site bloqué}one{# site bloqué}other{# sites bloqués}}</translation>
 <translation id="228293613124499805">La plupart des sites que vous consultez enregistrent probablement des données sur votre appareil, comme vos préférences ou les informations que vous partagez avec le site, généralement pour améliorer votre expérience. Nous vous recommandons de laisser ce paramètre activé.</translation>
 <translation id="2289270750774289114">Me demander lorsqu'un site souhaite accéder aux appareils Bluetooth se trouvant à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection de certificat côté client n'est pas compatible avec le système d'exploitation.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Lorsque cette option est activée, les sites peuvent demander à rechercher des appareils Bluetooth. Lorsqu'elle est désactivée, les sites ne peuvent pas rechercher les appareils Bluetooth.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">OK</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8800034312320686233">Impossible d'accéder au site ?</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>

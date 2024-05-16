@@ -124,6 +124,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3155163173539279776">Lancarkan Semula Chromium</translation>
 <translation id="3179665906251668410">Buka Pautan dalam Tetingkap Inko&amp;gnito Chromium</translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baharu anda</translation>
+<translation id="318879170965183683">Anda boleh menggunakan kata laluan daripada Google Account anda dalam Chromium semasa anda log masuk</translation>
 <translation id="3190315855212034486">Alamak! Chromium mengalami ranap sistem. Lancarkan semula sekarang?</translation>
 <translation id="3224847870593914902">Untuk mengalih keluar Google Account anda daripada Chromium, log keluar dari Chromium dalam halaman Tetapan</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca atau menulis pada direktori datanya:
@@ -145,6 +146,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3474745554856756813">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> boleh digunakan untuk beralih antara profil Chromium</translation>
 <translation id="3509308970982693815">Sila tutup semua tetingkap Chromium dan cuba lagi.</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> sudah log masuk.  Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chromium.</translation>
 <translation id="3567254597502212821">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chromium pada peranti ini.</translation>
 <translation id="3639635944603682591">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
@@ -204,6 +206,8 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4501471624619070934">Pemasangan gagal kerana akses disekat di negara ini.</translation>
 <translation id="4510853178268397146">Sambungan ini belum menerbitkan amalan privasi, seperti cara sambungan ini mengumpulkan dan menggunakan data. Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
 <translation id="452711251841752011">Selamat datang ke Chromium; tetingkap penyemak imbas baharu dibuka</translation>
+<translation id="4531137820806573936">Chromium memerlukan kebenaran untuk memetakan persekitaran dan menjejaki peranti anda</translation>
+<translation id="4536805923587466102">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" /> dalam profil Chromium yang lain</translation>
 <translation id="4544142686420020088">Chromium tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Teruskan dalam profil Chromium baharu?</translation>
 <translation id="4567424176335768812">Anda telah log masuk sebagai <ph name="USER_EMAIL_ADDRESS" />. Sekarang anda boleh mengakses penanda halaman, sejarah dan tetapan anda yang lain pada semua peranti yang anda gunakan untuk log masuk.</translation>
@@ -377,7 +381,6 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="718435575166326686">Chromium memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="7196312274710523067">Tidak dapat melancarkan Chromium. Cuba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam.</translation>
-<translation id="7198365860059291213">Chromium memerlukan pemahaman latar dan kebenaran penjejakan tangan untuk memulakan sesi yang mengasyikkan</translation>
 <translation id="7213407614656404070">Gunakan Chromium pada bila-bila masa anda mengklik pautan dalam mesej, dokumen dan apl lain</translation>
 <translation id="7223968959479464213">Pengurus Tugas - Chromium</translation>
 <translation id="7246575524853130370">Minat anda seperti yang dianggarkan oleh Chromium</translation>
@@ -434,6 +437,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="81770708095080097">Fail ini berbahaya, maka Chromium telah menyekatnya.</translation>
 <translation id="8232193495299001329">Chromium tidak dapat mengesahkan tempat asal sambungan ini, maka tindakan ini mungkin tidak selamat. Alih keluar sambungan ini daripada Chromium supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi.</translation>
 <translation id="8248265253516264921">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
+<translation id="8254601181414348851">Log masuk ke Chromium dalam profil baharu?</translation>
 <translation id="8266560134891435528">Chromium tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium memberi anda amaran<ph name="END_LINK" /> tentang laman dan muat turun tidak selamat</translation>
 <translation id="8290862415967981663">Fail ini mungkin berbahaya, maka Chromium telah menyekatnya.</translation>
@@ -455,7 +459,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
-<translation id="858822505990366713">Sesuaikan Chromium Anda</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
 <translation id="8619360774459241877">Melancarkan Chromium...</translation>
 <translation id="8621669128220841554">Pemasangan gagal disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Chromium.</translation>
@@ -474,7 +477,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8907580949721785412">Chromium cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="8931379085695076764">Chromium dapat menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda dari beberapa minggu yang lalu. Maklumat ini kekal pada peranti anda.</translation>
 <translation id="8941642502866065432">Tidak dapat mengemas kini Chromium</translation>
-<translation id="895999862145835951">Sesuaikan Chromium anda</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8986207147630327271">Anda menambahkan profil kerja pada penyemak imbas ini dan memberi pentadbir anda kawalan terhadap profil kerja sahaja.</translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>

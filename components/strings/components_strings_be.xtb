@@ -615,6 +615,7 @@
 <translation id="2122214041802369259">Высокая цана</translation>
 <translation id="2122719317867821810">Гэта палітыка працуе належным чынам, але перавызначае канфліктуючае значэнне, зададзенае з іншай крыніцы.</translation>
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
+<translation id="2127090458081644412">Пароль захаваны на гэтай прыладзе</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку. Змяніць стандартную пошукавую сістэму можна ў любы час.</translation>
@@ -678,6 +679,7 @@
 <translation id="2227758700723188171">Гранты і стыпендыі на навучанне</translation>
 <translation id="2228057197024893428">Гэты адрас зараз захаваны ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Паўторная хуткая каманда "<ph name="SHORTCUT_NAME" />" ігнаруецца</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="2233745931693710080">Кампакт-дыск</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2239100178324503013">Адправіць</translation>
@@ -721,6 +723,7 @@
 <translation id="2317259163369394535">Для <ph name="DOMAIN" /> патрабуецца імя карыстальніка і пароль.</translation>
 <translation id="2318594867107319532">Апошняя метка часу палітыкі:</translation>
 <translation id="2320564945062300737">Сродкі для догляду твару</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 акна}one{# акна}few{# вокнаў}many{# вокнаў}other{# акна}}</translation>
 <translation id="2328651992442742497">Дазволена (стандартна)</translation>
 <translation id="2328955282645810595">Будаўнічы і электраінструмент</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, дзейнічае да <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1010,6 @@
 <translation id="2928905813689894207">Адрас для выстаўлення рахункаў</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Абрэзка пасля кожнай копіі</translation>
-<translation id="2932085390869194046">Прапанаваць пароль...</translation>
 <translation id="2933624813161016821">Фольга для ціснення</translation>
 <translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Канверт 9 x 12 цаляў</translation>
@@ -2031,6 +2033,7 @@
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4901952598169637881">Паўсядзённы абутак</translation>
 <translation id="4905659621780993806">Адміністратар аўтаматычна перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" />. Захавайце перад перазапускам прылады ўсё, што вы адкрылі.</translation>
+<translation id="4913784027728226227">Каб захаваць і выкарыстоўваць гэты пароль на ўсіх сваіх прыладах, пацвердзіце сваю асобу</translation>
 <translation id="4913987521957242411">Дзірка зверху злева</translation>
 <translation id="4916389289686916969">Тэлевізійныя рэаліці-шоу</translation>
 <translation id="4917064667437236721">Цыліндр фарміравання відарыса</translation>
@@ -2314,6 +2317,7 @@
 <translation id="5470861586879999274">&amp;Адрабіць змену</translation>
 <translation id="547963486735802022">Паспрабуйце перанесці файлы яшчэ раз</translation>
 <translation id="5481076368049295676">Праз гэта змесціва на вашу прыладу можа ўсталявацца небяспечнае праграмнае забеспячэнне, якое будзе красці або выдаляць інфармацыю. <ph name="BEGIN_LINK" />Усе роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Прапаноўваць дапамогу з напісаннем</translation>
 <translation id="54817484435770891">Дадайце сапраўдны адрас</translation>
 <translation id="5483838506518938965">Усё гатова</translation>
 <translation id="5485973315555778056">Машына воблака</translation>
@@ -2443,6 +2447,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветэрынары</translation>
 <translation id="5715150588940290235">Выдаліць захаваныя коды бяспекі?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> з <ph name="WINDOW_COUNT" /> на гэтай прыладзе</translation>
 <translation id="5717509257172454543">Катанне на каньках</translation>
 <translation id="5720705177508910913">Бягучы карыстальнік</translation>
 <translation id="5720895412771013401">Настольныя камп'ютары</translation>
@@ -2953,6 +2958,7 @@
 <translation id="6709133671862442373">Навіны</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Увядзіце пошукавы запыт&gt;</translation>
+<translation id="6710648923880003133">Прапанаваць надзейны пароль</translation>
 <translation id="671076103358959139">Маркер рэгістрацыі:</translation>
 <translation id="6711464428925977395">Нешта не так з проксі-серверам або адрас няправільны.</translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
@@ -3407,6 +3413,7 @@
 <translation id="7564667064360547717">Адзенне для верхняй часткі цела</translation>
 <translation id="7567204685887185387">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: магчыма, яго сертыфікат бяспекі быў выдадзены падманным шляхам. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="7568616151991626879">Google Chrome спрабуе ўвесці ваш пароль на сайце <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Укладак няма}=1{1 укладка на гэтай прыладзе}one{# укладка на гэтай прыладзе}few{# укладкі на гэтай прыладзе}many{# укладак на гэтай прыладзе}other{# укладкі на гэтай прыладзе}}</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Выдаліць крэдытную карту з Chrome?</translation>
 <translation id="7569983096843329377">Чорны</translation>

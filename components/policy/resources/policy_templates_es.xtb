@@ -5398,6 +5398,15 @@ Si la política se inhabilita, el historial de navegación y el de descargas no 
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="5323271643727095577">No mostrar el cuadro de diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload. Mostrar el cuadro de diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload.</translation>
 <translation id="5324430722441910403">Configuración de búsquedas en el sitio</translation>
+<translation id="5326431956495937408">Si se habilita esta política, los usuarios podrán recibir contraseñas de miembros de la familia y enviarles las suyas (según el servicio para familias).
+Si se habilita esta política o no se define, aparecerá un botón en el Gestor de contraseñas con el que se podrá enviar una contraseña.
+Las contraseñas recibidas se almacenan en la cuenta del usuario y están disponibles en el Gestor de contraseñas.
+
+Si se inhabilita esta política, los usuarios no podrán enviar contraseñas a otros usuarios desde el Gestor de contraseñas ni recibir las de otros usuarios.
+
+La función no está disponible si la sincronización de contraseñas está desactivada (ya sea mediante la configuración del usuario o porque la política <ph name="SYNC_DISABLED" /> esté habilitada).
+
+Las cuentas gestionadas no pueden unirse ni crear grupos familiares, por lo que no pueden compartir contraseñas.</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
 <translation id="5329018127554115226">El modo Alta eficiencia se inhabilitará.</translation>
@@ -7125,13 +7134,6 @@ Los cambios de esta política solo se podrán aplicar si ARC no se está ejecuta
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="662991036483361836">Impedir que los usuarios habiliten Compartir con Nearby</translation>
-<translation id="6634974629075330608">Esta política inhabilita temporalmente los cambios en la forma en que Chrome gestiona las cookies configuradas mediante JavaScript que contienen determinados caracteres de control (NULL, retorno de carro y salto de línea).
-Anteriormente, la presencia de cualquiera de estos caracteres en una cadena de cookies provocaba que se truncara, pero aun así se definía.
-Ahora, la presencia de estos caracteres hará que se ignore toda la cadena de cookies.
-
-Si se le asigna el valor True a esta política (el valor predeterminado), se habilitará el nuevo comportamiento.
-
-Si se le asigna el valor False a esta política, se habilitará el comportamiento anterior.</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
 <translation id="6640355849038068978">Si se habilita esta opción, los usuarios podrán abrir la aplicación Eche (por ejemplo, haciendo clic en una notificación de la función Mi teléfono).
 
@@ -7891,6 +7893,13 @@ Nota: Si vas a usar esta política para resolver la zona horaria automáticament
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Inhabilitar el acceso root a las máquinas virtuales de Linux</translation>
 <translation id="7194407337890404814">Nombre del proveedor de búsquedas predeterminadas</translation>
+<translation id="7196336906814426783">Esta política establece una serie de intervalos semanales para programar la suspensión automática. Cuando comience un intervalo, el dispositivo <ph name="PRODUCT_OS_NAME" /> pasará al modo Suspensión. Cuando finalice el intervalo, el dispositivo se activará.
+
+No se admiten programaciones que incluyan intervalos que se solapen. Esta política no tendrá ningún efecto si contiene dos intervalos solapados.
+
+Los dispositivos <ph name="PRODUCT_OS_NAME" /> se basarán en la zona horaria del sistema para aplicar estos intervalos.
+
+Nota importante: Si las programaciones configuradas mediante esta política entran en conflicto con otros ajustes de gestión de energía, como <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />, es posible que no se ejecuten según lo esperado. Para permitir que se apliquen los intervalos de suspensión programados, comprueba que estos ajustes estén configurados.</translation>
 <translation id="7198134478421755850">Extensión</translation>
 <translation id="7199304109870655950">Permite configurar las opciones de acceso remoto en el host de Escritorio Remoto de Chrome.
 

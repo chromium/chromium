@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
 <translation id="2241634353105152135">Une fois</translation>
 <translation id="2253414712144136228">Retirer l'élément suivant : <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site bloqué}one{# site bloqué}other{# sites bloqués}}</translation>
 <translation id="228293613124499805">La plupart des sites que vous visitez peuvent enregistrer des données sur votre appareil, souvent pour améliorer votre expérience en enregistrant vos préférences ou en fonction de vos interactions avec le site. Nous vous recommandons de conserver ce paramètre activé.</translation>
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
@@ -480,7 +479,6 @@
 <translation id="8721719390026067591">Lorsque cette option est activée, les sites peuvent demander à rechercher des appareils Bluetooth. Lorsqu'elle est désactivée, les sites ne peuvent pas rechercher d'appareils Bluetooth.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">Terminé</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site autorisé}one{# site autorisé}other{# sites autorisés}}</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8800034312320686233">Le site ne fonctionne pas?</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site en particulier.</translation>

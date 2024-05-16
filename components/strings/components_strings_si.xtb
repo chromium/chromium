@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">මිල නිරීක්ෂණය කිරීම අක්‍රියයි</translation>
 <translation id="127777513559587977">රූපවාහිනී කතා සංදර්ශන</translation>
 <translation id="1281476433249504884">අට්ටිය 1</translation>
+<translation id="1281536351321444151">මීළඟ වන මෙම IBAN එක ස්වයං පිරවීමට, මෙය ඔබේ Google ගිණුම තුළ සුරකින්න</translation>
 <translation id="1282358575813748144">බෝට්ටු සහ ජලයාත්‍රා</translation>
 <translation id="1283977499362032052">සුදුසුකම් පිළිබඳ සාරාංශය සහ පත්‍රධාර</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">බඳුන 8</translation>
 <translation id="1530707389502320859">ඔබ මේ දැන් පැමිණීමට උත්සාහ කළ වෙබ් අඩවිය ව්‍යාජ බව පෙනේ. ප්‍රහාරකයින් සමහර විට URL වෙත කුඩා, බැලීමට අපහසු වෙනස්කම් කිරීමෙන් වෙබ් අඩවි අනුකාර කරති.</translation>
 <translation id="1532118530259321453">මෙම පිටුව කියයි</translation>
+<translation id="1533966801397200693">ඔබ පුරනය වී ඇති පැතිකඩ අධීක්‍ෂිත පැතිකඩකි. ඔබේ පරිපාලකයාට දුරස්ථව ඔබේ පැතිකඩ සැකසිම් වෙත වෙනස්කම් කිරීමට, වාර්තා කිරීම හරහා බ්‍රවුසරය ගැන තොරතුරු විශ්ලේෂණ කිරීමට, සහ වෙනත් අත්‍යවශ්‍ය කාර්යභාර ඉටු කිරීමට හැකි ය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">පිටුව පරිවර්තනය කරන්න</translation>
 <translation id="1537807545287921620">මෙම PDF වෙත ප්‍රවේශ විය නොහැක. සන්දර්භ මෙනුව විවෘත කර "PDF වෙතින් පෙළ උපුටා ගැනීම" ක්‍රියාත්මක කරන්න</translation>
 <translation id="1539840569003678498">වාර්තාව යවන ලදි:</translation>
@@ -1009,7 +1011,6 @@
 <translation id="2928905813689894207">බිල්පත් ලිපිනය</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">සෑම පිටපතකටම පසුව කප්පාදු කරන්න</translation>
-<translation id="2932085390869194046">මුරපදය යෝජනා කරන්න...</translation>
 <translation id="2933624813161016821">ලෝපත් ගිල්ලවීම</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> සබැඳි විවෘත කරන්න</translation>
 <translation id="2941878205777356567">ලියුම් කවරය අඟල් 9 x 12</translation>
@@ -1187,6 +1188,7 @@
 <translation id="3272091146646336650">සුපිරි B</translation>
 <translation id="3272112314896217187">සංඛ්‍යා-<ph name="NUMBER_OF_DIGITS" /> සත්‍යාපන කේතය ඇතුළු කරන්න</translation>
 <translation id="3272643614306383237">1 MBට වඩා අඩු. සමහර අඩවි ඔබේ මීළඟ පිවිසීමෙහි වඩා සෙමින් පූරණය විය හැක.</translation>
+<translation id="3273738040255912340">ඔබේ පරිපාලකයාට දුරස්ථව ඔබේ පැතිකඩ සහ බ්‍රවුසරය වෙත වෙනස්කම් කිරීමට, වාර්තා කිරීම හරහා බ්‍රවුසරය ගැන තොරතුරු විශ්ලේෂණ කිරීමට, සහ වෙනත් අත්‍යවශ්‍ය කාර්යභාර ඉටු කිරීමට හැකි ය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනුව <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}one{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}other{පරිපාලක ප්‍රතිපත්තිය මෙම ගොනු <ph name="DESTINATION_NAME" /> තුළ විවෘත කිරීම නිර්දේශ නොකරයි}}</translation>
 <translation id="3282085321714087552">ඔබගේ සංවිධානය, <ph name="ENROLLMENT_DOMAIN" />, සැකසීම් හෝ ප්‍රතිපත්ති වැනි, යම් තොරතුරු පහත සඳහන් වෙබ් අඩවි වෙත යවා ඇත.</translation>
 <translation id="3286372614333682499">ප්‍රතිමූර්තිය</translation>
@@ -2959,6 +2961,7 @@
 <translation id="6709133671862442373">පුවත්</translation>
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6710594484020273272">&lt;සෙවීම් පදය ටයිප් කරන්න&gt;</translation>
+<translation id="6710648923880003133">ප්‍රබල මුරපදයක් යෝජනා කරන්න</translation>
 <translation id="671076103358959139">ලියාපදිංචි වීමේ ටෝකනය:</translation>
 <translation id="6711464428925977395">ප්‍රොක්සි සේවාදායකයෙහි යම් දෙයක් වැරදිය, නැතහොත් ලිපිනය වැරදිය.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට සහ කැමරා ස්ථානය හඹා යෑමට අවශ්‍යයි</translation>
@@ -3892,6 +3895,7 @@
 <translation id="8446884382197647889">තවත් දැනගන්න</translation>
 <translation id="8449155699563577224">අඟ 17 x 24</translation>
 <translation id="8449836157089738489">නව ටැබ සමූහයක සියල්ල විවෘත කරන්න</translation>
+<translation id="84561192812921051">ඔබේ පරිපාලකයාට දුරස්ථව ඔබේ පැතිකඩ සහ බ්‍රවුසරය වෙත වෙනස්කම් කිරීමට, වාර්තා කිරීම හරහා බ්‍රවුසරය ගැන තොරතුරු විශ්ලේෂණ කිරීමට, සහ වෙනත් අත්‍යවශ්‍ය කාර්යභාර ඉටු කිරීමට හැකි ය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">අනියත</translation>
 <translation id="8458202188076138974">ලිපිය අමතර</translation>
 <translation id="8460854335417802511">එය ක්‍රියාත්මක කරන්න</translation>

@@ -1196,6 +1196,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5587506661873751671">Notiek lejupielāde: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Velciet, lai atlasītu apgabalu, kura saturs jātver</translation>
 <translation id="5590609058453685222">Atgādinājums par izslēgtu mikrofonu ir ieslēgts. Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
 <translation id="5599242528220103262">Īsinājumtaustiņi ir izslēgti</translation>
 <translation id="5600837773213129531">Nospiediet Ctrl+Alt+Z, lai atspējotu balss komentārus.</translation>
@@ -1372,6 +1373,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> pašlaik izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Zems akumulatora uzlādes līmenis. Ieslēgts akumulatora enerģijas taupīšanas režīms.</translation>
+<translation id="6240603910551255087">Augšējā poga</translation>
 <translation id="6247728804802644171">Atvērt paziņojumus</translation>
 <translation id="6249795363855770621">Nevarēja atzīmēt kā pabeigtu. Mēģiniet vēlreiz, kad būsiet tiešsaistē.</translation>
 <translation id="6254629735336163724">Bloķēts horizontāli</translation>
@@ -2074,6 +2076,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="906458777597946297">Maksimizēt logu</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9070640332319875144">Asistenta iestatījumi</translation>
+<translation id="9071966355747967534">Funkcija “<ph name="FEATURE_NAME" />” nav pieejama</translation>
 <translation id="9072519059834302790">Atlikušais akumulatora darbības laiks: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074432941673450836">Izmantojiet lietotnes, lai veiktu visas nepieciešamās darbības savā ierīcē (<ph name="PRODUCT_NAME" />). Lietotnes varat atrast palaidējā. Varat arī nospiest palaidēja taustiņu, kas atrodas tastatūrā virs kreisā pārslēgšanas taustiņa.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

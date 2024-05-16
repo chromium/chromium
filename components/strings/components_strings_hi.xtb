@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">कीमत को ट्रैक करने की सुविधा बंद है</translation>
 <translation id="127777513559587977">टीवी टॉक शो</translation>
 <translation id="1281476433249504884">स्टैकर 1</translation>
+<translation id="1281536351321444151">इस IBAN की जानकारी को अपने Google खाते में सेव करें, ताकि अगली बार इसे ऑटोमैटिक भरा जा सके</translation>
 <translation id="1282358575813748144">नाव और वॉटरक्राफ़्ट</translation>
 <translation id="1283977499362032052">रेज़्यूमे और पोर्टफ़ोलियो</translation>
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">ट्रे 8</translation>
 <translation id="1530707389502320859">जिस साइट पर आपने जाने की कोशिश की, वह नकली लग रही है. हमलावर कभी-कभी यूआरएल में छोटे और नज़र न आने वाले बदलाव करके साइट की नकल कर लेते हैं.</translation>
 <translation id="1532118530259321453">इस पेज का कहना है कि</translation>
+<translation id="1533966801397200693">आपने, मैनेज की जा रही प्रोफ़ाइल में साइन इन किया है. प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल की सेटिंग में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">पेज का अनुवाद करें</translation>
 <translation id="1537807545287921620">इस PDF को ऐक्सेस नहीं किया जा सकता. संदर्भ मेन्यू खोलें और "PDF फ़ाइल से टेक्स्ट निकालें" को चालू करें</translation>
 <translation id="1539840569003678498">रिपोर्ट भेज दी गई:</translation>
@@ -680,6 +682,7 @@
 <translation id="2227758700723188171">शिक्षा के लिए मिलने वाले अनुदान और स्कॉलरशिप</translation>
 <translation id="2228057197024893428">फ़िलहाल, यह पता Chrome में सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="ACCOUNT" /> में सेव करें.</translation>
 <translation id="2229456043301340598">अनदेखा किया गया डुप्लीकेट शॉर्टकट: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="2233745931693710080">कॉम्पैक्ट डिस्क</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
@@ -723,6 +726,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड आवश्यक है.</translation>
 <translation id="2318594867107319532">पिछली बार नीति को रीफ़्रेश करने का टाइमस्टैंप:</translation>
 <translation id="2320564945062300737">चेहरे की देखभाल के प्रॉडक्ट</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 विंडो}one{# विंडो}other{# विंडो}}</translation>
 <translation id="2328651992442742497">अनुमति है (डिफ़ॉल्ट रूप से)</translation>
 <translation id="2328955282645810595">निर्माण और पावर टूल</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
@@ -1008,7 +1012,6 @@
 <translation id="2928905813689894207">बिलिंग पता</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
-<translation id="2932085390869194046">पासवर्ड सुझाएं...</translation>
 <translation id="2933624813161016821">एंबॉसिंग फ़ॉयल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="2941878205777356567">9 x 12 इंच का लिफ़ाफ़ा</translation>
@@ -1185,6 +1188,7 @@
 <translation id="3272091146646336650">सुपर बी</translation>
 <translation id="3272112314896217187">पुष्टि करने के लिए <ph name="NUMBER_OF_DIGITS" /> अंकों वाला कोड डालें</translation>
 <translation id="3272643614306383237">1 एमबी से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
+<translation id="3273738040255912340">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chromium से बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> में खोलने का सुझाव नहीं देती}}</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -2306,6 +2310,7 @@
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
+<translation id="5456428544444655325">कभी न दिखाएं</translation>
 <translation id="5456839782162429664">ऑटोमैटिक भरने की सुविधा का इस्तेमाल करके पेमेंट करने पर, हर बार मैन्युअल तरीके से पुष्टि करें</translation>
 <translation id="5457113250005438886">अमान्य</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}one{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}other{<ph name="CONTACT_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अन्य}}</translation>
@@ -2446,6 +2451,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">पशु चिकित्सक</translation>
 <translation id="5715150588940290235">क्या आपको सेव किए गए सुरक्षा कोड मिटाने हैं?</translation>
+<translation id="5715918316982363436">इस डिवाइस पर मौजूद, <ph name="WINDOW_COUNT" /> से <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">आइस स्केटिंग</translation>
 <translation id="5720705177508910913">मौजूदा उपयोगकर्ता</translation>
 <translation id="5720895412771013401">डेस्कटॉप कंप्यूटर</translation>
@@ -2956,6 +2962,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="6710594484020273272">&lt;खोज शब्द लिखें&gt;</translation>
+<translation id="6710648923880003133">मज़बूत पासवर्ड का सुझाव पाएं</translation>
 <translation id="671076103358959139">नाम दर्ज करने का टोकन:</translation>
 <translation id="6711464428925977395">प्रॉक्सी सर्वर के साथ कुछ गलत है या पता गलत है.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
@@ -3409,6 +3416,7 @@
 <translation id="7564667064360547717">शर्ट और टॉप</translation>
 <translation id="7567204685887185387">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; हो सकता है इसका सुरक्षा प्रमाणपत्र धोखे से जारी किया गया हो. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="7568616151991626879">Google Chrome, <ph name="APP_NAME" /> पर आपका पासवर्ड भरने की कोशिश कर रहा है.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{एक भी टैब नहीं}=1{इस डिवाइस पर 1 टैब}one{इस डिवाइस पर # टैब}other{इस डिवाइस पर # टैब}}</translation>
 <translation id="7569490014721427265">गोल्फ़</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7569983096843329377">काला</translation>
@@ -3888,6 +3896,7 @@
 <translation id="8446884382197647889">ज़्यादा जानें</translation>
 <translation id="8449155699563577224">17 x 24 इंच</translation>
 <translation id="8449836157089738489">सभी यूआरएल नए टैब ग्रुप में खोलें</translation>
+<translation id="84561192812921051">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8458202188076138974">लेटर एक्स्ट्रा</translation>
 <translation id="8460854335417802511">इसे चालू करें</translation>

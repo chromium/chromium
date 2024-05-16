@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kaarten op de pagina Nieuw tabblad</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> verwijderen</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 site geblokkeerd}other{# sites geblokkeerd}}</translation>
 <translation id="228293613124499805">De meeste sites die je bezoekt, slaan waarschijnlijk gegevens op je apparaat op. Dit gebeurt vaak om de functionaliteit te verbeteren door je voorkeuren of met de site gedeelde informatie op te slaan. We raden je aan deze instelling aan te laten.</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">De toegang van deze site tot je apparaat beheren</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6042308850641462728">Meer</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Je laatste tabblad</translation>
 <translation id="6064125863973209585">Voltooide downloads</translation>
 <translation id="6071501408666570960">Je wordt misschien uitgelogd bij deze site</translation>
 <translation id="6120483543004435978">Als deze optie aanstaat, kunnen sites vragen om ze mogen weten wanneer je je apparaat actief gebruikt. Staat de optie uit, dan mogen sites niet weten wanneer je je apparaat actief gebruikt.</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7990211076305263060">Als deze optie aanstaat, kunnen sites om toegang tot je microfoon vragen. Staat de optie uit, dan kunnen sites je microfoon niet gebruiken.</translation>
 <translation id="8007176423574883786">Uitgezet voor dit apparaat</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Van <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">Als deze optie aanstaat, kunnen sites vragen of ze naar bluetooth-apparaten mogen zoeken. Staat de optie uit, dan kunnen sites niet zoeken naar bluetooth-apparaten.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8730621377337864115">Klaar</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 site toegestaan}other{# sites toegestaan}}</translation>
 <translation id="8751914237388039244">Een afbeelding selecteren</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript voor een specifieke site.</translation>

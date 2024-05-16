@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">محصولات پیگیری‌شده را در «نشانک‌ها» سازمان‌دهی کنید</translation>
 <translation id="1466383950273130737">‏انتخاب زبان Chrome</translation>
 <translation id="1477626028522505441">به‌دلیل مشکلاتی در سرور، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
+<translation id="1480287803138246127">‏ممکن است بخشی از سابقه شما اینجا نمایش داده نشود. برای دیدن کل سابقه Chrome، آن را به‌صورت کامل باز کنید.</translation>
 <translation id="148482509007564431">جریان ذخیره نشانک</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chrome پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="3227557059438308877">‏Google Chrome به‌عنوان «کلید ایمنی»</translation>
 <translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
+<translation id="3232459301230493791">‫<ph name="TAB_COUNT" /> برگه حذف شد</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
 <translation id="3237087289225714896">پیش‌بارگذاری استاندارد:</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="5517095782334947753">نشانک، سابقه، گذرواژه و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>
 <translation id="5524843473235508879">هدایت کردن مسدود شد.</translation>
+<translation id="5526281268548144413">بستن در چند پنجره امکان‌پذیر نیست</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{‫# دقیقه پیش}one{‫# دقیقه پیش}other{‫# دقیقه پیش}}</translation>
 <translation id="5548606607480005320">بررسی ایمنی</translation>
 <translation id="5554520618550346933">‏وقتی از گذرواژه‌ای استفاده کنید، Chrome به شما هشدار می‌دهد آیا این گذرواژه در فضای آنلاین منتشر شده است یا نه. هنگام انجام این کار، نام‌های کاربری و گذرواژه‌های شما رمزگذاری می‌شود تا اشخاص دیگر، ازجمله Google نتوانند آن‌ها را بخوانند.</translation>
@@ -1005,6 +1008,7 @@
 مثلاً ممکن است برخی از وب‌سایت‌ها با نمایش آگهی‌هایی که براساس وب‌سایت‌های نیستند که بازدید کرده‌اید به این درخواست پاسخ دهند. بسیاری از وب‌سایت‌ها همچنان داده‌های محصول مرور شما را جمع‌آوری و استفاده می‌کنند — مثلاً برای بهبود امنیت، ارائه محتوا، آگهی‌ها و توصیه‌ها و برای ایجاد آمارهای گزارش‌دهی.</translation>
 <translation id="6233974827872475843">‏با روشن کردن همگام‌سازی، گذرواژه‌های موجود در این دستگاه را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
+<translation id="6251449557817521191">‏سابقه Chrome را اینجا مشاهده کنید</translation>
 <translation id="6255794742848779505">ما درحال تغییر نحوه ذخیره کردن گذرواژه‌ها در این دستگاه هستیم</translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6277522088822131679">در چاپ صفحه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">افزودن آدرس</translation>
+<translation id="776533689993750361">‫<ph name="TAB_COUNT" /> برگه حذف شد</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772375229873196092">بستن <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}one{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش پرداخت دیگر}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر از گذرواژه‌ای استفاده کنید که در سرقت اطلاعات شبکه لو رفته باشد، به شما هشدار می‌دهد.</translation>
 <translation id="7986497153528221272">برای مشاهده گذرواژه‌ها، ابتدا در دستگاهتان قفل صفحه تنظیم کنید</translation>
+<translation id="7988531104457683216">‏ممکن است بخشی از سابقه شما اینجا نمایش داده نشود. برای دیدن کل سابقه Chrome، آن را به‌صورت کامل باز کنید. به‌علاوه، ممکن است «حساب Google» شما شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="7995059495660416932">وقتی محتوا دردسترس قرار گیرد آن را خواهید دید</translation>
 <translation id="799576009106109668">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="8004582292198964060">مرورگر</translation>

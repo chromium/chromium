@@ -679,6 +679,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2227758700723188171">Studijoms skirtos pašalpos ir stipendijos</translation>
 <translation id="2228057197024893428">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Nepaisomas neunikalus spartusis klavišas: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="2233745931693710080">Kompaktinis diskas</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2239100178324503013">Siųsti dabar</translation>
@@ -722,6 +723,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2317259163369394535"><ph name="DOMAIN" /> būtina įvesti naudotojo vardą ir slaptažodį.</translation>
 <translation id="2318594867107319532">Paskutinė politikos laiko žymė:</translation>
 <translation id="2320564945062300737">Veido priežiūros produktai</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{vieno lango}one{# lango}few{# langų}many{# lango}other{# langų}}</translation>
 <translation id="2328651992442742497">Leidžiama (numatytasis nustatymas)</translation>
 <translation id="2328955282645810595">Statyba ir elektriniai įrankiai</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, baigia galioti <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2928905813689894207">Atsiskaitymo adresas</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Apkarpymas po kiekvienos kopijos</translation>
-<translation id="2932085390869194046">Siūlyti slaptažodį...</translation>
 <translation id="2933624813161016821">Įspausta folija</translation>
 <translation id="2938225289965773019">Atidaryti „<ph name="PROTOCOL" />“ nuorodas</translation>
 <translation id="2941878205777356567">9 x 12 col. vokas</translation>
@@ -2307,6 +2308,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5447765697759493033">Ši svetainė nebus verčiama</translation>
 <translation id="5452270690849572955">Nepavyksta rasti šio <ph name="HOST_NAME" /> puslapio</translation>
 <translation id="5455374756549232013">Bloga politikos laiko žymė</translation>
+<translation id="5456428544444655325">Niekada nerodyti</translation>
 <translation id="5456839782162429664">Neautomatiškai patvirtinti kiekvieną kartą, kai mokama naudojant automatinį pildymą</translation>
 <translation id="5457113250005438886">Netinkama</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2447,6 +2449,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarai</translation>
 <translation id="5715150588940290235">Ištrinti išsaugotus saugos kodus?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> iš <ph name="WINDOW_COUNT" /> šiame įrenginyje</translation>
 <translation id="5717509257172454543">Čiuožimas</translation>
 <translation id="5720705177508910913">Dabartinis naudotojas</translation>
 <translation id="5720895412771013401">Staliniai kompiuteriai</translation>
@@ -2957,6 +2960,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6709133671862442373">Naujienos</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6710594484020273272">&lt;Įveskite paieškos terminą&gt;</translation>
+<translation id="6710648923880003133">Siūlyti sudėtingą slaptažodį</translation>
 <translation id="671076103358959139">Registracijos prieigos raktas:</translation>
 <translation id="6711464428925977395">Kažkas negerai su tarpiniu serveriu arba adresas netinkamas.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> nori kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
@@ -3410,6 +3414,7 @@ Papildoma išsami informacija:
 <translation id="7564667064360547717">Marškiniai ir viršutinės dalies drabužiai</translation>
 <translation id="7567204685887185387">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti neteisėtai išduotas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="7568616151991626879">„Google Chrome“ bando užpildyti jūsų slaptažodį programoje „<ph name="APP_NAME" />“.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Nėra}=1{Vienas skirtukas šiame įrenginyje}one{# skirtukas šiame įrenginyje}few{# skirtukai šiame įrenginyje}many{# skirtuko šiame įrenginyje}other{# skirtukų šiame įrenginyje}}</translation>
 <translation id="7569490014721427265">Golfas</translation>
 <translation id="7569952961197462199">Pašalinti kredito kortelės informaciją iš „Chrome“?</translation>
 <translation id="7569983096843329377">Juoda</translation>

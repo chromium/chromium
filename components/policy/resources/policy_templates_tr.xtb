@@ -5476,6 +5476,15 @@ Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme g
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="5323271643727095577">beforeunload etkinliği için event.preventDefault() çağrıldığında iptal iletişim kutusunu gösterme beforeunload event.returnValue, beforeunload etkinliği için boş dize olduğunda iptal iletişim kutusunu göster.</translation>
 <translation id="5324430722441910403">Site arama ayarları</translation>
+<translation id="5326431956495937408">Politika, Etkin değerine ayarlanırsa kullanıcılar aile üyeleriyle (aile hizmetlerine göre) şifre alışverişinde bulunabilir.
+Politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında Şifre Yöneticisi'nde şifre gönderilmesine izin veren bir düğme bulunur.
+Alınan şifreler kullanıcının hesabında depolanır ve bu şifrelere, Şifre Yöneticisi'nden ulaşılabilir.
+
+Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Şifre Yöneticisi'nden diğer kullanıcılara şifre gönderemez ve diğer kullanıcılardan şifre alamaz.
+
+Şifre senkronizasyonu kapalıysa (kullanıcı ayarlarından veya <ph name="SYNC_DISABLED" /> politikasının Etkin değerine ayarlanmasından dolayı) bu özellik kullanılamaz.
+
+Yönetilen hesaplar, aile gruplarına katılamadığı veya aile grubu oluşturamadığı için şifre paylaşamaz.</translation>
 <translation id="532848608876725157">DNS-over-HTTPS'i güvenli olmayan geçişle etkinleştir</translation>
 <translation id="5328965694451556034">Girişi/çıkışı raporla</translation>
 <translation id="5329018127554115226">Yüksek Verimlilik Modu devre dışı bırakılır.</translation>
@@ -7233,13 +7242,6 @@ Politikada yapılacak değişiklikler yalnızca ARC çalışmıyorken (ör. Chro
 <translation id="66265932317331474">CPU bilgisi raporlama</translation>
 <translation id="6628120204569232711">Depolama durumunu bildir</translation>
 <translation id="662991036483361836">Kullanıcıların Yakındakilerle Paylaş ayarını etkinleştirmesini engelle</translation>
-<translation id="6634974629075330608">Bu politika, Chrome'un belirli kontrol karakterlerini (NULL, satır başı karakteri ve satır feed'i) içeren JavaScript aracılığıyla ayarlanmış çerezleri işleme şekliyle ilgili değişiklikler için geçici bir devre dışı bırakma seçeneği sunar.
-Önceden, bir çerez dizesinde bu karakterlerden herhangi birinin mevcut olması, dizenin kısaltılmasına ancak yine de ayarlanmasına neden oluyordu.
-Artık bu karakterlerin mevcut olması, tüm çerez dizesinin yoksayılmasına neden olur.
-
-Bu politika, Doğru değerine (varsayılan) ayarlandığında yeni davranış etkinleştirilir.
-
-Bu politika Yanlış değerine ayarlandığında eski davranış etkinleştirilir.</translation>
 <translation id="663685822663765995">Renkli yazdırma modunu kısıtla</translation>
 <translation id="6640355849038068978">Bu ayar etkinleştirilirse kullanıcılar örneğin bir Telefon Merkezi bildirimini tıklayarak Eche uygulamasını başlatabilir.
 
@@ -8009,6 +8011,13 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için lütfen https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakın.</translation>
 <translation id="719398790886719721">Linux sanal makinelerine kök erişimi devre dışı bırak</translation>
 <translation id="7194407337890404814">Varsayılan arama sağlayıcının adı</translation>
+<translation id="7196336906814426783">Bu politika, otomatik askıya alma işleminin programlanması için bir dizi haftalık aralık oluşturur. <ph name="PRODUCT_OS_NAME" /> cihaz, bir aralık başladığında askıya alma moduna girer ve aralık sona erdiğinde uyanır.
+
+Aralıkları çakışan programlar desteklenmez. İki tane çakışan aralık içerdiği takdirde bu politikanın hiçbir etkisi olmaz.
+
+<ph name="PRODUCT_OS_NAME" /> cihazlar, bu aralıkları uygulamak için sistem saat dilimini kullanır.
+
+Önemli Not: Bu politika tarafından ayarlanan programlar, <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> gibi diğer güç yönetimi ayarlarıyla çakışırsa beklendiği gibi gerçekleşmeyebilir. Bu ayarların, planlanan askıya alma aralıklarının uygulanmasını sağlayacak şekilde yapılandırıldığından emin olun.</translation>
 <translation id="7198134478421755850">Uzantı</translation>
 <translation id="7199304109870655950">Chrome Uzaktan Masaüstü ana makinesinde uzaktan erişim seçeneklerini yapılandır.
 

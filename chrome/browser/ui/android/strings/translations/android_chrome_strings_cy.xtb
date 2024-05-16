@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
 <translation id="1466383950273130737">Dewiswch iaith Chrome</translation>
 <translation id="1477626028522505441">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd problemau gweinydd.</translation>
+<translation id="1480287803138246127">Mae'n bosib na fydd rhywfaint o'ch hanes yn ymddangos yma. I weld eich holl hanes Chrome, agorwch hanes Chrome llawn.</translation>
 <translation id="148482509007564431">Llif cadw nodau tudalen</translation>
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
 <translation id="1493287004536771723">Rydych yn dilyn <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3226612997184048185">Os ydych hefyd yn cadw eich nodau tudalen yn eich Cyfrif Google, gallwch olrhain prisiau cynnyrch yn Chrome a chael gwybod pan fydd y pris yn gostwng</translation>
 <translation id="3227557059438308877">Google Chrome fel Allwedd Ddiogelwch</translation>
 <translation id="3232293466644486101">Dileu data pori…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> o dabiau wedi'u dileu</translation>
 <translation id="3232754137068452469">Ap Gwe</translation>
 <translation id="3236059992281584593">1 funud ar ôl</translation>
 <translation id="3237087289225714896">Rhaglwytho safonol:</translation>
@@ -766,6 +768,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4961107849584082341">Cyfieithu'r dudalen hon i unrhyw iaith</translation>
 <translation id="496607651705915226">I gadw a defnyddio cyfrineiriau newydd yn eich Cyfrif Google, diweddarwch wasanaethau Google Play</translation>
 <translation id="4971735654804503942">Amddiffyniad cynt a rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus. Mae'n eich rhybuddio am achosion o dor diogelwch mewn perthynas â chyfrineiriau. Mae angen anfon data pori at Google.</translation>
+<translation id="4971753085054504448">Rhowch gynnig ar chwilio am rywbeth arall neu agorwch hanes Chrome llawn i weld rhagor o ganlyniadau.</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
 <translation id="4987271110129728827">Methu â dod o hyd i'r dudalen honno. Gwiriwch eich sillafu neu rhowch gynnig ar chwiliad gwe.</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
@@ -861,6 +864,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5515439363601853141">Datglowch i weld eich cyfrinair</translation>
 <translation id="5517095782334947753">Mae gennych nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Ailgyfeirio wedi'i rwystro.</translation>
+<translation id="5526281268548144413">Nid oes modd ei gau ar draws sawl ffenestr</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
 <translation id="5548606607480005320">Gwiriad diogelwch</translation>
 <translation id="5554520618550346933">Pan fyddwch yn defnyddio cyfrinair, mae Chrome yn eich rhybuddio os yw wedi'i gyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
@@ -1004,6 +1008,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion i chi nad ydynt seiliedig ar wefannau eraill rydych wedi ymweld â nhw. Bydd llawer o wefannau yn dal i gasglu a defnyddio'ch data pori - er enghraifft i wella diogelwch, i ddarparu cynnwys, hysbysebion ac argymhellion, ac i gynhyrchu ystadegau adrodd.</translation>
 <translation id="6233974827872475843">Cadwch y cyfrineiriau ar y ddyfais hon yn eich Cyfrif Google trwy droi cysoni ymlaen</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
+<translation id="6251449557817521191">Gweld eich hanes Chrome yma</translation>
 <translation id="6255794742848779505">Rydym yn newid sut mae cyfrineiriau'n cael eu cadw ar y ddyfais hon</translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
 <translation id="6277522088822131679">Bu gwall wrth argraffu'r dudalen. Rhowch gynnig arall arni.</translation>
@@ -1051,6 +1056,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6459045781120991510">Arolygon</translation>
 <translation id="6461962085415701688">Methu ag agor y ffeil</translation>
 <translation id="6464977750820128603">Gallwch weld gwefannau rydych yn ymweld â nhw yn Chrome a gosod amseryddion ar eu cyfer.\n\nMae Google yn derbyn gwybodaeth am y gwefannau rydych yn gosod amseryddion ar eu cyfer ac am faint o amser rydych yn ymweld â nhw. Caiff y wybodaeth hon ei defnyddio i wella Digital Wellbeing.</translation>
+<translation id="6470181189905173055">Bydd y tudalennau rydych chi wedi'u hagor yn Chrome wrth ddefnyddio <ph name="APP_LABEL" /> yn ymddangos yma.</translation>
 <translation id="6473086018775716761">Agorodd rhestr o ddewisiadau rhannu ar uchder llawn.</translation>
 <translation id="6475951671322991020">Lawrlwytho'r fideo</translation>
 <translation id="6477928892249167417">Mae'n debyg bod y gwefannau hyn yn bwysig i chi:</translation>
@@ -1334,6 +1340,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7759809451544302770">Dewisol</translation>
 <translation id="7762668264895820836">Cerdyn SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> tab wedi'i ddileu</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772375229873196092">Cau <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}zero{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}two{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}}</translation>
@@ -1387,6 +1394,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
 <translation id="7986497153528221272">I weld y cyfrineiriau, gosodwch glo sgrîn ar eich dyfais yn gyntaf.</translation>
+<translation id="7988531104457683216">Mae'n bosib na fydd rhywfaint o'ch hanes yn ymddangos yma. I weld eich holl hanes Chrome, agorwch hanes Chrome llawn. Hefyd, mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Byddwn yn gweld cynnwys pan fydd ar gael</translation>
 <translation id="799576009106109668">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
 <translation id="8004582292198964060">Porwr</translation>

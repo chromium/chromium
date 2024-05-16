@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">ブックマークでトラッキングしている商品を整理できます</translation>
 <translation id="1466383950273130737">Chrome の言語を選択</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
+<translation id="1480287803138246127">一部の履歴はここに表示されない場合があります。すべての Chrome 履歴を表示するには、全体の Chrome 履歴を開いてください。</translation>
 <translation id="148482509007564431">ブックマーク保存フロー</translation>
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> をフォローしています</translation>
@@ -425,6 +426,7 @@
 <translation id="3226612997184048185">ブックマークを Google アカウントにも保存している場合は、Chrome で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="3227557059438308877">Google Chrome をセキュリティ キーとして使用</translation>
 <translation id="3232293466644486101">閲覧履歴データを削除...</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> 個のタブを削除しました</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3236059992281584593">残り 1 分</translation>
 <translation id="3237087289225714896">標準プリロード:</translation>
@@ -863,6 +865,7 @@
 <translation id="5515439363601853141">パスワードを表示するにはロックを解除してください</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> のブックマーク、履歴、パスワードとその他の設定を使用できます。</translation>
 <translation id="5524843473235508879">リダイレクトがブロックされました。</translation>
+<translation id="5526281268548144413">複数のウィンドウでタブを閉じることはできません</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分前}other{# 分前}}</translation>
 <translation id="5548606607480005320">安全チェック</translation>
 <translation id="5554520618550346933">ウェブ上に公開されたことがあるパスワードを使用すると警告が表示されます。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
@@ -1006,6 +1009,7 @@
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
 <translation id="6233974827872475843">同期をオンにして、このデバイスのパスワードを Google アカウントに保存します</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>
+<translation id="6251449557817521191">Chrome 履歴がここに表示されます</translation>
 <translation id="6255794742848779505">このデバイスのパスワードの保存方法が変更されます</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6277522088822131679">ページの印刷中に問題が発生しました。もう一度お試しください。</translation>
@@ -1337,6 +1341,7 @@
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">住所を追加</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> 個のタブを削除しました</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> を閉じる</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}}</translation>
@@ -1390,6 +1395,7 @@
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
+<translation id="7988531104457683216">一部の履歴はここに表示されない場合があります。すべての Chrome 履歴を表示するには、全体の Chrome 履歴を開いてください。また、お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> には、他の形式の閲覧履歴が記録されている場合があります。</translation>
 <translation id="7995059495660416932">利用可能になると、コンテンツが表示されます</translation>
 <translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
@@ -1539,7 +1545,7 @@
 <translation id="8683039184091909753">画像</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
-<translation id="8712637175834984815">OK</translation>
+<translation id="8712637175834984815">理解した</translation>
 <translation id="8723453889042591629">このページをすばやく翻訳します。このショートカットを編集するには、長押ししてください。</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>

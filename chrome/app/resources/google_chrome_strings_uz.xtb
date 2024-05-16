@@ -35,7 +35,6 @@
 <translation id="1516530951338665275">Google Chrome ulanishi uchun Bluetooth orqali kirish ruxsati 
  kerak. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
-<translation id="155168855724261758">Chrome brauzerini sozlang</translation>
 <translation id="1551749261806528781">Barcha qurilmalarda parollarni saqlash va ulardan foydalanish uchun Chrome hisobiga kiring Hisobga kirilgandan keyin bu parol Google hisobida saqlanadi.</translation>
 <translation id="1553358976309200471">Chrome‘ni yangilash</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chrome profili yaratiladi</translation>
@@ -392,7 +391,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6933858244219479645">ChromeOS tizimi</translation>
 <translation id="6938166777909186039">Google Chrome yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 8.1.</translation>
 <translation id="6943584222992551122">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
-<translation id="6944202724043006419">Immersiv seansni boshlash uchun Chromega sahnani tekshirish va qoʻlni kuzatish ruxsatlari kerak</translation>
 <translation id="6967962315388095737">Google Chrome Beta mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="6989339256997917931">Google Chrome yangilandi, lekin siz undan so‘nggi 30 kun davomida foydalanmadingiz.</translation>
 <translation id="7011190694940573312">Operatsion tizim versiyasi mos emasligi sababli oʻrnatilmadi.</translation>
@@ -477,7 +475,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8009904340233602924">Chrome brauzeridan hisobsiz foydalanish</translation>
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8019103195866286235">Bu kengaytma dasturchisi uning nashrini bekor qildi va u xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromedan olib tashlang.</translation>
-<translation id="8031641407207794385">Chrome brauzerini sozlang</translation>
 <translation id="80471789339884597">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin barcha brauzerlarni qayta ishga tushirishingiz kerak.</translation>
 <translation id="8064015041956107954">Yuqori oʻng burchakdagi Chrome menyusidan bukmark, oʻqish rejimi va boshqalarni ochishingiz mumkin</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>

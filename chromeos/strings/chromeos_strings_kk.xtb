@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Сервер хостының атауы</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> USB кабелін ажыратып, қайта жалғаңыз.</translation>
 <translation id="5099354524039520280">жоғары</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> пернесі жоқ пернелер тіркесімі кейбір қолданбаның пернелер тіркесіміне қайшы келуі мүмкін. Осы пернелер тіркесімін пайдалануды жалғастыру үшін қайта басыңыз немесе <ph name="KEY" /> пернесін пайдаланып, жаңа пернелер тіркесімін басыңыз. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Ұқсас:</translation>

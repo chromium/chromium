@@ -615,6 +615,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2122214041802369259">Cena je vysoká</translation>
 <translation id="2122719317867821810">Zásada funguje podle očekávání, ale jinde je nastavena konfliktní hodnota, kterou tato zásada přepisuje.</translation>
 <translation id="2126374524350484896">Původ souboru PDF:</translation>
+<translation id="2127090458081644412">Heslo bylo uloženo do tohoto zařízení</translation>
 <translation id="2130448033692577677">Zadané šablony nelze použít, protože není nastavená zásada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Vyhledávače jsou zobrazeny v náhodném pořadí. Výchozí nastavení můžete kdykoliv změnit.</translation>
@@ -678,6 +679,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2227758700723188171">Studijní granty a stipendia</translation>
 <translation id="2228057197024893428">Tato adresa je aktuálně uložena v Chromu. Pokud ji chcete používat ve službách Google, uložte ji do svého účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Ignorovaná nejedinečná zkratka: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="2233745931693710080">Kompaktní disk</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2239100178324503013">Odeslat</translation>
@@ -721,6 +723,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje zadání uživatelského jména a hesla.</translation>
 <translation id="2318594867107319532">Poslední časové razítko zásad:</translation>
 <translation id="2320564945062300737">Přípravky pro péči o obličej</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 okno}few{# okna}many{# okna}other{# oken}}</translation>
 <translation id="2328651992442742497">Povoleno (výchozí)</translation>
 <translation id="2328955282645810595">Stavební a elektrické nástroje</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, platnost vyprší <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1009,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2928905813689894207">Fakturační adresa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> další}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> dalších}}</translation>
 <translation id="2930577230479659665">Oříznout za každou kopií</translation>
-<translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2933624813161016821">Razicí fólie</translation>
 <translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Obálka 9 × 12 palců</translation>
@@ -2027,6 +2029,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4901778704868714008">Uložit...</translation>
 <translation id="4901952598169637881">Obuv pro volný čas</translation>
 <translation id="4905659621780993806">V <ph name="TIME" /> dne <ph name="DATE" /> administrátor zařízení automaticky restartuje. Před restartováním zařízení uložte všechny otevřené položky.</translation>
+<translation id="4913784027728226227">Pokud toto heslo chcete uložit a použít na všech svých zařízeních, ověřte svou totožnost</translation>
 <translation id="4913987521957242411">Děrování vlevo nahoře</translation>
 <translation id="4916389289686916969">Televizní reality show</translation>
 <translation id="4917064667437236721">Zobrazovací válec</translation>
@@ -2300,6 +2303,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5447765697759493033">Tento web nebude přeložen</translation>
 <translation id="5452270690849572955">Tuto stránku na webu <ph name="HOST_NAME" /> nelze najít</translation>
 <translation id="5455374756549232013">Chybné časové razítko zásady</translation>
+<translation id="5456428544444655325">Nikdy nezobrazovat</translation>
 <translation id="5456839782162429664">Při každé platbě pomocí automatického vyplňování požádat o ruční ověření</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
@@ -2310,6 +2314,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5470861586879999274">&amp;Opakovat úpravy</translation>
 <translation id="547963486735802022">Zkuste soubory přenést znovu</translation>
 <translation id="5481076368049295676">Tento obsah by vám do zařízení mohl zkusit nainstalovat nebezpečný software, který odcizuje nebo maže informace. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Nabízet pomoc při psaní</translation>
 <translation id="54817484435770891">Přidejte platnou adresu</translation>
 <translation id="5483838506518938965">Hotovo</translation>
 <translation id="5485973315555778056">Cloudové zařízení</translation>
@@ -2439,6 +2444,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterináři</translation>
 <translation id="5715150588940290235">Vymazat uložené bezpečnostní kódy?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> z <ph name="WINDOW_COUNT" /> na tomto zařízení</translation>
 <translation id="5717509257172454543">Lední bruslení</translation>
 <translation id="5720705177508910913">Aktuální uživatel</translation>
 <translation id="5720895412771013401">Stolní počítače</translation>
@@ -2948,6 +2954,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6709133671862442373">Zprávy</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6710594484020273272">&lt;Zadejte vyhledávací dotaz&gt;</translation>
+<translation id="6710648923880003133">Navrhnout silné heslo</translation>
 <translation id="671076103358959139">Registrační token:</translation>
 <translation id="6711464428925977395">Došlo k chybě proxy serveru nebo jste zadali nesprávnou adresu.</translation>
 <translation id="6716672519412350405">Web <ph name="URL" /> chce vytvořit 3D mapu vašeho okolí a sledovat polohu kamery</translation>
@@ -3400,6 +3407,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7564667064360547717">Trička a topy</translation>
 <translation id="7567204685887185387">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě vydán podvodně. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="7568616151991626879">Google Chrome se pokouší vyplnit vaše heslo na webu <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Žádné}=1{1 karta na tomto zařízení}few{# karty na tomto zařízení}many{# karty na tomto zařízení}other{# karet na tomto zařízení}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Odstranit platební kartu z Chromu?</translation>
 <translation id="7569983096843329377">Černá</translation>

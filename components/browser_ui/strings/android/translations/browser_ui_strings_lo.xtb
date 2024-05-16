@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">ບັດໜ້າແຖບໃໝ່</translation>
 <translation id="2241634353105152135">ຄັ້ງ​ດຽວ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ລຶບອອກ</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{ມີ 1 ເວັບໄຊທີ່ຖືກບລັອກ}other{ມີ # ເວັບໄຊທີ່ຖືກບລັອກ}}</translation>
 <translation id="228293613124499805">ເວັບໄຊສ່ວນຫຼາຍທີ່ທ່ານເຂົ້າຈະບັນທຶກຂໍ້ມູນໄປໃສ່ອຸປະກອນຂອງທ່ານ, ສ່ວນຫຼາຍແມ່ນເພື່ອປັບປຸງປະສົບການຂອງທ່ານໂດຍການບັນທຶກການຕັ້ງຄ່າ ຫຼື ຂໍ້ມູນທີ່ທ່ານແບ່ງປັນກັບເວັບໄຊ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້.</translation>
 <translation id="2289270750774289114">ຖາມເມື່ອເວັບໄຊຕ້ອງການກວດຫາອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງ (ແນະນຳ)</translation>
 <translation id="2315043854645842844">ການ​ເລືອກ​ໃບ​ຢັ້ງ​ຢືນເບື້ອງ​ລູກ​ຂ່າຍ​ບໍ່​ຖືກ​ຮອງ​ຮັບ​ໂດຍ​ລະ​ບົບ​ປະຕິບັດການ.</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">ຄວບຄຸມສິດເຂົ້າເຖິງອຸປະກອນຂອງທ່ານຂອງເວັບໄຊນີ້</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ແຖບສຸດທ້າຍຂອງທ່ານ</translation>
 <translation id="6064125863973209585">ການດາວໂຫຼດສຳເລັດແລ້ວ</translation>
 <translation id="6071501408666570960">ທ່ານອາດຈະອອກຈາກລະບົບເວັບໄຊນີ້ແລ້ວ</translation>
 <translation id="6120483543004435978">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍຮູ້ເວລາທີ່ທ່ານໃຊ້ອຸປະກອນຂອງທ່ານຢ່າງຈິງຈັງ. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດຮູ້ເວລາທີ່ທ່ານໃຊ້ອຸປະກອນຂອງທ່ານຢ່າງຈິງຈັງ.</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="7990211076305263060">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານໄດ້.</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> ຈາກ <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8042586301629853791">ຈັດຮຽງຕາມ:</translation>
 <translation id="8067883171444229417">ຫຼິ້ນວິດີໂອ</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍຊອກຫາອຸປະກອນ Bluetooth ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດຊອກຫາອຸປະກອນ Bluetooth ໄດ້.</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{ມີ 1 ເວັບໄຊທີ່ອະນຸຍາດ}other{ມີ # ເວັບໄຊທີ່ອະນຸຍາດ}}</translation>
 <translation id="8751914237388039244">ເລືອກຮູບ</translation>
 <translation id="8800034312320686233">ເວັບໄຊໃຊ້ບໍ່ໄດ້ບໍ?</translation>
 <translation id="8801436777607969138">ບລັອກ JavaScript ສຳລັບເວັບໄຊສະເພາະ.</translation>

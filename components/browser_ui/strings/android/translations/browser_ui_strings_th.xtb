@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">การ์ดหน้าแท็บใหม่</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2253414712144136228">นำ<ph name="NAME_OF_LIST_ITEM" />ออก</translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{มี 1 เว็บไซต์ที่ถูกบล็อก}other{มี # เว็บไซต์ที่ถูกบล็อก}}</translation>
 <translation id="228293613124499805">เว็บไซต์ส่วนใหญ่ที่คุณเข้าชมอาจบันทึกข้อมูลลงในอุปกรณ์บ่อยๆ เพื่อปรับปรุงประสบการณ์การใช้งานโดยการบันทึกค่ากำหนดหรือข้อมูลที่คุณแชร์กับเว็บไซต์ เราขอแนะนำให้เปิดการตั้งค่านี้ไว้</translation>
 <translation id="2289270750774289114">ถามเมื่อเว็บไซต์ต้องการค้นหาอุปกรณ์บลูทูธใกล้เคียง (แนะนำ)</translation>
 <translation id="2315043854645842844">ระบบปฏิบัติการไม่สนับสนุนการเลือกใบรับรองฝั่งลูกค้า</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">ควบคุมสิทธิ์ของเว็บไซต์นี้ในการเข้าถึงอุปกรณ์ของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> แท็บสุดท้าย</translation>
 <translation id="6064125863973209585">การดาวน์โหลดที่เสร็จสมบูรณ์แล้ว</translation>
 <translation id="6071501408666570960">ระบบอาจนำคุณออกจากระบบเว็บไซต์นี้</translation>
 <translation id="6120483543004435978">เมื่อเปิด เว็บไซต์จะขอทราบเวลาที่คุณใช้งานอุปกรณ์อยู่ได้ เมื่อปิด เว็บไซต์จะไม่ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> จาก <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">เมื่อเปิด เว็บไซต์จะขอค้นหาอุปกรณ์บลูทูธได้ เมื่อปิด เว็บไซต์จะค้นหาอุปกรณ์บลูทูธไม่ได้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{มี 1 เว็บไซต์ที่อนุญาต}other{มี # เว็บไซต์ที่อนุญาต}}</translation>
 <translation id="8751914237388039244">เลือกรูปภาพ</translation>
 <translation id="8800034312320686233">หากเว็บไซต์ไม่ทำงาน</translation>
 <translation id="8801436777607969138">บล็อก JavaScript ในเว็บไซต์ที่ต้องการ</translation>

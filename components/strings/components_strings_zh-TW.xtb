@@ -614,6 +614,7 @@
 <translation id="2122214041802369259">價格偏高</translation>
 <translation id="2122719317867821810">這項政策運作正常，但與其他地方設定的值有所衝突，並已覆寫該值。</translation>
 <translation id="2126374524350484896">PDF 轉換工具：</translation>
+<translation id="2127090458081644412">已將密碼儲存到這部裝置</translation>
 <translation id="2130448033692577677">你並未設定 DnsOverHttpsMode 政策，因此系統無法套用你指定的範本。</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
 <translation id="2132825047782982803">系統採隨機方式排列，你隨時可以變更預設設定。</translation>
@@ -677,6 +678,7 @@
 <translation id="2227758700723188171">研究津貼與獎學金</translation>
 <translation id="2228057197024893428">這個地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
 <translation id="2229456043301340598">已忽略的重複快捷字詞：<ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="2233745931693710080">光碟</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2239100178324503013">立即傳送</translation>
@@ -720,6 +722,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
 <translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2320564945062300737">臉部護理產品</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 個視窗}other{# 個視窗}}</translation>
 <translation id="2328651992442742497">允許 (預設)</translation>
 <translation id="2328955282645810595">營建與電動工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期日：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1005,7 +1008,6 @@
 <translation id="2928905813689894207">帳單地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="2930577230479659665">完成每次複印後裁切</translation>
-<translation id="2932085390869194046">建議密碼...</translation>
 <translation id="2933624813161016821">壓紋箔</translation>
 <translation id="2938225289965773019">開啟<ph name="PROTOCOL" />連結</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -2029,6 +2031,7 @@
 <translation id="4901778704868714008">儲存...</translation>
 <translation id="4901952598169637881">休閒鞋</translation>
 <translation id="4905659621780993806">管理員將自動於 <ph name="DATE" /><ph name="TIME" />重新啟動你的裝置。在裝置重新啟動前，請記得儲存開啟的項目。</translation>
+<translation id="4913784027728226227">如要儲存這組密碼並在所有裝置上使用，請驗證身分</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
 <translation id="4916389289686916969">電視真人實境秀</translation>
 <translation id="4917064667437236721">成像柱面</translation>
@@ -2302,6 +2305,7 @@
 <translation id="5447765697759493033">系統不會翻譯這個網站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 網頁</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
+<translation id="5456428544444655325">永不顯示</translation>
 <translation id="5456839782162429664">每次透過自動填入功能付款都要手動驗證身分</translation>
 <translation id="5457113250005438886">無效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}other{「<ph name="CONTACT_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 項聯絡資訊}}</translation>
@@ -2312,6 +2316,7 @@
 <translation id="5470861586879999274">重做編輯(&amp;R)</translation>
 <translation id="547963486735802022">再次嘗試傳輸檔案</translation>
 <translation id="5481076368049295676">這項內容可能會試圖在你的裝置上安裝危險軟體，藉此竊取或刪除你的資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">提供寫作輔助</translation>
 <translation id="54817484435770891">新增有效的地址</translation>
 <translation id="5483838506518938965">你已完成所有步驟</translation>
 <translation id="5485973315555778056">雲端機器</translation>
@@ -2441,6 +2446,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">獸醫</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
+<translation id="5715918316982363436">這部裝置上的 <ph name="TAB_COUNT" /> (<ph name="WINDOW_COUNT" />)</translation>
 <translation id="5717509257172454543">滑冰</translation>
 <translation id="5720705177508910913">目前使用者</translation>
 <translation id="5720895412771013401">桌上型電腦</translation>
@@ -2951,6 +2957,7 @@
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
+<translation id="6710648923880003133">建議高強度密碼</translation>
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或是位址不正確。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
@@ -3404,6 +3411,7 @@
 <translation id="7564667064360547717">襯衫與上衣</translation>
 <translation id="7567204685887185387">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證是以欺詐方式發行。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="7568616151991626879">Google Chrome 正嘗試在「<ph name="APP_NAME" />」中填入密碼。</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{無}=1{這部裝置上的 1 個分頁}other{這部裝置上的 # 個分頁}}</translation>
 <translation id="7569490014721427265">高爾夫</translation>
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>

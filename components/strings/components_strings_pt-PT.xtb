@@ -154,6 +154,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1273592791152866347">Acompanhamento de preços desativado</translation>
 <translation id="127777513559587977">Debates televisivos</translation>
 <translation id="1281476433249504884">Empilhador 1</translation>
+<translation id="1281536351321444151">Para preencher automaticamente este IBAN da próxima vez, guarde-o na sua Conta Google</translation>
 <translation id="1282358575813748144">Barcos e embarcações</translation>
 <translation id="1283977499362032052">Currículos e portefólios</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
@@ -293,6 +294,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1529789484829130889">Tabuleiro 8</translation>
 <translation id="1530707389502320859">O site que acabou de tentar visitar parece falso. Por vezes, os atacantes imitam sites ao efetuarem pequenas alterações difíceis de detetar no URL.</translation>
 <translation id="1532118530259321453">Esta página diz</translation>
+<translation id="1533966801397200693">O perfil no qual tem sessão iniciada é um perfil gerido. O administrador pode alterar as definições do perfil remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traduzir página</translation>
 <translation id="1537807545287921620">Este PDF está inacessível. Abra o menu de contexto e ative a opção "Extrair texto do PDF"</translation>
 <translation id="1539840569003678498">Denúncia enviada:</translation>
@@ -679,6 +681,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2227758700723188171">Subsídios e bolsas para estudantes</translation>
 <translation id="2228057197024893428">Esta morada está atualmente guardada no Chrome. Para a usar nos produtos da rede Google, guarde-a na sua Conta Google <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Atalho duplicado ignorado: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
@@ -722,6 +725,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2317259163369394535">O domínio <ph name="DOMAIN" /> requer um nome de utilizador e uma palavra-passe.</translation>
 <translation id="2318594867107319532">Última data/hora da política:</translation>
 <translation id="2320564945062300737">Produtos de cuidados do rosto</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 janela}other{# janelas}}</translation>
 <translation id="2328651992442742497">Permitido (predefinição)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira a <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2928905813689894207">Endereço de faturação</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Cortar no fim de cada cópia</translation>
-<translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2933624813161016821">Folha de alumínio</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope 9 x 12 pol.</translation>
@@ -1185,6 +1188,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Introduza o código de validação de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
+<translation id="3273738040255912340">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -2306,6 +2310,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5447765697759493033">Este site não será traduzido.</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política incorreto</translation>
+<translation id="5456428544444655325">Nunca mostrar</translation>
 <translation id="5456839782162429664">Validar manualmente sempre que pagar com o preenchimento automático</translation>
 <translation id="5457113250005438886">Inválido</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2446,6 +2451,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinários</translation>
 <translation id="5715150588940290235">Eliminar os códigos de segurança guardados?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5717509257172454543">Patinagem no gelo</translation>
 <translation id="5720705177508910913">Utilizador atual</translation>
 <translation id="5720895412771013401">Computadores desktop</translation>
@@ -2956,6 +2962,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6709133671862442373">Notícias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Introduzir termo de pesquisa&gt;</translation>
+<translation id="6710648923880003133">Sugerir palavra-passe forte</translation>
 <translation id="671076103358959139">Símbolo de inscrição:</translation>
 <translation id="6711464428925977395">Existe um problema com o servidor proxy ou o endereço está incorreto.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente à sua volta e monitorizar a posição da câmara.</translation>
@@ -3408,6 +3415,7 @@ Detalhes adicionais:
 <translation id="7564667064360547717">Camisas e tops</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ter sido emitido de forma fraudulenta. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="7568616151991626879">O Google Chrome está a tentar preencher a sua palavra-passe na app <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Nenhum}=1{1 separador neste dispositivo}other{# separadores neste dispositivo}}</translation>
 <translation id="7569490014721427265">Golfe</translation>
 <translation id="7569952961197462199">Remover o cartão de crédito do Chrome?</translation>
 <translation id="7569983096843329377">Preto</translation>
@@ -3887,6 +3895,7 @@ Detalhes adicionais:
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8449155699563577224">17 x 24 pol.</translation>
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
+<translation id="84561192812921051">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Ativar</translation>

@@ -679,6 +679,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2227758700723188171">Studietoelae en -beurse</translation>
 <translation id="2228057197024893428">Hierdie adres is tans in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="ACCOUNT" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="2229456043301340598">Nie-unieke kortpad is geïgnoreer: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="2233745931693710080">Laserskyf</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2239100178324503013">Stuur nou</translation>
@@ -722,6 +723,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2317259163369394535"><ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>
 <translation id="2318594867107319532">Laaste beleidtydstempel:</translation>
 <translation id="2320564945062300737">Gesigsorgprodukte</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 venster}other{# vensters}}</translation>
 <translation id="2328651992442742497">Toegelaat (verstek)</translation>
 <translation id="2328955282645810595">Konstruksie- en kraggereedskap</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, verval op <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2928905813689894207">Faktureringadres</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Knip ná elke kopie</translation>
-<translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2933624813161016821">Reliëffoelie</translation>
 <translation id="2938225289965773019">Maak <ph name="PROTOCOL" />-skakels oop</translation>
 <translation id="2941878205777356567">Koevert 9x12 dm.</translation>
@@ -2446,6 +2447,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veeartse</translation>
 <translation id="5715150588940290235">Vee gestoorde sekuriteitskodes uit?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> van <ph name="WINDOW_COUNT" /> op hierdie toestel</translation>
 <translation id="5717509257172454543">Ysskaats</translation>
 <translation id="5720705177508910913">Huidige gebruiker</translation>
 <translation id="5720895412771013401">Rekenaars</translation>
@@ -2956,6 +2958,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6709133671862442373">Nuus</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6710594484020273272">&lt;Tik soekterm in&gt;</translation>
+<translation id="6710648923880003133">Stel sterk wagwoord voor</translation>
 <translation id="671076103358959139">Inskrywingtoken:</translation>
 <translation id="6711464428925977395">Daar is iets verkeerd met hierdie instaanbediener of die adres is verkeerd.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil 'n 3D-kaart van jou omgewing skep en kameraposisie naspoor.</translation>
@@ -3409,6 +3412,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7564667064360547717">Hemde en boklere</translation>
 <translation id="7567204685887185387">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk valslik uitgereik. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="7568616151991626879">Google Chrome probeer tans om jou wagwoord op <ph name="APP_NAME" /> in te vul.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Geen}=1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
 <translation id="7569490014721427265">Gholf</translation>
 <translation id="7569952961197462199">Verwyder kredietkaart uit Chrome?</translation>
 <translation id="7569983096843329377">Swart</translation>

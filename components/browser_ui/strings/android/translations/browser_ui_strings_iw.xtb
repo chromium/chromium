@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">כרטיסים בדף 'כרטיסייה חדשה'</translation>
 <translation id="2241634353105152135">פעם אחת בלבד</translation>
 <translation id="2253414712144136228">הסרה של <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{אתר אחד חסום}one{# אתרים חסומים}two{# אתרים חסומים}other{# אתרים חסומים}}</translation>
 <translation id="228293613124499805">סביר להניח שרוב האתרים שבהם מבקרים שומרים נתונים במכשיר, לרוב כדי לשפר את החוויה בהם. הנתונים שנשמרים הם ההעדפות או המידע שמשתפים עם האתר. מומלץ להשאיר את ההגדרה הזו פועלת.</translation>
 <translation id="2289270750774289114">‏המערכת מבקשת אישור כשאתר רוצה לאתר התקני Bluetooth קרובים (מומלץ)</translation>
 <translation id="2315043854645842844">מערכת ההפעלה אינה תומכת בבחירת אישור בצד הלקוח.</translation>
@@ -481,7 +480,6 @@
 <translation id="8721719390026067591">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לחפש מכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים לחפש מכשירי Bluetooth.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{יש אתר אחד עם הרשאה}one{יש # אתרים עם הרשאה}two{יש # אתרים עם הרשאה}other{יש # אתרים עם הרשאה}}</translation>
 <translation id="8751914237388039244">בחירת תמונה</translation>
 <translation id="8800034312320686233">האתר לא פועל?</translation>
 <translation id="8801436777607969138">‏חסימת JavaScript באתר ספציפי.</translation>

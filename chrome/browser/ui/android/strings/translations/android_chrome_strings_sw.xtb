@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Panga bidhaa unazofuatilia kwenye Alamisho</translation>
 <translation id="1466383950273130737">Chagua lugha ya Chrome</translation>
 <translation id="1477626028522505441">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya matatizo ya seva.</translation>
+<translation id="1480287803138246127">Huenda baadhi ya historia yako isionekane hapa. Ili uone historia yako yote kwenye Chrome, fungua historia kamili kwenye Chrome.</translation>
 <translation id="148482509007564431">Utaratibu wa kuhifadhi alamisho</translation>
 <translation id="1492417797159476138">Tayari umehifadhi jina hili la mtumiaji kwa ajili ya tovuti hii</translation>
 <translation id="1493287004536771723">Unafuatilia <ph name="SITE_NAME" /></translation>
@@ -766,6 +767,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4961107849584082341">Tafsiri ukurasa huu katika lugha yoyote</translation>
 <translation id="496607651705915226">Ili uhifadhi na utumie manenosiri mapya katika Akaunti yako ya Google, sasisha huduma za Google Play</translation>
 <translation id="4971735654804503942">Ulinzi wa haraka na wa mapema dhidi ya tovuti, vipakuliwa na viendelezi hatari. Hukuonya kuhusu matukio ya ufichuzi haramu wa manenosiri yako. Inahitaji data ya kuvinjari itumwe kwa Google.</translation>
+<translation id="4971753085054504448">Jaribu kutafuta kitu kingine au ufungue historia kamili kwenye Chrome ili uone matokeo zaidi.</translation>
 <translation id="497421865427891073">Nenda mbele</translation>
 <translation id="4987271110129728827">Imeshindwa kupata ukurasa huo. Kagua tahajia zako au jaribu kutafuta kwenye wavuti.</translation>
 <translation id="4988526792673242964">Kurasa</translation>
@@ -1004,6 +1006,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo ambayo hayalingani na tovuti nyingine ulizotembelea. Tovuti nyingi bado zitakusanya na kutumia data yako ya kuvinjari — kwa mfano ili kuboresha usalama, kutoa maudhui, matangazo na mapendekezo, na kuzalisha takwimu za kuripoti.</translation>
 <translation id="6233974827872475843">Hifadhi manenosiri kwenye kifaa hiki katika Akaunti yako ya Google kwa kuwasha kipengele cha usawazishaji</translation>
 <translation id="6247557882553405851">Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="6251449557817521191">Angalia historia yako kwenye Chrome hapa</translation>
 <translation id="6255794742848779505">Tunabadilisha jinsi manenosiri yanavyohifadhiwa katika kifaa hiki</translation>
 <translation id="6264376385120300461">Pakua licha ya hayo</translation>
 <translation id="6277522088822131679">Kulikuwa na tatizo katika kuchapisha ukurasa. Tafadhali jaribu tena.</translation>
@@ -1051,6 +1054,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6459045781120991510">Tafiti</translation>
 <translation id="6461962085415701688">Imeshindwa kufungua faili</translation>
 <translation id="6464977750820128603">Unaweza kuona tovuti ambazo ulitembelea katika Chrome na kuziwekea vipima muda.\n\nGoogle inapata maelezo kuhusu tovuti ulizowekea vipima muda na muda unaozitembelea. Tunatumia maelezo haya kuboresha mpango wa Nidhamu Dijitali.</translation>
+<translation id="6470181189905173055">Kurasa ulizofungua kwenye Chrome huku ukitumia <ph name="APP_LABEL" /> zitaonyeshwa hapa.</translation>
 <translation id="6473086018775716761">Orodha ya chaguo za kushiriki imefunguliwa kwenye nusu ya skrini.</translation>
 <translation id="6475951671322991020">Pakua video</translation>
 <translation id="6477928892249167417">Tovuti hizi zinaonekana kuwa muhimu kwako:</translation>
@@ -1387,6 +1391,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
 <translation id="7986497153528221272">Ili uone manenosiri, weka kwanza mipangilio ya kufunga skrini kwenye kifaa chako</translation>
+<translation id="7988531104457683216">Huenda baadhi ya historia yako isionekane hapa. Ili uone historia yako yote kwenye Chrome, fungua historia kamili kwenye Chrome. Pia, huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Utaona maudhui yatakapopatikana</translation>
 <translation id="799576009106109668">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>
 <translation id="8004582292198964060">Kivinjari</translation>

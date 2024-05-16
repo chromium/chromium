@@ -154,6 +154,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1273592791152866347">Hinna jälgimine on välja lülitatud</translation>
 <translation id="127777513559587977">Televestlussaated</translation>
 <translation id="1281476433249504884">Virnastaja 1</translation>
+<translation id="1281536351321444151">Selleks et kasutada järgmisel korral selle IBAN-i jaoks automaattäidet, salvestage see oma Google'i kontol</translation>
 <translation id="1282358575813748144">Paadid ja veesõidukid</translation>
 <translation id="1283977499362032052">Elulookirjeldused ja portfooliod</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
@@ -293,6 +294,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1529789484829130889">Salv 8</translation>
 <translation id="1530707389502320859">Sait, mida üritasite külastada, näib olevat võltsitud. Ründajad imiteerivad mõnikord saite, tehes URL-is väikeseid raskestimärgatavaid muudatusi.</translation>
 <translation id="1532118530259321453">Leht ütleb</translation>
+<translation id="1533966801397200693">Profiil, millele sisse olete logitud, on hallatud profiil. Teie administraator saab teha teie profiili seadetes distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Tõlgi leht</translation>
 <translation id="1537807545287921620">Sellele PDF-ile ei saa juurde pääseda. Avage kontekstimenüü ja lülitage sisse „PDF-ist teksti ekstraktimine”</translation>
 <translation id="1539840569003678498">Aruanne saadeti:</translation>
@@ -679,6 +681,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2227758700723188171">Õppetoetused ja stipendiumid</translation>
 <translation id="2228057197024893428">See aadress on praegu salvestatud Chrome'i. Kui soovite seda Google'i teenustes kasutada, salvestage see oma Google'i kontole <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Korduvat otseteed eirati: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
@@ -722,6 +725,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2317259163369394535">Domeen <ph name="DOMAIN" /> nõuab kasutajanime ja parooli.</translation>
 <translation id="2318594867107319532">Eeskirjade viimane ajatempel:</translation>
 <translation id="2320564945062300737">Näohooldustooted</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 aknas}other{# aknas}}</translation>
 <translation id="2328651992442742497">Lubatud (vaikeseade)</translation>
 <translation id="2328955282645810595">Ehitus- ja elektritööriistad</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2928905813689894207">Arveldusaadress</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Kärbi pärast iga koopiat</translation>
-<translation id="2932085390869194046">Soovita parooli …</translation>
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
 <translation id="2941878205777356567">9 × 12-tolline ümbrik</translation>
@@ -1185,6 +1188,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline kinnituskood</translation>
 <translation id="3272643614306383237">Alla 1 MB. Mõned saidid võivad teie järgmise külastuse ajal aeglasemalt laadida.</translation>
+<translation id="3273738040255912340">Teie administraator saab teha teie profiilil ja brauseris distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. Selle seadme tegevusi võidakse hallata ka väljaspool Chromiumi. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohas <ph name="DESTINATION_NAME" /> avada}other{Administraatori reegel ei soovita neid faile sihtkohas <ph name="DESTINATION_NAME" /> avada}}</translation>
 <translation id="3282085321714087552">Teie organisatsioon, <ph name="ENROLLMENT_DOMAIN" />, on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
@@ -2306,6 +2310,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5447765697759493033">Seda saiti ei tõlgita</translation>
 <translation id="5452270690849572955">Hosti <ph name="HOST_NAME" /> lehte ei leita</translation>
 <translation id="5455374756549232013">Reegli ajatempel on sobimatu</translation>
+<translation id="5456428544444655325">Ära kunagi kuva</translation>
 <translation id="5456839782162429664">Käsitsi kinnitamine iga kord, kui kasutate maksmisel automaattäidet</translation>
 <translation id="5457113250005438886">Kehtetu</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2446,6 +2451,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinaarid</translation>
 <translation id="5715150588940290235">Kas kustutada salvestatud turvakoodid?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> selle seadme <ph name="WINDOW_COUNT" /></translation>
 <translation id="5717509257172454543">Uisutamine</translation>
 <translation id="5720705177508910913">Praegune kasutaja</translation>
 <translation id="5720895412771013401">Lauaarvutid</translation>
@@ -2956,6 +2962,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6709133671862442373">Uudised</translation>
 <translation id="6710213216561001401">Eelmine</translation>
 <translation id="6710594484020273272">&lt;Sisestage otsingutermin&gt;</translation>
+<translation id="6710648923880003133">Soovita tugevat parooli</translation>
 <translation id="671076103358959139">Registreerimismärk:</translation>
 <translation id="6711464428925977395">Puhverserveriga on midagi valesti või aadress on vale.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> soovib luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit</translation>
@@ -3409,6 +3416,7 @@ Lisateave:
 <translation id="7564667064360547717">Särgid ja topid</translation>
 <translation id="7567204685887185387">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaat võib olla väljastatud pettuse teel. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="7568616151991626879">Google Chrome üritab rakenduses <ph name="APP_NAME" /> teie parooli sisestada.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Ühtegi}=1{1 vaheleht selles seadmes}other{# vahelehte selles seadmes}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kas eemaldada Chrome'ist krediitkaart?</translation>
 <translation id="7569983096843329377">Must</translation>
@@ -3888,6 +3896,7 @@ Lisateave:
 <translation id="8446884382197647889">Lisateave</translation>
 <translation id="8449155699563577224">17 × 24 tolli</translation>
 <translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
+<translation id="84561192812921051">Teie administraator saab teha teie profiilil ja brauseris distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Määramata</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Jah, nõustun</translation>

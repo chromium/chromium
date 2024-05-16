@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña archivada}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas archivadas}}</translation>
 <translation id="3194464645767632461">puntuación</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando haya un precio más bajo en una pestaña abierta.</translation>
+<translation id="3322827343001922122">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugerencia: Hay <ph name="NUMBER_OF_TABS" /> pestañas que parecen relacionadas. ¿Quieres agruparlas?</translation>
 <translation id="3547352561153509682">Se eliminará el grupo de todos los dispositivos en los que se haya iniciado sesión con <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

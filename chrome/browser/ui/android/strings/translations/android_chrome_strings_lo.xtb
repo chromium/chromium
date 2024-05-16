@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1384704387250346179">ແປພາສາໃນຮູບກັບ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">ເປີດໃຊ້ເມື່ອ <ph name="LAST_UPDATED" /> ມື້ກ່ອນ</translation>
+<translation id="1390418506739274310">ທ່ານອາດເຫັນປະຫວັດຈາກແອັບອື່ນໆທີ່ເປີດລິ້ງໃນ Chrome. ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">ເພື່ອສືບຕໍ່, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ຈະແບ່ງປັນຊື່, ທີ່ຢູ່ອີເມວ ແລະ ຮູບໂປຣໄຟລ໌ຂອງທ່ານໃຫ້ກັບເວັບໄຊນີ້. ເບິ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK1" /> ຂອງເວັບໄຊນີ້.</translation>
 <translation id="1397811292916898096">ຊອກຫາດ້ວຍ <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">ຮູບແບບສີສັນມືດ</translation>
@@ -388,6 +389,7 @@
 <translation id="3003253259757197230">ລະບົບຈະສົ່ງ URL ທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງໄປຫາ Google ເພື່ອຄາດເດົາເວັບໄຊຕໍ່ໄປທີ່ທ່ານອາດຈະເຂົ້າເບິ່ງ ແລະ ສະແດງຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບໜ້າທີ່ທ່ານກຳລັງເຂົ້າເບິ່ງ</translation>
 <translation id="3026955690410463085">ຮວມລິ້ງ</translation>
 <translation id="3027644380269727216">ອີງຕາມການເຄື່ອນໄຫວຂອງທ່ານຢູ່ເວັບໄຊ. ການຕັ້ງຄ່ານີ້ເປີດຢູ່.</translation>
+<translation id="3027950907978057636">ຈາກ <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">ບໍ່ມີການໂຫຼດກ່ອນລ່ວງໜ້າ</translation>
 <translation id="3029704984691124060">ວະລີຜ່ານບໍ່ກົງກັນ</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ຂໍຄວາມຊ່ວຍເຫຼືອ<ph name="END_LINK" /></translation>

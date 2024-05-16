@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Máte <ph name="TABS_COUNT_ONE" /> archivovanú kartu}few{Máte <ph name="TABS_COUNT_MANY" /> archivované karty}many{You have <ph name="TABS_COUNT_MANY" /> archived tabs}other{Máte <ph name="TABS_COUNT_MANY" /> archivovaných kariet}}</translation>
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
+<translation id="3322827343001922122">Otvoriť ponuku akcií skupiny kariet <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
 <translation id="3547352561153509682">Týmto odstránite skupinu zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{तपाईंसँग अभिलेखमा राखिएको <ph name="TABS_COUNT_ONE" /> ट्याब छ}other{तपाईंसँग अभिलेखमा राखिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याबहरू छन्}}</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3291470810748040983">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य कम हुँदा तपाईंलाई अलर्ट पठाइने छ</translation>
+<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> नामक ट्याब समूहको एक्सन मेनु खोल्नुहोस्</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="3547352561153509682">यसो गर्नुभयो भने <ph name="USER_EMAIL" /> मा साइन इन गरिएका सबै डिभाइसहरूबाट यो समूह मेटाइने छ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

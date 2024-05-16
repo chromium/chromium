@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Kad halaman tab baharu</translation>
 <translation id="2241634353105152135">Hanya sekali</translation>
 <translation id="2253414712144136228">Alih keluar <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{1 laman disekat}other{# laman disekat}}</translation>
 <translation id="228293613124499805">Kebanyakan laman yang anda lawati mungkin menyimpan data pada peranti anda, selalunya untuk meningkatkan pengalaman anda dengan menyimpan pilihan anda atau maklumat yang anda kongsi dengan laman tersebut. Kami mengesyorkan agar anda membiarkan tetapan ini dihidupkan.</translation>
 <translation id="2289270750774289114">Tanya apabila tapak mahu mencari peranti Bluetooth berdekatan (disyorkan)</translation>
 <translation id="2315043854645842844">Pemilihan sijil pihak pelanggan tidak disokong oleh sistem pengendalian ini.</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">Kawal akses tapak ini kepada peranti anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lagi</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Tab terakhir anda</translation>
 <translation id="6064125863973209585">Muat turun yang telah selesai</translation>
 <translation id="6071501408666570960">Anda mungkin akan dilog keluar dari laman ini</translation>
 <translation id="6120483543004435978">Apabila dihidupkan, laman dapat meminta untuk mengetahui waktu anda menggunakan peranti secara aktif. Apabila dimatikan, laman tidak dapat mengetahui waktu anda menggunakan peranti secara aktif.</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Daripada <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
 <translation id="8067883171444229417">Mainkan video</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">Apabila dihidupkan, laman dapat meminta untuk mencari peranti Bluetooth. Apabila dimatikan, laman tidak dapat mencari peranti Bluetooth.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{1 laman dibenarkan}other{# laman dibenarkan}}</translation>
 <translation id="8751914237388039244">Pilih imej</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
 <translation id="8801436777607969138">Sekat JavaScript untuk tapak tertentu.</translation>

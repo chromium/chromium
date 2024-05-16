@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Aftengdu USB-snúru <ph name="DEVICE_NAME" /> og stingdu henni síðan aftur í samband til að halda áfram uppfærsluferlinu</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Svipað:</translation>

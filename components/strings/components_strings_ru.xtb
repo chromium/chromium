@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">Цена больше не отслеживается.</translation>
 <translation id="127777513559587977">Телевизионные ток-шоу</translation>
 <translation id="1281476433249504884">Укладчик 1</translation>
+<translation id="1281536351321444151">Чтобы в следующий раз этот код IBAN можно было указать автоматически, сохраните его в аккаунте Google.</translation>
 <translation id="1282358575813748144">Водные суда и судоходство</translation>
 <translation id="1283977499362032052">Резюме и портфолио</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на который вы пытались перейти, похож на подделку. Иногда злоумышленники создают копии сайтов и вносят небольшие изменения в их адрес, которые сложно заметить сразу.</translation>
 <translation id="1532118530259321453">Подтвердите действие</translation>
+<translation id="1533966801397200693">Вы используете управляемый профиль. Администратор может удаленно изменять настройки профиля, анализировать отчеты с информацией о браузере и выполнять другие задачи. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Перевести страницу</translation>
 <translation id="1537807545287921620">Этот файл PDF недоступен. Откройте контекстное меню и включите функцию "Извлекать текст из файлов PDF".</translation>
 <translation id="1539840569003678498">Отчет отправлен:</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">Стипендии и гранты на образование</translation>
 <translation id="2228057197024893428">Адрес добавлен в Chrome. Сохраните его в аккаунте Google (<ph name="ACCOUNT" />), чтобы использовать в других продуктах Google.</translation>
 <translation id="2229456043301340598">Повторяющаяся быстрая команда "<ph name="SHORTCUT_NAME" />" игнорируется.</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
 <translation id="2239100178324503013">Отправить</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535">Для доступа к домену <ph name="DOMAIN" /> необходимо указать имя пользователя и пароль.</translation>
 <translation id="2318594867107319532">Последняя временная метка правила:</translation>
 <translation id="2320564945062300737">Товары для ухода за лицом</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 окне}one{# окне}few{# окнах}many{# окнах}other{# окна}}</translation>
 <translation id="2328651992442742497">Разрешено (по умолчанию)</translation>
 <translation id="2328955282645810595">Строительные и механические инструменты</translation>
 <translation id="2330137317877982892">Карта <ph name="CREDIT_CARD" />, действует до <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@
 <translation id="2928905813689894207">Платежный адрес</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}}</translation>
 <translation id="2930577230479659665">Подрезать после каждого экземпляра</translation>
-<translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2933624813161016821">Фольга для тиснения</translation>
 <translation id="2938225289965773019">переход по ссылкам <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Конверт 229 x 305 мм</translation>
@@ -1184,6 +1187,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Введите код подтверждения из <ph name="NUMBER_OF_DIGITS" /> цифр</translation>
 <translation id="3272643614306383237">Менее 1 МБ. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
+<translation id="3273738040255912340">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратор не рекомендует открывать этот файл в месте назначения "<ph name="DESTINATION_NAME" />".}one{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}few{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}many{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}other{Администратор не рекомендует открывать эти файлы в месте назначения "<ph name="DESTINATION_NAME" />".}}</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
@@ -2305,6 +2309,7 @@
 <translation id="5447765697759493033">Этот сайт не будет переводиться автоматически</translation>
 <translation id="5452270690849572955">Страница <ph name="HOST_NAME" /> не найдена</translation>
 <translation id="5455374756549232013">Неверная временная метка политики</translation>
+<translation id="5456428544444655325">Никогда</translation>
 <translation id="5456839782162429664">Запрашивать подтверждение при каждой оплате с использованием автозаполнения</translation>
 <translation id="5457113250005438886">Недопустимые данные</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакт}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакт}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакта}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактов}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контакта}}</translation>
@@ -2445,6 +2450,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринария</translation>
 <translation id="5715150588940290235">Удалить сохраненные защитные коды?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> в <ph name="WINDOW_COUNT" /> на этом устройстве</translation>
 <translation id="5717509257172454543">Катание на коньках</translation>
 <translation id="5720705177508910913">Текущий пользователь</translation>
 <translation id="5720895412771013401">Настольные компьютеры</translation>
@@ -2955,6 +2961,7 @@
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Введите поисковый запрос&gt;</translation>
+<translation id="6710648923880003133">Сгенерировать надежный пароль</translation>
 <translation id="671076103358959139">Токен регистрации:</translation>
 <translation id="6711464428925977395">На прокси-сервере возникла проблема или адрес указан неверно.</translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запрашивает разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.</translation>
@@ -3408,6 +3415,7 @@
 <translation id="7564667064360547717">Футболки и топы</translation>
 <translation id="7567204685887185387">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности мог быть выдан обманным путем. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="7568616151991626879">Google Chrome пытается указать пароль на сайте <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Нет вкладок}=1{1 вкладка на этом устройстве}one{# вкладка на этом устройстве}few{# вкладки на этом устройстве}many{# вкладок на этом устройстве}other{# вкладки на этом устройстве}}</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Удалить кредитную карту из Chrome?</translation>
 <translation id="7569983096843329377">Черный</translation>
@@ -3887,6 +3895,7 @@
 <translation id="8446884382197647889">Подробнее...</translation>
 <translation id="8449155699563577224">17 x 24 дюйма</translation>
 <translation id="8449836157089738489">Открыть все URL в новой группе вкладок</translation>
+<translation id="84561192812921051">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chrome.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Бессрочно</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Включить</translation>

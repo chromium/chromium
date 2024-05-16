@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1384704387250346179">Terjemah imej dgn Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Aktif <ph name="LAST_UPDATED" /> hari lalu</translation>
+<translation id="1390418506739274310">Anda mungkin melihat sejarah daripada apl lain yang membuka pautan dalam Chrome. Google Account anda mungkin mengandungi sejarah penyemakan imbas dalam bentuk lain pada <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Untuk meneruskan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan berkongsi nama, alamat e-mel dan gambar profil anda dengan laman ini. Lihat <ph name="BEGIN_LINK1" />syarat perkhidmatan<ph name="END_LINK1" /> laman ini.</translation>
 <translation id="1397811292916898096">Cari dengan <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tema gelap</translation>
@@ -96,6 +97,7 @@
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
 <translation id="1477626028522505441">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh masalah pelayan.</translation>
+<translation id="1480287803138246127">Sesetengah sejarah anda mungkin tidak dipaparkan di sini. Untuk melihat semua sejarah Chrome anda, buka sejarah Chrome penuh.</translation>
 <translation id="148482509007564431">Aliran penyimpanan penanda halaman</translation>
 <translation id="1492417797159476138">Anda telah pun menyimpan nama pengguna ini untuk tapak ini</translation>
 <translation id="1493287004536771723">Anda mengikuti <ph name="SITE_NAME" /></translation>
@@ -387,6 +389,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3003253259757197230">URL yang anda lawati dihantar kepada Google untuk meramal laman yang mungkin anda lawati seterusnya dan untuk menunjukkan maklumat tambahan tentang halaman yang anda lawati</translation>
 <translation id="3026955690410463085">Sertakan pautan</translation>
 <translation id="3027644380269727216">Berdasarkan aktiviti anda pada laman. Tetapan ini dihidupkan.</translation>
+<translation id="3027950907978057636">Daripada <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Tiada pramuat</translation>
 <translation id="3029704984691124060">Frasa laluan tidak sepadan</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
@@ -424,6 +427,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3226612997184048185">Jika anda juga menyimpan penanda halaman dalam Google Account anda, anda boleh menjejak harga produk dalam Chrome dan mendapatkan pemberitahuan jika harga produk tersebut turun</translation>
 <translation id="3227557059438308877">Google Chrome sebagai Kunci Keselamatan</translation>
 <translation id="3232293466644486101">Padamkan data semakan imbas…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> tab dipadamkan</translation>
 <translation id="3232754137068452469">Apl Web</translation>
 <translation id="3236059992281584593">1 minit lagi</translation>
 <translation id="3237087289225714896">Pramuat standard:</translation>
@@ -766,7 +770,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4961107849584082341">Terjemahkan halaman ini ke sebarang bahasa</translation>
 <translation id="496607651705915226">Untuk menyimpan dan menggunakan kata laluan baharu dalam Google Account anda, kemas kinikan perkhidmatan Google Play</translation>
 <translation id="4971735654804503942">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya. Memberi anda amaran tentang pelanggaran kata laluan. Menghendaki data semakan imbas dihantar kepada Google.</translation>
-<translation id="4971753085054504448">Cuba cari perkara lain atau buka sejarah Chrome untuk melihat lebih banyak hasil carian.</translation>
+<translation id="4971753085054504448">Cuba cari perkara lain atau buka sejarah penuh Chrome untuk melihat lebih banyak hasil carian.</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4987271110129728827">Tidak menemukan halaman itu. Semak ejaan anda atau cuba carian web.</translation>
 <translation id="4988526792673242964">Halaman</translation>
@@ -862,6 +866,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5515439363601853141">Buka kunci untuk melihat kata laluan anda</translation>
 <translation id="5517095782334947753">Anda mempunyai penanda halaman, sejarah, kata laluan dan tetapan lain daripada <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Ubah hala disekat.</translation>
+<translation id="5526281268548144413">Tidak boleh ditutup merentas berbilang tetingkap</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# minit yang lalu}other{# minit yang lalu}}</translation>
 <translation id="5548606607480005320">Semakan keselamatan</translation>
 <translation id="5554520618550346933">Apabila anda menggunakan kata laluan, Chrome akan memberi anda amaran jika kata laluan tersebut telah diterbitkan dalam talian. Apabila melakukan tindakan ini, kata laluan dan nama pengguna anda akan disulitkan supaya data ini tidak dapat dibaca oleh sesiapa termasuk Google.</translation>
@@ -1005,6 +1010,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan ini dengan memaparkan iklan yang tidak berdasarkan laman web lain yang anda lawati. Pelbagai laman web masih akan mengumpul dan menggunakan data penyemakan imbas anda — contohnya, untuk meningkatkan keselamatan, untuk menyediakan kandungan, iklan dan cadangan serta untuk menjana statistik pelaporan.</translation>
 <translation id="6233974827872475843">Simpan kata laluan pada peranti ini dalam Google Account anda dengan menghidupkan penyegerakan</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251449557817521191">Lihat sejarah Chrome anda di sini</translation>
 <translation id="6255794742848779505">Kami mengubah cara kata laluan disimpan pada peranti ini</translation>
 <translation id="6264376385120300461">Muat turun juga</translation>
 <translation id="6277522088822131679">Terdapat masalah semasa mencetak halaman. Sila cuba sekali lagi.</translation>
@@ -1336,6 +1342,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7759809451544302770">Pilihan</translation>
 <translation id="7762668264895820836">Kad SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> tab dipadamkan</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
 <translation id="7772375229873196092">Tutup <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>
@@ -1389,6 +1396,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Memberikan amaran kepada anda jika anda menggunakan kata laluan yang telah terjejas dalam pelanggaran data.</translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
+<translation id="7988531104457683216">Sesetengah sejarah anda mungkin tidak dipaparkan di sini. Untuk melihat semua sejarah Chrome anda, buka sejarah Chrome penuh. Google Account anda mungkin mempunyai bentuk sejarah penyemakan imbas yang lain pada <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Anda akan melihat kandungan apabila tersedia</translation>
 <translation id="799576009106109668">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>

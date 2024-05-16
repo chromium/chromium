@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organizujte svoje sledované produkty v Záložkách</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
 <translation id="1477626028522505441">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu problémov so serverom.</translation>
+<translation id="1480287803138246127">Časť vašej histórie sa tu nemusí zobraziť. Ak si chcete pozrieť celú históriu Chromu, otvorte ju.</translation>
 <translation id="148482509007564431">Postup uloženia záložky</translation>
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
 <translation id="1493287004536771723">Sledujete web <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">Ak vo svojom účte Google ukladáte aj záložky, môžete sledovať ceny produktov v prehliadači Chrome a dostávať upozornenia na poklesy ceny</translation>
 <translation id="3227557059438308877">Google Chrome ako bezpečnostný kľúč</translation>
 <translation id="3232293466644486101">Odstrániť dáta prehliadania…</translation>
+<translation id="3232459301230493791">Bolo odstránených niekoľko kariet (<ph name="TAB_COUNT" />)</translation>
 <translation id="3232754137068452469">Webová aplikácia</translation>
 <translation id="3236059992281584593">Zostáva: 1 min</translation>
 <translation id="3237087289225714896">Štandardné prednačítavanie:</translation>
@@ -862,6 +864,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5515439363601853141">Heslo sa zobrazí po odomknutí</translation>
 <translation id="5517095782334947753">Máte záložky, históriu, heslá a ďalšie nastavenia z účtu <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Presmerovanie bolo zablokované.</translation>
+<translation id="5526281268548144413">Nie je možné zavrieť vo viacerých oknách</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Pred # min}few{Pred # min}many{Pred # min}other{Pred # min}}</translation>
 <translation id="5548606607480005320">Kontrola bezpečnosti</translation>
 <translation id="5554520618550346933">Ak používate heslo, Chrome vás upozorní, keď bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
@@ -1005,6 +1008,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobrazia reklamy, ktoré nie sú založené na ostatných weboch, ktoré ste navštívili. Mnoho webov bude stále zhromažďovať a používať vaše dáta prehliadania, napríklad na zlepšenie zabezpečenia, poskytovanie obsahu, reklám a odporúčaní a na generovanie štatistík prehľadov.</translation>
 <translation id="6233974827872475843">Zapnite synchronizáciu, aby ste si mohli ukladať heslá v tomto zariadení do svojho účtu Google</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>
+<translation id="6251449557817521191">Tu si môžete pozrieť históriu Chromu</translation>
 <translation id="6255794742848779505">Meníme spôsob ukladania hesiel v tomto zariadení</translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
 <translation id="6277522088822131679">Pri tlačení stránky sa vyskytol problém. Skúste to znova.</translation>
@@ -1336,6 +1340,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7759809451544302770">Voliteľné</translation>
 <translation id="7762668264895820836">SD karta <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Pridať adresu</translation>
+<translation id="776533689993750361">Bola odstránená <ph name="TAB_COUNT" /> karta</translation>
 <translation id="7772032839648071052">Potvrďte prístupovú frázu</translation>
 <translation id="7772375229873196092">Zavrieť <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalší}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšie}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšieho}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalších}}</translation>
@@ -1389,6 +1394,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7975379999046275268">Zobraziť ukážku stránky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, keď použijete heslo, ktoré bolo prezradené v rámci porušenia ochrany údajov.</translation>
 <translation id="7986497153528221272">Ak si chcete zobraziť heslá, najprv v zariadení nastavte zámku obrazovky</translation>
+<translation id="7988531104457683216">Časť vašej histórie sa tu nemusí zobraziť. Ak si chcete pozrieť celú históriu Chromu, otvorte ju. Váš účet Google môže mať aj ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Obsah sa zobrazí, keď bude k dispozícii</translation>
 <translation id="799576009106109668">Prehliadanie sa zrýchli, pretože obsah bude proaktívne načítaný na základe vašej návštevy aktuálnej webovej stránky</translation>
 <translation id="8004582292198964060">Prehliadač</translation>

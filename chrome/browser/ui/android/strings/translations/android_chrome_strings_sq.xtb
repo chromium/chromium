@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organizo produktet e tua të monitoruara te "Faqeshënuesit"</translation>
 <translation id="1466383950273130737">Zgjidh gjuhën e Chrome</translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
+<translation id="1480287803138246127">Një pjesë e historikut tënd mund të mos shfaqet këtu. Për të parë të gjithë historikun e Chrome, hap historikun e plotë të Chrome.</translation>
 <translation id="148482509007564431">Fluksi i ruajtjes së faqeshënuesve</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
 <translation id="1493287004536771723">Po ndjek <ph name="SITE_NAME" /></translation>
@@ -1005,6 +1006,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në uebsajtet e tjera që ke vizituar. Shumë uebsajte do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
 <translation id="6233974827872475843">Ruaj fjalëkalimet në këtë pajisje në "Llogarinë tënde të Google" duke aktivizuar sinkronizimin</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
+<translation id="6251449557817521191">Shiko historikun e Chrome këtu</translation>
 <translation id="6255794742848779505">Ne po ndryshojmë mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
@@ -1389,6 +1391,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7975379999046275268">Shiko paraprakisht faqen <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
 <translation id="7986497153528221272">Për të parë fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
+<translation id="7988531104457683216">Një pjesë e historikut tënd mund të mos shfaqet këtu. Për të parë të gjithë historikun e Chrome, hap historikun e plotë të Chrome. "Llogaria jote e Google" mund të ketë gjithashtu forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Do ta shikosh përmbajtjen kur të ofrohet</translation>
 <translation id="799576009106109668">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>

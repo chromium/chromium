@@ -615,6 +615,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2122214041802369259">Preço alto</translation>
 <translation id="2122719317867821810">A política está funcionando da maneira esperada, mas um valor conflitante foi definido em outro lugar e foi substituído por esta política.</translation>
 <translation id="2126374524350484896">Criador do PDF:</translation>
+<translation id="2127090458081644412">Senha salva neste dispositivo</translation>
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Eles aparecem em ordem aleatória. Você pode mudar o padrão quando quiser.</translation>
@@ -678,6 +679,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2227758700723188171">Bolsas de estudo</translation>
 <translation id="2228057197024893428">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Atalho não exclusivo ignorado: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
@@ -721,6 +723,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2317259163369394535"><ph name="DOMAIN" /> exige um nome de usuário e uma senha.</translation>
 <translation id="2318594867107319532">Último carimbo de data/hora da política:</translation>
 <translation id="2320564945062300737">Produtos para o rosto</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 janela}one{# janela}other{# janelas}}</translation>
 <translation id="2328651992442742497">Com permissão (padrão)</translation>
 <translation id="2328955282645810595">Ferramentas de construção e elétricas</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expira em <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1009,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2928905813689894207">Endereço de cobrança</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Cortar depois de cada cópia</translation>
-<translation id="2932085390869194046">Sugerir senha…</translation>
 <translation id="2933624813161016821">Laminado em relevo</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Envelope de 23 cm x 30 cm</translation>
@@ -2031,6 +2033,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4901778704868714008">Salvar…</translation>
 <translation id="4901952598169637881">Sapatos casuais</translation>
 <translation id="4905659621780993806">O administrador vai reiniciar seu dispositivo automaticamente em <ph name="DATE" />, <ph name="TIME" />. Salve os itens abertos antes que o dispositivo seja reiniciado.</translation>
+<translation id="4913784027728226227">Para salvar e usar essa senha em todos os seus dispositivos, confirme sua identidade</translation>
 <translation id="4913987521957242411">Perfuração na parte superior esquerda</translation>
 <translation id="4916389289686916969">Reality shows na TV</translation>
 <translation id="4917064667437236721">Cilindro de imagem</translation>
@@ -2304,6 +2307,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5447765697759493033">Este site não será traduzido</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
+<translation id="5456428544444655325">Nunca mostrar</translation>
 <translation id="5456839782162429664">Verificar manualmente sempre que você pagar usando o preenchimento automático</translation>
 <translation id="5457113250005438886">Inválidos</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2314,6 +2318,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5470861586879999274">&amp;Refazer editar</translation>
 <translation id="547963486735802022">Tente transferir seus arquivos de novo</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar softwares perigosos no seu dispositivo que roubam ou excluem suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Oferecer ajuda para escrever</translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5483838506518938965">Está tudo pronto</translation>
 <translation id="5485973315555778056">Computador na nuvem</translation>
@@ -2443,6 +2448,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinários</translation>
 <translation id="5715150588940290235">Excluir os códigos de segurança salvos?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> neste dispositivo</translation>
 <translation id="5717509257172454543">Patinação no gelo</translation>
 <translation id="5720705177508910913">Usuário atual</translation>
 <translation id="5720895412771013401">Computadores desktop</translation>
@@ -2953,6 +2959,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6709133671862442373">Notícias</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6710594484020273272">&lt;Digitar termo de pesquisa&gt;</translation>
+<translation id="6710648923880003133">Sugerir senha forte</translation>
 <translation id="671076103358959139">Token de inscrição:</translation>
 <translation id="6711464428925977395">Há algo errado com o servidor proxy, ou o endereço está incorreto.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera</translation>
@@ -3406,6 +3413,7 @@ Mais detalhes:
 <translation id="7564667064360547717">Camisetas e tops</translation>
 <translation id="7567204685887185387">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido emitido de forma fraudulenta. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="7568616151991626879">O Google Chrome está tentando preencher sua senha em <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Nenhuma}=1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="7569490014721427265">Golfe</translation>
 <translation id="7569952961197462199">Remover cartão de crédito do Chrome?</translation>
 <translation id="7569983096843329377">Preto</translation>

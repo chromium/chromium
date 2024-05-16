@@ -250,6 +250,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1176471985365269981">Qurilmangizdagi fayl yoki jildlarni tahrirlash taqiqlangan</translation>
 <translation id="1177073277575830464">Androidni tezkor sozlash tugallandi. Sozlashni <ph name="DEVICE_TYPE" /> qurilmangizda davom ettiring.</translation>
 <translation id="1177440945615690056">Sozlamalar orqali istalgan mos mobil tarmoqqa ulanishingiz mumkin</translation>
+<translation id="1177548198167638471">Boshqa soʻralmasin</translation>
 <translation id="1177863135347784049">Boshqa</translation>
 <translation id="1178093605842850860">Bu saytni oʻqishi va oʻzgartirishi mumkin</translation>
 <translation id="1178581264944972037">Pauza</translation>
@@ -3824,6 +3825,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3810914450553844415">Administrator qoʻshimcha Google hisobi kiritishni taqiqlagan.</translation>
 <translation id="3810973564298564668">Sozlash</translation>
 <translation id="381202950560906753">Yana qo‘shish</translation>
+<translation id="381219490185664296">Varaqlar guruhi bekor qilinsinmi?</translation>
 <translation id="3812525830114410218">Sertifikat buzilgan</translation>
 <translation id="3813296892522778813">Agar qidirayotgan narsangiz topilmagan bo‘lsa, <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome yordam markazi<ph name="END_LINK_CHROMIUM" /> sahifasiga o‘ting</translation>
 <translation id="3813358687923336574">Tildan sahifalarni tarjima qilish va tezkor javoblar uchun foydalaniladi</translation>
@@ -5068,6 +5070,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4777458362738635055">Bu qurilmadagi boshqa foydalanuvchilar tarmoqdan foydalanishlari mumkin</translation>
 <translation id="4777813841994368231">Yoniq • Bu kengaytma dasturchisi uning nashrini bekor qilgan</translation>
 <translation id="4777825441726637019">Play Market</translation>
+<translation id="4777866634702576038">Varaqlar guruhi oʻchirilsinmi?</translation>
 <translation id="4777943778632837590">Tarmoq nomi serverlarini sozlash</translation>
 <translation id="4778653490315793244">Hech narsa topilmadi</translation>
 <translation id="4779083564647765204">Masshtab</translation>
@@ -5477,6 +5480,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5093477827231450397">Boshqa saytlarga reklamani tavsiya qilishi taqiqlangan saytlar roʻyxati</translation>
 <translation id="5093569275467863761">Inkognito rejimida orqaga qaytarilgan kesh subfreymi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Mos keladigan fayllarni bu ilova bilan Fayllar yoki boshqa ilovalar orqali ochishingiz va tahrirlashingiz mumkin. Bu ilova bilan standart holatda qaysi ilovalar ochilishini boshqarish uchun <ph name="BEGIN_LINK" />qurilmangizda standart ilovalarni sozlash haqida batafsil axborot oling<ph name="END_LINK" />.</translation>
+<translation id="5094423602314093681">Varaq(lar) olib tashlanib, guruh oʻchirilsinmi?</translation>
 <translation id="5094721898978802975">Ichki o‘rnatilgan va bir biriga bog‘langan ilovalar bilan aloqa o‘rnatish</translation>
 <translation id="5095252080770652994">Bajarilmoqda</translation>
 <translation id="5095507226704905004">Bu fayl yoʻq boʻlgani uchun uni nusxalash imkonsiz</translation>

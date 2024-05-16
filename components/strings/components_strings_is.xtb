@@ -154,6 +154,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1273592791152866347">Slökkt á verðvöktun</translation>
 <translation id="127777513559587977">Spjallþættir í sjónvarpi</translation>
 <translation id="1281476433249504884">Staflari 1</translation>
+<translation id="1281536351321444151">Til að fylla þetta IBAN út næst með sjálfvirkum hætti skaltu vista það á Google-reikningnum þínum</translation>
 <translation id="1282358575813748144">Bátar og skip</translation>
 <translation id="1283977499362032052">Ferilsskrár og verkefnamöppur</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
@@ -293,6 +294,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1529789484829130889">Bakki 8</translation>
 <translation id="1530707389502320859">Vefsvæðið sem þú varst að reyna að opna virðist vera falskt. Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera litlar og illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="1532118530259321453">Þessi síða segir</translation>
+<translation id="1533966801397200693">Prófíllinn sem þú ert skráð(ur) inn á er stýrður prófíll. Kerfisstjórinn þinn getur breytt prófílstillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
 <translation id="1537807545287921620">Ekki er hægt að opna þetta PDF-skjal. Opnaðu efnisvalmyndina og kveiktu á „Draga út texta úr PDF-skjali“</translation>
 <translation id="1539840569003678498">Skýrsla send:</translation>
@@ -679,6 +681,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2227758700723188171">Námsstyrkir</translation>
 <translation id="2228057197024893428">Þetta heimilisfang er vistað á Chrome eins og stendur. Til að nota það í Google-vörum skaltu vista það á Google-reikningnum þínum: <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Flýtileið sem er ekki einkvæm hunsuð: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 flipi}one{# flipi}other{# flipar}}</translation>
 <translation id="2233745931693710080">Geisladiskur</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2239100178324503013">Senda núna</translation>
@@ -722,6 +725,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2317259163369394535"><ph name="DOMAIN" /> þarf notandanafn og aðgangsorð.</translation>
 <translation id="2318594867107319532">Síðasti tímastimpill reglu:</translation>
 <translation id="2320564945062300737">Vörur til andlitsumhirðu</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 gluggi}one{# gluggi}other{# gluggar}}</translation>
 <translation id="2328651992442742497">Heimilað (sjálfgefið)</translation>
 <translation id="2328955282645810595">Byggingarverkfæri og vélknúin verkfæri</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, rennur út <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2928905813689894207">Heimilisfang greiðanda</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> í viðbót}}</translation>
 <translation id="2930577230479659665">Klippa eftir hvert eintak</translation>
-<translation id="2932085390869194046">Tillaga að aðgangsorði...</translation>
 <translation id="2933624813161016821">Upphleypingarfilma</translation>
 <translation id="2938225289965773019">Opna tengla fyrir <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Umslag: 23 x 30 cm</translation>
@@ -1185,6 +1188,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> tölustafa staðfestingarkóða</translation>
 <translation id="3272643614306383237">Minna en 1 MB. Sum vefsvæði kunna að hlaðast hægar í næstu heimsókn.</translation>
+<translation id="3273738040255912340">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Einnig er hægt er að hafa umsjón með aðgerðum í þessu tæki utan Chromium. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Regla kerfisstjóra mælir ekki með að opna þessa skrá í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með að opna þessar skrár í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Fyrirtækið þitt, <ph name="ENROLLMENT_DOMAIN" />, hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="3286372614333682499">skammsnið</translation>
@@ -2446,6 +2450,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Dýralæknar</translation>
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> frá <ph name="WINDOW_COUNT" /> í þessu tæki</translation>
 <translation id="5717509257172454543">Ísskautar</translation>
 <translation id="5720705177508910913">Núverandi notandi</translation>
 <translation id="5720895412771013401">Borðtölvur</translation>
@@ -2956,6 +2961,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6709133671862442373">Fréttir</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="6710594484020273272">&lt;Sláðu inn leitarorð&gt;</translation>
+<translation id="6710648923880003133">Leggja til traust aðgangsorð</translation>
 <translation id="671076103358959139">Skráningarlykill:</translation>
 <translation id="6711464428925977395">Eitthvað amar að staðgengilsþjóninum, eða þá að slóðin er röng.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vill búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
@@ -3409,6 +3415,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7564667064360547717">Skyrtur og toppar</translation>
 <translation id="7567204685887185387">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans gæti hafa verið gefið út með sviksamlegum hætti. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="7568616151991626879">Google Chrome er að reyna að fylla út aðgangsorðið þitt í <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Ekkert}=1{1 flipi í þessu tæki}one{# flipi í þessu tæki}other{# flipar í þessu tæki}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Fjarlægja kreditkort úr Chrome?</translation>
 <translation id="7569983096843329377">Svartur</translation>
@@ -3888,6 +3895,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8446884382197647889">Frekari upplýsingar</translation>
 <translation id="8449155699563577224">17 x 24 to.</translation>
 <translation id="8449836157089738489">Opna allt í nýjum flipahóp</translation>
+<translation id="84561192812921051">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Virkni þinni í þessu tæki er einnig hægt að stjórna utan Chrome.  <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Ótiltekið</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Kveikja</translation>

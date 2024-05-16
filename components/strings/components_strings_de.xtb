@@ -154,6 +154,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1273592791152866347">Preis-Tracking deaktiviert</translation>
 <translation id="127777513559587977">Fernseh-Talkshows</translation>
 <translation id="1281476433249504884">Stapelfach 1</translation>
+<translation id="1281536351321444151">Wenn du diese IBAN beim nächsten Mal automatisch ausfüllen lassen möchtest, speichere sie in deinem Google-Konto</translation>
 <translation id="1282358575813748144">Wasserfahrzeuge</translation>
 <translation id="1283977499362032052">Lebensläufe und Portfolios</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
@@ -246,7 +247,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1433225466058025572">Versuche noch einmal, deine Dateien zu verschieben</translation>
 <translation id="1434317006812369578">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="1435940442311036198">Passkey auf einem anderen Gerät verwenden</translation>
-<translation id="1436185428532214179">Darf nachfragen, wenn sie Dateien oder Ordner auf meinem Gerät bearbeiten möchte</translation>
+<translation id="1436185428532214179">Darf Anfragen, Dateien und Ordner auf meinem Gerät zu bearbeiten</translation>
 <translation id="1441816242347931036">Zum Fortfahren öffnen</translation>
 <translation id="1442386063175183758">Rechtsseitige Fensterfaltung</translation>
 <translation id="1442987760062738829">Lochen</translation>
@@ -293,6 +294,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1529789484829130889">Fach 8</translation>
 <translation id="1530707389502320859">Die Website, die du besuchen möchtest, ist möglicherweise eine Fälschung. Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.</translation>
 <translation id="1532118530259321453">Auf dieser Seite wird Folgendes angezeigt</translation>
+<translation id="1533966801397200693">Das Profil, in dem du angemeldet bist, ist ein verwaltetes Profil. Dein Administrator kann deine Profileinstellungen per Fernzugriff ändern, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Seite übersetzen</translation>
 <translation id="1537807545287921620">Auf diese PDF-Datei kann nicht zugegriffen werden. Öffne das Kontextmenü und aktiviere „Text aus PDF extrahieren“.</translation>
 <translation id="1539840569003678498">Bericht gesendet:</translation>
@@ -679,6 +681,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2227758700723188171">Stipendien</translation>
 <translation id="2228057197024893428">Diese Adresse ist derzeit in Chrome gespeichert. Wenn du sie in allen Google-Produkten verwenden möchtest, speichere sie in deinem Google-Konto (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Ignoriertes nicht eindeutiges Kürzel: „<ph name="SHORTCUT_NAME" />“</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
@@ -722,6 +725,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="2318594867107319532">Letzter Richtlinien-Zeitstempel:</translation>
 <translation id="2320564945062300737">Gesichtspflegeprodukte</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 Fenster}other{# Fenster}}</translation>
 <translation id="2328651992442742497">Zugelassen (Standardeinstellung)</translation>
 <translation id="2328955282645810595">Bau- und Elektrowerkzeuge</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, läuft am <ph name="EXPIRATION_DATE_ABBR" /> ab</translation>
@@ -1007,7 +1011,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2928905813689894207">Rechnungsadresse</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}}</translation>
 <translation id="2930577230479659665">Nach jeder Kopie zuschneiden</translation>
-<translation id="2932085390869194046">Passwort vorschlagen…</translation>
 <translation id="2933624813161016821">Prägefolie</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
 <translation id="2941878205777356567">Umschlag 9 × 12 Zoll</translation>
@@ -1185,6 +1188,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-stelligen Bestätigungscode eingeben</translation>
 <translation id="3272643614306383237">Weniger als 1 MB. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
+<translation id="3273738040255912340">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chromium verwaltet werden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Laut Administratorrichtlinie wird das Öffnen dieser Datei in <ph name="DESTINATION_NAME" /> nicht empfohlen}other{Laut Administratorrichtlinie wird das Öffnen dieser Dateien in <ph name="DESTINATION_NAME" /> nicht empfohlen}}</translation>
 <translation id="3282085321714087552">Deine Organisation, <ph name="ENROLLMENT_DOMAIN" />, hat Informationen wie z. B. Einstellungen oder Richtlinien an folgende Websites gesendet.</translation>
 <translation id="3286372614333682499">Hochformat</translation>
@@ -2304,6 +2308,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5447765697759493033">Diese Website wird nicht übersetzt</translation>
 <translation id="5452270690849572955">Diese <ph name="HOST_NAME" />-Seite wurde nicht gefunden</translation>
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
+<translation id="5456428544444655325">Nie anzeigen</translation>
 <translation id="5456839782162429664">Zahlungen mit Autofill jedes Mal manuell bestätigen</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weiterer}other{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
@@ -2444,6 +2449,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Tierärzte</translation>
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> von <ph name="WINDOW_COUNT" /> auf diesem Gerät</translation>
 <translation id="5717509257172454543">Eislaufen</translation>
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="5720895412771013401">Computer</translation>
@@ -2954,6 +2960,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6709133671862442373">Nachrichten</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="6710594484020273272">&lt;Suchbegriff eingeben&gt;</translation>
+<translation id="6710648923880003133">Starkes Passwort vorschlagen</translation>
 <translation id="671076103358959139">Registrierungstoken:</translation>
 <translation id="6711464428925977395">Mit dem Proxyserver ist ein Problem aufgetreten oder die Adresse ist falsch.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> möchte eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
@@ -3407,6 +3414,7 @@ Weitere Details:
 <translation id="7564667064360547717">Shirts und Tops</translation>
 <translation id="7567204685887185387">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise in betrügerischer Absicht ausgegeben. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="7568616151991626879">Google Chrome versucht, dein Passwort auf <ph name="APP_NAME" /> auszufüllen.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Keine}=1{1 Tab auf diesem Gerät}other{# Tabs auf diesem Gerät}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kreditkarte aus Chrome entfernen?</translation>
 <translation id="7569983096843329377">Schwarz</translation>
@@ -3887,6 +3895,7 @@ Weitere Details:
 <translation id="8446884382197647889">Weitere Informationen</translation>
 <translation id="8449155699563577224">17 × 24 Zoll</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
+<translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Aktivieren</translation>

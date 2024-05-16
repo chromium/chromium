@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه بایگانی‌شده دارید}one{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}other{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}}</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3291470810748040983">وقتی در یکی از برگه‌های باز، قیمت کمتری وجود داشت، اعلان دریافت خواهید کرد</translation>
+<translation id="3322827343001922122">باز کردن منو کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="3547352561153509682">با این کار، گروه از همه دستگاه‌های واردشده به حساب <ph name="USER_EMAIL" /> حذف خواهد شد</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

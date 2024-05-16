@@ -68,7 +68,6 @@
 <translation id="2241587408274973373">Karty na stronie nowej karty</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{Zablokowane w 1 witrynie}few{Zablokowane w # witrynach}many{Zablokowane w # witrynach}other{Zablokowane w # witryny}}</translation>
 <translation id="228293613124499805">Aby strony, na które wchodzisz, mogły lepiej działać, przeważnie zapisują one na Twoim urządzeniu dane. Najczęściej są to informacje, które im udostępniasz, lub Twoje ustawienia. Zalecamy pozostawienie tego ustawienia włączonego.</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
@@ -305,6 +304,7 @@
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Ostatnia karta</translation>
 <translation id="6064125863973209585">Ukończenie pobierania plików</translation>
 <translation id="6071501408666570960">Może nastąpić wylogowanie z tej strony</translation>
 <translation id="6120483543004435978">Gdy ta opcja jest włączona, strony internetowe mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia. Gdy jest wyłączona, strony nie mogą się dowiedzieć, kiedy używasz urządzenia.</translation>
@@ -426,6 +426,7 @@
 <translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> Z urządzenia <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
@@ -480,7 +481,6 @@
 <translation id="8721719390026067591">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wyszukanie urządzeń Bluetooth. Gdy jest wyłączona, strony nie mogą wyszukiwać urządzeń Bluetooth.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{Dozwolone w 1 witrynie}few{Dozwolone w # witrynach}many{Dozwolone w # witrynach}other{Dozwolone w # witryny}}</translation>
 <translation id="8751914237388039244">Wybierz obraz</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>

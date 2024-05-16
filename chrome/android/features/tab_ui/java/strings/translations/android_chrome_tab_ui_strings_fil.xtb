@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Mayroon kang <ph name="TABS_COUNT_ONE" /> naka-archive na tab}one{Mayroon kang <ph name="TABS_COUNT_MANY" /> naka-archive na tab}other{Mayroon kang <ph name="TABS_COUNT_MANY" /> na naka-archive na tab}}</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
+<translation id="3322827343001922122">Buksan ang menu ng pagkilos ng grupo ng tab para sa grupo ng tab na <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

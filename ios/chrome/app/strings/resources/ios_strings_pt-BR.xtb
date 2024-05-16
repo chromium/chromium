@@ -191,7 +191,7 @@
 <translation id="1980417445547898121">{count,plural, =1{Acesse neste iPhone {count} guia ativa recentemente em outro dispositivo}one{Acesse neste iPhone {count} guia ativa recentemente em outro dispositivo}other{Acesse neste iPhone {count} guias ativas recentemente em outro dispositivo}}</translation>
 <translation id="1981118202195772574">Dispositivo móvel</translation>
 <translation id="1989112275319619282">Procurar</translation>
-<translation id="1990820278544963435">Buscar</translation>
+<translation id="1990820278544963435">Localizar</translation>
 <translation id="1991153180045413119">Senha compartilhada</translation>
 <translation id="1992055602764528852">Faça login para conferir suas guias em outros dispositivos.</translation>
 <translation id="199425419756152024">Ver senha</translation>
@@ -862,6 +862,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5444892875087332195">Favoritos</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Mude sua senha em <ph name="WEBSITE" /><ph name="END_LINK" /> para impedir que ela seja usada por outras pessoas</translation>
 <translation id="5457226814769348910">Abrir versão off-line</translation>
+<translation id="5459548306731933777">Mostrar detalhes</translation>
 <translation id="5475069061743940393">Rastreamento de pacotes</translation>
 <translation id="5478327362747197944">Crie eventos do Google Agenda clicando em uma data em uma página da Web.</translation>
 <translation id="5482922178977937393">Quer receber notificações de notícias, esportes e muito mais com base nos seus interesses?</translation>

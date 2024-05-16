@@ -1008,7 +1008,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2928905813689894207">To‘lov manzili</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}}</translation>
 <translation id="2930577230479659665">Har bir nusxa chekkasini qirqish</translation>
-<translation id="2932085390869194046">Parol yaratish...</translation>
 <translation id="2933624813161016821">Naqshli folga</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> havolalarini ochish</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
@@ -2953,6 +2952,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6709133671862442373">Yangiliklar</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6710594484020273272">&lt;Qidiruv so‘rovini kiriting&gt;</translation>
+<translation id="6710648923880003133">Ishonchli parol yaratish</translation>
 <translation id="671076103358959139">Qaydnoma tokeni:</translation>
 <translation id="6711464428925977395">Proksi serverda xatolik mavjud yoki manzil noto‘g‘ri kiritildi.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> sayti atrofingiz 3D xaritasini yaratmoqchi va kamera holatini kuzatmoqchi</translation>

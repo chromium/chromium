@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">价格跟踪功能已关闭</translation>
 <translation id="127777513559587977">谈话类电视节目</translation>
 <translation id="1281476433249504884">堆叠出纸器 1</translation>
+<translation id="1281536351321444151">如需下次自动填充此 IBAN，请将其保存到您的 Google 账号中</translation>
 <translation id="1282358575813748144">船舶与水运工具</translation>
 <translation id="1283977499362032052">简历与作品集</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">纸匣 8</translation>
 <translation id="1530707389502320859">您刚才尝试访问的网站貌似为虚假网站。攻击者有时会对网址做些令人难以发现的细微更改来仿冒网站。</translation>
 <translation id="1532118530259321453">此网页显示</translation>
+<translation id="1533966801397200693">您登录的个人资料是受管个人资料。您的管理员可以远程更改您的个人资料设置，通过报告分析浏览器的相关信息，以及执行其他必要任务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">翻译网页</translation>
 <translation id="1537807545287921620">无法访问此 PDF 文件。请打开上下文菜单，然后从中开启“提取 PDF 文件中的文本”</translation>
 <translation id="1539840569003678498">报告发送时间：</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">助学金与奖学金</translation>
 <translation id="2228057197024893428">此地址目前已保存到 Chrome。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="2229456043301340598">已忽略重复的快捷字词：<ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2239100178324503013">立即发送</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供用户名和密码。</translation>
 <translation id="2318594867107319532">上次刷新政策时的时间戳：</translation>
 <translation id="2320564945062300737">面部护理产品</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 个窗口}other{# 个窗口}}</translation>
 <translation id="2328651992442742497">可以使用（默认）</translation>
 <translation id="2328955282645810595">施工与电动工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@
 <translation id="2928905813689894207">账单邮寄地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
-<translation id="2932085390869194046">建议密码…</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2941878205777356567">9 x 12 英寸信封</translation>
@@ -1183,6 +1186,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">输入 <ph name="NUMBER_OF_DIGITS" /> 位数的验证码</translation>
 <translation id="3272643614306383237">小于 1 MB。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
+<translation id="3273738040255912340">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chromium 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这个文件}other{管理员政策不建议在<ph name="DESTINATION_NAME" />中打开这些文件}}</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="3286372614333682499">纵向</translation>
@@ -2302,6 +2306,7 @@
 <translation id="5447765697759493033">系统不会翻译此网站</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 的网页</translation>
 <translation id="5455374756549232013">策略时间戳无效</translation>
+<translation id="5456428544444655325">永不显示</translation>
 <translation id="5456839782162429664">每次使用自动填充功能付款时都手动验证</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}other{<ph name="CONTACT_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 名联系人}}</translation>
@@ -2442,6 +2447,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">兽医学</translation>
 <translation id="5715150588940290235">删除已保存的安全码？</translation>
+<translation id="5715918316982363436">此设备上来自 <ph name="WINDOW_COUNT" />的 <ph name="TAB_COUNT" /></translation>
 <translation id="5717509257172454543">滑冰</translation>
 <translation id="5720705177508910913">当前用户</translation>
 <translation id="5720895412771013401">桌面设备</translation>
@@ -2951,6 +2957,7 @@
 <translation id="6709133671862442373">资讯</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="6710594484020273272">&lt;输入搜索字词&gt;</translation>
+<translation id="6710648923880003133">建议一个安全系数高的密码</translation>
 <translation id="671076103358959139">注册令牌：</translation>
 <translation id="6711464428925977395">代理服务器出现问题，或者地址有误。</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
@@ -3404,6 +3411,7 @@
 <translation id="7564667064360547717">衬衫和上衣</translation>
 <translation id="7567204685887185387">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能是由骗子发出的。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="7568616151991626879">Google Chrome 正尝试在 <ph name="APP_NAME" /> 上填充您的密码。</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{无}=1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
 <translation id="7569490014721427265">高尔夫</translation>
 <translation id="7569952961197462199">从 Chrome 中移除信用卡信息？</translation>
 <translation id="7569983096843329377">黑色</translation>
@@ -3883,6 +3891,7 @@
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8449155699563577224">17 x 24 英寸</translation>
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
+<translation id="84561192812921051">您的管理员可以远程更改您的个人资料和浏览器设置，通过报告分析浏览器的相关信息，以及执行其他必要的任务。此设备上的活动可能也在接受 Chrome 外部的管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">开启</translation>

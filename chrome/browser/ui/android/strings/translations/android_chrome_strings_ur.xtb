@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">اپنے ٹریک کردہ پروڈکٹس کو بُک مارکس میں منظم کریں</translation>
 <translation id="1466383950273130737">‏Chrome کی زبان منتخب کریں</translation>
 <translation id="1477626028522505441">سروس کے مسائل کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
+<translation id="1480287803138246127">‏ہو سکتا ہے آپ کی کچھ سرگزشت یہاں ظاہر نہ ہو۔ اپنی تمام Chrome کی سرگزشت دیکھنے کے لیے، مکمل Chrome کی سرگزشت کھولیں۔</translation>
 <translation id="148482509007564431">بُک مارک محفوظ کرنے کا فلو</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
 <translation id="1493287004536771723">آپ <ph name="SITE_NAME" /> کی پیروی کر رہے ہیں</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">‏اگر آپ اپنے بُک مارکس کو اپنے Google اکاؤنٹ میں بھی محفوظ کرتے ہیں تو آپ Chrome میں پروڈکٹ کی قیمتوں کو ٹریک کر سکتے ہیں اور قیمت میں گراوٹ ہونے پر اطلاع حاصل کر سکتے ہیں</translation>
 <translation id="3227557059438308877">‏سیکیورٹی کلید کے بطور Google Chrome</translation>
 <translation id="3232293466644486101">براؤزنگ ڈیٹا حذف کریں…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ٹیبز حذف ہو گئے</translation>
 <translation id="3232754137068452469">ویب ایپ</translation>
 <translation id="3236059992281584593">1 منٹ باقی</translation>
 <translation id="3237087289225714896">معیاری پیشگی لوڈنگ:</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">اپنا پاس ورڈ دیکھنے کیلئے غیر مقفل کریں</translation>
 <translation id="5517095782334947753">آپ کے پاس <ph name="FROM_ACCOUNT" /> کی جانب سے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات ہیں۔</translation>
 <translation id="5524843473235508879">ری ڈائریکٹ مسدود ہے۔</translation>
+<translation id="5526281268548144413">متعدد ونڈوز میں بند نہیں کیا جا سکتا</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="5548606607480005320">سیفٹی چیک</translation>
 <translation id="5554520618550346933">‏آپ کے پاس ورڈ استعمال کرنے پر، Chrome آپ کو پاس ورڈ آن لائن شائع ہونے پر متنبہ کرتا ہے۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموز ہوتے ہیں، تاکہ Google سمیت کوئی بھی انہیں پڑھ نہ سکے۔</translation>
@@ -1005,6 +1008,7 @@
 مثلاً، کچھ ویب سائٹس آپ کو ایسے اشتہارات دکھا کر اس درخواست کا جواب دے سکتی ہیں جو آپ کی ملاحظہ کردہ دوسری ویب سائٹس پر مبنی نہیں ہیں۔ بہت ساری ویب سائٹس اب بھی آپ کا براؤزنگ ڈیٹا اکٹھا اور استعمال کریں گی — مثلاً، سیکیورٹی کو بہتر بنانے، مواد، اشتہارات اور تجاویز فراہم کرنے اوراطلاع دہندگی کے اعداد و شمار تیار کرنے کیلئے۔</translation>
 <translation id="6233974827872475843">‏مطابقت پذیری کو آن کر کے اس آلہ پر پاس ورڈز کو اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="6247557882553405851">‏Google پاس ورڈ مینیجر</translation>
+<translation id="6251449557817521191">‏اپنی Chrome کی سرگزشت یہاں دیکھیں</translation>
 <translation id="6255794742848779505">ہم اس آلے پر پاس ورڈز محفوظ کیے جانے کے طریقے کو تبدیل کر رہے ہیں</translation>
 <translation id="6264376385120300461">بہر حال ڈاؤن لوڈ کریں</translation>
 <translation id="6277522088822131679">صفحہ کو پرنٹ کرنے میں ایک مسئلہ تھا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏SD کارڈ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">پتہ شامل کریں</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> ٹیب حذف ہو گیا</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> بند کریں</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}other{‏<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268">صفحے کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="7986497153528221272">پاس ورڈز دیکھنے کے لئے پہلے اپنے آلے پر اسکرین لاک سیٹ کریں</translation>
+<translation id="7988531104457683216">‏ہو سکتا ہے آپ کی کچھ سرگزشت یہاں ظاہر نہ ہو۔ اپنی تمام Chrome کی سرگزشت دیکھنے کے لیے، مکمل Chrome کی سرگزشت کھولیں۔ نیز، ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="7995059495660416932">مواد دستیاب ہونے پر آپ کو دکھائی دے گا</translation>
 <translation id="799576009106109668">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="8004582292198964060">براؤزر</translation>

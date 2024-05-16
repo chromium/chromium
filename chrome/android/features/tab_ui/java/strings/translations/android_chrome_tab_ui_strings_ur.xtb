@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{آپ کے پاس <ph name="TABS_COUNT_ONE" /> آرکائیو کردہ ٹیب ہے}other{آپ کے پاس <ph name="TABS_COUNT_MANY" /> آرکائیو کردہ ٹیبز ہیں}}</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
 <translation id="3291470810748040983">کھلے ہوئے ٹیب میں قیمت کم ہونے پر آپ کو الرٹ کیا جائے گا</translation>
+<translation id="3322827343001922122">ٹیب گروپ <ph name="TITLE_OF_GROUP" /> کے لیے ٹیب گروپ کارروائی مینو کھولیں</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3547352561153509682">یہ <ph name="USER_EMAIL" /> میں سائن ان کردہ تمام آلات سے گروپ کو حذف کر دے گا</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

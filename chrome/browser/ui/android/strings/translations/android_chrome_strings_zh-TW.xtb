@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">在書籤中整理所追蹤的產品</translation>
 <translation id="1466383950273130737">選擇 Chrome 的顯示語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="1480287803138246127">這裡可能並未顯示所有歷史記錄，請開啟完整的 Chrome 歷史記錄，才能查看所有記錄。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
 <translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
 <translation id="1493287004536771723">你正在追蹤「<ph name="SITE_NAME" />」</translation>
@@ -766,6 +767,7 @@
 <translation id="4961107849584082341">將這個網頁翻譯成任何語言</translation>
 <translation id="496607651705915226">如要在 Google 帳戶中儲存及使用新密碼，請更新 Google Play 服務</translation>
 <translation id="4971735654804503942">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制。系統會顯示密碼遭外洩的警告訊息。須將瀏覽資料傳送至 Google。</translation>
+<translation id="4971753085054504448">請嘗試搜尋其他內容，或是開啟完整的 Chrome 歷史記錄，查看更多結果。</translation>
 <translation id="497421865427891073">往前</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查錯別字或嘗試執行網頁搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -1004,6 +1006,7 @@
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
 <translation id="6233974827872475843">開啟同步功能，將這部裝置上的密碼儲存在 Google 帳戶中</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
+<translation id="6251449557817521191">這裡會顯示 Chrome 歷史記錄</translation>
 <translation id="6255794742848779505">我們正在變更密碼儲存在這部裝置上的方式</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
@@ -1051,6 +1054,7 @@
 <translation id="6459045781120991510">問卷調查</translation>
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">你可以查看自己透過 Chrome 造訪的網站，並對這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資訊以及你的造訪時間長度。這些資訊可協助我們改善數位健康。</translation>
+<translation id="6470181189905173055">使用 <ph name="APP_LABEL" /> 時，在 Chrome 中開啟的網頁會顯示在這裡。</translation>
 <translation id="6473086018775716761">分享選項清單已開啟，顯示在畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對你很重要：</translation>
@@ -1387,6 +1391,7 @@
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定功能</translation>
+<translation id="7988531104457683216">這裡可能並未顯示所有歷史記錄，請開啟完整的 Chrome 歷史記錄，才能查看所有記錄。此外，Google 帳戶可能會有其他形式的瀏覽記錄，詳情請參閱 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />。</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="8004582292198964060">瀏覽器</translation>

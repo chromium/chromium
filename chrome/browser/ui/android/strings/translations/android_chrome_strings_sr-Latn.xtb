@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384704387250346179">Prev. sl. uz Google obj. <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Poslednja aktivnost: pre <ph name="LAST_UPDATED" /> dan/a</translation>
+<translation id="1390418506739274310">Možete da vidite istoriju iz drugih aplikacija koje otvaraju linkove u Chrome-u. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Da biste nastavili, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> će deliti vaše ime, imejl adresu i sliku profila sa ovim sajtom. Pogledajte <ph name="BEGIN_LINK1" />Uslove korišćenja usluge<ph name="END_LINK1" /> za ovaj sajt.</translation>
 <translation id="1397811292916898096">Pretražite pomoću: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Tamna tema</translation>
@@ -96,6 +97,7 @@
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
+<translation id="1480287803138246127">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a.</translation>
 <translation id="148482509007564431">Tok čuvanja obeleživača</translation>
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovaj sajt</translation>
 <translation id="1493287004536771723">Pratite <ph name="SITE_NAME" /></translation>
@@ -387,6 +389,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3003253259757197230">URL-ovi koje posećujete se šalju Google-u da bi se predvideli sajtovi koje ćete možda sledeće posetiti i kako bismo vam prikazali dodatne informacije o stranici koju posećujete</translation>
 <translation id="3026955690410463085">Uvrstite link</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je uključeno.</translation>
+<translation id="3027950907978057636">Od <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Nema predučitavanja</translation>
 <translation id="3029704984691124060">Pristupne fraze se ne podudaraju</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
@@ -424,6 +427,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3226612997184048185">Ako sačuvate obeleživače i na Google nalogu, možete da pratite cene proizvoda u Chrome-u i da dobijate obaveštenja kada padne cena</translation>
 <translation id="3227557059438308877">Google Chrome kao bezbednosni ključ</translation>
 <translation id="3232293466644486101">Izbriši podatke pregledanja…</translation>
+<translation id="3232459301230493791">Broj izbrisanih kartica je <ph name="TAB_COUNT" /></translation>
 <translation id="3232754137068452469">Veb-aplikacija</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3237087289225714896">Standardno predučitavanje:</translation>
@@ -862,6 +866,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5515439363601853141">Otključajte da biste pregledali lozinku</translation>
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
+<translation id="5526281268548144413">Ne možete da zatvorite u više prozora</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Pre # min}one{Pre # min}few{Pre # min}other{Pre # min}}</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
@@ -1005,6 +1010,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa koji nisu zasnovani na drugim veb-sajtovima koje ste posetili. Mnogi veb-sajtovi će ipak prikupljati i koristiti podatke pregledanja, na primer, radi poboljšanja bezbednosti, pružanja sadržaja, oglasa i preporuka, kao i radi generisanja statistike izveštavanja.</translation>
 <translation id="6233974827872475843">Uključite sinhronizaciju da biste sačuvali lozinke sa ovog uređaja na Google nalogu</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>
+<translation id="6251449557817521191">Ovde pregledajte istoriju Chrome-a</translation>
 <translation id="6255794742848779505">Menjamo način čuvanja lozinki na ovom uređaju</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6277522088822131679">Došlo je do problema pri štampanju stranice. Probajte ponovo.</translation>
@@ -1336,6 +1342,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7759809451544302770">Opcionalno</translation>
 <translation id="7762668264895820836">SD kartica <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Dodajte adresu</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> kartica je izbrisana</translation>
 <translation id="7772032839648071052">Potvrdi pristupnu frazu</translation>
 <translation id="7772375229873196092">Zatvori <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1389,6 +1396,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku koja je ugrožena pri povredi podataka.</translation>
 <translation id="7986497153528221272">Da biste videli lozinke, prvo podesite otključavanje ekrana na uređaju</translation>
+<translation id="7988531104457683216">Deo istorije se možda neće prikazivati ovde. Da biste videli kompletnu istoriju Chrome-a, otvorite celu istoriju Chrome-a. Google nalog može da ima i druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Videćete sadržaj kada postane dostupan</translation>
 <translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="8004582292198964060">Pregledač</translation>

@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Du kannst deine beobachteten Produkte in den Lesezeichen organisieren</translation>
 <translation id="1466383950273130737">Sprache für Chrome auswählen</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> konnte aufgrund von Serverproblemen nicht heruntergeladen werden.</translation>
+<translation id="1480287803138246127">Möglicherweise wird ein Teil deines Verlaufs hier nicht angezeigt. Wenn du dir den gesamten Chrome-Verlauf ansehen möchtest, öffne den vollständigen Chrome-Verlauf.</translation>
 <translation id="148482509007564431">Ablauf zum Speichern von Lesezeichen</translation>
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1493287004536771723">Du folgst „<ph name="SITE_NAME" />“</translation>
@@ -424,6 +425,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3226612997184048185">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du in Chrome Produktpreise im Auge behalten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>
 <translation id="3227557059438308877">Google Chrome als Sicherheitsschlüssel</translation>
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> Tabs gelöscht</translation>
 <translation id="3232754137068452469">Web-App</translation>
 <translation id="3236059992281584593">1 Minute übrig</translation>
 <translation id="3237087289225714896">Standard-Vorabladen:</translation>
@@ -862,6 +864,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5515439363601853141">Entsperren, um dein Passwort zu sehen</translation>
 <translation id="5517095782334947753">Du hast Lesezeichen, den Verlauf, Passwörter und andere Einstellungen von <ph name="FROM_ACCOUNT" /> übernommen.</translation>
 <translation id="5524843473235508879">Weiterleitung blockiert.</translation>
+<translation id="5526281268548144413">Kann nicht in mehreren Fenstern geschlossen werden</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Vor # Min.}other{Vor # Min.}}</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
 <translation id="5554520618550346933">Wenn du ein Passwort verwendest, wirst du von Chrome gewarnt, falls es online veröffentlicht wurde. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
@@ -1005,6 +1008,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
 <translation id="6233974827872475843">Über die Aktivierung der Synchronisierung die Passwörter auf diesem Gerät in deinem Google-Konto speichern</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
+<translation id="6251449557817521191">Hier kannst du dir den Chrome-Verlauf ansehen</translation>
 <translation id="6255794742848779505">Wir ändern, wie Passwörter auf diesem Gerät gespeichert werden</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6277522088822131679">Beim Drucken der Seite ist ein Problem aufgetreten. Bitte versuche es erneut.</translation>
@@ -1336,6 +1340,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7762668264895820836">SD-Karte <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adresse hinzufügen</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> Tab gelöscht</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> schließen</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
@@ -1389,6 +1394,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
 <translation id="7986497153528221272">Wenn du Passwörter ansehen möchtest, richte zuerst eine Displaysperre auf deinem Gerät ein</translation>
+<translation id="7988531104457683216">Möglicherweise wird ein Teil deines Verlaufs hier nicht angezeigt. Wenn du dir den gesamten Chrome-Verlauf ansehen möchtest, öffne den vollständigen Chrome-Verlauf. Darüber hinaus sind unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert.</translation>
 <translation id="7995059495660416932">Inhalte werden angezeigt, sobald sie verfügbar sind</translation>
 <translation id="799576009106109668">Du kannst schneller im Web surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="8004582292198964060">Browser</translation>

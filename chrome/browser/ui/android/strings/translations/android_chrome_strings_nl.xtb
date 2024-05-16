@@ -81,6 +81,7 @@
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1384704387250346179">Afbeelding vertalen met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> dagen geleden actief</translation>
+<translation id="1390418506739274310">Je kunt de geschiedenis zien van andere apps die links openen in Chrome. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres en profielfoto met deze site om door te gaan. Bekijk de <ph name="BEGIN_LINK1" />servicevoorwaarden<ph name="END_LINK1" /> van deze site.</translation>
 <translation id="1397811292916898096">Zoeken met <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Donker thema</translation>
@@ -96,6 +97,7 @@
 <translation id="1448440926884431741">Orden je gevolgde producten in Bookmarks</translation>
 <translation id="1466383950273130737">Kies de taal voor Chromium</translation>
 <translation id="1477626028522505441">Downloaden van <ph name="FILE_NAME" /> is mislukt door serverproblemen.</translation>
+<translation id="1480287803138246127">Een deel van je geschiedenis wordt hier misschien niet getoond. Open de volledige Chrome-geschiedenis om al je Chrome-geschiedenis te bekijken.</translation>
 <translation id="148482509007564431">Proces voor bookmark opslaan</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1493287004536771723">Je volgt <ph name="SITE_NAME" /></translation>
@@ -387,6 +389,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3003253259757197230">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat en extra informatie te tonen over de pagina die je bezoekt</translation>
 <translation id="3026955690410463085">Link toevoegen</translation>
 <translation id="3027644380269727216">Gebaseerd op je activiteit op een site. Deze instelling staat aan.</translation>
+<translation id="3027950907978057636">Van <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Niet vooraf laden</translation>
 <translation id="3029704984691124060">Wachtwoordzinnen komen niet overeen</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hulp krijgen<ph name="END_LINK" /></translation>
@@ -424,6 +427,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3226612997184048185">Als je je bookmarks ook opslaat in je Google-account, kun je productprijzen in Chrome bijhouden en een melding krijgen als de prijs daalt</translation>
 <translation id="3227557059438308877">Google Chrome als beveiligingssleutel</translation>
 <translation id="3232293466644486101">Browsegegevens verwijderen…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> tabbladen verwijderd</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3236059992281584593">1 minuut resterend</translation>
 <translation id="3237087289225714896">Standaard vooraf laden:</translation>
@@ -862,6 +866,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5515439363601853141">Ontgrendelen om je wachtwoord te bekijken</translation>
 <translation id="5517095782334947753">Je hebt bookmarks, geschiedenis, wachtwoorden en andere instellingen van <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Omleiding geblokkeerd.</translation>
+<translation id="5526281268548144413">Kunnen niet worden gesloten voor meerdere vensters</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min geleden}other{# min geleden}}</translation>
 <translation id="5548606607480005320">Veiligheidscheck</translation>
 <translation id="5554520618550346933">Als je een wachtwoord gebruikt, waarschuwt Chrome je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
@@ -1005,6 +1010,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
 <translation id="6233974827872475843">Sla de wachtwoorden op dit apparaat op in je Google-account door synchronisatie aan te zetten</translation>
 <translation id="6247557882553405851">Google Wachtwoordmanager</translation>
+<translation id="6251449557817521191">Bekijk hier je Chrome-geschiedenis</translation>
 <translation id="6255794742848779505">We wijzigen hoe wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
@@ -1336,6 +1342,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7759809451544302770">Optioneel</translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> tabblad verwijderd</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> sluiten</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}}</translation>
@@ -1389,6 +1396,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7975379999046275268">Pagina bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarschuwt je als je een wachtwoord gebruikt dat is gevonden bij een gegevenslek.</translation>
 <translation id="7986497153528221272">Als je wachtwoorden wilt bekijken, moet je eerst een schermvergrendeling instellen op je apparaat</translation>
+<translation id="7988531104457683216">Een deel van je geschiedenis wordt hier misschien niet getoond. Open de volledige Chrome-geschiedenis om al je Chrome-geschiedenis te bekijken. Er kunnen ook andere vormen van browsegeschiedenis voor je Google-account zijn opgeslagen op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Je ziet content zodra deze beschikbaar komt</translation>
 <translation id="799576009106109668">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="8004582292198964060">Browser</translation>

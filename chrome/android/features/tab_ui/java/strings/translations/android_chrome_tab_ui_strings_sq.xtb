@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Ke <ph name="TABS_COUNT_ONE" /> skedë të arkivuar}other{Ke <ph name="TABS_COUNT_MANY" /> skeda të arkivuara}}</translation>
 <translation id="3194464645767632461">vlerësimi</translation>
 <translation id="3291470810748040983">Do të marrësh një alarm sinjalizues kur ka një çmim më të ulët në një skedë të hapur</translation>
+<translation id="3322827343001922122">Hap menynë e veprimeve të grupit të skedave për grupin e skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3328308545011660196">Sugjerim: <ph name="NUMBER_OF_TABS" /> skeda duken të lidhura. Dëshiron t'i gruposh?</translation>
 <translation id="3547352561153509682">Kjo do ta fshijë grupin nga të gjitha pajisjet ku je identifikuar me <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

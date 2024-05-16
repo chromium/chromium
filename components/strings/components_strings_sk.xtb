@@ -154,6 +154,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1273592791152866347">Sledovanie ceny je vypnuté</translation>
 <translation id="127777513559587977">Televízne diskusné relácie</translation>
 <translation id="1281476433249504884">Odkladač č. 1</translation>
+<translation id="1281536351321444151">Ak chcete toto číslo IBAN nabudúce automaticky doplniť, uložte si ho do účtu Google</translation>
 <translation id="1282358575813748144">Lode a plavidlá</translation>
 <translation id="1283977499362032052">Životopisy a portfóliá</translation>
 <translation id="1285320974508926690">Nikdy neprekladať tieto webové stránky</translation>
@@ -293,6 +294,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1529789484829130889">Priehradka č. 8</translation>
 <translation id="1530707389502320859">Web, ktorý sa pokúšate navštíviť, vyzerá falošne. Útočníci niekedy weby napodobňujú tak, že vo webovej adrese vykonajú drobné, ťažko odhaliteľné zmeny.</translation>
 <translation id="1532118530259321453">Táto stránka hovorí</translation>
+<translation id="1533966801397200693">Profil, do ktorého ste sa prihlásili, je spravovaný. Správca môže vzdialene vykonávať zmeny v nastaveniach profilu, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Preložiť stránku</translation>
 <translation id="1537807545287921620">Tento súbor PDF je nedostupný. Otvorte kontextovú ponuku a zapnite možnosť Extrahovať text zo súboru PDF.</translation>
 <translation id="1539840569003678498">Hlásenie bolo odoslané:</translation>
@@ -679,6 +681,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2227758700723188171">Študijné granty a štipendiá</translation>
 <translation id="2228057197024893428">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Bola ignorovaná nejedinečná skratka: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 karta}few{# karty}many{# tabs}other{# kariet}}</translation>
 <translation id="2233745931693710080">Kompaktný disk</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2239100178324503013">Odoslať</translation>
@@ -722,6 +725,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje používateľské meno a heslo.</translation>
 <translation id="2318594867107319532">Posledná časová pečiatka pravidiel:</translation>
 <translation id="2320564945062300737">Produkty starostlivosti o tvár</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 okno}few{# okná}many{# windows}other{# okien}}</translation>
 <translation id="2328651992442742497">Povolené (predvolené)</translation>
 <translation id="2328955282645810595">Stavebné a elektrické náradie</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, platí do <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2928905813689894207">Fakturačná adresa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšia}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšie}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšej}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalších}}</translation>
 <translation id="2930577230479659665">Orezať po každej kópii</translation>
-<translation id="2932085390869194046">Navrhnúť heslo…</translation>
 <translation id="2933624813161016821">Razbová fólia</translation>
 <translation id="2938225289965773019">Otvárať odkazy protokolu <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Obálka 228,6 mm × 304,8 mm</translation>
@@ -1182,6 +1185,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Zadajte <ph name="NUMBER_OF_DIGITS" />‑miestny overovací kód</translation>
 <translation id="3272643614306383237">Menej ako 1 MB. Pri vašej ďalšej návšteve sa môžu niektoré weby načítať pomalšie.</translation>
+<translation id="3273738040255912340">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo prehliadača Chromium. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Pravidlá správcu otvorenie tohto súboru v službe <ph name="DESTINATION_NAME" /> neodporúčajú}few{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}many{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}other{Pravidlá správcu otvorenie týchto súborov v službe <ph name="DESTINATION_NAME" /> neodporúčajú}}</translation>
 <translation id="3282085321714087552">Vaša organizácia, <ph name="ENROLLMENT_DOMAIN" />, odoslala na nasledujúce weby nejaké informácie, napríklad nastavenia alebo pravidlá.</translation>
 <translation id="3286372614333682499">na výšku</translation>
@@ -2302,6 +2306,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5447765697759493033">Tento web nebude preložený</translation>
 <translation id="5452270690849572955">Táto stránka webu <ph name="HOST_NAME" /> sa nenašla</translation>
 <translation id="5455374756549232013">Chybná časová pečiatka pravidla</translation>
+<translation id="5456428544444655325">Nikdy nezobrazovať</translation>
 <translation id="5456839782162429664">Pri každej platbe využívajúcej automatické dopĺňanie požiadať o manuálne overenie</translation>
 <translation id="5457113250005438886">Neplatné</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
@@ -2442,6 +2447,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinári</translation>
 <translation id="5715150588940290235">Chcete odstrániť uložené bezpečnostné kódy?</translation>
+<translation id="5715918316982363436">Karty (<ph name="TAB_COUNT" />) z <ph name="WINDOW_COUNT" /> v tomto zariadení</translation>
 <translation id="5717509257172454543">Ľadové korčuľovanie</translation>
 <translation id="5720705177508910913">Aktuálny používateľ</translation>
 <translation id="5720895412771013401">Desktopy</translation>
@@ -2951,6 +2957,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6710594484020273272">&lt;Zadajte hľadaný výraz&gt;</translation>
+<translation id="6710648923880003133">Navrhnúť silné heslo</translation>
 <translation id="671076103358959139">Registračný token:</translation>
 <translation id="6711464428925977395">Vyskytol sa problém s proxy serverom alebo je adresa nesprávna.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce vytvoriť 3D mapu vášho okolia a sledovať umiestnenie kamier</translation>
@@ -3404,6 +3411,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7564667064360547717">Košele a topy</translation>
 <translation id="7567204685887185387">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, bol zrejme vydaný falošný bezpečnostný certifikát. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="7568616151991626879">Google Chrome sa pokúša vyplniť heslo v aplikácii <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Žiadna}=1{1 karta v tomto zariadení}few{# karty v tomto zariadení}many{# tabs on this device}other{# kariet v tomto zariadení}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Chcete kreditnú kartu odstrániť z prehliadača Chrome?</translation>
 <translation id="7569983096843329377">Čierna</translation>
@@ -3883,6 +3891,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8446884382197647889">Ďalšie informácie</translation>
 <translation id="8449155699563577224">17 × 24 palcov</translation>
 <translation id="8449836157089738489">Otvoriť všetko v novej skupine kariet</translation>
+<translation id="84561192812921051">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo Chromu.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Bez časového obmedzenia</translation>
 <translation id="8458202188076138974">List (Extra)</translation>
 <translation id="8460854335417802511">Zapnutie</translation>

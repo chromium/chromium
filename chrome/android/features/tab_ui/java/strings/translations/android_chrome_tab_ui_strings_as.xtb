@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{আপোনাৰ ওচৰত <ph name="TABS_COUNT_ONE" /> টা আৰ্কাইভ কৰা টেব আছে}one{আপোনাৰ ওচৰত <ph name="TABS_COUNT_MANY" /> টা আৰ্কাইভ কৰা টেব আছে}other{আপোনাৰ ওচৰত <ph name="TABS_COUNT_MANY" /> টা আৰ্কাইভ কৰা টেব আছে}}</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
 <translation id="3291470810748040983">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে আপুনি এটা সতৰ্কবাৰ্তা লাভ কৰিব</translation>
+<translation id="3322827343001922122">টেবৰ গোট <ph name="TITLE_OF_GROUP" />ৰ বাবে টেবৰ গোটৰ কামৰ মেনুখন খোলক</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
 <translation id="3547352561153509682">ই <ph name="USER_EMAIL" />ত ছাইন কৰা আটাইবোৰ ডিভাইচৰ পৰা গোটটো মচি পেলাব</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

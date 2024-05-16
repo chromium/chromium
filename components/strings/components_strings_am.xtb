@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">የዋጋ ክትትል ጠፍቷል</translation>
 <translation id="127777513559587977">የቲቪ የጭውውት ትርዒቶች</translation>
 <translation id="1281476433249504884">ቁልል 1</translation>
+<translation id="1281536351321444151">በቀጣዩ ጊዜ ይህንን አይቢኤኤን በራስ-ሙላ ለመሙላት በGoogle መለያዎ ውስጥ ያስቀምጡት</translation>
 <translation id="1282358575813748144">ጀልባዎች እና የውሃ መጓጓዣዎች</translation>
 <translation id="1283977499362032052">የስራ ልምዶች እና ፖርትፎሊዮዎች</translation>
 <translation id="1285320974508926690">ይህን ጣቢያ በጭራሽ አትተርጉም</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">መሳቢያ 8</translation>
 <translation id="1530707389502320859">አሁን ለመጎብኘት የሞከሩት ጣቢያ የሐስት ይመስላል። አጥቂዎች አንዳንድ ግ ጊዜ በዩአርኤሉ ላይ ለመታየት የሚያስቸግሩ አነስተኛ ለውጦችን በማድረግ ጥኣቢያዎችን ያስመስላሉ።</translation>
 <translation id="1532118530259321453">ይህ ገፅ እንዲህ ይላል፦</translation>
+<translation id="1533966801397200693">እርስዎ የገቡበት መገለጫ የሚተዳደር መገለጫ ነው። አስተዳዳሪዎ በመገለጫዎ ቅንብሮች ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">ገፅ ተርጉም</translation>
 <translation id="1537807545287921620">ይህ PDF ተደራሽ አይደለም። ተገቢ ሁኔታ ምናሌን ይክፈቱ እና «ከPDF ላይ ጽሁፍ አውጣ» የሚለውን ያብሩ</translation>
 <translation id="1539840569003678498">ሪፖርት ተልኳል፦</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">የትምህርት ድጎማዎች እና ስኮላርሺፖች</translation>
 <translation id="2228057197024893428">ይህ አድራሻ በአሁኑ ጊዜ Chrome ላይ ተቀምጧል። በመላው የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ፣ <ph name="ACCOUNT" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="2229456043301340598">ችላ የተባለ ልዩ ያልሆነ አቋራጭ፦ <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 ትር}one{# ትር}other{# ትሮች}}</translation>
 <translation id="2233745931693710080">ኮምፓክት ዲስክ</translation>
 <translation id="2235344399760031203">የሦስተኛ ወገን ኩኪዎች ታግደዋል</translation>
 <translation id="2239100178324503013">አሁን ላክ</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> የተጠቃሚ ስም እና የይለፍ ቃል ያስፈልገዋል።</translation>
 <translation id="2318594867107319532">የመጨረሻው መመሪያ የጊዜ ማህተም፡-</translation>
 <translation id="2320564945062300737">የፊት እንክብካቤ ምርቶች</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 መስኮት}one{# መስኮት}other{# መስኮቶች}}</translation>
 <translation id="2328651992442742497">ተፈቅዷል (ነባሪ)</translation>
 <translation id="2328955282645810595">የግንባታ እና የኃይል መሣሪያዎች</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />፣ በ<ph name="EXPIRATION_DATE_ABBR" /> አገልግሎት ጊዜው ያበቃል</translation>
@@ -1007,7 +1011,6 @@
 <translation id="2928905813689894207">ክፍያ የሚጠየቅበት አድራሻ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}}</translation>
 <translation id="2930577230479659665">ከእያንዳንዱ ቅጂ በኋላ ከርክም</translation>
-<translation id="2932085390869194046">የይለፍ ቃል ጠቁም...</translation>
 <translation id="2933624813161016821">ፎይልን መቅረጽ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> አገናኞችን ክፈት</translation>
 <translation id="2941878205777356567">9 x 12 ኢንች ፖስታ</translation>
@@ -1184,6 +1187,7 @@
 <translation id="3272091146646336650">ልዕለ B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-አሃዝ የማረጋገጫ ኮድ ያስገቡ</translation>
 <translation id="3272643614306383237">ከ1 ሜባ ያነሰ። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ ቀስ ብለው ሊጭኑ ይችላሉ።</translation>
+<translation id="3273738040255912340">አስተዳዳሪዎ በመገለጫዎ ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ እንዲሁም ከChromium ውጭ ሊተዳደር ይችላል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{የአስተዳዳሪ መመሪያ ይህን ፋይል በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}one{የአስተዳዳሪ መመሪያ ይህን ፋይል በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}other{የአስተዳዳሪ መመሪያ እነዚህን ፋይሎች በ<ph name="DESTINATION_NAME" /> ውስጥ መክፈትን አይመክርም}}</translation>
 <translation id="3282085321714087552">ድርጅትዎ <ph name="ENROLLMENT_DOMAIN" /> እንደ ቅንብሮች ወይም መመሪያዎች ላሉት ለሚከተሉት ድር ጣቢያዎች የተወሰነ መረጃ ልኳል።</translation>
 <translation id="3286372614333682499">የምስል ፍሬ</translation>
@@ -2305,6 +2309,7 @@
 <translation id="5447765697759493033">ይህ ጣቢያ አይተረጎምም</translation>
 <translation id="5452270690849572955">ይህ <ph name="HOST_NAME" /> ገፅ ሊገኝ አይችልም</translation>
 <translation id="5455374756549232013">መጥፎ የመምሪያ ጊዜ ማህተም</translation>
+<translation id="5456428544444655325">በጭራሽ አታሳይ</translation>
 <translation id="5456839782162429664">ራስ-ሙላን በመጠቀም በሚከፍሉበት ጊዜ ሁሉ ራስዎ ያረጋግጡ</translation>
 <translation id="5457113250005438886">ልክ ያልሆነ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}one{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}other{<ph name="CONTACT_PREVIEW" /> እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}}</translation>
@@ -2445,6 +2450,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">የእንስሳት ሐኪሞች</translation>
 <translation id="5715150588940290235">የተቀመጡ የደህንነት ኮዶች ይሰረዙ?</translation>
+<translation id="5715918316982363436">በዚህ መሣሪያ ላይ <ph name="TAB_COUNT" /> ከ<ph name="WINDOW_COUNT" /></translation>
 <translation id="5717509257172454543">በበረዶ ላይ መንሸራተት</translation>
 <translation id="5720705177508910913">የአሁኑ ተጠቃሚ</translation>
 <translation id="5720895412771013401">የዴስክቶፕ ኮምፒውተሮች</translation>
@@ -2955,6 +2961,7 @@
 <translation id="6709133671862442373">ዜና</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6710594484020273272">&lt;የፍለጋ ቃል ይተይቡ&gt;</translation>
+<translation id="6710648923880003133">ጠንካራ የይለፍ ቃል ጠቁም</translation>
 <translation id="671076103358959139">የምዝገባ ማስመሰያ፦</translation>
 <translation id="6711464428925977395">በተኪ አገልጋዩ ላይ የሆነ ችግር አለ ወይም አድራሻው ትክክል አይደለም።</translation>
 <translation id="6716672519412350405"><ph name="URL" /> የዙሪያዎ የ3ል ካርታ መፍጠር እና የካሜራ ቦታን መከታተል ይፈልጋል</translation>
@@ -3408,6 +3415,7 @@
 <translation id="7564667064360547717">ሸሚዞች እና ከላይ የሚለበሱ</translation>
 <translation id="7567204685887185387">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በተጭበረበረ ሁኔታ ተሰጥቶ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="7568616151991626879">Google Chrome <ph name="APP_NAME" /> ላይ የይለፍ ቃልዎን ለመሙላት እየሞከረ ነው።</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{ምንም}=1{በዚህ መሣሪያ ላይ 1 ትር}one{በዚህ መሣሪያ ላይ # ትር}other{በዚህ መሣሪያ ላይ # ትሮች}}</translation>
 <translation id="7569490014721427265">ጎልፍ</translation>
 <translation id="7569952961197462199">ክሬዲት ካርድ ከChrome ይወገድ?</translation>
 <translation id="7569983096843329377">ጥቁር</translation>
@@ -3887,6 +3895,7 @@
 <translation id="8446884382197647889">ተጨማሪ ለመረዳት</translation>
 <translation id="8449155699563577224">17 x 24 ኢንች</translation>
 <translation id="8449836157089738489">ሁሉንም በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
+<translation id="84561192812921051">አስተዳዳሪዎ በመገለጫዎ ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ያልተወሰነ</translation>
 <translation id="8458202188076138974">ደብዳቤ ኤክስትራ</translation>
 <translation id="8460854335417802511">አብራው</translation>

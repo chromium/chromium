@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organiza os produtos dos que fagas un seguimento en Marcadores</translation>
 <translation id="1466383950273130737">Escolle o idioma de Chrome</translation>
 <translation id="1477626028522505441">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a problemas co servidor.</translation>
+<translation id="1480287803138246127">É posible que parte do teu historial non se mostre aquí. Para velo todo, abre o historial completo de Chrome.</translation>
 <translation id="148482509007564431">Fluxo para gardar marcadores</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1493287004536771723">Estás seguindo <ph name="SITE_NAME" /></translation>
@@ -424,6 +425,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3226612997184048185">Se tamén gardas os marcadores na túa Conta de Google, poderás facer un seguimento dos prezos dos produtos en Chrome e recibir notificacións cando baixen</translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232293466644486101">Eliminar datos de navegación…</translation>
+<translation id="3232459301230493791">Elimináronse <ph name="TAB_COUNT" /> pestanas</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3237087289225714896">Precarga estándar:</translation>
@@ -862,6 +864,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5515439363601853141">Desbloquea a pantalla para ver o teu contrasinal</translation>
 <translation id="5517095782334947753">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Bloqueouse a redirección.</translation>
+<translation id="5526281268548144413">Non se poden pechar en varias ventás</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Hai # min}other{Hai # min}}</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
 <translation id="5554520618550346933">Cando usas un contrasinal, Chrome avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
@@ -1005,6 +1008,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
 <translation id="6233974827872475843">Para gardar os contrasinais deste dispositivo na túa Conta de Google, activa a sincronización</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
+<translation id="6251449557817521191">Consulta o historial de Chrome aquí</translation>
 <translation id="6255794742848779505">Imos cambiar o modo no que se gardan os contrasinais neste dispositivo</translation>
 <translation id="6264376385120300461">Descargar de todos os modos</translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
@@ -1336,6 +1340,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
+<translation id="776533689993750361">Eliminouse <ph name="TAB_COUNT" /> pestana</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772375229873196092">Pechar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
@@ -1389,6 +1394,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
+<translation id="7988531104457683216">É posible que parte do teu historial non se mostre aquí. Para velo todo, abre o historial completo de Chrome. Ademais, a túa Conta de Google pode ter outro contido do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Verás o contido cando estea dispoñible</translation>
 <translation id="799576009106109668">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
 <translation id="8004582292198964060">Navegador</translation>

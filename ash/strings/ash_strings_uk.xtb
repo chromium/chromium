@@ -1196,6 +1196,7 @@
 <translation id="5587506661873751671">Завантажується (<ph name="DOWNLOAD_PERCENT" />%)</translation>
 <translation id="558849140439112033">Потягніть, щоб вибрати область, знімок якої потрібно зробити</translation>
 <translation id="5590609058453685222">Нагадування про вимкнений мікрофон увімкнено. Якщо ви говоритимете в режимі "Без звуку", то отримаєте сповіщення.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5599242528220103262">Комбінацію клавіш вимкнено</translation>
 <translation id="5600837773213129531">Натисніть Ctrl + Alt + Z, щоб вимкнути голосові підказки.</translation>
@@ -1372,6 +1373,7 @@
 <translation id="6232891689835436217">Додаток <ph name="APP_NAME" /> використовує ваші камеру та мікрофон</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Низький заряд акумулятора. Режим енергозбереження ввімкнено.</translation>
+<translation id="6240603910551255087">Верхня кнопка</translation>
 <translation id="6247728804802644171">Відкрити сповіщення</translation>
 <translation id="6249795363855770621">Не вдалося позначити як виконане. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="6254629735336163724">Заблоковано в горизонтальному положенні</translation>
@@ -2074,6 +2076,7 @@
 <translation id="906458777597946297">Розгорнути вікно</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9070640332319875144">Налаштування Асистента</translation>
+<translation id="9071966355747967534">Функція "<ph name="FEATURE_NAME" />" недоступна</translation>
 <translation id="9072519059834302790">Акумулятор розрядиться повністю через <ph name="TIME_LEFT" />.</translation>
 <translation id="9074432941673450836">Виконуйте різні завдання за допомогою додатків на <ph name="PRODUCT_NAME" />. Їх можна знайти на Панелі запуску. Ви також можете натиснути клавішу Панелі запуску (над лівою клавішею Shift) на клавіатурі.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

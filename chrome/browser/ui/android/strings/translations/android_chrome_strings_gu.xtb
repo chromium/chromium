@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Bookmarksમાં તમારી ટ્રૅક કરેલી પ્રોડક્ટની ગોઠવણ કરો</translation>
 <translation id="1466383950273130737">Chromeની ભાષા પસંદ કરો</translation>
 <translation id="1477626028522505441">સર્વર સમસ્યાઓને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
+<translation id="1480287803138246127">તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. તમારો બધો Chrome ઇતિહાસ જોવા માટે, સંપૂર્ણ Chrome ઇતિહાસ ખોલો.</translation>
 <translation id="148482509007564431">બુકમાર્ક સાચવવાનો ફ્લો</translation>
 <translation id="1492417797159476138">તમે આ સાઇટ માટે પહેલેથી જ વપરાશકર્તા નામ સાચવ્યું છે</translation>
 <translation id="1493287004536771723">તમે <ph name="SITE_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">જો તમે બુકમાર્કને તમારા Google એકાઉન્ટમાં પણ સાચવશો, તો તમે પ્રોડક્ટની કિંમતો Chromeમાં ટ્રૅક કરી શકશો તેમજ જ્યારે પણ કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવશો</translation>
 <translation id="3227557059438308877">સિક્યુરિટી કી તરીકે Google Chrome</translation>
 <translation id="3232293466644486101">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
+<translation id="3232459301230493791"><ph name="TAB_COUNT" /> ટૅબ ડિલીટ કર્યા</translation>
 <translation id="3232754137068452469">વેબ ઍપ</translation>
 <translation id="3236059992281584593">1 મિનિટ બાકી</translation>
 <translation id="3237087289225714896">પહેલેથી લોડ કરવાનો માનક મોડ:</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">તમારો પાસવર્ડ જોવા માટે અનલૉક કરો</translation>
 <translation id="5517095782334947753">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ છે.</translation>
 <translation id="5524843473235508879">રીડાયરેક્ટ કરવાનું અવરોધિત.</translation>
+<translation id="5526281268548144413">એકથી વધુ વિન્ડો પર બંધ ન હોઈ શકે</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# મિનિટ પહેલાં}one{# મિનિટ પહેલાં}other{# મિનિટ પહેલાં}}</translation>
 <translation id="5548606607480005320">સલામતી માટે તપાસ</translation>
 <translation id="5554520618550346933">તમે પાસવર્ડનો ઉપયોગ કરો છો, ત્યારે જો તે ઑનલાઇન પબ્લિશ કરવામાં આવ્યો હોય તો Chrome તમને ચેતવણી આપે છે. આમ કરતી વખતે તમારા પાસવર્ડ અને વપરાશકર્તાનું નામ એન્ક્રિપ્ટેડ હોય છે, જેથી Google સહિત, કોઈપણ તેને વાંચી શકતું નથી.</translation>
@@ -1005,6 +1008,7 @@
 ઉદાહરણ તરીકે, કેટલીક વેબસાઇટ, તમે મુલાકાત લીધેલી બીજા વેબસાઇટ પર આધારિત ન હોય તેવી જાહેરાતો તમને બતાવીને આ વિનંતી પર પ્રતિસાદ આપી શકે છે. ઘણી વેબસાઇટ હજી પણ તમારા બ્રાઉઝિંગ ડેટાને ભેગો કરશે અને ઉપયોગ કરશે — ઉદાહરણ તરીકે સુરક્ષાને બહેતર બનાવવા, કન્ટેન્ટ, જાહેરાતો અને ભલામણો આપવા અને રિપોર્ટિંગ આંકડા જનરેટ કરવા માટે.</translation>
 <translation id="6233974827872475843">સિંક કરોને ચાલુ કરીને તમારા Google એકાઉન્ટમાં આ ડિવાઇસ પર પાસવર્ડ સાચવો</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
+<translation id="6251449557817521191">તમારો Chrome ઇતિહાસ અહીં જુઓ</translation>
 <translation id="6255794742848779505">અમે આ ડિવાઇસ પર પાસવર્ડ સાચવવાની રીત બદલી રહ્યાં છીએ</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7762668264895820836">SD કાર્ડ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">સરનામું ઉમેરો</translation>
+<translation id="776533689993750361"><ph name="TAB_COUNT" /> ટૅબ ડિલીટ કર્યું</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ને બંધ કરો</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268">પેજને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
 <translation id="7986497153528221272">પાસવર્ડ જોવા માટે, પહેલા તમારા ડિવાઇસ પર સ્ક્રીન લૉક સેટ કરો</translation>
+<translation id="7988531104457683216">તમારો અમુક ઇતિહાસ કદાચ અહીં જોવા ન પણ મળી શકે. તમારો બધો Chrome ઇતિહાસ જોવા માટે, સંપૂર્ણ Chrome ઇતિહાસ ખોલો. તે ઉપરાંત, તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો પણ હોઈ શકે છે.</translation>
 <translation id="7995059495660416932">જ્યારે કન્ટેન્ટ ઉપલબ્ધ થશે, ત્યારે તમને તે દેખાશે</translation>
 <translation id="799576009106109668">તમે વધુ ઝડપથી બ્રાઉઝ કરશો કારણ કે વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવે છે</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>

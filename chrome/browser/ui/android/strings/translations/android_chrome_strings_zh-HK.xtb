@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="1480287803138246127">部分記錄可能不會在此顯示。如要查看所有 Chrome 記錄，請開啟完整 Chrome 記錄。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1493287004536771723">您正在追蹤「<ph name="SITE_NAME" />」</translation>
@@ -1005,6 +1006,7 @@
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
 <translation id="6233974827872475843">開啟同步功能，將此裝置上的密碼儲存在 Google 帳戶中</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
+<translation id="6251449557817521191">在此查看 Chrome 記錄</translation>
 <translation id="6255794742848779505">我們正在變更密碼儲存在此裝置上的方式</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
@@ -1389,6 +1391,7 @@
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
+<translation id="7988531104457683216">部分記錄可能不會在此顯示。如要查看所有 Chrome 記錄，請開啟完整 Chrome 記錄。此外，你的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上亦可能有其他形式的瀏覽記錄。</translation>
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="8004582292198964060">瀏覽器</translation>

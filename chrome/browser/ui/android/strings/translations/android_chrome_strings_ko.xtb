@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">추적 중인 제품을 북마크로 정리하세요.</translation>
 <translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="1480287803138246127">일부 방문 기록이 여기에 표시되지 않을 수 있습니다. 모든 Chrome 방문 기록을 보려면 전체 Chrome 방문 기록을 여세요.</translation>
 <translation id="148482509007564431">북마크 저장 흐름</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> 사이트를 팔로우 중입니다.</translation>
@@ -424,6 +425,7 @@
 <translation id="3226612997184048185">Google 계정에도 북마크를 저장하면 Chrome에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>
 <translation id="3227557059438308877">Chrome을 보안 키로 사용</translation>
 <translation id="3232293466644486101">인터넷 사용 기록 삭제…</translation>
+<translation id="3232459301230493791">탭 <ph name="TAB_COUNT" />개 삭제됨</translation>
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3236059992281584593">1분 남음</translation>
 <translation id="3237087289225714896">표준 미리 로드:</translation>
@@ -862,6 +864,7 @@
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="5524843473235508879">리디렉션이 차단되었습니다.</translation>
+<translation id="5526281268548144413">여러 창을 닫을 수 없음</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{#분 전}other{#분 전}}</translation>
 <translation id="5548606607480005320">안전 확인</translation>
 <translation id="5554520618550346933">비밀번호를 사용하면 온라인에 비밀번호가 게시된 경우 Chrome에서 경고를 표시합니다. 이렇게 하면 비밀번호 및 사용자 이름이 암호화되어 Google을 포함해 누구도 읽을 수 없습니다.</translation>
@@ -1005,6 +1008,7 @@
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
 <translation id="6233974827872475843">동기화를 사용 설정하여 이 기기의 비밀번호를 Google 계정에 저장하세요.</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
+<translation id="6251449557817521191">여기에서 Chrome 방문 기록 보기</translation>
 <translation id="6255794742848779505">이 기기에 비밀번호가 저장되는 방식이 변경됩니다</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
 <translation id="6277522088822131679">페이지를 인쇄하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7762668264895820836">SD 카드 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">주소 추가</translation>
+<translation id="776533689993750361">탭 <ph name="TAB_COUNT" />개 삭제됨</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> 닫기</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
@@ -1389,6 +1394,7 @@
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
+<translation id="7988531104457683216">일부 방문 기록이 여기에 표시되지 않을 수 있습니다. 모든 Chrome 방문 기록을 보려면 전체 Chrome 방문 기록을 여세요. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="7995059495660416932">이용 가능한 콘텐츠가 있으면 표시됩니다.</translation>
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="8004582292198964060">브라우저</translation>

@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Una kichupo <ph name="TABS_COUNT_ONE" /> kilichohifadhiwa kwenye kumbukumbu}other{Una vichupo <ph name="TABS_COUNT_MANY" /> vilivyohifadhiwa kwenye kumbukumbu}}</translation>
 <translation id="3194464645767632461">ukadiriaji</translation>
 <translation id="3291470810748040983">Utapata arifa wakati kuna bei nafuu zaidi katika kichupo ulichokifungua</translation>
+<translation id="3322827343001922122">Fungua menyu ya vitendo ya kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Pendekezo: Vichupo <ph name="NUMBER_OF_TABS" /> vinaonekana kuwa vinahusiana. Ungependa kuvipanga pamoja?</translation>
 <translation id="3547352561153509682">Hatua hii itafuta kikundi kwenye vifaa vyote ulivyotumia kuingia katika akaunti ya <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

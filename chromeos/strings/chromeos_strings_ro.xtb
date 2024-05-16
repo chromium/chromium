@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Nume de gazdă server</translation>
 <translation id="5089810972385038852">Stat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Deconectează cablul USB <ph name="DEVICE_NAME" />, apoi reintrodu-l pentru a continua procesul de actualizare</translation>
 <translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Sinonime:</translation>

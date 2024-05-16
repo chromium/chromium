@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Bạn có <ph name="TABS_COUNT_ONE" /> thẻ được lưu trữ}other{Bạn có <ph name="TABS_COUNT_MANY" /> thẻ được lưu trữ}}</translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
+<translation id="3322827343001922122">Mở trình đơn thao tác đối với nhóm thẻ cho nhóm thẻ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3547352561153509682">Thao tác này sẽ xoá nhóm khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

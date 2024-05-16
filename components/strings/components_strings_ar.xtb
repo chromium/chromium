@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">ميزة تتبُّع السعر غير مفعَّلة</translation>
 <translation id="127777513559587977">برامج حوار تلفزيونية</translation>
 <translation id="1281476433249504884">المكدِّس 1</translation>
+<translation id="1281536351321444151">‏لملء رقم الحساب هذا بصيغة IBAN في المرة القادمة تلقائيًا، عليك حفظه في حسابك على Google</translation>
 <translation id="1282358575813748144">قوارب ومراكب</translation>
 <translation id="1283977499362032052">سير ذاتية وسابقات أعمال</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">الدُرج 8</translation>
 <translation id="1530707389502320859">‏يبدو الموقع الإلكتروني الذي حاولت الانتقال إليه مزيفًا. يحاكي المهاجمون أحيانًا المواقع الإلكترونية من خلال إجراء تغييرات بسيطة يصعب رؤيتها على عنوان URL.</translation>
 <translation id="1532118530259321453">تعرض هذه الصفحة</translation>
+<translation id="1533966801397200693">الملف الشخصي الذي سجّلت الدخول إليه مُدار. يمكن للمشرف إجراء تغييرات على إعدادات ملفك الشخصي عن بُعد وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
 <translation id="1537807545287921620">‏لا يمكن الوصول إلى ملف PDF هذا. يمكنك فتح قائمة السياق وتفعيل ميزة "استخراج النص من ملف PDF".</translation>
 <translation id="1539840569003678498">تاريخ ووقت إرسال الإبلاغ:</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">منح تعليمية ودراسية</translation>
 <translation id="2228057197024893428">‏هذا العنوان محفوظ حاليًا في Chrome. لاستخدامه في جميع منتجات Google، عليك حفظه في حسابك على Google‏، <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">اختصار مكرّر تم تجاهله: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{علامة تبويب واحدة}zero{‫# علامة تبويب}two{علامتا تبويب}few{‫# علامات تبويب}many{‫# علامة تبويب}other{‫# علامة تبويب}}</translation>
 <translation id="2233745931693710080">قرص مضغوط</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535">يتطلَّب <ph name="DOMAIN" /> اسم مستخدم وكلمة مرور.</translation>
 <translation id="2318594867107319532">الطابع الزمني لآخر تعديل لهذه السياسة:</translation>
 <translation id="2320564945062300737">منتجات عناية بالوجه</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{نافذة واحدة}zero{‫# نافذة}two{نافذتان}few{‫# نوافذ}many{‫# نافذة}other{‫# نافذة}}</translation>
 <translation id="2328651992442742497">مسموح به (الإعداد التلقائي)</translation>
 <translation id="2328955282645810595">أعمال إنشاء وأدوات تعمل بالطاقة</translation>
 <translation id="2330137317877982892">تنتهي صلاحية <ph name="CREDIT_CARD" /> في <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1008,7 +1012,6 @@
 <translation id="2928905813689894207">عنوان إرسال الفواتير</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> وعنوان <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> آخر}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> وعنوانان (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />) آخران}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عناوين أخرى}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوانًا آخر}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان آخر}}</translation>
 <translation id="2930577230479659665">القطع بعد كل نسخة</translation>
-<translation id="2932085390869194046">اقتراح كلمة مرور...</translation>
 <translation id="2933624813161016821">قصدير مزخرف</translation>
 <translation id="2938225289965773019">فتح روابط <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">ظرف مقاس 23 × 30 سم</translation>
@@ -1186,6 +1189,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">أدخِل رمز التحقّق المكوَّن من <ph name="NUMBER_OF_DIGITS" /> أرقام.</translation>
 <translation id="3272643614306383237">أقل من ميغابايت واحد. قد يتم تحميل بعض المواقع بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
+<translation id="3273738040255912340">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{لا تنصح سياسة المشرف بفتح هذا الملف في <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بفتح هذين الملفَّين في <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">أرسلت مؤسستك التي تمتلك النطاق <ph name="ENROLLMENT_DOMAIN" /> بعض المعلومات، مثل الإعدادات أو السياسات، إلى المواقع الإلكترونية التالية.</translation>
 <translation id="3286372614333682499">عمودي</translation>
@@ -1393,7 +1397,7 @@
 <translation id="3646643500201740985">قياس مستوى أداء إعلان</translation>
 <translation id="3647286794400715637">‏يجب أن يحتوي كل إدخال في سلسلة عناوين URL على عنوان URL واحد (كحد أدني) أو اثنين (كحد أقصى).</translation>
 <translation id="3650584904733503804">تم التحقق بنجاح</translation>
-<translation id="3650594806107685466">للمساعدة في الحفاظ على أمان بطاقتك، أدخِل رمز التحقق من البطاقة المتوفّر على <ph name="SIDE_OF_CARD" />.</translation>
+<translation id="3650594806107685466">للمساعدة في الحفاظ على أمان بطاقتك، أدخِل رمز التحقق المتوفّر على <ph name="SIDE_OF_CARD" />.</translation>
 <translation id="3650917416636556301">تخييم ومشي لمسافة طويلة</translation>
 <translation id="3655241534245626312">الانتقال إلى إعدادات الأذونات</translation>
 <translation id="3655670868607891010">إذا تكرّر هذا الأمر، ننصحك بالاطّلاع على هذه <ph name="HELP_LINK" />.</translation>
@@ -2309,6 +2313,7 @@
 <translation id="5447765697759493033">لن تتم ترجمة هذا الموقع</translation>
 <translation id="5452270690849572955">لا يمكن العثور على صفحة <ph name="HOST_NAME" /> هذه.</translation>
 <translation id="5455374756549232013">الطابع الزمني للسياسة سيئ</translation>
+<translation id="5456428544444655325">عدم الإظهار مطلقًا</translation>
 <translation id="5456839782162429664">إثبات الهوية يدويًا في كل مرة تستخدم فيها ميزة "الملء التلقائي" لإتمام عملية الدفع</translation>
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> وجهة اتصال <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> أخرى}two{<ph name="CONTACT_PREVIEW" /> وجهتا اتصال (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />) أخريان}few{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال أخرى}many{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}other{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}}</translation>
@@ -2449,6 +2454,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">أطباء بيطريون</translation>
 <translation id="5715150588940290235">هل تريد حذف رموز الأمان المحفوظة؟</translation>
+<translation id="5715918316982363436">‫<ph name="TAB_COUNT" /> من <ph name="WINDOW_COUNT" /> على هذا الجهاز</translation>
 <translation id="5717509257172454543">تزلُّج على الجليد</translation>
 <translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="5720895412771013401">أجهزة كمبيوتر مكتبي</translation>
@@ -2959,6 +2965,7 @@
 <translation id="6709133671862442373">الأخبار</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6710594484020273272">&lt;إدخال عبارة البحث&gt;</translation>
+<translation id="6710648923880003133">اقتراح كلمة مرور قوية</translation>
 <translation id="671076103358959139">الرمز المميّز للتسجيل:</translation>
 <translation id="6711464428925977395">هناك خطأ ما في الخادم الوكيل، أو العنوان غير صحيح.</translation>
 <translation id="6716672519412350405">يريد الموقع الإلكتروني <ph name="URL" /> إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا.</translation>
@@ -3412,6 +3419,7 @@
 <translation id="7564667064360547717">قمصان وسترات</translation>
 <translation id="7567204685887185387">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان تم إصدارها عن طريق الاحتيال. وربما يكون سبب ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="7568616151991626879">‏يحاول Google Chrome إدخال كلمة مرورك في "<ph name="APP_NAME" />".</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{ما مِن علامات تبويب على هذا الجهاز}=1{علامة تبويب واحدة على هذا الجهاز}two{علامتا تبويب على هذا الجهاز}few{‫# علامات تبويب على هذا الجهاز}many{‫# علامة تبويب على هذا الجهاز}other{‫# علامة تبويب على هذا الجهاز}}</translation>
 <translation id="7569490014721427265">غولف</translation>
 <translation id="7569952961197462199">‏هل تريد إزالة بطاقة الائتمان من Chrome؟</translation>
 <translation id="7569983096843329377">أسود</translation>
@@ -3893,6 +3901,7 @@
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8449155699563577224">17 × 24 بوصة</translation>
 <translation id="8449836157089738489">فتح الكل في مجموعة علامات تبويب جديدة</translation>
+<translation id="84561192812921051">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chrome.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">غير محدَّد</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">تفعيل</translation>

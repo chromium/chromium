@@ -277,7 +277,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2083190527011054446">Bona nit, <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2088116547584365419">jocs</translation>
-<translation id="209965399369889474">No hi ha connexió a la xarxa</translation>
+<translation id="209965399369889474">No hi ha connexió de xarxa</translation>
 <translation id="2107581415810719320">Un altre botó <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="2108303511227308752">La tecla de drecera Alt+Retrocés ha canviat. Per fer servir la tecla de suprimir, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+Retrocés.</translation>
@@ -1196,6 +1196,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5587506661873751671">S'està baixant (<ph name="DOWNLOAD_PERCENT" /> %)</translation>
 <translation id="558849140439112033">Arrossega per seleccionar l'àrea que vols capturar</translation>
 <translation id="5590609058453685222">La funció Toc de micròfon silenciat està activada. Si parles mentre el micròfon està silenciat, rebràs una notificació.</translation>
+<translation id="5592745162308462420">Fn</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599242528220103262">La tecla de drecera està desactivada</translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
@@ -1372,6 +1373,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Bateria baixa. Estalvi de bateria s'ha activat.</translation>
+<translation id="6240603910551255087">Botó superior</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>
 <translation id="6249795363855770621">No s'ha pogut marcar com a completada. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="6254629735336163724">Bloquejada en horitzontal</translation>
@@ -2074,6 +2076,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="906458777597946297">Maximitza la finestra</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>
+<translation id="9071966355747967534"><ph name="FEATURE_NAME" /> no està disponible</translation>
 <translation id="9072519059834302790">Temps restant perquè s'esgoti la bateria: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074432941673450836">Utilitza les aplicacions per fer tot el que necessitis al teu <ph name="PRODUCT_NAME" />. Pots accedir a les teves aplicacions des del menú d'aplicacions. També pots prémer la tecla del menú d'aplicacions al teclat (a sobre de la tecla Maj de l'esquerra).</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

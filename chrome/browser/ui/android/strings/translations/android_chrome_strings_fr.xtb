@@ -96,6 +96,7 @@
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
 <translation id="1466383950273130737">Choisissez la langue de Chrome</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
+<translation id="1480287803138246127">Il est possible qu'une partie de votre historique ne s'affiche pas ici. Pour l'afficher en intégralité, sélectionnez "Ouvrir tout l'historique Chrome".</translation>
 <translation id="148482509007564431">Flux d'enregistrement en tant que favori</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1493287004536771723">Vous suivez <ph name="SITE_NAME" /></translation>
@@ -1005,6 +1006,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité ou d'afficher du contenu, des services, des annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
 <translation id="6233974827872475843">Enregistrer les mots de passe de cet appareil dans votre compte Google en activant la synchronisation</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
+<translation id="6251449557817521191">Consultez votre historique Chrome ici</translation>
 <translation id="6255794742848779505">Nous modifions la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
@@ -1389,6 +1391,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, définissez d'abord un verrouillage d'écran sur votre appareil</translation>
+<translation id="7988531104457683216">Il est possible qu'une partie de votre historique ne s'affiche pas ici. Pour l'afficher en intégralité, sélectionnez "Ouvrir tout l'historique Chrome". En outre, votre compte Google conserve peut-être d'autres historiques de navigation sur <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7995059495660416932">Vous verrez le contenu lorsqu'il sera disponible</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="8004582292198964060">Navigateur</translation>

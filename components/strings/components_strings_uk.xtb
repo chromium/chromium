@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">Відстеження цін вимкнено</translation>
 <translation id="127777513559587977">Телевізійні ток-шоу</translation>
 <translation id="1281476433249504884">Накопичувач 1</translation>
+<translation id="1281536351321444151">Щоб наступного разу автоматично заповнити цей номер IBAN, збережіть його у своєму обліковому записі Google</translation>
 <translation id="1282358575813748144">Човни й судна</translation>
 <translation id="1283977499362032052">Резюме й портфоліо</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на який ви намагалися перейти, виглядає несправжнім. Зловмисники іноді імітують сайти, вносячи майже непомітні зміни в URL-адресу.</translation>
 <translation id="1532118530259321453">Повідомлення з цієї сторінки</translation>
+<translation id="1533966801397200693">Ви ввійшли в керований профіль. Адміністратор може віддалено змінювати налаштування вашого профілю, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
 <translation id="1537807545287921620">Цей файл PDF недоступний. Відкрийте контекстне меню й увімкніть опцію "Видобути текст із файлу PDF".</translation>
 <translation id="1539840569003678498">Звіт надіслано:</translation>
@@ -615,6 +617,7 @@
 <translation id="2122214041802369259">Висока ціна</translation>
 <translation id="2122719317867821810">Це правило працює належним чином, але в іншому місці встановлюється конфліктне значення й замінюється цим правилом.</translation>
 <translation id="2126374524350484896">Додаток, у якому створено PDF:</translation>
+<translation id="2127090458081644412">Пароль збережено на цьому пристрої</translation>
 <translation id="2130448033692577677">Вибрані шаблони можуть не застосовуватися, оскільки правило DnsOverHttpsMode не налаштовано.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2132825047782982803">Назви наведено в довільному порядку. Ви можете будь-коли змінити пошукову систему за умовчанням.</translation>
@@ -678,6 +681,7 @@
 <translation id="2227758700723188171">Гранти на навчання й стипендії</translation>
 <translation id="2228057197024893428">Ця адреса зараз зберігається в Chrome. Збережіть її у своєму обліковому записі Google (<ph name="ACCOUNT" />), щоб використовувати в усіх продуктах Google.</translation>
 <translation id="2229456043301340598">Повторювана швидка команда ігнорується: "<ph name="SHORTCUT_NAME" />"</translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="2233745931693710080">Компакт-диск</translation>
 <translation id="2235344399760031203">Сторонні файли cookie блокуються</translation>
 <translation id="2239100178324503013">Надіслати</translation>
@@ -721,6 +725,7 @@
 <translation id="2317259163369394535">Для сайту <ph name="DOMAIN" /> потрібно ввести ім’я користувача та пароль.</translation>
 <translation id="2318594867107319532">Остання позначка часу для правила:</translation>
 <translation id="2320564945062300737">Товари для догляду за обличчям</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 вікні}one{# вікні}few{# вікнах}many{# вікнах}other{# вікна}}</translation>
 <translation id="2328651992442742497">Дозволено (за умовчанням)</translation>
 <translation id="2328955282645810595">Будівельні електроінструменти</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1006,7 +1011,6 @@
 <translation id="2928905813689894207">Платіжна адреса</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Обрізати після кожної копії</translation>
-<translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2933624813161016821">Фольга для тиснення</translation>
 <translation id="2938225289965773019">Відкрити посилання протоколу <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюймів</translation>
@@ -1184,6 +1188,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Введіть <ph name="NUMBER_OF_DIGITS" />-значний код підтвердження</translation>
 <translation id="3272643614306383237">Менше 1 МБ. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
+<translation id="3273738040255912340">Адміністратор може віддалено вносити зміни у ваш профіль і вебпереглядач, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. Діями на цьому пристрої можна керувати за межами Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано відкривати цей файл у розташуванні "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано відкривати ці файли в розташуванні "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано відкривати ці файли в розташуванні "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано відкривати ці файли в розташуванні "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано відкривати ці файли в розташуванні "<ph name="DESTINATION_NAME" />"}}</translation>
 <translation id="3282085321714087552">Ваша організація (<ph name="ENROLLMENT_DOMAIN" />) надіслала вказаним веб-сайтам деяку інформацію, таку як налаштування й правила.</translation>
 <translation id="3286372614333682499">книжкова</translation>
@@ -2031,6 +2036,7 @@
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4901952598169637881">Повсякденне взуття</translation>
 <translation id="4905659621780993806">Адміністратор автоматично перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" />. Збережіть усі відкриті файли до цього часу.</translation>
+<translation id="4913784027728226227">Щоб зберегти й використовувати цей пароль на всіх пристроях, підтвердьте свою особу</translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
 <translation id="4916389289686916969">Телевізійні реаліті-шоу</translation>
 <translation id="4917064667437236721">Формний циліндр</translation>
@@ -2304,6 +2310,7 @@
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
 <translation id="5452270690849572955">Сторінку хосту <ph name="HOST_NAME" /> не знайдено</translation>
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
+<translation id="5456428544444655325">Ніколи не показувати</translation>
 <translation id="5456839782162429664">Вручну підтверджувати особу щоразу, коли ви сплачуєте за допомогою автозаповнення</translation>
 <translation id="5457113250005438886">Недійсні дані</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2314,6 +2321,7 @@
 <translation id="5470861586879999274">&amp;Повторити редагування</translation>
 <translation id="547963486735802022">Спробуйте повторно перенести файли</translation>
 <translation id="5481076368049295676">Цей вміст може намагатися встановити на ваш пристрій небезпечну програму, яка викрадає або видаляє інформацію. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
+<translation id="5481682542063333508">Пропонувати допомогу з текстом</translation>
 <translation id="54817484435770891">Додати дійсну адресу</translation>
 <translation id="5483838506518938965">Готово</translation>
 <translation id="5485973315555778056">Машина хмари</translation>
@@ -2443,6 +2451,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Ветеринари</translation>
 <translation id="5715150588940290235">Видалити збережені коди безпеки?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> в <ph name="WINDOW_COUNT" /> на цьому пристрої</translation>
 <translation id="5717509257172454543">Катання на ковзанах</translation>
 <translation id="5720705177508910913">Поточний користувач</translation>
 <translation id="5720895412771013401">Стаціонарні комп’ютери</translation>
@@ -2953,6 +2962,7 @@
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Введіть пошуковий термін&gt;</translation>
+<translation id="6710648923880003133">Запропонувати надійний пароль</translation>
 <translation id="671076103358959139">Маркер реєстрації:</translation>
 <translation id="6711464428925977395">Помилка проксі-сервера або неправильна адреса.</translation>
 <translation id="6716672519412350405">Хост <ph name="URL" /> намагається створити 3D-карту вашого оточення й відстежувати положення камери</translation>
@@ -3406,6 +3416,7 @@
 <translation id="7564667064360547717">Сорочки й топи</translation>
 <translation id="7567204685887185387">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки видали шахраї. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="7568616151991626879">Google Chrome намагається автоматично заповнити пароль у додатку <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Немає}=1{1 вкладка на цьому пристрої}one{# вкладка на цьому пристрої}few{# вкладки на цьому пристрої}many{# вкладок на цьому пристрої}other{# вкладки на цьому пристрої}}</translation>
 <translation id="7569490014721427265">Гольф</translation>
 <translation id="7569952961197462199">Видалити дані кредитної картки з Chrome?</translation>
 <translation id="7569983096843329377">Чорний</translation>
@@ -3885,6 +3896,7 @@
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8449155699563577224">17 x 24 дюйм.</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
+<translation id="84561192812921051">Адміністратор може віддалено вносити зміни у ваш профіль і вебпереглядач, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. Діями на цьому пристрої можна керувати за межами Chrome.  <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Необмежено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Увімкнути</translation>

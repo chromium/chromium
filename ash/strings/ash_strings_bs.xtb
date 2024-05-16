@@ -1196,6 +1196,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5587506661873751671">Preuzimanje <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Prevucite da odaberete oblast za snimanje</translation>
 <translation id="5590609058453685222">Uključeno je podsjećanje bez zvuka. Dobit ćete obavještenje ako govorite dok je zvuk isključen.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5599242528220103262">Prečica tastature je isključena</translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da onemogućite izgovaranje povratnih informacija.</translation>
@@ -1372,6 +1373,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutno koristi vašu kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Baterija je slaba. Ušteda baterije je uključena.</translation>
+<translation id="6240603910551255087">Gornje dugme</translation>
 <translation id="6247728804802644171">Otvorite obavještenja</translation>
 <translation id="6249795363855770621">Označavanje zadatka kao završenog nije uspjelo. Pokušajte ponovo kada budete online.</translation>
 <translation id="6254629735336163724">Zaključano na horizontalnom prikazu</translation>
@@ -2074,7 +2076,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="906458777597946297">Maksimiziranje prozora</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Postavke asistenta</translation>
-<translation id="9071966355747967534">Značajka <ph name="FEATURE_NAME" /> nije dostupna</translation>
+<translation id="9071966355747967534">Funkcija <ph name="FEATURE_NAME" /> nije dostupna</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> dok se baterija ne isprazni.</translation>
 <translation id="9074432941673450836">Koristite aplikacije da uradite sve što vam je potrebno na uređaju <ph name="PRODUCT_NAME" />. Aplikacije možete pronaći u Pokretaču. Također možete pritisnuti tipku Pokretač (iznad lijeve tipke Shift) na tastaturi.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -145,6 +145,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3474745554856756813">See kustutab seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931">Chromiumi profiilide vahel vahetamiseks vajutage klahve <ph name="SHORTCUT" /></translation>
 <translation id="3509308970982693815">Sulgege kõik Chromiumi aknad ja proovige uuesti.</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> on juba sisse logitud.  Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Teie privaatsuse kaitsmiseks kustutame automaatselt teie huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chromiumil arvesse võtta.</translation>
 <translation id="3567254597502212821">Teie sirvimisajalugu, selles seadmes Chromiumiga külastatud saitide andmed.</translation>
 <translation id="3639635944603682591">Selle isiku sirvimisandmed kustutatakse seadmest. Andmete taastamiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
@@ -376,7 +377,6 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="718435575166326686">Chromium vajab selle saidi puhul kaamera kasutamise luba</translation>
 <translation id="7196312274710523067">Chromiumi ei õnnestunud käivitada. Proovige uuesti.</translation>
 <translation id="7197677400338048821">Chromium ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast.</translation>
-<translation id="7198365860059291213">Interaktiivse seansi alustamiseks on Chromiumil vaja luba stseeni tuvastamiseks ja käeliigutuste jälgimiseks</translation>
 <translation id="7213407614656404070">Kasutage Chromiumi iga kord, kui klõpsate sõnumites, dokumentides ja teistes rakendustes linkidel</translation>
 <translation id="7223968959479464213">Tegumihaldur – Chromium</translation>
 <translation id="7246575524853130370">Teie huvid Chromiumi prognooside kohaselt</translation>
@@ -433,6 +433,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="81770708095080097">Chromium blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8232193495299001329">Chromium ei suuda tuvastada, kust see laiendus pärineb. Laiendus võib olla ebaturvaline. Eemaldage laiendus Chromiumist, et see ei saaks enam teie külastatavatel saitidel näha ja muuta teie andmeid, sealhulgas isiklikku teavet.</translation>
 <translation id="8248265253516264921">Kui pildil puudub kasulik kirjeldus, üritab Chromium selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
+<translation id="8254601181414348851">Kas logida Chromiumi sisse uuel profiilil?</translation>
 <translation id="8266560134891435528">Chromium ei saa teie paroole kontrollida, kuna te pole sisse logitud</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium hoiatab teid<ph name="END_LINK" /> ebaturvaliste saitide ja allalaadimiste eest</translation>
 <translation id="8290862415967981663">Chromium blokeeris faili, kuna see võib olla ohtlik.</translation>
@@ -454,7 +455,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
-<translation id="858822505990366713">Kohanda minu Chromiumit</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Kuidas neid andmeid kasutame?<ph name="END_BOLD" /> Saidid võivad talletada Chromiumissse teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="8619360774459241877">Chromiumi käivitamine …</translation>
 <translation id="8621669128220841554">Installimine ebaõnnestus tundmatu vea tõttu. Laadige Chromium uuesti alla.</translation>
@@ -473,7 +473,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8931379085695076764">Chromium suudab prognoosida teie huvisid, võttes aluseks teie viimase mõne nädala sirvimisajaloo. See teave jääb teie seadmesse.</translation>
 <translation id="8941642502866065432">Chromiumi ei saa värskendada</translation>
-<translation id="895999862145835951">Kohanda minu Chromiumit</translation>
 <translation id="897581876605952338">Chromium Enterprise'i logo</translation>
 <translation id="8986207147630327271">Lisate sellesse brauserisse tööprofiili ja annate administraatorile kontrolli vaid oma tööprofiili üle.</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>

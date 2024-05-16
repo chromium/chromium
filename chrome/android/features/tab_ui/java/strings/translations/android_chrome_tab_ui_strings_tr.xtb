@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Arşivlenmiş <ph name="TABS_COUNT_ONE" /> sekmeniz var}other{Arşivlenmiş <ph name="TABS_COUNT_MANY" /> sekmeniz var}}</translation>
 <translation id="3194464645767632461">puan</translation>
 <translation id="3291470810748040983">Açık bir sekmede daha düşük fiyat varsa uyarı alırsınız</translation>
+<translation id="3322827343001922122"><ph name="TITLE_OF_GROUP" /> sekme grubu için sekme grubu işlem menüsünü aç</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
 <translation id="3547352561153509682">Bu işlem, grubun <ph name="USER_EMAIL" /> hesabında oturum açılmış tüm cihazlardan silinmesini sağlar</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

@@ -5377,6 +5377,15 @@ Si cette règle est désactivée, ces deux historiques ne peuvent pas être supp
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
 <translation id="5324430722441910403">Paramètres de recherche sur site</translation>
+<translation id="5326431956495937408">Si cette règle est activée, l'utilisateur peut envoyer ses mots de passe à des membres de sa famille et en recevoir de leur part (selon les services destinés aux familles).
+Si cette règle est activée ou n'est pas configurée, le Gestionnaire de mots de passe propose un bouton qui permet d'envoyer un mot de passe.
+Les mots de passe reçus sont stockés dans le compte de l'utilisateur et disponibles dans le Gestionnaire de mots de passe.
+
+Si cette règle est désactivée, l'utilisateur ne peut pas envoyer de mots de passe à d'autres utilisateurs depuis le Gestionnaire de mots de passe ni en recevoir de la part d'autres utilisateurs.
+
+Cette fonctionnalité n'est pas disponible si la synchronisation des mots de passe est désactivée (soit dans les paramètres de l'utilisateur, soit si la règle <ph name="SYNC_DISABLED" /> est activée).
+
+Les comptes gérés ne peuvent pas rejoindre ni créer de groupe familial, et ne peuvent donc pas partager de mots de passe.</translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
 <translation id="5329018127554115226">Le mode Haute efficacité sera désactivé.</translation>
@@ -7088,13 +7097,6 @@ Pour que les modifications apportées à cette règle puissent être appliquées
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="662991036483361836">Empêcher les utilisateurs d'activer le Partage à proximité</translation>
-<translation id="6634974629075330608">Cette règle permet de désactiver temporairement les modifications apportées à la façon dont Chrome traite les cookies définis via JavaScript qui contiennent certains caractères de contrôle (NULL, retour chariot et saut de ligne).
-Auparavant, la présence d'un de ces caractères dans une chaîne de cookie entraînait sa troncation, mais il restait défini.
-Désormais, toute la chaîne du cookie sera ignorée en présence de ces caractères.
-
-Si cette règle est définie sur "True" (valeur par défaut), le nouveau comportement est activé.
-
-Si cette règle est définie sur "False", l'ancien comportement est activé.</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
 <translation id="6640355849038068978">Si ce paramètre est activé, les utilisateurs pourront lancer l'application Eche, par exemple en cliquant sur une notification Phone Hub.
 

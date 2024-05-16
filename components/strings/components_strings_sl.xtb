@@ -679,6 +679,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2227758700723188171">Štipendije</translation>
 <translation id="2228057197024893428">Ta naslov je trenutno shranjen v Chromu. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2229456043301340598">Prezrta bližnjica, ki ni enolična: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
 <translation id="2239100178324503013">Pošlji</translation>
@@ -722,6 +723,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2317259163369394535">Domena <ph name="DOMAIN" /> zahteva uporabniško ime in geslo.</translation>
 <translation id="2318594867107319532">Zadnji časovni žig pravilnika:</translation>
 <translation id="2320564945062300737">Izdelki za nego obraza</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 okna}one{# okna}two{# oken}few{# oken}other{# oken}}</translation>
 <translation id="2328651992442742497">Dovoljeno (privzeto)</translation>
 <translation id="2328955282645810595">Gradbena in električna orodja</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, poteče <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1009,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2928905813689894207">Naslov za izstavitev računa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}two{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="2930577230479659665">Obrezovanje po vsakem izvodu</translation>
-<translation id="2932085390869194046">Predlagaj geslo …</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Odpiranje povezav za <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Kuverta 9 x 12 palcev</translation>
@@ -2306,6 +2307,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5447765697759493033">To spletno mesto ne bo prevedeno</translation>
 <translation id="5452270690849572955">Te strani spletnega mesta <ph name="HOST_NAME" /> ni mogoče najti</translation>
 <translation id="5455374756549232013">Napačen časovni žig pravilnika</translation>
+<translation id="5456428544444655325">Nikoli ne pokaži</translation>
 <translation id="5456839782162429664">Ročno preverjanje ob vsakem plačilu s samodejnim izpolnjevanjem</translation>
 <translation id="5457113250005438886">Neveljavno</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}two{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -2446,6 +2448,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarji</translation>
 <translation id="5715150588940290235">Želite izbrisati shranjene varnostne kode?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> iz <ph name="WINDOW_COUNT" /> v tej napravi</translation>
 <translation id="5717509257172454543">Drsanje</translation>
 <translation id="5720705177508910913">Trenutni uporabnik</translation>
 <translation id="5720895412771013401">Namizni računalniki</translation>
@@ -2956,6 +2959,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6709133671862442373">Novice</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6710594484020273272">&lt;Vnesite iskalno poizvedbo&gt;</translation>
+<translation id="6710648923880003133">Predlagaj močno geslo</translation>
 <translation id="671076103358959139">Žeton za včlanitev:</translation>
 <translation id="6711464428925977395">Nekaj je narobe s strežnikom proxy ali pa naslov ni pravilen.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
@@ -3409,6 +3413,7 @@ Dodatne podrobnosti:
 <translation id="7564667064360547717">Majice in zgornji deli</translation>
 <translation id="7567204685887185387">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo je bilo morda izdano z goljufijo. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="7568616151991626879">Google Chrome poskuša izpolniti vaše geslo na <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Noben}=1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Želite odstraniti kreditno kartico iz Chroma?</translation>
 <translation id="7569983096843329377">Črna</translation>

@@ -5366,6 +5366,15 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
+<translation id="5326431956495937408">Wenn die Richtlinie aktiviert ist, können Nutzer ihre Passwörter gemäß den Familiendiensten an Familienmitglieder senden und von ihnen empfangen.
+Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager eine Schaltfläche, über die ein Passwort gesendet werden kann.
+Empfangene Passwörter werden im Konto des Nutzers gespeichert und sind im Passwortmanager verfügbar.
+
+Ist die Richtlinie deaktiviert, können Nutzer keine Passwörter vom Passwortmanager aus an andere Nutzer senden und auch keine Passwörter von anderen Nutzern empfangen.
+
+Die Funktion ist nicht verfügbar, wenn die Synchronisierung von Passwörtern deaktiviert ist (entweder über die Nutzereinstellungen oder wenn die Richtlinie „<ph name="SYNC_DISABLED" />“ aktiviert ist).
+
+Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen und können daher keine Passwörter teilen.</translation>
 <translation id="532848608876725157">DoH-Modus mit unsicherem Fallback-Verhalten aktivieren</translation>
 <translation id="5328965694451556034">Anmeldung/Abmeldung melden</translation>
 <translation id="5329018127554115226">Der Modus für hohe Effizienz wird deaktiviert.</translation>
@@ -7065,13 +7074,6 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="662991036483361836">Nutzer dürfen Nearby Share nicht aktivieren</translation>
-<translation id="6634974629075330608">Durch diese Richtlinie wird vorübergehend die Zustimmung zu Änderungen am Umgang von Chrome mit Cookies widerrufen, die per JavaScript mit bestimmten Steuerzeichen festgelegt werden (NULL, Zeilenumbruch und Zeilenvorschub).
-Bisher führten diese Zeichen in einem Cookie-String dazu, dass der String abgeschnitten, aber dennoch festgelegt wurde.
-Jetzt führen diese Zeichen dazu, dass der gesamte Cookie-String ignoriert wird.
-
-Wenn diese Richtlinie auf „true“ gesetzt ist (Standardeinstellung), ist das neue Verhalten aktiviert.
-
-Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktiviert.</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
 <translation id="6640355849038068978">Wenn diese Einstellung aktiviert ist, können Nutzer die App „Eche“ starten, z. B. mit einem Klick auf eine Phone Hub-Benachrichtigung.
 

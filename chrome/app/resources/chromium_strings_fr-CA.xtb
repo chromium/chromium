@@ -147,6 +147,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3474745554856756813">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments de cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> permet de basculer entre les profils Chromium</translation>
 <translation id="3509308970982693815">Veuillez fermer toutes les fenêtres Chromium et essayer de nouveau.</translation>
+<translation id="3530103706039034513">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté.  Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3533435340678213462">Afin de protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt ayant plus de quatre semaines. Au fur et à mesure que vous naviguez, un centre d'intérêt peut réapparaître sur la liste. Vous pouvez également retirer des centres d'intérêt si vous ne voulez pas que Chromium les prenne en compte.</translation>
 <translation id="3567254597502212821">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chromium sur cet appareil.</translation>
 <translation id="3639635944603682591">Les données de navigation de cette personne seront supprimées de cet appareil. Pour récupérer ces données, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
@@ -378,7 +379,6 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="718435575166326686">Chromium requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="7196312274710523067">Impossible de lancer Chromium. Réessayez.</translation>
 <translation id="7197677400338048821">Chromium ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>
-<translation id="7198365860059291213">Chromium a besoin d'une compréhension de la scène et d'une autorisation de suivi manuel pour démarrer une session immersive</translation>
 <translation id="7213407614656404070">Utilisez Chromium chaque fois que vous cliquez sur des liens dans des messages, des documents et d'autres applications</translation>
 <translation id="7223968959479464213">Gestionnaire de tâches – Chromium</translation>
 <translation id="7246575524853130370">Vos centres d'intérêt estimés par Chromium</translation>
@@ -435,6 +435,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="81770708095080097">Chromium a bloqué ce fichier, car il est dangereux.</translation>
 <translation id="8232193495299001329">Chromium ne peut pas vérifier l'origine de cette extension et elle peut s'avérer dangereuse. Retirez-la de Chromium afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="8248265253516264921">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>
+<translation id="8254601181414348851">Vous connecter à Chromium avec un nouveau profil?</translation>
 <translation id="8266560134891435528">Chromium ne peut pas vérifier vos mots de passe parce que vous n'êtes pas connecté.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vous avertit<ph name="END_LINK" /> au sujet des sites et des téléchargements dangereux</translation>
 <translation id="8290862415967981663">Chromium a bloqué ce fichier, car il peut être dangereux.</translation>
@@ -456,7 +457,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8555465886620020932">Erreur liée au service : <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
-<translation id="858822505990366713">Personnaliser votre Chromium</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données :<ph name="END_BOLD" /> les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chromium. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
 <translation id="8619360774459241877">Lancement de Chromium en cours…</translation>
 <translation id="8621669128220841554">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Chromium à nouveau.</translation>
@@ -475,7 +475,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8907580949721785412">Chromium essaie d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="8931379085695076764">Chromium peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>
 <translation id="8941642502866065432">Impossible de mettre à jour Chromium</translation>
-<translation id="895999862145835951">Personnaliser votre Chromium</translation>
 <translation id="897581876605952338">Logo de Chromium Enterprise</translation>
 <translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8988036198400390003">Gérer les profils Chromium</translation>

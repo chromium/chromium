@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Έχετε <ph name="TABS_COUNT_ONE" /> αρχειοθετημένη καρτέλα}other{Έχετε <ph name="TABS_COUNT_MANY" /> αρχειοθετημένες καρτέλες}}</translation>
 <translation id="3194464645767632461">αξιολόγηση</translation>
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
+<translation id="3322827343001922122">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3547352561153509682">Αυτή η ενέργεια θα διαγράψει την ομάδα από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

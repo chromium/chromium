@@ -154,6 +154,7 @@
 <translation id="1273592791152866347">Suivi de prix désactivé</translation>
 <translation id="127777513559587977">Émissions de variété</translation>
 <translation id="1281476433249504884">Empileur 1</translation>
+<translation id="1281536351321444151">Pour remplir automatiquement cet IBAN la prochaine fois, enregistrez-le dans votre compte Google</translation>
 <translation id="1282358575813748144">Bateaux et embarcations</translation>
 <translation id="1283977499362032052">CV et dossiers de présentation</translation>
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
@@ -293,6 +294,7 @@
 <translation id="1529789484829130889">Bac 8</translation>
 <translation id="1530707389502320859">Le site que vous venez d'essayer de visiter semble être un faux. Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement l'URL utilisée.</translation>
 <translation id="1532118530259321453">Cette page indique</translation>
+<translation id="1533966801397200693">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier les paramètres de votre profil à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traduire la page</translation>
 <translation id="1537807545287921620">Ce fichier PDF est inaccessible. Ouvrez le menu contextuel et activez « extraire le texte du fichier PDF »</translation>
 <translation id="1539840569003678498">Envoi du rapport :</translation>
@@ -679,6 +681,7 @@
 <translation id="2227758700723188171">Bourses d'études</translation>
 <translation id="2228057197024893428">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser dans tous les produits Google, enregistrez-le dans votre compte Google, <ph name="ACCOUNT" />.</translation>
 <translation id="2229456043301340598">Raccourci non unique ignoré : <ph name="SHORTCUT_NAME" /></translation>
+<translation id="2233041017768270281">{COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="2233745931693710080">Disque compact</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
@@ -722,6 +725,7 @@
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="2318594867107319532">Estampille temporelle de la dernière politique :</translation>
 <translation id="2320564945062300737">Produits de soin du visage</translation>
+<translation id="2322254345061973671">{COUNT,plural, =1{1 fenêtre}one{# fenêtre}other{# fenêtres}}</translation>
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
 <translation id="2328955282645810595">Outils électriques et de construction</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, expire le <ph name="EXPIRATION_DATE_ABBR" /></translation>
@@ -1007,7 +1011,6 @@
 <translation id="2928905813689894207">Adresse de facturation</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autre adresse}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> et <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> autres adresses}}</translation>
 <translation id="2930577230479659665">Couper après chaque copie</translation>
-<translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2933624813161016821">Feuille de gaufrage</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2941878205777356567">Enveloppe 9 x 12 po</translation>
@@ -1185,6 +1188,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Entrez le code de vérification à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="3272643614306383237">Moins de 1 Mo. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
+<translation id="3273738040255912340">Votre administrateur peut apporter des modifications à votre profil et à votre navigateur à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas d'ouvrir ce fichier dans <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas d'ouvrir ces fichiers dans <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -2446,6 +2450,7 @@
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Vétérinaires</translation>
 <translation id="5715150588940290235">Supprimer les codes de sécurité enregistrés?</translation>
+<translation id="5715918316982363436"><ph name="TAB_COUNT" /> de <ph name="WINDOW_COUNT" /> sur cet appareil</translation>
 <translation id="5717509257172454543">Patinage sur glace</translation>
 <translation id="5720705177508910913">Utilisateur actuel</translation>
 <translation id="5720895412771013401">Ordinateurs de bureau</translation>
@@ -2956,6 +2961,7 @@
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6710594484020273272">&lt;Entrez un terme de recherche&gt;</translation>
+<translation id="6710648923880003133">Suggérer un mot de passe fort</translation>
 <translation id="671076103358959139">Jeton d'inscription :</translation>
 <translation id="6711464428925977395">Un problème est survenu avec le serveur mandataire, ou l'adresse est incorrecte.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
@@ -3409,6 +3415,7 @@ Détails supplémentaires :
 <translation id="7564667064360547717">Chemises et hauts</translation>
 <translation id="7567204685887185387">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été émis de manière frauduleuse. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="7568616151991626879">Google Chrome essaie de remplir votre mot de passe sur <ph name="APP_NAME" />.</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Aucun}=1{1 onglet sur cet appareil}one{# onglet sur cet appareil}other{# onglets sur cet appareil}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Supprimer la carte de crédit de Chrome?</translation>
 <translation id="7569983096843329377">Noir</translation>
@@ -3888,6 +3895,7 @@ Détails supplémentaires :
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8449155699563577224">17 po x 24 po</translation>
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
+<translation id="84561192812921051">Votre administrateur peut apporter des modifications à votre profil et à votre navigateur à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indéfini</translation>
 <translation id="8458202188076138974">Lettre extra</translation>
 <translation id="8460854335417802511">Activer l'initiative</translation>

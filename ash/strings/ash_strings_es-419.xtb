@@ -1197,6 +1197,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5587506661873751671">Descargando <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5590609058453685222">El Aviso de micrófono silenciado está activado. Recibirás una notificación si hablas con el micrófono silenciado.</translation>
+<translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5599242528220103262">La combinación de teclas está desactivada</translation>
 <translation id="5600837773213129531">Presiona Ctrl + Alt + Z para inhabilitar los comentarios por voz.</translation>
@@ -1373,6 +1374,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está utilizando tu cámara y micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="62380141479352646">Batería baja. Se activó el Ahorro de batería.</translation>
+<translation id="6240603910551255087">Botón superior</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6249795363855770621">No se pudo marcar como completada. Vuelve a intentarlo cuando estés en línea.</translation>
 <translation id="6254629735336163724">Se bloqueó en posición horizontal</translation>
@@ -2075,6 +2077,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="906458777597946297">Maximizar ventana</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>
+<translation id="9071966355747967534"><ph name="FEATURE_NAME" /> no está disponible</translation>
 <translation id="9072519059834302790">Tiempo restante hasta que se agote la batería: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074432941673450836">Usa apps para todo lo que quieras hacer en tu <ph name="PRODUCT_NAME" />. Puedes encontrar tus apps en el Selector. También puedes presionar la tecla del Selector (arriba de la tecla Mayúsculas de la izquierda) en el teclado.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
