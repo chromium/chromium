@@ -5,9 +5,14 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
-import {CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AcceleratorAction, CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {FakeAcceleratorFetcher} from 'chrome://resources/ash/common/shortcut_input_ui/fake_accelerator_fetcher.js';
+import {Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -579,12 +584,74 @@ suite('<os-settings-input-page>', () => {
           await metricsProxy.whenCalled('recordInteraction'));
     });
 
-    test('when dismissing shortcut reminder', async () => {
-      // Default shortcut reminder with two elements should show "last used IME"
-      // reminder.
+
+    test('dismissing shortcut reminder with accelerator provider', async () => {
+      const expectedLastUsedImeAccelerator: ShortcutLabelProperties = {
+        keyDisplay: stringToMojoString16('m'),  // string16 m.
+        accelerator: {
+          modifiers: Modifier.CONTROL,
+          keyCode: VKey.kKeyM,
+          keyState: AcceleratorKeyState.PRESSED,
+          timeStamp: {
+            internalValue: 0n,
+          },
+        },
+        originalAccelerator: null,
+        shortcutLabelText:
+            inputPage.i18nAdvanced('imeCustomizedShortcutReminderNext'),
+      };
+
+      const acceleratorProvider = new FakeAcceleratorFetcher();
+      acceleratorProvider.observeAcceleratorChanges(
+          [
+            AcceleratorAction.kSwitchToLastUsedIme,
+            AcceleratorAction.kSwitchToNextIme,
+          ],
+          inputPage);
+      inputPage.acceleratorFetcher = acceleratorProvider;
+      assertTrue(!!inputPage.acceleratorFetcher);
+
+      // Set an updated lastUsedImeAccelerator, the shortcut reminder should
+      // show "ctrl + m" as last used IME.
+      acceleratorProvider.mockAcceleratorsUpdated(
+          AcceleratorAction.kSwitchToLastUsedIme,
+          [expectedLastUsedImeAccelerator]);
+      await flushTasks();
+
+      assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
+      assertEquals(
+          inputPage.get('lastUsedImeAccelerator_'),
+          expectedLastUsedImeAccelerator);
+
+      const updatedLastUsedImeAccelerator: ShortcutLabelProperties = {
+        keyDisplay: stringToMojoString16('k'),
+        accelerator: {
+          modifiers: Modifier.CONTROL + Modifier.SHIFT,
+          keyCode: VKey.kKeyK,
+          keyState: AcceleratorKeyState.PRESSED,
+          timeStamp: {
+            internalValue: 0n,
+          },
+        },
+        originalAccelerator: null,
+        shortcutLabelText:
+            inputPage.i18nAdvanced('imeCustomizedShortcutReminderLastUsed'),
+      };
+
+      // Update the last used IME with a new accelerator, the shortcut reminder
+      // should show "ctrl + shift + k" as last used IME.
+      acceleratorProvider.mockAcceleratorsUpdated(
+          AcceleratorAction.kSwitchToLastUsedIme,
+          [updatedLastUsedImeAccelerator]);
+      assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
+      assertEquals(
+          inputPage.get('lastUsedImeAccelerator_'),
+          updatedLastUsedImeAccelerator);
+
       let element =
           inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
       assertTrue(!!element);
+
       let dismissButton =
           element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
       assertTrue(!!dismissButton);
@@ -629,6 +696,61 @@ suite('<os-settings-input-page>', () => {
           InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
           await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
     });
+
+    test(
+        'when dismissing shortcut reminder without shortcut provider',
+        async () => {
+          // Default shortcut reminder with two elements should show "last used
+          // IME" reminder.
+          let element =
+              inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+          assertTrue(!!element);
+          let dismissButton =
+              element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+          assertTrue(!!dismissButton);
+          dismissButton.click();
+          assertEquals(
+              InputsShortcutReminderState.LAST_USED_IME,
+              await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+          metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+          // Add US Swahili keyboard, a third party IME.
+          languageHelper.addInputMethod(
+              'ime_abcdefghijklmnopqrstuvwxyzabcdefxkb:us:sw');
+          flush();
+
+          // Shortcut reminder should show "next IME" shortcut.
+          element =
+              inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+          assertTrue(!!element);
+          dismissButton =
+              element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+          assertTrue(!!dismissButton);
+          dismissButton.click();
+          assertEquals(
+              InputsShortcutReminderState.NEXT_IME,
+              await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+          metricsProxy.resetResolver('recordShortcutReminderDismissed');
+
+          // Reset shortcut reminder dismissals to display both shortcuts.
+          inputPage.setPrefValue(
+              'ash.shortcut_reminders.last_used_ime_dismissed', false);
+          inputPage.setPrefValue(
+              'ash.shortcut_reminders.next_ime_dismissed', false);
+          flush();
+
+          // Shortcut reminder should show both shortcuts.
+          element =
+              inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
+          assertTrue(!!element);
+          dismissButton =
+              element.shadowRoot!.querySelector<HTMLButtonElement>('#dismiss');
+          assertTrue(!!dismissButton);
+          dismissButton.click();
+          assertEquals(
+              InputsShortcutReminderState.LAST_USED_IME_AND_NEXT_IME,
+              await metricsProxy.whenCalled('recordShortcutReminderDismissed'));
+        });
 
     test('when clicking on "learn more" about language packs', async () => {
       const languagePacksNotice =

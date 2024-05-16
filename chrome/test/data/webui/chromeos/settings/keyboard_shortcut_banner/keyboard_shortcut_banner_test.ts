@@ -5,6 +5,13 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {KeyboardShortcutBanner, sanitizeInnerHtml} from 'chrome://os-settings/lazy_load.js';
+import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
+import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import {Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -41,6 +48,9 @@ suite('<keyboard-shortcut-banner>', () => {
   }
 
   setup(() => {
+    loadTimeData.overrideValues({
+      isShortcutCustomizationEnabled: false,
+    });
     setupBannerAndDocument(TITLE, DESCRIPTIONS);
   });
 
@@ -114,5 +124,38 @@ suite('<keyboard-shortcut-banner>', () => {
     const button = banner.shadowRoot!.querySelector('cr-button');
     button!.click();
     await dismissPromise;
+  });
+
+  test('displays the shortcut-input-key', () => {
+    banner.set('showCustomizedShortcut_', true);
+    flush();
+    const expectedAcceleratorProperties: ShortcutLabelProperties[] = [{
+      keyDisplay: stringToMojoString16('m'),
+      accelerator: {
+        modifiers: Modifier.CONTROL,
+        keyCode: VKey.kKeyM,
+        keyState: AcceleratorKeyState.PRESSED,
+        timeStamp: {
+          internalValue: 0n,
+        },
+      },
+      originalAccelerator: null,
+      shortcutLabelText: getTrustedHTML`<a>test string</a>` as TrustedHTML,
+    }];
+    banner.shortcutLabelProperties = expectedAcceleratorProperties;
+
+    // After setup showCustomizedShortcut and accelerator, parts-container
+    // should show up to display shortcut-input-key.
+    const shortcutInputKeyContainer =
+        banner.shadowRoot!.querySelector('#partsContainer');
+    const reminder = shortcutInputKeyContainer!.firstElementChild;
+
+    const text = reminder!.firstElementChild;
+    assertTrue(!!text);
+    assertEquals(text.childNodes.length, 2);
+
+    const [modifierNode, keyNode] = text.children;
+    assertEquals((modifierNode as ShortcutInputKeyElement).key, 'ctrl');
+    assertEquals((keyNode as ShortcutInputKeyElement).key, 'm');
   });
 });

@@ -156,7 +156,7 @@ export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_s
 export {FkeyRowElement} from './device_page/fkey_row.js';
 export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
+export {AcceleratorAction, Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from './device_page/keyboard_six_pack_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
@@ -186,6 +186,7 @@ export {SettingsKerberosPageElement} from './kerberos_page/kerberos_page.js';
 export {MainPageContainerElement} from './main_page_container/main_page_container.js';
 export {PageDisplayerElement} from './main_page_container/page_displayer.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
+export * as acceleratorInfoMojom from './mojom-webui/accelerator_info.mojom-webui.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';
 export * as appParentalControlsHandlerMojom from './mojom-webui/app_parental_controls_handler.mojom-webui.js';
 export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';

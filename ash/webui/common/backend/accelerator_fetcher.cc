@@ -75,10 +75,18 @@ void AcceleratorFetcher::BindInterface(
 }
 
 void AcceleratorFetcher::ObserveAcceleratorChanges(
-    const std::vector<AcceleratorAction>& actionIds,
+    const std::vector<AcceleratorAction>& action_ids,
     mojo::PendingRemote<common::mojom::AcceleratorFetcherObserver> observer) {
-  actions_for_receivers_[accelerator_observers_.Add(std::move(observer))] =
-      actionIds;
+  mojo::RemoteSetElementId id = accelerator_observers_.Add(std::move(observer));
+  actions_for_receivers_[id] = action_ids;
+
+  common::mojom::AcceleratorFetcherObserver* receiver =
+      accelerator_observers_.Get(id);
+  // Notify the observer immediately after adding it.
+  for (const AcceleratorAction& action_id : action_ids) {
+    receiver->OnAcceleratorsUpdated(action_id,
+                                    GetAcceleratorsForActionId(action_id));
+  }
 }
 
 void AcceleratorFetcher::OnAcceleratorsUpdated() {

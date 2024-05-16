@@ -22,10 +22,12 @@ import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
+import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -36,6 +38,9 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
+import {AcceleratorAction} from '../mojom-webui/accelerator_actions.mojom-webui.js';
+import {AcceleratorFetcher, AcceleratorFetcherInterface, AcceleratorFetcherObserverReceiver} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
+import {StandardAcceleratorProperties} from '../mojom-webui/accelerator_info.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
@@ -141,6 +146,14 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       allowOrca_: Boolean,
 
       allowSuggestionSection_: Boolean,
+
+      acceleratorFetcher: Object,
+
+      isShortcutCustomizationEnabled_: Boolean,
+
+      lastUsedImeAccelerator_: Object,
+
+      nextImeAccelerator_: Object,
     };
   }
 
@@ -170,6 +183,16 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private showAddSpellcheckLanguagesDialog_: boolean;
   private showAddInputMethodsDialog_: boolean;
 
+  // Accelerator fetcher properties.
+  // TODO(yyhyyh@): Move these members to somewhere common.
+  acceleratorFetcher: AcceleratorFetcherInterface|null;
+  private isShortcutCustomizationEnabled_ =
+      loadTimeData.getBoolean('isShortcutCustomizationEnabled');
+  private lastUsedImeAccelerator_?: StandardAcceleratorProperties;
+  private nextImeAccelerator_?: StandardAcceleratorProperties;
+  private acceleratorFetcherObserverReceiver_:
+      AcceleratorFetcherObserverReceiver;
+
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
   private languageSettingsJapaneseEnabled_: boolean;
@@ -190,6 +213,22 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   override ready(): void {
     super.ready();
 
+    if (this.isShortcutCustomizationEnabled_) {
+      this.acceleratorFetcher = AcceleratorFetcher.getRemote();
+
+      assert(this.acceleratorFetcher);
+      this.acceleratorFetcherObserverReceiver_ =
+          new AcceleratorFetcherObserverReceiver(this);
+
+      this.acceleratorFetcher!.observeAcceleratorChanges(
+          [
+            AcceleratorAction.kSwitchToLastUsedIme,
+            AcceleratorAction.kSwitchToNextIme,
+          ],
+          this.acceleratorFetcherObserverReceiver_.$
+              .bindNewPipeAndPassRemote());
+    }
+
     this.addFocusConfig(
         routes.OS_LANGUAGES_EDIT_DICTIONARY, '#editDictionarySubpageTrigger');
   }
@@ -203,6 +242,44 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
 
     this.attemptDeepLink();
+  }
+
+  onAcceleratorsUpdated(
+      action: AcceleratorAction,
+      accelerators: StandardAcceleratorProperties[]): void {
+    const hasUpdatedAccelerators = accelerators.length > 0;
+
+    // If accelerators available, update the string display with only the first
+    // accelerator.
+    if (action === AcceleratorAction.kSwitchToLastUsedIme) {
+      this.lastUsedImeAccelerator_ =
+          hasUpdatedAccelerators ? accelerators[0] : undefined;
+    } else if (action === AcceleratorAction.kSwitchToNextIme) {
+      this.nextImeAccelerator_ =
+          hasUpdatedAccelerators ? accelerators[0] : undefined;
+    }
+  }
+
+  private getShortcutLabelProperties_(): ShortcutLabelProperties[] {
+    const shortcutLabelProperties: ShortcutLabelProperties[] = [];
+
+    if (this.lastUsedImeAccelerator_) {
+      shortcutLabelProperties.push({
+        ...this.lastUsedImeAccelerator_,
+        shortcutLabelText:
+            this.i18nAdvanced('imeCustomizedShortcutReminderLastUsed'),
+      });
+    }
+
+    if (this.nextImeAccelerator_) {
+      shortcutLabelProperties.push({
+        ...this.nextImeAccelerator_,
+        shortcutLabelText:
+            this.i18nAdvanced('imeCustomizedShortcutReminderNext'),
+      });
+    }
+
+    return shortcutLabelProperties;
   }
 
   private onShowImeMenuChange_(e: Event): void {

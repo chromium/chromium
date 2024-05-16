@@ -490,6 +490,12 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the next input method. Note that 'Ctrl' shouldn't be translated in almost all languages, and 'Shift' shouldn't be translated in most languages.">
     To switch to the next input method, press <ph name="BEGIN_SHORTCUT">&lt;kbd&gt;</ph><ph name="BEGIN_CTRL">&lt;kbd&gt;</ph>Ctrl<ph name="END_CTRL">&lt;/kbd&gt;</ph><ph name="SEPARATOR1">+</ph><ph name="BEGIN_SHIFT">&lt;kbd&gt;</ph>Shift<ph name="END_SHIFT">&lt;/kbd&gt;</ph><ph name="SEPARATOR2">+</ph><ph name="BEGIN_SPACE">&lt;kbd&gt;</ph>Space<ph name="END_SPACE">&lt;/kbd&gt;</ph><ph name="END_SHORTCUT">&lt;/kbd&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the last used input method.">
+    To switch to the last used input method, press <ph name="KEY_CODES">&lt;a&gt;ctrl + space&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION" desc="The body of the shortcut reminder for switching to the next input method.">
+    To switch to the next input method, press <ph name="KEY_CODES">&lt;a&gt;ctrl + shift + space&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_OPEN_OPTIONS_PAGE_LABEL" desc="Description read by screenreader for the button to open the settings page for a input method (keyboard layout and input method editor).">
     Open settings page for <ph name="INPUT_METHOD_NAME">$1<ex>US keyboard</ex></ph>
   </message>

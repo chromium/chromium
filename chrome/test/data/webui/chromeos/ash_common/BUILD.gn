@@ -31,6 +31,7 @@ webui_ts_library("build_ts") {
     "post_message_api/post_message_api_test.ts",
     "shortcut_input_key_test.ts",
     "shortcut_input_test.ts",
+    "shortcut_utils_test.ts",
     "typescript_utils/strict_query_test.ts",
   ]
   deps = [
@@ -39,6 +40,7 @@ webui_ts_library("build_ts") {
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
 }

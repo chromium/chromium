@@ -464,6 +464,10 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_NO_DICTIONARY_WORDS_LABEL},
       {"imeShortcutReminderTitle",
        IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_TITLE},
+      {"imeCustomizedShortcutReminderLastUsed",
+       IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION},
+      {"imeCustomizedShortcutReminderNext",
+       IDS_OS_SETTINGS_LANGUAGES_CUSTOMIZED_SHORTCUT_REMINDER_NEXT_IME_DESCRIPTION},
       {"imeShortcutReminderLastUsed",
        IDS_OS_SETTINGS_LANGUAGES_SHORTCUT_REMINDER_LAST_USED_IME_DESCRIPTION},
       {"imeShortcutReminderNext",
@@ -486,6 +490,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "languagePacksInSettingsEnabled",
       base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
+  html_source->AddBoolean("isShortcutCustomizationEnabled",
+                          ::features::IsShortcutCustomizationEnabled());
 
   AddInputMethodOptionsLoadTimeData(
       html_source,

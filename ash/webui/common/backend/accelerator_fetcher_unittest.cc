@@ -64,6 +64,10 @@ class FakeAcceleratorFetcherObserver
     return accelerators_updated_called_count_;
   }
 
+  void set_accelerators_updated_called_count(int count) {
+    accelerators_updated_called_count_ = count;
+  }
+
   std::vector<mojom::StandardAcceleratorPropertiesPtr> accelerators_;
   int accelerators_updated_called_count_ = 0;
   mojo::Receiver<common::mojom::AcceleratorFetcherObserver> receiver{this};
@@ -87,6 +91,7 @@ class AcceleratorFetcherTest : public AshTestBase {
     observer_ = std::make_unique<FakeAcceleratorFetcherObserver>();
     accelerator_fetcher_->ObserveAcceleratorChanges(
         actionIds, observer_->receiver.BindNewPipeAndPassRemote());
+    accelerator_fetcher_->FlushMojoForTesting();
   }
 
   void TearDown() override {
@@ -103,14 +108,15 @@ class AcceleratorFetcherTest : public AshTestBase {
 };
 
 TEST_F(AcceleratorFetcherTest, ObserveAcceleratorChanges) {
+  observer_->set_accelerators_updated_called_count(0);
   const auto& expected_accelerators =
       accelerator_lookup_->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kSwitchToNextIme);
 
   accelerator_fetcher_->OnAcceleratorsUpdated();
   accelerator_fetcher_->FlushMojoForTesting();
-
-  EXPECT_EQ(observer_->accelerators_updated_called_count(), 1);
+  EXPECT_EQ(observer_->accelerators_updated_called_count(),
+            static_cast<int>(expected_accelerators.size()));
   EXPECT_EQ(observer_->accelerators_.size(), expected_accelerators.size());
   EXPECT_TRUE(
       CompareAccelerators(expected_accelerators, observer_->accelerators_));

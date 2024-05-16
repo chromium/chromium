@@ -69,6 +69,11 @@ IN_PROC_BROWSER_TEST_F(AshCommonResourcesShortcutInputTest, All) {
   RunTestAtPath("shortcut_input_test.js");
 }
 
+using AshCommonResourcesShortcutUtilsTest = AshCommonResourcesBrowserTest;
+IN_PROC_BROWSER_TEST_F(AshCommonResourcesShortcutUtilsTest, All) {
+  RunTestAtPath("shortcut_utils_test.js");
+}
+
 }  // namespace
 
 }  // namespace ash

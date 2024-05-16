@@ -145,11 +145,13 @@
 </settings-toggle-button>
 
 <div class="hr bottom-margin">
-  <template is="dom-if" if="[[shouldShowShortcutReminder_(
+  <template is="dom-if" if="[[!shouldShowShortcutReminder_(
       shortcutReminderBody_.length)]]">
     <keyboard-shortcut-banner header="$i18n{imeShortcutReminderTitle}"
         body="[[shortcutReminderBody_]]"
-        on-dismiss="onShortcutReminderDismiss_">
+        on-dismiss="onShortcutReminderDismiss_"
+        shortcut-label-properties="[[getShortcutLabelProperties_(
+          lastUsedImeAccelerator_, nextImeAccelerator_)]]">
     </keyboard-shortcut-banner>
   </template>
   <h2>$i18n{inputMethodListTitle}</h2>
