@@ -117,9 +117,6 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
     auto handle = base::WrapUnique(new SigninPerformer(std::move(on_done)));
 
     switch (app_type) {
-      case KioskAppType::kArcApp:
-        handle->login_performer_->LoginAsArcKioskAccount(account_id);
-        break;
       case KioskAppType::kChromeApp:
         handle->login_performer_->LoginAsKioskAccount(account_id);
         break;

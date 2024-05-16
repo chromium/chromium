@@ -15,7 +15,7 @@
 namespace ash {
 
 // Supported types of Kiosk apps.
-enum class KioskAppType { kArcApp, kChromeApp, kWebApp };
+enum class KioskAppType { kChromeApp, kWebApp };
 
 // Universal identifier for Kiosk apps.
 class KioskAppId {
@@ -23,7 +23,6 @@ class KioskAppId {
   static KioskAppId ForChromeApp(std::string_view chrome_app_id,
                                  const AccountId& account_id);
   static KioskAppId ForWebApp(const AccountId& account_id);
-  static KioskAppId ForArcApp(const AccountId& account_id);
 
   KioskAppId();
   KioskAppId(const KioskAppId&);

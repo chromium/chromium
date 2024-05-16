@@ -98,8 +98,6 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
       return WebAppById(web_app_manager_, app_id.account_id);
     case KioskAppType::kChromeApp:
       return ChromeAppById(chrome_app_manager_, app_id.app_id.value());
-    case KioskAppType::kArcApp:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -131,8 +129,6 @@ void KioskControllerImpl::InitializeKioskSystemSession(
     case KioskAppType::kChromeApp:
       chrome_app_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
-    case KioskAppType::kArcApp:
-      NOTREACHED_NORETURN();
   }
 }
 

@@ -116,9 +116,6 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
 
 void RecordKioskLaunchDuration(KioskAppType type, base::TimeDelta duration) {
   switch (type) {
-    case KioskAppType::kArcApp:
-      base::UmaHistogramLongTimes("Kiosk.LaunchDuration.Arc", duration);
-      break;
     case KioskAppType::kChromeApp:
       base::UmaHistogramLongTimes("Kiosk.LaunchDuration.ChromeApp", duration);
       break;
@@ -133,8 +130,6 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
     const KioskAppId& kiosk_app_id,
     KioskAppLauncher::NetworkDelegate* network_delegate) {
   switch (kiosk_app_id.type) {
-    case KioskAppType::kArcApp:
-      NOTREACHED_NORETURN();
     case KioskAppType::kChromeApp:
       return std::make_unique<StartupAppLauncher>(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
@@ -261,7 +256,6 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kPolicyLoadFailed);
     CASE(kUnableToDownload);
     CASE(kUnableToLaunch);
-    CASE(kArcAuthFailed);
     CASE(kExtensionsLoadTimeout);
     CASE(kExtensionsPolicyInvalid);
     CASE(kUserNotAllowlisted);
@@ -756,21 +750,7 @@ void KioskLaunchController::HandleProfileLoadError(
 
 void KioskLaunchController::HandleOldEncryption(
     std::unique_ptr<UserContext> user_context) {
-  if (kiosk_app_id_.type != KioskAppType::kArcApp) {
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
-  if (!host_) {
-    CHECK_IS_TEST();
-    return;
-  }
-  host_->StartWizard(EncryptionMigrationScreenView::kScreenId);
-  EncryptionMigrationScreen* migration_screen =
-      static_cast<EncryptionMigrationScreen*>(
-          host_->GetWizardController()->current_screen());
-  DCHECK(migration_screen);
-  migration_screen->SetUserContext(std::move(user_context));
-  migration_screen->SetupInitialView();
+  NOTREACHED_NORETURN();
 }
 
 void KioskLaunchController::OnNetworkConfigRequested() {

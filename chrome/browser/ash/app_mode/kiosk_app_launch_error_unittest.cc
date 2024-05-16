@@ -61,8 +61,6 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
                      expected_message);
   VerifyErrorMessage(KioskAppLaunchError::Error::kPolicyLoadFailed,
                      expected_message);
-  VerifyErrorMessage(KioskAppLaunchError::Error::kArcAuthFailed,
-                     expected_message);
   VerifyErrorMessage(KioskAppLaunchError::Error::kUserNotAllowlisted,
                      expected_message);
 

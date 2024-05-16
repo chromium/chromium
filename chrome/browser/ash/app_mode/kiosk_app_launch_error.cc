@@ -43,7 +43,6 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kNotKioskEnabled:
     case Error::kUnableToRetrieveHash:
     case Error::kPolicyLoadFailed:
-    case Error::kArcAuthFailed:
     case Error::kUserNotAllowlisted:
     case Error::kLacrosDataMigrationStarted:
     case Error::kLacrosBackwardDataMigrationStarted:

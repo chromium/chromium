@@ -1570,8 +1570,7 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
   }
 
   if (user_context.GetUserType() == user_manager::UserType::kArcKioskApp) {
-    LoginAsKioskApp(KioskAppId::ForArcApp(user_context.GetAccountId()));
-    return;
+    NOTREACHED_NORETURN();
   }
 
   if (user_context.GetUserType() == user_manager::UserType::kWebKioskApp) {

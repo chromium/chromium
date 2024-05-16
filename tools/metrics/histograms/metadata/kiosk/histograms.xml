@@ -195,7 +195,6 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>Records the total duration it takes to launch a kiosk app.</summary>
   <token key="KioskType">
-    <variant name="Arc"/>
     <variant name="ChromeApp"/>
     <variant name="Web"/>
   </token>

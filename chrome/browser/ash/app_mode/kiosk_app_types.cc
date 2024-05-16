@@ -18,8 +18,6 @@ namespace {
 
 std::string ToString(KioskAppType type) {
   switch (type) {
-    case KioskAppType::kArcApp:
-      return "ArcKiosk";
     case KioskAppType::kChromeApp:
       return "ChromeAppKiosk";
     case KioskAppType::kWebApp:
@@ -35,13 +33,6 @@ KioskAppId KioskAppId::ForChromeApp(std::string_view chrome_app_id,
   // TODO(b/304937903) upgrade to CHECK.
   DUMP_WILL_BE_CHECK(account_id.is_valid());
   return KioskAppId(chrome_app_id, account_id);
-}
-
-// static
-KioskAppId KioskAppId::ForArcApp(const AccountId& account_id) {
-  // TODO(b/304937903) upgrade to CHECK.
-  DUMP_WILL_BE_CHECK(account_id.is_valid());
-  return KioskAppId(KioskAppType::kArcApp, account_id);
 }
 
 // static

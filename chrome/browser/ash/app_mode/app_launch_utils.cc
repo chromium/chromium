@@ -125,10 +125,6 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,
                               const std::optional<std::string>& app_name) {
-  if (kiosk_app_id.type == KioskAppType::kArcApp) {
-    // Do not initialize a `KioskSystemSession` for ARC kiosk.
-    return;
-  }
   KioskController::Get().InitializeKioskSystemSession(profile, kiosk_app_id,
                                                       app_name);
 }
@@ -178,9 +174,6 @@ void SetOneTimeAutoLaunchKioskAppId(PrefService& local_state,
                                    KioskChromeAppManager::kKioskDictionaryName);
 
   switch (kiosk_app_id.type) {
-    case KioskAppType::kArcApp:
-      NOTREACHED_IN_MIGRATION();
-      return;
     case KioskAppType::kChromeApp:
       dict_update->Set(kOneTimeAutoLaunchChromeAppAccountId,
                        kiosk_app_id.account_id.Serialize());

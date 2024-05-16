@@ -142,8 +142,6 @@ KioskSystemSession::KioskSystemSession(
     case KioskAppType::kWebApp:
       InitForWebKiosk(app_name);
       break;
-    case KioskAppType::kArcApp:
-      NOTREACHED_IN_MIGRATION();
   }
   if (IsLacrosEnabled()) {
     lacros_watcher_ = std::make_unique<LacrosWatcher>(profile, kiosk_app_id_);

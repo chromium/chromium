@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_list/arc",
-  "+chrome/browser/ash/arc/kiosk",
   "+chrome/browser/ash/arc/policy",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/crosapi",
