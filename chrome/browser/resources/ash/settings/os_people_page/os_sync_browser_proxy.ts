@@ -69,6 +69,6 @@ export class OsSyncBrowserProxyImpl implements OsSyncBrowserProxy {
   }
 
   setOsSyncDatatypes(osSyncPrefs: OsSyncPrefs): void {
-    return chrome.send('SetOsSyncDatatypes', [osSyncPrefs]);
+    chrome.send('SetOsSyncDatatypes', [osSyncPrefs]);
   }
 }

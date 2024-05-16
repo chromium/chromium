@@ -77,8 +77,7 @@ export class ClearBrowsingDataBrowserProxyImpl implements
   }
 
   restartCounters(isBasic: boolean, timePeriod: number) {
-    return chrome.send('restartClearBrowsingDataCounters',
-                       [isBasic, timePeriod]);
+    chrome.send('restartClearBrowsingDataCounters', [isBasic, timePeriod]);
   }
 
   static getInstance(): ClearBrowsingDataBrowserProxy {

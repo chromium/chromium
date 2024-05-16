@@ -331,15 +331,15 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   // <if expr="chromeos_ash">
   attemptUserExit() {
-    return chrome.send('AttemptUserExit');
+    chrome.send('AttemptUserExit');
   }
 
   turnOnSync() {
-    return chrome.send('TurnOnSync');
+    chrome.send('TurnOnSync');
   }
 
   turnOffSync() {
-    return chrome.send('TurnOffSync');
+    chrome.send('TurnOffSync');
   }
   // </if>
 

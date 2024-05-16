@@ -344,7 +344,7 @@ export class SecurityKeysPinBrowserProxyImpl implements
   }
 
   close() {
-    return chrome.send('securityKeyPINClose');
+    chrome.send('securityKeyPINClose');
   }
 
   static getInstance(): SecurityKeysPinBrowserProxy {
@@ -386,7 +386,7 @@ export class SecurityKeysCredentialBrowserProxyImpl implements
   }
 
   close() {
-    return chrome.send('securityKeyCredentialManagementClose');
+    chrome.send('securityKeyCredentialManagementClose');
   }
 
   static getInstance(): SecurityKeysCredentialBrowserProxy {
@@ -414,7 +414,7 @@ export class SecurityKeysResetBrowserProxyImpl implements
   }
 
   close() {
-    return chrome.send('securityKeyResetClose');
+    chrome.send('securityKeyResetClose');
   }
 
   static getInstance(): SecurityKeysResetBrowserProxy {
@@ -452,7 +452,7 @@ export class SecurityKeysBioEnrollProxyImpl implements
   }
 
   cancelEnrollment() {
-    return chrome.send('securityKeyBioEnrollCancel');
+    chrome.send('securityKeyBioEnrollCancel');
   }
 
   deleteEnrollment(id: string) {
@@ -464,7 +464,7 @@ export class SecurityKeysBioEnrollProxyImpl implements
   }
 
   close() {
-    return chrome.send('securityKeyBioEnrollClose');
+    chrome.send('securityKeyBioEnrollClose');
   }
 
   static getInstance(): SecurityKeysBioEnrollProxy {
