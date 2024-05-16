@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/values.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -82,6 +84,34 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
             "code\"},\"risk_data_encoded\":{\"encoding_type\":\"BASE_64\","
             "\"message_type\":\"BROWSER_NATIVE_FINGERPRINTING\",\"value\":"
             "\"seems pretty risky\"},\"sender_instrument_id\":\"13\"}");
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_WithActionToken) {
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>(),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"token\"}}");
+  request->ParseResponse(response->GetDict());
+
+  std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
+  EXPECT_EQ(expected_action_token, request->response_details_->action_token_);
+}
+
+TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
+       ParseResponse_WithErrorMessage) {
+  auto request = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>(),
+      /*response_callback=*/base::DoNothing(),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"error\":{\"user_error_message\":\"Something went wrong!\"}}");
+  request->ParseResponse(response->GetDict());
+
+  EXPECT_EQ("Something went wrong!",
+            request->response_details_->error_message_.value());
 }
 
 }  // namespace payments::facilitated

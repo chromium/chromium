@@ -4,6 +4,9 @@
 
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
 
+#include <string>
+#include <vector>
+
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -24,6 +27,8 @@ FacilitatedPaymentsInitiatePaymentRequest::
         const std::string& app_locale,
         const bool full_sync_enabled)
     : request_details_(std::move(request_details)),
+      response_details_(std::make_unique<
+                        FacilitatedPaymentsInitiatePaymentResponseDetails>()),
       response_callback_(std::move(response_callback)),
       app_locale_(app_locale),
       full_sync_enabled_(full_sync_enabled) {}
@@ -98,7 +103,25 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
 }
 
 void FacilitatedPaymentsInitiatePaymentRequest::ParseResponse(
-    const base::Value::Dict& response) {}
+    const base::Value::Dict& response) {
+  // The `error` is only set in the absence of the action token.
+  if (const base::Value::Dict* error = response.FindDict("error")) {
+    if (const std::string* error_message =
+            error->FindString("user_error_message")) {
+      response_details_->error_message_ = *error_message;
+    }
+    return;
+  }
+
+  if (const base::Value::Dict* trigger_purchase_manager =
+          response.FindDict("trigger_purchase_manager")) {
+    if (const std::string* action_token =
+            trigger_purchase_manager->FindString("o2_action_token")) {
+      response_details_->action_token_.assign(action_token->begin(),
+                                              action_token->end());
+    }
+  }
+}
 
 bool FacilitatedPaymentsInitiatePaymentRequest::IsResponseComplete() {
   return false;
