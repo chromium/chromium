@@ -3860,7 +3860,13 @@ TEST_F(URLLoaderTest, CertStatusOnResponse) {
 }
 
 // Verifies if URLLoader works well with ResourceScheduler.
-TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
+// TODO(crbug.com/333723898): enable this test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ResourceSchedulerIntegration DISABLED_ResourceSchedulerIntegration
+#else
+#define MAYBE_ResourceSchedulerIntegration ResourceSchedulerIntegration
+#endif
+TEST_F(URLLoaderTest, MAYBE_ResourceSchedulerIntegration) {
   // ResourceScheduler limits the number of connections for the same host
   // by 6.
   constexpr int kRepeat = 6;
