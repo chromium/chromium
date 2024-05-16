@@ -8,7 +8,7 @@ const tests = [
   {
     name: '[gather] Test gather with default options and 0-D indices',
     input: {dataType: 'int32', dimensions: [3]},
-    indices: {dataType: 'int64', dimensions: []},
+    indices: {dataType: 'uint64', dimensions: []},
     output: {dataType: 'int32', dimensions: []}
   },
   {
