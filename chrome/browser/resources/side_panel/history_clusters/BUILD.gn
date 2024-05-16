@@ -11,11 +11,15 @@ build_webui("build") {
 
   static_files = [ "history_clusters.html" ]
 
-  web_component_files = [ "app.ts" ]
+  non_web_component_files = [
+    "app.ts",
+    "app.html.ts",
+  ]
+  css_files = [ "app.css" ]
 
   ts_deps = [
     "../shared:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

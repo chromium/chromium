@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
-import 'chrome://history-clusters-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import 'chrome://resources/cr_components/history_clusters/clusters.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
@@ -11,9 +10,10 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 
 export interface HistoryClustersAppElement {
   $: {
@@ -22,26 +22,27 @@ export interface HistoryClustersAppElement {
   };
 }
 
-export class HistoryClustersAppElement extends PolymerElement {
+export class HistoryClustersAppElement extends CrLitElement {
   static get is() {
     return 'history-clusters-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The current query for which related clusters are requested and shown.
        */
-      query: {
-        type: String,
-        value: '',
-      },
+      query: {type: String},
 
-      scrollContainer: HTMLElement,
+      scrollTarget_: {type: Object},
     };
   }
 
@@ -54,14 +55,14 @@ export class HistoryClustersAppElement extends PolymerElement {
   // Properties
   //============================================================================
 
-  query: string;
-  private scrollTarget_: HTMLElement;
+  query: string = '';
+  protected scrollTarget_?: HTMLElement;
 
   //============================================================================
   // Event Handlers
   //============================================================================
 
-  private onContextMenu_(event: MouseEvent) {
+  protected onContextMenu_(event: MouseEvent) {
     BrowserProxyImpl.getInstance().handler.showContextMenuForSearchbox(
         this.query, {x: event.clientX, y: event.clientY});
   }
@@ -86,7 +87,7 @@ export class HistoryClustersAppElement extends PolymerElement {
   /**
    * Called when the value of the search field changes.
    */
-  private onSearchChanged_(event: CustomEvent<string>) {
+  protected onSearchChanged_(event: CustomEvent<string>) {
     // Update the query based on the value of the search field, if necessary.
     this.query = event.detail;
   }
@@ -94,7 +95,7 @@ export class HistoryClustersAppElement extends PolymerElement {
   /**
    * Called when the browser handler forces us to change our query.
    */
-  private onQueryChangedByUser_(event: CustomEvent<string>) {
+  protected onQueryChangedByUser_(event: CustomEvent<string>) {
     // This will in turn fire `onSearchChanged_()`.
     if (this.$.searchbox) {
       this.$.searchbox.setValue(event.detail);

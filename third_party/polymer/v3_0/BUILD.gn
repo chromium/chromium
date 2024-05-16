@@ -137,8 +137,6 @@ ts_library("library") {
     "//chrome/browser/resources/settings_shared:build_ts",
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
     "//chrome/browser/resources/side_panel/commerce:build_ts",
-    "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
-    "//chrome/browser/resources/side_panel/history_clusters:build_ts",
     "//chrome/browser/resources/side_panel/performance_controls:build_ts",
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
