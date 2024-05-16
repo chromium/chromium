@@ -404,6 +404,11 @@ BASE_FEATURE(kUseLastBeginFrameArgs,
              "UseLastBeginFrameArgs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use BlitRequests for copy requests made by ViewTransition.
+BASE_FEATURE(kBlitRequestsForViewTransition,
+             "BlitRequestsForViewTransition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }

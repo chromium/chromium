@@ -6379,6 +6379,7 @@ data/gpu/pixel_video_test.js
 data/gpu/pixel_video_underlay.html
 data/gpu/pixel_video_vp9.html
 data/gpu/pixel_video_vp9_i420a.html
+data/gpu/pixel_view_transitions_capture.html
 data/gpu/pixel_webgl2_blitframebuffer_result_displayed.html
 data/gpu/pixel_webgl2_clearbufferfv_result_displayed.html
 data/gpu/pixel_webgl_aa_alpha.html

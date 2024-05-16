@@ -126,7 +126,9 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       frame_sink_id_(frame_sink_id),
       surface_resource_holder_(this),
       is_root_(is_root),
-      allow_copy_output_requests_(is_root) {
+      allow_copy_output_requests_(is_root),
+      use_blit_request_for_view_transition_(base::FeatureList::IsEnabled(
+          features::kBlitRequestsForViewTransition)) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -1584,7 +1586,9 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
       view_transition_token_to_animation_manager_[transition_token] =
           SurfaceAnimationManager::CreateWithSave(
               directive, surface, frame_sink_manager_->shared_bitmap_manager(),
-              frame_sink_manager_->GetSharedImageInterface(),
+              use_blit_request_for_view_transition_
+                  ? frame_sink_manager_->GetSharedImageInterface()
+                  : nullptr,
               frame_sink_manager_->reserved_resource_id_tracker(),
               base::BindOnce(&CompositorFrameSinkSupport::
                                  OnSaveTransitionDirectiveProcessed,
