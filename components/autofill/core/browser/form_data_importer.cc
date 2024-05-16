@@ -1160,9 +1160,4 @@ void FormDataImporter::
       payment_method_type_if_non_interactive_authentication_flow_completed;
 }
 
-std::optional<NonInteractivePaymentMethodType> FormDataImporter::
-    GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const {
-  return payment_method_type_if_non_interactive_authentication_flow_completed_;
-}
-
 }  // namespace autofill

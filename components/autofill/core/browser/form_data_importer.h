@@ -137,9 +137,7 @@ class FormDataImporter : public AddressDataManager::Observer,
   // otherwise it should set to nullopt.
   void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
       std::optional<NonInteractivePaymentMethodType>
-          payment_method_type_if_non_interactive_authentication_flow_completed_);
-  std::optional<NonInteractivePaymentMethodType>
-  GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const;
+          payment_method_type_if_non_interactive_authentication_flow_completed);
 
  private:
   // Defines a candidate for address profile import.

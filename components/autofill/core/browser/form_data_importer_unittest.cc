@@ -4288,8 +4288,8 @@ TEST_F(FormDataImporterTest,
 
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
-      form_data_importer()
-          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(form_data_importer())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 
@@ -4318,8 +4318,8 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
 
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
-      form_data_importer()
-          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(form_data_importer())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 
@@ -4343,8 +4343,8 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
 
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
-      form_data_importer()
-          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(form_data_importer())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

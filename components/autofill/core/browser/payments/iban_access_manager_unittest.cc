@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -503,8 +504,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
       suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
 
   EXPECT_EQ(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed(),
       NonInteractivePaymentMethodType::kLocalIban);
 }
 
@@ -526,8 +527,8 @@ TEST_F(IbanAccessManagerMandatoryReauthTest,
       suggestion.GetPayload<Suggestion::BackendId>(), base::DoNothing());
 
   EXPECT_EQ(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed(),
       NonInteractivePaymentMethodType::kServerIban);
 }
 

@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
@@ -1166,8 +1167,8 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted();
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed();
   ASSERT_TRUE(type.has_value());
   ASSERT_EQ(type.value(), NonInteractivePaymentMethodType::kLocalCard);
 }
@@ -1233,8 +1234,8 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
     // Expect that we did not signal that there was no interactive
     // authentication.
     EXPECT_FALSE(
-        autofill_client_.GetFormDataImporter()
-            ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+        test_api(*autofill_client_.GetFormDataImporter())
+            .payment_method_type_if_non_interactive_authentication_flow_completed()
             .has_value());
   }
 }
@@ -3210,8 +3211,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted();
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed();
   EXPECT_THAT(type, testing::Optional(
                         NonInteractivePaymentMethodType::kMaskedServerCard));
 
@@ -3356,8 +3357,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 
@@ -3412,8 +3413,8 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
   histogram_tester.ExpectUniqueSample(
@@ -3503,8 +3504,8 @@ TEST_F(
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 
@@ -3721,8 +3722,8 @@ TEST_F(CreditCardAccessManagerTest,
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted();
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed();
   EXPECT_THAT(type,
               testing::Optional(NonInteractivePaymentMethodType::kVirtualCard));
 
@@ -3785,8 +3786,8 @@ TEST_F(CreditCardAccessManagerTest,
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
   std::optional<NonInteractivePaymentMethodType> type =
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted();
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed();
   EXPECT_THAT(type,
               testing::Optional(NonInteractivePaymentMethodType::kVirtualCard));
 
@@ -3828,8 +3829,8 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
   // Expect accessor to successfully retrieve the CVC.
@@ -3871,8 +3872,8 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
   // Expect the metrics are logged correctly.
@@ -3986,8 +3987,8 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
-      autofill_client_.GetFormDataImporter()
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*autofill_client_.GetFormDataImporter())
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 
   // Expect the metrics are logged correctly.
@@ -4487,13 +4488,13 @@ TEST_F(CreditCardAccessManagerTest, DestructorResetsCardIdentifier) {
       ->SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
           NonInteractivePaymentMethodType::kLocalCard);
   EXPECT_TRUE(
-      form_data_importer
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*form_data_importer)
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
   autofill_driver_.reset();
   EXPECT_FALSE(
-      form_data_importer
-          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+      test_api(*form_data_importer)
+          .payment_method_type_if_non_interactive_authentication_flow_completed()
           .has_value());
 }
 
