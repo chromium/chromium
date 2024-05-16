@@ -87,7 +87,7 @@ ComponentInstaller::~ComponentInstaller() = default;
 void ComponentInstaller::Register(ComponentUpdateService* cus,
                                   base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cus);
+  CHECK(cus);
 
   std::vector<uint8_t> public_key_hash;
   installer_policy_->GetHash(&public_key_hash);
@@ -182,9 +182,6 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
     return Result(InstallError::SET_PERMISSIONS_FAILED);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DCHECK(!base::PathExists(unpack_path));
-  DCHECK(base::PathExists(local_install_path));
 
 #if BUILDFLAG(IS_APPLE)
   // Since components can be large and can be re-downloaded when needed, they
@@ -453,8 +450,8 @@ void ComponentInstaller::StartRegistration(
     const base::Version& max_previous_product_version,
     scoped_refptr<RegistrationInfo> registration_info) {
   VLOG(1) << __func__ << " for " << installer_policy_->GetName();
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // First check for an installation set up alongside Chrome itself.
   base::FilePath root;
@@ -483,8 +480,8 @@ void ComponentInstaller::StartRegistration(
 }
 
 void ComponentInstaller::UninstallOnTaskRunner() {
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   const std::optional<base::FilePath> base_dir = GetComponentDirectory();
   if (!base_dir) {

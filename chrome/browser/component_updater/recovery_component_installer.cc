@@ -314,9 +314,7 @@ void SetPrefsForElevatedRecoveryInstall(const base::FilePath& unpack_path,
 RecoveryComponentInstaller::RecoveryComponentInstaller(
     const base::Version& version,
     PrefService* prefs)
-    : current_version_(version), prefs_(prefs) {
-  DCHECK(version.IsValid());
-}
+    : current_version_(version), prefs_(prefs) {}
 
 void RecoveryComponentInstaller::OnUpdateError(int error) {
   NOTREACHED_IN_MIGRATION() << "Recovery component update error: " << error;

@@ -71,7 +71,7 @@ const char kSwitchTestRequestParam[] = "test-request";
 
 ComponentUpdaterCommandLineConfigPolicy::
     ComponentUpdaterCommandLineConfigPolicy(const base::CommandLine* cmdline) {
-  DCHECK(cmdline);
+  CHECK(cmdline);
   // Parse comma-delimited debug flags.
   std::vector<std::string> switch_values = base::SplitString(
       cmdline->GetSwitchValueASCII(switches::kComponentUpdater), ",",
@@ -93,7 +93,6 @@ ComponentUpdaterCommandLineConfigPolicy::
       GetSwitchArgument(switch_values, kSwitchUrlSource);
   if (!switch_url_source.empty()) {
     url_source_override_ = GURL(switch_url_source);
-    DCHECK(url_source_override_.is_valid());
   }
 
   const std::string initial_delay =

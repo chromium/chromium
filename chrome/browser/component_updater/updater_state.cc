@@ -144,7 +144,7 @@ UpdaterState::State UpdaterState::StateReader::Read(bool is_machine) const {
   state.is_autoupdate_check_enabled = IsAutoupdateCheckEnabled();
   state.update_policy = [this] {
     const int update_policy = GetUpdatePolicy();
-    DCHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
+    CHECK((update_policy >= 0 && update_policy <= 3) || update_policy == -1);
     return update_policy;
   }();
   return state;
@@ -216,7 +216,7 @@ std::string UpdaterState::NormalizeTimeDelta(const base::TimeDelta& delta) {
     val = "1344";  // 2*28 days in hours.
   }
 
-  DCHECK(!val.empty());
+  CHECK(!val.empty());
   return val;
 }
 

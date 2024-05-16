@@ -86,7 +86,6 @@ void RecoveryComponentActionHandler::Unpack() {
 void RecoveryComponentActionHandler::UnpackComplete(
     const update_client::Unpacker::Result& result) {
   if (result.error != update_client::UnpackerError::kNone) {
-    DCHECK(!base::DirectoryExists(result.unpack_path));
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), false,

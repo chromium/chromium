@@ -331,7 +331,6 @@ void CrxUpdateService::MaybeThrottle(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto it = components_.find(id);
   if (it != components_.end()) {
-    DCHECK_EQ(it->first, id);
     if (OnDemandUpdateWithCooldown(id)) {
       ready_callbacks_.insert(std::make_pair(id, std::move(callback)));
       return;

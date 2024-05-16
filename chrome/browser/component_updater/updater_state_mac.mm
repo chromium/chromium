@@ -73,17 +73,15 @@ std::string UpdaterState::StateReaderKeystone::GetUpdaterName() const {
 
 base::Version UpdaterState::StateReaderKeystone::GetUpdaterVersion(
     bool /*is_machine*/) const {
-  // System Keystone trumps user one, so check this one first
+  // System Keystone takes precedence over user one, so check this one first.
   base::FilePath local_library;
-  bool success =
-      base::apple::GetLocalDirectory(NSLibraryDirectory, &local_library);
-  DCHECK(success);
-  base::FilePath system_bundle_plist = local_library.Append(kKeystonePlist);
-  base::Version system_keystone = GetVersionFromPlist(system_bundle_plist);
-  if (system_keystone.IsValid()) {
-    return system_keystone;
+  if (base::apple::GetLocalDirectory(NSLibraryDirectory, &local_library)) {
+    base::FilePath system_bundle_plist = local_library.Append(kKeystonePlist);
+    base::Version system_keystone = GetVersionFromPlist(system_bundle_plist);
+    if (system_keystone.IsValid()) {
+      return system_keystone;
+    }
   }
-
   base::FilePath user_bundle_plist =
       base::apple::GetUserLibraryPath().Append(kKeystonePlist);
   return GetVersionFromPlist(user_bundle_plist);
