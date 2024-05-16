@@ -56,9 +56,6 @@ _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 _TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
 
 SDK_PLATFORM_DICT = {
-    version_codes.MARSHMALLOW: 'M',
-    version_codes.NOUGAT: 'N',
-    version_codes.NOUGAT_MR1: 'N',
     version_codes.OREO: 'O',
     version_codes.OREO_MR1: 'O',
     version_codes.PIE: 'P',

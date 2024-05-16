@@ -12,77 +12,13 @@ PREFIX="$1"
 
 # The expected structures for CTS archives are like:
 #   - (x86|arm64)/<dessert letter>
-TARGET_DIR="$PREFIX/arm64/M"
-IN_ZIPFILE=android-cts-6.0_r32-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-6.0_r32.zip
-
-# The CIPD source is a collection of zip files containing all CTS tests
-# The below is what we
-# need for filtered archive package.
-mkdir -p "$TARGET_DIR"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsWebkitTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsWidgetTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistService.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsTextTestCases.apk"
-
-zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
-
-# platform separator for readability
-
-TARGET_DIR="$PREFIX/x86/M"
-IN_ZIPFILE=android-cts-6.0_r32-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-6.0_r32.zip
-
-mkdir -p "$TARGET_DIR"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsWebkitTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsWidgetTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsAssistService.apk"
-unzip "$IN_ZIPFILE" "android-cts/repository/testcases/CtsTextTestCases.apk"
-
-zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
-
-# platform separator for readability
-
-TARGET_DIR="$PREFIX/arm64/N"
-IN_ZIPFILE=android-cts-7.0_r33-linux_x86-arm.zip
-OUT_ZIPFILE=android-cts-arm64-7.0_r33.zip
-
-mkdir -p "$TARGET_DIR"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases.apk"
-
-zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
-
-# platform separator for readability
-
-TARGET_DIR="$PREFIX/x86/N"
-IN_ZIPFILE=android-cts-7.0_r33-linux_x86-x86.zip
-OUT_ZIPFILE=android-cts-x86-7.0_r33.zip
-
-mkdir -p "$TARGET_DIR"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases.apk"
-
-zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
-
-# platform separator for readability
-
 TARGET_DIR="$PREFIX/arm64/O"
 IN_ZIPFILE=android-cts-8.0_R26-linux_x86-arm.zip
 OUT_ZIPFILE=android-cts-arm64-8.0_r26.zip
 
+# The CIPD source is a collection of zip files containing all CTS tests
+# The below is what we
+# need for filtered archive package.
 mkdir -p "$TARGET_DIR"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases.apk"
 unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp.apk"

@@ -58,17 +58,17 @@ class _RunCtsTest(unittest.TestCase):
     with self.assertRaises(Exception) as _:
       run_cts.DetermineArch(device)
 
-  def testDetermineCtsRelease_marshmallow(self):
+  def testDetermineCtsRelease_oreo(self):
     logging_mock = mock.Mock()
     logging.info = logging_mock
-    device = mock.Mock(build_version_sdk=version_codes.MARSHMALLOW)
-    self.assertEqual(run_cts.DetermineCtsRelease(device), 'M')
+    device = mock.Mock(build_version_sdk=version_codes.OREO)
+    self.assertEqual(run_cts.DetermineCtsRelease(device), 'O')
     # We should log a message to explain how we auto-determined the CTS release.
     # We don't assert the message itself, since that's rather strict.
     logging_mock.assert_called()
 
   def testDetermineCtsRelease_tooLow(self):
-    device = mock.Mock(build_version_sdk=version_codes.LOLLIPOP_MR1)
+    device = mock.Mock(build_version_sdk=version_codes.NOUGAT_MR1)
     with self.assertRaises(Exception) as cm:
       run_cts.DetermineCtsRelease(device)
     message = str(cm.exception)
@@ -84,9 +84,11 @@ class _RunCtsTest(unittest.TestCase):
         version_codes.MARSHMALLOW: 'min fake release',
         version_codes.NOUGAT: 'max fake release',
     }
+    original_sdk_platform_dict = run_cts.SDK_PLATFORM_DICT
     run_cts.SDK_PLATFORM_DICT = mock_sdk_platform_dict
     with self.assertRaises(Exception) as cm:
       run_cts.DetermineCtsRelease(device)
+    run_cts.SDK_PLATFORM_DICT = original_sdk_platform_dict
     message = str(cm.exception)
     self.assertIn('--cts-release max fake release', message,
                   msg='Should recommend the highest supported CTS release')
