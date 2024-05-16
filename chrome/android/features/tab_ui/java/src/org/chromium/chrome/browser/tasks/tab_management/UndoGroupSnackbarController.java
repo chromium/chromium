@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
@@ -224,7 +223,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
             int rootId = info.tabOriginalRootId;
             if (info.tab.getRootId() == rootId) continue;
 
-            TabGroupTitleUtils.deleteTabGroupTitle(rootId);
+            filter.deleteTabGroupTitle(rootId);
 
             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                 TabGroupColorUtils.deleteTabGroupColor(rootId);
@@ -250,7 +249,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
         // the group title for that rootID on undo since the destination group never had a group
         // title to begin with, and the merging tabs still have the original group title stored.
         if (firstInfo.destinationGroupTitle == null) {
-            TabGroupTitleUtils.deleteTabGroupTitle(firstRootId);
+            tabGroupModelFilter.deleteTabGroupTitle(firstRootId);
         }
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
