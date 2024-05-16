@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -216,7 +217,7 @@ TEST_F(OverviewWindowDragControllerTest, DropTargetBoundsTest) {
         event_generator, by_touch, /*drop=*/false);
     EXPECT_TRUE(overview_controller->InOverviewSession());
 
-    const OverviewDropTarget* drop_target = overview_grid->drop_target();
+    const OverviewItemBase* drop_target = overview_grid->drop_target();
     EXPECT_TRUE(drop_target);
     EXPECT_EQ(gfx::RectF(drop_target->item_widget()->GetWindowBoundsInScreen()),
               target_bounds_before_dragging);

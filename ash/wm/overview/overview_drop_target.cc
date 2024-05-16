@@ -79,15 +79,19 @@ void OverviewDropTarget::UpdateBackgroundVisibility(
       item_widget_->GetWindowBoundsInScreen().Contains(location_in_screen));
 }
 
+void OverviewDropTarget::SetOpacity(float opacity) {}
+
 aura::Window::Windows OverviewDropTarget::GetWindowsForHomeGesture() {
   return {item_widget_->GetNativeWindow()};
 }
 
-void OverviewDropTarget::SetOpacity(float opacity) {}
-
 void OverviewDropTarget::HideForSavedDeskLibrary(bool animate) {}
 
 void OverviewDropTarget::RevertHideForSavedDeskLibrary(bool animate) {}
+
+void OverviewDropTarget::UpdateMirrorsForDragging(bool is_touch_dragging) {}
+
+void OverviewDropTarget::DestroyMirrorsForDragging() {}
 
 aura::Window* OverviewDropTarget::GetWindow() {
   return nullptr;
@@ -188,10 +192,6 @@ void OverviewDropTarget::UpdateCannotSnapWarningVisibility(bool animate) {}
 void OverviewDropTarget::HideCannotSnapWarning(bool animate) {}
 
 void OverviewDropTarget::OnMovingItemToAnotherDesk() {}
-
-void OverviewDropTarget::UpdateMirrorsForDragging(bool is_touch_dragging) {}
-
-void OverviewDropTarget::DestroyMirrorsForDragging() {}
 
 void OverviewDropTarget::Shutdown() {}
 

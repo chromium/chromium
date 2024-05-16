@@ -32,6 +32,7 @@
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_mini_view_header_view.h"
@@ -743,40 +744,18 @@ void OverviewItem::CloseWindows() {
 }
 
 void OverviewItem::Restack() {
+  aura::Window* parent_window = transform_window_.window()->parent();
+  aura::Window* stacking_target = GetStackBelowTarget();
   aura::Window* window = GetWindow();
-  aura::Window* parent_window = window->parent();
-  aura::Window* stacking_target = nullptr;
-
-  // Stack `window` below the split view window if split view is active.
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(root_window_);
-  if (split_view_controller->InSplitViewMode()) {
-    aura::Window* snapped_window =
-        split_view_controller->GetDefaultSnappedWindow();
-    if (snapped_window->parent() == parent_window) {
-      stacking_target = snapped_window;
-    }
-  }
-  // Stack `window` below the last window in `overview_grid_` that comes before
-  // `window` and has the same parent.
-  for (const std::unique_ptr<OverviewItemBase>& overview_item :
-       overview_grid_->window_list()) {
-    if (overview_item.get() == this ||
-        overview_item.get() == overview_grid_->drop_target()) {
-      break;
-    }
-
-    if (overview_item->GetWindow()->parent() == parent_window) {
-      stacking_target = overview_item->item_widget()->GetNativeWindow();
-    }
-  }
-
   if (stacking_target) {
     DCHECK_EQ(parent_window, stacking_target->parent());
     parent_window->StackChildBelow(window, stacking_target);
   }
-  DCHECK_EQ(parent_window, item_widget_->GetNativeWindow()->parent());
-  parent_window->StackChildBelow(item_widget_->GetNativeWindow(), window);
+
+  auto* item_widget_window = item_widget_->GetNativeWindow();
+  DCHECK_EQ(parent_window, item_widget_window->parent());
+  parent_window->StackChildBelow(item_widget_window, window);
+
   if (cannot_snap_widget_) {
     DCHECK_EQ(parent_window, cannot_snap_widget_->GetNativeWindow()->parent());
     parent_window->StackChildAbove(cannot_snap_widget_->GetNativeWindow(),
@@ -1124,9 +1103,9 @@ void OverviewItem::CreateItemWidget(
 
   item_widget_ = std::make_unique<views::Widget>();
   item_widget_->set_focus_on_creation(false);
-  item_widget_->Init(CreateOverviewItemWidgetParams(
-      transform_window_.window()->parent(), "OverviewItemWidget",
-      /*accept_events=*/true));
+  item_widget_->Init(CreateOverviewItemWidgetParams(GetWindow()->parent(),
+                                                    "OverviewItemWidget",
+                                                    /*accept_events=*/true));
   aura::Window* widget_window = item_widget_->GetNativeWindow();
   widget_window->parent()->StackChildBelow(widget_window, GetWindow());
   // Overview uses custom animations so remove the default ones.
@@ -1188,6 +1167,45 @@ void OverviewItem::OnItemBoundsAnimationEnded() {
     Restack();
     should_restack_on_animation_end_ = false;
   }
+}
+
+aura::Window* OverviewItem::GetStackBelowTarget() const {
+  aura::Window* stacking_target = nullptr;
+  aura::Window* window = transform_window_.window();
+  aura::Window* parent_window = window->parent();
+
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(root_window_);
+  if (split_view_controller->InSplitViewMode()) {
+    aura::Window* snapped_window =
+        split_view_controller->GetDefaultSnappedWindow();
+    if (snapped_window->parent() == parent_window) {
+      stacking_target = snapped_window;
+    }
+  }
+
+  // Find the last window in `overview_grid_` that comes before `window` and has
+  // the same parent.
+  for (const std::unique_ptr<OverviewItemBase>& overview_item :
+       overview_grid_->window_list()) {
+    // `overview_item` could represent an overview group item, which would never
+    // be strictly equal to this. However, the group item would contain `this`.
+    // Using `Contains()` ensures `this` check works correctly for both single
+    // overview items and group items.
+    if (overview_item->Contains(window) ||
+        overview_item.get() == overview_grid_->drop_target()) {
+      break;
+    }
+
+    // The parent window of `overview_item` can be different than
+    // `parent_window`, particularly when `overview_item` represents a float
+    // window.
+    if (overview_item->GetWindow()->parent() == parent_window) {
+      stacking_target = overview_item->item_widget()->GetNativeWindow();
+    }
+  }
+
+  return stacking_target;
 }
 
 void OverviewItem::PerformItemSpawnedAnimation(

@@ -6962,8 +6962,9 @@ TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
 }
 
 // Verify that an Overview group item remains interactive after being dragged to
-// a different display and back without releasing the mouse. See
-// http://b/339088510 for more details.
+// a different display and back without releasing the mouse. Also verify the
+// group item's widget consistently stays beneath the item widget of the
+// individual windows it contains. See http://b/339088510 for more details.
 TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
   UpdateDisplay("800x700,801+0-800x700");
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
@@ -6992,8 +6993,23 @@ TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
 
   ToggleOverview();
   ASSERT_TRUE(IsInOverviewSession());
-  auto* overview_group_item = GetOverviewItemForWindow(w1.get());
+  OverviewGroupItem* overview_group_item =
+      static_cast<OverviewGroupItem*>(GetOverviewItemForWindow(w1.get()));
   ASSERT_TRUE(overview_group_item);
+
+  const auto& overview_items =
+      overview_group_item->overview_items_for_testing();
+  ASSERT_EQ(overview_items.size(), 2u);
+  auto* group_item_widget = overview_group_item->item_widget();
+  ASSERT_TRUE(group_item_widget);
+  auto* group_item_widget_window = group_item_widget->GetNativeWindow();
+
+  // Stacking order verification before drag.
+  for (const auto& overview_item : overview_items) {
+    EXPECT_TRUE(window_util::IsStackedBelow(
+        group_item_widget_window,
+        overview_item->item_widget()->GetNativeWindow()));
+  }
 
   // Drag `overview_group_item` to display #2 w/o releasing mouse and drag back
   // then drop.
@@ -7003,8 +7019,17 @@ TEST_F(SnapGroupMultiDisplayTest, GroupItemCrossDisplayDragInteractivity) {
   DragGroupItemToPoint(overview_group_item, point_in_display1, event_generator,
                        /*by_touch_gestures=*/false, /*drop=*/true);
 
-  // Verify that Overview exits on mouse click, and both windows remaining on
-  // the display they were originally on.
+  // Stacking order verification after drag.
+  for (const auto& overview_item : overview_items) {
+    EXPECT_TRUE(window_util::IsStackedBelow(
+        group_item_widget_window,
+        overview_item->item_widget()->GetNativeWindow()));
+  }
+
+  // Verify that Overview exits on mouse click (shift the click position by
+  // `gfx::Vector2d(10, 0)` as there is a gap between the two individual items
+  // and it is not handling event currently), and both windows remaining on the
+  // display they were originally on.
   event_generator->MoveMouseTo(
       gfx::ToRoundedPoint(overview_group_item->target_bounds().CenterPoint()) +
       gfx::Vector2d(10, 0));

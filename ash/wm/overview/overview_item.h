@@ -181,6 +181,10 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void OnItemBoundsAnimationStarted();
   void OnItemBoundsAnimationEnded();
 
+  // Returns the target that the window of `this` should be stacked below,
+  // returns `nullptr` if no stacking is needed.
+  aura::Window* GetStackBelowTarget() const;
+
   // Performs the spawn-item-in-overview animation (which is a fade-in plus
   // scale-up animation), on the given |window|. |target_transform| is the final
   // transform that should be applied to |window| at the end of the animation.
