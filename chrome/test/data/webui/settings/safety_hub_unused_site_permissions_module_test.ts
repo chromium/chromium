@@ -200,34 +200,41 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         mockData[0]!.origin,
         getSiteList()[0]!.querySelector(
                              '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location',
-        getSiteList()[0]!.querySelector(
-                             '.cr-secondary-text')!.textContent!.trim());
+    assertTrue(!!getSiteList()[0]!.querySelector(
+                                      '.cr-secondary-text')!.textContent!.trim()
+                     .match(
+                         'You haven\'t visited recently. ' +
+                         'Chrome|Chromium removed location'));
 
     assertEquals(
         mockData[1]!.origin,
         siteList[1]!.querySelector(
                         '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone',
-        siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+    assertTrue(
+        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+              .match(
+                  'You haven\'t visited recently. ' +
+                  'Chrome|Chromium removed location, microphone'));
 
     assertEquals(
         mockData[2]!.origin,
         siteList[2]!.querySelector(
                         '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone, camera',
-        siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+    assertTrue(
+        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+              .match(
+                  'You haven\'t visited recently. ' +
+                  'Chrome|Chromium removed location, microphone, camera'));
 
     assertEquals(
         mockData[3]!.origin,
         siteList[3]!.querySelector(
                         '.site-representation')!.textContent!.trim());
-    assertEquals(
-        'Removed location, microphone, and 2 more',
-        siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+    assertTrue(
+        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+              .match(
+                  'You haven\'t visited recently. ' +
+                  'Chrome|Chromium removed location, microphone, and 2 more'));
 
     assertEquals(
         mockData[4]!.origin,

@@ -231,19 +231,27 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     switch (permissionsI18n.length) {
       case 1:
         return this.i18n(
-            'safetyCheckUnusedSitePermissionsRemovedOnePermissionLabel',
+            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
+                'safetyHubUnusedSitePermissionsRemovedOnePermissionLabel' :
+                'safetyCheckUnusedSitePermissionsRemovedOnePermissionLabel',
             ...permissionsI18n);
       case 2:
         return this.i18n(
-            'safetyCheckUnusedSitePermissionsRemovedTwoPermissionsLabel',
+            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
+                'safetyHubUnusedSitePermissionsRemovedTwoPermissionsLabel' :
+                'safetyCheckUnusedSitePermissionsRemovedTwoPermissionsLabel',
             ...permissionsI18n);
       case 3:
         return this.i18n(
-            'safetyCheckUnusedSitePermissionsRemovedThreePermissionsLabel',
+            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
+                'safetyHubUnusedSitePermissionsRemovedThreePermissionsLabel' :
+                'safetyCheckUnusedSitePermissionsRemovedThreePermissionsLabel',
             ...permissionsI18n);
       default:
         return this.i18n(
-            'safetyCheckUnusedSitePermissionsRemovedFourOrMorePermissionsLabel',
+            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
+                'safetyHubUnusedSitePermissionsRemovedFourOrMorePermissionsLabel' :
+                'safetyCheckUnusedSitePermissionsRemovedFourOrMorePermissionsLabel',
             permissionsI18n[0], permissionsI18n[1], permissionsI18n.length - 2);
     }
   }

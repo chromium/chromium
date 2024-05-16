@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/pref_names.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +44,10 @@ class SafetyHubMenuNotificationServiceTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitWithFeatures({features::kSafetyHub}, {});
+    feature_list_.InitWithFeatures(
+        {features::kSafetyHub,
+         safe_browsing::kSafetyHubAbusiveNotificationRevocation},
+        {});
     prefs()->SetBoolean(
         permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
 
@@ -191,7 +195,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification.value().label);
   EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().command);
 }
@@ -204,7 +208,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsIncremental) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
-        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
         notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
@@ -242,7 +246,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
-        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
         notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
@@ -266,7 +270,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification->label);
 
   // Creating a notification permission shouldn't cause the active notification
@@ -275,7 +279,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification->label);
 
   // Showing the notification sufficient days and times.
@@ -283,7 +287,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
-        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
         notification->label);
   }
   AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
@@ -319,7 +323,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification->label);
 
   // Disable safe browsing, which generates a medium-priority Safe Browsing
@@ -469,7 +473,7 @@ TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION, 1,
       notification.value().label);
   EXPECT_TRUE(menu_notification_service()
                   ->GetLastShownNotificationModule()
@@ -516,4 +520,55 @@ TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
   EXPECT_EQ(
       menu_notification_service()->GetLastShownNotificationModule().value(),
       safety_hub::SafetyHubModuleType::PASSWORDS);
+}
+
+// TODO(crbug.com/328773301): Remove after
+// SafetyHubAbusiveNotificationRevocation is launched.
+class
+    SafetyHubMenuNotificationServiceTestDisableAutoAbusiveNotificationRevocation
+    : public SafetyHubMenuNotificationServiceTest {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    feature_list_.InitWithFeatures({features::kSafetyHub}, {});
+    prefs()->SetBoolean(
+        permissions::prefs::kUnusedSitePermissionsRevocationEnabled, true);
+
+    password_store_ = CreateAndUseTestPasswordStore(profile());
+    PasswordStatusCheckService* password_service =
+        PasswordStatusCheckServiceFactory::GetForProfile(profile());
+    RunUntilIdle();
+    EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<password_manager::TestPasswordStore> password_store_;
+};
+
+TEST_F(
+    SafetyHubMenuNotificationServiceTestDisableAutoAbusiveNotificationRevocation,
+    TwoNotificationsSequentially) {
+  // Creating a mock result, which should result in a notification to be
+  // available.
+  CreateMockUnusedSitePermissionsEntry("https://example1.com:443");
+
+  // Show the notification sufficient days and times.
+  std::optional<MenuNotificationEntry> notification;
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_TRUE(notification.has_value());
+    ExpectPluralString(
+        IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+        notification->label);
+  }
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
+
+  // The notification has been shown sufficiently, so shouldn't be shown again.
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  CreateMockNotificationPermissionEntry();
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
 }

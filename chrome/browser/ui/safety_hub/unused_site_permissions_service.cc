@@ -45,6 +45,7 @@
 #include "components/permissions/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -242,7 +243,10 @@ std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::
     return std::u16string();
   }
   return l10n_util::GetPluralStringFUTF16(
-      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION,
+      base::FeatureList::IsEnabled(
+          safe_browsing::kSafetyHubAbusiveNotificationRevocation)
+          ? IDS_SETTINGS_SAFETY_HUB_REVOKED_PERMISSIONS_MENU_NOTIFICATION
+          : IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION,
       revoked_permissions_.size());
 #else
   // Menu notifications are not present on Android.
