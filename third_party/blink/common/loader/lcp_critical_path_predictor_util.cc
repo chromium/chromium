@@ -10,29 +10,32 @@
 namespace blink {
 
 bool LcppEnabled() {
-  return base::FeatureList::IsEnabled(
-             blink::features::kLCPCriticalPathPredictor) ||
-         base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver) ||
-         base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kLCPPLazyLoadImagePreload) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kDelayAsyncScriptExecution) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kHttpDiskCachePrewarming) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kLCPPAutoPreconnectLcpOrigin) ||
-         base::FeatureList::IsEnabled(
-             blink::features::kLCPTimingPredictorPrerender2) ||
-         base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload);
+  static const bool enabled =
+      base::FeatureList::IsEnabled(
+          blink::features::kLCPCriticalPathPredictor) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPFontURLPredictor) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kLCPPLazyLoadImagePreload) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kDelayAsyncScriptExecution) ||
+      base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kLCPPAutoPreconnectLcpOrigin) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kLCPTimingPredictorPrerender2) ||
+      base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload);
+  return enabled;
 }
 
 bool LcppScriptObserverEnabled() {
-  return base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver) ||
-         (base::FeatureList::IsEnabled(
-              features::kLowPriorityAsyncScriptExecution) &&
-          features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
-              .Get());
+  static const bool enabled =
+      base::FeatureList::IsEnabled(blink::features::kLCPScriptObserver) ||
+      (base::FeatureList::IsEnabled(
+           features::kLowPriorityAsyncScriptExecution) &&
+       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
+           .Get());
+  return enabled;
 }
 
 }  // namespace blink
