@@ -341,6 +341,10 @@ class ReftestScreenshot(TypedDict):
     url: str
     screenshot: str
 
+    @staticmethod
+    def decode_image(screenshot: 'ReftestScreenshot') -> bytes:
+        return base64.b64decode(screenshot['screenshot'].strip())
+
 
 @dataclass
 class BrowserOutput:
@@ -862,51 +866,83 @@ class WPTResultsProcessor:
                                  html_diff_content.encode())
 
     def _write_screenshots(self, test_name: str, artifacts: Artifacts,
-                           screenshots: List[ReftestScreenshot]):
+                           screenshot1: ReftestScreenshot,
+                           screenshot2: ReftestScreenshot):
         """Write actual, expected, and diff screenshots to disk, if possible.
 
         Arguments:
-            test_name: Web test name (a path).
+            test_name: Web test name (a URL whose path is relative to
+                `web_tests/`).
             artifacts: Artifact manager.
-            screenshots: Each element represents a screenshot of either the test
-                result or one of its references.
+            screenshot1: A screenshot of either the test page or one of its
+                references that failed comparison.
+            screenshot2: The screenshot compared against `screenshot1`.
+
+        The screenshots may be in either order and may represent any compatible
+        comparison (test against reference, or match ref against mismatch ref).
 
         Returns:
             The diff stats if the screenshots are different.
         """
-        # Remember the two images so we can diff them later.
-        _, test_url = self.port.get_suite_name_and_base_test(test_name)
-        test_url = self.path_finder.strip_wpt_path(test_url)
-        actual_image_bytes = b''
-        expected_image_bytes = b''
+        _, base_test = self.port.get_suite_name_and_base_test(test_name)
+        test_url = self.path_finder.strip_wpt_path(base_test)
 
-        for screenshot in screenshots:
-            if not isinstance(screenshot, dict):
-                # Skip the relation string, like '!=' or '=='.
-                continue
-            # The URL produced by wptrunner will have a leading "/", which we
-            # trim away for easier comparison to the WPT name below.
-            url = screenshot['url']
-            if url.startswith('/'):
-                url = url[1:]
-            image_bytes = base64.b64decode(screenshot['screenshot'].strip())
+        wpt_dir = self.port.wpt_dir(base_test)
+        assert wpt_dir, f'{base_test!r} is not a WPT'
+        manifest = self.port.wpt_manifest(wpt_dir)
+        # `test_url` is the globally mounted URL (i.e., its canonical ID),
+        # whereas `url_from_root`'s path part is relative to the test root
+        # (i.e., `external/wpt` or `wpt_internal`). These URLs happen to be
+        # identical for `external/wpt`, which wptserve mounts to `/`.
+        url_from_root = base_test[len(f'{wpt_dir}/'):]
+        relation_by_ref = {
+            url: relation
+            for relation, url in manifest.extract_reference_list(url_from_root)
+        }
+        assert set(relation_by_ref.values()) <= {'==', '!='}
 
-            screenshot_key = 'expected_image'
-            file_suffix = test_failures.FILENAME_SUFFIX_EXPECTED
-            if url == test_url:
-                screenshot_key = 'actual_image'
-                file_suffix = test_failures.FILENAME_SUFFIX_ACTUAL
-                actual_image_bytes = image_bytes
+        test_screenshot = match_screenshot = mismatch_screenshot = None
+        for screenshot in [screenshot1, screenshot2]:
+            # Compare URLs with a leading `/` to follow the convention
+            # wptrunner uses. There can only be up to one of each type of
+            # screenshot.
+            if screenshot['url'] == f'/{test_url}':
+                assert not test_screenshot
+                test_screenshot = screenshot
+            elif relation_by_ref[screenshot['url']] == '==':
+                assert not match_screenshot
+                match_screenshot = screenshot
             else:
-                expected_image_bytes = image_bytes
+                assert not mismatch_screenshot
+                mismatch_screenshot = screenshot
 
-            screenshot_subpath = self.port.output_filename(
-                test_name, file_suffix, '.png')
-            artifacts.CreateArtifact(screenshot_key, screenshot_subpath,
-                                     image_bytes)
+        # Because fuzzy rules allow matches without pixel-by-pixel equality,
+        # the screenshots in a mismatch failure may be slightly different, so we
+        # still extract both.
+        if mismatch_screenshot:
+            expected = mismatch_screenshot
+            # For tests with both match and mismatch references, the references
+            # may be compared if the match reference is found to be equivalent
+            # to the test page.
+            actual = test_screenshot or match_screenshot
+        else:
+            expected, actual = match_screenshot, test_screenshot
+
+        assert expected
+        expected_image = ReftestScreenshot.decode_image(expected)
+        expected_subpath = self.port.output_filename(
+            test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.png')
+        artifacts.CreateArtifact('expected_image', expected_subpath,
+                                 expected_image)
+
+        assert actual
+        actual_image = ReftestScreenshot.decode_image(actual)
+        actual_subpath = self.port.output_filename(
+            test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.png')
+        artifacts.CreateArtifact('actual_image', actual_subpath, actual_image)
 
         diff_bytes, stats, error = self.port.diff_image(
-            expected_image_bytes, actual_image_bytes)
+            expected_image, actual_image)
         if error:
             _log.error(
                 'Error creating diff image for %s '
@@ -942,8 +978,11 @@ class WPTResultsProcessor:
                 self._write_text_results(result, artifacts)
             screenshots = (extra or {}).get('reftest_screenshots') or []
             if screenshots:
+                # Remove the relation operator `==` or `!=` between the
+                # screenshot objects.
+                screenshot1, _, screenshot2 = screenshots
                 image_diff_stats = self._write_screenshots(
-                    result.name, artifacts, screenshots)
+                    result.name, artifacts, screenshot1, screenshot2)
 
         if message:
             self._write_log(result.name, artifacts, 'crash_log',

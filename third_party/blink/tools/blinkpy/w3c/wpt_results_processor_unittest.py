@@ -41,8 +41,16 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'reftest': {
                         'reftest.html': [
                             'c3f2fb6f436da59d43aeda0a7e8a018084557033',
-                            [None, [['reftest-ref.html', '==']], {}],
-                        ]
+                            [None, [['/reftest-ref.html', '==']], {}],
+                        ],
+                        'reftest-multiple.html': [
+                            'c3f2fb6f436da59d43aeda0a7e8a018084557033',
+                            [
+                                None,
+                                [['/reftest-ref.html', '=='],
+                                 ['/reftest-mismatch.html', '!=']], {}
+                            ],
+                        ],
                     },
                     'testharness': {
                         'test.html': [
@@ -75,7 +83,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'reftest': {
                         'reftest.html': [
                             'c3f2fb6f436da59d43aeda0a7e8a018084557033',
-                            [None, [['reftest-ref.html', '==']], {}],
+                            [
+                                None,
+                                [['/wpt_internal/reftest-ref.html', '==']], {}
+                            ],
                         ],
                     },
                     'testharness': {
@@ -89,6 +100,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     },
                 },
             }))
+        self.fs.write_text_file(
+            self.path_finder.path_from_web_tests('VirtualTestSuites'),
+            json.dumps([{
+                'prefix': 'fake-vts',
+                'platforms': ['Linux'],
+                'bases': ['external/wpt/reftest-multiple.html'],
+                'args': ['--enable-features=FakeFeature'],
+            }]))
         self.fs.write_text_file(
             self.path_finder.path_from_blink_tools('blinkpy', 'web_tests',
                                                    'results.html'),
@@ -699,7 +718,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                         'reftest_screenshots': [{
                             'url': '/reftest.html',
                             'screenshot': 'abcd',
-                        }, {
+                        }, '==', {
                             'url': '/reftest-ref.html',
                             'screenshot': 'bcde',
                         }],
@@ -725,6 +744,44 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                  '> abcd',
                              ]))
 
+    def test_extract_screenshots_match_and_mismatch(self):
+        self._event(action='test_start',
+                    test='/reftest-multiple.html',
+                    subsuite='fake-vts')
+        self._event(action='test_end',
+                    test='/reftest-multiple.html',
+                    subsuite='fake-vts',
+                    status='FAIL',
+                    expected='PASS',
+                    extra={
+                        'reftest_screenshots': [{
+                            'url': '/reftest-ref.html',
+                            'screenshot': 'abcd',
+                        }, '!=', {
+                            'url': '/reftest-mismatch.html',
+                            'screenshot': 'abcd',
+                        }],
+                    })
+        self.assertEqual(
+            self.fs.read_binary_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'virtual', 'fake-vts',
+                             'external', 'wpt',
+                             'reftest-multiple-actual.png')),
+            base64.b64decode('abcd'))
+        self.assertEqual(
+            self.fs.read_binary_file(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'virtual', 'fake-vts',
+                             'external', 'wpt',
+                             'reftest-multiple-expected.png')),
+            base64.b64decode('abcd'))
+        self.assertFalse(
+            self.fs.exists(
+                self.fs.join('/mock-checkout', 'out', 'Default',
+                             'layout-test-results', 'virtual', 'fake-vts',
+                             'external', 'wpt', 'reftest-multiple-diff.png')))
+
     def test_extract_screenshots_for_wpt_internal(self):
         self._event(action='test_start', test='/wpt_internal/reftest.html')
         self._event(action='test_end',
@@ -735,8 +792,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                         'reftest_screenshots': [{
                             'url': '/wpt_internal/reftest.html',
                             'screenshot': 'abcd',
-                        }, {
-                            'url': 'wpt_internal/reftest-ref.html',
+                        }, '==', {
+                            'url': '/wpt_internal/reftest-ref.html',
                             'screenshot': 'bcde',
                         }],
                     })
@@ -990,31 +1047,28 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                return_value=(..., diff_stats, ...)):
             for _ in range(2):
                 self._event(action='suite_start')
-                self._event(action='test_start', test='/test.html')
-                self._event(action='test_status',
-                            test='/test.html',
-                            status='FAIL',
-                            expected='PASS',
-                            subtest='subtest')
+                self._event(action='test_start', test='/reftest.html')
                 self._event(action='process_output',
                             process='101',
                             command='chromedriver --port=101',
                             data='[101:101:INFO] This is Chrome version 125')
                 self._event(action='test_end',
-                            test='/test.html',
-                            status='OK',
+                            test='/reftest.html',
+                            status='FAIL',
+                            expected='PASS',
                             extra={
                                 'reftest_screenshots': [{
-                                    'url': '/test.html',
+                                    'url': '/reftest-ref.html',
                                     'screenshot': 'abcd',
+                                }, '==', {
+                                    'url': '/reftest.html',
+                                    'screenshot': 'bcde',
                                 }],
                                 'browser_pid':
                                 101,
                             })
-                self._event(action='test_start', test='/reftest.html')
-                self._event(action='test_end',
-                            test='/reftest.html',
-                            status='PASS')
+                self._event(action='test_start', test='/test.html')
+                self._event(action='test_end', test='/test.html', status='OK')
                 self._event(action='suite_end')
         self.processor.process_results_json()
 
@@ -1023,13 +1077,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 self.fs.join('/mock-checkout', 'out', 'Default',
                              'layout-test-results', 'full_results.json')))
         self.assertEqual(full_json['num_regressions'], 1)
-        unexpected_fail = full_json['tests']['external']['wpt']['test.html']
+        unexpected_fail = full_json['tests']['external']['wpt']['reftest.html']
         self.assertTrue(unexpected_fail['has_stderr'])
         self.assertEqual(unexpected_fail['artifacts']['stderr'], [
             self.fs.join('layout-test-results', 'external', 'wpt',
-                         'test-stderr.txt'),
+                         'reftest-stderr.txt'),
             self.fs.join('layout-test-results', 'retry_1', 'external', 'wpt',
-                         'test-stderr.txt'),
+                         'reftest-stderr.txt'),
         ])
         self.assertEqual(unexpected_fail['image_diff_stats'], diff_stats)
 
@@ -1044,8 +1098,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
         failing_results = json.loads(failing_results_match['json'])
         self.assertIn('external', failing_results['tests'])
         self.assertIn('wpt', failing_results['tests']['external'])
-        self.assertIn('test.html', failing_results['tests']['external']['wpt'])
-        self.assertNotIn('reftest.html',
+        self.assertIn('reftest.html',
+                      failing_results['tests']['external']['wpt'])
+        self.assertNotIn('test.html',
                          failing_results['tests']['external']['wpt'])
         self.assertRegex(self.fs.read_text_file(path_to_failing_results),
                          'ADD_RESULTS\(.*\);$')
