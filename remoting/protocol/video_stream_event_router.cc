@@ -58,8 +58,7 @@ void VideoStreamEventRouter::SetVideoChannelStateObserver(
     return;
   }
 
-  multi_stream_state_observers_.insert(
-      {screen_id, video_channel_state_observer});
+  multi_stream_state_observers_[screen_id] = video_channel_state_observer;
 }
 
 base::WeakPtr<VideoChannelStateObserver> VideoStreamEventRouter::GetObserver(
