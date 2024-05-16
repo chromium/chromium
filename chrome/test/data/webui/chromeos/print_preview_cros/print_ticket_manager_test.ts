@@ -149,8 +149,8 @@ suite('PrintTicketManager', () => {
         assertFalse(instance.isPrintRequestInProgress(), 'Request finished');
       });
 
-  // Verify PrintTicketManger ensures that PrintPreviewPageHandler.print is only
-  // called if print request is not in progress.
+  // Verify PrintTicketManager ensures that PrintPreviewPageHandler.print is
+  // only called if print request is not in progress.
   test('ensure only one print request triggered at a time', async () => {
     const delay = 1;
     printPreviewPageHandler.setTestDelay(delay);

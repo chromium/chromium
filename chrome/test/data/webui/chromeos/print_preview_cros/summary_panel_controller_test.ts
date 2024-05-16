@@ -19,8 +19,8 @@ suite('SummaryPanelController', () => {
   let controller: SummaryPanelController|null = null;
   let mockController: MockController;
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
-  let previewTicketManger: PreviewTicketManager;
-  let printTicketManger: PrintTicketManager;
+  let previewTicketManager: PreviewTicketManager;
+  let printTicketManager: PrintTicketManager;
   let eventTracker: EventTracker;
 
   setup(() => {
@@ -31,8 +31,8 @@ suite('SummaryPanelController', () => {
     // Setup fakes.
     printPreviewPageHandler = new FakePrintPreviewPageHandler();
     setPrintPreviewPageHandlerForTesting(printPreviewPageHandler);
-    previewTicketManger = PreviewTicketManager.getInstance();
-    printTicketManger = PrintTicketManager.getInstance();
+    previewTicketManager = PreviewTicketManager.getInstance();
+    printTicketManager = PrintTicketManager.getInstance();
 
     controller = new SummaryPanelController(eventTracker);
     assertTrue(!!controller);
@@ -95,10 +95,10 @@ suite('SummaryPanelController', () => {
     const testEvent = new CustomEvent<void>(
         PRINT_REQUEST_STARTED_EVENT, {bubbles: true, composed: true});
     const startRequest =
-        eventToPromise(PRINT_REQUEST_STARTED_EVENT, printTicketManger);
+        eventToPromise(PRINT_REQUEST_STARTED_EVENT, printTicketManager);
     handlerFn.addExpectation(testEvent);
 
-    printTicketManger.dispatchEvent(testEvent);
+    printTicketManager.dispatchEvent(testEvent);
     await startRequest;
 
     mockController.verifyMocks();
@@ -113,10 +113,10 @@ suite('SummaryPanelController', () => {
         const testEvent = new CustomEvent<void>(
             PRINT_REQUEST_FINISHED_EVENT, {bubbles: true, composed: true});
         const finishRequest =
-            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, printTicketManger);
+            eventToPromise(PRINT_REQUEST_FINISHED_EVENT, printTicketManager);
         handlerFn.addExpectation(testEvent);
 
-        printTicketManger.dispatchEvent(testEvent);
+        printTicketManager.dispatchEvent(testEvent);
         await finishRequest;
 
         mockController.verifyMocks();
@@ -130,11 +130,11 @@ suite('SummaryPanelController', () => {
         // Set preview loaded to true since that can also disable the print
         // button.
         const previewRequestInProgressFn = mockController.createFunctionMock(
-            previewTicketManger, 'isPreviewLoaded');
+            previewTicketManager, 'isPreviewLoaded');
         previewRequestInProgressFn.returnValue = true;
 
         const printRequestInProgressFn = mockController.createFunctionMock(
-            printTicketManger, 'isPrintRequestInProgress');
+            printTicketManager, 'isPrintRequestInProgress');
         printRequestInProgressFn.returnValue = true;
         assertTrue(controller!.shouldDisablePrintButton());
       });
@@ -147,11 +147,11 @@ suite('SummaryPanelController', () => {
         // Set preview loaded to true since that can also disable the print
         // button.
         const previewRequestInProgressFn = mockController.createFunctionMock(
-            previewTicketManger, 'isPreviewLoaded');
+            previewTicketManager, 'isPreviewLoaded');
         previewRequestInProgressFn.returnValue = true;
 
         const printRequestInProgressFn = mockController.createFunctionMock(
-            printTicketManger, 'isPrintRequestInProgress');
+            printTicketManager, 'isPrintRequestInProgress');
         printRequestInProgressFn.returnValue = false;
         assertFalse(controller!.shouldDisablePrintButton());
       });
@@ -159,7 +159,7 @@ suite('SummaryPanelController', () => {
   // Verify shouldDisablePrintButton is true when preview isn't loaded.
   test('shouldDisablePrintButton true while preview is not loaded', () => {
     const previewRequestInProgressFn = mockController.createFunctionMock(
-        previewTicketManger, 'isPreviewLoaded');
+        previewTicketManager, 'isPreviewLoaded');
     previewRequestInProgressFn.returnValue = false;
     assertTrue(controller!.shouldDisablePrintButton());
   });

@@ -80,10 +80,10 @@ suite('SummaryPanel', () => {
   // Initialize the session to request a preview and enable the print button.
   async function waitForPreviewRequestFinished(delay: number = 1):
       Promise<void> {
-    const previewTicketManger = PreviewTicketManager.getInstance();
+    const previewTicketManager = PreviewTicketManager.getInstance();
     const previewRequestFinishedEvent =
-        eventToPromise(PREVIEW_REQUEST_FINISHED_EVENT, previewTicketManger);
-    previewTicketManger.initializeSession(
+        eventToPromise(PREVIEW_REQUEST_FINISHED_EVENT, previewTicketManager);
+    previewTicketManager.initializeSession(
         FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     mockTimer.tick(delay);
     await previewRequestFinishedEvent;
@@ -201,13 +201,13 @@ suite('SummaryPanel', () => {
     assertFalse(
         printButton.disabled, 'Print should be enabled before request sent');
 
-    const printTicketManger = PrintTicketManager.getInstance();
-    printTicketManger.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    const printTicketManager = PrintTicketManager.getInstance();
+    printTicketManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
     printButton.click();
     await printDisabledEvent1;
 
     assertTrue(
-        printTicketManger.isPrintRequestInProgress(),
+        printTicketManager.isPrintRequestInProgress(),
         'Print request in progress');
     assertTrue(
         printButton.disabled,
@@ -219,7 +219,7 @@ suite('SummaryPanel', () => {
     await printDisabledEvent2;
 
     assertFalse(
-        printTicketManger.isPrintRequestInProgress(),
+        printTicketManager.isPrintRequestInProgress(),
         'Print request is complete');
     assertFalse(
         printButton.disabled,

@@ -25,7 +25,7 @@ export const SHEETS_USED_CHANGED_EVENT =
 export class SummaryPanelController extends EventTarget {
   private sheetsUsed = 0;
   private previewTicketManager = PreviewTicketManager.getInstance();
-  private printTicketManger = PrintTicketManager.getInstance();
+  private printTicketManager = PrintTicketManager.getInstance();
 
   /**
    * @param eventTracker Passed in by owning element to ensure event handlers
@@ -40,10 +40,10 @@ export class SummaryPanelController extends EventTarget {
         this.previewTicketManager, PREVIEW_REQUEST_FINISHED_EVENT,
         () => this.onPreviewRequestFinished());
     eventTracker.add(
-        this.printTicketManger, PRINT_REQUEST_STARTED_EVENT,
+        this.printTicketManager, PRINT_REQUEST_STARTED_EVENT,
         (e: Event) => this.onPrintRequestStarted(e));
     eventTracker.add(
-        this.printTicketManger, PRINT_REQUEST_FINISHED_EVENT,
+        this.printTicketManager, PRINT_REQUEST_FINISHED_EVENT,
         (e: Event) => this.onPrintRequestFinished(e));
   }
 
@@ -68,13 +68,13 @@ export class SummaryPanelController extends EventTarget {
 
   // Handles behavior for when the print button is clicked.
   handlePrintClicked(): void {
-    this.printTicketManger.sendPrintRequest();
+    this.printTicketManager.sendPrintRequest();
   }
 
   // Handles any required cleanup prior to sending a cancel request to the
   // backend and closing the dialog when the cancel button is clicked.
   handleCancelClicked(): void {
-    this.printTicketManger.cancelPrintRequest();
+    this.printTicketManager.cancelPrintRequest();
   }
 
   // CustomEvent dispatch helper.
@@ -106,7 +106,7 @@ export class SummaryPanelController extends EventTarget {
   // Whether the print button should be enabled for the current state.
   shouldDisablePrintButton(): boolean {
     return !this.previewTicketManager.isPreviewLoaded() ||
-        this.printTicketManger.isPrintRequestInProgress();
+        this.printTicketManager.isPrintRequestInProgress();
   }
 }
 
