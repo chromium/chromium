@@ -314,7 +314,7 @@ BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
 // change was only a reformatting (inserting whitespaces and special
 // characters).
 // This feature should be enabled with
-// blink::features::kAutofillDontSetAutofillStateAfterJavaScriptChanges.
+// blink::features::AllowJavaScriptToResetAutofillState.
 BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -908,12 +908,14 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
         .DidChangeSelectionInSelectControl(*this);
   }
 
-  // We set the Autofilled state again because setting the autofill value
-  // triggers JavaScript events and the site may override the autofilled value,
-  // which resets the autofill state. Even if the website modifies the from
-  // control element's content during the autofill operation, we want the state
-  // to show as as autofilled.
-  SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
+  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
+    // We set the Autofilled state again because setting the autofill value
+    // triggers JavaScript events and the site may override the autofilled
+    // value, which resets the autofill state. Even if the website modifies the
+    // from control element's content during the autofill operation, we want the
+    // state to show as as autofilled.
+    SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
+  }
 
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     for (HTMLSelectedOptionElement* selectedoption :

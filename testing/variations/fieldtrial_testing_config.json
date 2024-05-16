@@ -1776,6 +1776,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AllowJavaScriptToResetAutofillState",
                         "AutofillFixCachingOnJavaScriptChanges"
                     ]
                 }

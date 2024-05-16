@@ -936,7 +936,7 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP,
                 "Use initial network state at startup"),
         Flag.baseFeature(
-                BlinkFeatures.AUTOFILL_DONT_SET_AUTOFILL_STATE_AFTER_JAVA_SCRIPT_CHANGES,
+                BlinkFeatures.ALLOW_JAVA_SCRIPT_TO_RESET_AUTOFILL_STATE,
                 "When enabled, Autofill will reset the autofill state of fields modified by JS"),
         Flag.baseFeature(
                 BlinkFeatures.AUTOFILL_INCLUDE_FORM_ELEMENTS_IN_SHADOW_DOM,

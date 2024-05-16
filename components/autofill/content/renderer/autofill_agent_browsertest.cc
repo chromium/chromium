@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -685,7 +686,7 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
 TEST_F(AutofillAgentTest, JavaScriptChangedValue_AutofillState) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kAutofillDontSetAutofillStateAfterJavaScriptChanges,
+      {blink::features::kAllowJavaScriptToResetAutofillState,
        features::kAutofillFixCachingOnJavaScriptChanges},
       /*disabled_features=*/{});
   LoadHTML(R"(

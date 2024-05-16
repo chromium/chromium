@@ -1067,13 +1067,15 @@ void HTMLSelectListElement::SetSelectedOption(
   }
   NotifyFormStateChanged();
 
-  // We set the Autofill state again because setting the autofill value
-  // triggers JavaScript events and the site may override the autofilled value,
-  // which resets the Autofilled state. Even if the website modifies the from
-  // control element's content during the autofill operation, we want the state
-  // to show as autofilled.
-  SetAutofillState(selected_option ? autofill_state
-                                   : WebAutofillState::kNotFilled);
+  if (!RuntimeEnabledFeatures::AllowJavaScriptToResetAutofillStateEnabled()) {
+    // We set the Autofill state again because setting the autofill value
+    // triggers JavaScript events and the site may override the autofilled
+    // value, which resets the Autofilled state. Even if the website modifies
+    // the from control element's content during the autofill operation, we want
+    // the state to show as autofilled.
+    SetAutofillState(selected_option ? autofill_state
+                                     : WebAutofillState::kNotFilled);
+  }
 }
 
 void HTMLSelectListElement::OptionElementChildrenChanged(
