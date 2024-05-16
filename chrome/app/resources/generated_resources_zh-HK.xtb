@@ -45,7 +45,7 @@
 <translation id="1029317248976101138">放大</translation>
 <translation id="1029526375103058355">輕按點撃功能</translation>
 <translation id="1029724557649700742">新功能將會在推出時加入，但可用功能會因裝置而異。</translation>
-<translation id="1031343556156414679">開啟 Windows Hello 管理密碼金鑰</translation>
+<translation id="1031343556156414679">在 Windows Hello 管理密鑰</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
 <translation id="1032605640136438169">請閱讀新版條款</translation>
 <translation id="103279545524624934">請釋出磁碟的儲存空間，以啟動 Android 應用程式。</translation>
@@ -745,7 +745,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556127816860282890">背景活動及部分視覺效果 (例如平滑捲動) 可能會受到限制</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
-<translation id="1557939148300698553">建立設定檔</translation>
+<translation id="1557939148300698553">建立個人檔案</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1558671750917454373">繼續投放去 <ph name="DEVICE_NAME" /></translation>
 <translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識該聯絡人</translation>
@@ -1320,7 +1320,7 @@
 <translation id="1949849604471335579">根據個人喜好設定桌布、螢幕保護程式、強調色等項目</translation>
 <translation id="1949980990364952348">應用程式名稱</translation>
 <translation id="1951012854035635156">助理</translation>
-<translation id="1951823516285577843">尋找替代擴充功能</translation>
+<translation id="1951823516285577843">尋找替代擴充程式</translation>
 <translation id="1954597385941141174">網站可要求連接 USB 裝置</translation>
 <translation id="1954813140452229842">連接共用裝置時發生錯誤。請檢查您的憑證，然後再試一次。</translation>
 <translation id="1955749740583837857">閂建議</translation>
@@ -3025,7 +3025,7 @@
 <translation id="3226487301970807183">切換靠左對齊側邊面板</translation>
 <translation id="322708765617468434">設定完成後，你可隨時在裝置中新增其他使用者。每位使用者都可將體驗個人化，以確保資料私隱。</translation>
 <translation id="3227137524299004712">麥克風</translation>
-<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{請移除這項擴充功能，或前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找可替代的類似擴充功能。}other{請移除這些擴充功能，或前往 <ph name="BEGIN_LINK" />Chrome 線上應用程式商店<ph name="END_LINK" />尋找可替代的類似擴充功能。}}</translation>
+<translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式。}other{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式}}</translation>
 <translation id="3229412050601871341">裝置密碼</translation>
 <translation id="3230539834943294477">查看說明文章或尋找裝置支援</translation>
 <translation id="3232168089952388105">要分享裝置相關資料嗎？</translation>
@@ -4202,7 +4202,7 @@
 <translation id="4093865285251893588">個人檔案圖片</translation>
 <translation id="4093955363990068916">本機檔案：</translation>
 <translation id="4094647278880271855">您使用的環境變數 (<ph name="BAD_VAR" />) 目前不受支援，有可能會影響穩定性和安全性。</translation>
-<translation id="4095246243698959793">才能同步及使用 Google 中的密碼金鑰</translation>
+<translation id="4095246243698959793">才能同步及使用 Google 中的密鑰</translation>
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
 <translation id="4095425503313512126">瀏覽及搜尋內容時，載入速度更快</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>
@@ -8342,7 +8342,7 @@
 <translation id="7323315405936922211">游標區域大小</translation>
 <translation id="7324297612904500502">Chrome 測試版論壇</translation>
 <translation id="7325209047678309347">打印機卡紙</translation>
-<translation id="7325953439504232954">要切換設定檔嗎？</translation>
+<translation id="7325953439504232954">要切換個人檔案嗎？</translation>
 <translation id="7326004502692201767">為子女設定此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="732659786514229249">要在機構中註冊裝置嗎？</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> 已停用 ADB 偵錯。重新啟動 <ph name="DEVICE_TYPE" /> 後，您將無法載入應用程式。</translation>
@@ -10134,7 +10134,7 @@
 <translation id="8636500887554457830">不允許網站傳送彈出式視窗或使用重新導向</translation>
 <translation id="8636514272606969031">固定咗側面板</translation>
 <translation id="8637688295594795546">可安裝系統更新，正在準備下載…</translation>
-<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{系統可能會在近期內停止支援這項擴充功能}other{系統可能會在近期內停止支援這些擴充功能}}</translation>
+<translation id="8638603762333060790">{NUM_EXTENSIONS,plural, =1{系統可能會在近期內停止支援此擴充程式}other{系統可能會在近期內停止支援這些擴充程式}}</translation>
 <translation id="8638719155236856752">ChromeOS 網絡健康狀態</translation>
 <translation id="8639635302972078117">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="8640575194957831802">上次開啟日期</translation>
@@ -10578,7 +10578,6 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">即將開始下載…</translation>
 <translation id="8954796993367253220">如要刪除訪客模式記錄，請關閉所有訪客視窗。</translation>
-<translation id="8955093856391032948">翻譯</translation>
 <translation id="8955174612586215829">尋找主題</translation>
 <translation id="8957757410289731985">自訂個人檔案</translation>
 <translation id="8959144235813727886">網站和應用程式</translation>

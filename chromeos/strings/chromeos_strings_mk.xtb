@@ -718,6 +718,7 @@
 <translation id="5088172560898466307">Име на хостот на серверот</translation>
 <translation id="5089810972385038852">Држава</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5095761549884461003">Исклучете го USB-кабелот на <ph name="DEVICE_NAME" />, па вклучете го повторно за да продолжите со процесот на ажурирање</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Можно е да дојде до поклопување меѓу кратенка без копче за <ph name="META_KEY" /> и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за <ph name="KEY" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Слични:</translation>

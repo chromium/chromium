@@ -47,7 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{你有 <ph name="TABS_COUNT_ONE" /> 個已封存的分頁}other{你有 <ph name="TABS_COUNT_MANY" /> 個已封存的分頁}}</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3291470810748040983">當開啟的分頁中有產品降價，您就會收到通知</translation>
-<translation id="3322827343001922122">開啟分頁群組「<ph name="TITLE_OF_GROUP" />」的動作選單</translation>
+<translation id="3322827343001922122">打開分頁群組「<ph name="TITLE_OF_GROUP" />」嘅操作選單</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關嘅分頁。要唔要將佢哋分組？</translation>
 <translation id="3547352561153509682">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

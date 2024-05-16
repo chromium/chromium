@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">ဤဝဘ်ဆိုက်သုံးခွင့်ကို သင့်စက်တွင် ထိန်းချုပ်ပါ</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="6064125863973209585">ပြီးသွားသည့် ဒေါင်းလုဒ်များ</translation>
 <translation id="6071501408666570960">ဤဝဘ်ဆိုက်မှ ထွက်သွားနိုင်သည်</translation>
 <translation id="6120483543004435978">ဖွင့်ထားသောအခါ သင့်စက်အသုံးပြုချိန်ကို သိရှိရန် ဝဘ်ဆိုက်များက တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ သင့်စက်အသုံးပြုချိန်ကို ဝဘ်ဆိုက်များက မသိနိုင်ပါ။</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7990211076305263060">ဖွင့်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းသုံးရန် တောင်းဆိုနိုင်သည်။ ပိတ်ထားသောအခါ ဝဘ်ဆိုက်များက သင့်မိုက်ခရိုဖုန်းကို မသုံးနိုင်ပါ။</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" /> မှ</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
 <translation id="8042586301629853791">စီရန်-</translation>
 <translation id="8067883171444229417">ဗီဒီယို ဖွင့်ရန်</translation>

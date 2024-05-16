@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Танд <ph name="TABS_COUNT_ONE" /> архивласан таб байна}other{Танд <ph name="TABS_COUNT_MANY" /> архивласан таб байна}}</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
 <translation id="3291470810748040983">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авна</translation>
+<translation id="3322827343001922122">Табын бүлгийн үйлдлийн цэсийг <ph name="TITLE_OF_GROUP" /> табын бүлэгт зориулж нээнэ үү</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3547352561153509682">Энэ нь бүлгийг <ph name="USER_EMAIL" />-д нэвтэрсэн бүх төхөөрөмжөөс устгана</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>

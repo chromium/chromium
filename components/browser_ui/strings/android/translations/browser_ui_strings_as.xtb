@@ -304,6 +304,7 @@
 <translation id="6015775454662021376">আপোনাৰ ডিভাইচটোলৈ এই ছাইটটোৰ থকা এক্সেছ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6042308850641462728">অধিক</translation>
+<translation id="6060464773477604108"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> আপোনাৰ অন্তিম টেব</translation>
 <translation id="6064125863973209585">সম্পূৰ্ণ হোৱা ডাউনল’ডসমূহ</translation>
 <translation id="6071501408666570960">আপোনাক এই ছাইটটোৰ পৰা ছাইন আউট কৰোৱা হ’ব পাৰে</translation>
 <translation id="6120483543004435978">অন কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপুনি কোন সময়ত নিজৰ ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰে সেই বিষয়ে জানিব নোৱাৰে।</translation>
@@ -425,6 +426,7 @@
 <translation id="7986741934819883144">সম্পৰ্ক এটা বাছনি কৰক</translation>
 <translation id="7990211076305263060">অন কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="8007176423574883786">এই ডিভাইচটোৰ বাবে অফ কৰা হৈছে</translation>
+<translation id="8009579582995973057"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> <ph name="FROM_DEVICE" />ৰ পৰা</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
 <translation id="8042586301629853791">এই অনুসৰি সজাওক:</translation>
 <translation id="8067883171444229417">ভিডিঅ’ প্লে কৰক</translation>

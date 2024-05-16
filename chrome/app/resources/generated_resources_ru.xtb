@@ -1660,6 +1660,7 @@
 <translation id="2211043920024403606">Данные профиля</translation>
 <translation id="2211245494465528624">Настройка синхронизации</translation>
 <translation id="221297410904507041">Удалить историю браузера, файлы cookie, кеш и другие данные</translation>
+<translation id="2213410656650624348">Умеренная</translation>
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
 <translation id="2215070081105889450">Чтобы поделиться аудио, предоставьте доступ к вкладке или экрану</translation>
@@ -2039,6 +2040,7 @@
 <translation id="2473195200299095979">Перевести эту страницу</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
 <translation id="247616523300581745">Скрыть файлы</translation>
+<translation id="2476435723907345463">Вы запретили использовать ключи доступа.</translation>
 <translation id="2476901513051581836">Невозможно очистить хранилище, пока не будет известен его размер</translation>
 <translation id="2476974672882258506">Чтобы удалить <ph name="PARALLELS_DESKTOP" />, завершите работу Windows.</translation>
 <translation id="2477065602824695373">Автосканирование отключено, поскольку настроено несколько переключателей.</translation>
@@ -2233,6 +2235,7 @@
 <translation id="2620215283731032047">Невозможно скачать безопасно файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2620245777360407679">Устройства, подключенные к точке доступа</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="262087792756666314">Для быстрого доступа к этой функции нажмите кнопку "Закрепить" в верхней части боковой панели</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Записать образец голоса для Ассистента</translation>
 <translation id="26224892172169984">Запретить обработку протоколов на всех сайтах</translation>
@@ -3008,6 +3011,7 @@
 <translation id="3222066309010235055">Предварительная обработка: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Подключиться к ВМ "<ph name="USB_VM_NAME" />"</translation>
 <translation id="3222857603094643834">Находите любую информацию на этой странице с помощью Google Объектива</translation>
+<translation id="3223109931751684474">Запретить использование ключей доступа на этом устройстве</translation>
 <translation id="3223531857777746191">Кнопка сброса</translation>
 <translation id="3225084153129302039">Аватар по умолчанию (фиолетовый)</translation>
 <translation id="3225319735946384299">Подписывание кода</translation>
@@ -3332,6 +3336,7 @@
 <translation id="3473479545200714844">Лупа</translation>
 <translation id="3474218480460386727">В новых словах не должно быть больше 99 букв.</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
+<translation id="3477772589943384839">Умеренная экономия памяти. Вкладки становятся неактивными по истечении длительного периода времени.</translation>
 <translation id="347785443197175480">Предоставить сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
 <translation id="3479357084663933762">Дейтераномалия</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
@@ -4092,6 +4097,7 @@
 <translation id="4010036441048359843">Включить выделение текста</translation>
 <translation id="4010746393007464819">Доступно обновление до Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Чтобы получить доступ к закладкам на мобильном устройстве, <ph name="GET_IOS_APP_LINK" />.</translation>
+<translation id="4012268176861210196">Вы можете закрепить эту функцию</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Используете расширения? <ph name="BEGIN_LINK" />Управляйте ими<ph name="END_LINK" /> в специальном разделе.</translation>
 <translation id="4016762287427926315">Разрешения, предоставленные приложению "<ph name="APP_NAME" />", будут действовать и для этого приложения. Вы можете их <ph name="BEGIN_LINK" />изменить<ph name="END_LINK" />.</translation>
@@ -4395,6 +4401,7 @@
 <translation id="4261429981378979799">Разрешения для расширений</translation>
 <translation id="4262004481148703251">Закрыть</translation>
 <translation id="4263223596040212967">Проверьте раскладку клавиатуры и повторите попытку.</translation>
+<translation id="4263470758446311292">Максимальная экономия памяти. Вкладки становятся неактивными по истечении короткого периода времени.</translation>
 <translation id="4265096510956307240">Подтвердить личность</translation>
 <translation id="4265301768135164545">Вы также можете настроить профиль eSIM <ph name="BEGIN_LINK" />вручную<ph name="END_LINK" />.</translation>
 <translation id="426564820080660648">Чтобы проверить наличие обновлений, подключитесь через сеть Ethernet или Wi-Fi либо используйте мобильную передачу данных.</translation>
@@ -4714,6 +4721,7 @@
 <translation id="4503748371388753124">Компьютер оснащен доверенным платформенным модулем (TPM), с помощью которого в Chrome OS Flex реализовано множество критически важных функций безопасности. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="4504374760782163539">{COUNT,plural, =0{Файлы cookie разрешены.}=1{Файлы cookie разрешены (есть 1 исключение).}one{Файлы cookie разрешены (есть {COUNT} исключение).}few{Файлы cookie разрешены (есть {COUNT} исключения).}many{Файлы cookie разрешены (есть {COUNT} исключений).}other{Файлы cookie разрешены (есть {COUNT} исключения).}}</translation>
 <translation id="4504940961672722399">Активируйте это расширение, нажав на значок или с помощью комбинации клавиш <ph name="EXTENSION_SHORTCUT" />.</translation>
+<translation id="4505469832694348179">Скачайте Chrome с помощью QR-кода и войдите в аккаунт Google.</translation>
 <translation id="450552327874992444">Это слово уже добавлено.</translation>
 <translation id="4507373251891673233">Вы заблокировали все расширения с сайта <ph name="HOST" />.</translation>
 <translation id="4507401683427517298">Нажмите "Добавить ярлык".</translation>
@@ -5049,6 +5057,7 @@
 <translation id="4768332406694066911">У вас есть идентифицирующие вас сертификаты этих организаций</translation>
 <translation id="4769632191812288342">Выбрана стандартная защита.</translation>
 <translation id="4770119228883592393">Требуется разрешение. Нажмите ⌘ + Option + Стрелка вниз, чтобы ответить.</translation>
+<translation id="4770755495532014179">Используйте этот пароль на iPhone</translation>
 <translation id="4773112038801431077">Обновление Linux</translation>
 <translation id="477548766361111120">Разрешить расширению просматривать и менять сайт</translation>
 <translation id="4776311127346151860">Устройство "<ph name="DEVICE_NAME" />" подключено</translation>
@@ -5218,6 +5227,7 @@
 <translation id="4890399733764921729">Ошибка подключения. Оно заблокировано другим мобильным оператором.</translation>
 <translation id="4890773143211625964">Показать дополнительные настройки принтера</translation>
 <translation id="4891089016822695758">Форум бета-версии</translation>
+<translation id="4891795846939730995">Чтобы снова разрешить устройству их использовать, войдите на сайт или в приложение с помощью сохраненного ключа доступа</translation>
 <translation id="4892229439761351791">Сайт может использовать устройство Bluetooth</translation>
 <translation id="4892328231620815052">Посмотреть список для чтения можно в меню "Закладки и списки".</translation>
 <translation id="489258173289528622">Что делать при переходе в режим бездействия, когда устройство работает от батареи</translation>
@@ -6447,6 +6457,7 @@
 <translation id="5846504156837627898">Управление разрешениями сайтов</translation>
 <translation id="5846749317653566506">Настройте параметры коррекции цвета, чтобы вам было легче различать оттенки на экране.</translation>
 <translation id="5846807460505171493">Установка обновлений и приложений. Продолжая, вы разрешаете устройству автоматически скачивать и устанавливать обновления и приложения от производителя устройства, оператора связи и компании Google (в том числе по мобильной сети). Некоторые из этих приложений могут предлагать платный контент.</translation>
+<translation id="5848054741303781539">Настраивается вручную, данные о местоположении не используются</translation>
 <translation id="5848319660029558352">Чтение вслух и форматирование текста</translation>
 <translation id="5849212445710944278">Слово уже добавлено.</translation>
 <translation id="584945105664698226">Скорость речи</translation>
@@ -7483,6 +7494,7 @@
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
 <translation id="6650206238642452078">Подписка на системные события ChromeOS</translation>
+<translation id="6650584564768559994">Сбалансированная экономия памяти. Вкладки становятся неактивными по истечении оптимального периода времени.</translation>
 <translation id="665061930738760572">Открыть в &amp;новом окне</translation>
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>
 <translation id="6651495917527016072">Синхронизировать сети Wi-Fi с телефоном. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -7740,6 +7752,7 @@
 <translation id="6831043979455480757">Перевести</translation>
 <translation id="6832218595502288407">Выровнять по левому краю</translation>
 <translation id="6833479554815567477">Вкладка удалена из группы "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="6833753236242482566">Сбалансированная (рекомендуется)</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="683630338945552556">Сохранять и использовать пароли в аккаунте Google</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
@@ -9390,6 +9403,7 @@
 <translation id="8066444921260601116">Диалоговое окно подключения</translation>
 <translation id="8070572887926783747">Доступ к данным о местоположении для приложения "<ph name="APP_NAME" />"</translation>
 <translation id="8070662218171013510">Виброотклик</translation>
+<translation id="8071033114691184017">Используйте этот пароль на iPhone</translation>
 <translation id="8071432093239591881">Печатать как изображение</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данные приложений – это любая информация, которую приложения сохраняют в соответствии с настройками разработчика. Она может включать контакты, сообщения, фотографии и многое другое.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Данные резервных копий не занимают место в хранилище Google Диска.<ph name="END_PARAGRAPH2" />
@@ -9957,6 +9971,7 @@
 <translation id="8482077254400484047">Настроить внешний вид неактивных вкладок</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8486666913807228950">Причина: в списке "Принудительное открытие" обнаружено инвертированное правило <ph name="REVERT_RULE" />.</translation>
+<translation id="8487303289354211861">Функция закреплена. Для доступа к ней используйте новую кнопку на панели инструментов.</translation>
 <translation id="8487678622945914333">Увеличить</translation>
 <translation id="8487699605742506766">Точка доступа</translation>
 <translation id="8489156414266187072">Персональные подсказки показываются только в вашем аккаунте</translation>
@@ -10582,7 +10597,6 @@
 <translation id="8953476467359856141">Если устройство заряжается</translation>
 <translation id="895347679606913382">Запуск...</translation>
 <translation id="8954796993367253220">Чтобы очистить историю гостевого режима, закройте все гостевые окна</translation>
-<translation id="8955093856391032948">перевод</translation>
 <translation id="8955174612586215829">Обзор тем</translation>
 <translation id="8957757410289731985">Настроить профиль</translation>
 <translation id="8959144235813727886">Сайты и приложения</translation>
@@ -10673,6 +10687,7 @@
 <translation id="9014674417732091912">Перенесено на строку под номером <ph name="ROW_NUMBER" /></translation>
 <translation id="901668144954885282">Резервное копирование на Google Диск</translation>
 <translation id="9016827136585652292">Включить или отключить экран конфиденциальности</translation>
+<translation id="9017055559700464094">Функция закреплена. Теперь она доступна на панели инструментов.</translation>
 <translation id="90181708067259747">Дата окончания срока действия: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Установка завершена</translation>
 <translation id="901876615920222131">Чтобы снова открыть группу, нажмите на нее.</translation>
@@ -10831,6 +10846,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Для оптимальной работы установите <ph name="DEVICE_OS" /> на внутренний накопитель. Это можно сделать позже на экране входа.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Если вы пока не хотите устанавливать систему, запустите ее с USB-накопителя и попробуйте в деле. Текущая ОС и данные на устройстве сохранятся, однако доступный объем хранилища и производительность могут снизиться.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Открыть в закрепленной вкладке</translation>
+<translation id="9122788874051694311">Сохранить этот ключ доступа вне режима инкогнито?</translation>
 <translation id="9123287046453017203">Версия ОС на устройстве не актуальна</translation>
 <translation id="9125910124977405374">Удалить <ph name="LANGUAGE_NAME" /> из языков, которые переводятся автоматически</translation>
 <translation id="9126149354162942022">Цвет курсора</translation>

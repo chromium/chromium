@@ -47,6 +47,7 @@
 <translation id="313819129451406482">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya arxivada}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes arxivades}}</translation>
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
+<translation id="3322827343001922122">Obre el menú d'accions del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3547352561153509682">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" /></translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
