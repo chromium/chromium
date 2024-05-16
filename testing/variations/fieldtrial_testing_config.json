@@ -5851,9 +5851,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled1",
+                    "name": "V1Enabled2_20240516",
                     "params": {
-                        "group_name": "enabled-arm-1",
+                        "group_name": "enabled-v1-arm-2",
                         "max_prompt_count": "5",
                         "reprompt_duration": "7d",
                         "reprompt_duration_multiplier ": "2",
