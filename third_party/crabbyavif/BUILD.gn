@@ -133,7 +133,6 @@ rust_static_library("crabbyavif") {
     "src/src/capi/mod.rs",
     "src/src/capi/reformat.rs",
     "src/src/capi/types.rs",
-    "src/src/capi/utils.rs",
     "src/src/codecs/dav1d.rs",
     "src/src/codecs/mod.rs",
     "src/src/decoder/gainmap.rs",
