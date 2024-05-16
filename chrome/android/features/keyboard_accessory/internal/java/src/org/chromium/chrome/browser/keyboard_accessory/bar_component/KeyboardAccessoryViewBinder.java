@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,6 +103,7 @@ class KeyboardAccessoryViewBinder {
     }
 
     static class BarItemChipViewHolder extends BarItemViewHolder<AutofillBarItem, ChipView> {
+        private static final float LARGE_FONT_THRESHOLD = 1.3f;
         private final View mRootViewForIPH;
         private final KeyboardAccessoryView mKeyboardAccessory;
         private final Function<AutofillSuggestion, Drawable> mSuggestionDrawableFunction;
@@ -110,7 +112,7 @@ class KeyboardAccessoryViewBinder {
                 ViewGroup parent,
                 KeyboardAccessoryView keyboardAccessory,
                 Function<AutofillSuggestion, Drawable> suggestionDrawableFunction) {
-            super(parent, R.layout.keyboard_accessory_suggestion);
+            super(parent, selectLayoutForScale(parent.getContext()));
             mRootViewForIPH = parent.getRootView();
             mKeyboardAccessory = keyboardAccessory;
             mSuggestionDrawableFunction = suggestionDrawableFunction;
@@ -213,6 +215,16 @@ class KeyboardAccessoryViewBinder {
                     mSuggestionDrawableFunction.apply(item.getSuggestion()),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");
+        }
+
+        @LayoutRes
+        private static int selectLayoutForScale(Context context) {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT)) {
+                return R.layout.keyboard_accessory_suggestion;
+            }
+            return context.getResources().getConfiguration().fontScale >= LARGE_FONT_THRESHOLD
+                    ? R.layout.keyboard_accessory_suggestion_large
+                    : R.layout.keyboard_accessory_suggestion;
         }
     }
 

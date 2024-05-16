@@ -150,6 +150,7 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
     "java/res/layout/keyboard_accessory_suggestion.xml",
+    "java/res/layout/keyboard_accessory_suggestion_large.xml",
     "java/res/layout/password_accessory_passkey_chip.xml",
     "java/res/layout/password_accessory_sheet.xml",
     "java/res/layout/password_accessory_sheet_option.xml",
