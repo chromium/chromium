@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
+#include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 #include "chrome/browser/ash/login/screens/choobe_screen.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
+#include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
@@ -352,6 +354,8 @@ class WizardController : public OobeUI::Observer {
   void ShowEnterOldPasswordScreen();
   void ShowLocalDataLossWarningScreen();
   void ShowFactorSetupSuccessScreen();
+  void ShowCategoriesSelectionScreen();
+  void ShowPersonalizedRecomendAppsScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -468,6 +472,10 @@ class WizardController : public OobeUI::Observer {
       ApplyOnlinePasswordScreen::Result result);
   void OnOSAuthErrorScreenExit(OSAuthErrorScreen::Result result);
   void OnFactorSetupSuccessScreenExit(FactorSetupSuccessScreen::Result result);
+  void OnCategoriesSelectionScreenExit(
+      CategoriesSelectionScreen::Result result);
+  void OnPersonalizedRecomendAppsScreenExit(
+      PersonalizedRecommendAppsScreen::Result result);
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);

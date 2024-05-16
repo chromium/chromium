@@ -128,6 +128,8 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
+#include "chrome/browser/ash/login/screens/categories_selection_screen.h"
+#include "chrome/browser/ash/login/screens/personalized_recommend_apps_screen.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -157,6 +159,7 @@
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/categories_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
@@ -206,6 +209,7 @@
 #include "chrome/browser/ui/webui/ash/login/packaged_license_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/personalized_recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
@@ -957,6 +961,18 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  if (features::IsOobePersonalizedOnboardingEnabled()) {
+    append(std::make_unique<CategoriesSelectionScreen>(
+        oobe_ui->GetView<CategoriesSelectionScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnCategoriesSelectionScreenExit,
+                            weak_factory_.GetWeakPtr())));
+    append(std::make_unique<PersonalizedRecommendAppsScreen>(
+        oobe_ui->GetView<PersonalizedRecommendAppsScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(
+            &WizardController::OnPersonalizedRecomendAppsScreenExit,
+            weak_factory_.GetWeakPtr())));
+  }
+
   append(std::make_unique<PasswordSelectionScreen>(
       oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPasswordSelectionScreenExit,
@@ -1276,6 +1292,14 @@ void WizardController::ShowConsolidatedConsentScreen() {
 void WizardController::ShowChoobeScreen() {
   DCHECK(features::IsOobeChoobeEnabled());
   SetCurrentScreen(GetScreen(ChoobeScreenView::kScreenId));
+}
+
+void WizardController::ShowCategoriesSelectionScreen() {
+  SetCurrentScreen(GetScreen(CategoriesSelectionScreenView::kScreenId));
+}
+
+void WizardController::ShowPersonalizedRecomendAppsScreen() {
+  SetCurrentScreen(GetScreen(PersonalizedRecommendAppsScreenView::kScreenId));
 }
 
 void WizardController::ShowTouchpadScrollScreen() {
@@ -1902,6 +1926,45 @@ void WizardController::OnTouchpadScreenExit(
                TouchpadScrollScreen::GetResultString(result));
 
   ShowDrivePinningScreen();
+}
+
+void WizardController::OnCategoriesSelectionScreenExit(
+    CategoriesSelectionScreen::Result result) {
+  OnScreenExit(CategoriesSelectionScreenView::kScreenId,
+               CategoriesSelectionScreen::GetResultString(result));
+  switch (result) {
+    case CategoriesSelectionScreen::Result::kError:
+      ShowRecommendAppsScreen();
+      break;
+    case CategoriesSelectionScreen::Result::kNext:
+    case CategoriesSelectionScreen::Result::kNotApplicable:
+    case CategoriesSelectionScreen::Result::kSkip:
+      ShowPersonalizedRecomendAppsScreen();
+      break;
+  }
+}
+
+void WizardController::OnPersonalizedRecomendAppsScreenExit(
+    PersonalizedRecommendAppsScreen::Result result) {
+  OnScreenExit(PersonalizedRecommendAppsScreenView::kScreenId,
+               PersonalizedRecommendAppsScreen::GetResultString(result));
+
+  switch (result) {
+    case PersonalizedRecommendAppsScreen::Result::kBack:
+      ShowCategoriesSelectionScreen();
+      break;
+    case PersonalizedRecommendAppsScreen::Result::kNext:
+    case PersonalizedRecommendAppsScreen::Result::kNotApplicable:
+    case PersonalizedRecommendAppsScreen::Result::kSkip:
+      if (features::IsOobeAiIntroEnabled()) {
+        ShowAiIntroScreen();
+      } else if (features::IsOobeTunaEnabled()) {
+        ShowTunaScreen();
+      } else {
+        ShowAssistantOptInFlowScreen();
+      }
+      break;
+  }
 }
 
 void WizardController::OnDrivePinningScreenExit(
@@ -2576,7 +2639,11 @@ void WizardController::AttemptLocalAuthenticationWithContext(
 
 void WizardController::FinishAuthFactorsSetup() {
   // TODO(b/238606050): Ensure that AuthSession is terminated after this step.
-  ShowRecommendAppsScreen();
+  if (features::IsOobePersonalizedOnboardingEnabled()) {
+    ShowCategoriesSelectionScreen();
+  } else {
+    ShowRecommendAppsScreen();
+  }
 }
 
 // End of local authentication setup screen exit handlers.

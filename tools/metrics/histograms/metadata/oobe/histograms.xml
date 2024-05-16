@@ -243,6 +243,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Auto-enrollment-check.Next"/>
   <variant name="Autolaunch.Canceled"/>
   <variant name="Autolaunch.Completed"/>
+  <variant name="Categories-selection.Error"/>
   <variant name="Categories-selection.Next"/>
   <variant name="Categories-selection.Skip"/>
   <variant name="Choobe.Selected"/>

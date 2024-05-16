@@ -30,6 +30,8 @@ std::string CategoriesSelectionScreen::GetResultString(Result result) {
       return "Next";
     case Result::kSkip:
       return "Skip";
+    case Result::kError:
+      return "Error";
     case Result::kNotApplicable:
       return BaseScreen::kNotApplicable;
   }
@@ -71,11 +73,49 @@ void CategoriesSelectionScreen::ShowImpl() {
     return;
   }
   view_->Show();
-  // TODO(b/337674429) query the endpoint to retrieve list of categories
-  //  and set it in the UI.
+
+  raw_ptr<OobeAppsDiscoveryService> oobe_apps_discovery_service_ =
+      OobeAppsDiscoveryServiceFactory::GetForProfile(
+          ProfileManager::GetActiveUserProfile());
+  oobe_apps_discovery_service_->GetAppsAndUseCases(
+      base::BindOnce(&CategoriesSelectionScreen::OnResponseReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void CategoriesSelectionScreen::HideImpl() {}
+
+void CategoriesSelectionScreen::OnResponseReceived(
+    const std::vector<OOBEAppDefinition>& appInfos,
+    const std::vector<OOBEDeviceUseCase>& categories,
+    AppsFetchingResult result) {
+  if (result != AppsFetchingResult::kSuccess) {
+    exit_callback_.Run(Result::kError);
+  }
+
+  // PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  // const base::Value::List& selected_categories =
+  // prefs->GetList(prefs::kOobeCategoriesSelected);
+
+  base::Value::List categories_list;
+  for (OOBEDeviceUseCase category : categories) {
+    base::Value::Dict category_dict;
+    category_dict.Set("categoryId", base::Value(std::move(category.GetID())));
+    category_dict.Set("title", base::Value(std::move(category.GetLabel())));
+    category_dict.Set("subtitle",
+                      base::Value(std::move(category.GetDescription())));
+    category_dict.Set("icon", base::Value(std::move(category.GetImageURL())));
+    category_dict.Set("selected", false);
+    category_dict.Set("order", base::Value(category.GetOrder()));
+    categories_list.Append(std::move(category_dict));
+  }
+  //  TODO(b/337674429) : need to sort with order as well as pre select old
+  //  value.
+  base::Value::Dict data;
+  data.Set("categories", std::move(categories_list));
+  if (view_) {
+    view_->SetCategoriesData(std::move(data));
+  }
+}
 
 void CategoriesSelectionScreen::OnSelect(base::Value::List categories) {
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -86,6 +126,8 @@ void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionSkip) {
+    PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+    prefs->ClearPref(prefs::kOobeCategoriesSelected);
     exit_callback_.Run(Result::kSkip);
     return;
   }
