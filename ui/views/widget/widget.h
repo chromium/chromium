@@ -905,7 +905,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If the view is non-NULL it can be accessed during the drag by calling
   // dragged_view(). If the view has not been deleted during the drag,
   // OnDragDone() is called on it. |location| is in the widget's coordinate
-  // system.
+  // system. |view| must be hosted by this widget.
   void RunShellDrag(View* view,
                     std::unique_ptr<ui::OSExchangeData> data,
                     const gfx::Point& location,

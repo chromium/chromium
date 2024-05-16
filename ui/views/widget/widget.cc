@@ -1102,6 +1102,10 @@ void Widget::RunShellDrag(View* view,
                           const gfx::Point& location,
                           int operation,
                           ui::mojom::DragEventSource source) {
+  if (view) {
+    CHECK_EQ(view->GetWidget(), this);
+  }
+
   if (!native_widget_)
     return;
   dragged_view_ = view;
