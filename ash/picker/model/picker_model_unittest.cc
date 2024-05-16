@@ -4,6 +4,7 @@
 
 #include "ash/picker/model/picker_model.h"
 
+#include "ash/picker/model/picker_mode_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,7 +130,6 @@ TEST(PickerModel, GetsEmptySelectedText) {
 
   PickerModel model(&client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
-  EXPECT_FALSE(model.HasSelectedText());
   EXPECT_EQ(model.selected_text(), u"");
 }
 
@@ -140,8 +140,36 @@ TEST(PickerModel, GetsNonEmptySelectedText) {
 
   PickerModel model(&client, &fake_ime_keyboard,
                     PickerModel::EditorStatus::kEnabled);
-  EXPECT_TRUE(model.HasSelectedText());
   EXPECT_EQ(model.selected_text(), u"bc");
+}
+
+TEST(PickerModel, GetModeForUnfocusedState) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  PickerModel model(/*focused_client=*/nullptr, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
+}
+
+TEST(PickerModel, GetModeForNoSelectionState) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
+}
+
+TEST(PickerModel, GetModeForSelectionState) {
+  input_method::FakeImeKeyboard fake_ime_keyboard;
+  ui::FakeTextInputClient client({.type = ui::TEXT_INPUT_TYPE_TEXT});
+  client.SetTextAndSelection(u"abcd", gfx::Range(1, 3));
+
+  PickerModel model(&client, &fake_ime_keyboard,
+                    PickerModel::EditorStatus::kEnabled);
+
+  EXPECT_EQ(model.GetMode(), PickerModeType::kHasSelection);
 }
 
 }  // namespace

@@ -976,6 +976,7 @@ component("ash") {
     "picker/metrics/picker_performance_metrics.h",
     "picker/metrics/picker_session_metrics.cc",
     "picker/metrics/picker_session_metrics.h",
+    "picker/model/picker_mode_type.h",
     "picker/model/picker_model.cc",
     "picker/model/picker_model.h",
     "picker/model/picker_search_results_section.cc",
