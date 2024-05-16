@@ -94,7 +94,11 @@ class BasicHttpResponse : public HttpResponse {
   void set_code(HttpStatusCode code) { code_ = code; }
 
   std::string reason() const {
-    return reason_.value_or(GetHttpReasonPhrase(code_));
+    if (reason_) {
+      return *reason_;
+    } else {
+      return GetHttpReasonPhrase(code_);
+    }
   }
   void set_reason(std::optional<std::string> reason) {
     reason_ = std::move(reason);
