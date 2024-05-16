@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_FREEZING_FREEZING_POLICY_H_
 
+#include <map>
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/freezing/freezer.h"
@@ -18,18 +21,23 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
+#include "components/performance_manager/public/resource_attribution/queries.h"
 #include "content/public/browser/browsing_instance_id.h"
 
 namespace performance_manager {
 
-// Freezes browsing instances when all their pages have a freezing vote and
-// there is no reason not to freeze it.
+// Freezes browsing instances with no opted-out pages when:
+// - A group of same-origin frames/workers associated with the browsing instance
+//   used a lot of CPU in background and Battery Saver is active.
+//         or
+// - All pages in the browsing instance have at least one freezing vote.
 //
-// Reasons not to freeze a browsing instance:
+// A page is opted-out from freezing when it is:
 //   - Visible;
 //   - Audible;
 //   - Recently audible;
-//   - Holding at least one WebLock.
+//   - Holding at least one WebLock;
 //   - Holding at least one IndexedDB lock;
 //   - Connected to a USB device;
 //   - Connected to a bluetooth device;
@@ -44,7 +52,8 @@ class FreezingPolicy : public GraphObserver,
                        public PageNode::ObserverDefaultImpl,
                        public FrameNode::ObserverDefaultImpl,
                        public PageLiveStateObserverDefaultImpl,
-                       public NodeDataDescriberDefaultImpl {
+                       public NodeDataDescriberDefaultImpl,
+                       public resource_attribution::QueryResultObserver {
  public:
   FreezingPolicy();
   FreezingPolicy(const FreezingPolicy&) = delete;
@@ -72,25 +81,38 @@ class FreezingPolicy : public GraphObserver,
     BrowsingInstanceState();
     ~BrowsingInstanceState();
 
-    // Pages that belong to this browsing instance (typically only 1 page, but
-    // may contain an unbounded amount of pages connected via opener
+    // Pages that have frames in this browsing instance (typically only 1 page,
+    // but may contain an unbounded amount of pages connected via opener
     // relationship).
     base::flat_set<const PageNode*> pages;
     // Whether pages in the browsing instance are currently frozen.
     bool frozen = false;
+    // Whether a group of same-origin frames/workers associated with this
+    // browsing instance used a lot of CPU in background.
+    bool cpu_intensive_in_background = false;
+    // Whether a page associated with this browsing instance had a
+    // `CannotFreezeReason` at any time since the last CPU measurement.
+    bool had_cannot_freeze_reason_since_last_cpu_measurement = false;
   };
 
   // Returns browsing instance id(s) for `page`.
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
       const PageNode* page) const;
 
-  // Updates frozen state for `page_node`'s browsing instance(s).
+  // Update frozen state for a browsing instance, or for all browsing instances
+  // associated with a page.
+  void UpdateFrozenState(BrowsingInstanceState& browsing_instance_state);
   void UpdateFrozenState(const PageNode* page_node);
 
   // Helper to add or remove a `CannotFreezeReason` for `page_node`.
   void OnCannotFreezeReasonChange(const PageNode* page_node,
                                   bool add,
                                   CannotFreezeReason reason);
+
+  // Returns true iff a page associated with `browsing_instance_state` has a
+  // `CannotFreezeReason`.
+  static bool HasCannotFreezeReason(
+      const BrowsingInstanceState& browsing_instance_state);
 
   // GraphObserver implementation:
   void OnBeforeGraphDestroyed(Graph* graph) override;
@@ -126,12 +148,34 @@ class FreezingPolicy : public GraphObserver,
   // NodeDataDescriber:
   base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
 
+  // resource_attribution::QueryResultObserver:
+  void OnResourceUsageUpdated(
+      const resource_attribution::QueryResultMap& results) override;
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
       browsing_instances_;
+
+  // Whether Battery Saver is currently active.
+  bool is_battery_saver_active_ = false;
+
+  // Measures cumulative CPU usage per group of frames/workers that belong to
+  // the same [browsing instance, origin]. Engaged when the
+  // "CPUMeasurementInFreezingPolicy" feature is enabled.
+  std::optional<resource_attribution::ScopedResourceUsageQuery>
+      cpu_usage_query_;
+
+  // Manages observation of `cpu_usage_query_` by `this`.
+  resource_attribution::ScopedQueryObservation cpu_usage_query_observation_{
+      this};
+
+  // Calculates the proportion of CPU used by a group of frames/workers that
+  // belong to the same [browsing instance, origin] over an interval, based on
+  // cumulative measurements from `cpu_usage_query_`.
+  resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
 };
 
 }  // namespace performance_manager

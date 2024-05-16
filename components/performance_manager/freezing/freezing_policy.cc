@@ -6,20 +6,26 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "components/performance_manager/freezing/cannot_freeze_reason.h"
+#include "base/functional/callback_helpers.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
-#include "components/performance_manager/public/graph/page_node.h"
-#include "content/public/browser/browsing_instance_id.h"
+#include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/resource_types.h"
 
 namespace performance_manager {
 
 namespace {
+
+using resource_attribution::OriginInBrowsingInstanceContext;
+
+constexpr base::TimeDelta kCPUMeasurementInterval = base::Minutes(1);
 
 struct PageFreezingState : public NodeAttachedDataImpl<PageFreezingState> {
   struct Traits : public NodeAttachedDataInMap<PageNodeImpl> {};
@@ -81,17 +87,31 @@ bool IsPageCapturingDisplay(const PageNode* page_node) {
 
 }  // namespace
 
-FreezingPolicy::FreezingPolicy() : freezer_(std::make_unique<Freezer>()) {}
+FreezingPolicy::FreezingPolicy()
+    : freezer_(std::make_unique<Freezer>()),
+      cpu_proportion_tracker_(
+          /*context_filter=*/base::NullCallback(),
+          /*cpu_proportion_type=*/resource_attribution::CPUProportionTracker::
+              CPUProportionType::kBackground) {
+  if (base::FeatureList::IsEnabled(features::kCPUMeasurementInFreezingPolicy)) {
+    cpu_usage_query_ =
+        resource_attribution::QueryBuilder()
+            .AddAllContextsOfType<OriginInBrowsingInstanceContext>()
+            .AddResourceType(resource_attribution::ResourceType::kCPUTime)
+            .CreateScopedQuery();
+    cpu_usage_query_observation_.Observe(&cpu_usage_query_.value());
+    cpu_usage_query_->Start(kCPUMeasurementInterval);
+  }
+}
 
 FreezingPolicy::~FreezingPolicy() = default;
 
 void FreezingPolicy::ToggleFreezingOnBatterySaverMode(bool is_enabled) {
-  if (!base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
-    return;
-  }
+  is_battery_saver_active_ = is_enabled;
 
-  // TODO(crbug.com/325954772): Monitor CPU usage of background tabs and freeze
-  // those that cross a threshold when freezing on battery saver is enabled.
+  for (auto& [_, browsing_instance_state] : browsing_instances_) {
+    UpdateFrozenState(browsing_instance_state);
+  }
 }
 
 void FreezingPolicy::AddFreezeVote(PageNode* page_node) {
@@ -128,43 +148,61 @@ FreezingPolicy::GetBrowsingInstances(const PageNode* page) const {
   return browsing_instances;
 }
 
-void FreezingPolicy::UpdateFrozenState(const PageNode* page_node) {
-  // Update frozen state for `page_node`'s browsing instance(s).
-  for (content::BrowsingInstanceId browsing_instance :
-       GetBrowsingInstances(page_node)) {
-    auto it = browsing_instances_.find(browsing_instance);
-    CHECK(it != browsing_instances_.end());
-    auto& browsing_instance_state = it->second;
-    const bool was_frozen = browsing_instance_state.frozen;
+void FreezingPolicy::UpdateFrozenState(
+    BrowsingInstanceState& browsing_instance_state) {
+  const bool was_frozen = browsing_instance_state.frozen;
 
-    // Determine the browsing instance's frozen state by checking if all pages
-    // have at least 1 freeze vote and no `CannotFreezeReason`.
-    bool should_be_frozen = true;
+  bool should_be_frozen;
+  if (HasCannotFreezeReason(browsing_instance_state)) {
+    // Cannot be frozen if a page has a `CannotFreezeReason`.
+    should_be_frozen = false;
+    browsing_instance_state
+        .had_cannot_freeze_reason_since_last_cpu_measurement = true;
+  } else if (is_battery_saver_active_ &&
+             browsing_instance_state.cpu_intensive_in_background &&
+             // Note: Feature state is checked last so that only clients that
+             // have a browsing instance that is CPU intensive in background
+             // while Battery Saver is active are enrolled in the experiment.
+             base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
+    // Should be frozen if Battery Saver is active and the browsing instance was
+    // CPU-intensive in background.
+    should_be_frozen = true;
+  } else {
+    // Should be frozen if all pages have a freeze vote.
+    should_be_frozen = true;
     for (const PageNode* page : browsing_instance_state.pages) {
       auto& page_freezing_state = PageFreezingState::FromPage(page);
-      if (page_freezing_state.num_freeze_votes == 0 ||
-          !page_freezing_state.cannot_freeze_reasons.empty()) {
+      if (page_freezing_state.num_freeze_votes == 0) {
         should_be_frozen = false;
         break;
       }
     }
+  }
 
-    if (was_frozen == should_be_frozen) {
-      continue;
+  if (was_frozen == should_be_frozen) {
+    return;
+  }
+
+  browsing_instance_state.frozen = should_be_frozen;
+
+  // Apply frozen state change to pages in the browsing instance.
+  if (should_be_frozen) {
+    for (const PageNode* page : browsing_instance_state.pages) {
+      freezer_->MaybeFreezePageNode(page);
     }
-
-    browsing_instance_state.frozen = should_be_frozen;
-
-    // Apply frozen state change to pages in the browsing instance.
-    if (should_be_frozen) {
-      for (const PageNode* page : browsing_instance_state.pages) {
-        freezer_->MaybeFreezePageNode(page);
-      }
-    } else {
-      for (const PageNode* page : browsing_instance_state.pages) {
-        freezer_->UnfreezePageNode(page);
-      }
+  } else {
+    for (const PageNode* page : browsing_instance_state.pages) {
+      freezer_->UnfreezePageNode(page);
     }
+  }
+}
+
+void FreezingPolicy::UpdateFrozenState(const PageNode* page_node) {
+  for (content::BrowsingInstanceId browsing_instance :
+       GetBrowsingInstances(page_node)) {
+    auto it = browsing_instances_.find(browsing_instance);
+    CHECK(it != browsing_instances_.end());
+    UpdateFrozenState(it->second);
   }
 }
 
@@ -186,6 +224,18 @@ void FreezingPolicy::OnCannotFreezeReasonChange(const PageNode* page_node,
       UpdateFrozenState(page_node);
     }
   }
+}
+
+//  static
+bool FreezingPolicy::HasCannotFreezeReason(
+    const BrowsingInstanceState& browsing_instance_state) {
+  for (const PageNode* page : browsing_instance_state.pages) {
+    const auto& page_freezing_state = PageFreezingState::FromPage(page);
+    if (!page_freezing_state.cannot_freeze_reasons.empty()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void FreezingPolicy::OnBeforeGraphDestroyed(Graph* graph) {
@@ -501,6 +551,60 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
   }
 
   return ret;
+}
+
+void FreezingPolicy::OnResourceUsageUpdated(
+    const resource_attribution::QueryResultMap& results) {
+  if (!cpu_proportion_tracker_.IsTracking()) {
+    cpu_proportion_tracker_.StartFirstInterval(base::TimeTicks::Now(), results);
+    return;
+  }
+
+  const double high_cpu_proportion =
+      features::kFreezingOnBatterySaverHighCPUProportion.Get();
+  const std::map<resource_attribution::ResourceContext, double>
+      cpu_proportion_map = cpu_proportion_tracker_.StartNextInterval(
+          base::TimeTicks::Now(), results);
+  for (const auto& [context, cpu_proportion] : cpu_proportion_map) {
+    if (cpu_proportion < high_cpu_proportion) {
+      continue;
+    }
+
+    // This cast is valid because the query only targets contexts of type
+    // `OriginInBrowsingInstanceContext` (verified by CHECK inside `AsContext`).
+    const auto& origin_in_browsing_instance_context =
+        resource_attribution::AsContext<OriginInBrowsingInstanceContext>(
+            context);
+    auto browsing_instance_it = browsing_instances_.find(
+        origin_in_browsing_instance_context.GetBrowsingInstance());
+    if (browsing_instance_it == browsing_instances_.end()) {
+      continue;
+    }
+
+    if (browsing_instance_it->second.cpu_intensive_in_background) {
+      // Already known to be CPU-intensive in background.
+      continue;
+    }
+
+    if (browsing_instance_it->second
+            .had_cannot_freeze_reason_since_last_cpu_measurement) {
+      // CPU-intensive in background while having a `CannotFreezeReason` isn't
+      // recorded (it's acceptable to use a lot of CPU while playing audio,
+      // running a videoconference call...).
+      continue;
+    }
+
+    browsing_instance_it->second.cpu_intensive_in_background = true;
+    UpdateFrozenState(browsing_instance_it->second);
+  }
+
+  // Update `had_cannot_freeze_reason_since_last_cpu_measurement` for all
+  // browsing instances.
+  for (auto& [_, browsing_instance_state] : browsing_instances_) {
+    browsing_instance_state
+        .had_cannot_freeze_reason_since_last_cpu_measurement =
+        HasCannotFreezeReason(browsing_instance_state);
+  }
 }
 
 }  // namespace performance_manager

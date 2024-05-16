@@ -156,8 +156,16 @@ extern const base::FeatureParam<base::TimeDelta> kDelayBeforeLogging;
 // If Chrome CPU utilization is over the specified percent then we will log it.
 extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
 
-// When enabled, background pages that use a lot of CPU may be frozen when
-// Battery Saver is active.
+// When enabled, the freezing policy measures background CPU usage.
+BASE_DECLARE_FEATURE(kCPUMeasurementInFreezingPolicy);
+
+// Proportion of background CPU usage for a group of frames/workers that belong
+// to the same [browsing instance, origin] that is considered "high".
+extern const base::FeatureParam<double>
+    kFreezingOnBatterySaverHighCPUProportion;
+
+// When enabled, browsing instances with high CPU usage in background are frozen
+// when Battery Saver is active. Depends on kCPUMeasurementInFreezingPolicy.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 
 // When enabled, Resource Attribution measurements will include contexts for

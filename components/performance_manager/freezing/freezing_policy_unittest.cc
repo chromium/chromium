@@ -6,20 +6,28 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
+#include "components/performance_manager/public/resource_attribution/queries.h"
+#include "components/performance_manager/public/resource_attribution/query_results.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -175,7 +183,7 @@ TEST_F(FreezingPolicyTest,
 
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   EXPECT_CALL(*freezer(), UnfreezePageNode(page2.get()));
-  page_node()->SetIsAudible(true);
+  page_node()->SetIsHoldingWebLockForTesting(true);
   VerifyFreezerExpectations();
 }
 
@@ -185,7 +193,7 @@ TEST_F(FreezingPolicyTest,
        AddFreezeVotesToBrowsingInstanceWithManyPagesAndCannotFreezeReason) {
   auto [page2, frame2] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
-  page_node()->SetIsAudible(true);
+  page_node()->SetIsHoldingWebLockForTesting(true);
 
   // Don't expect freezing.
   policy()->AddFreezeVote(page_node());
@@ -537,6 +545,159 @@ TEST_F(FreezingPolicyTest, StartsLoadingWhenFrozen) {
   EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
   page_node()->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
   VerifyFreezerExpectations();
+}
+
+namespace {
+
+class FreezingPolicyBatterySaverTest : public FreezingPolicyTest {
+ public:
+  FreezingPolicyBatterySaverTest() = default;
+
+  // Reports CPU usage for `context` to the the freezing policy, with "now" as
+  // the measurement time. `cumulative_background_cpu` is used as cumulative
+  // background CPU and `cumulative_cpu` is used as cumulative CPU
+  // (`cumulative_background_cpu` is used as cumulative CPU if `cumulative_cpu`
+  // is nullopt).
+  void ReportCumulativeCPUUsage(
+      resource_attribution::ResourceContext context,
+      base::TimeDelta cumulative_background_cpu,
+      std::optional<base::TimeDelta> cumulative_cpu = std::nullopt) {
+    resource_attribution::QueryResultMap cpu_result_map;
+    cpu_result_map[context] = resource_attribution::QueryResults{
+        .cpu_time_result = resource_attribution::CPUTimeResult{
+            .metadata = resource_attribution::ResultMetadata(
+                /* measurement_time=*/base::TimeTicks::Now(),
+                resource_attribution::MeasurementAlgorithm::kSum),
+            .start_time = base::TimeTicks(),
+            .cumulative_cpu = cumulative_cpu.has_value()
+                                  ? cumulative_cpu.value()
+                                  : cumulative_background_cpu,
+            .cumulative_background_cpu = cumulative_background_cpu}};
+    resource_attribution::QueryResultObserver* observer = policy();
+    observer->OnResourceUsageUpdated(std::move(cpu_result_map));
+  }
+
+  const resource_attribution::OriginInBrowsingInstanceContext kContext{
+      url::Origin(), kBrowsingInstanceA};
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kFreezingOnBatterySaver};
+};
+
+}  // namespace
+
+TEST_F(FreezingPolicyBatterySaverTest, Basic) {
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+
+  // The page should be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, CannotFreeze) {
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+
+  // Add a `CannotFreezeReason`.
+  page_node()->SetIsHoldingWebLockForTesting(true);
+
+  // The page should not be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background, because it has a `CannotFreezeReason`.
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+  AdvanceClock(base::Seconds(60));
+
+  // Remove the `CannotFreezeReason`. This should not cause the page to be
+  // frozen, since there was a `CannotFreezeReason` when high CPU usage was
+  // measured.
+  page_node()->SetIsHoldingWebLockForTesting(false);
+
+  // The page should not be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background, because it transiently had a
+  // `CannotFreezeReason` during the measurement interval.
+  ReportCumulativeCPUUsage(kContext, base::Seconds(90));
+  AdvanceClock(base::Seconds(60));
+
+  // The page should be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background and there was no `CannotFreezeReason` at
+  // any point during the measurement interval.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  ReportCumulativeCPUUsage(kContext, base::Seconds(105));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, CannotFreezeTransient) {
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+
+  // Transiently add a `CannotFreezeReason`.
+  page_node()->SetIsHoldingWebLockForTesting(true);
+  page_node()->SetIsHoldingWebLockForTesting(false);
+
+  // The page should not be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background, because it transiently had a
+  // `CannotFreezeReason` during the measurement interval.
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, BatterySaverInactive) {
+  // Battery Saver is not active in this test.
+
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+
+  // The page should not be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in background, because Battery Saver is not active.
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, ForegroundCPU) {
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  ReportCumulativeCPUUsage(kContext,
+                           /*cumulative_background_cpu=*/base::Seconds(60),
+                           /*cumulative_cpu=*/base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+
+  // The page should not be frozen when a browsing instance associated with it
+  // consumes >=25% CPU in foreground, but little CPU in background.
+  ReportCumulativeCPUUsage(kContext,
+                           /*cumulative_background_cpu=*/base::Seconds(62),
+                           /*cumulative_cpu=*/base::Seconds(90));
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, DeactivateBatterySaver) {
+  policy()->ToggleFreezingOnBatterySaverMode(true);
+
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+  VerifyFreezerExpectations();
+
+  // The page should be unfrozen when Battery Saver becomes inactive.
+  EXPECT_CALL(*freezer(), UnfreezePageNode(page_node()));
+  policy()->ToggleFreezingOnBatterySaverMode(false);
+}
+
+TEST_F(FreezingPolicyBatterySaverTest, ActivateBatterySaverAfterHighCPU) {
+  // Battery Saver is not active at the beginning of this test.
+
+  // Report high background CPU usage.
+  ReportCumulativeCPUUsage(kContext, base::Seconds(60));
+  AdvanceClock(base::Seconds(60));
+  ReportCumulativeCPUUsage(kContext, base::Seconds(75));
+
+  // The page should be frozen when Battery Saver becomes active.
+  EXPECT_CALL(*freezer(), MaybeFreezePageNode(page_node()));
+  policy()->ToggleFreezingOnBatterySaverMode(true);
 }
 
 }  // namespace performance_manager

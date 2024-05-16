@@ -2241,6 +2241,54 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTracker) {
   cpu_monitor_.RepeatingQueryStopped(kDummyQuery);
 }
 
+namespace {
+
+resource_attribution::CPUTimeResult CreateCPUTimeResult(
+    base::TimeDelta cumulative_cpu,
+    base::TimeDelta cumulative_background_cpu) {
+  return resource_attribution::CPUTimeResult{
+      .metadata = resource_attribution::ResultMetadata(
+          /* measurement_time=*/base::TimeTicks::Now(),
+          resource_attribution::MeasurementAlgorithm::kSum),
+      .start_time = base::TimeTicks(),
+      .cumulative_cpu = cumulative_cpu,
+      .cumulative_background_cpu = cumulative_background_cpu};
+}
+
+}  // namespace
+
+// Tests the CPUProportionTracker helper class when configured to use cumulative
+// background CPU instead of cumulative CPU.
+TEST_F(ResourceAttrCPUMonitorTest, CPUProportionTrackerBackground) {
+  CPUProportionTracker tracker(
+      base::NullCallback(),
+      CPUProportionTracker::CPUProportionType::kBackground);
+
+  const OriginInBrowsingInstanceContext context(kOrigin1,
+                                                kBrowsingInstanceForPage);
+
+  {
+    resource_attribution::QueryResultMap cpu_result_map;
+    cpu_result_map[context] = resource_attribution::QueryResults{
+        .cpu_time_result =
+            CreateCPUTimeResult(base::Seconds(60), base::Seconds(60))};
+    tracker.StartFirstInterval(base::TimeTicks::Now(), cpu_result_map);
+  }
+
+  task_env().FastForwardBy(base::Seconds(60));
+
+  resource_attribution::QueryResultMap cpu_result_map;
+  cpu_result_map[context] = resource_attribution::QueryResults{
+      .cpu_time_result =
+          CreateCPUTimeResult(/*cumulative_cpu=*/base::Seconds(120),
+                              /*cumulative_background_cpu=*/base::Seconds(90))};
+  auto cpu_proportion_map =
+      tracker.StartNextInterval(base::TimeTicks::Now(), cpu_result_map);
+
+  EXPECT_EQ(cpu_proportion_map.size(), 1U);
+  EXPECT_EQ(cpu_proportion_map[context], 0.5);
+}
+
 // Tests that multiple CPUProportionTrackers with different schedules are
 // independent. Also tests trackers with and without a context filter.
 TEST_F(ResourceAttrCPUMonitorTest, MultipleCPUProportionTrackers) {
