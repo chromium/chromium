@@ -76,9 +76,12 @@ component("image_decoders") {
     sources += [
       "avif/avif_image_decoder.cc",
       "avif/avif_image_decoder.h",
+      "avif/crabbyavif_image_decoder.cc",
+      "avif/crabbyavif_image_decoder.h",
     ]
 
     deps += [
+      "//third_party/crabbyavif",
       "//third_party/libavif",
       "//third_party/libavifinfo",
     ]
@@ -120,7 +123,10 @@ source_set("unit_tests") {
   }
 
   if (enable_av1_decoder) {
-    sources += [ "avif/avif_image_decoder_test.cc" ]
+    sources += [
+      "avif/avif_image_decoder_test.cc",
+      "avif/crabbyavif_image_decoder_test.cc",
+    ]
   }
 }
 
