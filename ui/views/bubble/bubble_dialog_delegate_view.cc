@@ -455,6 +455,9 @@ BubbleDialogDelegate::BubbleDialogDelegate(View* anchor_view,
   set_footnote_margins(
       layout_provider->GetInsetsMetric(INSETS_DIALOG_FOOTNOTE));
 
+  set_desired_bounds_delegate(base::BindRepeating(
+      &BubbleDialogDelegate::GetDesiredBubbleBounds, base::Unretained(this)));
+
   RegisterWidgetInitializedCallback(base::BindOnce(
       [](BubbleDialogDelegate* bubble_delegate) {
         bubble_delegate->theme_observer_ =
@@ -952,7 +955,7 @@ ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
   return ax::mojom::Role::kAlertDialog;
 }
 
-gfx::Rect BubbleDialogDelegate::GetDesiredWidgetBounds() {
+gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
   CHECK(use_custom_frame())
       << "GetBubbleBounds() for native frame dialogs is not supported.";
 
