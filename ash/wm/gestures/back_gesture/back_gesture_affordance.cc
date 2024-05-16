@@ -307,7 +307,7 @@ void BackGestureAffordance::Abort() {
 }
 
 void BackGestureAffordance::Complete() {
-  DCHECK_EQ(State::DRAGGING, state_);
+  CHECK_EQ(State::DRAGGING, state_);
   state_ = State::COMPLETING;
 
   animation_ = std::make_unique<gfx::LinearAnimation>(
