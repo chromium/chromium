@@ -58,7 +58,12 @@ void AsyncWidgetRequestWaiter::Wait() {
       return !wayland_extension->HasInFlightRequestsForState() &&
              wayland_extension->GetVizSequenceIdForAppliedState() ==
                  wayland_extension->GetVizSequenceIdForLatchedState();
-    }));
+    })) << "Has in flight requests: "
+        << wayland_extension->HasInFlightRequestsForState()
+        << ", applied sequence ID: "
+        << wayland_extension->GetVizSequenceIdForAppliedState()
+        << ", latched sequence ID:"
+        << wayland_extension->GetVizSequenceIdForLatchedState();
 
     // Wait for all Wayland messages sent as a result of requests being latched
     // to be processed on the server side.
