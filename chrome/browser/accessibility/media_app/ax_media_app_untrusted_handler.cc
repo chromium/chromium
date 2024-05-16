@@ -810,10 +810,10 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
 void AXMediaAppUntrustedHandler::OnBitmapReceived(
     const std::string& dirty_page_id,
     const SkBitmap& bitmap) {
-  // If there was a failure getting a page's bitmap, the app will return a null
-  // value which shows up as an empty bitmap here. To prevent the entire app
-  // crashing just because one page failed to render, send it to ScreenAI
-  // anyway, which should just produce an empty A11y tree.
+  if (bitmap.drawsNothing()) {
+    OnPageOcred(dirty_page_id, ui::AXTreeUpdate());
+    return;
+  }
   ocr_->PerformOCR(
       bitmap, base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                              weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
