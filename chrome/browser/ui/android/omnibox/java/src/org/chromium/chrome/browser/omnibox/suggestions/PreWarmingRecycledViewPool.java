@@ -19,6 +19,7 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * RecyclerView pool that:
@@ -53,15 +54,21 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
             };
 
     private OmniboxSuggestionsDropdownAdapter mAdapter;
-    private final Handler mHandler;
+    private final Optional<Handler> mHandler;
     private final FrameLayout mPlaceholderParent;
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
 
-    PreWarmingRecycledViewPool(
-            OmniboxSuggestionsDropdownAdapter adapter, Context context, Handler handler) {
+    PreWarmingRecycledViewPool(OmniboxSuggestionsDropdownAdapter adapter, Context context) {
         mAdapter = adapter;
-        mHandler = handler;
+        mHandler =
+                OmniboxFeatures.sAsyncViewInflation.isEnabled()
+                        // If AsyncViewInflation is enabled, we use AsyncViewStub to handle
+                        // asynchrony and we
+                        // don't need to do it ourselves.
+                        ? Optional.empty()
+                        // Otherwise, we handle asynchrony.
+                        : Optional.of(new Handler());
         mPlaceholderParent = new FrameLayout(context);
         // The list below should include suggestions defined in OmniboxSuggestionUiType
         // and specify the maximum anticipated volume of suggestions of each type.
@@ -99,12 +106,15 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         if (mStopCreatingViews) return;
         for (var viewTypeAndCount : mViewsToCreate) {
             for (int index = 0; index < viewTypeAndCount.count; ++index) {
-                mHandler.postDelayed(
-                        () -> {
-                            createViewHolder(viewTypeAndCount.viewType);
-                        },
-                        STEP_MILLIS * (index + 1));
+                Runnable createViewRunnable = () -> createViewHolder(viewTypeAndCount.viewType);
+                final long delay = STEP_MILLIS * (index + 1);
+                mHandler.ifPresentOrElse(h -> h.postDelayed(createViewRunnable, delay), createViewRunnable);
             }
+        }
+
+        // Synchronously apply all views.
+        if (mHandler.isEmpty()) {
+            putViewsIntoPool();
         }
     }
 
@@ -116,7 +126,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     void stopCreatingViews() {
         if (mStopCreatingViews) return;
         mStopCreatingViews = true;
-        mHandler.removeCallbacks(null);
+        mHandler.ifPresent(h -> h.removeCallbacks(null));
         putViewsIntoPool();
     }
 

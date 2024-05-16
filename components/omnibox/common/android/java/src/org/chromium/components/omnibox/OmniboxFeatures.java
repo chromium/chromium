@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.CachedFieldTrialParameter;
@@ -223,5 +224,11 @@ public class OmniboxFeatures {
      */
     public static boolean shouldAnimateSuggestionsListAppearance() {
         return sAnimateSuggestionsListAppearance.isEnabled();
+    }
+
+    /** Indicate a low memory device for testing purposes. */
+    public static void setIsLowMemoryDeviceForTesting(boolean isLowMemDevice) {
+        sIsLowMemoryDevice = isLowMemDevice;
+        ResettersForTesting.register(() -> sIsLowMemoryDevice = null);
     }
 }

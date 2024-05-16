@@ -6,14 +6,9 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,11 +25,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -45,9 +44,7 @@ import java.util.Arrays;
 public class PreWarmingRecycledViewPoolTest {
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Handler mHandler;
-    @Mock private View mView;
+    private @Mock View mView;
 
     private Context mContext;
     private OmniboxSuggestionsDropdownAdapter mAdapter;
@@ -70,22 +67,20 @@ public class PreWarmingRecycledViewPoolTest {
                                 return new ViewHolder(mView, null);
                             }
                         });
-        mPool = new PreWarmingRecycledViewPool(mAdapter, mContext, mHandler);
+        mPool = new PreWarmingRecycledViewPool(mAdapter, mContext);
     }
 
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
-    @Test
-    public void testCreateViews() {
-        doAnswer(
-                        (invocation -> {
-                            ((Runnable) invocation.getArgument(0)).run();
-                            return null;
-                        }))
-                .when(mHandler)
-                .postDelayed(any(Runnable.class), anyLong());
-        mPool.onNativeInitialized();
-        mPool.stopCreatingViews();
+    private void ensureNoViewsCreated() {
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.HEADER));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.DEFAULT));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION));
+        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION));
+    }
 
+    private void ensureAllViewsCreated() {
         assertEquals(1, mPool.getRecycledViewCount(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION));
         assertEquals(1, mPool.getRecycledViewCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST));
         assertEquals(1, mPool.getRecycledViewCount(OmniboxSuggestionUiType.HEADER));
@@ -110,15 +105,90 @@ public class PreWarmingRecycledViewPoolTest {
         }
     }
 
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL)
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
-    public void testStopCreating() {
+    public void testCreateViews() {
         mPool.onNativeInitialized();
-        verify(mHandler, times(22)).postDelayed(any(Runnable.class), anyLong());
-        mPool.getRecycledView(OmniboxSuggestionUiType.DEFAULT);
-        verify(mHandler).removeCallbacks(null);
 
-        mPool.getRecycledView(OmniboxSuggestionUiType.DEFAULT);
-        verify(mHandler, times(1)).removeCallbacks(null);
+        ensureNoViewsCreated();
+
+        // Run first, then cancel.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        mPool.stopCreatingViews();
+        ensureAllViewsCreated();
+    }
+
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void stopCreatingViews_noViewsCreatedWhenCanceled() {
+        mPool.onNativeInitialized();
+        ensureNoViewsCreated();
+
+        // Cancel, then run.
+        mPool.stopCreatingViews();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ensureNoViewsCreated();
+    }
+
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void destroy_cancelsViewCreation() {
+        mPool.onNativeInitialized();
+        ensureNoViewsCreated();
+
+        // Destroy, then run.
+        mPool.destroy();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ensureNoViewsCreated();
+    }
+
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void createViews_noViewsCreatedOnLowEndDevices() {
+        OmniboxFeatures.setIsLowMemoryDeviceForTesting(true);
+        mPool.onNativeInitialized();
+        ensureNoViewsCreated();
+    }
+
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void createViews_noViewsCreatedIfCanceledBeforeNative() {
+        mPool.stopCreatingViews();
+        mPool.onNativeInitialized();
+        ensureNoViewsCreated();
+    }
+
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void createViews_recordViewCreated() {
+        ensureNoViewsCreated();
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Omnibox.SuggestionView.CreatedType",
+                        OmniboxSuggestionUiType.DEFAULT)) {
+            assertNull(mPool.getRecycledView(OmniboxSuggestionUiType.DEFAULT));
+        }
+    }
+
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void createViews_recordViewReused() {
+        mPool.onNativeInitialized();
+        ensureAllViewsCreated();
+
+        try (var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Omnibox.SuggestionView.ReusedType",
+                        OmniboxSuggestionUiType.DEFAULT)) {
+            assertNotNull(mPool.getRecycledView(OmniboxSuggestionUiType.DEFAULT));
+        }
+    }
+
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
+    @Test
+    public void createViews_viewsCreatedSynchronouslyWhenUsingAsyncViewInflater() {
+        mPool.onNativeInitialized();
+        ensureAllViewsCreated();
     }
 }

@@ -171,7 +171,7 @@ public class AutocompleteCoordinator
         mProfileSupplier.addObserver(mProfileChangeCallback);
 
         mAdapter = createAdapter(listItems);
-        mRecycledViewPool = new PreWarmingRecycledViewPool(mAdapter, context, new Handler());
+        mRecycledViewPool = new PreWarmingRecycledViewPool(mAdapter, context);
 
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
         updateSuggestionListLayoutDirection();
