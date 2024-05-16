@@ -58,6 +58,8 @@ suite('BasicPage', () => {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertFalse(loadTimeData.getBoolean('showPrivacyGuide'));
+
     // Because some test() cases below call navigateTo(), need to ensure that
     // the route is being reset before each test.
     Router.getInstance().navigateTo(routes.BASIC);
@@ -299,6 +301,8 @@ suite('PrivacyGuidePromo', () => {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+
     privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
     PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -398,9 +402,13 @@ suite('PrivacyGuidePromo', () => {
 
     // Click the no thanks button.
     const privacyGuidePromo =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
-    privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
-                                     '#noThanksButton')!.click();
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo');
+    assertTrue(!!privacyGuidePromo);
+    const noThanksButton =
+        privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
+            '#noThanksButton');
+    assertTrue(!!noThanksButton);
+    noThanksButton.click();
     await microtasksFinished();
 
     // The privacy guide should be marked as seen and the promo no longer
@@ -413,9 +421,13 @@ suite('PrivacyGuidePromo', () => {
 
     // Click the start button.
     const privacyGuidePromo =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
-    privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
-                                     '#startButton')!.click();
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo');
+    assertTrue(!!privacyGuidePromo);
+    const startButton =
+        privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
+            '#startButton');
+    assertTrue(!!startButton);
+    startButton.click();
     await microtasksFinished();
 
     const result = await testMetricsBrowserProxy.whenCalled(
