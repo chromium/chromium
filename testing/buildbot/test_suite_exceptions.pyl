@@ -327,6 +327,9 @@
   },
   'blink_web_tests': {
     'remove_from': [
+      # No arm64 apache suppport for fuchsia arm64 bots yet.
+      'fuchsia-arm64-cast-receiver-rel',
+      'fuchsia-fyi-arm64-dbg',
       'Win10 Tests x64 (dbg)',
       'win11-arm64-dbg-tests',
     ],
@@ -618,6 +621,9 @@
       'Win10 Tests x64 (dbg)',
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
+      # No arm64 apache suppport for fuchsia arm64 bots yet.
+      'fuchsia-arm64-cast-receiver-rel',
+      'fuchsia-fyi-arm64-dbg',
       'linux-rel-cft',
       'mac-rel-cft',
       'win-rel-cft',
