@@ -6679,12 +6679,6 @@ NavigationRequest::AboutSrcDocCheckResult NavigationRequest::CheckAboutSrcDoc()
   if (frame_tree_node_->IsMainFrame())
     return AboutSrcDocCheckResult::BLOCK_REQUEST;
 
-  if (!base::FeatureList::IsEnabled(
-          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations)) {
-    // Retain previous behaviour if new behavior has been disabled.
-    return AboutSrcDocCheckResult::ALLOW_REQUEST;
-  }
-
   // There are 4 cases where we allow a navigation to about:srcdoc:
 
   // 1) We allow same-document navigations from any frame.

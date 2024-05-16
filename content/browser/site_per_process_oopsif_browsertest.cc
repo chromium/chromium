@@ -80,17 +80,17 @@ IN_PROC_BROWSER_TEST_F(BaseUrlInheritanceIframeTest,
       exploded_page_state.top.children[0].initiator_base_url_string.value());
 }
 
-// A test class to test functionality with and without both OOPSIF and the
-// new about:srcdoc navigation blocking feature.
-class SrcdocBlockingIsolatedSandboxedIframeTest
+// Test class to allow testing srcdoc functionality both with and without
+// `kIsolateSandboxedIframes` enabled. The tests verify the correct operation of
+// plumbing of both srcdoc attribute values, as well as the srcdoc frame's
+// parent's base url values, to the srcdoc's frame's renderer.
+class SrcdocIsolatedSandboxedIframeTest
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
-  SrcdocBlockingIsolatedSandboxedIframeTest() {
-    feature_list_.InitWithFeatureStates(
-        {{blink::features::kIsolateSandboxedIframes, std::get<0>(GetParam())},
-         {features::kBlockCrossOriginInitiatedAboutSrcdocNavigations,
-          std::get<1>(GetParam())}});
+  SrcdocIsolatedSandboxedIframeTest() {
+    feature_list_.InitWithFeatureState(
+        blink::features::kIsolateSandboxedIframes, GetParam());
   }
 
   void SetUpOnMainThread() override {
@@ -104,13 +104,13 @@ class SrcdocBlockingIsolatedSandboxedIframeTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-};  // class SrcdocBlockingIsolatedSandboxedIframeTest
+};  // class SrcdocIsolatedSandboxedIframeTest
 
 // Test the scenario where a Site A mainframe contains a Site B subframe which
 // in turn has a sandboxed srcdoc frame. If A tries to directly navigate
-// the srcdoc to about:srcdoc, we shouldn't get a renderer kill.
-IN_PROC_BROWSER_TEST_P(SrcdocBlockingIsolatedSandboxedIframeTest,
-                       NoRendererKillForCrossOriginInitiatorWithoutBlocking) {
+// the srcdoc to about:srcdoc, the navigation should be blocked.
+IN_PROC_BROWSER_TEST_P(SrcdocIsolatedSandboxedIframeTest,
+                       SrcdocNavigationForCrossOriginInitiatorIsBlocked) {
   StartEmbeddedServer();
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
@@ -149,52 +149,16 @@ IN_PROC_BROWSER_TEST_P(SrcdocBlockingIsolatedSandboxedIframeTest,
   }
 
   // Check final origin and base url.
-  bool srcdoc_navigations_blocked = std::get<1>(GetParam());
-  std::string expected_base_url_str = srcdoc_navigations_blocked
-                                          ? "chrome-error://chromewebdata/"
-                                          : "about:srcdoc";
+  std::string expected_base_url_str = "chrome-error://chromewebdata/";
   EXPECT_EQ(expected_base_url_str,
             EvalJs(srcdoc_frame, "document.baseURI").ExtractString());
 
   EXPECT_TRUE(
       srcdoc_frame->current_frame_host()->GetLastCommittedOrigin().opaque());
-  if (srcdoc_navigations_blocked) {
     EXPECT_EQ(url::SchemeHostPort(), srcdoc_frame->current_frame_host()
                                          ->GetLastCommittedOrigin()
                                          .GetTupleOrPrecursorTupleIfOpaque());
-  } else {
-    EXPECT_EQ(url::SchemeHostPort(subframe_url),
-              srcdoc_frame->current_frame_host()
-                  ->GetLastCommittedOrigin()
-                  .GetTupleOrPrecursorTupleIfOpaque());
-  }
 }
-
-// Test class to allow testing srcdoc functionality both with and without
-// `kIsolateSandboxedIframes` enabled. The tests verify the correct operation of
-// plumbing of both srcdoc attribute values, as well as the srcdoc frame's
-// parent's base url values, to the srcdoc's frame's renderer.
-class SrcdocIsolatedSandboxedIframeTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SrcdocIsolatedSandboxedIframeTest() {
-    feature_list_.InitWithFeatureState(
-        blink::features::kIsolateSandboxedIframes, GetParam());
-  }
-
-  void SetUpOnMainThread() override {
-    // Support multiple sites on the test server.
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-  void StartEmbeddedServer() {
-    SetupCrossSiteRedirector(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};  // class SrcdocIsolatedSandboxedIframeTest
 
 // Out-of-process-sandboxed-iframe (OOPSIF) tests.
 //
@@ -2391,17 +2355,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "isolated" : "non_isolated";
                          });
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SrcdocBlockingIsolatedSandboxedIframeTest,
-    testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      bool srcdoc_isolated = std::get<0>(info.param);
-      bool srcdoc_navigation_blocking = std::get<1>(info.param);
-      return base::StringPrintf(
-          "%s_%s", srcdoc_isolated ? "isolated" : "nonIsolated",
-          srcdoc_navigation_blocking ? "navigationBlocking"
-                                     : "navigationNonBlocking");
-    });
 
 }  // namespace content

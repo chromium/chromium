@@ -1184,27 +1184,12 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       *extension, sandboxed_frame_process_id));
 }
 
-// Test class to parameterize the srcdoc-blocking behavior, so tests run both
-// with and without it, and with and without sandboxing.
-// TODO(crbug.com/328279696): Once the blocking behavior is turned on
-// permanently, revise this class to just be parameterised on whether or not the
-// srcdoc frame is sandboxed.
+// Test class to run tests both with and without sandboxing.
 class ProcessMapAboutSrcdocBrowserTest
     : public ProcessMapBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
-  ProcessMapAboutSrcdocBrowserTest() {
-    if (std::get<0>(GetParam())) {
-      feature_list_.InitAndEnableFeature(
-          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kBlockCrossOriginInitiatedAboutSrcdocNavigations);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  ProcessMapAboutSrcdocBrowserTest() = default;
 };
 
 // This test verifies that an about:srcdoc frame with a non-extension parent
@@ -1213,8 +1198,7 @@ class ProcessMapAboutSrcdocBrowserTest
 // base URI of the extension.
 IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
                        ExtensionCannotNavigateAboutSrcdocGrandchild) {
-  bool srcdoc_navigation_blocked = std::get<0>(GetParam());
-  bool srcdoc_is_sandboxed = std::get<1>(GetParam());
+  bool srcdoc_is_sandboxed = GetParam();
   const Extension* extension =
       AddExtensionWithNonExtensionSubframeWithSrcdocSubframe(
           srcdoc_is_sandboxed);
@@ -1252,18 +1236,9 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
   srcdoc_frame = content::ChildFrameAt(non_extension_frame, 0);
   std::string new_srcdoc_base_uri =
       EvalJs(srcdoc_frame, "document.baseURI").ExtractString();
-  if (srcdoc_navigation_blocked) {
-    // The srcdoc gets a baseURI for an error page, but at least it's not the
-    // extension's baseURI.
-    EXPECT_NE(extension_base_uri, new_srcdoc_base_uri);
-  } else if (srcdoc_is_sandboxed) {
-    // This occurs since at present we wipe the initiator base url sent by
-    // the extension, but since the srcdoc is cross-process it cannot retrieve
-    // the parent's base url directly.
-    EXPECT_EQ(std::string("about:srcdoc"), new_srcdoc_base_uri);
-  } else {
-    EXPECT_EQ(non_extension_base_uri, new_srcdoc_base_uri);
-  }
+  // The srcdoc gets a baseURI for an error page, but at least it's not the
+  // extension's baseURI.
+  EXPECT_NE(extension_base_uri, new_srcdoc_base_uri);
   EXPECT_FALSE(content::EvalJs(srcdoc_frame, "!!chrome && !!chrome.tabs;")
                    .ExtractBool());
 
@@ -1293,16 +1268,11 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ProcessMapAboutSrcdocBrowserTest,
-    testing::Values(std::make_tuple(false, false),
-                    std::make_tuple(false, true),
-                    std::make_tuple(true, false),
-                    std::make_tuple(true, true)),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      bool srcdoc_navigation_blocked = std::get<0>(info.param);
-      bool srcdoc_is_sandboxed = std::get<1>(info.param);
+    testing::Values(true, false),
+    [](const testing::TestParamInfo<bool>& info) {
+      bool srcdoc_is_sandboxed = info.param;
       std::string label = base::StringPrintf(
-          "kBlockCrossOriginInitiatedAboutSrcdocNavigation_%s_%s",
-          srcdoc_navigation_blocked ? "Enabled" : "Disabled",
+          "kBlockCrossOriginInitiatedAboutSrcdocNavigation_%s",
           srcdoc_is_sandboxed ? "Sandboxed" : "NotSandboxed");
       return label;
     });
