@@ -79,29 +79,6 @@
 namespace ash::window_util {
 namespace {
 
-// This window targeter reserves space for the portion of the resize handles
-// that extend within a top level window.
-class InteriorResizeHandleTargeterAsh
-    : public chromeos::InteriorResizeHandleTargeter {
- public:
-  InteriorResizeHandleTargeterAsh() = default;
-  InteriorResizeHandleTargeterAsh(const InteriorResizeHandleTargeterAsh&) =
-      delete;
-  InteriorResizeHandleTargeterAsh& operator=(
-      const InteriorResizeHandleTargeterAsh&) = delete;
-  ~InteriorResizeHandleTargeterAsh() override = default;
-
-  bool ShouldUseExtendedBounds(const aura::Window* target) const override {
-    // Fullscreen/maximized windows can't be drag-resized.
-    const WindowState* window_state = WindowState::Get(window());
-    if (window_state && window_state->IsMaximizedOrFullscreenOrPinned())
-      return false;
-
-    // The shrunken hit region only applies to children of |window()|.
-    return InteriorResizeHandleTargeter::ShouldUseExtendedBounds(target);
-  }
-};
-
 // Returns true if `window` has any descendant that is a system modal window or
 // is itself a system modal window.
 bool ContainsSystemModalWindow(const aura::Window* window) {
@@ -403,7 +380,13 @@ void CloseWidgetForWindow(aura::Window* window) {
 }
 
 void InstallResizeHandleWindowTargeterForWindow(aura::Window* window) {
-  window->SetEventTargeter(std::make_unique<InteriorResizeHandleTargeterAsh>());
+  window->SetEventTargeter(
+      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
+          base::BindRepeating([](const aura::Window* window) {
+            const WindowState* window_state = WindowState::Get(window);
+            return window_state ? window_state->GetStateType()
+                                : chromeos::WindowStateType::kDefault;
+          })));
 }
 
 bool IsDraggingTabs(const aura::Window* window) {

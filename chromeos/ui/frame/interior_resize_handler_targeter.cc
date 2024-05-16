@@ -9,7 +9,9 @@
 
 namespace chromeos {
 
-InteriorResizeHandleTargeter::InteriorResizeHandleTargeter() {
+InteriorResizeHandleTargeter::InteriorResizeHandleTargeter(
+    WindowStateTypeCallback window_state_type_cb)
+    : window_state_type_cb_(std::move(window_state_type_cb)) {
   SetInsets(gfx::Insets(chromeos::kResizeInsideBoundsSize));
 }
 
@@ -35,10 +37,12 @@ bool InteriorResizeHandleTargeter::GetHitTestRects(
 
 bool InteriorResizeHandleTargeter::ShouldUseExtendedBounds(
     const aura::Window* target) const {
-  // Fullscreen/maximized/pinned windows can't be drag-resized.
-  // TODO(crbug.com/40143671): Incorporate the check in
-  // InteriorResizeHandleTargeterAsh::ShouldUseExtendedBounds() override here.
-  //
+  // Fullscreen/maximized windows can't be drag-resized.
+  if (IsMaximizedOrFullscreenOrPinnedWindowStateType(
+          window_state_type_cb_.Run(window()))) {
+    return false;
+  }
+
   // The shrunken hit region only applies to children of |window()|.
   return target->parent() == window();
 }

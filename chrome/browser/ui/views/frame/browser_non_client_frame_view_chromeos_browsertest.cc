@@ -215,6 +215,41 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   EXPECT_EQ(HTCLIENT, frame_view->NonClientHitTest(top_edge));
 }
 
+// Regression test for crbug.com/40945061. Asserts that the content window
+// accepts input from the edge of the browser frame when the browser is
+// maximized.
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
+                       ContentWindowAcceptsEdgeInputsWhenMaximized) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  content::WebContents* web_contents = browser_view->GetActiveWebContents();
+  views::Widget* widget = browser_view->GetWidget();
+  const BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+
+  // Maximize the widget.
+  EXPECT_FALSE(widget->IsMaximized());
+  const gfx::Rect old_bounds = frame_view->bounds();
+  widget->Maximize();
+  auto* window = widget->GetNativeWindow();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return window->GetProperty(chromeos::kWindowStateTypeKey) ==
+           chromeos::WindowStateType::kMaximized;
+  }));
+  // TODO(crbug.com/40276379): Remove waiting for bounds change when the bug
+  // is fixed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return frame_view->bounds() != old_bounds; }));
+
+  // Assert that input events at the edge of the browser are propagated to the
+  // web contents window.
+  EXPECT_FALSE(web_contents->GetFocusedFrame());
+  ui::test::EventGenerator event_generator(window->GetRootWindow());
+  ASSERT_NO_FATAL_FAILURE(
+      event_generator.GestureTapAt(frame_view->bounds().left_center()));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !!web_contents->GetFocusedFrame(); }));
+}
+
 using BrowserNonClientFrameViewChromeOSTouchTest =
     TopChromeTouchTest<ChromeOSBrowserUITest>;
 
