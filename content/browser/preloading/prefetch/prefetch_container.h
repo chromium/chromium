@@ -416,7 +416,7 @@ class CONTENT_EXPORT PrefetchContainer {
                                  serving_page_metrics_container);
   void UpdateServingPageMetrics();
 
-  // Returns request id to be used by DevTools
+  // Returns request id to be used by DevTools and test utilities.
   const std::string& RequestId() const { return request_id_; }
 
   // Sets DevTools observer
@@ -722,7 +722,7 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<PrefetchServingPageMetricsContainer>
       serving_page_metrics_container_;
 
-  // Request identifier used by DevTools
+  // Request identifier used by DevTools and test utilities.
   std::string request_id_;
 
   // Weak pointer to DevTools observer

@@ -22,6 +22,9 @@ class BrowserContext;
 class PrefetchContainer;
 class PrefetchMatchResolver;
 
+using PrefetchCompleteCallbackForTesting =
+    base::RepeatingCallback<void(PrefetchContainer*)>;
+
 // Intercepts navigations that can use prefetched resources.
 class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
     : public NavigationLoaderInterceptor {
@@ -43,6 +46,11 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor final
       BrowserContext* browser_context,
       NavigationLoaderInterceptor::LoaderCallback callback,
       NavigationLoaderInterceptor::FallbackCallback fallback_callback) override;
+
+  // Sets a callback to be called on |OnGetPrefetchComplete| to inform whether
+  // the prefetch is served, used only for test purpose.
+  static void SetPrefetchCompleteCallbackForTesting(
+      PrefetchCompleteCallbackForTesting callback);
 
  protected:
   int GetFrameTreeNodeId() const { return frame_tree_node_id_; }

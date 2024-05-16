@@ -111,6 +111,8 @@ static_library("test_support") {
     "../browser/payments/stub_payment_credential.h",
     "../browser/preloading/prefetch/mock_prefetch_service_delegate.cc",
     "../browser/preloading/prefetch/mock_prefetch_service_delegate.h",
+    "../browser/preloading/prefetch/prefetch_test_util.cc",
+    "../browser/preloading/prefetch/prefetch_test_util.h",
     "../browser/preloading/prefetch/prefetch_test_util_internal.cc",
     "../browser/preloading/prefetch/prefetch_test_util_internal.h",
     "../browser/presentation/presentation_test_utils.cc",

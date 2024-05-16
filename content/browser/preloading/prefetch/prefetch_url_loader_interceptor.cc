@@ -40,7 +40,19 @@ void RecordWasFullRedirectChainServedHistogram(
                         was_full_redirect_chain_served);
 }
 
+PrefetchCompleteCallbackForTesting& GetPrefetchCompleteCallbackForTesting() {
+  static base::NoDestructor<PrefetchCompleteCallbackForTesting>
+      get_prefetch_complete_callback_for_testing;
+  return *get_prefetch_complete_callback_for_testing;
+}
+
 }  // namespace
+
+// static
+void PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
+    PrefetchCompleteCallbackForTesting callback) {
+  GetPrefetchCompleteCallbackForTesting() = std::move(callback);  // IN-TEST
+}
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
     int frame_tree_node_id,
@@ -169,17 +181,14 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     PrefetchContainer::Reader reader) {
-  if (!reader) {
+  PrefetchRequestHandler request_handler;
+  if (!reader || !(request_handler = reader.CreateRequestHandler())) {
     // Do not intercept the request.
     redirect_reader_ = PrefetchContainer::Reader();
     std::move(loader_callback_).Run(std::nullopt);
-    return;
-  }
-
-  auto request_handler = reader.CreateRequestHandler();
-  if (!request_handler) {
-    redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run(std::nullopt);
+    if (GetPrefetchCompleteCallbackForTesting()) {
+      GetPrefetchCompleteCallbackForTesting().Run(nullptr);  // IN-TEST
+    }
     return;
   }
 
@@ -187,6 +196,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
       single_request_url_loader_factory =
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               std::move(request_handler));
+
+  PrefetchContainer* prefetch_container = reader.GetPrefetchContainer();
 
   // If |prefetch_container| is done serving the prefetch, clear out
   // |redirect_reader_|, but otherwise cache it in |redirect_reader_|.
@@ -224,6 +235,10 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
                   &bypass_redirect_checks,
                   navigation_request->GetNavigationId())),
           /*subresource_loader_params=*/{}));
+
+  if (GetPrefetchCompleteCallbackForTesting()) {
+    GetPrefetchCompleteCallbackForTesting().Run(prefetch_container);  // IN-TEST
+  }
 }
 
 }  // namespace content
