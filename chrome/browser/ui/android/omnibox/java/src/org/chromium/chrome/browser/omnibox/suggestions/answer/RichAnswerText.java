@@ -124,28 +124,32 @@ class RichAnswerText implements AnswerText {
     private SpannableStringBuilder processFormattedString(FormattedString formattedString) {
         SpannableStringBuilder result = new SpannableStringBuilder();
         List<FormattedStringFragment> fragments = formattedString.getFragmentsList();
-        // TODO(b/327497146): handle the case where there are no fragments by using the default for
-        // the type of line.
-        for (int i = 0; i < fragments.size(); i++) {
-            FormattedStringFragment formattedStringFragment = fragments.get(i);
+        if (fragments.size() > 0) {
+            for (int i = 0; i < fragments.size(); i++) {
+                FormattedStringFragment formattedStringFragment = fragments.get(i);
+                String text =
+                        AnswerTextUtils.processAnswerText(
+                                formattedStringFragment.getText(), mIsAnswerLine, mAnswerType);
+                appendAndStyleText(
+                        text, getAppearanceForText(formattedStringFragment.getColor()), result);
+            }
+        } else {
+            String text =
+                    AnswerTextUtils.processAnswerText(
+                            formattedString.getText(), mIsAnswerLine, mAnswerType);
             appendAndStyleText(
-                    formattedStringFragment, getAppearanceForText(formattedStringFragment), result);
+                    text, getAppearanceForText(ColorType.COLOR_ON_SURFACE_DEFAULT), result);
         }
 
         return result;
     }
 
     private void appendAndStyleText(
-            FormattedStringFragment formattedStringFragment,
-            MetricAffectingSpan style,
-            SpannableStringBuilder result) {
+            String text, MetricAffectingSpan style, SpannableStringBuilder result) {
         if (!result.toString().isEmpty()) {
             result.append(" ");
         }
 
-        String text =
-                AnswerTextUtils.processAnswerText(
-                        formattedStringFragment.getText(), mIsAnswerLine, mAnswerType);
         int startIndex = result.length();
         result.append(text);
         result.setSpan(style, startIndex, result.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -156,25 +160,24 @@ class RichAnswerText implements AnswerText {
      *
      * @return MetricAffectingSpan specifying style to be used to present text field.
      */
-    private MetricAffectingSpan getAppearanceForText(
-            FormattedStringFragment formattedStringFragment) {
+    private MetricAffectingSpan getAppearanceForText(ColorType colorType) {
         return mIsAnswerLine
                 ? getAppearanceForAnswerText(
-                        mContext, formattedStringFragment, mAnswerType, mReverseStockTextColor)
+                        mContext, colorType, mAnswerType, mReverseStockTextColor)
                 : getAppearanceForQueryText();
     }
 
     /**
      * Return text style for elements in main line holding answer.
      *
-     * @param answerType the answer type for the suggestion answer
+     * @param colorType The color type for the text.
      * @param context Current context.
      * @return TextAppearanceSpan object defining style for the text.
      */
     @VisibleForTesting
     static MetricAffectingSpan getAppearanceForAnswerText(
             Context context,
-            FormattedStringFragment formattedStringFragment,
+            ColorType colorType,
             @AnswerType int answerType,
             boolean reverseStockTextColor) {
         if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
@@ -185,7 +188,6 @@ class RichAnswerText implements AnswerText {
 
         // TODO(b/327497146): skip color reversal when original data source is proto backend, which
         // should handle color reversal server side.
-        ColorType colorType = formattedStringFragment.getColor();
         return switch (colorType) {
             case COLOR_ON_SURFACE_POSITIVE, COLOR_ON_SURFACE_NEGATIVE -> {
                 boolean wantPositiveColor = (colorType == ColorType.COLOR_ON_SURFACE_POSITIVE);

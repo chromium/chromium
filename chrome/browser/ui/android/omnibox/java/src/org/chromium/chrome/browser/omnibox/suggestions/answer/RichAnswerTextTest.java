@@ -372,7 +372,6 @@ public class RichAnswerTextTest {
                                         .setStartIndex(0)
                                         .setText("1 United States Dollar = 156.23 Japanese Yen"))
                         .build();
-
         RichAnswerTemplate richAnswerTemplate =
                 RichAnswerTemplate.newBuilder()
                         .setAnswerType(AnswerType.CURRENCY)
@@ -392,5 +391,37 @@ public class RichAnswerTextTest {
         Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
 
         Assert.assertEquals(secondaryText.toString(), "1 usd to jpy");
+    }
+
+    @Test
+    @SmallTest
+    public void testNoFragments() {
+        FormattedString headline = FormattedString.newBuilder().setText("redmond weather").build();
+        FormattedString subhead =
+                FormattedString.newBuilder().setText("64•F Thu - Redmond, WA").build();
+
+        RichAnswerTemplate richAnswerTemplate =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(AnswerType.WEATHER)
+                        .addAnswers(
+                                0,
+                                AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
+                        .build();
+
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
+        SpannableStringBuilder primaryText = texts[0].getText();
+        SpannableStringBuilder secondaryText = texts[1].getText();
+
+        Assert.assertEquals(primaryText.toString(), "64•F Thu - Redmond, WA");
+        TextAppearanceSpan[] textAppearanceSpans =
+                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 1);
+        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
+
+        Assert.assertEquals(secondaryText.toString(), "redmond weather");
+        textAppearanceSpans =
+                secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 1);
+        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
     }
 }
