@@ -732,29 +732,29 @@ struct ConvertArray;
 
 namespace internal {
 template <typename T>
-concept has_reserve = requires(T t) { t.reserve(0); };
+concept HasReserve = requires(T t) { t.reserve(0); };
 
 template <typename T>
-concept has_push_back = requires(T t, T::value_type v) { t.push_back(v); };
+concept HasPushBack = requires(T t, T::value_type v) { t.push_back(v); };
 
 template <typename T>
-concept has_insert = requires(T t, T::value_type v) { t.insert(v); };
+concept HasInsert = requires(T t, T::value_type v) { t.insert(v); };
 
 template <typename T>
-concept is_container = requires(T t) {
-  T::value_type;
-  { t.begin() } -> std::same_as<typename T::const_iterator>;
-  { t.end() } -> std::same_as<typename T::const_iterator>;
-  { t.size() } -> std::same_as<size_t>;
+concept IsContainer = requires(T t) {
+  typename T::value_type;
+  t.begin();
+  t.end();
+  t.size();
 };
+
+template <typename T>
+concept IsObjectContainer =
+    IsContainer<T> && !std::integral<typename T::value_type>;
 }  // namespace internal
 
 // Partial specialization for converting java arrays into std containers
-template <typename ContainerType>
-  requires requires(ContainerType t) {
-    internal::is_container<ContainerType>;
-    not std::integral<typename ContainerType::value_type>;
-  }
+template <internal::IsObjectContainer ContainerType>
 struct ConvertArray<ContainerType> {
  private:
   using ElementType = std::remove_const_t<typename ContainerType::value_type>;
@@ -762,13 +762,13 @@ struct ConvertArray<ContainerType> {
  public:
   static ContainerType FromJniType(JNIEnv* env,
                                    const JavaRef<jobjectArray>& j_array) {
-    constexpr bool has_push_back = internal::has_push_back<ContainerType>;
-    constexpr bool has_insert = internal::has_insert<ContainerType>;
+    constexpr bool has_push_back = internal::HasPushBack<ContainerType>;
+    constexpr bool has_insert = internal::HasInsert<ContainerType>;
     static_assert(has_push_back || has_insert, "Template type not supported.");
     jsize array_jsize = env->GetArrayLength(j_array.obj());
 
     ContainerType ret;
-    if constexpr (internal::has_reserve<ContainerType>) {
+    if constexpr (internal::HasReserve<ContainerType>) {
       size_t array_size = static_cast<size_t>(array_jsize);
       ret.reserve(array_size);
     }

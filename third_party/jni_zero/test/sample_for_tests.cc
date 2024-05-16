@@ -12,6 +12,17 @@
 #include "third_party/jni_zero/test/test_jni/SampleForAnnotationProcessor_jni.h"
 #include "third_party/jni_zero/test/test_jni/SampleForTests_jni.h"
 
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907L
+// Tests for concepts.
+namespace jni_zero::internal {
+static_assert(IsContainer<std::vector<std::string>>);
+static_assert(!IsObjectContainer<std::vector<char>>);
+static_assert(!IsObjectContainer<std::string>);
+static_assert(IsObjectContainer<std::vector<std::string>>);
+static_assert(IsObjectContainer<std::vector<std::string*>>);
+}  // namespace jni_zero::internal
+#endif  // defined(__cpp_concepts) && __cpp_concepts >= 201907L
+
 using jni_zero::AttachCurrentThread;
 using jni_zero::JavaParamRef;
 using jni_zero::ScopedJavaLocalRef;
