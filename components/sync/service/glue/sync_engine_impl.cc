@@ -48,15 +48,11 @@ RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   return result;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. When adding values, be certain to also
-// update the corresponding definition in enums.xml.
 enum class SyncTransportDataStartupState {
-  kValidData = 0,
-  kEmptyCacheGuid = 1,
-  kEmptyBirthday = 2,
-  kGaiaIdMismatch = 3,
-  kMaxValue = kGaiaIdMismatch
+  kValidData,
+  kEmptyCacheGuid,
+  kEmptyBirthday,
+  kGaiaIdMismatch,
 };
 
 std::string GenerateCacheGUID() {

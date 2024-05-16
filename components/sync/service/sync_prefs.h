@@ -308,10 +308,6 @@ class SyncPrefs {
   void OnFirstSetupCompletePrefChange();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void KeepAccountSettingsPrefsOnlyForUsers(
-      const std::vector<signin::GaiaIdHash>& available_gaia_ids,
-      const char* pref_path);
-
   // Never null.
   const raw_ptr<PrefService> pref_service_;
 

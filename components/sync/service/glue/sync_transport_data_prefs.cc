@@ -23,9 +23,9 @@ const char kSyncLastSyncedTime[] = "sync.last_synced_time";
 const char kSyncLastPollTime[] = "sync.last_poll_time";
 
 // 64-bit integer serialization of base::TimeDelta storing poll intervals
-// received by the server (in seconds). For historic reasons, this is called
+// received by the server. For historic reasons, this is called
 // "short_poll_interval", but it's not worth the hassle to rename it.
-const char kSyncPollIntervalSeconds[] = "sync.short_poll_interval";
+const char kSyncPollInterval[] = "sync.short_poll_interval";
 
 const char kSyncGaiaId[] = "sync.gaia_id";
 const char kSyncCacheGuid[] = "sync.cache_guid";
@@ -48,7 +48,7 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(kSyncBagOfChips, std::string());
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
-  registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
+  registry->RegisterTimeDeltaPref(kSyncPollInterval, base::TimeDelta());
 }
 
 void SyncTransportDataPrefs::ClearAll() {
@@ -56,7 +56,7 @@ void SyncTransportDataPrefs::ClearAll() {
 
   pref_service_->ClearPref(kSyncLastSyncedTime);
   pref_service_->ClearPref(kSyncLastPollTime);
-  pref_service_->ClearPref(kSyncPollIntervalSeconds);
+  pref_service_->ClearPref(kSyncPollInterval);
   pref_service_->ClearPref(kSyncGaiaId);
   pref_service_->ClearPref(kSyncCacheGuid);
   pref_service_->ClearPref(kSyncBirthday);
@@ -86,13 +86,13 @@ void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
 base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::TimeDelta poll_interval =
-      pref_service_->GetTimeDelta(kSyncPollIntervalSeconds);
+      pref_service_->GetTimeDelta(kSyncPollInterval);
   // If the poll interval is unreasonably short, reset it. This will cause
   // callers to use a reasonable default value instead.
   // This fixes a past bug where stored pref values were accidentally
   // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
   if (poll_interval < base::Minutes(1)) {
-    pref_service_->ClearPref(kSyncPollIntervalSeconds);
+    pref_service_->ClearPref(kSyncPollInterval);
     return base::TimeDelta();
   }
   return poll_interval;
@@ -100,7 +100,7 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
 
 void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetTimeDelta(kSyncPollIntervalSeconds, interval);
+  pref_service_->SetTimeDelta(kSyncPollInterval, interval);
 }
 
 void SyncTransportDataPrefs::SetGaiaId(const std::string& gaia_id) {

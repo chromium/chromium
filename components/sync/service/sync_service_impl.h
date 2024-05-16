@@ -287,8 +287,7 @@ class SyncServiceImpl : public SyncService,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncResetEngineReason)
 
-  // static
-  ShutdownReason ShutdownReasonForResetEngineReason(
+  static ShutdownReason ShutdownReasonForResetEngineReason(
       ResetEngineReason reset_reason);
 
   // Records UMA histograms related to download status during browser startup.

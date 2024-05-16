@@ -18,10 +18,15 @@ class PrefService;
 namespace syncer {
 
 // Helpers to ease the use of account-keyed prefs. These prefs are structured as
-// follows (note that the leaf values may be any `base::Value` type):
+// follows. Note that the leaf values may be any `base::Value` type, and special
+// helpers exist for dictionaries (pref_path2 in the example):
 //
 // {
 //   "pref_path1": {
+//     "base64_gaia_id_hash1": "value1",
+//     "base64_gaia_id_hash2": "value2"
+//   },
+//   "pref_path2": {
 //     "base64_gaia_id_hash1": {
 //       "key1": "value1",
 //       "key2": 123
