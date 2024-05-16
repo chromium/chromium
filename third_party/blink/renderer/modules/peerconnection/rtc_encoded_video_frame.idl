@@ -14,7 +14,7 @@ enum RTCEncodedVideoFrameType {
 [
     Exposed=(Window, DedicatedWorker)
 ] interface RTCEncodedVideoFrame {
-    [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
+    [Measure, RaisesException]
     constructor (RTCEncodedVideoFrame originalFrame, optional RTCEncodedVideoFrameOptions options = {});
     readonly attribute RTCEncodedVideoFrameType type;
     readonly attribute unsigned long timestamp;  // RTP timestamp.
