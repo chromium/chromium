@@ -42,17 +42,18 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 
+import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.chrome.test.R;
 
 /**
- * This is the testing util class for TabListEditor. It's used to perform action and verify
- * result within the TabListEditor.
+ * This is the testing util class for TabListEditor. It's used to perform action and verify result
+ * within the TabListEditor.
  */
 public class TabListEditorTestingRobot {
     /**
      * @param viewMatcher A matcher that matches a view.
-     * @return A matcher that matches view in the {@link TabListEditorLayout} based on the
-     *         given matcher.
+     * @return A matcher that matches view in the {@link TabListEditorLayout} based on the given
+     *     matcher.
      */
     public static Matcher<View> inTabListEditor(Matcher<View> viewMatcher) {
         return allOf(isDescendantOfA(instanceOf(TabListEditorLayout.class)), viewMatcher);
@@ -197,10 +198,10 @@ public class TabListEditorTestingRobot {
 
         public TabListEditorTestingRobot.Result verifyTabListEditorIsHidden() {
             try {
-                onView(
-                                allOf(
-                                        instanceOf(TabListEditorLayout.class),
-                                        withId(R.id.selectable_list)))
+                onView(allOf(instanceOf(TabListEditorLayout.class), withId(R.id.selectable_list)))
+                        // DefaultFailureHandler breaks when dumping the view hierarchy that
+                        // contains a webview. See crbug.com/339675001.
+                        .withFailureHandler(RawFailureHandler.getInstance())
                         .check(matches(isDisplayed()));
             } catch (NoMatchingRootException | NoMatchingViewException e) {
                 return this;
