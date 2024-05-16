@@ -937,6 +937,7 @@ if (is_win || is_mac || is_linux) {
         ":ks_ticket",
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
+        "//chrome/updater/mac/client_lib:test_sources",
         "//third_party/ocmock",
       ]
 

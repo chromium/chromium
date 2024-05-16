@@ -92,6 +92,26 @@ Repeating the updater installation and app registration is not harmful. To
 make the system more resilient, apps may periodically repeat the installation
 and registration process.
 
+#### CRURegistration library
+
+An Objective-C library to perform these operations is in development. When
+available, applications will be able to initialize
+[`CRURegistration`](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/mac/client_lib)
+with their product IDs, then use `installUpdaterWithReply:` and
+`registerVersion:existenceCheckerPath:serverURLString:reply:` to install the
+updater (if needed) and register. These methods operate asynchronously using
+[`dispatch/dispatch.h`](https://developer.apple.com/documentation/dispatch/dispatch_queue)
+mechanisms. `CRURegistration` maintains an internal task queue, so clients can
+call `register...` immediately after `install...` without waiting for a result.
+
+`CRURegistration` uses the helpers and command line binaries documented above.
+To install the updater using `CRURegistration`, the updater must be embedded
+as a Helper as documented above.
+
+`CRURegistration` is designed to depend only on APIs published in macOS SDKs
+and compile as pure Objective-C (without requiring C++ support) so it can be
+dropped into projects without incurring Chromium dependencies.
+
 ## Uninstalling Applications and the Updater
 
 The updater will uninstall itself automatically when it has no applications to
