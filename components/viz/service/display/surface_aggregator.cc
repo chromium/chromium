@@ -1710,6 +1710,9 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
     dest_pass_list_->push_back(std::move(copy_pass));
   }
 
+  dest_pass_list_->back()->video_capture_enabled =
+      surface->IsVideoCaptureOnFromClient();
+
   if (!apply_surface_transform_to_root_pass)
     AddDisplayTransformPass();
 }
