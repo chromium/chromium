@@ -13249,7 +13249,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - 1 Tab} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - # Tabs}}
         </message>
         <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="In Title Case: Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
-          {NUM_TABS, plural, =1 {Unnamed Group - 1 Tab} other {Unnamed Group - # Tabs}}
+          {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No Tabs From Other Devices
@@ -13269,7 +13269,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - 1 tab} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - # tabs}}
         </message>
         <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
-          {NUM_TABS, plural, =1 {Unnamed group - 1 tab} other {Unnamed group - # tabs}}
+          {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No tabs from other devices
