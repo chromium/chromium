@@ -96,6 +96,7 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"storageItemMyFiles", IDS_SETTINGS_STORAGE_ITEM_MY_FILES},
       {"storageItemOtherUsers", IDS_SETTINGS_STORAGE_ITEM_OTHER_USERS},
       {"storageItemSystem", IDS_SETTINGS_STORAGE_ITEM_SYSTEM},
+      {"storageItemEncryption", IDS_SETTINGS_STORAGE_ITEM_ENCRYPTION_LABEL},
       {"storageOverviewAriaLabel", IDS_SETTINGS_STORAGE_OVERVIEW_ARIA_LABEL},
       {"storageSizeComputing", IDS_SETTINGS_STORAGE_SIZE_CALCULATING},
       {"storageSizeUnknown", IDS_SETTINGS_STORAGE_SIZE_UNKNOWN},

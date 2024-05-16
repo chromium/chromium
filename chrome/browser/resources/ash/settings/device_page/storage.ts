@@ -109,6 +109,16 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
         },
       },
 
+      /**
+       * Sublabel for storage encryption label.
+       */
+      storageEncryptionSubLabel_: {
+        type: String,
+        value(this: SettingsStorageElement) {
+          return this.i18n('storageSizeComputing');
+        },
+      },
+
       sizeStat_: Object,
     };
   }
@@ -129,6 +139,7 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
   private myFilesSizeSubLabel_: string;
+  private storageEncryptionSubLabel_: string;
   private readonly isSkyVaultEnabled_: boolean;
 
   constructor() {
@@ -174,6 +185,15 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
       this.addWebUiListener(
           'storage-system-size-changed',
           (size: string) => this.handleSystemSizeChanged_(size));
+    }
+    if (!this.isEphemeralUser_) {
+      this.browserProxy_.getStorageEncryptionInfo().then(
+          encryptionInfo => {
+            this.storageEncryptionSubLabel_ = encryptionInfo;
+          },
+          reason => {
+            console.warn(`Unable to get info: ${reason}`);
+          });
     }
   }
 

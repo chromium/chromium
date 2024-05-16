@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addWebUiListener} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
+
 
 /**
  * Enumeration for device state about remaining space.
@@ -208,6 +209,8 @@ export interface DevicePageBrowserProxy {
 
   updateStorageInfo(): void;
 
+  getStorageEncryptionInfo(): Promise<string>;
+
   openMyFiles(): void;
 
   openBrowsingDataSettings(): void;
@@ -313,6 +316,10 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
 
   updateStorageInfo(): void {
     chrome.send('updateStorageInfo');
+  }
+
+  getStorageEncryptionInfo(): Promise<string> {
+    return sendWithPromise('getStorageEncryptionInfo');
   }
 
   openMyFiles(): void {

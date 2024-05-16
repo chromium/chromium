@@ -28,6 +28,7 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'getStorageEncryptionInfo',
       'requestNoteTakingApps',
       'requestPowerManagementSettings',
       'setPreferredNoteTakingApp',
@@ -175,6 +176,10 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
   updateExternalStorages() {}
 
   updateStorageInfo() {}
+
+  getStorageEncryptionInfo(): Promise<string> {
+    return Promise.resolve('AES-256');
+  }
 
   // Test interface:
   /**

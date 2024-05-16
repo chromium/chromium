@@ -238,6 +238,20 @@
     </div>
   </div>
 </template>
+<template is="dom-if" if="[[!isEphemeralUser_]]">
+  <div id="systemEncryption"
+      class="settings-box two-line single-column stretch settings-box-text"
+      aria-describedby="systemEncryptionSubLabel"
+      aria-labelledby="systemEncryptionLabel">
+    <div id="systemEncryptionLabel" class="label" aria-hidden="true">
+      $i18n{storageItemEncryption}
+    </div>
+    <div id="systemEncryptionSubLabel"
+        class="secondary label" aria-hidden="true">
+      [[storageEncryptionSubLabel_]]
+    </div>
+  </div>
+</template>
 <template is="dom-if" if="[[isExternalStorageEnabled_]]">
   <cr-link-row id="externalStoragePreferences" class="hr"
       on-click="onExternalStoragePreferencesClick_"
