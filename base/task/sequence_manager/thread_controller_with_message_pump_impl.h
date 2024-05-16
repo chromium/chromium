@@ -176,7 +176,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       GUARDED_BY(task_runner_lock_);
 
   WorkDeduplicator work_deduplicator_;
-  bool in_native_work_batch_ = false;
+  bool do_work_needed_before_wait_ = false;
+  bool task_execution_allowed_in_native_nested_loop_ = false;
 
   ThreadControllerPowerMonitor power_monitor_;
 

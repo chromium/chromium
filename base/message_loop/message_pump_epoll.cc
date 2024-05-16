@@ -379,7 +379,6 @@ void MessagePumpEpoll::HandleEvent(int fd,
 
 void MessagePumpEpoll::HandleWakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  BeginNativeWorkBatch();
   processed_io_events_ = true;
   uint64_t value;
   ssize_t n = HANDLE_EINTR(read(wake_event_.get(), &value, sizeof(value)));
