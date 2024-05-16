@@ -5,6 +5,7 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -51,7 +52,8 @@ void FillTextWithAutofill(base::WeakPtr<autofill::AutofillManager> manager,
       ->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                            autofill::mojom::FieldActionType::kReplaceSelection,
                            form, field, trimmed_text,
-                           SuggestionType::kComposeResumeNudge);
+                           SuggestionType::kComposeResumeNudge,
+                           /*field_type_used=*/std::nullopt);
 }
 
 }  // namespace

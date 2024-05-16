@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -336,7 +337,8 @@ void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
               delegate->manager_->FillOrPreviewField(
                   mojom::ActionPersistence::kFill,
                   mojom::FieldActionType::kReplaceAll, delegate->query_form_,
-                  delegate->query_field_, value, SuggestionType::kIbanEntry);
+                  delegate->query_field_, value, SuggestionType::kIbanEntry,
+                  IBAN_VALUE);
             }
           },
           GetWeakPtr()));

@@ -155,7 +155,8 @@ class FormFiller {
                           FormStructure* form_structure,
                           AutofillField* autofill_field,
                           const std::u16string& value,
-                          SuggestionType type);
+                          SuggestionType type,
+                          std::optional<FieldType> field_type_used);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/40227071): Clean up the API.

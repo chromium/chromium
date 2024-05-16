@@ -435,9 +435,11 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     FormStructure* form_structure,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
-                                    SuggestionType type) {
+                                    SuggestionType type,
+                                    std::optional<FieldType> field_type_used) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->set_is_autofilled(true);
+    autofill_field->set_autofilled_type(field_type_used);
     autofill_field->set_filling_product(
         GetFillingProductFromSuggestionType(type));
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{

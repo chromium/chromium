@@ -257,7 +257,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[2], u"CC_NAME_VALUE",
-      SuggestionType::kCreditCardFieldByFieldFilling);
+      SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form, form.fields[3],
       test::GetCreditCard(), std::u16string(),
@@ -288,7 +288,7 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
   autofill_manager().FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields[3], u"SOME_VALUE",
-      SuggestionType::kCreditCardFieldByFieldFilling);
+      SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
 
   base::HistogramTester histogram_tester;
   ResetDriverToCommitMetrics();

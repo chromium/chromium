@@ -4634,7 +4634,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
   browser_autofill_manager_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       form, form.fields.front(), u"CH93 0076 2011 6238 5295 7",
-      SuggestionType::kIbanEntry);
+      SuggestionType::kIbanEntry, IBAN_VALUE);
   FormSubmitted(form);
 
   const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =

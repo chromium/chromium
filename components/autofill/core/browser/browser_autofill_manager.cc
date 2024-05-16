@@ -1460,12 +1460,14 @@ void BrowserAutofillManager::FillOrPreviewField(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& value,
-    SuggestionType type) {
+    SuggestionType type,
+    std::optional<FieldType> field_type_used) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   form_filler_->FillOrPreviewField(action_persistence, action_type, form, field,
-                                   form_structure, autofill_field, value, type);
+                                   form_structure, autofill_field, value, type,
+                                   field_type_used);
   if (action_persistence == mojom::ActionPersistence::kFill) {
     const FormFieldData* const_field = &field;
     const AutofillField* const_autofill_field = autofill_field;

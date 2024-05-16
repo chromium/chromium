@@ -160,7 +160,7 @@ class BrowserAutofillManager : public AutofillManager {
       const std::u16string& cvc,
       const AutofillTriggerDetails& trigger_details);
 
-  // Routes calls from external components to FillOrPreviewFieldImpl.
+  // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
   // TODO(crbug.com/40227496): Replace FormFieldData parameter by FieldGlobalId.
   virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
@@ -168,7 +168,8 @@ class BrowserAutofillManager : public AutofillManager {
                                   const FormData& form,
                                   const FormFieldData& field,
                                   const std::u16string& value,
-                                  SuggestionType type);
+                                  SuggestionType type,
+                                  std::optional<FieldType> field_type_used);
 
   // Calls UndoAutofillImpl and logs metrics. Virtual for testing.
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
