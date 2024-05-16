@@ -47,6 +47,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewEnableCrash,
     &features::kWebViewPreloadClasses,
+    &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
 };
 
 // static

@@ -894,7 +894,10 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public void onScrollUpdateGestureConsumed() {
-            mScrollAccessibilityHelper.postViewScrolledAccessibilityEventCallback();
+            if (!AwFeatureMap.isEnabled(
+                    AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU)) {
+                mScrollAccessibilityHelper.postViewScrolledAccessibilityEventCallback();
+            }
             if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INVOKE_ZOOM_PICKER_ON_GSU)) {
                 mZoomControls.invokeZoomPicker();
             }
@@ -913,6 +916,10 @@ public class AwContents implements SmartClipProvider {
                 mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
                         /* isScrolling= */ true, mId);
             }
+            if (AwFeatureMap.isEnabled(
+                    AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU)) {
+                mScrollAccessibilityHelper.setIsInAScroll(true);
+            }
         }
 
         @Override
@@ -926,6 +933,10 @@ public class AwContents implements SmartClipProvider {
             if (mAwFrameMetricsListener != null) {
                 mAwFrameMetricsListener.onWebContentsScrollStateUpdate(
                         /* isScrolling= */ false, mId);
+            }
+            if (AwFeatureMap.isEnabled(
+                    AwFeatures.WEBVIEW_DO_NOT_SEND_ACCESSIBILITY_EVENTS_ON_GSU)) {
+                mScrollAccessibilityHelper.setIsInAScroll(false);
             }
         }
 

@@ -56,6 +56,7 @@ BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
 BASE_DECLARE_FEATURE(kWebViewAsyncDns);
 BASE_DECLARE_FEATURE(kWebViewPreloadClasses);
+BASE_DECLARE_FEATURE(kWebViewDoNotSendAccessibilityEventsOnGSU);
 
 }  // namespace features
 }  // namespace android_webview

@@ -46,6 +46,24 @@ class ScrollAccessibilityHelper {
 
     private Handler mHandler;
     private boolean mMsgViewScrolledQueued;
+    private boolean mIsInAScroll;
+    private boolean mEventSentByViewBaseClass;
+    private final Runnable mSendRecurringViewScrolledEvents =
+            new Runnable() {
+                @Override
+                public void run() {
+                    if (!mEventSentByViewBaseClass) {
+                        Message msg = mHandler.obtainMessage(HandlerCallback.MSG_VIEW_SCROLLED);
+                        mHandler.sendMessage(msg);
+                    } else {
+                        mEventSentByViewBaseClass = false;
+                    }
+                    if (mIsInAScroll) {
+                        mHandler.postDelayed(
+                                this, SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS);
+                    }
+                }
+            };
 
     public ScrollAccessibilityHelper(View eventSender) {
         mHandler = new Handler(new HandlerCallback(eventSender));
@@ -59,12 +77,23 @@ class ScrollAccessibilityHelper {
     public void postViewScrolledAccessibilityEventCallback() {
         if (mMsgViewScrolledQueued) return;
         mMsgViewScrolledQueued = true;
+        mEventSentByViewBaseClass = false;
 
         Message msg = mHandler.obtainMessage(HandlerCallback.MSG_VIEW_SCROLLED);
         mHandler.sendMessageDelayed(msg, SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS);
     }
 
+    public void setIsInAScroll(boolean isScrolling) {
+        mIsInAScroll = isScrolling;
+        if (isScrolling) {
+            mHandler.postDelayed(
+                    mSendRecurringViewScrolledEvents,
+                    SEND_RECURRING_ACCESSIBILITY_EVENTS_INTERVAL_MILLIS);
+        }
+    }
+
     public void removePostedViewScrolledAccessibilityEventCallback() {
+        mEventSentByViewBaseClass = true;
         if (!mMsgViewScrolledQueued) return;
         mMsgViewScrolledQueued = false;
 
@@ -73,5 +102,6 @@ class ScrollAccessibilityHelper {
 
     public void removePostedCallbacks() {
         removePostedViewScrolledAccessibilityEventCallback();
+        mHandler.removeCallbacks(mSendRecurringViewScrolledEvents);
     }
 }
