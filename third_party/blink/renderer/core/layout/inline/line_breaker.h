@@ -412,6 +412,9 @@ class CORE_EXPORT LineBreaker {
   const ConstraintSpace& constraint_space_;
   ExclusionSpace* exclusion_space_;
   const InlineBreakToken* break_token_;
+  // This is set by the constructor, or set after filling a LineInfo.
+  // BreakLine consumes it.
+  const RubyBreakTokenData* ruby_break_token_ = nullptr;
   const ColumnSpannerPath* column_spanner_path_;
   const ComputedStyle* current_style_ = nullptr;
 

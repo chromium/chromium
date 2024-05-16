@@ -515,6 +515,7 @@ LineBreaker::LineBreaker(InlineNode node,
   }
 
   current_ = break_token->Start();
+  ruby_break_token_ = break_token->RubyData();
   break_iterator_.SetStartOffset(current_.text_offset);
   is_after_forced_break_ = break_token->IsForcedBreak();
   items_data_->AssertOffset(current_);
@@ -888,6 +889,11 @@ void LineBreaker::NextLine(LineInfo* line_info) {
     UpdateAvailableWidth();
   }
   ComputeLineLocation(line_info);
+  DCHECK(!ruby_break_token_);
+  const InlineItemResults& results = line_info->Results();
+  if (!results.empty() && results.back().IsRubyColumn()) {
+    ruby_break_token_ = results.back().ruby_column->ruby_break_token;
+  }
   if (mode_ == LineBreakerMode::kContent) {
     line_info->SetBreakToken(CreateBreakToken(*line_info));
   }
@@ -913,10 +919,9 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
           : LineBreakState::kContinue;
   trailing_whitespace_ = initial_whitespace_;
 
-  if (break_token_) {
-    if (const auto* ruby_data = break_token_->RubyData()) {
-      HandleRuby(ruby_data, line_info);
-    }
+  if (ruby_break_token_) {
+    HandleRuby(ruby_break_token_, line_info);
+    ruby_break_token_ = nullptr;
   }
 
   while (state_ != LineBreakState::kDone) {
@@ -4374,7 +4379,7 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
            : 0);
 
   return InlineBreakToken::Create(node_, current_style_, current_, flags,
-                                  sub_break_token);
+                                  sub_break_token, ruby_break_token_);
 }
 
 }  // namespace blink
