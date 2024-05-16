@@ -20,6 +20,18 @@ bool PositionTryOptions::operator==(const PositionTryOptions& other) const {
   return options_ == other.options_;
 }
 
+bool PositionTryOptions::HasPositionTryName(
+    const HashSet<AtomicString>& names) const {
+  for (const auto& option : options_) {
+    if (const ScopedCSSName* scoped_name = option.GetPositionTryName()) {
+      if (names.Contains(scoped_name->GetName())) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void PositionTryOptions::Trace(Visitor* visitor) const {
   visitor->Trace(options_);
 }

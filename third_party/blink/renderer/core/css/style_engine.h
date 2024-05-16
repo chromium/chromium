@@ -574,10 +574,16 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // Set a flag to invalidate elements using position-try-options on next
   // lifecycle update when @position-try rules are added or removed.
-  void MarkPositionTryStylesDirty();
+  void MarkPositionTryStylesDirty(
+      const HeapHashSet<Member<RuleSet>>& changed_rule_sets);
 
   // Mark elements affected by @position-try rules for style and layout update.
   void InvalidatePositionTryStyles();
+
+  void MarkLastSuccessfulPositionOptionDirtyForElement(Element& element) {
+    CHECK(RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled());
+    last_successful_option_dirty_set_.insert(&element);
+  }
 
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
@@ -718,6 +724,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                  GetDocument().GetLayoutView()));
     return viewport_size_;
   }
+
+  // Returns true if marked dirty for layout
+  bool UpdateLastSuccessfulPositionOptions();
 
  private:
   void UpdateCounters(const Element& element,
@@ -1102,6 +1111,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Stores various "flip sets" used to implement <try-tactic> from
   // CSS Anchor Positioning.
   TryValueFlips try_value_flips_;
+
+  // Elements which had their computed position-try-options changed since last
+  // time resize observers were considered. May need to have their last
+  // successful option invalidated.
+  HeapHashSet<Member<Element>> last_successful_option_dirty_set_;
+
+  // Names of @position-try rules which were added, removed, or modified since
+  // last time resize observers were considered. Anchored elements with a last
+  // successful option with position-try-options referring any of these names
+  // will be invalidated.
+  HashSet<AtomicString> dirty_position_try_names_;
 };
 
 void PossiblyScheduleNthPseudoInvalidations(Node& node);

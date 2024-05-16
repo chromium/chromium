@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/native_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -3301,6 +3302,11 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     if (!performing_reattach) {
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
+      data->ClearOutOfFlowData();
+    } else if (data->GetOutOfFlowData()) {
+      GetDocument()
+          .GetStyleEngine()
+          .MarkLastSuccessfulPositionOptionDirtyForElement(*this);
     }
 
     if (ElementAnimations* element_animations = data->GetElementAnimations()) {
@@ -4146,6 +4152,17 @@ StyleRecalcChange Element::RecalcOwnStyle(
         diff == ComputedStyle::Difference::kEqual
             ? LayoutObject::ApplyStyleChanges::kNo
             : LayoutObject::ApplyStyleChanges::kYes;
+
+    if (diff != ComputedStyle::Difference::kEqual && GetOutOfFlowData() &&
+        (!new_style->HasOutOfFlowPosition() ||
+         !base::ValuesEquivalent(old_style->GetPositionTryOptions().Get(),
+                                 new_style->GetPositionTryOptions().Get()))) {
+      // position-try-options or positioning changed, which both invalidate last
+      // successful try option.
+      GetDocument()
+          .GetStyleEngine()
+          .MarkLastSuccessfulPositionOptionDirtyForElement(*this);
+    }
 
     const ComputedStyle* layout_style = new_style;
     if (auto* pseudo_element = DynamicTo<PseudoElement>(this)) {

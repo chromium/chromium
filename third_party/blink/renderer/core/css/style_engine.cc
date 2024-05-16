@@ -693,7 +693,18 @@ void StyleEngine::UpdateCounterStyles() {
   counter_styles_need_update_ = false;
 }
 
-void StyleEngine::MarkPositionTryStylesDirty() {
+void StyleEngine::MarkPositionTryStylesDirty(
+    const HeapHashSet<Member<RuleSet>>& changed_rule_sets) {
+  if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
+    for (RuleSet* rule_set : changed_rule_sets) {
+      CHECK(rule_set);
+      for (StyleRulePositionTry* try_rule : rule_set->PositionTryRules()) {
+        if (try_rule) {
+          dirty_position_try_names_.insert(try_rule->Name());
+        }
+      }
+    }
+  }
   // TODO(crbug.com/1381623): Currently invalidating all elements in the
   // document with position-options, regardless of where the @position-try rules
   // are added. In order to make invalidation more targeted we would need to add
@@ -2735,7 +2746,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
   if (changed_rule_flags & kPositionTryRules) {
     // TODO(crbug.com/1383907): @position-try rules are not yet collected from
     // user stylesheets.
-    MarkPositionTryStylesDirty();
+    MarkPositionTryStylesDirty(changed_rule_sets);
   }
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
@@ -2867,7 +2878,7 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   if (changed_rule_flags & kPositionTryRules) {
-    MarkPositionTryStylesDirty();
+    MarkPositionTryStylesDirty(changed_rule_sets);
   }
 
   if (changed_rule_flags & kViewTransitionRules) {
@@ -4298,6 +4309,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);
   visitor->Trace(try_value_flips_);
+  visitor->Trace(last_successful_option_dirty_set_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -4385,6 +4397,79 @@ void StyleEngine::BaseURLChanged() {
 void StyleEngine::UpdateViewportSize() {
   viewport_size_ =
       CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView());
+}
+
+namespace {
+
+bool UpdateLastSuccessfulPositionOption(Element& element) {
+  if (OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData()) {
+    LayoutObject* layout_object = element.GetLayoutObject();
+    if (out_of_flow_data->ApplyPendingSuccessfulPositionOption(layout_object) &&
+        layout_object) {
+      layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kAnchorPositioning);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool InvalidatePositionTryNames(Element* root,
+                                const HashSet<AtomicString>& try_names) {
+  bool invalidated = false;
+  Node* current = root;
+  while (current) {
+    if (auto* element = DynamicTo<Element>(current)) {
+      if (OutOfFlowData* data = element->GetOutOfFlowData()) {
+        if (data->InvalidatePositionTryNames(try_names)) {
+          LayoutObject* layout_object = element->GetLayoutObject();
+          CHECK(layout_object);
+          layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+              layout_invalidation_reason::kAnchorPositioning);
+          invalidated = true;
+        }
+      }
+      if (ComputedStyle::NullifyEnsured(element->GetComputedStyle()) ==
+          nullptr) {
+        current =
+            LayoutTreeBuilderTraversal::NextSkippingChildren(*element, root);
+        continue;
+      }
+    }
+    current = LayoutTreeBuilderTraversal::Next(*current, root);
+  }
+  return invalidated;
+}
+
+}  // namespace
+
+bool StyleEngine::UpdateLastSuccessfulPositionOptions() {
+  if (!RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
+    CHECK(dirty_position_try_names_.empty());
+    CHECK(last_successful_option_dirty_set_.empty());
+    return false;
+  }
+  bool invalidated = false;
+  if (!dirty_position_try_names_.empty()) {
+    // Added, removed, or modified @position-try rules.
+    // Walk the whole tree and invalidate last successful position for elements
+    // with position-try-options referring those names.
+    if (InvalidatePositionTryNames(GetDocument().documentElement(),
+                                   dirty_position_try_names_)) {
+      invalidated = true;
+    }
+    dirty_position_try_names_.clear();
+  }
+
+  if (!last_successful_option_dirty_set_.empty()) {
+    for (Element* element : last_successful_option_dirty_set_) {
+      if (UpdateLastSuccessfulPositionOption(*element)) {
+        invalidated = true;
+      }
+    }
+    last_successful_option_dirty_set_.clear();
+  }
+  return invalidated;
 }
 
 }  // namespace blink

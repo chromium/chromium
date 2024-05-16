@@ -579,10 +579,11 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
           MarkContainerChainForLayout();
         }
 
-        if (old_style->GetPosition() == EPosition::kStatic)
+        if (old_style->GetPosition() == EPosition::kStatic) {
           SetShouldDoFullPaintInvalidation();
-        else if (new_style.HasOutOfFlowPosition())
+        } else if (new_style.HasOutOfFlowPosition()) {
           Parent()->SetChildNeedsLayout();
+        }
       }
 
       bool will_become_inflow = false;

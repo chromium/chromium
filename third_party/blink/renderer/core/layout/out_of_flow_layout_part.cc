@@ -10,6 +10,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -173,21 +174,77 @@ class OOFCandidateStyleIterator {
     return false;
   }
 
-  void MoveToStyleWithoutOptions() {
+  void MoveToLastSuccessfulOrStyleWithoutOptions() {
     CHECK(element_);
-    style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
+    const CSSPropertyValueSet* try_set = nullptr;
+    TryTacticList try_tactics = kNoTryTactics;
+    if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
+      // No successful options for this pass. Clear out the new successful
+      // option candidate.
+      out_of_flow_data->ClearPendingSuccessfulPositionOption();
+      if (out_of_flow_data->HasLastSuccessfulPositionOption()) {
+        try_set = out_of_flow_data->GetLastSuccessfulTrySet();
+        try_tactics = out_of_flow_data->GetLastSuccessfulTryTactics();
+      }
+    }
+    style_ = UpdateStyle(try_set, try_tactics);
   }
 
-  void MoveToTryOptionIndex(std::optional<wtf_size_t> index) {
+  std::optional<const CSSPropertyValueSet*> TrySetFromOption(
+      const PositionTryOption& option) {
+    if (!option.GetInsetArea().IsNone()) {
+      // This option is an inset-area(). Create a declaration block
+      // with an equivalent inset-area declaration.
+      CSSPropertyValue declaration(
+          CSSPropertyName(CSSPropertyID::kInsetArea),
+          *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
+      return ImmutableCSSPropertyValueSet::Create(&declaration, /* length */ 1u,
+                                                  kHTMLStandardMode);
+    } else if (const ScopedCSSName* name = option.GetPositionTryName()) {
+      if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
+        return &rule->Properties();
+      }
+      return std::nullopt;
+    }
+    return nullptr;
+  }
+
+  void MoveToChosenTryOptionIndex(std::optional<wtf_size_t> index) {
+    CHECK(element_);
+    const CSSPropertyValueSet* try_set = nullptr;
+    TryTacticList try_tactics = kNoTryTactics;
+    bool may_invalidate_last_successful = false;
+    if (index.has_value()) {
+      CHECK(position_try_options_);
+      CHECK_LE(index.value(), position_try_options_->GetOptions().size());
+      const PositionTryOption& option =
+          position_try_options_->GetOptions()[*index];
+      try_tactics = option.GetTryTactic();
+      std::optional<const CSSPropertyValueSet*> opt_try_set =
+          TrySetFromOption(option);
+      CHECK(opt_try_set.has_value());
+      try_set = opt_try_set.value();
+      if (RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled()) {
+        may_invalidate_last_successful =
+            element_->EnsureOutOfFlowData().SetPendingSuccessfulPositionOption(
+                position_try_options_, try_set, try_tactics);
+      }
+    } else if (OutOfFlowData* out_of_flow_data = element_->GetOutOfFlowData()) {
+      may_invalidate_last_successful =
+          out_of_flow_data->SetPendingSuccessfulPositionOption(
+              position_try_options_,
+              /* try_set */ nullptr, kNoTryTactics);
+    }
+    if (may_invalidate_last_successful) {
+      element_->GetDocument()
+          .GetStyleEngine()
+          .MarkLastSuccessfulPositionOptionDirtyForElement(*element_);
+    }
     if (index == try_option_index_) {
       // We're already at this position.
       return;
     }
-    if (!index.has_value()) {
-      MoveToStyleWithoutOptions();
-    } else {
-      style_ = UpdateStyle(index.value());
-    }
+    style_ = UpdateStyle(try_set, try_tactics);
   }
 
  private:
@@ -222,24 +279,13 @@ class OOFCandidateStyleIterator {
     CHECK_LE(try_option_index, position_try_options_->GetOptions().size());
     const PositionTryOption& option =
         position_try_options_->GetOptions()[try_option_index];
-    const CSSPropertyValueSet* properties = nullptr;
-    if (!option.GetInsetArea().IsNone()) {
-      // This option is an inset-area(). Create a declaration block
-      // with an equivalent inset-area declaration.
-      CSSPropertyValue declaration(
-          CSSPropertyName(CSSPropertyID::kInsetArea),
-          *ComputedStyleUtils::ValueForInsetArea(option.GetInsetArea()));
-      properties = ImmutableCSSPropertyValueSet::Create(
-          &declaration, /* length */ 1u, kHTMLStandardMode);
-    } else if (const ScopedCSSName* name = option.GetPositionTryName()) {
-      const StyleRulePositionTry* rule = GetPositionTryRule(*name);
-      if (!rule) {
-        // @position-try option does not exist.
-        return nullptr;
-      }
-      properties = &rule->Properties();
+    std::optional<const CSSPropertyValueSet*> try_set =
+        TrySetFromOption(option);
+    if (!try_set.has_value()) {
+      // @position-try option does not exist.
+      return nullptr;
     }
-    return UpdateStyle(properties, option.GetTryTactic());
+    return UpdateStyle(try_set.value(), option.GetTryTactic());
   }
 
   const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set,
@@ -1903,11 +1949,11 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     if (non_overflowing_candidates.empty()) {
       // None of the options worked out.
       // Fall back to style without any options applied.
-      iter.MoveToStyleWithoutOptions();
+      iter.MoveToLastSuccessfulOrStyleWithoutOptions();
       overflows_containing_block = true;
     } else {
       // Move the iterator to the chosen candidate.
-      iter.MoveToTryOptionIndex(
+      iter.MoveToChosenTryOptionIndex(
           non_overflowing_candidates.front().try_option_index);
     }
     // Once the position-try-options placement has been decided, calculate the

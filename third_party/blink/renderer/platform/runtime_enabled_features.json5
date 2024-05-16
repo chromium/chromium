@@ -2221,6 +2221,11 @@
       settable_from_internals: true,
     },
     {
+      name: "LastSuccessfulPositionOption",
+      depends_on: ["CSSAnchorPositioning"],
+      status: "stable",
+    },
+    {
       name: "LayoutBaselineFix",
       status: "stable",
     },

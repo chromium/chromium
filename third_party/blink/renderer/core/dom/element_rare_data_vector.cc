@@ -311,11 +311,16 @@ StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
 }
 
 OutOfFlowData& ElementRareDataVector::EnsureOutOfFlowData() {
+  CHECK(RuntimeEnabledFeatures::LastSuccessfulPositionOptionEnabled());
   return EnsureField<OutOfFlowData>(FieldId::kOutOfFlowData);
 }
 
 OutOfFlowData* ElementRareDataVector::GetOutOfFlowData() const {
   return static_cast<OutOfFlowData*>(GetField(FieldId::kOutOfFlowData));
+}
+
+void ElementRareDataVector::ClearOutOfFlowData() {
+  SetField(FieldId::kOutOfFlowData, nullptr);
 }
 
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()

@@ -259,6 +259,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   OutOfFlowData& EnsureOutOfFlowData();
   OutOfFlowData* GetOutOfFlowData() const;
+  void ClearOutOfFlowData();
 
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;

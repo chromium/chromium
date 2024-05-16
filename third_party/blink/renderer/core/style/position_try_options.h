@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_POSITION_TRY_OPTIONS_H_
 
 #include <array>
+
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/inset_area.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -52,6 +54,9 @@ class CORE_EXPORT PositionTryOptions
 
   const HeapVector<PositionTryOption>& GetOptions() const { return options_; }
   bool operator==(const PositionTryOptions& other) const;
+  // Returns true if at least one option refers to at least one name in the
+  // passed in 'names' set.
+  bool HasPositionTryName(const HashSet<AtomicString>& names) const;
   void Trace(Visitor* visitor) const;
 
  private:
