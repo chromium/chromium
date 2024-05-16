@@ -1,12 +1,12 @@
 [package]
 name = "ryu"
-version = "1.0.17" # don't forget to update html_root_url
+version = "1.0.18"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast floating point to string conversion"
 documentation = "https://docs.rs/ryu"
 edition = "2018"
-exclude = ["performance.png", "chart/**"]
+exclude = ["build.rs", "performance.png", "chart/**"]
 keywords = ["float"]
 license = "Apache-2.0 OR BSL-1.0"
 repository = "https://github.com/dtolnay/ryu"

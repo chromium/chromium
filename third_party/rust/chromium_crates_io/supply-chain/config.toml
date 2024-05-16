@@ -206,7 +206,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rustversion:1.0.16"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ryu:1.0.17"]
+[policy."ryu:1.0.18"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."semver:1.0.22"]
@@ -349,7 +349,7 @@ criteria = "does-not-implement-crypto"
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
 [[exemptions.ryu]]
-version = "1.0.17"
+version = "1.0.18"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024.
@@ -358,6 +358,7 @@ Delta audit of 1.0.15 -> 1.0.16 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
 
 Exemption updated to 1.0.17 in Feb 2024.
+Exemption updated to 1.0.18 in May 2024.
 """
 
 [[exemptions.syn]]
