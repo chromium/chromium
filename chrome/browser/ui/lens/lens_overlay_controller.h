@@ -12,6 +12,8 @@
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -65,7 +67,8 @@ class Profile;
 class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
                               public lens::mojom::LensSidePanelPageHandler,
-                              public content::WebContentsDelegate {
+                              public content::WebContentsDelegate,
+                              public SidePanelViewStateObserver {
  public:
   LensOverlayController(tabs::TabInterface* tab,
                         variations::VariationsClient* variations_client,
@@ -183,7 +186,10 @@ class LensOverlayController : public LensSearchboxClient,
     // User pressed the escape key.
     kEscapeKeyPress = 9,
 
-    kMaxValue = kEscapeKeyPress
+    // Another side panel opened forcing our overlay to close.
+    kUnexpectedSidePanelOpen = 10,
+
+    kMaxValue = kUnexpectedSidePanelOpen
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
 
@@ -241,6 +247,10 @@ class LensOverlayController : public LensSearchboxClient,
     // this state will apply to all tabs.
     kOff,
 
+    // In the process of closing the side panel that was open when the overlay
+    // was invoked so we can make a full page screenshot
+    kClosingOpenedSidePanel,
+
     // In the process of taking a screenshot to transition to kOverlay.
     kScreenshot,
 
@@ -270,6 +280,9 @@ class LensOverlayController : public LensSearchboxClient,
     // TODO(b/335516480): Implement suspended state.
     kSuspended,
 
+    // In the process of closing the side panel before closing the overlay.
+    kClosingSidePanel,
+
     // Will be kOff soon.
     kClosing,
   };
@@ -281,8 +294,8 @@ class LensOverlayController : public LensSearchboxClient,
     return initialization_data_->current_screenshot_;
   }
 
-  // Returns the side panel coordinator
-  lens::LensOverlaySidePanelCoordinator* side_panel_coordinator() {
+  // Returns the results side panel coordinator
+  lens::LensOverlaySidePanelCoordinator* results_side_panel_coordinator() {
     return results_side_panel_coordinator_.get();
   }
 
@@ -486,6 +499,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   class UnderlyingWebContentsObserver;
 
+  // Takes a screenshot of the current viewport.
+  void CaptureScreenshot();
+
   // Called once a screenshot has been captured. This should trigger transition
   // to kOverlay. As this process is asynchronous, there are edge cases that can
   // result in multiple in-flight screenshot attempts. We record the
@@ -550,6 +566,11 @@ class LensOverlayController : public LensSearchboxClient,
                             AutocompleteMatchType::Type match_type,
                             bool is_zero_prefix_suggestion) override;
   void OnPageBound() override;
+
+  // SidePanelViewStateObserver:
+  void OnSidePanelDidOpen() override;
+  void OnSidePanelCloseInterrupted() override;
+  void OnSidePanelDidClose() override;
 
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
@@ -668,6 +689,11 @@ class LensOverlayController : public LensSearchboxClient,
   // Pending region to search after the overlay loads.
   lens::mojom::CenterRotatedBoxPtr pending_region_;
 
+  // If the side panel needed to be closed before dismissing the overlay, this
+  // stores the original dismissal_source so it is properly recorded when the
+  // side panel is done closing and the callback is invoked.
+  std::optional<DismissalSource> last_dismissal_source_;
+
   // Thumbnail URI referencing the data defined by the user image selection on
   // the overlay. If the user hasn't made any selection or has made a text
   // selection this will contain an empty string. Returned by GetThumbnail().
@@ -689,6 +715,14 @@ class LensOverlayController : public LensSearchboxClient,
   // Side panel coordinator for showing results in the panel.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
+
+  // General side panel coordinator responsible for all side panel interactions.
+  // Separate from the results_side_panel_coordinator because this controls
+  // interactions to other side panels as well, not just our results. The
+  // side_panel_coordinator leaves with the browser view, so it should outlive
+  // this class. Therefore, if the controller is not in the kOff state, this can
+  // be assumed to be non-null.
+  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,
@@ -729,6 +763,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Class for handling key events from the renderer that were not handled.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  base::ScopedObservation<SidePanelCoordinator, SidePanelViewStateObserver>
+      side_panel_state_observer_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

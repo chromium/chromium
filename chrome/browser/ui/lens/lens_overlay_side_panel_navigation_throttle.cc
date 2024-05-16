@@ -35,10 +35,10 @@ LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
   // Only create the navigation throttle for this handle if it equals the side
   // panel web contents and the side panel is showing the lens overlay results
   // entry.
-  if (controller && controller->side_panel_coordinator() &&
-      controller->side_panel_coordinator()->IsEntryShowing() &&
-      (handle->GetWebContents() ==
-       controller->side_panel_coordinator()->GetSidePanelWebContents())) {
+  if (controller && controller->results_side_panel_coordinator() &&
+      controller->results_side_panel_coordinator()->IsEntryShowing() &&
+      (handle->GetWebContents() == controller->results_side_panel_coordinator()
+                                       ->GetSidePanelWebContents())) {
     return base::WrapUnique(new LensOverlaySidePanelNavigationThrottle(handle));
   }
 

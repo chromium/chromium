@@ -608,6 +608,15 @@ void SidePanelCoordinator::Show(
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
 
+  // If the side panel was in the process of closing, notify observers that the
+  // close was cancelled.
+  if (browser_view_->unified_side_panel()->IsClosing()) {
+    for (SidePanelViewStateObserver& view_state_observer :
+         view_state_observers_) {
+      view_state_observer.OnSidePanelCloseInterrupted();
+    }
+  }
+
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
           GetContentContainerView()->GetViewByID(
