@@ -4057,6 +4057,7 @@
       // preventDefault(), instead of waiting for the browser to send
       // touchscrollstarted.
       name: "UnblockTouchMoveEarlier",
+      status: "experimental",
     },
     {
       name: "UnclosedFormControlIsInvalid",
