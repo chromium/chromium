@@ -10,6 +10,14 @@ mojom("mojom") {
   deps = [ "//mojo/public/mojom/base" ]
 }
 
+mojom("test_mojom") {
+  sources = [ "mojom/test_connector.mojom" ]
+  deps = [
+    ":mojom",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
+  ]
+}
+
 source_set("in_process") {
   # HeapProfilerController's dependencies are not compiled on iOS unless
   # use_allocator_shim is true.
@@ -53,12 +61,14 @@ source_set("unit_tests") {
     deps = [
       ":in_process",
       ":mojom",
+      ":test_mojom",
       "//base/test:test_support",
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/variations",
       "//components/version_info",
+      "//mojo/core/test:test_support",
       "//mojo/public/cpp/bindings",
     ]
   }
