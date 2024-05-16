@@ -1150,9 +1150,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.Actions"
-    enum="AppListFederatedActions" expires_after="2024-08-01">
+    enum="AppListFederatedActions" expires_after="2024-11-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Emitted on usage of launcher search. Records overall impressions, launches,
     abandons, and ignores, for the query list view when federated analytics is
@@ -1173,9 +1174,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.InitStatus"
-    enum="AppListFederatedInitStatus" expires_after="2024-09-01">
+    enum="AppListFederatedInitStatus" expires_after="2024-11-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Records status in initialization of federated analytics. These are expected
     to be rare, and the bucket proportion is not meaningful.
@@ -1183,9 +1185,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.QueryLengthOnStorageSuccess"
-    units="characters" expires_after="2024-06-01">
+    units="characters" expires_after="2024-11-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Records the length of launcher query strings which are successfully reported
     to on-device (Federated Service) storage.
@@ -1196,6 +1199,7 @@ chromium-metrics-reviews@google.com.
     enum="AppListFederatedReportStatus" expires_after="2024-11-03">
   <owner>amandadeacon@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Records status in reporting of federated analytics examples. These are
     expected to be rare, and the bucket proportion is not meaningful.
@@ -1205,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Apps.AppList.Search.Federated.SearchSessionConclusion"
     enum="AppListFederatedSearchSessionConclusion" expires_after="2024-11-03">
   <owner>amandadeacon@chromium.org</owner>
-  <owner>tby@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
   <summary>
     Tracks the conclusion of each search session starting from the search box.
     Records launcher dismissals (&quot;quit&quot;), launches, and viewings of
