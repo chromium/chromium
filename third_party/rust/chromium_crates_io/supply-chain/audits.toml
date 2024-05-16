@@ -709,6 +709,12 @@ the `libc` crate is enabled.  See https://github.com/rust-lang/libc/issues/3560
 for more details.
 """
 
+[[audits.libc]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-4"]
+delta = "0.2.153 -> 0.2.154"
+notes = "No change to unsafe risk profile here."
+
 [[audits.log]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
