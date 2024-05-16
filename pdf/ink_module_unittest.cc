@@ -7,11 +7,25 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "pdf/pdf_features.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace chrome_pdf {
 
 namespace {
+
+class FakeClient : public InkModule::Client {
+ public:
+  FakeClient() = default;
+  FakeClient(const FakeClient&) = delete;
+  FakeClient& operator=(const FakeClient&) = delete;
+  ~FakeClient() override = default;
+
+  // InkModule::Client:
+  int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
+    // TODO(crbug.com/335524380): Implement.
+    return -1;
+  }
+};
 
 class InkModuleTest : public testing::Test {
  protected:
@@ -20,7 +34,8 @@ class InkModuleTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 
-  InkModule ink_module_;
+  FakeClient client_;
+  InkModule ink_module_{client_};
 };
 
 TEST_F(InkModuleTest, UnknownMessage) {

@@ -48,6 +48,10 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/ink_module.h"
+#endif
+
 namespace blink {
 class WebAssociatedURLLoader;
 class WebInputEvent;
@@ -77,10 +81,6 @@ class PDFiumEngine;
 class PdfAccessibilityDataHandler;
 class Thumbnail;
 
-#if BUILDFLAG(ENABLE_PDF_INK2)
-class InkModule;
-#endif
-
 class PdfViewWebPlugin final : public PDFEngine::Client,
                                public blink::WebPlugin,
                                public pdf::mojom::PdfListener,
@@ -89,6 +89,9 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
                                public PdfAccessibilityImageFetcher,
+#if BUILDFLAG(ENABLE_PDF_INK2)
+                               public InkModule::Client,
+#endif
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -396,6 +399,10 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // PdfAccessibilityImageFetcher:
   SkBitmap GetImageForOcr(int32_t page_index,
                           int32_t page_object_index) override;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
+#endif
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

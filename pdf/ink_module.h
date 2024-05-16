@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
@@ -23,13 +24,26 @@ class WebInputEvent;
 class WebMouseEvent;
 }  // namespace blink
 
+namespace gfx {
+class PointF;
+}  // namespace gfx
+
 namespace chrome_pdf {
 
 class InkStroke;
 
 class InkModule {
  public:
-  InkModule();
+  class Client {
+   public:
+    virtual ~Client() = default;
+
+    // Returns the 0-based page index for the given `point` if it is on a
+    // visible page, or -1 if `point` is not on a visible page.
+    virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;
+  };
+
+  explicit InkModule(Client& client);
   InkModule(const InkModule&) = delete;
   InkModule& operator=(const InkModule&) = delete;
   ~InkModule();
@@ -52,6 +66,8 @@ class InkModule {
 
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
+
+  const raw_ref<Client> client_;
 
   bool enabled_ = false;
 

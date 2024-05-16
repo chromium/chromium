@@ -268,11 +268,11 @@ bool IsSaveDataSizeValid(size_t size) {
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-std::unique_ptr<InkModule> MaybeCreateInkModule() {
+std::unique_ptr<InkModule> MaybeCreateInkModule(InkModule::Client& client) {
   if (!base::FeatureList::IsEnabled(features::kPdfInk2)) {
     return nullptr;
   }
-  return std::make_unique<InkModule>();
+  return std::make_unique<InkModule>(client);
 }
 #endif
 
@@ -299,7 +299,7 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
-      ink_module_(MaybeCreateInkModule()),
+      ink_module_(MaybeCreateInkModule(*this)),
 #endif
       initial_params_(params) {
   DCHECK(pdf_host_);
@@ -1968,6 +1968,11 @@ void PdfViewWebPlugin::EnableAccessibility() {
 SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
                                           int32_t page_object_index) {
   return engine_->GetImageForOcr(page_index, page_object_index);
+}
+
+int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
+  // TODO(crbug.com/335524380): Implement.
+  return -1;
 }
 
 void PdfViewWebPlugin::HandleAccessibilityAction(

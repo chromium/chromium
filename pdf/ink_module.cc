@@ -70,7 +70,7 @@ std::unique_ptr<InkBrush> CreateBrush() {
 
 }  // namespace
 
-InkModule::InkModule() {
+InkModule::InkModule(Client& client) : client_(client) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInk2));
 }
 
@@ -144,6 +144,11 @@ bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
 
   // TODO(crbug.com/335517471): Adjust `point` if needed.
   gfx::PointF point = normalized_event.PositionInWidget();
+  if (client_->VisiblePageIndexFromPoint(point) < 0) {
+    // Do not draw when not on a page.
+    return false;
+  }
+
   CHECK(!ink_start_time_.has_value());
   ink_start_time_ = base::Time::Now();
   ink_inputs_.push_back({
