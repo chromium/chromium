@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -111,6 +112,20 @@ RationalizationRuleBuilder::SetOtherFieldConditions(
     std::vector<FieldCondition> other_field_conditions) && {
   return std::move(
       this->SetOtherFieldConditions(std::move(other_field_conditions)));
+}
+
+RationalizationRuleBuilder&
+RationalizationRuleBuilder::SetFieldsWithConditionsDoNotExist(
+    std::vector<FieldCondition> fields_with_conditions_do_not_exist) & {
+  rule.fields_with_conditions_do_not_exist =
+      std::move(fields_with_conditions_do_not_exist);
+  return *this;
+}
+RationalizationRuleBuilder&&
+RationalizationRuleBuilder::SetFieldsWithConditionsDoNotExist(
+    std::vector<FieldCondition> fields_with_conditions_do_not_exist) && {
+  return std::move(this->SetFieldsWithConditionsDoNotExist(
+      std::move(fields_with_conditions_do_not_exist)));
 }
 
 RationalizationRuleBuilder& RationalizationRuleBuilder::SetActions(
@@ -240,6 +255,22 @@ void ApplyRuleIfApplicable(
       continue;
     }
 
+    bool found_field_with_condition_that_must_not_exist = false;
+    for (const FieldCondition& field_with_condition_do_not_exist :
+         rule.fields_with_conditions_do_not_exist) {
+      CHECK_NE(field_with_condition_do_not_exist.location,
+               FieldLocation::kTriggerField);
+      if (FindFieldMeetingCondition(context, fields, i,
+                                    field_with_condition_do_not_exist)) {
+        found_field_with_condition_that_must_not_exist = true;
+        break;
+      }
+    }
+    // Don't proceed if the condition which shouldn't be met was satisfied.
+    if (found_field_with_condition_that_must_not_exist) {
+      continue;
+    }
+
     found_fields[FieldLocation::kTriggerField] = i;
 
     // Apply actions.
@@ -339,6 +370,40 @@ void ApplyRationalizationEngineRules(
                 SetTypeAction{
                     .target = FieldLocation::kTriggerField,
                     .set_overall_type = ADDRESS_HOME_LINE2,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_HOUSE_NUMBER_AND_APT for PL")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("PL")})
+                    .SetFeature(&features::kAutofillUsePLAddressModel)
+                    .Build())
+
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{ADDRESS_HOME_HOUSE_NUMBER}})
+            .SetOtherFieldConditions({
+                FieldCondition{
+                    .location = FieldLocation::kLastClassifiedPredecessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_STREET_NAME},
+                },
+            })
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kNextClassifiedSuccessor,
+                    .possible_overall_types =
+                        FieldTypeSet{ADDRESS_HOME_APT_NUM,
+                                     ADDRESS_HOME_APT_TYPE, UNKNOWN_TYPE,
+                                     ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+                                     ADDRESS_HOME_LINE3}},
+            })
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
                 },
             })
             .Build(),
