@@ -4057,7 +4057,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3983586614702900908">dispositivos de un proveedor desconocido</translation>
 <translation id="3983764759749072418">Las aplicaciones de Play Store tienen acceso a este dispositivo.</translation>
 <translation id="3983769721878416534">Retraso antes del clic</translation>
-<translation id="3983793589497399077">Haz clic o arrastra el dedo para buscar con Lens</translation>
 <translation id="3984135167056005094">No incluir dirección de correo electrónico</translation>
 <translation id="3984159763196946143">No se ha podido iniciar el modo Demo</translation>
 <translation id="3984431586879874039">¿Permitir que este sitio web vea tu llave de seguridad?</translation>
@@ -7153,7 +7152,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6383382161803538830">El modo Lectura no está disponible en esta página</translation>
 <translation id="638418309848716977">Enlaces compatibles</translation>
 <translation id="6384275966486438344">Cambiar configuración de búsqueda por: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Grupo sin nombre - 1 pestaña}other{Grupo sin nombre - # pestañas}}</translation>
 <translation id="6385149369087767061">Conéctate a Internet y vuelve a intentarlo</translation>
 <translation id="6385382178401976503">Tarjeta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Advertencia: La función de registros detallados está habilitada, así que los registros que se muestran a continuación podrían incluir URLs u otra información sensible. Revísalos y decide si quieres enviar esta información.</translation>
@@ -10362,7 +10360,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8784626084144195648">Media de datos agrupados</translation>
 <translation id="8785622406424941542">Lápiz óptico</translation>
 <translation id="8786824282808281903">Cuando se muestre este icono a tu hijo/a, se podrá usar una huella digital para identificar al usuario o para aprobar compras.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupo sin nombre - 1 pestaña}other{Grupo sin nombre - # pestañas}}</translation>
 <translation id="8787752878731558379">Ayúdanos a mejorar Chrome indicándonos por qué has permitido el uso de cookies de terceros</translation>
 <translation id="8789898473175677810">Chrome forma parte de una <ph name="LINK_BEGIN" />iniciativa colaborativa<ph name="LINK_END" /> para reducir el seguimiento entre sitios y eliminar gradualmente el uso de cookies de terceros. Sin embargo, estamos tratando hacerlo de forma responsable porque muchos sitios dependen de cookies de terceros para funcionar según lo previsto. Por ejemplo, muchos sitios usan cookies de terceros para simplificar el proceso de inicio de sesión, proporcionar sistemas de comentarios y chat insertados, y ofrecer servicios de pagos. Además, los anunciantes suelen usar cookies de terceros para personalizar mejor los anuncios. Esto es importante porque los sitios suelen contar con anuncios para ayudar a pagar los gastos y mantener su contenido online sin coste económico para los usuarios.</translation>
 <translation id="8791157330927639737">Más información sobre actualizaciones</translation>

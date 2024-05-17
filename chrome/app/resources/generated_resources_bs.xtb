@@ -4080,7 +4080,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="3983586614702900908">uređaji nepoznatog dobavljača</translation>
 <translation id="3983764759749072418">Aplikacije iz Play trgovine imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odgoda prije klika</translation>
-<translation id="3983793589497399077">Kliknite ili prevucite bilo gdje da pretražite putem Objektiva</translation>
 <translation id="3984135167056005094">Nemoj uključiti adresu e-pošte</translation>
 <translation id="3984159763196946143">Pokretanje demo načina rada nije uspjelo</translation>
 <translation id="3984431586879874039">Dozvoliti ovoj web lokaciji da vidi vaš sigurnosni ključ?</translation>
@@ -7182,7 +7181,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6383382161803538830">Način rada za čitanje nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
 <translation id="6384275966486438344">Promijenite svoje postavke pretraživanja na: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se s internetom i pokušajte ponovo</translation>
 <translation id="6385382178401976503">Kartica: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Upozorenje – omogućeno je detaljno zapisivanje. Zapisi ispod mogu obuhvatati URL-ove ili druge osjetljive informacije. Pregledajte i budite sigurni da vam ne smeta poslati ove informacije.</translation>
@@ -10406,7 +10404,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8784626084144195648">Zbirni prosjek</translation>
 <translation id="8785622406424941542">Digitalna olovka</translation>
 <translation id="8786824282808281903">Kada vaše dijete vidi ovu ikonu, moguće je koristiti otisak prsta za identifikaciju ili odobravanje kupovina.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Neimenovana grupa – 1 kartica}one{Neimenovana grupa – # kartica}few{Neimenovana grupa – # kartice}other{Neimenovana grupa – # kartica}}</translation>
 <translation id="8787752878731558379">Pomozite nam da poboljšamo Chrome slanjem razloga o dozvoljavanju kolačića treće strane</translation>
 <translation id="8789898473175677810">Chrome je dio <ph name="LINK_BEGIN" />zajedničkih napora<ph name="LINK_END" /> da se smanji unakrsno praćenje web lokacija i postepeno ukine korištenje kolačića trećih strana. Ali to pokušavamo učiniti na odgovoran način jer se mnoge web lokacije oslanjaju na funkcioniranje kolačića trećih strana na predviđeni način. Naprimjer, mnoge web lokacije koriste kolačiće trećih strana da pojednostave prijavu, podrže sisteme ugrađenog chata i ugrađenih komentara te za usluge plaćanja. Osim toga, oglašivači često koriste kolačiće trećih strana da bolje personaliziraju oglase. To je važno jer se web lokacije često oslanjaju na oglase za plaćanje troškova i da njihov online sadržaj ostane besplatan.</translation>
 <translation id="8791157330927639737">Saznajte više o ažuriranju</translation>

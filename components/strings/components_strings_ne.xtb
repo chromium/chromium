@@ -570,6 +570,7 @@
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गरिने छैनन्।</translation>
+<translation id="2055461225779831292">तपाईंको डिभाइसका क्यामेराहरू (<ph name="CAMERAS_COUNT" />) प्रयोग गर्न र यताउता सार्न</translation>
 <translation id="2056492565825767809">तपाईंको माउस पोइन्टर लक गर्ने</translation>
 <translation id="2056658168519009885">साइटहरूले तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्न Chrome सँग जानकारी माग्न सक्छन्।</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
@@ -717,6 +718,7 @@
 <translation id="2300306941146563769">अपलोड नगरिएको</translation>
 <translation id="2301098101308036335">कुन-कुन वेबसाइटहरू हेरिएका छन् र कहिले हेरिएका छन्।</translation>
 <translation id="230286397113210245">इन्कोग्निटो विन्डो खोल्ने बटन, गोप्य रूपमा ब्राउज गर्न यो बटन थिचेर नयाँ इन्कोग्निटो विन्डो खोल्नुहोस्</translation>
+<translation id="2306124309679506798">इमर्सिभ सत्र सुरु गर्ने अनुमति दिने हो?</translation>
 <translation id="2312234273148520048">मसाला तथा ड्रेसिङ</translation>
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> भन्दा कम। अर्को पटक तपाईंका केही साइटहरू बिस्तारै लोड हुन सक्छन्।</translation>
 <translation id="2316159751672436664">ChromeOS का सेटिङमा गई आफ्ना एक्सेसिबिलिटी टुलहरू पर्सनलाइज गर्नुहोस्</translation>
@@ -1169,6 +1171,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न चाहनुहुन्छ भने Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3240791268468473923">क्रिडेन्सियल सिटसँग नमिल्ने सुरक्षित भुक्तानी क्रिडेन्सियल खोलियो</translation>
 <translation id="324180406144491771">“<ph name="HOST_NAME" />” का लिंकहरू ब्लक गरिएका छन्</translation>
+<translation id="3248329428895535435">यो साइटका हकमा फेरि नदेखाउनुहोस्</translation>
 <translation id="3252772880526154546">वास्तुकला</translation>
 <translation id="3254301855501243548">१८ x २२ इन्च</translation>
 <translation id="3255926992597692024">Chromium ले भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउन खोज्दै छ।</translation>
@@ -1604,6 +1607,7 @@
 <translation id="4082333119419111506">पेपर (प्रिप्रिन्टेड)</translation>
 <translation id="4082393374666368382">सेटिङहरू - व्यवस्थापन</translation>
 <translation id="4084219288110917128">Envelope C1</translation>
+<translation id="4085326869263783566">मलाई लेख्न मद्दत गर्नुहोस्। खोल्न ट्याब की थिचिराखेका बेला इन्टर की थिच्नुहोस्</translation>
 <translation id="4088981014127559358">सतह १ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">ठेगाना भर्नुहोस्</translation>
@@ -2304,6 +2308,7 @@
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
 <translation id="5452270690849572955">यो <ph name="HOST_NAME" /> को पृष्ठ फेला पार्न सक्दैन</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्ट्याम्प</translation>
+<translation id="5456428544444655325">कहिल्यै पनि नदेखाउनुहोस्</translation>
 <translation id="5456839782162429664">हरेक पटक अटोफिल सुविधा प्रयोग गरी भुक्तानी गर्दा म्यानुअल तरिकाले पुष्टि गर्नुहोस्</translation>
 <translation id="5457113250005438886">अवैध</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -3783,6 +3788,7 @@
 <translation id="8263001937536038617">फोटो तथा भिडियो सेवा</translation>
 <translation id="8265992338205884890">देखिने डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> रूपमा साइन इन गर्दै</translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध गरिएका प्रतिहरू</translation>
 <translation id="8269703227894255363">{0,plural, =1{फाइल खोल्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल खोल्न रोक लगाइएको छ}}</translation>
 <translation id="8270173610195068258">अपराध तथा न्याय</translation>
@@ -4202,6 +4208,7 @@
 <translation id="9094544726794842788">थम्ब्स डाउनले तपाईंलाई यी परिणामहरू मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ</translation>
 <translation id="9095388113577226029">थप भाषाहरू...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS का सेटिङमा गई Chrome लाई सिस्टमको डिफल्ट ब्राउजरका रूपमा सेट गर्न ट्याब थिचेर इन्टर थिच्नुहोस्</translation>
+<translation id="9101450247048146228">क्यामेराको प्रयोग र चाल (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">ट्रे १</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> ले सामान्यतया तपाईंको जानकारीको सुरक्षा गर्न इन्क्रिप्सन प्रयोग गर्दछ। Chromium ले यस समयमा <ph name="SITE" /> मा जडान गर्ने प्रयास गर्दा वेबसाइटले असामान्य र गलत प्रमाणहरू फिर्ता पठायो। यस्तो आक्रमणकारीले <ph name="SITE" /> भएको बहाना गर्ने प्रयास गर्दा वा Wi-Fi साइन इन स्क्रिनले जडानलाई अवरोध पुर्याउँदा हुन सक्छ। कुनै पनि डेटा आदानप्रदान हुन पूर्व Chromium ले जडान रोकेका कारण तपाईंको जानकारी अझै पनि सुरक्षित छ।</translation>
 <translation id="9107467864910557787"><ph name="MANAGER" /> ले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
@@ -4224,6 +4231,8 @@
 <translation id="9139318394846604261">किनमेल</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="9144951720726881238">म्याद सकिने मिति:</translation>
+<translation id="9145910032514306808">फेरि <ph name="BEGIN_LINK" />साइन इन गर्नुहोस्<ph name="END_LINK" />
+    अनि लेखनसम्बन्धी मद्दत प्राप्त गर्न यो ट्याबमा फर्कनुहोस्</translation>
 <translation id="9148507642005240123">सम्पादन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="9148599396704355100">सस्तो मूल्य</translation>
 <translation id="9150025764986957246">तपाईं निम्नलगायतका कुराहरू हाल्न सक्नुहुन्छ:</translation>

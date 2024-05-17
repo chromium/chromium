@@ -124,6 +124,7 @@
 <translation id="3155163173539279776">Chromiumను పునఃప్రారంభించండి</translation>
 <translation id="3179665906251668410">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
+<translation id="318879170965183683">మీరు సైన్ ఇన్ చేసినప్పుడు Chromiumలో మీ Google ఖాతా నుండి మీ పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు</translation>
 <translation id="3190315855212034486">అయ్యో! Chromium క్రాష్ అయ్యింది. ఇప్పుడే మళ్లీ ప్రారంభించాలా?</translation>
 <translation id="3224847870593914902">Chromium నుండి మీ Google ఖాతాను తీసివేయడానికి, సెట్టింగ్‌ల పేజీలోని Chromium నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="3258596308407688501">Chromium దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -203,6 +204,8 @@
 <translation id="4501471624619070934">ఈ దేశంలో యాక్సెస్ పరిమితం చేయబడినందున ఇన్‌స్టలేషన్ విఫలమైంది.</translation>
 <translation id="4510853178268397146">ఈ ఎక్స్‌టెన్షన్ అది డేటాను ఎలా సేకరిస్తుంది, దాన్ని ఎలా ఉపయోగిస్తుంది వంటి గోప్యతా పద్ధతులను పబ్లిష్ చేయలేదు. మీరు దాన్ని తీసివేయవలసిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="452711251841752011">Chromiumకు స్వాగతం; కొత్త బ్రౌజర్ విండో తెరవబడింది</translation>
+<translation id="4531137820806573936">మీ పరిసరాలను మ్యాప్ చేయడానికి, మీ చేతి సంజ్ఞలు అలాగే కదలికలను ట్రాక్ చేయడానికి Chromiumకి అనుమతి అవసరం</translation>
+<translation id="4536805923587466102">మీరు ఇప్పటికే మరొక Chromium ప్రొఫైల్‌లో <ph name="USER_EMAIL_ADDRESS" />‌గా సైన్ ఇన్ చేశారు</translation>
 <translation id="4544142686420020088">Chromium అప్‌డేట్ అవ్వలేదు, ఏదో తప్పు జరిగింది. <ph name="BEGIN_LINK" />Chromium అప్‌డేట్ సమస్యలు, విఫలమైన అప్‌డేట్‌లను పరిష్కరించండి.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">కొత్త Chromium ప్రొఫైల్‌లో కొనసాగించాలా?</translation>
 <translation id="4567424176335768812">మీరు <ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేశారు. ఇప్పుడు మీరు సైన్ ఇన్ చేసిన అన్ని పరికరాల్లో మీ బుక్‌మార్క్‌లు, హిస్టరీ మరియు ఇతర సెట్టింగ్‌లను యాక్సెస్ చేయవచ్చు.</translation>

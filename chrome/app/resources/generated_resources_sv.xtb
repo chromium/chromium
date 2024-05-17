@@ -4081,7 +4081,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3983586614702900908">enheter från en okänd leverantör</translation>
 <translation id="3983764759749072418">Appar i Play Butik har åtkomst till enheten.</translation>
 <translation id="3983769721878416534">Fördröjning före klick</translation>
-<translation id="3983793589497399077">Klicka eller dra var som helst för att söka med Lens</translation>
 <translation id="3984135167056005094">Ange inga e-postadresser</translation>
 <translation id="3984159763196946143">Det gick inte att starta demoläget</translation>
 <translation id="3984431586879874039">Vill du tillåta att webbplatsen ser din säkerhetsnyckel?</translation>
@@ -7183,7 +7182,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6383382161803538830">Läsläget är inte tillgängligt på den här sidan</translation>
 <translation id="638418309848716977">Länkar som stöds</translation>
 <translation id="6384275966486438344">Ändra sökinställningarna till: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Namnlös grupp – 1 flik}other{Namnlös grupp – # flikar}}</translation>
 <translation id="6385149369087767061">Anslut till internet och försök igen</translation>
 <translation id="6385382178401976503">Kort: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Varning – Detaljerad loggning har aktiverats. Loggarna nedan kan innehålla webbadresser eller andra känsliga uppgifter. Granska och kontrollera att du vill skicka in dessa uppgifter.</translation>
@@ -10401,7 +10399,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8784626084144195648">Fackmedelvärde</translation>
 <translation id="8785622406424941542">E-penna</translation>
 <translation id="8786824282808281903">När den här ikonen visas kan ditt barn använda sitt fingeravtryck för att identifiera sig eller godkänna köp.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Namnlös grupp – 1 flik}other{Namnlös grupp – # flikar}}</translation>
 <translation id="8787752878731558379">Hjälp oss att förbättra Chrome genom att berätta varför du har tillåtit cookies från tredje part</translation>
 <translation id="8789898473175677810">Chrome ingår i ett <ph name="LINK_BEGIN" />samarbete<ph name="LINK_END" /> för att minska spårning från webbplats till webbplats och fasa ut användningen av tredjepartscookies. Men vi försöker göra det på ett ansvarsfullt sätt eftersom många webbplatser förlitar sig på tredjepartscookies för att fungera som avsett. Till exempel används tredjepartscookies på många webbplatser för att förenkla inloggningen, stödja inbäddade chatt- och kommentarssystem och för betaltjänster. Och annonsörer använder ofta tredjepartscookies för att anpassa annonser bättre. Det är viktigt eftersom webbplatser ofta förlitar sig på annonser för att betala utgifter och erbjuda sitt onlineinnehåll kostnadsfritt.</translation>
 <translation id="8791157330927639737">Läs mer om uppdateringar</translation>

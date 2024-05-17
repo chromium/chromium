@@ -1497,6 +1497,9 @@ cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.</translation>
 <translation id="2157842368188031417">Chính sách này chỉ áp dụng cho các phiên khách được quản lý. Cần phải bật chính sách này thì chế độ máy trạm chia sẻ của Imprivata mới được phép chuyển đổi người dùng trong phiên.
       Nếu bạn bật chính sách này thì hệ thống sẽ bắt buộc ghi đè một số chính sách nhất định của các tính năng. Điều này sẽ dẫn đến việc dữ liệu nhạy cảm của người dùng vẫn tồn tại và không được xử lý bởi cơ chế dọn dẹp được dùng cho các chuyển đổi người dùng trong phiên với chế độ máy trạm chia sẻ của Imprivata.
       Nếu bạn tắt hoặc không đặt chính sách này, thì hệ thống sẽ không ghi đè bất kỳ chính sách nào.</translation>
+<translation id="2158741059065130266">Nếu bạn đặt chính sách này thành Đúng, người dùng ứng dụng Files <ph name="PRODUCT_OS_NAME" /> sẽ nhìn thấy Thùng rác. Các tệp trong mục Tệp của tôi và Tệp đã tải xuống (bao gồm cả các tệp con tương ứng do người dùng tạo) sẽ được gửi đến đó khi bị xoá.
+
+      Nếu bạn đặt chính sách này thành Sai, các tệp từng nằm trong thùng rác vẫn sẽ hiển thị khi người dùng cho hiện các tệp bị ẩn và tìm thư mục .Trash trong mục Tệp của tôi hoặc Tệp đã tải xuống.</translation>
 <translation id="2159486052528894673">Cho phép các chính sách đám mây ở cấp người dùng ghi đè các chính sách đám mây ở cấp thiết bị.</translation>
 <translation id="2160170953213468208">Khi bật, chính sách này sẽ buộc tải tệp xuống đối với mọi thao tác truy cập vào các tài liệu Office thuộc loại MIME mà <ph name="BASIC_EDITOR_NAME" /> thường xử lý.
 

@@ -146,7 +146,6 @@
 <translation id="8338427544764842461">Välilehtiryhmäsi tallennetaan tänne, ja ne päivittyvät kaikilla sisäänkirjautuneilla laitteilla</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="870736955561925754">Suljetaanko välilehti ja poistetaanko ryhmä?</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>

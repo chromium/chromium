@@ -124,6 +124,7 @@
 <translation id="3155163173539279776">‏اجرای مجدد Chromium</translation>
 <translation id="3179665906251668410">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="3185330573522821672">‏سفارشی کردن نمایه جدید Chromium</translation>
+<translation id="318879170965183683">‏وقتی به سیستم وارد شده باشید می‌توانید از گذرواژه‌های «حساب Google» خود در Chromium استفاده کنید</translation>
 <translation id="3190315855212034486">‏اوه! Chromium خراب شده است. دوباره راه‌اندازی شود؟</translation>
 <translation id="3224847870593914902">‏برای برداشتن «حساب Google» خود از Chromium، در صفحه «تنظیمات» از سیستم Chromium خارج شوید</translation>
 <translation id="3258596308407688501">‏Chromium نمی‌تواند مسیر داده‌های خود را بخواند یا در آن بنویسد:
@@ -204,6 +205,8 @@
 <translation id="4501471624619070934">نصب انجام نشد زیرا دسترسی در این کشور محدود است.</translation>
 <translation id="4510853178268397146">‏این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است. ‫Chromium توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="452711251841752011">‏به Chromium خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
+<translation id="4531137820806573936">‏‫Chromium برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
+<translation id="4536805923587466102">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chromium دیگری به سیستم وارد شده‌اید</translation>
 <translation id="4544142686420020088">‏Chromium به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chromium و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏در نمایه جدید Chromium ادامه می‌دهید؟</translation>
 <translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>

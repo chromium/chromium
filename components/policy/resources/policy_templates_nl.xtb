@@ -1464,6 +1464,9 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
       Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
       Als je het beleid instelt op False of niet instelt, wordt er geen beleid overschreven.</translation>
+<translation id="2158741059065130266">Als je het beleid instelt op True, kunnen gebruikers van de Bestanden-app van <ph name="PRODUCT_OS_NAME" /> een prullenbak zien en worden bestanden onder Mijn bestanden en Downloads (inclusief door de gebruiker gemaakte onderliggende items) daar naartoe gestuurd als ze worden verwijderd.
+
+      Als je het beleid instelt op False, zijn de bestanden die eerder in de prullenbak stonden, nog steeds beschikbaar door verborgen bestanden te tonen en de directory .Trash te zoeken onder Mijn bestanden of Downloads.</translation>
 <translation id="2159486052528894673">Toestaan dat cloudbeleidsregels voor gebruikers cloudbeleidsregels voor machines overschrijven.</translation>
 <translation id="2160170953213468208">Als je dit beleid toepast, wordt bij navigatie naar Office-documenten met een MIME-type dat normaal gesproken door de <ph name="BASIC_EDITOR_NAME" /> wordt verwerkt, afgedwongen dat het bestand wordt gedownload.
 

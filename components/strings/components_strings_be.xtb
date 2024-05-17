@@ -153,6 +153,7 @@
 <translation id="1273592791152866347">Адсочванне цаны выключана</translation>
 <translation id="127777513559587977">Тэлевізійныя ток-шоу</translation>
 <translation id="1281476433249504884">Укладчык 1</translation>
+<translation id="1281536351321444151">Каб у наступны раз увесці гэты IBAN аўтаматычна, захавайце яго ва ўліковы запіс Google</translation>
 <translation id="1282358575813748144">Лодкі і водны транспарт</translation>
 <translation id="1283977499362032052">Рэзюмэ і партфоліа</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
@@ -292,6 +293,7 @@
 <translation id="1529789484829130889">Латок 8</translation>
 <translation id="1530707389502320859">Сайт, які вы хацелі наведаць, можа быць фальшывым. Зламыснікі часам імітуюць сайты, уносячы невялікія і непрыкметныя змяненні ў URL-адрас.</translation>
 <translation id="1532118530259321453">Інфармацыя ад старонкі</translation>
+<translation id="1533966801397200693">Профіль, у які вы ўвайшлі, знаходзіцца пад кіраваннем. Ваш адміністратар можа аддалена змяняць налады профілю, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Перакласці старонку</translation>
 <translation id="1537807545287921620">Гэты файл PDF недаступны. Адкрыйце кантэкстнае меню і ўключыце функцыю "Выняць тэкст з PDF".</translation>
 <translation id="1539840569003678498">Справаздача адпраўлена:</translation>
@@ -568,6 +570,7 @@
 <translation id="2046951263634619614">Кнігарні</translation>
 <translation id="2048261947532620704">Ідзе пераклад старонкі</translation>
 <translation id="2053111141626950936">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца.</translation>
+<translation id="2055461225779831292">Выкарыстоўваць і перамяшчаць камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2056492565825767809">Блакіраваць паказальнік мышы</translation>
 <translation id="2056658168519009885">Сайты могуць запытваць у браўзера Chrome інфармацыю, якая дапаможа персаналізаваць для вас рэкламу.</translation>
 <translation id="2059166748188874810">Муніцыпальная акруга</translation>
@@ -715,6 +718,7 @@
 <translation id="2300306941146563769">Не запампавана</translation>
 <translation id="2301098101308036335">Якія вэб-сайты наведваюцца і калі.</translation>
 <translation id="230286397113210245">Кнопка "Адкрыць акно ў рэжыме інкогніта". Каб адкрыць новае акно ў рэжыме інкогніта для прыватнага прагляду вэб-старонак, націсніце яе.</translation>
+<translation id="2306124309679506798">Дазволіць эфект прысутнасці?</translation>
 <translation id="2312234273148520048">Прыправы і заправы</translation>
 <translation id="2316087952091171402">Менш за <ph name="UPPER_ESTIMATE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="2316159751672436664">Персаналізаваць інструменты даступнасці ў наладах Chrome OS</translation>
@@ -1171,6 +1175,7 @@
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць выгляд браўзера, націсніце Tab, затым Enter</translation>
 <translation id="3240791268468473923">Быў адкрыты аркуш, які паказваецца пры адсутнасці супадзення ўліковых даных для бяспечных плацяжоў</translation>
 <translation id="324180406144491771">Спасылкі "<ph name="HOST_NAME" />" заблакіраваны</translation>
+<translation id="3248329428895535435">Не паказваць на гэтым сайце</translation>
 <translation id="3252772880526154546">Архітэктура</translation>
 <translation id="3254301855501243548">18 x 22 цалі</translation>
 <translation id="3255926992597692024">Chromium спрабуе замяніць налады запаўнення спосабаў аплаты.</translation>
@@ -1186,6 +1191,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код спраўджання</translation>
 <translation id="3272643614306383237">Менш за 1 МБ. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
+<translation id="3273738040255912340">Ваш адміністратар можа аддалена змяняць налады профілю і браўзера, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. Сама прылада таксама можа знаходзіцца пад знешнім кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэты файл тут: <ph name="DESTINATION_NAME" />}one{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}few{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}many{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}other{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша арганізацыя (<ph name="ENROLLMENT_DOMAIN" />) адправіла на наступныя вэб-сайты пэўныя звесткі (напрыклад, налады або палітыкі).</translation>
 <translation id="3286372614333682499">кніжная</translation>
@@ -1603,6 +1609,7 @@
 <translation id="4082333119419111506">Папера з нанесеным відарысам</translation>
 <translation id="4082393374666368382">Налады – Кіраванне</translation>
 <translation id="4084219288110917128">Канверт C1</translation>
+<translation id="4085326869263783566">Дапамога з напісаннем. Каб адкрыць, націсніце Tab + Увод.</translation>
 <translation id="4088981014127559358">Зрух відарыса па восі Y, бок 1</translation>
 <translation id="4089152113577680600">Латок 14</translation>
 <translation id="4092349052316400070">Увядзіце адрас</translation>
@@ -2303,6 +2310,7 @@
 <translation id="5447765697759493033">Гэты сайт не будзе перакладацца</translation>
 <translation id="5452270690849572955">Гэта старонка хоста <ph name="HOST_NAME" /> не знойдзена</translation>
 <translation id="5455374756549232013">Недапушчальная метка часу палітыкі</translation>
+<translation id="5456428544444655325">Ніколі не паказваць</translation>
 <translation id="5456839782162429664">Запытваць пацвярджэнне асобы пры кожнай аплаце з выкарыстаннем аўтазапаўнення</translation>
 <translation id="5457113250005438886">Несапраўдная</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і яшчэ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -3783,6 +3791,7 @@
 <translation id="8263001937536038617">Фота- і відэапаслугі</translation>
 <translation id="8265992338205884890">Бачныя даныя</translation>
 <translation id="8267698848189296333">Уваход ва ўліковы запіс <ph name="USERNAME" /></translation>
+<translation id="8268967003421414091">Verve</translation>
 <translation id="8269242089528251720">Асобныя дакументы, разабраныя копіі</translation>
 <translation id="8269703227894255363">{0,plural, =1{Файл не можа быць адкрыты па прычыне блакіроўкі}one{<ph name="FILE_COUNT" /> файл не можа быць адкрыты па прычыне блакіроўкі}few{<ph name="FILE_COUNT" /> файлы не могуць быць адкрыты па прычыне блакіроўкі}many{<ph name="FILE_COUNT" /> файлаў не могуць быць адкрыты па прычыне блакіроўкі}other{<ph name="FILE_COUNT" /> файла не могуць быць адкрыты па прычыне блакіроўкі}}</translation>
 <translation id="8270173610195068258">Злачыннасць і правасуддзе</translation>
@@ -3887,6 +3896,7 @@
 <translation id="8446884382197647889">Даведацца больш</translation>
 <translation id="8449155699563577224">17 x 24 цалі</translation>
 <translation id="8449836157089738489">Адкрыць усе ў новай групе ўкладак</translation>
+<translation id="84561192812921051">Ваш адміністратар можа аддалена змяняць налады профілю і браўзера, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. Сама прылада таксама можа быць пад знешнім кіраваннем.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Бясконца</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">Уключыць</translation>
@@ -4201,6 +4211,7 @@
 <translation id="9094544726794842788">Калі націснуць кнопку "Не падабаецца", будзе адкрыта форма для адпраўкі падрабязнага водгуку аб тым, чаму вам не спадабаліся гэтыя вынікі</translation>
 <translation id="9095388113577226029">Іншыя мовы...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб зрабіць Chrome стандартным браўзерам сістэмы ў наладах iOS, націсніце Tab, затым Увод</translation>
+<translation id="9101450247048146228">Рух і выкарыстанне камер (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="9101630580131696064">Латок 1</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> звычайна выкарыстоўвае шыфраванне для абароны вашай інфармацыі. Пры спробе Chromium падключыцца да <ph name="SITE" />, вэб-сайт адправіў незнаёмыя і няправільныя ўліковыя даныя. Гэта можа адбывацца, калі зламыснік спрабуе выдаць сябе за <ph name="SITE" />, або экран уваходу ў сетцы Wi-Fi перарваў падключэнне. Ваша інфармацыя ўсё роўна абаронена, паколькі Chromium перарваў падключэнне да абмену данымі.</translation>
 <translation id="9107467864910557787">Браўзерам кіруе <ph name="MANAGER" />.</translation>
@@ -4223,6 +4234,8 @@
 <translation id="9139318394846604261">Шопінг</translation>
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>
 <translation id="9144951720726881238">Заканчэнне тэрміну дзеяння:</translation>
+<translation id="9145910032514306808">Каб атрымаць дапамогу з напісаннем,
+    <ph name="BEGIN_LINK" />увайдзіце зноў<ph name="END_LINK" /> і вярніцеся на гэту ўкладку</translation>
 <translation id="9148507642005240123">&amp;Адрабіць змену</translation>
 <translation id="9148599396704355100">Нізкая цана</translation>
 <translation id="9150025764986957246">Вы можаце ўвесці, напрыклад:</translation>

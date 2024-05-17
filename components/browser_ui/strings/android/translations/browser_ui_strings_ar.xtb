@@ -305,6 +305,7 @@
 <translation id="6015775454662021376">يمكنك التحكّم بإمكانية وصول هذا الموقع إلى جهازك.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
+<translation id="6060464773477604108">‫<ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> علامة التبويب الأخيرة</translation>
 <translation id="6064125863973209585">عمليات التنزيل المكتمِلة</translation>
 <translation id="6071501408666570960">قد يتم تسجيل خروجك من هذا الموقع الإلكتروني.</translation>
 <translation id="6120483543004435978">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب معرفة الأوقات التي تستخدم فيها الجهاز بشكل نشط. وعند إيقافه، لن تتمكّن المواقع الإلكترونية من معرفة تلك الأوقات.</translation>
@@ -426,6 +427,7 @@
 <translation id="7986741934819883144">اختيار جهة اتصال</translation>
 <translation id="7990211076305263060">عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية طلب استخدام الميكروفون. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام الميكروفون.</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>
+<translation id="8009579582995973057">‫<ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="RECENCY" /> <ph name="SEPARATOR2" /> من <ph name="FROM_DEVICE" /></translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8042586301629853791">الترتيب حسب:</translation>
 <translation id="8067883171444229417">تشغيل الفيديو</translation>

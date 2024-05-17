@@ -82,6 +82,7 @@
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1384704387250346179">Μετάφραση εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Ενεργή <ph name="LAST_UPDATED" /> ημέρες πριν</translation>
+<translation id="1390418506739274310">Μπορεί να δείτε το ιστορικό από άλλες εφαρμογές που ανοίγουν συνδέσμους στο Chrome. Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="13931502444227376">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το όνομα, τη διεύθυνση ηλεκτρονικού ταχυδρομείου και τη φωτογραφία προφίλ σας σε αυτόν τον ιστότοπο. Ανατρέξτε στους <ph name="BEGIN_LINK1" />όρους παροχής υπηρεσιών<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="1397811292916898096">Αναζήτηση με <ph name="PRODUCT_NAME" /></translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
@@ -389,6 +390,7 @@
 <translation id="3003253259757197230">Τα URL που επισκέπτεστε αποστέλλονται στην Google για την πρόβλεψη των ιστοτόπων που ενδέχεται να επισκεφτείτε στη συνέχεια και την εμφάνιση πρόσθετων πληροφοριών σχετικά με τη σελίδα που επισκέπτεστε.</translation>
 <translation id="3026955690410463085">Συμπερίληψη συνδέσμου</translation>
 <translation id="3027644380269727216">Βάσει της δραστηριότητάς σας σε έναν ιστότοπο. Αυτή η ρύθμιση είναι ενεργοποιημένη.</translation>
+<translation id="3027950907978057636">Από <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Χωρίς προφόρτωση</translation>
 <translation id="3029704984691124060">Οι φράσεις πρόσβασης δεν συμφωνούν</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Λάβετε βοήθεια<ph name="END_LINK" /></translation>

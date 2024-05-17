@@ -4082,7 +4082,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="3983586614702900908">mga device mula sa isang hindi kilalang vendor</translation>
 <translation id="3983764759749072418">May access sa device na ito ang mga application sa Play Store.</translation>
 <translation id="3983769721878416534">Pagkaantala bago ang pag-click</translation>
-<translation id="3983793589497399077">Mag-click o mag-drag sa kahit saan para maghanap gamit ang Lens</translation>
 <translation id="3984135167056005094">Huwag isama ang email address</translation>
 <translation id="3984159763196946143">Hindi masimulan ang demo mode</translation>
 <translation id="3984431586879874039">Payagan ang site na ito na makita ang iyong security key?</translation>
@@ -7184,7 +7183,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6383382161803538830">Hindi available ang reading mode sa page na ito</translation>
 <translation id="638418309848716977">Mga sinusuportahang link</translation>
 <translation id="6384275966486438344">Gawing ito ang iyong mga setting ng paghahanap: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Grupong walang pangalan - 1 tab}one{Grupong walang pangalan - # tab}other{Grupong walang pangalan - # na tab}}</translation>
 <translation id="6385149369087767061">Kumonekta sa internet at subukan ulit</translation>
 <translation id="6385382178401976503">Card: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Babala - Naka-enable ang detalyadong pag-log; posibleng maglaman ang mga log sa ibaba ng mga URL o iba pang sensitibong impormasyon. Pakitingnan ulit at tiyaking kumportable kang isumite ang impormasyong ito.</translation>
@@ -10406,7 +10404,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8784626084144195648">Binned na Average</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Kapag nakita ng iyong anak ang icon na ito, puwedeng gumamit ng fingerprint para sa pagtukoy o para aprubahan ang mga pagbili.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupong Walang Pangalan - 1 Tab}one{Grupong Walang Pangalan - # Tab}other{Grupong Walang Pangalan - # na Tab}}</translation>
 <translation id="8787752878731558379">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies</translation>
 <translation id="8789898473175677810">Ang Chrome ay bahagi ng <ph name="LINK_BEGIN" />collaborative na pagsisikap<ph name="LINK_END" /> para mabawasan ang cross-site na pag-track at maalis ang paggamit ng third-party na cookies. Pero sinusubukan naming gawin ito sa responsableng paraan dahil maraming site ang umaasa sa third-party na cookies para gumana ayon sa pagkadisenyo ang mga ito. Halimbawa, maraming site ang gumagamit ng third-party na cookies para mapasimple ang pag-sign in, para suportahan ang mga naka-embed na system ng chat at komento, at para sa mga serbisyo sa pagbabayad. At madalas na gumagamit ang mga advertiser ng third-party na cookies para mas mahusay na makapag-personalize ng mga ad. Mahalaga iyon dahil madalas na umaasa ang mga site sa mga ad para makatulong sa pagbabayad ng mga gastos at mapanatiling libre ang online na content ng mga ito.</translation>
 <translation id="8791157330927639737">Matuto pa tungkol sa pag-update</translation>

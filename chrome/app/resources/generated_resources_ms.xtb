@@ -4081,7 +4081,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="3983586614702900908">peranti daripada vendor yang tidak diketahui</translation>
 <translation id="3983764759749072418">Aplikasi Gedung Play mempunyai akses kepada peranti ini.</translation>
 <translation id="3983769721878416534">Lengah sebelum klik</translation>
-<translation id="3983793589497399077">Klik atau seret pada mana-mana bahagian untuk mencari dengan Lens</translation>
 <translation id="3984135167056005094">Jangan sertakan alamat e-mel</translation>
 <translation id="3984159763196946143">Tidak dapat memulakan mod tunjuk cara</translation>
 <translation id="3984431586879874039">Benarkan tapak ini melihat kunci keselamatan anda?</translation>
@@ -7183,7 +7182,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6383382161803538830">Mod bacaan tidak tersedia pada halaman ini</translation>
 <translation id="638418309848716977">Pautan yang disokong</translation>
 <translation id="6384275966486438344">Ubah tetapan carian anda kepada: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Kumpulan tidak bernama – 1 tab}other{Kumpulan tidak bernama – # tab}}</translation>
 <translation id="6385149369087767061">Sambung kepada Internet, kemudian cuba lagi</translation>
 <translation id="6385382178401976503">Kad: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Amaran - Pengelogan terperinci didayakan; log di bawah mungkin mengandungi URL atau maklumat sensitif lain. Sila semak dan pastikan anda selesa menyerahkan maklumat ini.</translation>
@@ -10402,7 +10400,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8784626084144195648">Purata Bin</translation>
 <translation id="8785622406424941542">Stilus</translation>
 <translation id="8786824282808281903">Apabila anak anda melihat ikon ini, cap jari boleh digunakan untuk pengenalan atau meluluskan pembelian.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Kumpulan Tidak Bernama – 1 Tab}other{Kumpulan Tidak Bernama – # Tab}}</translation>
 <translation id="8787752878731558379">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga</translation>
 <translation id="8789898473175677810">Chrome ialah sebahagian daripada <ph name="LINK_BEGIN" />usaha kerjasama<ph name="LINK_END" /> untuk mengurangkan penjejakan rentas laman dan menghentikan penggunaan kuki pihak ketiga. Walau bagaimanapun, kami sedang cuba melakukan tindakan ini dengan penuh tanggungjawab kerana banyak laman bergantung pada kuki pihak ketiga untuk berfungsi seperti yang direka bentuk. Sebagai contoh, banyak laman menggunakan kuki pihak ketiga untuk memudahkan log masuk, menyokong sistem sembang dan ulasan terbenam serta perkhidmatan pembayaran. Pengiklan sering menggunakan kuki pihak ketiga untuk meningkatkan iklan diperibadikan. Perkara ini penting kerana laman sering bergantung pada iklan untuk membantu mereka membayar perbelanjaan dan mengekalkan kandungan dalam talian mereka secara percuma.</translation>
 <translation id="8791157330927639737">Ketahui lebih lanjut tentang pengemaskinian</translation>

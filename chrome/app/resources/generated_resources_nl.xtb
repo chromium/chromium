@@ -4068,7 +4068,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3983586614702900908">apparaten van een onbekende leverancier</translation>
 <translation id="3983764759749072418">Play Store-apps hebben toegang tot dit apparaat.</translation>
 <translation id="3983769721878416534">Vertraging vóór klikken</translation>
-<translation id="3983793589497399077">Klik of sleep ergens om te zoeken met Lens</translation>
 <translation id="3984135167056005094">E-mailadres niet opnemen</translation>
 <translation id="3984159763196946143">Kan demomodus niet starten</translation>
 <translation id="3984431586879874039">Deze site toestaan je beveiligingssleutel te bekijken?</translation>
@@ -7164,7 +7163,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6383382161803538830">De leesmodus is niet beschikbaar op deze pagina</translation>
 <translation id="638418309848716977">Ondersteunde links</translation>
 <translation id="6384275966486438344">Je zoekinstellingen wijzigen in: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
 <translation id="6385149369087767061">Maak verbinding met internet en probeer het opnieuw</translation>
 <translation id="6385382178401976503">Kaart <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Waarschuwing: Gedetailleerde logboekregistratie staat aan. De onderstaande logboeken kunnen URL's of andere gevoelige informatie bevatten. Check de informatie om te zien of je akkoord gaat met het indienen van deze informatie.</translation>
@@ -10379,7 +10377,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Als je kind dit icoon ziet, kan er een vingerafdruk worden gebruikt voor identificatie of om aankopen goed te keuren.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
 <translation id="8787752878731558379">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan</translation>
 <translation id="8789898473175677810">Chrome neemt deel aan een <ph name="LINK_BEGIN" />gezamenlijke inspanning<ph name="LINK_END" /> om cross-site tracking te verminderen en het gebruik van cookies van derden uit te faseren. Maar we proberen dit op een verantwoorde manier te doen, omdat veel sites cookies van derden afhankelijk zijn van de werking van cookies van derden zoals ze zijn bedoeld. Veel sites gebruiken bijvoorbeeld cookies van derden om het inloggen makkelijker te maken, voor ingesloten chat- en reactiesystemen en voor betalingsservices. En adverteerders gebruiken vaak cookies van derden om advertenties beter te personaliseren. Dit is belangrijk omdat sites vaak op advertenties vertrouwen om onkosten te betalen en hun online content kosteloos te houden.</translation>
 <translation id="8791157330927639737">Meer informatie over updaten</translation>

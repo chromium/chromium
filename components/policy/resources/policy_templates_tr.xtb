@@ -1488,6 +1488,9 @@ Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik 
 <translation id="2157842368188031417">Bu politika, yalnızca yönetilen misafir oturumları için geçerlidir. Imprivata'nın paylaşılan iş istasyonu modunda oturum içi kullanıcı değişikliğine izin verilmesi için bu politikanın etkinleştirilmesi gerekir.
       Politika, Doğru değerine ayarlanırsa özelliklerle ilgili politikalardan Imprivata paylaşılan iş istasyonu modundaki oturum içi kullanıcı değişikliklerinde kullanılan temizleme mekanizması tarafından işlenmeyen ve hassas kullanıcı verilerini tutan belirli politikalar zorla geçersiz kılınır.
       Politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa herhangi bir politika geçersiz kılınmaz.</translation>
+<translation id="2158741059065130266">Politika, Doğru değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> Dosyalar uygulamasının kullanıcıları bir çöp kutusu görür ve Dosyalarım ve İndirilenler bölümlerindeki dosyalar (kullanıcıların oluşturduğu alt öğeler dahil) silindiğinde oraya gönderilir.
+
+      Politika, Yanlış değerine ayarlanırsa daha önce çöp kutusunda bulunan dosyalar, gizli dosyalar gösterilerek ve Dosyalarım veya İndirilenler bölümünde .çöp kutusu dizini bulunarak kullanılabilir olmaya devam eder.</translation>
 <translation id="2159486052528894673">Kullanıcı bulut politikalarının, makine bulut politikalarını geçersiz kılmasına izin ver.</translation>
 <translation id="2160170953213468208">Bu politika etkinleştirildiğinde, normalde <ph name="BASIC_EDITOR_NAME" /> tarafından işlenen MIME türüne sahip Office dokümanlarına gitmeye zorlayarak dosyayı indirir.
 

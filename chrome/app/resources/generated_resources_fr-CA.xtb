@@ -4061,7 +4061,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3983586614702900908">appareils d'un fournisseur inconnu</translation>
 <translation id="3983764759749072418">Les applications provenant de la boutique Play Store ont accès à cet appareil.</translation>
 <translation id="3983769721878416534">Délai précédant le clic</translation>
-<translation id="3983793589497399077">Glissez-déposez des éléments à n'importe quel endroit pour effectuer une recherche avec Lentille</translation>
 <translation id="3984135167056005094">Ne pas inclure l'adresse de courriel</translation>
 <translation id="3984159763196946143">Impossible de démarrer le mode Démo</translation>
 <translation id="3984431586879874039">Autoriser ce site à voir votre clé de sécurité?</translation>
@@ -7157,7 +7156,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6383382161803538830">Le mode lecture n'est pas accessible sur cette page</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
 <translation id="6384275966486438344">Changer vos paramètres de recherche à : <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Groupe sans nom : 1 onglet}one{Groupe sans nom : # onglet}other{Groupe sans nom : # onglets}}</translation>
 <translation id="6385149369087767061">Connectez-vous à Internet et réessayez</translation>
 <translation id="6385382178401976503">Carte : <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Avertissement : La création de journaux détaillés est activée. Les journaux ci-dessous peuvent contenir des URL ou d'autres éléments d'information confidentielle. Veuillez examiner les données incluses et confirmer que vous consentez à leur envoi.</translation>
@@ -10366,7 +10364,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8784626084144195648">Moyenne de l'intervalle</translation>
 <translation id="8785622406424941542">Stylet</translation>
 <translation id="8786824282808281903">Lorsque votre enfant voit cette icône, il peut utiliser son empreinte digitale pour s'identifier ou pour autoriser des achats.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Groupe sans nom : 1 onglet}one{Groupe sans nom : # onglet}other{Groupe sans nom : # onglets}}</translation>
 <translation id="8787752878731558379">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers</translation>
 <translation id="8789898473175677810">Chrome fait partie d'un <ph name="LINK_BEGIN" />effort de collaboration<ph name="LINK_END" /> visant à réduire le suivi intersite et à éliminer progressivement l'utilisation de témoins tiers. Toutefois, nous essayons de le faire de manière responsable, car de nombreux sites s'appuient sur des témoins tiers pour fonctionner comme prévu. Par exemple, de nombreux sites utilisent des témoins tiers pour simplifier la connexion, pour prendre en charge les systèmes de clavardage et de commentaires intégrés et pour les services de paiement. De plus, les annonceurs utilisent souvent des témoins tiers pour mieux personnaliser les annonces. Cela est important, car les sites comptent souvent sur les annonces pour payer leurs dépenses et maintenir leur contenu en ligne gratuit.</translation>
 <translation id="8791157330927639737">En savoir plus sur la mise à jour</translation>

@@ -4074,7 +4074,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="3983586614702900908">dyfeisiau gan werthwr anhysbys</translation>
 <translation id="3983764759749072418">Mae gan apiau o Play Store fynediad at y ddyfais hon.</translation>
 <translation id="3983769721878416534">Oedi cyn clicio</translation>
-<translation id="3983793589497399077">Cliciwch neu llusgwch unrhyw le i chwilio gyda Lens</translation>
 <translation id="3984135167056005094">Peidio â chynnwys cyfeiriadau e-bost</translation>
 <translation id="3984159763196946143">Methu â dechrau'r modd demo</translation>
 <translation id="3984431586879874039">Ydych chi am ganiatáu i'r wefan hon weld eich allwedd ddiogelwch?</translation>
@@ -7170,7 +7169,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6383382161803538830">Nid yw'r modd darllen ar gael ar y dudalen hon</translation>
 <translation id="638418309848716977">Dolenni a gefnogir</translation>
 <translation id="6384275966486438344">Newid eich gosodiadau chwilio i: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Grŵp dienw - 1 tab}zero{Grŵp dienw - # tab}two{Grŵp dienw - # tab}few{Grŵp dienw - # tab}many{Grŵp dienw - # tab}other{Grŵp dienw - # tab}}</translation>
 <translation id="6385149369087767061">Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="6385382178401976503">Cerdyn: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Rhybudd - Mae logio manwl wedi'i alluogi; gall y logiau isod gynnwys URL neu wybodaeth sensitif arall. Darllenwch y wybodaeth hon a sicrhewch eich bod yn gyffyrddus i'w chyflwyno.</translation>
@@ -10389,7 +10387,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="8784626084144195648">Cyfartaledd ar ôl Grwpio</translation>
 <translation id="8785622406424941542">Pwyntil</translation>
 <translation id="8786824282808281903">Pan fydd eich plentyn yn gweld yr eicon hwn, gellir defnyddio olion bysedd ar gyfer ei adnabod neu i gymeradwyo pryniannau.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Grŵp Dienw - 1 Tab}zero{Grŵp Dienw - # Tab}two{Grŵp Dienw - # Tab}few{Grŵp Dienw - # Tab}many{Grŵp Dienw - # Tab}other{Grŵp Dienw - # Tab}}</translation>
 <translation id="8787752878731558379">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti</translation>
 <translation id="8789898473175677810">Mae Chrome yn rhan o <ph name="LINK_BEGIN" />ymdrech gydweithredol<ph name="LINK_END" /> i leihau olrhain traws-wefan a stopio defnyddio cwcis trydydd parti yn raddol. Ond rydym yn ceisio ei wneud yn gyfrifol oherwydd bod llawer o wefannau'n dibynnu ar gwcis trydydd parti i weithio fel y'i dyluniwyd. Er enghraifft, mae llawer o wefannau yn defnyddio cwcis trydydd parti i symleiddio mewngofnodi, i gefnogi systemau sgwrsio a sylwadau sydd wedi'u mewnosod, ac ar gyfer gwasanaethau talu. Ac mae hysbysebwyr yn aml yn defnyddio cwcis trydydd parti i bersonoleiddio hysbysebion yn well. Mae hynny'n bwysig oherwydd bod gwefannau'n aml yn dibynnu ar hysbysebion i helpu i dalu treuliau a chadw eu cynnwys ar-lein yn ddi-dâl.</translation>
 <translation id="8791157330927639737">Dysgu rhagor am ddiweddaru</translation>

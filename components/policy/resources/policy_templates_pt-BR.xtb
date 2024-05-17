@@ -1521,6 +1521,9 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="2157842368188031417">Esta política se aplica apenas a sessões de visitante gerenciadas. Ela precisa ser ativada para que o modo de estação de trabalho compartilhada do Imprivata permita trocas de usuário dentro da sessão.
       Definir a política como verdadeira substituirá forçadamente certas políticas para recursos, que mantêm dados de usuários sensíveis e não são gerenciadas pelo mecanismo de limpeza usado para troca de usuários dentro da sessão com a estação de trabalho compartilhada do Imprivata.
       Definir a política como falsa ou deixá-la sem definição não substituirá nenhuma política.</translation>
+<translation id="2158741059065130266">Se a política for definida como verdadeira, os usuários do app Arquivos do <ph name="PRODUCT_OS_NAME" /> vão poder ver uma lixeira, e os arquivos em "Meus arquivos" e "Downloads", incluindo os descendentes criados pelo usuário, vão ser enviados para lá após a exclusão.
+
+      Se a política for definida como falsa, os arquivos que estavam na lixeira ainda vão estar disponíveis, mostrando os arquivos ocultos e encontrando o diretório .Trash em "Meus arquivos" ou "Downloads".</translation>
 <translation id="2159486052528894673">Permitir que as políticas da nuvem de usuários substituam as políticas da nuvem da máquina.</translation>
 <translation id="2160170953213468208">Quando ativada, essa política força o download de qualquer documento do Office com um Tipo MIME normalmente processado por <ph name="BASIC_EDITOR_NAME" />.
 

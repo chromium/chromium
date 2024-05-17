@@ -4050,7 +4050,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="3983586614702900908">urządzenia od nieznanego dostawcy</translation>
 <translation id="3983764759749072418">Aplikacje ze Sklepu Play mają dostęp do tego urządzenia.</translation>
 <translation id="3983769721878416534">Opóźnienie przed kliknięciem</translation>
-<translation id="3983793589497399077">Kliknij lub przeciągnij w dowolne miejsce, aby wyszukać za pomocą Obiektywu</translation>
 <translation id="3984135167056005094">Nie uwzględniaj adresu e-mail</translation>
 <translation id="3984159763196946143">Nie udało się uruchomić trybu demonstracyjnego</translation>
 <translation id="3984431586879874039">Zezwolić tej stronie na odczytywanie danych klucza bezpieczeństwa?</translation>
@@ -7150,7 +7149,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6383382161803538830">Tryb czytania jest niedostępny na tej stronie</translation>
 <translation id="638418309848716977">Obsługiwane linki</translation>
 <translation id="6384275966486438344">Zmiana ustawień wyszukiwania na: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez nazwy – 1 karta}few{Grupa bez nazwy – # karty}many{Grupa bez nazwy – # kart}other{Grupa bez nazwy – # karty}}</translation>
 <translation id="6385149369087767061">Połącz się z internetem i spróbuj ponownie</translation>
 <translation id="6385382178401976503">Karta: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Ostrzeżenie: masz włączone szczegółowe zapisywanie w dzienniku. Dzienniki poniżej mogą zawierać adresy URL lub inne poufne informacje. Przejrzyj te dane i upewnij się, że chcesz je przesłać.</translation>
@@ -10369,7 +10367,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8784626084144195648">Średnia w przedziale</translation>
 <translation id="8785622406424941542">Rysik</translation>
 <translation id="8786824282808281903">Gdy Twoje dziecko zobaczy tę ikonę, będzie mogło użyć odcisku palca do identyfikacji lub zatwierdzenia płatności.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupa bez nazwy – 1 karta}few{Grupa bez nazwy – # karty}many{Grupa bez nazwy – # kart}other{Grupa bez nazwy – # karty}}</translation>
 <translation id="8787752878731558379">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm</translation>
 <translation id="8789898473175677810">W ramach Chrome bierzemy udział we <ph name="LINK_BEGIN" />wspólnym przedsięwzięciu<ph name="LINK_END" />, które ma na celu ograniczenie śledzenia w witrynach i wycofanie użycia plików cookie innych firm. Staramy się to robić odpowiedzialnie, ponieważ wiele witryn korzysta z tych plików cookie, aby działać zgodnie z założeniami. Na przykład wiele witryn używa plików cookie innych firm, aby uprościć logowanie, obsługiwać systemy czatu i komentarzy oraz obsługiwać usługi płatnicze. Reklamodawcy często używają plików cookie innych firm, aby lepiej personalizować reklamy. Ma to znaczenie, ponieważ witryny często polegają na reklamach, aby pokryć wydatki i utrzymać bezpłatny dostęp do treści.</translation>
 <translation id="8791157330927639737">Więcej informacji o aktualizacjach</translation>

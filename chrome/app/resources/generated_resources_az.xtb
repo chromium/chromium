@@ -4067,7 +4067,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3983586614702900908">naməlum vendordan cihazlar</translation>
 <translation id="3983764759749072418">Play Market tətbiqlərinin bu cihaza girişi var.</translation>
 <translation id="3983769721878416534">Klikləmədən öncə gecikmə</translation>
-<translation id="3983793589497399077">Linza ilə axtarmaq üçün istənilən yerə klikləyin və ya sürükləyin</translation>
 <translation id="3984135167056005094">E-poçt ünvanını daxil etməyin</translation>
 <translation id="3984159763196946143">Demo rejimini başlatmaq mümkün olmadı</translation>
 <translation id="3984431586879874039">Bu saytın təhlüksizlik açarınıza baxmasına icazə verilsin?</translation>
@@ -7165,7 +7164,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6383382161803538830">Oxu rejimi bu səhifədə əlçatan deyil</translation>
 <translation id="638418309848716977">Dəstəklənən keçidlər</translation>
 <translation id="6384275966486438344">Axtarış parametrlərini dəyişdirmək: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Adsız qrup - 1 tab}other{Adsız qrup - # tab}}</translation>
 <translation id="6385149369087767061">İnternetə qoşulun və yenidən cəhd edin</translation>
 <translation id="6385382178401976503">Kart: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Xəbərdarlıq - Təfsilatlı qeydiyyat aktivləşdirilib; aşağıdakı qeydlərə URL-lər və ya digər həssas məlumat daxil ola bilər. Nəzərdən keçirin və əmin olun ki, bu məlumatı göndərməkdə rahatsınız.</translation>
@@ -10379,7 +10377,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8784626084144195648">Səbətə atılmış ortalama</translation>
 <translation id="8785622406424941542">Stylus</translation>
 <translation id="8786824282808281903">Övladınız bu ikonanı gördükdə kimliyi doğrulamaq və ya alışı təsdiqləmək üçün barmaq izindən istifadə edə bilər.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Adsız Qrup - 1 Tab}other{Adsız Qrup - # Tab}}</translation>
 <translation id="8787752878731558379">Üçüncü tərəf kukilərinə icazə vermə səbəbinizi bildirərək Chrome-u təkmilləşdirməyə kömək edin</translation>
 <translation id="8789898473175677810">Chrome saytlararası izləməni azaltmaq və üçüncü tərəf kukilərinin istifadəsini mərhələli şəkildə dayandırmaq üçün <ph name="LINK_BEGIN" />birgə səy<ph name="LINK_END" /> göstərir. Bir çox saytlar nəzərdə tutduğu kimi işləmək üçün üçüncü tərəf kukilərindən istifadə etdiyinə görə bunu məsuliyyətlə etməyə çalışırıq. Məsələn, bir çox saytlar girişi asanlaşdırmaq, daxil edilmiş söhbət və şərh sistemlərini dəstəkləmək, habelə ödəniş xidmətləri üçün üçüncü tərəf kukilərindən istifadə edir. Reklamçılar da reklamları daha yaxşı fərdiləşdirmək üçün tez-tez üçüncü tərəf kukilərindən istifadə edirlər. Saytlar xərcləri ödəmək və onlayn kontenti pulsuz təmin etmək üçün tez-tez reklamlardan istifadə etdiyinə görə bu məsələ vacibdir.</translation>
 <translation id="8791157330927639737">Güncəlləmə haqqında ətraflı məlumat</translation>

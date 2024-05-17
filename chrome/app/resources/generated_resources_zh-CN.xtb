@@ -4049,7 +4049,6 @@
 <translation id="3983586614702900908">来自未知供应商的设备</translation>
 <translation id="3983764759749072418">Play 商店中的应用有权访问此设备。</translation>
 <translation id="3983769721878416534">点击前延迟</translation>
-<translation id="3983793589497399077">点击或拖动任意位置即可使用智能镜头搜索</translation>
 <translation id="3984135167056005094">不附带电子邮件地址</translation>
 <translation id="3984159763196946143">无法启动演示模式</translation>
 <translation id="3984431586879874039">允许此网站查看您的安全密钥？</translation>
@@ -7142,7 +7141,6 @@
 <translation id="6383382161803538830">此页面不支持朗读模式</translation>
 <translation id="638418309848716977">支持的链接</translation>
 <translation id="6384275966486438344">将您的搜索设置更改为：<ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
 <translation id="6385149369087767061">请连接到互联网，然后重试</translation>
 <translation id="6385382178401976503">银行卡：<ph name="CARD" /></translation>
 <translation id="6385994920693662133">警告 - 详细记录功能已启用。以下日志中可能会包含网址或其他敏感信息。请检查并确保您同意提交这些信息。</translation>
@@ -10351,7 +10349,6 @@
 <translation id="8784626084144195648">按区段计算的平均值</translation>
 <translation id="8785622406424941542">触控笔</translation>
 <translation id="8786824282808281903">当您的孩子看到此图标时，他/她可以使用指纹验证身份或批准购买交易。</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
 <translation id="8787752878731558379">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome</translation>
 <translation id="8789898473175677810">Chrome 和<ph name="LINK_BEGIN" />许多浏览器共同致力于<ph name="LINK_END" />减少跨网站跟踪并逐步弃用第三方 Cookie。但我们力求以负责任的方式实现这一目标，因为许多网站都依赖第三方 Cookie 才能按预期运行。例如，许多网站使用第三方 Cookie 来简化登录流程、支持嵌入式聊天和评论系统，以及提供付款服务。广告主往往会使用第三方 Cookie 来更好地展示个性化广告。这一点很重要，因为网站通常依靠广告来支付费用，以便持续提供免费的在线内容。</translation>
 <translation id="8791157330927639737">详细了解更新</translation>

@@ -4066,7 +4066,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="3983586614702900908">uređaji nepoznatog prodavca</translation>
 <translation id="3983764759749072418">Aplikacije iz Play prodavnice imaju pristup ovom uređaju.</translation>
 <translation id="3983769721878416534">Odlaganje pre klika</translation>
-<translation id="3983793589497399077">Kliknite bilo gde ili prevucite da biste pretraživali pomoću Objektiva</translation>
 <translation id="3984135167056005094">Ne uključuj imejl adresu</translation>
 <translation id="3984159763196946143">Pokretanje režima demonstracije nije uspelo</translation>
 <translation id="3984431586879874039">Želite li da dozvolite ovom sajtu da vidi bezbednosni ključ?</translation>
@@ -7168,7 +7167,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6383382161803538830">Režim čitanja nije dostupan na ovoj stranici</translation>
 <translation id="638418309848716977">Podržani linkovi</translation>
 <translation id="6384275966486438344">Promenite podešavanja pretrage na: <ph name="SEARCH_HOST" /></translation>
-<translation id="63849924261838903">{NUM_TABS,plural, =1{Grupa bez naziva – 1 kartica}one{Grupa bez naziva – # kartica}few{Grupa bez naziva – # kartice}other{Grupa bez naziva – # kartica}}</translation>
 <translation id="6385149369087767061">Povežite se na internet i probajte ponovo</translation>
 <translation id="6385382178401976503">Kartica: <ph name="CARD" /></translation>
 <translation id="6385994920693662133">Upozorenje – Omogućeno je detaljno evidentiranje; evidencije u nastavku mogu da sadrže URL-ove ili druge osetljive informacije. Pregledajte ih i uverite se da nemate ništa protiv slanja tih informacija.</translation>
@@ -10392,7 +10390,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8784626084144195648">Prosek agregacije</translation>
 <translation id="8785622406424941542">Pisaljka</translation>
 <translation id="8786824282808281903">Kad dete vidi ovu ikonu, može da se koristi otisak prsta za identifikaciju ili odobrenje kupovina.</translation>
-<translation id="8787575090331305835">{NUM_TABS,plural, =1{Grupa bez naziva – 1 kartica}one{Grupa bez naziva – # kartica}few{Grupa bez naziva – # kartice}other{Grupa bez naziva – # kartica}}</translation>
 <translation id="8787752878731558379">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane</translation>
 <translation id="8789898473175677810">Chrome učestvuje u <ph name="LINK_BEGIN" />zajedničkim nastojanjima<ph name="LINK_END" /> da se smanji praćenje na više sajtova i postepeno ukine korišćenje kolačića treće strane. Ali trudimo se da to radimo odgovorno jer mnogi sajtovi koriste kolačiće treće strane da bi funkcionisali na željeni način. Na primer, mnogi sajtovi koriste kolačiće treće strane da bi pojednostavili prijavljivanje, podržali ugrađene sisteme za ćaskanje i komentarisanje, kao i za usluge plaćanja. Oglašavači često koriste kolačiće treće strane kako bi bolje personalizovali oglase. To je važno jer sajtovi često računaju da će im oglasi pomoći da plate troškove i da nastave da pružaju onlajn sadržaj bez naknade.</translation>
 <translation id="8791157330927639737">Saznajte više o ažuriranju</translation>
