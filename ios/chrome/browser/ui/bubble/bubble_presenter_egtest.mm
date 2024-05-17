@@ -476,6 +476,41 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
       IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH);
 }
 
+// Tests that the toolbar swipe IPH would NOT be shown if the user has switched
+// pages.
+- (void)testThatToolbarSwipeIPHDoesNotShowAfterPageChange {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  [self relaunchWithIPHFeatureForSafariSwitcher:
+            @"IPH_iOSSwipeToolbarToChangeTab"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  // Make sure two tabs are created.
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 = self.testServer->GetURL("/destination.html");
+  // Load two pages each in incognito and regular.
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  // Switch to the "adjacent to active" tab on regular.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(appearance,
+                  @"Toolbar swipe IPH should not be visible when the "
+                  @"user switches to an adjacent tab after changing page.");
+}
+
 // Tests that the toolbar swipe IPH would be dismissed with the reason
 // `kTappedOutsideIPHAndAnchorView` when the user leaves the page using other
 // means.

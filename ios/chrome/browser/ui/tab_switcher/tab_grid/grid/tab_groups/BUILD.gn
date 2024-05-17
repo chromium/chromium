@@ -17,7 +17,6 @@ source_set("tab_groups") {
     ":tab_groups_ui",
     "//base",
     "//ios/chrome/browser/drag_and_drop/model",
-    "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

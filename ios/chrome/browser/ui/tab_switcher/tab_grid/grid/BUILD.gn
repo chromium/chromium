@@ -13,7 +13,6 @@ source_set("grid") {
     ":grid_mediator",
     ":grid_ui",
     "//base",
-    "//ios/chrome/browser/iph_for_new_chrome_user/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
