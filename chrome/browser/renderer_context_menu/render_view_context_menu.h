@@ -435,11 +435,16 @@ class RenderViewContextMenu
       bool uncertain);
 
   // Opens the Lens overlay to search a region defined by the given bounds of
-  // the view and the image to be searched.
+  // the view and the image to be searched. Tab bounds and view bounds are
+  // relative to the screen and in DP, while image bounds are relative to the
+  // view and in physical pixels. The device scale factor is supplied to scale
+  // the image bounds properly.
   void OpenLensOverlayWithBounds(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
+      const gfx::Rect& tab_bounds,
       const gfx::Rect& view_bounds,
+      float device_scale_factor,
       const gfx::Rect& image_bounds);
 
 #if BUILDFLAG(IS_CHROMEOS)

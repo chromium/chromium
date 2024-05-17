@@ -4247,6 +4247,9 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
   if (LensOverlayController::IsEnabled(GetProfile()) &&
       lens::features::UseLensOverlayForImageSearch()) {
     auto view_bounds = render_frame_host->GetView()->GetViewBounds();
+    auto tab_bounds = source_web_contents_->GetViewBounds();
+    float device_scale_factor =
+        render_frame_host->GetView()->GetDeviceScaleFactor();
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame;
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
@@ -4255,10 +4258,10 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
     // there's either a connection error or a response.
     auto* frame = chrome_render_frame.get();
 
-    frame->RequestBoundsForContextNodeDiagnostic(
-        base::BindOnce(&RenderViewContextMenu::OpenLensOverlayWithBounds,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       std::move(chrome_render_frame), view_bounds));
+    frame->RequestBoundsForContextNodeDiagnostic(base::BindOnce(
+        &RenderViewContextMenu::OpenLensOverlayWithBounds,
+        weak_pointer_factory_.GetWeakPtr(), std::move(chrome_render_frame),
+        tab_bounds, view_bounds, device_scale_factor));
   } else {
     core_tab_helper->SearchWithLens(
         render_frame_host, params().src_url,
@@ -4274,15 +4277,20 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
 void RenderViewContextMenu::OpenLensOverlayWithBounds(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
+    const gfx::Rect& tab_bounds,
     const gfx::Rect& view_bounds,
+    float device_scale_factor,
     const gfx::Rect& image_bounds) {
+  // Scale the image bounds, which are in physical pixels, to device pixels.
+  auto scaled_image_bounds =
+      gfx::ScaleToEnclosedRect(image_bounds, 1.f / device_scale_factor);
   LensOverlayController* const controller =
       LensOverlayController::GetController(source_web_contents_);
   CHECK(controller);
   controller->ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      lens::GetCenterRotatedBoxFromViewAndImageBounds(view_bounds,
-                                                      image_bounds));
+      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+          tab_bounds, view_bounds, scaled_image_bounds));
 }
 
 void RenderViewContextMenu::ExecAddANote() {

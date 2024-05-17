@@ -34,11 +34,12 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
     lens::mojom::CenterRotatedBoxPtr region);
 
-// Returns a normalized bounding box from the given view and image bounds,
-// clipping if the image bounds go outside the view bounds.
-lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromViewAndImageBounds(
+// Returns a normalized bounding box from the given tab, view, and image
+// bounds, clipping if the image bounds go outside the tab or view bounds.
+lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromTabViewAndImageBounds(
+    const gfx::Rect& tab_bounds,
     const gfx::Rect& view_bounds,
-    const gfx::Rect& image_bounds);
+    gfx::Rect image_bounds);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_IMAGE_HELPER_H_

@@ -160,17 +160,29 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
   return image_crop;
 }
 
-lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromViewAndImageBounds(
+lens::mojom::CenterRotatedBoxPtr GetCenterRotatedBoxFromTabViewAndImageBounds(
+    const gfx::Rect& tab_bounds,
     const gfx::Rect& view_bounds,
-    const gfx::Rect& image_bounds) {
-  float left = static_cast<float>(image_bounds.x()) / view_bounds.width();
-  float right = static_cast<float>(image_bounds.x() + image_bounds.width()) /
-                view_bounds.width();
-  float top = static_cast<float>(image_bounds.y()) / view_bounds.height();
-  float bottom = static_cast<float>(image_bounds.y() + image_bounds.height()) /
-                 view_bounds.height();
+    gfx::Rect image_bounds) {
+  // Image bounds are relative to view bounds, so create a copy of the view
+  // bounds with the offset removed. Use this to clip the image bounds.
+  auto view_bounds_for_clipping = gfx::Rect(view_bounds.size());
+  image_bounds.Intersect(view_bounds_for_clipping);
 
-  // Clip to remain inside view bounds.
+  float left =
+      static_cast<float>(view_bounds.x() + image_bounds.x() - tab_bounds.x()) /
+      tab_bounds.width();
+  float right = static_cast<float>(view_bounds.x() + image_bounds.x() +
+                                   image_bounds.width() - tab_bounds.x()) /
+                tab_bounds.width();
+  float top =
+      static_cast<float>(view_bounds.y() + image_bounds.y() - tab_bounds.y()) /
+      tab_bounds.height();
+  float bottom = static_cast<float>(view_bounds.y() + image_bounds.y() +
+                                    image_bounds.height() - tab_bounds.y()) /
+                 tab_bounds.height();
+
+  // Clip to remain inside tab bounds.
   if (left < 0) {
     left = 0;
   }

@@ -315,32 +315,35 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(expected_output, image_crop->image().image_content());
 }
 
-TEST_F(LensOverlayImageHelperTest, GetCenterRotatedBoxFromViewAndImageBounds) {
-  gfx::Rect view_bounds(10, 20, 200, 100);
+TEST_F(LensOverlayImageHelperTest,
+       GetCenterRotatedBoxFromTabViewAndImageBounds) {
+  gfx::Rect tab_bounds(50, 50, 400, 200);
+  gfx::Rect view_bounds(100, 150, 200, 100);
   gfx::Rect image_bounds(125, 25, 50, 50);
 
-  auto result =
-      GetCenterRotatedBoxFromViewAndImageBounds(view_bounds, image_bounds);
+  auto result = GetCenterRotatedBoxFromTabViewAndImageBounds(
+      tab_bounds, view_bounds, image_bounds);
 
-  ASSERT_EQ(0.75, result->box.x());
-  ASSERT_EQ(0.5, result->box.y());
-  ASSERT_EQ(0.25, result->box.width());
-  ASSERT_EQ(0.5, result->box.height());
+  ASSERT_EQ(0.5, result->box.x());
+  ASSERT_EQ(0.75, result->box.y());
+  ASSERT_EQ(0.125, result->box.width());
+  ASSERT_EQ(0.25, result->box.height());
   ASSERT_EQ(lens::mojom::CenterRotatedBox_CoordinateType::kNormalized,
             result->coordinate_type);
 }
 
 TEST_F(LensOverlayImageHelperTest,
-       GetCenterRotatedBoxFromViewAndImageBoundsClipsWhenImageOutOfView) {
-  gfx::Rect view_bounds(10, 20, 200, 100);
-  gfx::Rect image_bounds(-50, 50, 150, 100);
+       GetCenterRotatedBoxFromTabViewAndImageBoundsClipsWhenImageOutOfView) {
+  gfx::Rect tab_bounds(0, 0, 400, 200);
+  gfx::Rect view_bounds(0, 0, 200, 300);
+  gfx::Rect image_bounds(100, 100, 200, 200);
 
-  auto result =
-      GetCenterRotatedBoxFromViewAndImageBounds(view_bounds, image_bounds);
+  auto result = GetCenterRotatedBoxFromTabViewAndImageBounds(
+      tab_bounds, view_bounds, image_bounds);
 
-  ASSERT_EQ(0.25, result->box.x());
+  ASSERT_EQ(0.375, result->box.x());
   ASSERT_EQ(0.75, result->box.y());
-  ASSERT_EQ(0.5, result->box.width());
+  ASSERT_EQ(0.25, result->box.width());
   ASSERT_EQ(0.5, result->box.height());
   ASSERT_EQ(lens::mojom::CenterRotatedBox_CoordinateType::kNormalized,
             result->coordinate_type);
