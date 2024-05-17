@@ -67,6 +67,9 @@ class InkModule {
   void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
   void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
 
+  // Convert `ink_inputs_` into an entry in `ink_strokes_`.
+  void ConvertInkInputsIntoStroke();
+
   const raw_ref<Client> client_;
 
   bool enabled_ = false;
