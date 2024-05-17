@@ -549,7 +549,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
 
 void LogSuggestionsCount(const SuggestionsContext& context,
                          const std::vector<Suggestion>& suggestions) {
-  if (!context.is_autofill_available) {
+  if (suggestions.empty() || !context.is_autofill_available) {
     return;
   }
 
@@ -1337,9 +1337,25 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     return;
   }
 
-  if (!suggestions.empty()) {
-    // TODO(b/340494671): Show Autofill suggestions UI from this branch.
-    LogSuggestionsCount(context, suggestions);
+  LogSuggestionsCount(context, suggestions);
+
+  const bool form_element_was_clicked =
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
+  // Try to show Fast Checkout.
+  if (fast_checkout_delegate_ &&
+      (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
+       (form_element_was_clicked &&
+        fast_checkout_delegate_->TryToShowFastCheckout(form, field,
+                                                       GetWeakPtr())))) {
+    // The Fast Checkout surface is shown, so abort showing regular Autofill
+    // UI. Now the flow is controlled by the `FastCheckoutClient` instead of
+    // `external_delegate_`.
+    // In principle, TTF and Fast Checkout triggering surfaces are different
+    // and the two screens should never coincide.
+    std::move(callback).Run(/*show_suggestions=*/false, std::move(suggestions));
+    return;
   }
 
   // Check if other suggestion sources should be queried. Manual fallbacks can't
@@ -1431,22 +1447,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
   };
 
   auto ShouldShowSuggestions = [&] {
-    const bool form_element_was_clicked =
-        trigger_source ==
-        AutofillSuggestionTriggerSource::kFormControlElementClicked;
-    if (fast_checkout_delegate_ &&
-        (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
-         (form_element_was_clicked &&
-          fast_checkout_delegate_->TryToShowFastCheckout(form, field,
-                                                         GetWeakPtr())))) {
-      // The Fast Checkout surface is shown, so abort showing regular Autofill
-      // UI. Now the flow is controlled by the `FastCheckoutClient` instead of
-      // `external_delegate_`.
-      // In principle, TTF and Fast Checkout triggering surfaces are different
-      // and the two screens should never coincide.
-      return false;
-    }
-
     if (ShouldOfferSingleFieldFormFill()) {
       // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
       // will handle sending the results back to the renderer.
