@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.tab_ui.R;
@@ -19,21 +20,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator for the IPH dialog in grid tab switcher. */
 class TabGridIphDialogCoordinator implements TabSwitcherIphController {
-    private final View mParentView;
     private final TabGridIphDialogView mIphDialogView;
     private final PropertyModel mModel;
     private final ModalDialogManager mModalDialogManager;
     private final ViewTreeObserver.OnGlobalLayoutListener mRootViewLayoutListener;
 
-    TabGridIphDialogCoordinator(
-            Context context, ViewGroup parent, ModalDialogManager modalDialogManager) {
+    private @Nullable ViewGroup mParentView;
+    private boolean mGlobalLayoutListenerAttached;
+
+    TabGridIphDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
         try (TraceEvent e = TraceEvent.scoped("TabGridIphDialogCoordinator.constructor")) {
             mIphDialogView =
                     (TabGridIphDialogView)
                             LayoutInflater.from(context)
                                     .inflate(R.layout.iph_drag_and_drop_dialog_layout, null, false);
             mModalDialogManager = modalDialogManager;
-            mParentView = parent;
 
             ModalDialogProperties.Controller dialogController =
                     new ModalDialogProperties.Controller() {
@@ -48,6 +49,7 @@ class TabGridIphDialogCoordinator implements TabSwitcherIphController {
                         @Override
                         public void onDismiss(PropertyModel model, int dismissalCause) {
                             mIphDialogView.stopIPHAnimation();
+                            detachParentGlobalLayoutListener();
                         }
                     };
             mModel =
@@ -60,20 +62,43 @@ class TabGridIphDialogCoordinator implements TabSwitcherIphController {
                             .with(ModalDialogProperties.CUSTOM_VIEW, mIphDialogView)
                             .build();
 
-            mIphDialogView.setRootView(mParentView);
             mRootViewLayoutListener = mIphDialogView::updateLayout;
-            mParentView.getViewTreeObserver().addOnGlobalLayoutListener(mRootViewLayoutListener);
+        }
+    }
+
+    /** Sets the parent view of the model dialog. */
+    public void setParentView(@Nullable ViewGroup parentView) {
+        boolean wasGlobalLayoutListenerAttached = mGlobalLayoutListenerAttached;
+        detachParentGlobalLayoutListener();
+        mParentView = parentView;
+        mIphDialogView.setRootView(parentView);
+        if (wasGlobalLayoutListenerAttached && parentView != null) {
+            attachParentGlobalLayoutListener();
         }
     }
 
     @Override
     public void showIph() {
+        attachParentGlobalLayoutListener();
         mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
         mIphDialogView.startIPHAnimation();
     }
 
     /** Destroy the IPH component. */
     public void destroy() {
+        detachParentGlobalLayoutListener();
+    }
+
+    private void attachParentGlobalLayoutListener() {
+        assert mParentView != null;
+        mGlobalLayoutListenerAttached = true;
+        mParentView.getViewTreeObserver().addOnGlobalLayoutListener(mRootViewLayoutListener);
+    }
+
+    private void detachParentGlobalLayoutListener() {
+        if (mParentView == null) return;
+
+        mGlobalLayoutListenerAttached = false;
         mParentView.getViewTreeObserver().removeOnGlobalLayoutListener(mRootViewLayoutListener);
     }
 }

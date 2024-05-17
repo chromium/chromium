@@ -115,7 +115,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull Context mContext;
     private final @NonNull ActivityLifecycleDispatcher mLifecylceDispatcher;
     private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final @NonNull ViewGroup mContainer;
+    private final @NonNull TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private final @NonNull MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull ModalDialogManager mModalDialogManager;
@@ -131,7 +131,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             new ValueChangedCallback<>(this::onTabModelFilterChanged);
 
     private @Nullable Profile mProfile;
-    private @Nullable TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
     private @Nullable TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
     private @Nullable TabSuggestionMessageService mTabSuggestionMessageService;
@@ -170,7 +169,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mContext = context;
         mLifecylceDispatcher = lifecylceDispatcher;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
-        mContainer = container;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
@@ -187,6 +185,10 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                         this::dismissHandler);
 
         registerMessages(tabListCoordinator, mode);
+
+        mTabGridIphDialogCoordinator =
+                new TabGridIphDialogCoordinator(mContext, mModalDialogManager);
+        mTabGridIphDialogCoordinator.setParentView(container);
 
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         mOnTabModelFilterChanged.onResult(
@@ -226,8 +228,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             mMessageCardProviderCoordinator.subscribeMessageService(mTabSuggestionMessageService);
         }
 
-        mTabGridIphDialogCoordinator =
-                new TabGridIphDialogCoordinator(mContext, mContainer, mModalDialogManager);
         IphMessageService iphMessageService =
                 new IphMessageService(profile, mTabGridIphDialogCoordinator);
         mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
@@ -279,9 +279,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
 
         mMessageCardProviderCoordinator.destroy();
-        if (mTabGridIphDialogCoordinator != null) {
-            mTabGridIphDialogCoordinator.destroy();
-        }
+        mTabGridIphDialogCoordinator.destroy();
         if (mIncognitoReauthPromoMessageService != null) {
             mIncognitoReauthPromoMessageService.destroy();
         }
