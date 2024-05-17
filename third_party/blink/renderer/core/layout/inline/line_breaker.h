@@ -227,6 +227,9 @@ class CORE_EXPORT LineBreaker {
   // HandleRuby() twice.
   NOINLINE bool HandleRuby(const RubyBreakTokenData* ruby_token,
                            LineInfo* line_info);
+  bool IsMonolithicRuby(
+      const LineInfo& base_line,
+      const HeapVector<LineInfo, 1>& annotation_line_list) const;
   // `mode`: Must be kMaxContent or kContent.
   // `limit`: Must be non-negative or kIndefiniteSize, which means no auto-wrap.
   LineInfo CreateSubLineInfo(InlineItemTextIndex start,

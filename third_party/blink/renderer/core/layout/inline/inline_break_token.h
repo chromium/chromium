@@ -33,6 +33,12 @@ struct RubyBreakTokenData : GarbageCollected<RubyBreakTokenData> {
   const wtf_size_t ruby_base_end_item_index;
   const Vector<AnnotationBreakTokenData, 1> annotation_data;
 
+  RubyBreakTokenData(wtf_size_t open_column_index,
+                     wtf_size_t base_end_index,
+                     const Vector<AnnotationBreakTokenData, 1>& annotations)
+      : open_column_item_index(open_column_index),
+        ruby_base_end_item_index(base_end_index),
+        annotation_data(annotations) {}
   void Trace(Visitor*) const {}
 };
 
