@@ -1264,7 +1264,8 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->GetSubmittedForm()->username_value) &&
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
     leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck,
-                                  submitted_manager->GetPendingCredentials());
+                                  submitted_manager->GetPendingCredentials(),
+                                  submitted_manager->GetURL());
   }
 
   // TODO(crbug.com/40570965): Implement checking whether to save with

@@ -48,11 +48,12 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
 void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
-                                           const PasswordForm& credentials) {
+                                           const PasswordForm& credentials,
+                                           const GURL& form_url) {
   if (client_->IsOffTheRecord())
     return;
 
-  if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(),
+  if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(), form_url,
                                              GetLogger(client_))) {
     return;
   }

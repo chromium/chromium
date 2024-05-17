@@ -427,6 +427,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Leak detection failed: network error";
     case STRING_LEAK_DETECTION_QUOTA_LIMIT:
       return "Leak detection failed: quota limit";
+    case STRING_LEAK_DETECTION_URL_BLOCKED:
+      return "Leak detection disabled by SafeBrowsingAllowlistDomains policy";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER:
       return "Uploading password requirements vote for using letters";

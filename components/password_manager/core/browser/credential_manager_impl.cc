@@ -59,7 +59,8 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
 
   // Check whether a stored password credential was leaked.
   if (credential.type == CredentialType::CREDENTIAL_TYPE_PASSWORD) {
-    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck, *form);
+    leak_delegate_.StartLeakCheck(LeakDetectionInitiator::kSignInCheck, *form,
+                                  origin.GetURL());
   }
 
   std::string signon_realm = origin.GetURL().spec();

@@ -82,7 +82,8 @@ size_t BulkLeakCheckServiceAdapter::GetPendingChecksCount() const {
 
 void BulkLeakCheckServiceAdapter::OnEdited(
     const CredentialUIEntry& credential) {
-  if (LeakDetectionCheck::CanStartLeakCheck(*prefs_, nullptr)) {
+  if (LeakDetectionCheck::CanStartLeakCheck(*prefs_, credential.GetURL(),
+                                            nullptr)) {
     // Here no extra canonicalization is needed, as there are no other
     // credentials we could de-dupe before we pass it on to the service.
     std::vector<LeakCheckCredential> credentials;

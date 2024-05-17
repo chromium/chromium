@@ -56,6 +56,10 @@ PasswordForm CreateTestForm() {
   return form;
 }
 
+GURL GetTestUrl() {
+  return GURL("https://example.com");
+}
+
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
@@ -154,6 +158,17 @@ class LeakDetectionDelegateTest : public testing::Test {
     }
   }
 
+  // Sets kSafeBrowsingAllowlistDomains policy which controls for what domains
+  // leak check is blocked
+  void SetBlockedDomain(std::string_view domain) {
+    pref_service_->registry()->RegisterListPref(
+        ::prefs::kSafeBrowsingAllowlistDomains);
+    base::Value::List domains;
+    domains.Append(domain);
+    pref_service()->SetList(::prefs::kSafeBrowsingAllowlistDomains,
+                            std::move(domains));
+  }
+
   void SetLeakDetectionEnabled(bool is_on) {
     pref_service_->SetBoolean(
         password_manager::prefs::kPasswordLeakDetectionEnabled, is_on);
@@ -205,7 +220,8 @@ TEST_F(LeakDetectionDelegateTest, InIncognito) {
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(true));
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
 }
@@ -215,7 +231,8 @@ TEST_F(LeakDetectionDelegateTest, SafeBrowsingOff) {
 
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
   const PasswordForm form = CreateTestForm();
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
 }
@@ -225,7 +242,8 @@ TEST_F(LeakDetectionDelegateTest, UsernameIsEmpty) {
   form.username_value.clear();
 
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
 }
@@ -240,7 +258,8 @@ TEST_F(LeakDetectionDelegateTest, StartCheck) {
                     form.username_value, form.password_value));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_TRUE(delegate().leak_check());
 }
@@ -251,7 +270,8 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartCheck) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
 }
@@ -267,10 +287,49 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
                     form.username_value, form.password_value));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_TRUE(delegate().leak_check());
-  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                    GetTestUrl(), nullptr));
+}
+
+TEST_F(LeakDetectionDelegateTest, DontStartLeakCheckWithBlockedFormURL) {
+  SetSBState(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  SetLeakDetectionEnabled(true);
+  SetBlockedDomain("blocked_domain.com");
+
+  const PasswordForm form = CreateTestForm();
+  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
+  EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GURL("http://blocked_domain.com"));
+
+  EXPECT_FALSE(delegate().leak_check());
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(
+      *pref_service(), GURL("http://blocked_domain.com"), nullptr));
+}
+
+TEST_F(LeakDetectionDelegateTest, StartCheckWithNonBlockedFormURL) {
+  SetSBState(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  SetLeakDetectionEnabled(true);
+  SetBlockedDomain("blocked_domain.com");
+
+  const PasswordForm form = CreateTestForm();
+  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
+  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
+  EXPECT_CALL(*check_instance,
+              Start(LeakDetectionInitiator::kSignInCheck, form.url,
+                    form.username_value, form.password_value));
+  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
+      .WillOnce(Return(ByMove(std::move(check_instance))));
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GURL("http://not_blocked_domain.com"));
+
+  EXPECT_TRUE(delegate().leak_check());
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(
+      *pref_service(), GURL("http://not_blocked_domain.com"), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
@@ -284,10 +343,12 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
                     form.username_value, form.password_value));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_TRUE(delegate().leak_check());
-  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                    GetTestUrl(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
@@ -297,10 +358,12 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
-  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                     GetTestUrl(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
@@ -310,10 +373,12 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_FALSE(delegate().leak_check());
-  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
+                                                     GetTestUrl(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {
@@ -324,7 +389,8 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked).Times(0);
   delegate_interface->OnLeakDetectionDone(
@@ -344,7 +410,8 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -376,7 +443,8 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -413,7 +481,8 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -451,7 +520,8 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   // The credential is not saved in a store that is synced remotely - therefore
   // `IsSyncing` is false.
@@ -495,7 +565,8 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -536,7 +607,8 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -562,7 +634,8 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   EXPECT_CALL(factory(), TryCreateLeakCheck)
       .WillOnce(
           Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_CALL(
       client(),
@@ -592,7 +665,8 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   PasswordForm form = CreateTestForm();
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
   ASSERT_TRUE(delegate().leak_check());
 
   // The delegate analyses the password store after this call.
@@ -607,7 +681,8 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
       .WillOnce(Return(ByMove(std::move(check_instance))));
   form.username_value = u"username";
   form.password_value = u"password";
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
   ASSERT_TRUE(delegate().leak_check());
 
   // Simulate the previous check is complete now.
@@ -632,7 +707,8 @@ TEST_F(LeakDetectionDelegateTest, PassesChromeChannel) {
   EXPECT_CALL(client(), GetChannel).WillOnce(Return(channel));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, channel))
       .WillOnce(Return(ByMove(std::move(check_instance))));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
+  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
+                            GetTestUrl());
 
   EXPECT_TRUE(delegate().leak_check());
 }

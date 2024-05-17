@@ -41,10 +41,24 @@ class LeakDetectionCheck {
                      std::u16string password) = 0;
 
   // Determines whether the leak check can be started depending on `prefs`. Will
-  // use `logger` for logging if non-null.
+  // use `logger` for logging if non-null. Leak check can be blocked if
+  // |origin_url| appears on SafeBrowsingAllowlistDomains setting.
+  // It should be set to either:
+  // - URL of the frame that contains the submitted password form
+  // - top frame URL
+  // - credential URL if none of above are available (ie in
+  // BulkLeakCheckServiceAdapter::OnEdited)
   static bool CanStartLeakCheck(
       const PrefService& prefs,
+      const GURL& form_url,
       std::unique_ptr<autofill::SavePasswordProgressLogger> logger);
+
+ private:
+  // Leak check is blocked for domains from SafeBrowsingAllowlistDomains policy
+  static bool IsURLBlockedByPolicy(
+      const PrefService& prefs,
+      const GURL& form_url,
+      autofill::SavePasswordProgressLogger* logger);
 };
 
 }  // namespace password_manager
