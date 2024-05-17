@@ -13,7 +13,7 @@ load("//lib/chrome_settings.star", "chrome_settings")
 load("//project.star", "settings")
 
 lucicfg.check_version(
-    min = "1.40.0",
+    min = "1.43.6",
     message = "Update depot_tools",
 )
 
