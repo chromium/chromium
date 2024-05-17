@@ -199,7 +199,7 @@
 #include "components/metrics/motherboard_metrics_provider.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/metrics/chrome_metrics_service_crash_reporter.h"
 #endif
 
@@ -231,10 +231,10 @@ const int kMaxHistogramGatheringWaitDuration = 60000;  // 60 seconds.
 // Needs to be kept in sync with the writer in
 // third_party/crashpad/crashpad/handler/handler_main.cc.
 const char kCrashpadHistogramAllocatorName[] = "CrashpadMetrics";
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 base::LazyInstance<ChromeMetricsServiceCrashReporter>::Leaky g_crash_reporter =
     LAZY_INSTANCE_INITIALIZER;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 // Needs to be kept in sync with the writer in PlatformExperienceHelper.
@@ -612,12 +612,12 @@ std::string ChromeMetricsServiceClient::GetVersionString() {
 void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
   // TODO(https://bugs.chromium.org/p/crashpad/issues/detail?id=135): call this
   // on Mac when the Crashpad API supports it.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // Register the environment with the crash reporter. Note that there is a
   // window from startup to this point during which crash reports will not have
   // an environment set.
   g_crash_reporter.Get().OnEnvironmentUpdate(*environment);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 }
 
 void ChromeMetricsServiceClient::MergeSubprocessHistograms() {

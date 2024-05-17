@@ -6952,7 +6952,7 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_android) {
+  if (is_win || is_android || is_linux) {
     sources += [
       "metrics/chrome_metrics_service_crash_reporter.cc",
       "metrics/chrome_metrics_service_crash_reporter.h",
