@@ -282,6 +282,7 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING_ANDROID = "DataSharingAndroid";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID = "DefaultBrowserPromoAndroid";
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
+    public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DISCO_FEED_ENDPOINT = "DiscoFeedEndpoint";
     public static final String DOWNLOADS_MIGRATE_TO_JOBS_API = "DownloadsMigrateToJobsAPI";

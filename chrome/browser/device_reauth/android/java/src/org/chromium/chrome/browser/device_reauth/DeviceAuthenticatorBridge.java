@@ -13,6 +13,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
     private final Context mContext;
@@ -22,7 +23,10 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
     private DeviceAuthenticatorBridge(long nativeDeviceAuthenticator) {
         mContext = ContextUtils.getApplicationContext();
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
-        mController = new DeviceAuthenticatorController(mContext, this);
+        mController =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_AUTHENTICATOR_ANDROIDX)
+                        ? new AndroidxDeviceAuthenticatorControllerImpl()
+                        : new DeviceAuthenticatorControllerImpl(mContext, this);
     }
 
     @CalledByNative
