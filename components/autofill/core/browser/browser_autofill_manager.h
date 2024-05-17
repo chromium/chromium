@@ -547,8 +547,8 @@ class BrowserAutofillManager : public AutofillManager {
   void GetAvailableSuggestions(const FormData& form,
                                const FormFieldData& field,
                                AutofillSuggestionTriggerSource trigger_source,
-                               std::vector<Suggestion>* suggestions,
-                               SuggestionsContext* context);
+                               std::vector<Suggestion>& suggestions,
+                               SuggestionsContext& context);
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout,

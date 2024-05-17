@@ -1299,7 +1299,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     SuggestionsContext context,
     OnGenerateSuggestionsCallback callback) {
   std::vector<Suggestion> suggestions;
-  GetAvailableSuggestions(form, field, trigger_source, &suggestions, &context);
+  GetAvailableSuggestions(form, field, trigger_source, suggestions, context);
 
   auto ShouldSuppressSuggestions = [&] {
     switch (context.suppress_reason) {
@@ -1707,7 +1707,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   std::vector<Suggestion> suggestions;
   GetAvailableSuggestions(form, field,
                           AutofillSuggestionTriggerSource::kUnspecified,
-                          &suggestions, &context);
+                          suggestions, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2766,14 +2766,11 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    std::vector<Suggestion>* suggestions,
-    SuggestionsContext* context) {
-  DCHECK(suggestions);
-  DCHECK(context);
-
+    std::vector<Suggestion>& suggestions,
+    SuggestionsContext& context) {
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses) {
-    *suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
+    suggestions = client().GetPlusAddressDelegate()->GetSuggestions(
         client().GetLastCommittedPrimaryMainFrameOrigin(),
         client().IsOffTheRecord(),
         client().ClassifyAsPasswordForm(*this, form.global_id(),
@@ -2782,35 +2779,33 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     return;
   }
 
-  if (context->should_show_mixed_content_warning) {
+  if (context.should_show_mixed_content_warning) {
     Suggestion warning_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
     warning_suggestion.type = SuggestionType::kMixedFormMessage;
-    suggestions->emplace_back(warning_suggestion);
+    suggestions.emplace_back(warning_suggestion);
     return;
   }
 
-  if (!context->is_autofill_available ||
-      context->do_not_generate_autofill_suggestions) {
+  if (!context.is_autofill_available ||
+      context.do_not_generate_autofill_suggestions) {
     return;
   }
 
-  if (context->filling_product == FillingProduct::kCreditCard) {
+  if (context.filling_product == FillingProduct::kCreditCard) {
     FieldType trigger_field_type =
-        context->focused_field
-            ? context->focused_field->Type().GetStorableType()
-            : UNKNOWN_TYPE;
-    *suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
-                                            trigger_source);
-  } else if (context->filling_product == FillingProduct::kAddress) {
+        context.focused_field ? context.focused_field->Type().GetStorableType()
+                              : UNKNOWN_TYPE;
+    suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
+                                           trigger_source);
+  } else if (context.filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
-    *suggestions =
-        GetProfileSuggestions(form, context->form_structure, field,
-                              context->focused_field, trigger_source);
-    if (context->focused_field &&
-        context->focused_field->Type().group() == FieldTypeGroup::kEmail &&
+    suggestions = GetProfileSuggestions(form, context.form_structure, field,
+                                        context.focused_field, trigger_source);
+    if (context.focused_field &&
+        context.focused_field->Type().group() == FieldTypeGroup::kEmail &&
         client().GetPlusAddressDelegate()) {
       std::vector<Suggestion> plus_address_suggestions =
           client().GetPlusAddressDelegate()->GetSuggestions(
@@ -2819,29 +2814,29 @@ void BrowserAutofillManager::GetAvailableSuggestions(
               client().ClassifyAsPasswordForm(*this, form.global_id(),
                                               field.global_id()),
               field.value(), trigger_source);
-      suggestions->insert(
-          suggestions->cbegin(),
+      suggestions.insert(
+          suggestions.cbegin(),
           std::make_move_iterator(plus_address_suggestions.begin()),
           std::make_move_iterator(plus_address_suggestions.end()));
     }
   }
 
   // Ablation experiment
-  if (context->filling_product == FillingProduct::kAddress ||
-      context->filling_product == FillingProduct::kCreditCard) {
+  if (context.filling_product == FillingProduct::kAddress ||
+      context.filling_product == FillingProduct::kCreditCard) {
     FormTypeForAblationStudy form_type =
-        context->filling_product == FillingProduct::kCreditCard
+        context.filling_product == FillingProduct::kCreditCard
             ? FormTypeForAblationStudy::kPayment
             : FormTypeForAblationStudy::kAddress;
     // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
     // no ablation happens in the following.
     AblationGroup ablation_group = client().GetAblationStudy().GetAblationGroup(
         client().GetLastCommittedPrimaryMainFrameURL(), form_type);
-    context->ablation_group = ablation_group;
+    context.ablation_group = ablation_group;
     // Note that we don't set the ablation group if there are no suggestions.
     // In that case we stick to kDefault.
-    context->conditional_ablation_group =
-        !suggestions->empty() ? ablation_group : AblationGroup::kDefault;
+    context.conditional_ablation_group =
+        !suggestions.empty() ? ablation_group : AblationGroup::kDefault;
 
     // In both cases (credit card and address forms), we inform the other event
     // logger also about the ablation.
@@ -2850,33 +2845,33 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     // recorded by the credit_card_form_event_logger_). For the complementary
     // event logger, the conditional ablation status is logged as kDefault to
     // not imply that data would be filled without ablation.
-    if (context->filling_product == FillingProduct::kCreditCard) {
+    if (context.filling_product == FillingProduct::kCreditCard) {
       credit_card_form_event_logger_->SetAblationStatus(
-          context->ablation_group, context->conditional_ablation_group);
-      address_form_event_logger_->SetAblationStatus(context->ablation_group,
+          context.ablation_group, context.conditional_ablation_group);
+      address_form_event_logger_->SetAblationStatus(context.ablation_group,
                                                     AblationGroup::kDefault);
-    } else if (context->filling_product == FillingProduct::kAddress) {
+    } else if (context.filling_product == FillingProduct::kAddress) {
       address_form_event_logger_->SetAblationStatus(
-          context->ablation_group, context->conditional_ablation_group);
+          context.ablation_group, context.conditional_ablation_group);
       credit_card_form_event_logger_->SetAblationStatus(
-          context->ablation_group, AblationGroup::kDefault);
+          context.ablation_group, AblationGroup::kDefault);
     }
 
-    if (!suggestions->empty() && ablation_group == AblationGroup::kAblation) {
+    if (!suggestions.empty() && ablation_group == AblationGroup::kAblation) {
       // Logic for disabling/ablating autofill.
-      context->suppress_reason = SuppressReason::kAblation;
-      suggestions->clear();
+      context.suppress_reason = SuppressReason::kAblation;
+      suggestions.clear();
       return;
     }
   }
-  if (suggestions->empty() ||
-      context->filling_product != FillingProduct::kCreditCard) {
+  if (suggestions.empty() ||
+      context.filling_product != FillingProduct::kCreditCard) {
     return;
   }
   // Don't provide credit card suggestions for non-secure pages, but do
   // provide them for secure pages with passive mixed content (see
   // implementation of IsContextSecure).
-  if (!context->is_context_secure) {
+  if (!context.is_context_secure) {
     // Replace the suggestion content with a warning message explaining why
     // Autofill is disabled for a website. The string is different if the
     // credit card autofill HTTP warning experiment is enabled.
@@ -2884,7 +2879,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
     warning_suggestion.type =
         SuggestionType::kInsecureContextPaymentDisabledMessage;
-    suggestions->assign(1, warning_suggestion);
+    suggestions.assign(1, warning_suggestion);
   }
 }
 
