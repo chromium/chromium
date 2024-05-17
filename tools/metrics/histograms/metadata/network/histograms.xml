@@ -3102,6 +3102,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Vpn.ServicesNumber" units="units"
+    expires_after="2025-02-20">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network usage metric emitted on each user login that tracks the
+    number of the configured VPN services in shill.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Vpn.TimeToConfig" units="ms"
     expires_after="2024-12-31">
   <owner>jiejiang@chromium.org</owner>
