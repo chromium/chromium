@@ -83,7 +83,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
       RenderFrameHostImpl* owning_frame,
       AuctionProcessManager::ProcessHandle& process_handle,
       const GURL& url,
-      auction_worklet::mojom::SellerWorklet* seller_worklet);
+      auction_worklet::mojom::SellerWorklet* seller_worklet,
+      size_t thread_index);
 
   // Unregisters `this` from DebuggableAuctionWorkletTracker, and notifies
   // NotifyDestroyed() observers.
@@ -106,6 +107,8 @@ class CONTENT_EXPORT DebuggableAuctionWorklet {
   absl::variant<auction_worklet::mojom::BidderWorklet*,
                 auction_worklet::mojom::SellerWorklet*>
       worklet_;
+
+  size_t thread_index_ = 0;
 
   base::WeakPtrFactory<DebuggableAuctionWorklet> weak_ptr_factory_{this};
 };

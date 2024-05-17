@@ -83,8 +83,9 @@ class TestAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet,
-      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>

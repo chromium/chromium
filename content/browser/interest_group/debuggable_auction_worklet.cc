@@ -36,7 +36,7 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
     (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent));
   } else {
     absl::get<auction_worklet::mojom::SellerWorklet*>(worklet_)
-        ->ConnectDevToolsAgent(std::move(agent), /*thread_index=*/0);
+        ->ConnectDevToolsAgent(std::move(agent), thread_index_);
   }
 }
 
@@ -59,12 +59,14 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     AuctionProcessManager::ProcessHandle& process_handle,
     const GURL& url,
-    auction_worklet::mojom::SellerWorklet* seller_worklet)
+    auction_worklet::mojom::SellerWorklet* seller_worklet,
+    size_t thread_index)
     : owning_frame_(owning_frame),
       process_handle_(process_handle),
       url_(url),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      worklet_(seller_worklet) {
+      worklet_(seller_worklet),
+      thread_index_(thread_index) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
   RequestPid();

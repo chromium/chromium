@@ -4180,6 +4180,44 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
   }
 }
 
+TEST_F(AuctionRunnerTest, WorkletServiceGetNextSellerWorkletThreadIndex) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kFledgeSellerWorkletThreadPool,
+      {{"seller_worklet_thread_pool_size", "4"}});
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote1;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver1 =
+          auction_worklet_service_remote1.InitWithNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_remote2;
+  mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+      auction_worklet_service_receiver2 =
+          auction_worklet_service_remote2.InitWithNewPipeAndPassReceiver();
+
+  auto auction_worklet_service1 =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver1));
+
+  auto auction_worklet_service2 =
+      auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+          std::move(auction_worklet_service_receiver2));
+
+  // It uses a round-robin scheduling, and the state is shared among the
+  // worklet services in the same process.
+  EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 0u);
+  EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 1u);
+  EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 2u);
+  EXPECT_EQ(auction_worklet_service2->GetNextSellerWorkletThreadIndex(), 3u);
+  EXPECT_EQ(auction_worklet_service2->GetNextSellerWorkletThreadIndex(), 0u);
+  EXPECT_EQ(auction_worklet_service2->GetNextSellerWorkletThreadIndex(), 1u);
+  EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 2u);
+  EXPECT_EQ(auction_worklet_service1->GetNextSellerWorkletThreadIndex(), 3u);
+}
+
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 

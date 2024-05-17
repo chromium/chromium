@@ -223,6 +223,15 @@ BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,
              "FledgeDelayPostAuctionInterestGroupUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables multi-threaded seller worklet.
+BASE_FEATURE(kFledgeSellerWorkletThreadPool,
+             "FledgeSellerWorkletThreadPool",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The number of seller worklet threads.
+const base::FeatureParam<int> kFledgeSellerWorkletThreadPoolSize{
+    &kFledgeSellerWorkletThreadPool, "seller_worklet_thread_pool_size", 1};
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.

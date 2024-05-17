@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/bidder_worklet.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
@@ -23,6 +24,12 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
 namespace auction_worklet {
+
+namespace {
+
+static size_t g_next_seller_worklet_thread_index = 0;
+
+}  // namespace
 
 // V8HelperHolder exists to make sure we don't end up creating a fresh V8 thread
 // every time a new service instance is created. It itself must be accessed from
@@ -60,13 +67,22 @@ class AuctionWorkletServiceImpl::V8HelperHolder
   }
 
   static scoped_refptr<V8HelperHolder> SellerInstance(
-      ProcessModel process_model) {
-    if (!g_seller_instance) {
-      g_seller_instance =
-          new V8HelperHolder(process_model, WorkletType::kSeller);
+      ProcessModel process_model,
+      size_t thread_index) {
+    if (!g_seller_instances) {
+      g_seller_instances = new std::vector<V8HelperHolder*>();
     }
-    DCHECK_CALLED_ON_VALID_SEQUENCE(g_seller_instance->sequence_checker_);
-    return g_seller_instance;
+
+    while (g_seller_instances->size() <= thread_index) {
+      g_seller_instances->push_back(
+          new V8HelperHolder(process_model, WorkletType::kSeller,
+                             /*thread_index=*/g_seller_instances->size()));
+    }
+
+    DCHECK_CALLED_ON_VALID_SEQUENCE(
+        g_seller_instances->at(thread_index)->sequence_checker_);
+
+    return g_seller_instances->at(thread_index);
   }
 
   const scoped_refptr<AuctionV8Helper>& V8Helper() {
@@ -85,10 +101,19 @@ class AuctionWorkletServiceImpl::V8HelperHolder
  private:
   friend class base::RefCounted<V8HelperHolder>;
 
-  explicit V8HelperHolder(ProcessModel process_model, WorkletType worklet_type)
-      : process_model_(process_model), worklet_type_(worklet_type) {
+  explicit V8HelperHolder(ProcessModel process_model,
+                          WorkletType worklet_type,
+                          size_t thread_index = 0)
+      : process_model_(process_model),
+        worklet_type_(worklet_type),
+        thread_index_(thread_index) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_EQ(*GetHelperHolderInstance(), nullptr);
+
+    if (worklet_type_ == WorkletType::kBidder) {
+      DCHECK_EQ(g_bidder_instance, nullptr);
+    } else {
+      DCHECK_EQ(g_seller_instances->size(), thread_index_);
+    }
   }
 
   ~V8HelperHolder() {
@@ -103,9 +128,25 @@ class AuctionWorkletServiceImpl::V8HelperHolder
       wait_for_v8_shutdown_.Wait();
     }
 
-    V8HelperHolder** instance = GetHelperHolderInstance();
-    DCHECK_EQ(*instance, this);
-    *instance = nullptr;
+    if (worklet_type_ == WorkletType::kBidder) {
+      DCHECK_EQ(g_bidder_instance, this);
+      g_bidder_instance = nullptr;
+    } else {
+      DCHECK_EQ(g_seller_instances->at(thread_index_), this);
+      g_seller_instances->at(thread_index_) = nullptr;
+
+      size_t alive_instances_count =
+          std::count_if(g_seller_instances->begin(), g_seller_instances->end(),
+                        [](V8HelperHolder* instance) { return !!instance; });
+
+      if (alive_instances_count == 0) {
+        g_seller_instances->clear();
+        delete g_seller_instances;
+        g_seller_instances = nullptr;
+
+        g_next_seller_worklet_thread_index = 0;
+      }
+    }
   }
 
   void FinishedDestroying() {
@@ -115,20 +156,13 @@ class AuctionWorkletServiceImpl::V8HelperHolder
     wait_for_v8_shutdown_.Signal();
   }
 
-  V8HelperHolder** GetHelperHolderInstance() {
-    if (worklet_type_ == WorkletType::kBidder) {
-      return &g_bidder_instance;
-    } else {
-      return &g_seller_instance;
-    }
-  }
-
   static V8HelperHolder* g_bidder_instance;
-  static V8HelperHolder* g_seller_instance;
+  static std::vector<V8HelperHolder*>* g_seller_instances;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;
   const ProcessModel process_model_;
   const WorkletType worklet_type_;
+  size_t thread_index_ = 0;
 
   base::WaitableEvent wait_for_v8_shutdown_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -136,8 +170,9 @@ class AuctionWorkletServiceImpl::V8HelperHolder
 
 AuctionWorkletServiceImpl::V8HelperHolder*
     AuctionWorkletServiceImpl::V8HelperHolder::g_bidder_instance = nullptr;
-AuctionWorkletServiceImpl::V8HelperHolder*
-    AuctionWorkletServiceImpl::V8HelperHolder::g_seller_instance = nullptr;
+
+std::vector<AuctionWorkletServiceImpl::V8HelperHolder*>*
+    AuctionWorkletServiceImpl::V8HelperHolder::g_seller_instances = nullptr;
 
 // static
 void AuctionWorkletServiceImpl::CreateForRenderer(
@@ -162,9 +197,15 @@ AuctionWorkletServiceImpl::AuctionWorkletServiceImpl(
     mojo::PendingReceiver<mojom::AuctionWorkletService> receiver)
     : auction_bidder_v8_helper_holder_(
           V8HelperHolder::BidderInstance(process_model)),
-      auction_seller_v8_helper_holder_(
-          V8HelperHolder::SellerInstance(process_model)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  for (size_t i = 0;
+       i <
+       static_cast<size_t>(features::kFledgeSellerWorkletThreadPoolSize.Get());
+       ++i) {
+    auction_seller_v8_helper_holders_.push_back(
+        V8HelperHolder::SellerInstance(process_model, /*thread_index=*/i));
+  }
+}
 
 AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
@@ -172,7 +213,9 @@ std::vector<scoped_refptr<AuctionV8Helper>>
 AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
   std::vector<scoped_refptr<AuctionV8Helper>> result;
   result.push_back(auction_bidder_v8_helper_holder_->V8Helper());
-  result.push_back(auction_seller_v8_helper_holder_->V8Helper());
+  for (const auto& v8_helper_holder : auction_seller_v8_helper_holders_) {
+    result.push_back(v8_helper_holder->V8Helper());
+  }
   return result;
 }
 
@@ -212,8 +255,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
 
 void AuctionWorkletServiceImpl::LoadSellerWorklet(
     mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
-    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-        shared_storage_host_remote,
+    std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+        shared_storage_hosts,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -224,14 +267,16 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id) {
-  std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
-      shared_storage_hosts;
-  shared_storage_hosts.push_back(std::move(shared_storage_host_remote));
+  std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers;
+  for (size_t i = 0; i < auction_seller_v8_helper_holders_.size(); ++i) {
+    v8_helpers.push_back(auction_seller_v8_helper_holders_[i]->V8Helper());
+  }
+
+  CHECK_EQ(v8_helpers.size(), shared_storage_hosts.size());
 
   auto seller_worklet = std::make_unique<SellerWorklet>(
-      std::vector{auction_seller_v8_helper_holder_->V8Helper()},
-      std::move(shared_storage_hosts), pause_for_debugger_on_start,
-      std::move(pending_url_loader_factory),
+      std::move(v8_helpers), std::move(shared_storage_hosts),
+      pause_for_debugger_on_start, std::move(pending_url_loader_factory),
       std::move(auction_network_events_handler), decision_logic_url,
       trusted_scoring_signals_url, top_window_origin,
       std::move(permissions_policy_state), experiment_group_id,
@@ -249,7 +294,10 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
 }
 
 size_t AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex() {
-  return 0;
+  size_t result = g_next_seller_worklet_thread_index++;
+  g_next_seller_worklet_thread_index %=
+      auction_seller_v8_helper_holders_.size();
+  return result;
 }
 
 void AuctionWorkletServiceImpl::DisconnectSellerWorklet(

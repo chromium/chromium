@@ -1532,6 +1532,20 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "fledge-two-seller-worklet-threads",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],
+    "bases": [
+      "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js",
+      "http/tests/inspector-protocol/target/target-auction-worklet.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FledgeSellerWorkletThreadPool:seller_worklet_thread_pool_size/2"
+    ],
+    "expires": "Nov 15, 2024"
+  },
+  {
     "prefix": "fledge-kanon-status-below-threshold",
     "platforms": ["Linux", "Mac", "Win"],
     "owners": ["behamilton@google.com", "caraitto@chromium.org", "pauljensen@chromium.org", "mmenke@chromium.org", "morlovich@chromium.org", "qingxinwu@google.com"],

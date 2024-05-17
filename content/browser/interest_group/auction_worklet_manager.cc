@@ -184,7 +184,7 @@ class AuctionWorkletManager::WorkletOwner
   mojo::Remote<auction_worklet::mojom::SellerWorklet> seller_worklet_;
   // This must be destroyed before the worklet it's passed, since it hangs on to
   // a raw pointer to it.
-  std::unique_ptr<DebuggableAuctionWorklet> worklet_debug_;
+  std::vector<std::unique_ptr<DebuggableAuctionWorklet>> worklet_debugs_;
 
   // If true, we will split callback notifications into small batches.
   bool split_up_notifications_;
@@ -383,19 +383,22 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       worklet_info_.needs_cors_for_additional_bid,
       rfh->frame_tree_node()->frame_tree_node_id());
 
+  CHECK(worklet_debugs_.empty());
+
   switch (worklet_info_.type) {
     case WorkletType::kBidder: {
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           worklet_receiver = bidder_worklet_.BindNewPipeAndPassReceiver();
-      worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
+      worklet_debugs_.push_back(base::WrapUnique(new DebuggableAuctionWorklet(
           delegate->GetFrame(), process_handle_, worklet_info_.script_url,
-          bidder_worklet_.get()));
+          bidder_worklet_.get())));
+
       process_handle_.GetService()->LoadBidderWorklet(
           std::move(worklet_receiver),
           worklet_manager_->MaybeBindAuctionSharedStorageHost(
               delegate->GetFrame(),
               url::Origin::Create(worklet_info_.script_url)),
-          worklet_debug_->should_pause_on_start(),
+          worklet_debugs_[0]->should_pause_on_start(),
           std::move(url_loader_factory),
           std::move(auction_network_events_handler), worklet_info_.script_url,
           worklet_info_.wasm_url, worklet_info_.signals_url,
@@ -412,15 +415,36 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
     case WorkletType::kSeller: {
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
-      worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate->GetFrame(), process_handle_, worklet_info_.script_url,
-          seller_worklet_.get()));
+
+      std::vector<
+          mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts;
+
+      for (size_t i = 0;
+           i < static_cast<size_t>(
+                   features::kFledgeSellerWorkletThreadPoolSize.Get());
+           ++i) {
+        worklet_debugs_.push_back(base::WrapUnique(new DebuggableAuctionWorklet(
+            delegate->GetFrame(), process_handle_, worklet_info_.script_url,
+            seller_worklet_.get(),
+            /*thread_index=*/i)));
+
+        // For `DebuggableAuctionWorklet` created synchronously for the same
+        // frame, they should have the same `should_pause_on_start()` state.
+        if (i > 0) {
+          CHECK_EQ(worklet_debugs_[i]->should_pause_on_start(),
+                   worklet_debugs_[i - 1]->should_pause_on_start());
+        }
+
+        shared_storage_hosts.push_back(
+            worklet_manager_->MaybeBindAuctionSharedStorageHost(
+                delegate->GetFrame(),
+                url::Origin::Create(worklet_info_.script_url)));
+      }
+
       process_handle_.GetService()->LoadSellerWorklet(
-          std::move(worklet_receiver),
-          worklet_manager_->MaybeBindAuctionSharedStorageHost(
-              delegate->GetFrame(),
-              url::Origin::Create(worklet_info_.script_url)),
-          worklet_debug_->should_pause_on_start(),
+          std::move(worklet_receiver), std::move(shared_storage_hosts),
+          worklet_debugs_[0]->should_pause_on_start(),
           std::move(url_loader_factory),
           std::move(auction_network_events_handler), worklet_info_.script_url,
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
