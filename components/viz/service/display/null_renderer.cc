@@ -45,10 +45,6 @@ gfx::Size NullRenderer::GetRenderPassBackingPixelSize(
   return gfx::Size();
 }
 
-bool NullRenderer::FlippedFramebuffer() const {
-  return false;
-}
-
 void NullRenderer::CopyDrawnRenderPass(
     const copy_output::RenderPassGeometry& geometry,
     std::unique_ptr<CopyOutputRequest> request) {}

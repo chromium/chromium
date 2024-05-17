@@ -112,7 +112,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   void FinishDrawingRenderPass() override;
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override;
-  bool FlippedFramebuffer() const override;
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;

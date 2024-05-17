@@ -127,10 +127,6 @@ void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_surface_->SwapBuffers(std::move(output_frame));
 }
 
-bool SoftwareRenderer::FlippedFramebuffer() const {
-  return false;
-}
-
 void SoftwareRenderer::EnsureScissorTestDisabled() {
   is_scissor_enabled_ = false;
 }

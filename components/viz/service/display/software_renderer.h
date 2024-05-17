@@ -68,7 +68,6 @@ class VIZ_SERVICE_EXPORT SoftwareRenderer : public DirectRenderer {
   void DoDrawQuad(const DrawQuad* quad, const gfx::QuadF* draw_region) override;
   void BeginDrawingFrame() override;
   void FinishDrawingFrame() override;
-  bool FlippedFramebuffer() const override;
   void EnsureScissorTestDisabled() override;
   void CopyDrawnRenderPass(const copy_output::RenderPassGeometry& geometry,
                            std::unique_ptr<CopyOutputRequest> request) override;

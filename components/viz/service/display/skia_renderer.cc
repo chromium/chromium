@@ -1383,12 +1383,6 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
 #endif
 }
 
-bool SkiaRenderer::FlippedFramebuffer() const {
-  // TODO(weiliangc): Make sure flipped correctly for Windows.
-  // (crbug.com/644851)
-  return false;
-}
-
 void SkiaRenderer::EnsureScissorTestDisabled() {
   scissor_rect_.reset();
 }

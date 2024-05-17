@@ -106,25 +106,14 @@ void DirectRenderer::InitializeViewport(DrawingFrame* frame,
   DCHECK_GE(viewport_rect.y(), 0);
   DCHECK_LE(viewport_rect.right(), surface_size.width());
   DCHECK_LE(viewport_rect.bottom(), surface_size.height());
-  bool flip_y = FlippedFramebuffer();
-  if (flip_y) {
-    frame->target_to_device_transform = gfx::OrthoProjectionTransform(
-        draw_rect.x(), draw_rect.right(), draw_rect.bottom(), draw_rect.y());
-  } else {
-    frame->target_to_device_transform = gfx::OrthoProjectionTransform(
-        draw_rect.x(), draw_rect.right(), draw_rect.y(), draw_rect.bottom());
-  }
-
-  gfx::Rect window_rect = viewport_rect;
-  if (flip_y)
-    window_rect.set_y(surface_size.height() - viewport_rect.bottom());
+  frame->target_to_device_transform = gfx::OrthoProjectionTransform(
+      draw_rect.x(), draw_rect.right(), draw_rect.y(), draw_rect.bottom());
   frame->target_to_device_transform.PostConcat(
-      gfx::WindowTransform(window_rect.x(), window_rect.y(),
-                           window_rect.width(), window_rect.height()));
+      gfx::WindowTransform(viewport_rect.x(), viewport_rect.y(),
+                           viewport_rect.width(), viewport_rect.height()));
   current_draw_rect_ = draw_rect;
   current_viewport_rect_ = viewport_rect;
   current_surface_size_ = surface_size;
-  current_window_space_viewport_ = window_rect;
 }
 
 gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
@@ -132,8 +121,6 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
   gfx::Rect window_rect = draw_rect;
   window_rect -= current_draw_rect_.OffsetFromOrigin();
   window_rect += current_viewport_rect_.OffsetFromOrigin();
-  if (FlippedFramebuffer())
-    window_rect.set_y(current_surface_size_.height() - window_rect.bottom());
   return window_rect;
 }
 

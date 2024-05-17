@@ -313,7 +313,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // return that quad, otherwise return null.
   virtual const DrawQuad* CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass);
-  virtual bool FlippedFramebuffer() const = 0;
   virtual void EnsureScissorTestDisabled() = 0;
   virtual void DidChangeVisibility() = 0;
   virtual void CopyDrawnRenderPass(
@@ -402,7 +401,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::Rect current_draw_rect_;
   gfx::Rect current_viewport_rect_;
   gfx::Size current_surface_size_;
-  gfx::Rect current_window_space_viewport_;
 
   DrawingFrame* current_frame() {
     DCHECK(current_frame_valid_);
