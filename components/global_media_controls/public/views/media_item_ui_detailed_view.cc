@@ -316,6 +316,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
       media_message_center::kMediaNextTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
+  const gfx::VectorIcon* devices_icon =
+      &media_message_center::kMediaCastStartIcon;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
     // Create the chapter list button.
@@ -329,14 +332,16 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
         base::BindRepeating(&MediaItemUIDetailedView::ToggleChapterListView,
                             base::Unretained(this)));
     chapter_list_button_->SetVisible(false);
+
+    // Show the `kDevicesIcon` as the device selector button's icon.
+    devices_icon = &vector_icons::kDevicesIcon;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the start casting button.
   if (device_selector_view) {
     start_casting_button_ = CreateMediaActionButton(
-        button_container, kEmptyMediaActionButtonId,
-        media_message_center::kMediaCastStartIcon,
+        button_container, kEmptyMediaActionButtonId, *devices_icon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     start_casting_button_->SetCallback(
         base::BindRepeating(&MediaItemUIDetailedView::StartCastingButtonPressed,
