@@ -10,8 +10,6 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
 
 namespace base {
 
@@ -25,16 +23,16 @@ BASE_FEATURE(kReduceCpuUtilization,
 
 class CpuReductionExperimentSubSampler {
  public:
-  CpuReductionExperimentSubSampler() = default;
+  CpuReductionExperimentSubSampler() : counter_(base::RandUint64()) {}
 
   bool ShouldLogHistograms() {
-    AutoLock hold(lock_);
-    return sub_sampler_.ShouldSample(0.001);
+    // Relaxed memory order since no memory access depends on value.
+    uint64_t val = counter_.fetch_add(1, std::memory_order_relaxed);
+    return val % 1000 == 0;
   }
 
  private:
-  Lock lock_;
-  MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
+  std::atomic<uint64_t> counter_{0};
 };
 
 // Singleton instance of CpuReductionExperimentSubSampler. This is only set when
