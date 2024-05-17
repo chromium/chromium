@@ -746,6 +746,21 @@ TEST_F(AudioSelectionNotificationHandlerTest, HandleSettingsButtonClicked) {
   FastForwardBy(AudioSelectionNotificationHandler::kDebounceTime);
   EXPECT_EQ(1u, GetNotificationCount());
 
+  // No clicking notification event metrics are fired before clicking settings
+  // button, only the notification showing up metrics are fired.
+  histogram_tester().ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification, 1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification,
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesShowsUp,
+      1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification,
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesClicked,
+      0);
+
   // Clicking notification body does not have any effects.
   HandleSettingsButtonClicked(std::nullopt);
   EXPECT_EQ(1u, GetNotificationCount());
@@ -756,6 +771,21 @@ TEST_F(AudioSelectionNotificationHandlerTest, HandleSettingsButtonClicked) {
 
   EXPECT_TRUE(settings_audio_page_opened());
   EXPECT_EQ(0u, GetNotificationCount());
+
+  // Clicking notification event metrics are fired after clicking settings
+  // button.
+  histogram_tester().ExpectTotalCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification, 2);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification,
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesShowsUp,
+      1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kAudioSelectionNotification,
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesClicked,
+      1);
 }
 
 }  // namespace ash

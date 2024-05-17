@@ -258,8 +258,6 @@ void AudioSelectionNotificationHandler::ShowNotification(
                                      /*by_user=*/false);
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(notification));
-
-  // TODO(zhangwenyu): Add metrics to record notification is displayed.
 }
 
 void AudioSelectionNotificationHandler::HandleSwitchButtonClicked(
@@ -318,7 +316,9 @@ void AudioSelectionNotificationHandler::HandleSettingsButtonClicked(
     return;
   }
 
-  // TODO(zhangwenyu): Add metrics to record notification button clicked.
+  audio_device_metrics_handler_.RecordNotificationEvents(
+      AudioDeviceMetricsHandler::AudioSelectionNotificationEvents::
+          kNotificationWithMultipleSourcesDevicesClicked);
 
   // Open OS Settings audio page.
   open_settigns_callback.Run();
