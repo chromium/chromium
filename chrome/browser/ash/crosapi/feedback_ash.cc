@@ -38,6 +38,8 @@ feedback::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
       return feedback::kFeedbackSourceQuickOffice;
     case mojom::LacrosFeedbackSource::kFeedbackSourceAI:
       return feedback::kFeedbackSourceAI;
+    case mojom::LacrosFeedbackSource::kFeedbackSourceLensOverlay:
+      return feedback::kFeedbackSourceLensOverlay;
     case mojom::LacrosFeedbackSource::kUnknown:
       return feedback::kFeedbackSourceUnknownLacrosSource;
   }

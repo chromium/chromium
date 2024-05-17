@@ -147,3 +147,11 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, ShowFeedbackPageFromAI) {
                            /*ai_metadata=*/base::Value::Dict());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
+
+IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
+                       ShowFeedbackPageFromLensOverlay) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
+  ShowFeedbackPageWithFeedbackSource(feedback::kFeedbackSourceLensOverlay);
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+}

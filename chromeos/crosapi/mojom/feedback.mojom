@@ -11,7 +11,7 @@ import "url/mojom/url.mojom";
 // Note: When you add a new value, please add a test case accordingly in:
 // chrome/browser/feedback/show_feedback_page_lacros_browertest.cc.
 //
-// Next MinVersion: 6
+// Next MinVersion: 7
 // Next ID: 9
 //
 [Stable, Extensible]
@@ -30,6 +30,7 @@ enum LacrosFeedbackSource {
   [MinVersion=5] kFeedbackSourceProfileErrorDialog = 10,
   [MinVersion=5] kFeedbackSourceQuickOffice=11,
   [MinVersion=6] kFeedbackSourceAI=12,
+  [MinVersion=7] kFeedbackSourceLensOverlay=13,
 };
 
 [Stable]
