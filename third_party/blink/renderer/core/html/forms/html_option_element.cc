@@ -403,6 +403,9 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
 }
 
 HTMLSelectListElement* HTMLOptionElement::OwnerSelectList() const {
+  if (!RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
+    return nullptr;
+  }
   for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
     if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
       return selectlist;
