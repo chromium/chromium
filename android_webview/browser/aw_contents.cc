@@ -1317,6 +1317,7 @@ jint AwContents::AddDocumentStartJavaScript(
   std::vector<std::string> native_allowed_origin_rule_strings;
   AppendJavaStringArrayToStringVector(env, allowed_origin_rules,
                                       &native_allowed_origin_rule_strings);
+  web_contents()->GetController().GetBackForwardCache().Flush();
   auto result = GetJsCommunicationHost()->AddDocumentStartJavaScript(
       base::android::ConvertJavaStringToUTF16(env, script),
       native_allowed_origin_rule_strings);

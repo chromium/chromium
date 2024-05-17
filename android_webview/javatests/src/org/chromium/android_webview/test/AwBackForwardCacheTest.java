@@ -593,4 +593,26 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());
     }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageEvictedWhenAddingDocumentStartJavascript() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mAwContents.addDocumentStartJavaScript(
+                                "console.log(\"hello world\");", new String[] {"*"}));
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
+    }
 }
