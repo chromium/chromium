@@ -8,6 +8,9 @@
 // but as we're targeting just libfuzzer Linux builds, perhaps we don't need
 // it.
 
-__attribute__((visibility("default"), noinline)) void __wrap_dlclose(void *handle) {
+#if defined(__clang__)
+__attribute__((visibility("default"), noinline))
+#endif
+void __wrap_dlclose(void *handle) {
   // Do nothing. We don't want to call the real dlclose on libfuzzer builds.
 }
