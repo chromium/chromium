@@ -445,10 +445,6 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool GetOnDeviceModelRetractUnsafeContent();
 
-// Returns true if the safety model must be used.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceModelMustUseSafetyModel();
-
 // Whether we should initiate download of the text safety classifier model.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldUseTextSafetyClassifierModel();

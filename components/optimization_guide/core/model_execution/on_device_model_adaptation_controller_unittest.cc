@@ -41,8 +41,7 @@ class OnDeviceModelServiceAdaptationControllerTest : public testing::Test {
            {"on_device_model_context_token_chunk_size", "4"},
            {"on_device_model_topk", "1"},
            {"on_device_model_temperature", "0"}}},
-         {features::kTextSafetyClassifier,
-          {{"on_device_must_use_safety_model", "false"}}},
+         {features::kTextSafetyClassifier, {}},
          {features::kOptimizationGuideComposeOnDeviceEval, {{}}},
          {features::internal::kModelAdaptationCompose, {{}}}},
         {});

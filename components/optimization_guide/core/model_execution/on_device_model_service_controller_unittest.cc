@@ -97,8 +97,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
            {"on_device_model_context_token_chunk_size", "4"},
            {"on_device_model_topk", "1"},
            {"on_device_model_temperature", "0"}}},
-         {features::kTextSafetyClassifier,
-          {{"on_device_must_use_safety_model", "false"}}}},
+         {features::kTextSafetyClassifier, {}}},
         {});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
@@ -133,6 +132,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       WriteFeatureConfig(*params.config, params.config2);
     } else {
       proto::OnDeviceModelExecutionFeatureConfig default_config;
+      default_config.set_can_skip_text_safety(true);
       PopulateConfigForFeature(kFeature, default_config);
       WriteFeatureConfig(default_config);
     }
@@ -436,6 +436,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
       {});
 
   proto::OnDeviceModelExecutionFeatureConfig config_compose, config_test;
+  config_compose.set_can_skip_text_safety(true);
+  config_test.set_can_skip_text_safety(true);
   PopulateConfigForFeature(ModelBasedCapabilityKey::kCompose, config_compose);
   PopulateConfigForFeature(ModelBasedCapabilityKey::kTest, config_test);
 
@@ -809,11 +811,10 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdateSafetyModel) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
-  Initialize();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "true"}});
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   // No safety model received yet.
   {
@@ -1022,12 +1023,15 @@ TEST(SafetyConfigTest, SafeWithRequiredScores) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "true"},
-       {"on_device_retract_unsafe_content", "true"}});
+      {{"on_device_retract_unsafe_content", "true"}});
 
   {
     auto safety_config =
@@ -1072,12 +1076,15 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyPasses) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "true"},
-       {"on_device_retract_unsafe_content", "true"}});
+      {{"on_device_retract_unsafe_content", "true"}});
 
   {
     auto safety_config =
@@ -1117,12 +1124,15 @@ TEST_F(OnDeviceModelServiceControllerTest, DefaultOutputSafetyFails) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelUsedButNoRetract) {
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "true"},
-       {"on_device_retract_unsafe_content", "false"}});
+      {{"on_device_retract_unsafe_content", "false"}});
 
   {
     auto safety_config =
@@ -1168,7 +1178,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckPassesWithSafeUrl) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1219,7 +1232,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     auto safety_config =
@@ -1232,6 +1248,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckFailsWithUnsafeUrl) {
     AddPageUrlSubstitution(input_template);
     check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should pass the default raw output safety check
@@ -1269,7 +1289,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RequestCheckIgnoredInDarkMode) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "false"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     auto safety_config =
@@ -1321,7 +1344,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     auto safety_config =
@@ -1334,6 +1360,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     AddPageUrlSubstitution(input_template);
     // Omitted check thresholds, should fallback to default.
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should pass the default raw output safety check
@@ -1372,7 +1402,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1387,6 +1420,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     AddPageUrlSubstitution(input_template);
     check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should pass the default raw output safety check
@@ -1426,6 +1463,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     AddPageUrlSubstitution(input_template);
     check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should pass the default raw output safety check
@@ -1526,7 +1567,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1542,6 +1586,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
     check->set_check_language_only(true);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should pass the default raw output safety check
@@ -1580,10 +1628,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "false"},
-       {"on_device_retract_unsafe_content", "true"}});
+      {{"on_device_retract_unsafe_content", "true"}});
 
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1598,6 +1648,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     input_template->set_string_template("safe_text in esperanto: %s");
     AddStringValueSubstitution(input_template);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should be used in the raw output check.
@@ -1635,10 +1689,12 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "false"},
-       {"on_device_retract_unsafe_content", "true"}});
+      {{"on_device_retract_unsafe_content", "true"}});
 
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1653,6 +1709,10 @@ TEST_F(OnDeviceModelServiceControllerTest, RawOutputCheckFailsWithUnsafeText) {
     input_template->set_string_template("unsafe_text in esperanto: %s");
     AddStringValueSubstitution(input_template);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should be used in the raw output check.
@@ -1691,10 +1751,12 @@ TEST_F(OnDeviceModelServiceControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "false"},
-       {"on_device_retract_unsafe_content", "true"}});
+      {{"on_device_retract_unsafe_content", "true"}});
 
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     // Configure a request safety check on the PageUrl.
@@ -1707,6 +1769,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
     input_template->set_string_template("safe_text in unknown language: %s");
     AddStringValueSubstitution(input_template);
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   // This should be used in the raw output check.
@@ -1741,12 +1807,15 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "false"},
-       {"on_device_retract_unsafe_content", "false"}});
+      {{"on_device_retract_unsafe_content", "false"}});
 
   {
     auto safety_config =
@@ -1755,6 +1824,10 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
     safety_config->mutable_safety_category_thresholds()->Add(
         RequireReasonable());
     SetFeatureTextSafetyConfiguration(std::move(safety_config));
+
+    std::unique_ptr<optimization_guide::ModelInfo> ld_model_info =
+        TestModelInfoBuilder().SetVersion(123).Build();
+    test_controller_->SetLanguageDetectionModel(*ld_model_info);
   }
 
   auto session = test_controller_->CreateSession(
@@ -1786,12 +1859,15 @@ TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkMode) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SafetyModelDarkModeNoFeatureConfig) {
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(true);
+  Initialize({.config = config});
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kTextSafetyClassifier,
-      {{"on_device_must_use_safety_model", "false"},
-       {"on_device_retract_unsafe_content", "false"}});
+      {{"on_device_retract_unsafe_content", "false"}});
 
   proto::TextSafetyModelMetadata model_metadata;
   auto* other_feature_safety_config =
@@ -2206,6 +2282,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
   Initialize({.config = config});
 
@@ -2236,6 +2313,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   config.set_feature(ToModelExecutionFeatureProto(kFeature));
   Initialize({.config = config});
 
@@ -2386,6 +2464,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UseServerWithRepeatedDelays) {
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeatureWithRedactRule(config, "bar");
   Initialize({.config = config});
 
@@ -2430,6 +2509,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
 
 TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeatureWithRedactRule(config, "bar",
                                          proto::RedactBehavior::REJECT);
   Initialize({.config = config});
@@ -2465,6 +2545,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeatureWithRedactRule(config, "bar");
   // Add a rule that identifies `previous_response` of `rewrite_params`.
   auto& output_config = *config.mutable_output_config();
@@ -2491,6 +2572,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {
 
 TEST_F(OnDeviceModelServiceControllerTest, ReplacementText) {
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeatureWithRedactRule(config, "bar")
       .set_replacement_string("[redacted]");
   Initialize({.config = config});
@@ -2715,6 +2797,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeature(kFeature, config);
   Initialize({.config = config});
 
@@ -2747,6 +2830,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UseRemoteTextSafetyFallback) {
 
   base::HistogramTester histogram_tester;
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeature(kFeature, config);
   // Set input url proto field for text safety to just be user input.
   auto* input_url_proto_field = config.mutable_text_safety_fallback_config()
@@ -2827,6 +2911,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
@@ -2906,6 +2991,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
   base::HistogramTester histogram_tester;
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
@@ -2961,6 +3047,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitAndEnableFeature(features::kTextSafetyRemoteFallback);
 
   proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_can_skip_text_safety(true);
   PopulateConfigForFeature(kFeature, config);
   // Create an empty ts fallback config which is valid and will call the
   // fallback.
@@ -3071,7 +3158,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval0) {
            {{"on_device_text_safety_token_interval", "0"}}},
       },
       {});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   {
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
@@ -3143,7 +3234,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TsInterval3) {
            {{"on_device_text_safety_token_interval", "3"}}},
       },
       {});
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
   {
     auto safety_config =
         std::make_unique<proto::FeatureTextSafetyConfiguration>();
@@ -3203,13 +3298,15 @@ TEST_P(OnDeviceModelServiceControllerTsIntervalTest,
       {{features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_retract_repeats", "false"}}},
        {features::kTextSafetyClassifier,
-        {{"on_device_must_use_safety_model", "true"},
-         {"on_device_retract_unsafe_content", "true"},
+        {{"on_device_retract_unsafe_content", "true"},
          {"on_device_text_safety_token_interval",
           base::NumberToString(GetParam())}}}},
       {});
 
-  Initialize();
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  PopulateConfigForFeature(kFeature, config);
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
 
   {
     auto safety_config =

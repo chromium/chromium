@@ -34,6 +34,9 @@ message OnDeviceModelExecutionFeatureConfig {
   // The config used to construct the request for server fallback text safety
   // evaluation.
   optional TextSafetyFallbackConfig text_safety_fallback_config = 4;
+
+  // Whether text safety can be skipped for this feature, if not configured.
+  optional bool can_skip_text_safety = 5;
 }
 
 message OnDeviceModelExecutionInputConfig {

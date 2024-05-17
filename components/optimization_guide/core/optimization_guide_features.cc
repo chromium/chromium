@@ -752,12 +752,6 @@ bool GetOnDeviceModelRetractUnsafeContent() {
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 
-bool GetOnDeviceModelMustUseSafetyModel() {
-  static const base::FeatureParam<bool> kOnDeviceModelMustUseSafetyModel{
-      &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
-  return kOnDeviceModelMustUseSafetyModel.Get();
-}
-
 bool ShouldUseTextSafetyClassifierModel() {
   return base::FeatureList::IsEnabled(kTextSafetyClassifier);
 }

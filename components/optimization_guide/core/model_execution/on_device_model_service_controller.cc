@@ -83,8 +83,13 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     return OnDeviceModelEligibilityReason::kModelNotAvailable;
   }
 
+  // Check feature config.
+  auto adapter = GetFeatureAdapter(feature);
+  if (!adapter) {
+    return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
+  }
   // Check safety info.
-  if (features::GetOnDeviceModelMustUseSafetyModel()) {
+  if (!adapter->CanSkipTextSafety()) {
     if (!safety_model_info_) {
       return OnDeviceModelEligibilityReason::kSafetyModelNotAvailable;
     }
@@ -101,10 +106,6 @@ OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
       return OnDeviceModelEligibilityReason::
           kLanguageDetectionModelNotAvailable;
     }
-  }
-
-  if (!GetFeatureAdapter(feature)) {
-    return OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature;
   }
 
   if (!features::internal::IsOnDeviceModelEnabled(feature)) {
@@ -146,32 +147,30 @@ OnDeviceModelServiceController::CreateSession(
   on_device_model::ModelAssetPaths model_paths;
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
 
-  // TODO(b:336356889): Move the text safety and language detection model config
-  // to the model adaptation controller.
-  std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
+  auto adapter = GetFeatureAdapter(feature);
+  CHECK(adapter);
+
+  // Populate the model paths even if they are not needed for the current
+  // feature, since the base model remote could be used for subsequent features.
   if (safety_model_info_) {
+    model_paths.ts_data = safety_model_info_->GetDataPath();
+    model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
+  }
+  if (language_detection_model_path_) {
+    model_paths.language_detection_model = *language_detection_model_path_;
+  }
+
+  std::optional<proto::FeatureTextSafetyConfiguration> safety_config;
+  if (!adapter->CanSkipTextSafety()) {
+    CHECK(safety_model_info_);
     safety_config =
         safety_model_info_->GetConfig(ToModelExecutionFeatureProto(feature));
-
-    if (safety_config) {
-      model_paths.ts_data = safety_model_info_->GetDataPath();
-      model_paths.ts_sp_model = safety_model_info_->GetSpModelPath();
-
-      if (!safety_config->allowed_languages().empty() &&
-          language_detection_model_path_) {
-        model_paths.language_detection_model = *language_detection_model_path_;
-      }
-    }
-  }
-  if (features::GetOnDeviceModelMustUseSafetyModel()) {
     CHECK(safety_config);
     CHECK(!model_paths.ts_data.empty() && !model_paths.ts_sp_model.empty());
     if (!safety_config->allowed_languages().empty()) {
       CHECK(!model_paths.language_detection_model.empty());
     }
   }
-  auto adapter = GetFeatureAdapter(feature);
-  CHECK(adapter);
 
   std::optional<on_device_model::AdaptationAssetPaths> adaptation_assets;
   if (features::internal::IsOnDeviceModelAdaptationEnabled(feature)) {

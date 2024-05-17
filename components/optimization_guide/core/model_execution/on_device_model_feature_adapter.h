@@ -53,6 +53,8 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       const std::string& text) const;
 
+  bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
+
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();
