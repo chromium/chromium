@@ -671,7 +671,8 @@ protocol::Response InspectorPageAgent::setAdBlockingEnabled(bool enable) {
 
 protocol::Response InspectorPageAgent::reload(
     Maybe<bool> optional_bypass_cache,
-    Maybe<String> optional_script_to_evaluate_on_load) {
+    Maybe<String> optional_script_to_evaluate_on_load,
+    Maybe<String> loader_id) {
   pending_script_to_evaluate_on_load_once_.Set(
       optional_script_to_evaluate_on_load.value_or(""));
   v8_session_->setSkipAllPauses(true);

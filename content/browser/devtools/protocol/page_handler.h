@@ -121,6 +121,7 @@ class PageHandler : public DevToolsDomainHandler,
   Response Close() override;
   void Reload(Maybe<bool> bypassCache,
               Maybe<std::string> script_to_evaluate_on_load,
+              Maybe<std::string> loader_id,
               std::unique_ptr<ReloadCallback> callback) override;
   void Navigate(const std::string& url,
                 Maybe<std::string> referrer,

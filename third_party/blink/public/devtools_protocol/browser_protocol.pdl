@@ -8710,6 +8710,10 @@ domain Page
       # If set, the script will be injected into all frames of the inspected page after reload.
       # Argument will be ignored if reloading dataURL origin.
       optional string scriptToEvaluateOnLoad
+      # If set, an error will be thrown if the target page's main frame's
+      # loader id does not match the provided id. This prevents accidentally
+      # reloading an unintended target in case there's a racing navigation.
+      experimental optional Network.LoaderId loaderId
 
   # Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
   experimental deprecated command removeScriptToEvaluateOnLoad
