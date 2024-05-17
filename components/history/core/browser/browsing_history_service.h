@@ -177,6 +177,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
 
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  protected:
   // Constructor that allows specifying more dependencies for unit tests.

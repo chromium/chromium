@@ -24,6 +24,22 @@
 
 namespace {
 
+// Enum class representing the results of attempting to use a preloaded WebUI
+// when WebUIContentsPreloadedManager::MakeContents() is called.
+// The description of each value is also in tools/metrics/histograms/enums.xml.
+enum class WebUIPreloadResult {
+  // No preloaded WebUI is available when a WebUI is requested.
+  kNoPreload = 0,
+  // The preloaded WebUI matches the requested WebUI.
+  kHit = 1,
+  // The preloaded WebUI is redirected to the requested WebUI.
+  kHitRedirected = 2,
+  // The preloaded WebUI does not match the requested WebUI and cannot be
+  // redirected.
+  kMiss = 3,
+  kMaxValue = kMiss,
+};
+
 // This factory is used to get notification for the browser context shutdown.
 class BrowserContextShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
@@ -75,29 +91,17 @@ content::WebUIController* GetWebUIController(
   return webui->GetController();
 }
 
-// Enum class representing the results of attempting to use a preloaded WebUI
-// when WebUIContentsPreloadedManager::MakeContents() is called.
-// The description of each value is also in tools/metrics/histograms/enums.xml.
-enum class WebUIPreloadResult {
-  // No preloaded WebUI is available when a WebUI is requested.
-  kNoPreload = 0,
-  // The preloaded WebUI matches the requested WebUI.
-  kHit = 1,
-  // The preloaded WebUI is redirected to the requested WebUI.
-  kHitRedirected = 2,
-  // The preloaded WebUI does not match the requested WebUI and cannot be
-  // redirected.
-  kMiss = 3,
-  kMaxValue = kMiss,
-};
+std::vector<GURL> GetAllPreloadableWebUIURLs() {
+  // Top 3 most used Top Chrome WebUIs.
+  // TODO(crbug.com/40168622): add more Top Chrome WebUIs.
+  static const base::NoDestructor<std::vector<GURL>> s_preloadable_webui_urls(
+      {GURL(chrome::kChromeUITabSearchURL),
+       GURL(chrome::kChromeUIHistoryClustersSidePanelURL),
+       GURL(chrome::kChromeUIBookmarksSidePanelURL)});
+  return *s_preloadable_webui_urls;
+}
 
 }  // namespace
-
-// Currently we preloads Tab Search. In practice, this also benefits other
-// WebUIs. This is likely due to reused render processes that increase cache
-// hits and reduce re-creation of common structs.
-const char* const WebUIContentsPreloadManager::kPreloadedWebUIURL =
-    chrome::kChromeUITabSearchURL;
 
 // A stub WebUI page embdeder that captures the ready-to-show signal.
 class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
@@ -207,13 +211,41 @@ void WebUIContentsPreloadManager::PreloadForBrowserContextForTesting(
   PreloadForBrowserContext(browser_context);
 }
 
+GURL WebUIContentsPreloadManager::GetNextWebUIURLToPreloadForTesting(
+    content::BrowserContext* browser_context) const {
+  return GetNextWebUIURLToPreload(browser_context);
+}
+
+void WebUIContentsPreloadManager::SetNextWebUIUrlToPreloadForTesting(
+    GURL webui_url) {
+  next_webui_url_to_preload_for_testing_ = webui_url;
+}
+
+GURL WebUIContentsPreloadManager::GetNextWebUIURLToPreload(
+    content::BrowserContext* browser_context) const {
+  if (next_webui_url_to_preload_for_testing_) {
+    return *next_webui_url_to_preload_for_testing_;
+  }
+
+  // TODO(crbug.com/40168622): smartly select next WebUI to preload under the
+  // the current state of the browser and past engagement data.
+  return GURL(chrome::kChromeUITabSearchURL);
+}
+
+// static
+std::vector<GURL>
+WebUIContentsPreloadManager::GetAllPreloadableWebUIURLsForTesting() {
+  return GetAllPreloadableWebUIURLs();
+}
+
 void WebUIContentsPreloadManager::PreloadForBrowserContext(
     content::BrowserContext* browser_context) {
   if (!ShouldPreloadForBrowserContext(browser_context)) {
     return;
   }
 
-  SetPreloadedContents(CreateNewContents(browser_context));
+  SetPreloadedContents(CreateNewContents(
+      browser_context, GetNextWebUIURLToPreload(browser_context)));
 }
 
 void WebUIContentsPreloadManager::SetPreloadedContents(
@@ -266,7 +298,8 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
 
   if (ShouldPreloadForBrowserContext(browser_context)) {
     // Preloads a new contents.
-    SetPreloadedContents(CreateNewContents(browser_context));
+    SetPreloadedContents(CreateNewContents(
+        browser_context, GetNextWebUIURLToPreload(browser_context)));
   }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
@@ -277,8 +310,12 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
   return result;
 }
 
-GURL WebUIContentsPreloadManager::GetPreloadedURLForTesting() const {
-  return GURL(kPreloadedWebUIURL);
+std::optional<GURL> WebUIContentsPreloadManager::GetPreloadedURLForTesting()
+    const {
+  if (!preloaded_web_contents_) {
+    return std::nullopt;
+  }
+  return preloaded_web_contents_->GetVisibleURL();
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {

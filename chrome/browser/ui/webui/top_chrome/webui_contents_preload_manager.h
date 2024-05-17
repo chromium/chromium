@@ -74,7 +74,8 @@ class WebUIContentsPreloadManager {
     return preloaded_web_contents_.get();
   }
 
-  GURL GetPreloadedURLForTesting() const;
+  // Returns nullopt if there is no contents preloaded.
+  std::optional<GURL> GetPreloadedURLForTesting() const;
 
   // Disable navigations for tests that don't have //content properly
   // initialized.
@@ -83,9 +84,17 @@ class WebUIContentsPreloadManager {
   void PreloadForBrowserContextForTesting(
       content::BrowserContext* browser_context);
 
+  GURL GetNextWebUIURLToPreloadForTesting(
+      content::BrowserContext* browser_context) const;
+
+  void SetNextWebUIUrlToPreloadForTesting(GURL webui_url);
+
+  static std::vector<GURL> GetAllPreloadableWebUIURLsForTesting();
+
  private:
   class WebUIControllerEmbedderStub;
-  static const char* const kPreloadedWebUIURL;
+
+  GURL GetNextWebUIURLToPreload(content::BrowserContext* browser_context) const;
 
   // Preload a WebContents for `browser_context`.
   // There is at most one preloaded contents at any time.
@@ -101,7 +110,7 @@ class WebUIContentsPreloadManager {
 
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
-      GURL url = GURL(kPreloadedWebUIURL));
+      GURL url);
 
   void LoadURLForContents(content::WebContents* web_contents, GURL url);
 
@@ -121,6 +130,8 @@ class WebUIContentsPreloadManager {
   // Disable navigations for views unittests because they don't initialize
   // //content properly.
   bool is_navigation_disabled_for_test_ = false;
+
+  std::optional<GURL> next_webui_url_to_preload_for_testing_;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
   // A stub WebUI page embdeder that captures the ready-to-show signal.

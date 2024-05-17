@@ -190,16 +190,19 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       BookmarkModelFactory::GetForBrowserContext(profile);
   source->AddString(
       "bookmarksBarId",
-      base::NumberToString(
-          bookmark_model ? bookmark_model->bookmark_bar_node()->id() : -1));
+      base::NumberToString(bookmark_model && bookmark_model->bookmark_bar_node()
+                               ? bookmark_model->bookmark_bar_node()->id()
+                               : -1));
   source->AddString(
       "otherBookmarksId",
-      base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
-                                          : -1));
+      base::NumberToString(bookmark_model && bookmark_model->other_node()
+                               ? bookmark_model->other_node()->id()
+                               : -1));
   source->AddString(
       "mobileBookmarksId",
-      base::NumberToString(bookmark_model ? bookmark_model->mobile_node()->id()
-                                          : -1));
+      base::NumberToString(bookmark_model && bookmark_model->mobile_node()
+                               ? bookmark_model->mobile_node()->id()
+                               : -1));
   bookmarks::ManagedBookmarkService* managed =
       ManagedBookmarkServiceFactory::GetForProfile(profile);
   source->AddString("managedBookmarksFolderId",
