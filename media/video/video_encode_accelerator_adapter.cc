@@ -210,10 +210,11 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB reuse_cb =
         base::BindPostTaskToCurrentDefault(
             base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this));
-    const gpu::MailboxHolder kEmptyMailBoxes[media::VideoFrame::kMaxPlanes] =
-        {};
+    scoped_refptr<gpu::ClientSharedImage>
+        kEmptySharedImages[media::VideoFrame::kMaxPlanes];
     return VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(visible_size), visible_size, std::move(gmb), kEmptyMailBoxes,
+        gfx::Rect(visible_size), visible_size, std::move(gmb),
+        kEmptySharedImages, gpu::SyncToken(), /*texture_target=*/0,
         std::move(reuse_cb), base::TimeDelta());
   }
 

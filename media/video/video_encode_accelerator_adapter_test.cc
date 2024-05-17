@@ -104,10 +104,12 @@ class VideoEncodeAcceleratorAdapterTest
            gmb->stride(1) * gmb_size.height() / 2);
     gmb->Unmap();
 
-    gpu::MailboxHolder empty_mailboxes[media::VideoFrame::kMaxPlanes];
+    scoped_refptr<gpu::ClientSharedImage>
+        empty_shared_images[media::VideoFrame::kMaxPlanes];
     auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(gmb_size), size, std::move(gmb), empty_mailboxes,
-        base::NullCallback(), timestamp);
+        gfx::Rect(gmb_size), size, std::move(gmb), empty_shared_images,
+        gpu::SyncToken(), /*texture_target=*/0, base::NullCallback(),
+        timestamp);
     frame->set_color_space(kYUVColorSpace);
     return frame;
   }

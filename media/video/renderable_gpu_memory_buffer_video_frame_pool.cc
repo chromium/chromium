@@ -75,8 +75,8 @@ class FrameResources {
   const gfx::Size coded_size_;
   const gfx::ColorSpace color_space_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-  gpu::MailboxHolder mailbox_holders_[VideoFrame::kMaxPlanes];
   scoped_refptr<gpu::ClientSharedImage> shared_images_[VideoFrame::kMaxPlanes];
+  gpu::SyncToken sync_token_;
 };
 
 // The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
@@ -170,8 +170,7 @@ FrameResources::~FrameResources() {
     if (!shared_images_[i]) {
       continue;
     }
-    context->DestroySharedImage(mailbox_holders_[i].sync_token,
-                                std::move(shared_images_[i]));
+    context->DestroySharedImage(sync_token_, std::move(shared_images_[i]));
   }
 }
 
@@ -251,13 +250,7 @@ bool FrameResources::Initialize() {
         shared_images_[0] = context->CreateSharedImage(
             gpu_memory_buffer_.get(), viz::MultiPlaneFormat::kNV12,
             color_space_, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            kSharedImageUsage, mailbox_holders_[0].sync_token);
-        if (shared_images_[0]) {
-          mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
-        }
-        mailbox_holders_[0].texture_target =
-            shared_images_[0] ? shared_images_[0]->GetTextureTargetForOverlays()
-                              : GL_TEXTURE_2D;
+            kSharedImageUsage, sync_token_);
         return true;
       }
 
@@ -270,15 +263,9 @@ bool FrameResources::Initialize() {
         shared_images_[plane] = context->CreateSharedImage(
             gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-            mailbox_holders_[plane].sync_token);
-        if (shared_images_[plane]) {
-          mailbox_holders_[plane].mailbox = shared_images_[plane]->mailbox();
-        }
-        mailbox_holders_[plane].texture_target =
-            shared_images_[plane]
-                ? shared_images_[plane]->GetTextureTargetForOverlays()
-                : GL_TEXTURE_2D;
+            sync_token_);
       }
+
       return true;
     }
     case PIXEL_FORMAT_ABGR:
@@ -288,12 +275,7 @@ bool FrameResources::Initialize() {
       shared_images_[0] = context->CreateSharedImage(
           gpu_memory_buffer_.get(), image_format, color_space_,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-          mailbox_holders_[0].sync_token);
-      if (shared_images_[0]) {
-        mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
-        mailbox_holders_[0].texture_target =
-            shared_images_[0]->GetTextureTargetForOverlays();
-      }
+          sync_token_);
       return true;
     }
     default:
@@ -312,9 +294,11 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   const gfx::Rect visible_rect(coded_size_);
   const gfx::Size natural_size = coded_size_;
   auto video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-      visible_rect, natural_size, std::move(gpu_memory_buffer_),
-      mailbox_holders_, VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(),
-      base::TimeDelta());
+      visible_rect, natural_size, std::move(gpu_memory_buffer_), shared_images_,
+      sync_token_,
+      shared_images_[0] ? shared_images_[0]->GetTextureTargetForOverlays()
+                        : GL_TEXTURE_2D,
+      VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), base::TimeDelta());
   if (!video_frame) {
     return nullptr;
   }
@@ -346,9 +330,7 @@ void FrameResources::ReturnGpuMemoryBufferFromFrame(
     const gpu::SyncToken& sync_token) {
   DCHECK(!gpu_memory_buffer_);
   gpu_memory_buffer_ = std::move(gpu_memory_buffer);
-  for (auto& holder : mailbox_holders_) {
-    holder.sync_token = sync_token;
-  }
+  sync_token_ = sync_token;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
