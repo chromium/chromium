@@ -95,10 +95,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context) override;
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
-  void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
-                            const std::string& old_password) override;
-  void ResyncEncryptedData(bool ephemeral,
-                           std::unique_ptr<UserContext> user_context) override;
 
  protected:
   ~AuthSessionAuthenticator() override;

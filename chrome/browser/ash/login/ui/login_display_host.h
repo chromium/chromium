@@ -196,14 +196,6 @@ class LoginDisplayHost {
   // Cancels current password changed flow.
   virtual void CancelPasswordChangedFlow() = 0;
 
-  // Decrypt cryptohome using user provided `old_password` and migrate to new
-  // password.
-  virtual void MigrateUserData(const std::string& old_password) = 0;
-
-  // Ignore password change, remove existing cryptohome and force full sync of
-  // user data.
-  virtual void ResyncUserData() = 0;
-
   // Handles an accelerator action.
   // Returns `true` if the accelerator was handled.
   virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;

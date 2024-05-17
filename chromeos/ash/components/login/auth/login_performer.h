@@ -103,12 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void OnLocalAuthenticationRequired(
       std::unique_ptr<UserContext> user_context) override;
 
-  // Migrates cryptohome using |old_password| specified.
-  void RecoverEncryptedData(const std::string& old_password);
-
-  // Reinitializes cryptohome with the new password.
-  void ResyncEncryptedData();
-
   // Returns latest auth error.
   const GoogleServiceAuthError& error() const {
     return last_login_failure_.error();

@@ -85,7 +85,7 @@ void AuthSessionAuthenticator::CompleteLogin(
   CompleteLoginImpl(ephemeral, std::move(user_context));
 }
 
-// Implementation part, shared by CompleteLogin and ResyncEncryptedData.
+// Implementation part, called by CompleteLogin.
 void AuthSessionAuthenticator::CompleteLoginImpl(
     bool ephemeral,
     std::unique_ptr<UserContext> context) {
@@ -781,85 +781,6 @@ void AuthSessionAuthenticator::OnAuthSuccess() {
 
 void AuthSessionAuthenticator::OnAuthFailure(const AuthFailure& error) {
   NOTIMPLEMENTED();
-}
-
-void AuthSessionAuthenticator::RecoverEncryptedData(
-    std::unique_ptr<UserContext> context,
-    const std::string& old_password) {
-  DCHECK(context);
-  DCHECK(!context->GetAuthSessionId().empty());
-  LOGIN_LOG(USER) << "Attempting to update user password";
-
-  auto* password_factor =
-      context->GetAuthFactorsData().FindOnlinePasswordFactor();
-  DCHECK(password_factor);
-  std::string key_label = password_factor->ref().label().value();
-
-  if (!context->HasReplacementKey()) {
-    // Assume that there was an attempt to use the key, so it is was already
-    // hashed.
-    DCHECK(context->GetKey()->GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN);
-    // Make sure that the key has correct label.
-    context->GetKey()->SetLabel(key_label);
-    context->SaveKeyForReplacement();
-  }
-
-  Key auth_key(old_password);
-  auth_key.SetLabel(key_label);
-  context->SetKey(auth_key);
-
-  AuthErrorCallback error_callback = base::BindOnce(
-      &AuthSessionAuthenticator::ProcessCryptohomeError,
-      weak_factory_.GetWeakPtr(), AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
-
-  // Existing users might require encryption migration: intercept related
-  // error codes.
-  error_callback =
-      base::BindOnce(&AuthSessionAuthenticator::HandleMigrationRequired,
-                     weak_factory_.GetWeakPtr(), std::move(error_callback));
-  // As we are in password change flow, all auth failures should be handled
-  // as password changed errors to be redirected correctly.
-  error_callback =
-      base::BindOnce(&AuthSessionAuthenticator::HandlePasswordChangeDetected,
-                     weak_factory_.GetWeakPtr(), std::move(error_callback));
-
-  AuthSuccessCallback success_callback = base::BindOnce(
-      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
-
-  std::vector<AuthOperation> steps;
-  steps.push_back(base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
-                                 auth_performer_->AsWeakPtr()));
-  steps.push_back(base::BindOnce(&AuthFactorEditor::ReplaceContextKey,
-                                 auth_factor_editor_->AsWeakPtr()));
-  steps.push_back(base::BindOnce(&MountPerformer::MountPersistentDirectory,
-                                 mount_performer_->AsWeakPtr()));
-  if (safe_mode_delegate_->IsSafeMode()) {
-    steps.push_back(
-        base::BindOnce(&AuthSessionAuthenticator::CheckOwnershipOperation,
-                       weak_factory_.GetWeakPtr()));
-  }
-  RunOperationChain(std::move(context), std::move(steps),
-                    std::move(success_callback), std::move(error_callback));
-}
-
-void AuthSessionAuthenticator::ResyncEncryptedData(
-    bool ephemeral,
-    std::unique_ptr<UserContext> context) {
-  LOGIN_LOG(USER) << "Re-create cryptohome";
-
-  AuthErrorCallback error_callback = base::BindOnce(
-      &AuthSessionAuthenticator::ProcessCryptohomeError,
-      weak_factory_.GetWeakPtr(), AuthFailure::DATA_REMOVAL_FAILED);
-
-  AuthSuccessCallback success_callback =
-      base::BindOnce(&AuthSessionAuthenticator::CompleteLoginImpl,
-                     weak_factory_.GetWeakPtr(), ephemeral);
-
-  std::vector<AuthOperation> steps;
-  steps.push_back(base::BindOnce(&MountPerformer::RemoveUserDirectory,
-                                 mount_performer_->AsWeakPtr()));
-  RunOperationChain(std::move(context), std::move(steps),
-                    std::move(success_callback), std::move(error_callback));
 }
 
 void AuthSessionAuthenticator::PrepareForNewAttempt(

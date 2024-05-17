@@ -268,22 +268,6 @@ void LoginPerformer::LoginAuthenticated(
   authenticator_->LoginAuthenticated(std::move(user_context));
 }
 
-void LoginPerformer::RecoverEncryptedData(const std::string& old_password) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  authenticator_->RecoverEncryptedData(
-      std::make_unique<UserContext>(user_context_), old_password);
-  user_context_.ClearSecrets();
-}
-
-void LoginPerformer::ResyncEncryptedData() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  authenticator_->ResyncEncryptedData(
-      user_manager::UserManager::Get()->IsEphemeralAccountId(
-          user_context_.GetAccountId()),
-      std::make_unique<UserContext>(user_context_));
-  user_context_.ClearSecrets();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // LoginPerformer, private:
 

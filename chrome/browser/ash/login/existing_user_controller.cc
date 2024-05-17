@@ -1293,22 +1293,6 @@ void ExistingUserController::CancelPasswordChangedFlow() {
   PerformLoginFinishedActions(true /* start auto login timer */);
 }
 
-void ExistingUserController::MigrateUserData(const std::string& old_password) {
-  // LoginPerformer instance has state of the user so it should exist.
-  if (login_performer_.get()) {
-    VLOG(1) << "Migrate the existing cryptohome to new password.";
-    login_performer_->RecoverEncryptedData(old_password);
-  }
-}
-
-void ExistingUserController::ResyncUserData() {
-  // LoginPerformer instance has state of the user so it should exist.
-  if (login_performer_.get()) {
-    VLOG(1) << "Create a new cryptohome and resync user data.";
-    login_performer_->ResyncEncryptedData();
-  }
-}
-
 void ExistingUserController::StartAutoLoginTimer() {
   auto session_state = session_manager::SessionManager::Get()->session_state();
   if (is_login_in_progress_ ||

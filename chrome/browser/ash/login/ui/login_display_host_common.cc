@@ -449,18 +449,6 @@ void LoginDisplayHostCommon::CancelPasswordChangedFlow() {
   OnCancelPasswordChangedFlow();
 }
 
-void LoginDisplayHostCommon::MigrateUserData(const std::string& old_password) {
-  if (GetExistingUserController()) {
-    GetExistingUserController()->MigrateUserData(old_password);
-  }
-}
-
-void LoginDisplayHostCommon::ResyncUserData() {
-  if (GetExistingUserController()) {
-    GetExistingUserController()->ResyncUserData();
-  }
-}
-
 bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   if (action == LoginAcceleratorAction::kShowFeedback) {
     login_feedback_ = std::make_unique<LoginFeedback>(

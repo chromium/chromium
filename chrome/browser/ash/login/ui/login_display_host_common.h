@@ -62,8 +62,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       const AccountId& account_id,
       const std::optional<user_manager::UserType>& user_type) final;
   void CancelPasswordChangedFlow() final;
-  void MigrateUserData(const std::string& old_password) final;
-  void ResyncUserData() final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
   base::WeakPtr<quick_start::TargetDeviceBootstrapController>

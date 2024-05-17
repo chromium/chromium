@@ -60,8 +60,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
   void CancelPasswordChangedFlow() override;
-  void MigrateUserData(const std::string& old_password) override;
-  void ResyncUserData() override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;

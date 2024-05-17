@@ -85,14 +85,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Cancels current password changed flow.
   void CancelPasswordChangedFlow();
 
-  // Decrypt cryptohome using user provided `old_password` and migrate to new
-  // password.
-  void MigrateUserData(const std::string& old_password);
-
-  // Ignore password change, remove existing cryptohome and force full sync of
-  // user data.
-  void ResyncUserData();
-
   // Resumes login process once local authentication is completed.
   void ResumeAfterLocalAuthentication(std::unique_ptr<UserContext>);
   // Invoked if login process was cancelled at local authentication.

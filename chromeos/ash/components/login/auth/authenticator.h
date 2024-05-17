@@ -91,23 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
   // Must be called on the UI thread.
   virtual void OnAuthFailure(const AuthFailure& error) = 0;
 
-  // Call these methods on the UI thread.
-  // If a password logs the user in online, but cannot be used to
-  // mount their cryptohome, we expect that a password change has
-  // occurred.
-  // Call this method to migrate the user's encrypted data
-  // forward to use their new password. |old_password| is the password
-  // their data was last encrypted with.
-  // |user_context| contains key with new password to be set up.
-  virtual void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
-                                    const std::string& old_password) = 0;
-
-  // Call this method to erase the user's encrypted data
-  // and create a new cryptohome.
-  virtual void ResyncEncryptedData(
-      bool ephemeral,
-      std::unique_ptr<UserContext> user_context) = 0;
-
   // Sets consumer explicitly.
   void SetConsumer(AuthStatusConsumer* consumer);
 

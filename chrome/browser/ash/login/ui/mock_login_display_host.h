@@ -70,8 +70,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               (const AccountId&, const std::optional<user_manager::UserType>&),
               (override));
   MOCK_METHOD(void, CancelPasswordChangedFlow, (), (override));
-  MOCK_METHOD(void, MigrateUserData, (const std::string&), (override));
-  MOCK_METHOD(void, ResyncUserData, (), (override));
   MOCK_METHOD(bool,
               HandleAccelerator,
               (LoginAcceleratorAction action),

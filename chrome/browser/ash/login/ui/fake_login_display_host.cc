@@ -137,10 +137,6 @@ void FakeLoginDisplayHost::UpdateOobeDialogState(OobeDialogState state) {}
 
 void FakeLoginDisplayHost::CancelPasswordChangedFlow() {}
 
-void FakeLoginDisplayHost::MigrateUserData(const std::string& old_password) {}
-
-void FakeLoginDisplayHost::ResyncUserData() {}
-
 bool FakeLoginDisplayHost::HandleAccelerator(LoginAcceleratorAction action) {
   return false;
 }
