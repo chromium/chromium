@@ -503,7 +503,7 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
     return false;
   }
   return base::Contains(safe_browsing::GetExcludedCountries(),
-                        variations_service->GetStoredPermanentCountry());
+                        variations_service->GetLatestCountry());
 }
 
 void ChromePasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(

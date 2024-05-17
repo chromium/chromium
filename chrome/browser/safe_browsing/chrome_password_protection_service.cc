@@ -1658,7 +1658,7 @@ bool ChromePasswordProtectionService::IsInExcludedCountry() {
   if (!variations_service)
     return false;
   return base::Contains(GetExcludedCountries(),
-                        variations_service->GetStoredPermanentCountry());
+                        variations_service->GetLatestCountry());
 }
 
 PasswordReuseEvent::SyncAccountType

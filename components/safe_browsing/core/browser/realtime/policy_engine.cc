@@ -67,8 +67,9 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
 
   // |variations_service| can be nullptr in tests.
   if (variations_service &&
-      IsInExcludedCountry(variations_service->GetStoredPermanentCountry()))
+      IsInExcludedCountry(variations_service->GetLatestCountry())) {
     return false;
+  }
 
   return IsUserEpOptedIn(pref_service) || IsUserMbbOptedIn(pref_service);
 }

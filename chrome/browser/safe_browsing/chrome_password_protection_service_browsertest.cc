@@ -49,7 +49,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/user_names.h"
-#include "components/variations/service/variations_service.h"
+#include "components/variations/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -221,17 +221,17 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                        VerifyIsInExcludedCountry) {
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
   const std::string non_excluded_countries[] = {"be", "br", "ca", "de", "es",
                                                 "fr", "ie", "in", "jp", "nl",
                                                 "ru", "se", "us"};
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
   for (auto country : non_excluded_countries) {
-    variations_service->OverrideStoredPermanentCountry(country);
+    g_browser_process->local_state()->SetString(
+        variations::prefs::kVariationsCountry, country);
     EXPECT_FALSE(service->IsInExcludedCountry());
   }
-  variations_service->OverrideStoredPermanentCountry("cn");
+  g_browser_process->local_state()->SetString(
+      variations::prefs::kVariationsCountry, "cn");
   EXPECT_TRUE(service->IsInExcludedCountry());
 }
 
