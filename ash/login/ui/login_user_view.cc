@@ -599,6 +599,14 @@ gfx::Size LoginUserView::CalculatePreferredSize(
   }
 }
 
+int LoginUserView::GetHeightForWidth(int w) const {
+  // TODO(crbug.com/40232718): The behavior of GetHeightForWidth is inconsistent
+  // with the behavior of CalculatePreferredSize. This results in LoginUserView
+  // having different heights in different layouts. There is a conflict between
+  // multiple pixel tests.
+  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+}
+
 void LoginUserView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   tap_button_->SetBoundsRect(GetLocalBounds());

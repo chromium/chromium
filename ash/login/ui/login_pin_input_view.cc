@@ -33,8 +33,6 @@ namespace {
 constexpr const int kMaxWidthPinInputDp = 280;
 constexpr const int kFieldWidth = 24;
 constexpr const int kFieldSpace = 8;
-// Total height of the view.
-constexpr const int kPinInputTotalHeightDp = 37;
 // Default length
 constexpr const int kPinAutosubmitMinLength = 6;
 constexpr const int kPinAutosubmitMaxLength = 12;
@@ -280,8 +278,10 @@ bool LoginPinInputView::IsReadOnly() const {
 gfx::Size LoginPinInputView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int ideal_size = kFieldWidth * length_ + kFieldSpace * (length_ - 1);
-  return gfx::Size(std::min(kMaxWidthPinInputDp, ideal_size),
-                   kPinInputTotalHeightDp);
+  const int available_width = std::min(kMaxWidthPinInputDp, ideal_size);
+  return gfx::Size(
+      available_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, available_width));
 }
 
 void LoginPinInputView::RequestFocus() {
