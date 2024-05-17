@@ -132,7 +132,9 @@ class VIEWS_EXPORT TabbedPane : public FlexLayoutView {
   // tab.
   bool MoveSelectionBy(int delta);
 
-  // Overridden from View:
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -250,8 +252,6 @@ class TabbedPaneTabStrip : public View, public gfx::AnimationDelegate {
 
  protected:
   // View:
-  gfx::Size CalculatePreferredSize(
-      const SizeBounds& available_size) const override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
 
  private:

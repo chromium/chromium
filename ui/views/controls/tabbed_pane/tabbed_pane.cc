@@ -408,23 +408,6 @@ TabbedPane::TabStripStyle TabbedPaneTabStrip::GetStyle() const {
   return style_;
 }
 
-gfx::Size TabbedPaneTabStrip::CalculatePreferredSize(
-    const SizeBounds& available_size) const {
-  // In horizontal mode, use the preferred size as determined by the largest
-  // child or the minimum size necessary to display the tab titles, whichever is
-  // larger.
-  if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    return GetLayoutManager()->GetPreferredSize(this, available_size);
-  }
-
-  // In vertical mode, Tabstrips don't require any minimum space along their
-  // main axis, and can shrink all the way to zero size.  Only the cross axis
-  // thickness matters.
-  const gfx::Size size =
-      GetLayoutManager()->GetPreferredSize(this, available_size);
-  return gfx::Size(size.width(), 0);
-}
-
 void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   // Do not draw border line in kHighlight mode.
   if (GetStyle() == TabbedPane::TabStripStyle::kHighlight) {
@@ -654,6 +637,22 @@ bool TabbedPane::MoveSelectionBy(int delta) {
   }
   SelectTab(tab_strip_->GetTabAtDeltaFromSelected(delta));
   return true;
+}
+
+gfx::Size TabbedPane::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  // In horizontal mode, use the preferred size as determined by the largest
+  // child or the minimum size necessary to display the tab titles, whichever is
+  // larger.
+  if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
+    return FlexLayoutView::CalculatePreferredSize(available_size);
+  }
+
+  // In vertical mode, Tabstrips don't require any minimum space along their
+  // main axis, and can shrink all the way to zero size.
+  const gfx::Size size =
+      GetLayoutManager()->GetPreferredSize(this, available_size);
+  return gfx::Size(size.width(), contents_->GetHeightForWidth(size.width()));
 }
 
 bool TabbedPane::AcceleratorPressed(const ui::Accelerator& accelerator) {
