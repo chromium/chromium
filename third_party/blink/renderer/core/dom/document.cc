@@ -3423,9 +3423,6 @@ void Document::open(LocalDOMWindow* entered_window,
     return;
   }
 
-  if (!AllowedToUseDynamicMarkUpInsertion("open", exception_state))
-    return;
-
   if (entered_window && !entered_window->GetFrame())
     return;
 
@@ -3894,9 +3891,6 @@ void Document::close(ExceptionState& exception_state) {
         "Custom Element constructor should not use close().");
     return;
   }
-
-  if (!AllowedToUseDynamicMarkUpInsertion("close", exception_state))
-    return;
 
   close();
 }
@@ -4504,9 +4498,6 @@ void Document::writeln(const String& text,
 void Document::write(v8::Isolate* isolate,
                      const Vector<String>& text,
                      ExceptionState& exception_state) {
-  if (!AllowedToUseDynamicMarkUpInsertion("write", exception_state))
-    return;
-
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
@@ -4521,9 +4512,6 @@ void Document::write(v8::Isolate* isolate,
 void Document::writeln(v8::Isolate* isolate,
                        const Vector<String>& text,
                        ExceptionState& exception_state) {
-  if (!AllowedToUseDynamicMarkUpInsertion("writeln", exception_state))
-    return;
-
   StringBuilder builder;
   for (const String& string : text)
     builder.Append(string);
@@ -7701,32 +7689,6 @@ HTMLLinkElement* Document::LinkCanonical() const {
   return GetLinkElement(this, [](HTMLLinkElement& link_element) {
     return link_element.RelAttribute().IsCanonical();
   });
-}
-
-bool Document::AllowedToUseDynamicMarkUpInsertion(
-    const char* api_name,
-    ExceptionState& exception_state) {
-  if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled()) {
-    return true;
-  }
-  if (!GetFrame() || GetExecutionContext()->IsFeatureEnabled(
-                         mojom::blink::DocumentPolicyFeature::kDocumentWrite,
-                         ReportOptions::kReportOnFailure)) {
-    return true;
-  }
-
-  // TODO(ekaramad): Throwing an exception seems an ideal resolution to mishaps
-  // in using the API against the policy. But this cannot be applied to cross-
-  // origin as there are security risks involved. We should perhaps unload the
-  // whole frame instead of throwing.
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotAllowedError,
-      String::Format(
-          "The use of method '%s' has been blocked by permissions policy. The "
-          "feature "
-          "'document-write' is disabled in this document.",
-          api_name));
-  return false;
 }
 
 ukm::UkmRecorder* Document::UkmRecorder() {

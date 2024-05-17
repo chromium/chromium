@@ -29,7 +29,7 @@ enum DocumentPolicyFeature {
   // Controls the ability of the document to use several dynamic markup API
   // which interfere with document's input stream (document.write(),
   // document.close(), etc.).
-  kDocumentWrite = 9,
+  // kDocumentWrite = 9, // Removed.
   // Controls whether synchronous script elements will run.
   kSyncScript = 10,
   // Controls whether or not the JS Self-Profiling API is enabled.

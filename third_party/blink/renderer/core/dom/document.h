@@ -2307,11 +2307,6 @@ class CORE_EXPORT Document : public ContainerNode,
   const AtomicString& BodyAttributeValue(const QualifiedName&) const;
   void SetBodyAttribute(const QualifiedName&, const AtomicString&);
 
-  // Returns true if use of |method_name| for markup insertion is allowed by
-  // permissions policy; otherwise returns false and throws a DOM exception.
-  bool AllowedToUseDynamicMarkUpInsertion(const char* method_name,
-                                          ExceptionState&);
-
   void SetFreezingInProgress(bool is_freezing_in_progress) {
     is_freezing_in_progress_ = is_freezing_in_progress;
   }
