@@ -5354,6 +5354,10 @@
                     "name": "EnabledEarlyDiscard_20240515",
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootPSIMemoryPolicy",
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 },
                 {
@@ -5364,6 +5368,10 @@
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootPSIMemoryPolicy",
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 },
                 {
@@ -5374,12 +5382,20 @@
                     },
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootPSIMemoryPolicy",
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 },
                 {
                     "name": "EnabledAvailableAdjustmentPsi_20240515",
                     "enable_features": [
                         "CrOSLateBootPsiAdjustAvailable"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPSIMemoryPolicy"
                     ]
                 },
                 {
@@ -5390,6 +5406,10 @@
                     },
                     "enable_features": [
                         "CrOSLateBootPsiAdjustAvailable"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPSIMemoryPolicy"
                     ]
                 },
                 {
@@ -5397,12 +5417,19 @@
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootPsiAdjustAvailable"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootPSIMemoryPolicy"
                     ]
                 },
                 {
                     "name": "EnabledPSIMemoryPolicy_20240515",
                     "enable_features": [
                         "CrOSLateBootPSIMemoryPolicy"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 },
                 {
@@ -5414,6 +5441,10 @@
                     },
                     "enable_features": [
                         "CrOSLateBootPSIMemoryPolicy"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootDiscardStaleAtModeratePressure",
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 },
                 {
@@ -5421,6 +5452,9 @@
                     "enable_features": [
                         "CrOSLateBootDiscardStaleAtModeratePressure",
                         "CrOSLateBootPSIMemoryPolicy"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootPsiAdjustAvailable"
                     ]
                 }
             ]
