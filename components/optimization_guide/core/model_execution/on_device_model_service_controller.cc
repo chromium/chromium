@@ -74,9 +74,8 @@ void OnDeviceModelServiceController::Init() {
 
 OnDeviceModelEligibilityReason OnDeviceModelServiceController::CanCreateSession(
     ModelBasedCapabilityKey feature) {
-  if (!base::FeatureList::IsEnabled(
-          features::kOptimizationGuideOnDeviceModel)) {
-    return OnDeviceModelEligibilityReason::kFeatureNotEnabled;
+  if (on_device_component_state_manager_) {
+    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
   }
 
   if (!model_metadata_) {
@@ -128,10 +127,6 @@ OnDeviceModelServiceController::CreateSession(
     base::WeakPtr<ModelQualityLogsUploaderService>
         model_quality_uploader_service,
     const std::optional<SessionConfigParams>& config_params) {
-  if (on_device_component_state_manager_) {
-    on_device_component_state_manager_->OnDeviceEligibleFeatureUsed();
-  }
-
   OnDeviceModelEligibilityReason reason = CanCreateSession(feature);
   CHECK_NE(reason, OnDeviceModelEligibilityReason::kUnknown);
   base::UmaHistogramEnumeration(
