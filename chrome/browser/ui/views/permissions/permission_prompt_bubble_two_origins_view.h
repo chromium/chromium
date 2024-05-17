@@ -11,6 +11,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_observer.h"
 
 // Bubble that prompts the user to grant or deny a permission request from from
 // a pair of origins.
@@ -27,7 +28,8 @@
 // |                           [ Block ] [ Allow ] |
 // -------------------------------------------------
 class PermissionPromptBubbleTwoOriginsView
-    : public PermissionPromptBubbleBaseView {
+    : public PermissionPromptBubbleBaseView,
+      public views::ViewObserver {
  public:
   PermissionPromptBubbleTwoOriginsView(
       Browser* browser,
@@ -75,6 +77,9 @@ class PermissionPromptBubbleTwoOriginsView
   void HelpCenterLinkClicked(const ui::Event& event);
 
   void MaybeShow();
+
+  // ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   // The task tracker for loading favicons.
   std::unique_ptr<base::CancelableTaskTracker> favicon_tracker_;

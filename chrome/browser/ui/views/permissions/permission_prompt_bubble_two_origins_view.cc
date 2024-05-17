@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
@@ -116,8 +117,14 @@ PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
       favicon_tracker_.get());
 }
 
-PermissionPromptBubbleTwoOriginsView::~PermissionPromptBubbleTwoOriginsView() =
-    default;
+PermissionPromptBubbleTwoOriginsView::~PermissionPromptBubbleTwoOriginsView() {
+  if (favicon_left_) {
+    favicon_left_->RemoveObserver(this);
+  }
+  if (favicon_right_) {
+    favicon_right_->RemoveObserver(this);
+  }
+}
 
 void PermissionPromptBubbleTwoOriginsView::AddedToWidget() {
   if (GetUrlIdentityObject().type != UrlIdentity::Type::kDefault) {
@@ -202,6 +209,7 @@ void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   favicon_left_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   favicon_left_->SetProperty(views::kMarginsKey,
                              gfx::Insets().set_right(favicon_margin));
+  favicon_left_->AddObserver(this);
 
   // Right favicon for embedding origin.
   favicon_right_ = favicon_container_->AddChildView(
@@ -209,6 +217,7 @@ void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   favicon_right_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
   favicon_right_->SetProperty(views::kMarginsKey,
                               gfx::Insets().set_left(favicon_margin));
+  favicon_right_->AddObserver(this);
 }
 
 void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
@@ -294,5 +303,17 @@ void PermissionPromptBubbleTwoOriginsView::MaybeShow() {
   if (favicon_left_received_ && favicon_right_received_ &&
       show_timer_.IsRunning()) {
     show_timer_.FireNow();
+  }
+}
+
+void PermissionPromptBubbleTwoOriginsView::OnViewIsDeleting(views::View* view) {
+  // This is necessary to avoid dangling pointers since the favicon views are
+  // owned by the custom title which is destroyed before this view.
+  view->RemoveObserver(this);
+  if (view == favicon_left_.get()) {
+    favicon_left_ = nullptr;
+  }
+  if (view == favicon_right_.get()) {
+    favicon_right_ = nullptr;
   }
 }

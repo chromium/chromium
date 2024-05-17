@@ -38,7 +38,11 @@ SubpageView::SubpageView(views::Button::PressedCallback callback,
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
-SubpageView::~SubpageView() = default;
+SubpageView::~SubpageView() {
+  if (title_) {
+    title_->RemoveObserver(this);
+  }
+}
 
 void SubpageView::SetTitle(const std::u16string& title) {
   title_->SetText(title);
@@ -91,6 +95,11 @@ void SubpageView::SetUpSubpageTitle(views::Button::PressedCallback callback) {
     title_width -= close_button_width;
   }
   title_->SetMaximumWidth(title_width);
+  // We need to observe the `title_` view for destruction in order to clear the
+  // raw_ptr to prevent a dangling reference. This is because the `title_` is
+  // owned by a view other than this view. That other view is destroyed prior
+  // to the destruction of this view.
+  title_->AddObserver(this);
 
   bubble_frame_view_->SetTitleView(std::move(title_view));
 }
@@ -119,6 +128,13 @@ void SubpageView::SetHeaderView(std::unique_ptr<views::View> header_view) {
 
 void SubpageView::SetFootnoteView(std::unique_ptr<views::View> footnote_view) {
   bubble_frame_view_->SetFootnoteView(std::move(footnote_view));
+}
+
+void SubpageView::OnViewIsDeleting(views::View* view) {
+  if (view == title_.get()) {
+    title_->RemoveObserver(this);
+    title_ = nullptr;
+  }
 }
 
 BEGIN_METADATA(SubpageView)

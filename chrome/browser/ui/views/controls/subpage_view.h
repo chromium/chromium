@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 // class Button;
@@ -29,7 +30,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kSubpageViewId);
 // |________________________________________________|
 // ||content view|                                  |
 // *-------------------------------------------------*
-class SubpageView : public views::View {
+class SubpageView : public views::View, public views::ViewObserver {
   METADATA_HEADER(SubpageView, views::View)
 
  public:
@@ -49,6 +50,9 @@ class SubpageView : public views::View {
 
  private:
   void SetUpSubpageTitle(views::Button::PressedCallback callback);
+
+  // ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   const raw_ptr<views::BubbleFrameView> bubble_frame_view_;
   raw_ptr<views::Label> title_ = nullptr;
