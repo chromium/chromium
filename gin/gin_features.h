@@ -22,6 +22,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8CodeMemoryWriteProtection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplugHighPriorityThreads);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8DecommitPooledPages);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ExperimentalRegexpEngine);
 GIN_EXPORT extern const base::FeatureParam<int> kV8FlushBytecodeOldAge;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushBaselineCode);

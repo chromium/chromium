@@ -18,6 +18,11 @@ BASE_FEATURE(kV8CompactWithStack,
              "V8CompactWithStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Decommit (rather than discard) pooled pages.
+BASE_FEATURE(kV8DecommitPooledPages,
+             "DecommitPooledPages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables optimization of JavaScript in V8.
 BASE_FEATURE(kV8OptimizeJavascript,
              "V8OptimizeJavascript",
