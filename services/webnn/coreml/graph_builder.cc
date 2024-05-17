@@ -557,7 +557,12 @@ GraphBuilder::CreateAndBuild(const mojom::GraphInfo& graph_info,
 GraphBuilder::GraphBuilder(const mojom::GraphInfo& graph_info,
                            base::FilePath ml_package_dir)
     : graph_info_(graph_info),
-      internal_operand_id_(graph_info_->id_to_operand_map.rbegin()->first + 1),
+      internal_operand_id_(
+          base::ranges::max_element(
+              graph_info_->id_to_operand_map,
+              {},
+              [](const auto& id_operand) { return id_operand.first; })
+              ->first),
       result_(std::make_unique<Result>(std::move(ml_package_dir))) {}
 
 GraphBuilder::~GraphBuilder() = default;
@@ -908,8 +913,9 @@ void GraphBuilder::AddPlaceholderInput(
             .second);
 
   if (operand.dimensions.empty()) {
-    uint64_t internal_operand_id = GenerateInternalOperandInfo(
-        OperandTypeToMILDataType(operand.data_type), {});
+    ASSIGN_OR_RETURN(uint64_t internal_operand_id,
+                     GenerateInternalOperandInfo(
+                         OperandTypeToMILDataType(operand.data_type), {}));
     RETURN_IF_ERROR(
         AddOperationForReshape(input_id, internal_operand_id, block));
     id_to_operand_info_map()[input_id].coreml_name =
@@ -1293,8 +1299,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
   if (!operation.activation.is_null()) {
     const OperandInfo& output_operand =
         GetOperandInfo(operation.output_operand_id);
-    uint64_t internal_operand_id = GenerateInternalOperandInfo(
-        output_operand.mil_data_type, output_operand.dimensions);
+    ASSIGN_OR_RETURN(uint64_t internal_operand_id,
+                     GenerateInternalOperandInfo(output_operand.mil_data_type,
+                                                 output_operand.dimensions));
 
     PopulateNamedValueType(internal_operand_id, *op->add_outputs());
 
@@ -1453,9 +1460,10 @@ GraphBuilder::AddOperationForElementwiseBinary(
   if (is_logical_binary_operation) {
     // The output of logical binary ops need to be cast from a boolean
     // tensor that CoreML provides to an UInt8 that WebNN expects.
-    uint64_t internal_output_id = GenerateInternalOperandInfo(
-        CoreML::Specification::MILSpec::DataType::BOOL,
-        GetOperandInfo(output_operand_id).dimensions);
+    ASSIGN_OR_RETURN(uint64_t internal_output_id,
+                     GenerateInternalOperandInfo(
+                         CoreML::Specification::MILSpec::DataType::BOOL,
+                         GetOperandInfo(output_operand_id).dimensions));
     PopulateNamedValueType(internal_output_id, *op->add_outputs());
 
     RETURN_IF_ERROR(
@@ -1671,8 +1679,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
                                  operation.output_operand_id, block);
   }
 
-  uint64_t matmul_output = GenerateInternalOperandInfo(
-      a_operand_info.mil_data_type, matmul_dimensions);
+  ASSIGN_OR_RETURN(uint64_t matmul_output,
+                   GenerateInternalOperandInfo(a_operand_info.mil_data_type,
+                                               matmul_dimensions));
   RETURN_IF_ERROR(AddOperationForMatmul(
       operation.a_operand_id, operation.b_operand_id, operation.a_transpose,
       operation.b_transpose, matmul_output, block));
@@ -1689,11 +1698,14 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
     }
     uint64_t with_alpha_output = operation.output_operand_id;
     if (operation.c_operand_id) {
-      with_alpha_output = GenerateInternalOperandInfo(
-          a_operand_info.mil_data_type, matmul_dimensions);
+      ASSIGN_OR_RETURN(with_alpha_output,
+                       GenerateInternalOperandInfo(a_operand_info.mil_data_type,
+                                                   matmul_dimensions));
     }
-    uint64_t alpha_operand_id = GenerateInternalOperandInfo(
-        CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+    ASSIGN_OR_RETURN(uint64_t alpha_operand_id,
+                     GenerateInternalOperandInfo(
+                         CoreML::Specification::MILSpec::DataType::FLOAT32,
+                         /*dimensions=*/{}));
 
     RETURN_IF_ERROR(AddInternalConstantWithValue(
         alpha_operand_id, CreateScalarImmediateValue(operation.alpha), block));
@@ -1721,13 +1733,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForGemm(
           ops::kGemm, kOptionC,
           MILDataTypeToOperandType(c_operand_info.mil_data_type)));
     }
-    uint64_t beta_operand_id = GenerateInternalOperandInfo(
-        CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+    ASSIGN_OR_RETURN(uint64_t beta_operand_id,
+                     GenerateInternalOperandInfo(
+                         CoreML::Specification::MILSpec::DataType::FLOAT32,
+                         /*dimensions=*/{}));
     RETURN_IF_ERROR(AddInternalConstantWithValue(
         beta_operand_id, CreateScalarImmediateValue(operation.beta), block));
 
-    uint64_t with_beta_output = GenerateInternalOperandInfo(
-        a_operand_info.mil_data_type, matmul_dimensions);
+    ASSIGN_OR_RETURN(uint64_t with_beta_output,
+                     GenerateInternalOperandInfo(a_operand_info.mil_data_type,
+                                                 matmul_dimensions));
     RETURN_IF_ERROR(AddOperationForElementwiseBinary(
         c_operand_id, beta_operand_id, with_beta_output,
         mojom::ElementWiseBinary::Kind::kMul, block));
@@ -1784,8 +1799,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForHardSwish(
   // emulated by: mul(x, hardsigmoid(x, alpha=1.0/6, beta=0.5))
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  uint64_t hardsigmoid_output = GenerateInternalOperandInfo(
-      input_operand_info.mil_data_type, input_operand_info.dimensions);
+  ASSIGN_OR_RETURN(uint64_t hardsigmoid_output,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
 
   // TODO: crbug.com/339238741 - Use float16 when input type is float16.
   constexpr static float alpha = float(1.0 / 6);
@@ -1880,13 +1896,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
   // Perform: mul(alpha, a)
   //
   // TODO: crbug.com/339238741 - Use float16 when the input is float16.
-  uint64_t alpha_operand_id = GenerateInternalOperandInfo(
-      CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+  ASSIGN_OR_RETURN(uint64_t alpha_operand_id,
+                   GenerateInternalOperandInfo(
+                       CoreML::Specification::MILSpec::DataType::FLOAT32,
+                       /*dimensions=*/{}));
   RETURN_IF_ERROR(AddInternalConstantWithValue(
       alpha_operand_id, CreateScalarImmediateValue(operation.alpha), block));
 
-  uint64_t mul_output = GenerateInternalOperandInfo(
-      input_operand_info.mil_data_type, input_operand_info.dimensions);
+  ASSIGN_OR_RETURN(uint64_t mul_output,
+                   GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                               input_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       /*lhs_operand_id=*/operation.input_operand_id,
       /*rhs_operand_id=*/alpha_operand_id,
@@ -1896,8 +1915,10 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForLinear(
   // Perform: add(mul_output, beta)
   //
   // TODO: crbug.com/339238741 - Use float16 when the input is float16.
-  uint64_t beta_operand_id = GenerateInternalOperandInfo(
-      CoreML::Specification::MILSpec::DataType::FLOAT32, /*dimensions=*/{});
+  ASSIGN_OR_RETURN(uint64_t beta_operand_id,
+                   GenerateInternalOperandInfo(
+                       CoreML::Specification::MILSpec::DataType::FLOAT32,
+                       /*dimensions=*/{}));
   RETURN_IF_ERROR(AddInternalConstantWithValue(
       beta_operand_id, CreateScalarImmediateValue(operation.beta), block));
 
@@ -2477,10 +2498,15 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::PopulateFeatureDescription(
   return base::ok();
 }
 
-uint64_t GraphBuilder::GenerateInternalOperandInfo(
+base::expected<uint64_t, mojom::ErrorPtr>
+GraphBuilder::GenerateInternalOperandInfo(
     CoreML::Specification::MILSpec::DataType mil_data_type,
     base::span<const uint32_t> dimensions) {
-  uint64_t operand_id = internal_operand_id_++;
+  internal_operand_id_++;
+  if (!internal_operand_id_.IsValid()) {
+    return NewUnknownError("Number of operands in graph exceeds limit.");
+  }
+  uint64_t operand_id = internal_operand_id_.ValueOrDie();
   // Prefix is added to internal operands generated for WebNN operations that
   // need to be decomposed into multiple CoreML operations.
   CHECK(id_to_operand_info_map()

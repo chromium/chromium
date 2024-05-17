@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -367,7 +368,8 @@ class GraphBuilder {
   SetupMlPackageDirStructure();
 
   std::string GetCoreMLNameFromOperand(uint64_t operand_id);
-  [[nodiscard]] uint64_t GenerateInternalOperandInfo(
+  [[nodiscard]] base::expected<uint64_t, mojom::ErrorPtr>
+  GenerateInternalOperandInfo(
       CoreML::Specification::MILSpec::DataType mil_data_type,
       base::span<const uint32_t> dimensions);
 
@@ -378,7 +380,7 @@ class GraphBuilder {
 
   // Used to generate unique names for internal operands generated for WebNN
   // operations that need to be decomposed into multiple CoreML operations.
-  uint64_t internal_operand_id_;
+  base::CheckedNumeric<uint64_t> internal_operand_id_;
 
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;
