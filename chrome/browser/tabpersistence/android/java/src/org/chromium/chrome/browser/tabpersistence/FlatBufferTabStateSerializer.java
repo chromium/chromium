@@ -97,7 +97,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 || webContentsState.buffer().limit() == 0) {
             return new byte[] {};
         }
-        ByteBuffer buffer = webContentsState.buffer();
+        ByteBuffer buffer = webContentsState.buffer().asReadOnlyBuffer();
         byte[] contentsStateBytes = new byte[buffer.limit()];
         buffer.rewind();
         buffer.get(contentsStateBytes);
