@@ -17,6 +17,7 @@
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 #include "chrome/services/sharing/nearby/platform/nearby_platform_metrics.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
+#include "chrome/services/sharing/nearby/test_support/fake_device.h"
 #include "components/cross_device/nearby/nearby_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -49,6 +50,16 @@ const char kCharacteristicUuid[] = "1234";
 std::vector<uint8_t> GetByteVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
 }
+
+class FakeBleV2RemotePeripheral : public api::ble_v2::BlePeripheral {
+ public:
+  FakeBleV2RemotePeripheral() = default;
+  ~FakeBleV2RemotePeripheral() override = default;
+
+  std::string GetAddress() const override { return kDeviceAddress; }
+
+  UniqueId GetUniqueId() const override { NOTREACHED_NORETURN(); }
+};
 
 }  // namespace
 
@@ -139,6 +150,15 @@ class BleV2MediumTest : public testing::Test {
                   advertising_data,
                   {.tx_power_level = api::ble_v2::TxPowerLevel::kHigh,
                    .is_connectable = true}));
+  }
+
+  void CallConnectToGattServer(bool expected_success) {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_sync_primitives;
+    FakeBleV2RemotePeripheral peripheral;
+    auto gatt_client = ble_v2_medium_->ConnectToGattServer(
+        peripheral, api::ble_v2::TxPowerLevel::kHigh,
+        /*callback=*/{});
+    EXPECT_EQ(expected_success, (gatt_client != nullptr));
   }
 
  protected:
@@ -703,6 +723,33 @@ TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Failure) {
       ->PostTaskAndReply(
           FROM_HERE,
           base::BindOnce(&BleV2MediumTest::CallStartAdvertisingForGattService,
+                         base::Unretained(this), /*expected_result=*/false),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2MediumTest, ConnectToGattServer_Success) {
+  fake_adapter_->SetConnectToDeviceResult(
+      bluetooth::mojom::ConnectResult::SUCCESS,
+      std::make_unique<bluetooth::FakeDevice>());
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2MediumTest::CallConnectToGattServer,
+                         base::Unretained(this), /*expected_result=*/true),
+          run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(BleV2MediumTest, ConnectToGattServer_Failure) {
+  fake_adapter_->SetConnectToDeviceResult(
+      bluetooth::mojom::ConnectResult::FAILED, /*fake_device=*/nullptr);
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&BleV2MediumTest::CallConnectToGattServer,
                          base::Unretained(this), /*expected_result=*/false),
           run_loop.QuitClosure());
   run_loop.Run();

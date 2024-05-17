@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/services/sharing/nearby/platform/ble_v2_gatt_client.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_server_socket.h"
@@ -61,6 +62,47 @@ void CancelPendingTasks(
   }
 }
 
+std::string_view ConnectResultToString(bluetooth::mojom::ConnectResult result) {
+  switch (result) {
+    case bluetooth::mojom::ConnectResult::SUCCESS:
+      return "Success";
+    case bluetooth::mojom::ConnectResult::AUTH_CANCELED:
+      return "Auth Canceled";
+    case bluetooth::mojom::ConnectResult::AUTH_FAILED:
+      return "Auth Failed";
+    case bluetooth::mojom::ConnectResult::AUTH_REJECTED:
+      return "Auth Rejected";
+    case bluetooth::mojom::ConnectResult::AUTH_TIMEOUT:
+      return "Auth Timeout";
+    case bluetooth::mojom::ConnectResult::FAILED:
+      return "Failed";
+    case bluetooth::mojom::ConnectResult::INPROGRESS:
+      return "In Progress";
+    case bluetooth::mojom::ConnectResult::UNKNOWN:
+      return "Unknown";
+    case bluetooth::mojom::ConnectResult::UNSUPPORTED_DEVICE:
+      return "Unsupported Device";
+    case bluetooth::mojom::ConnectResult::DEVICE_NO_LONGER_IN_RANGE:
+      return "Device No Longer In Range";
+    case bluetooth::mojom::ConnectResult::NOT_READY:
+      return "Not Ready";
+    case bluetooth::mojom::ConnectResult::ALREADY_CONNECTED:
+      return "Already Connected";
+    case bluetooth::mojom::ConnectResult::ALREADY_EXISTS:
+      return "Already Exists";
+    case bluetooth::mojom::ConnectResult::NOT_CONNECTED:
+      return "Not Connected";
+    case bluetooth::mojom::ConnectResult::DOES_NOT_EXIST:
+      return "Does Not Exist";
+    case bluetooth::mojom::ConnectResult::INVALID_ARGS:
+      return "Invalid Args";
+    case bluetooth::mojom::ConnectResult::NON_AUTH_TIMEOUT:
+      return "Non Auth Timeout";
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 BleV2Medium::BleV2Medium(
@@ -72,9 +114,7 @@ BleV2Medium::BleV2Medium(
 }
 
 BleV2Medium::~BleV2Medium() {
-  // For thread safety, shut down on the |task_runner_|. The destructor is
-  // blocking. It is expected that BleV2Medium calls are not made from the
-  // main thread.
+  // For thread safety, shut down on the |task_runner_|.
   base::WaitableEvent shutdown_waitable_event;
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&BleV2Medium::Shutdown, base::Unretained(this),
@@ -418,8 +458,29 @@ std::unique_ptr<api::ble_v2::GattClient> BleV2Medium::ConnectToGattServer(
     api::ble_v2::BlePeripheral& peripheral,
     api::ble_v2::TxPowerLevel tx_power_level,
     api::ble_v2::ClientGattConnectionCallback callback) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  base::WaitableEvent connect_to_gatt_server_waitable_event;
+  CHECK(adapter_.is_bound());
+  mojo::PendingRemote<bluetooth::mojom::Device> device;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BleV2Medium::DoConnectToGattServer,
+                     base::Unretained(this), &device, peripheral.GetAddress(),
+                     &connect_to_gatt_server_waitable_event));
+  base::ScopedAllowBaseSyncPrimitives allow_wait;
+  connect_to_gatt_server_waitable_event.Wait();
+
+  if (!device) {
+    LOG(WARNING) << __func__ << ": could not connect to the GATT server";
+    return nullptr;
+  }
+
+  // `tx_power_level` has no equivalent parameter in the Bluetooth Adapter
+  // layer, so it is ignored.
+  //
+  // TODO(b/311430390): When Nearby Connections uses
+  // `ClientGattConnectionCallback`, pass it into `BleV2GattClient` to trigger
+  // events for characteristic subscription and disconnect.
+  return std::make_unique<nearby::chrome::BleV2GattClient>(std::move(device));
 }
 
 std::unique_ptr<api::ble_v2::BleServerSocket> BleV2Medium::OpenServerSocket(
@@ -627,6 +688,44 @@ void BleV2Medium::OnRegisterGattServices(
   }
 }
 
+void BleV2Medium::DoConnectToGattServer(
+    mojo::PendingRemote<bluetooth::mojom::Device>* device,
+    const std::string& address,
+    base::WaitableEvent* connect_to_gatt_server_waitable_event) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  pending_connect_to_gatt_server_waitable_events_.insert(
+      connect_to_gatt_server_waitable_event);
+  CHECK(adapter_.is_bound());
+  adapter_->ConnectToDevice(
+      address, base::BindOnce(&BleV2Medium::OnConnectToGattServer,
+                              base::Unretained(this), device,
+                              connect_to_gatt_server_waitable_event));
+}
+
+void BleV2Medium::OnConnectToGattServer(
+    mojo::PendingRemote<bluetooth::mojom::Device>* out_device,
+    base::WaitableEvent* connect_to_gatt_server_waitable_event,
+    bluetooth::mojom::ConnectResult result,
+    mojo::PendingRemote<bluetooth::mojom::Device> in_device) {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (!pending_connect_to_gatt_server_waitable_events_.contains(
+          connect_to_gatt_server_waitable_event)) {
+    // The event has already been signaled.
+    return;
+  }
+
+  *out_device = std::move(in_device);
+
+  VLOG(1) << __func__
+          << ": ConnectToDevice() result = " << ConnectResultToString(result);
+
+  if (!connect_to_gatt_server_waitable_event->IsSignaled()) {
+    connect_to_gatt_server_waitable_event->Signal();
+    pending_connect_to_gatt_server_waitable_events_.erase(
+        connect_to_gatt_server_waitable_event);
+  }
+}
+
 void BleV2Medium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   CHECK(task_runner_->RunsTasksInCurrentSequence());
 
@@ -643,6 +742,7 @@ void BleV2Medium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   // Cancel all pending connect/listen calls. This is sequence safe because all
   // changes to the pending-event sets are sequenced.
   CancelPendingTasks(pending_register_gatt_services_waitable_events_);
+  CancelPendingTasks(pending_connect_to_gatt_server_waitable_events_);
 
   shutdown_waitable_event->Signal();
 }

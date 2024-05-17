@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_TEST_SUPPORT_FAKE_ADAPTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/services/sharing/nearby/test_support/fake_device.h"
 #include "chrome/services/sharing/nearby/test_support/fake_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
@@ -77,6 +78,8 @@ class FakeAdapter : public mojom::Adapter {
   void AllowIncomingConnectionForServiceNameAndUuidPair(
       const std::string& service_name,
       const device::BluetoothUUID& service_uuid);
+  void SetConnectToDeviceResult(bluetooth::mojom::ConnectResult result,
+                                std::unique_ptr<FakeDevice> fake_device);
 
   mojo::Receiver<mojom::Adapter> adapter_{this};
   std::string address_ = "AdapterAddress";
@@ -109,6 +112,9 @@ class FakeAdapter : public mojom::Adapter {
       allowed_connections_for_service_name_and_uuid_pair_;
 
   std::unique_ptr<FakeGattService> fake_gatt_service_;
+
+  bluetooth::mojom::ConnectResult connect_to_device_result_;
+  std::unique_ptr<FakeDevice> fake_device_;
 
   mojo::RemoteSet<mojom::AdapterObserver> observers_;
 };

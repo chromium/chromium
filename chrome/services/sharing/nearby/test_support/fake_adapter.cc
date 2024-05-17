@@ -84,7 +84,19 @@ FakeAdapter::FakeAdapter() = default;
 FakeAdapter::~FakeAdapter() = default;
 
 void FakeAdapter::ConnectToDevice(const std::string& address,
-                                  ConnectToDeviceCallback callback) {}
+                                  ConnectToDeviceCallback callback) {
+  if (connect_to_device_result_ == bluetooth::mojom::ConnectResult::SUCCESS) {
+    mojo::PendingRemote<mojom::Device> pending_device;
+    mojo::MakeSelfOwnedReceiver(
+        std::move(fake_device_),
+        pending_device.InitWithNewPipeAndPassReceiver());
+    std::move(callback).Run(connect_to_device_result_,
+                            std::move(pending_device));
+    return;
+  }
+
+  std::move(callback).Run(connect_to_device_result_, mojo::NullRemote());
+}
 
 void FakeAdapter::GetDevices(GetDevicesCallback callback) {}
 
@@ -316,6 +328,13 @@ void FakeAdapter::AllowIncomingConnectionForServiceNameAndUuidPair(
     const device::BluetoothUUID& service_uuid) {
   allowed_connections_for_service_name_and_uuid_pair_.emplace(service_name,
                                                               service_uuid);
+}
+
+void FakeAdapter::SetConnectToDeviceResult(
+    bluetooth::mojom::ConnectResult result,
+    std::unique_ptr<FakeDevice> fake_device) {
+  connect_to_device_result_ = result;
+  fake_device_ = std::move(fake_device);
 }
 
 void FakeAdapter::OnAdvertisementDestroyed(
