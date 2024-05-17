@@ -74,8 +74,6 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   }
 
   void TearDown() override {
-    LoginTestBase::TearDown();
-
     // If the test did not explicitly dismissed the widget, destroy it now.
     LocalAuthenticationRequestWidget* local_authentication_request_widget =
         LocalAuthenticationRequestWidget::Get();
@@ -87,6 +85,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
+    LoginTestBase::TearDown();
   }
 
   void SetExpectedCredentialsWithDbusClient(const AccountId& account_id,
