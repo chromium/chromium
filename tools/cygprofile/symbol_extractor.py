@@ -10,7 +10,6 @@ import logging
 import os
 import re
 import subprocess
-import sys
 
 import cygprofile_utils
 
@@ -188,8 +187,11 @@ def SymbolNamesFromLlvmBitcodeFile(filename):
     [str] A list of symbol names, can be empty.
   """
   command = (_NM_PATH, '--defined-only', filename)
-  p = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE,
-                       stderr=subprocess.PIPE)
+  p = subprocess.Popen(command,
+                       shell=False,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       text=True)
   try:
     result = _SymbolInfosFromLlvmNm(p.stdout)
     if not result:
@@ -198,7 +200,8 @@ def SymbolNamesFromLlvmBitcodeFile(filename):
     return result
   finally:
     _, _ = p.communicate()
-    p.stdout.close()
+    if p.stdout:
+      p.stdout.close()
     assert p.wait() == 0
 
 

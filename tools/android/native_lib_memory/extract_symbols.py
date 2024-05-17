@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -18,15 +18,10 @@ import logging
 import multiprocessing
 import os
 import shutil
+import socketserver
 import sys
 
-# Python 3 moved these.
-try:
-  import SimpleHTTPServer as server
-  import SocketServer as socketserver
-except ModuleNotFoundError:
-  from http import server
-  import socketserver
+from http import server
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
