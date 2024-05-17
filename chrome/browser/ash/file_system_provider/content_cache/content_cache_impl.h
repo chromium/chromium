@@ -84,9 +84,15 @@ class ContentCacheImpl : public ContentCache {
                          scoped_refptr<net::IOBuffer> buffer,
                          int64_t offset,
                          int length,
-                         FileErrorCallback on_bytes_written_callback,
+                         FileErrorCallback callback,
                          std::unique_ptr<int64_t> inserted_id,
                          bool item_add_success);
+
+  void WriteBytesToDisk(const OpenedCloudFile& file,
+                        scoped_refptr<net::IOBuffer> buffer,
+                        int64_t offset,
+                        int length,
+                        FileErrorCallback callback);
 
   void OnBytesWritten(const base::FilePath& file_path,
                       int64_t offset,

@@ -198,6 +198,23 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
+       WriteBytesShouldFailWithDifferentVersionTag) {
+  const base::FilePath fsp_path("random-path");
+
+  // Perform initial write to cache of length 512 bytes.
+  WriteFileToCache(fsp_path, "versionA", kDefaultChunkSize);
+
+  // Try to write to the same file from offset 512 but with a different
+  // version_tag.
+  OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
+                       ++request_id_, "versionB", kDefaultChunkSize);
+  EXPECT_EQ(
+      WriteBytesToContentCache(file, /*buffer=*/nullptr,
+                               /*offset=*/kDefaultChunkSize, kDefaultChunkSize),
+      base::File::FILE_ERROR_NOT_FOUND);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
        WriteBytesShouldFailIfNonContiguousChunk) {
   const base::FilePath fsp_path("random-path");
   const std::string version_tag("versionA");
@@ -210,7 +227,7 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
                        ++request_id_, version_tag, kDefaultChunkSize);
   EXPECT_EQ(WriteBytesToContentCache(file, /*buffer=*/nullptr,
-                                     /*offset=*/0, kDefaultChunkSize),
+                                     /*offset=*/1024, kDefaultChunkSize),
             base::File::FILE_ERROR_INVALID_OPERATION);
 }
 
@@ -249,9 +266,10 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   // Cannot write to the file in its evicted state.
   OpenedCloudFile file(fsp_path, OpenFileMode::OPEN_FILE_MODE_READ,
                        ++request_id_, version_tag, kDefaultChunkSize);
-  EXPECT_EQ(WriteBytesToContentCache(file, /*buffer=*/nullptr,
-                                     /*offset=*/0, kDefaultChunkSize),
-            base::File::FILE_ERROR_NOT_FOUND);
+  EXPECT_EQ(
+      WriteBytesToContentCache(file, /*buffer=*/nullptr,
+                               /*offset=*/kDefaultChunkSize, kDefaultChunkSize),
+      base::File::FILE_ERROR_NOT_FOUND);
 
   // No new replacement file is added to the cache.
   EXPECT_EQ(content_cache_->GetCachedFilePaths().size(), 0U);
@@ -272,24 +290,74 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
-       WriteBytesShouldFailIfMultipleWritersAttemptToWriteAtOnce) {
+       WriteBytesShouldFailIfMultipleWritersAttemptToWriteToStartOfNewFile) {
   OpenedCloudFile file(base::FilePath("random-path"),
                        OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
                        /*version_tag=*/"versionA", kDefaultChunkSize * 2);
+  // First write attempt to start of file.  Eventually creates a file on disk.
   TestFuture<base::File::Error> future;
   scoped_refptr<net::IOBufferWithSize> buffer =
       InitializeBufferWithRandBytes(kDefaultChunkSize * 2);
   content_cache_->WriteBytes(file, buffer, /*offset=*/0, kDefaultChunkSize,
                              future.GetCallback());
 
-  // This attempt will be attempted before the `WriteBytesBlocking` call that is
-  // made above, so this should fail as the first 512 byte chunk has not been
-  // written yet.
+  // Second write attempt to start of file. This will be attempted before the
+  // write that is made above has created a path on disk. And the second write
+  // will not create a path on disk as this is only done on new cache entries.
   EXPECT_EQ(WriteBytesToContentCache(file, /*buffer=*/nullptr,
-                                     /*offset=*/512, kDefaultChunkSize),
-            base::File::FILE_ERROR_INVALID_OPERATION);
+                                     /*offset=*/0, kDefaultChunkSize),
+            base::File::FILE_ERROR_NOT_FOUND);
 
-  // Initial file write should succeed.
+  // Allow the first write to continue. It should succeed.
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       WriteBytesShouldFailIfMultipleContiguousWritersAttemptToWriteToNewFile) {
+  OpenedCloudFile file(base::FilePath("random-path"),
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
+                       /*version_tag=*/"versionA", kDefaultChunkSize * 2);
+  // First write attempt.  Eventually creates a file on disk.
+  TestFuture<base::File::Error> future;
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      InitializeBufferWithRandBytes(kDefaultChunkSize * 2);
+  content_cache_->WriteBytes(file, buffer, /*offset=*/0, kDefaultChunkSize,
+                             future.GetCallback());
+
+  // Second write attempt to contiguous chunk. This will be attempted before the
+  // write that is made above, so this should fail as offset writes are not
+  // allowed.
+  EXPECT_EQ(
+      WriteBytesToContentCache(file, /*buffer=*/nullptr,
+                               /*offset=*/kDefaultChunkSize, kDefaultChunkSize),
+      base::File::FILE_ERROR_INVALID_OPERATION);
+
+  // Allow the first write to continue. It should succeed.
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       WriteBytesShouldFailIfMultipleWritersAttemptToWriteToExistingFile) {
+  // Perform initial write to cache of length 512 bytes. Creates a file on disk.
+  OpenedCloudFile file =
+      WriteFileToCache(base::FilePath("random-path"),
+                       /*version_tag=*/"versionA", kDefaultChunkSize);
+
+  // Write attempt to second chunk.
+  TestFuture<base::File::Error> future;
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      InitializeBufferWithRandBytes(kDefaultChunkSize * 2);
+  content_cache_->WriteBytes(file, buffer, /*offset=*/kDefaultChunkSize,
+                             kDefaultChunkSize, future.GetCallback());
+
+  // This will be attempted before the write that is made above, so this should
+  // fail as the first write is in the middle of writing.
+  EXPECT_EQ(
+      WriteBytesToContentCache(file, /*buffer=*/nullptr,
+                               /*offset=*/kDefaultChunkSize, kDefaultChunkSize),
+      base::File::FILE_ERROR_IN_USE);
+
+  // Allow the first write to continue. It should succeed.
   EXPECT_EQ(future.Get(), base::File::FILE_OK);
 }
 
@@ -347,6 +415,27 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   EXPECT_THAT(ReadBytesFromContentCache(file, /*buffer=*/nullptr,
                                         /*offset=*/0, kDefaultChunkSize),
               Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
+}
+
+TEST_F(FileSystemProviderContentCacheImplTest,
+       ReadBytesShouldReturnNotFoundIfInitialWriteNotFinished) {
+  OpenedCloudFile file(base::FilePath("random-path"),
+                       OpenFileMode::OPEN_FILE_MODE_READ, ++request_id_,
+                       /*version_tag=*/"versionA", kDefaultChunkSize * 2);
+  TestFuture<base::File::Error> future;
+  scoped_refptr<net::IOBufferWithSize> buffer =
+      InitializeBufferWithRandBytes(kDefaultChunkSize * 2);
+  content_cache_->WriteBytes(file, buffer, /*offset=*/0, kDefaultChunkSize,
+                             future.GetCallback());
+
+  // This will be attempted before the write that is made above, so this should
+  // fail as the first 512 byte chunk has not been written yet.
+  EXPECT_THAT(ReadBytesFromContentCache(file, /*buffer=*/nullptr,
+                                        /*offset=*/0, kDefaultChunkSize),
+              Pair(-1, base::File::FILE_ERROR_NOT_FOUND));
+
+  // Allow the first write to continue. It should succeed.
+  EXPECT_EQ(future.Get(), base::File::FILE_OK);
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,

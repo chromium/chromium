@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/local_fd.h"
+#include "chrome/browser/ash/file_system_provider/opened_cloud_file.h"
 
 namespace ash::file_system_provider {
 
@@ -24,11 +25,13 @@ inline constexpr int kUnknownId = -1;
 class CacheFileContext {
  public:
   // When repopulating the context on session startup with the file information
-  // that is already cached on disk, use the `bytes_on_disk` and `id` fields.
-  // Otherwise leave the default values.
-  explicit CacheFileContext(const std::string& version_tag,
-                            int64_t bytes_on_disk = 0,
-                            int64_t id = kUnknownId);
+  // that is already cached on disk, use the `bytes_on_disk`, `id` and
+  // `path_on_disk` fields. Otherwise leave the default values.
+  explicit CacheFileContext(
+      const std::string& version_tag,
+      int64_t bytes_on_disk = 0,
+      int64_t id = kUnknownId,
+      const base::FilePath& path_on_disk = base::FilePath());
 
   CacheFileContext(CacheFileContext&&);
   CacheFileContext(const CacheFileContext&) = delete;
@@ -36,11 +39,9 @@ class CacheFileContext {
 
   ~CacheFileContext();
 
-  bool HasLocalFD(int request_id) { return open_fds_.contains(request_id); }
-  LocalFD& GetOrCreateLocalFD(
-      int request_id,
-      base::FilePath path_on_disk,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  bool CanGetLocalFD(const OpenedCloudFile& file);
+  LocalFD& GetLocalFD(const OpenedCloudFile& file,
+                      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   bool CloseLocalFD(int request_id) { return open_fds_.erase(request_id) == 1; }
 
   int64_t bytes_on_disk() const { return bytes_on_disk_; }
@@ -57,6 +58,11 @@ class CacheFileContext {
 
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
+
+  const base::FilePath& path_on_disk() const { return path_on_disk_; }
+  void set_path_on_disk(const base::FilePath& path_on_disk) {
+    path_on_disk_ = path_on_disk;
+  }
 
   bool has_writer() const { return has_writer_; }
   void set_has_writer(bool has_writer) { has_writer_ = has_writer; }
@@ -82,6 +88,9 @@ class CacheFileContext {
   // A unique ID associated with this file that is used to write the file on
   // disk.
   int64_t id_;
+
+  // The path of the cached file on disk.
+  base::FilePath path_on_disk_;
 
   // True if there is an open writer to this file, multiple writers at
   // disjoint offset ranges is currently not supported.
