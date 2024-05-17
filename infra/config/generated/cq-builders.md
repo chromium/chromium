@@ -356,6 +356,7 @@ builder.
 
   Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
+  * [`//build/fuchsia/sdk_override.txt`](https://cs.chromium.org/search?q=+file:build/fuchsia/sdk_override.txt)
 
 * [fuchsia-x64-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-accessibility-rel""))
 

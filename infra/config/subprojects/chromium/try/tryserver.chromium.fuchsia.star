@@ -46,11 +46,13 @@ try_.builder(
         ],
     ),
     main_list_view = "try",
-    # This is the only bot that builds //chromecast code for Fuchsia on ARM64
-    # so trigger it when changes are made.
     tryjob = try_.job(
         location_filters = [
+            # This is the only bot that builds //chromecast code for Fuchsia on
+            # ARM64, so trigger it when changes are made.
             "chromecast/.+",
+            # Always trigger this builder when drilling the fuchsia-sdk.
+            "build/fuchsia/sdk_override.txt",
         ],
     ),
 )
