@@ -211,10 +211,6 @@
             networks="[[getThirdPartyVpnNetworks_(thirdPartyVpns_, item)]]"
             on-selected="onNetworkSelected_">
         </network-list>
-        <div hidden$="[[haveThirdPartyVpnNetwork_(thirdPartyVpns_, item)]]"
-            class="no-networks settings-box-text">
-          $i18n{internetNoNetworks}
-        </div>
       </template>
     </template>
   </div>
