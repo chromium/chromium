@@ -746,11 +746,6 @@ const char kOmniboxHttpsUpgradesName[] = "Omnibox HTTPS upgrades";
 const char kOmniboxHttpsUpgradesDescription[] =
     "Enables HTTPS upgrades for omnibox navigations typed without a scheme";
 
-const char kOmniboxInspireMeName[] = "Omnibox Trending Queries";
-const char kOmniboxInspireMeDescription[] =
-    "When enabled, appends additional suggestions based on local trends and "
-    "optionally extends the ZPS limit.";
-
 const char kOmniboxInspireMeSignedOutName[] =
     "Omnibox Trending Queries For Signed-Out users";
 const char kOmniboxInspireMeSignedOutDescription[] =

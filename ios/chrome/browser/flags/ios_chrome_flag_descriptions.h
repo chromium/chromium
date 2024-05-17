@@ -647,10 +647,6 @@ extern const char kOmniboxCompanyEntityIconAdjustmentDescription[];
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];
 
-// Title and description for the Inspire Me omnibox flag.
-extern const char kOmniboxInspireMeName[];
-extern const char kOmniboxInspireMeDescription[];
-
 // Title and description for the Inspire Me for Signed Out Users omnibox flag.
 extern const char kOmniboxInspireMeSignedOutName[];
 extern const char kOmniboxInspireMeSignedOutDescription[];
