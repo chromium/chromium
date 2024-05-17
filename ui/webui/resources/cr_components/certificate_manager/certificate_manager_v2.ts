@@ -14,8 +14,10 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';

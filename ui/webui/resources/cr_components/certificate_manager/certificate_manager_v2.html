@@ -14,7 +14,7 @@
     display: flex;
   }
 
-  .certs-export-button {
+  .push-left {
     margin-left: auto;
   }
 </style>
@@ -51,14 +51,56 @@
     </div>
   </div>
 
-  <div>Local Certificates</div>
+  <div class="cr-centered-card-container">
+    Local certificates that have been added by your operating system or your
+    administrator.
+
+    <!-- TODO(crbug.com/40928765): wire up all of the dynamic content
+      in the local certificates section (
+      * # of imported OS certs
+      * toggle for enabling/disabling import of OS certs
+      * viewing/managing imported certs from OS
+      * # of admin policy certs
+      * viewing admin policy certs
+      * Dynamically figuring out OS name
+      -->
+    <h3> Windows </h3>
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        <div>
+          Use imported local certificates from your operating system
+        </div>
+        <div class="cr-secondary-text">
+          56 leaf certs
+        </div>
+      </div>
+      <cr-toggle class="push-left"
+          aria-label="Toggle operating system certificate imports"
+          checked=true>
+      </cr-toggle>
+    </div>
+
+    <cr-link-row label="View imported certificates from Windows">
+    </cr-link-row>
+    <cr-link-row external label="Manage imported certificates from Windows">
+    </cr-link-row>
+
+    <h3> Custom </h3>
+
+    <cr-link-row label="Installed by your administrator"
+        sub-label="23 certs">
+      <cr-button class="action-button" id="exportAdminCerts">
+        Export
+      </cr-button>
+    </cr-link-row>
+  </div>
 
   <div>
     <cr-expand-button class="cr-row first"
         expanded="{{crsTrustedCertsOpened_}}">
       <div class="cert-row">
         Trusted Certificates
-        <cr-button class="action-button certs-export-button"
+        <cr-button class="action-button push-left"
             id="exportCRS" on-click="onExportCrs_">
           Export
         </cr-button>
