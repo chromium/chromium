@@ -217,9 +217,12 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
     return base::unexpected(
         OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
   }
-  if (supported_model_spec->base_model_name() != base_model_spec_->model_name ||
-      supported_model_spec->base_model_version() !=
-          base_model_spec_->model_version) {
+  // When base model override was specified, skip the incompatibility check.
+  if (!switches::GetOnDeviceModelExecutionOverride() &&
+      (supported_model_spec->base_model_name() !=
+           base_model_spec_->model_name ||
+       supported_model_spec->base_model_version() !=
+           base_model_spec_->model_version)) {
     return base::unexpected(
         OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
   }
