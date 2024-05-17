@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <map>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -171,8 +170,7 @@ class CONTENT_EXPORT PrivateAggregationHost
 
   void CloseCurrentPipe(PipeResult pipe_result);
 
-  void OnTimeoutBeforeDisconnect(mojo::ReceiverId id,
-                                 ReceiverContext* receiver_context);
+  void OnTimeoutBeforeDisconnect(mojo::ReceiverId id);
 
   void OnReceiverDisconnected();
 
@@ -189,8 +187,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       PrivateAggregationBudgeter::BudgetDeniedBehavior)>
       on_report_request_details_received_;
 
-  mojo::ReceiverSet<blink::mojom::PrivateAggregationHost,
-                    std::unique_ptr<ReceiverContext>>
+  mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>
       receiver_set_;
 
   // A map containing a timer tracking the duration of time that each mojo pipe
