@@ -17,7 +17,7 @@
 - (void)fakeboxTapped;
 
 // Informs the receiver that the identity disc was tapped.
-- (void)identityDiscWasTapped;
+- (void)identityDiscWasTapped:(UIView*)identityDisc;
 
 @end
 

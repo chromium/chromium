@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
@@ -246,6 +247,8 @@
 @implementation NewTabPageCoordinator {
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
+  // Coordinator in charge of fast account switching menu.
+  AccountSwitcherCoordinator* _accountSwitcherCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -400,6 +403,9 @@
 
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
+
+  [_accountSwitcherCoordinator stop];
+  _accountSwitcherCoordinator = nil;
 
   self.started = NO;
 }
@@ -796,7 +802,7 @@
   [self focusFakebox];
 }
 
-- (void)identityDiscWasTapped {
+- (void)identityDiscWasTapped:(UIView*)identityDisc {
   [self.NTPMetricsRecorder recordIdentityDiscTapped];
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
@@ -807,13 +813,14 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
-      // "Instant signin" works as a quick account-switching UI.
-      ShowSigninCommand* const switchAccountCommand = [[ShowSigninCommand alloc]
-          initWithOperation:AuthenticationOperation::kInstantSignin
-                accessPoint:signin_metrics::AccessPoint::
-                                ACCESS_POINT_NTP_IDENTITY_DISC];
-      [handler showSignin:switchAccountCommand
-          baseViewController:self.baseViewController];
+      _accountSwitcherCoordinator = [[AccountSwitcherCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser];
+      _accountSwitcherCoordinator.anchorPoint =
+          [identityDisc convertPoint:identityDisc.bounds.origin toView:nil];
+      // TODO(crbug.com/336719423): Record signin metrics based on the selected
+      // action from the account switcher.
+      [_accountSwitcherCoordinator start];
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }

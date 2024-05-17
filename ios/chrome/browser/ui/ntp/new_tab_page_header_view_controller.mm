@@ -417,7 +417,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityIdentifier = kNTPFeedHeaderIdentityDisc;
   [self.identityDiscButton addTarget:self.commandHandler
-                              action:@selector(identityDiscWasTapped)
+                              action:@selector(identityDiscWasTapped:)
                     forControlEvents:UIControlEventTouchUpInside];
   self.identityDiscButton.pointerInteractionEnabled = YES;
   self.identityDiscButton.pointerStyleProvider =
