@@ -54,4 +54,7 @@ extern NSString* const kContentNotificationFeedbackCategoryIdentifier;
 // NAU.
 extern NSString* const kContentNotificationNAUBodyParameter;
 
+// The histogram name for the NAU success metric.
+extern const char kNAUHistogramName[];
+
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_

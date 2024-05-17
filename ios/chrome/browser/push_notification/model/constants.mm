@@ -15,3 +15,6 @@ NSString* const kContentNotificationFeedbackCategoryIdentifier =
 
 NSString* const kContentNotificationNAUBodyParameter =
     @"kContentNotificationNAUBodyParameter";
+
+const char kNAUHistogramName[] =
+    "ContentNotifications.NotificationActionUpload.Success";
