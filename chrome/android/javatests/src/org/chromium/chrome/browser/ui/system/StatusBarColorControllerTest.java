@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -208,6 +209,7 @@ public class StatusBarColorControllerTest {
     @Feature({"StatusBar"})
     @DisableFeatures({ChromeFeatureList.SURFACE_POLISH})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    @DisabledTest(message = "https://issues.chromium.org/issues/341157444")
     public void testStatusBarColorNtp() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
