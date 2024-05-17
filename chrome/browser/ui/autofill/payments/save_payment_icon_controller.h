@@ -23,9 +23,11 @@ class SavePaymentIconController {
     kCreditCard = 1,
     // Bubble for save IBAN.
     kSaveIban = 2,
-    // Bubble for manage saved IBAN
+    // Bubble for manage saved IBAN.
     kManageSavedIban = 3,
-    kMaxValue = kManageSavedIban
+    // Credit card save confirmation bubble.
+    kCreditCardSaveConfirmation = 4,
+    kMaxValue = kCreditCardSaveConfirmation
   };
 
   virtual ~SavePaymentIconController() = default;
