@@ -48,7 +48,9 @@ function isWordRenderable(word: Word): boolean {
 
 // Return the text separator if there is one, else returns a space.
 function getTextSeparator(word: Word): string {
-  return word.textSeparator ? word.textSeparator : ' ';
+  return (word.textSeparator !== null && word.textSeparator !== undefined) ?
+      word.textSeparator :
+      ' ';
 }
 
 export interface TextLayerElement {

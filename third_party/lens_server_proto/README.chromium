@@ -20,4 +20,5 @@ blaze run //lens/chrome/scripts/proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+Added the optional keyword to text separator field. This change matches
+similar changes to the upstream copies of the proto.
