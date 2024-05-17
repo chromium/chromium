@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/version.h"
 
 namespace ash {
 
@@ -216,6 +217,12 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
   WallpaperInfo info;
   info.type = wallpaper_type;
 
+  const std::string* version =
+      dict.FindString(WallpaperInfo::kNewWallpaperVersionNodeName);
+  if (version) {
+    info.version = base::Version(*version);
+  }
+
   int64_t date_val;
   if (!base::StringToInt64(*date_string, &date_val)) {
     return std::nullopt;
@@ -239,6 +246,9 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
 
 base::Value::Dict WallpaperInfo::ToDict() const {
   base::Value::Dict wallpaper_info_dict;
+  if (version.IsValid()) {
+    wallpaper_info_dict.Set(kNewWallpaperVersionNodeName, version.GetString());
+  }
   if (asset_id.has_value()) {
     wallpaper_info_dict.Set(kNewWallpaperAssetIdNodeName,
                             base::NumberToString(asset_id.value()));
