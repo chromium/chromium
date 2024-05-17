@@ -207,8 +207,6 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
     registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
-    registry->Deregister(
-        SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }
 
  protected:

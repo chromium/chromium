@@ -246,9 +246,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   if (features::IsReadAnythingLocalSidePanelEnabled()) {
     auto* active_web_contents =
         browser_->tab_strip_model()->GetActiveWebContents();
-    if (active_web_contents) {
-      ObserveWebContentsSidePanelController(active_web_contents);
-    }
+    ObserveWebContentsSidePanelController(active_web_contents);
   } else {
     coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
     if (coordinator_) {
