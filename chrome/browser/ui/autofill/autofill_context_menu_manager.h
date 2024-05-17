@@ -22,7 +22,6 @@ class ContentPasswordManagerDriver;
 namespace autofill {
 
 class AutofillField;
-class BrowserAutofillManager;
 class PersonalDataManager;
 
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
@@ -110,7 +109,7 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // shown to the user. `filling_product` defines which manual fallback option
   // was accepted.
   void LogManualFallbackContextMenuEntryAccepted(
-      BrowserAutofillManager& manager,
+      AutofillDriver& autofill_driver,
       const FillingProduct filling_product);
 
   // Triggers the feedback flow for Autofill command.
@@ -121,13 +120,14 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // opened on.
   void ExecuteFallbackForPlusAddressesCommand(AutofillDriver& driver);
 
-  // Triggers Autofill address suggestions on the field that the context menu
-  // was opened on.
-  void ExecuteFallbackForAddressesCommand(AutofillManager& manager);
-
   // Triggers Autofill payments suggestions on the field that the context menu
   // was opened on.
-  void ExecuteFallbackForPaymentsCommand(AutofillManager& manager);
+  void ExecuteFallbackForPaymentsCommand(AutofillDriver& driver);
+
+  // Triggers Autofill address suggestions on the field that the context menu
+  // was opened on.
+  void ExecuteFallbackForAddressesCommand(
+      ContentAutofillDriver& autofill_driver);
 
   // Gets the `AutofillField` described by the `params_` from the `manager`.
   // The `frame_token` is used to map from the `params_` renderer id to a global

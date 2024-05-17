@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -212,32 +214,31 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   if (!rfh) {
     return;
   }
-  ContentAutofillDriver* driver =
+  ContentAutofillDriver* autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(rfh);
-  if (!driver) {
+  if (!autofill_driver) {
     return;
   }
-  AutofillManager& manager = driver->GetAutofillManager();
-
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
-    ExecuteAutofillFeedbackCommand(driver->GetFrameToken(), manager);
+    ExecuteAutofillFeedbackCommand(autofill_driver->GetFrameToken(),
+                                   autofill_driver->GetAutofillManager());
     return;
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) {
-    ExecuteFallbackForAddressesCommand(manager);
+    ExecuteFallbackForAddressesCommand(*autofill_driver);
     return;
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) {
-    ExecuteFallbackForPaymentsCommand(manager);
+    ExecuteFallbackForPaymentsCommand(*autofill_driver);
     return;
   }
 
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS) {
-    ExecuteFallbackForPlusAddressesCommand(*driver);
+    ExecuteFallbackForPlusAddressesCommand(*autofill_driver);
     return;
   }
 
@@ -537,11 +538,15 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
-    BrowserAutofillManager& manager,
-    const FillingProduct filling_product) {
-    auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
-    AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
-    if (filling_product == FillingProduct::kAddress) {
+    AutofillDriver& autofill_driver,
+    FillingProduct filling_product) {
+  BrowserAutofillManager& manager = static_cast<BrowserAutofillManager&>(
+      autofill_driver.GetAutofillManager());
+  AutofillField* field =
+      GetAutofillField(manager, autofill_driver.GetFrameToken());
+
+  switch (filling_product) {
+    case FillingProduct::kAddress: {
       const bool is_address_field =
           field && IsAddressType(field->Type().GetStorableType());
       if (is_address_field) {
@@ -553,16 +558,30 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
                     ->ShouldSuppressSuggestionsAndFillingByDefault());
       } else {
         manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-            FillingProduct::kAddress);
+            filling_product);
       }
-    } else if (filling_product == FillingProduct::kCreditCard &&
-               !(field &&
-                 field->Type().group() == FieldTypeGroup::kCreditCard)) {
-      // Only log payments manual fallback when triggered from a field that is
-      // not classified as payments.
-      manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-          FillingProduct::kCreditCard);
-    }
+    } break;
+    case FillingProduct::kCreditCard:
+      if (!(field && field->Type().group() == FieldTypeGroup::kCreditCard)) {
+        // Only log payments manual fallback when triggered from a field that is
+        // not classified as payments.
+        manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
+            filling_product);
+      }
+      break;
+    // TODO(b/327566698): Add metrics for plus addresses.
+    case FillingProduct::kPlusAddresses:
+    // TODO(b/321678141): Add metrics for passwords.
+    case FillingProduct::kPassword:
+      NOTIMPLEMENTED();
+      break;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+      NOTREACHED();
+  }
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
@@ -584,18 +603,30 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
-    AutofillDriver& driver) {
-  driver.RendererShouldTriggerSuggestions(
-      /*field_id=*/{driver.GetFrameToken(),
+    AutofillDriver& autofill_driver) {
+  autofill_driver.RendererShouldTriggerSuggestions(
+      /*field_id=*/{autofill_driver.GetFrameToken(),
                     FieldRendererId(params_.field_renderer_id)},
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
-  // TODO(b/327566698): Add metrics.
+  LogManualFallbackContextMenuEntryAccepted(autofill_driver,
+                                            FillingProduct::kPlusAddresses);
+}
+
+void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
+    AutofillDriver& autofill_driver) {
+  autofill_driver.RendererShouldTriggerSuggestions(
+      /*field_id=*/{autofill_driver.GetFrameToken(),
+                    FieldRendererId(params_.field_renderer_id)},
+      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  LogManualFallbackContextMenuEntryAccepted(autofill_driver,
+                                            FillingProduct::kCreditCard);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
-    AutofillManager& manager) {
-  auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
-  AutofillField* field = GetAutofillField(manager, driver.GetFrameToken());
+    ContentAutofillDriver& autofill_driver) {
+  AutofillManager& manager = autofill_driver.GetAutofillManager();
+  AutofillField* field =
+      GetAutofillField(manager, autofill_driver.GetFrameToken());
   if (!field && !base::FeatureList::IsEnabled(
                     features::kAutofillForUnclassifiedFieldsAvailable)) {
     // The field should generally exist, since the fallback option is only shown
@@ -611,7 +642,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
   if (personal_data_manager_->address_data_manager().GetProfiles().empty() &&
       base::FeatureList::IsEnabled(
           features::kAutofillForUnclassifiedFieldsAvailable)) {
-    content::RenderFrameHost* rfh = driver.render_frame_host();
+    content::RenderFrameHost* rfh = autofill_driver.render_frame_host();
     auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
     AddressBubblesController::SetUpAndShowAddNewAddressBubble(
         web_contents,
@@ -633,13 +664,13 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
                       if (!rfh) {
                         return;
                       }
-                      ContentAutofillDriver* driver =
+                      AutofillDriver* driver =
                           ContentAutofillDriver::GetForRenderFrameHost(rfh);
                       if (!driver) {
                         return;
                       }
 
-                      driver->browser_events().RendererShouldTriggerSuggestions(
+                      driver->RendererShouldTriggerSuggestions(
                           /*field_id=*/{driver->GetFrameToken(),
                                         FieldRendererId(field_renderer_id)},
                           AutofillSuggestionTriggerSource::
@@ -667,25 +698,13 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             &personal_data_manager_->address_data_manager(), rfh->GetGlobalId(),
             params_.field_renderer_id));
   } else {
-    driver.browser_events().RendererShouldTriggerSuggestions(
-        /*field_id=*/{driver.GetFrameToken(),
+    autofill_driver.browser_events().RendererShouldTriggerSuggestions(
+        /*field_id=*/{autofill_driver.GetFrameToken(),
                       FieldRendererId(params_.field_renderer_id)},
         AutofillSuggestionTriggerSource::kManualFallbackAddress);
   }
-  LogManualFallbackContextMenuEntryAccepted(
-      static_cast<BrowserAutofillManager&>(manager), FillingProduct::kAddress);
-}
-
-void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
-    AutofillManager& manager) {
-  auto& driver = static_cast<ContentAutofillDriver&>(manager.driver());
-  driver.browser_events().RendererShouldTriggerSuggestions(
-      FieldGlobalId(driver.GetFrameToken(),
-                    FieldRendererId(params_.field_renderer_id)),
-      AutofillSuggestionTriggerSource::kManualFallbackPayments);
-  LogManualFallbackContextMenuEntryAccepted(
-      static_cast<BrowserAutofillManager&>(manager),
-      FillingProduct::kCreditCard);
+  LogManualFallbackContextMenuEntryAccepted(autofill_driver,
+                                            FillingProduct::kAddress);
 }
 
 AutofillField* AutofillContextMenuManager::GetAutofillField(
