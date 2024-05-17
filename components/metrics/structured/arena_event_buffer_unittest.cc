@@ -108,9 +108,7 @@ TEST_F(ArenaEventBufferTest, Purge) {
 
   EXPECT_EQ(buffer->resource_info().used_size_bytes, 0);
 
-  int64_t size;
-  EXPECT_TRUE(base::GetFileSize(GetPath(), &size));
-  EXPECT_EQ(size, 0);
+  EXPECT_FALSE(base::PathExists(GetPath()));
 }
 
 TEST_F(ArenaEventBufferTest, UpdatePath) {

@@ -93,7 +93,7 @@ void PersistentProtoInternal::OnReadComplete(
 
   // Purge the read proto if |purge_after_reading_|.
   if (purge_after_reading_) {
-    proto_->Clear();
+    Purge();
     purge_after_reading_ = false;
   }
 
@@ -129,7 +129,7 @@ void PersistentProtoInternal::OnWriteComplete(const WriteStatus status) {
 void PersistentProtoInternal::Purge() {
   if (proto_) {
     proto_->Clear();
-    QueueWrite();
+    QueueFileDelete();
   } else {
     purge_after_reading_ = true;
   }
@@ -195,6 +195,12 @@ void PersistentProtoInternal::UpdatePath(const base::FilePath& path,
 void PersistentProtoInternal::DeallocProto() {
   FlushQueuedWrites();
   proto_ = nullptr;
+}
+
+void PersistentProtoInternal::QueueFileDelete() {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                        proto_file_->path()));
 }
 
 void PersistentProtoInternal::FlushQueuedWrites() {

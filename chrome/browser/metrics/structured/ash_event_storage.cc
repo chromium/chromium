@@ -52,7 +52,7 @@ RepeatedPtrField<StructuredEventProto> AshEventStorage::TakeEvents() {
   if (IsPreUserStorageReadable()) {
     RepeatedPtrField<StructuredEventProto> events =
         std::move(*pre_user_events()->mutable_events());
-    pre_user_events_->QueueWrite();
+    pre_user_events_->Purge();
     return events;
   }
 
@@ -61,7 +61,7 @@ RepeatedPtrField<StructuredEventProto> AshEventStorage::TakeEvents() {
 
   RepeatedPtrField<StructuredEventProto> events =
       std::move(*user_events()->mutable_events());
-  user_events_->QueueWrite();
+  user_events_->Purge();
   return events;
 }
 

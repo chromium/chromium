@@ -93,6 +93,9 @@ class PersistentProtoInternal
   void DeallocProto();
 
  private:
+  // Queues a task to delete the backing file.
+  void QueueFileDelete();
+
   // Completes a write if there is a queued one.
   //
   // This is needed because it needs to be called by the class that owns the
