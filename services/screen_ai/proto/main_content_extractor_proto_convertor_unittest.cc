@@ -4,12 +4,10 @@
 
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
-#include <optional>
 #include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,28 +17,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
-#include "ui/accessibility/test_ax_tree_update_json_reader.h"
-#include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace {
 
 // To update the test expectations:
 //  1- Set the following to 'true' to get debug protos.
-//  2- Use the the following command to convert generated protos to text:
-//     gqui from rawproto:[source.pb] --noprotoprint_annotations \
-//     --noselect_stats --outfile=textproto:[destination.pbtxt]
-//  3- Remove the extra first and last brackets of each example.
+//  2- Replace the expected proto by the generated file.
 #define WRITE_DEBUG_PROTO false
-
-// Large test files generated from real world web pages for
-// ProtoConvertorViewHierarchyTest.
-constexpr int kProtoConversionTestCasesCount = 5;
-constexpr char kProtoConversionSampleInputFileNameFormat[] =
-    "sample%i_ax_tree.json";
-constexpr char kProtoConversionSampleExpectedFileNameFormat[] =
-    "sample%i_expected_proto%s.pbtxt";
 
 // A dummy tree node definition for PreOrderTreeGeneration.
 constexpr int kMaxChildInTemplate = 3;
@@ -98,164 +83,107 @@ void WriteDebugProto(const std::string& serialized_proto,
   }
 }
 
-template <class T>
-void ExpectBoundingBoxes(const T& box1,
-                         const T& box2,
-                         const gfx::PointF& max_diff) {
-  EXPECT_NEAR(box1.top(), box2.top(), max_diff.y());
-  EXPECT_NEAR(box1.left(), box2.left(), max_diff.x());
-  EXPECT_NEAR(box1.bottom(), box2.bottom(), max_diff.y());
-  EXPECT_NEAR(box1.right(), box2.right(), max_diff.x());
-}
-
-// TODO(https://crbug.com/40851192): Consider making the comparison not
-// sensitive to order.
-template <class T>
-void ExpectLists(const T& list1, const T& list2) {
-  EXPECT_EQ(list1.value_size(), list2.value_size());
-  int min_length = std::min(list1.value_size(), list2.value_size());
-  for (int i = 0; i < min_length; i++)
-    EXPECT_EQ(list1.value(i), list2.value(i));
-}
-
-void ExpectAttributes(const ::screenai::UiElementAttribute& attrib1,
-                      const ::screenai::UiElementAttribute& attrib2) {
-  SCOPED_TRACE(
-      base::StringPrintf("Comparing attribute: %s", attrib1.name().c_str()));
-  EXPECT_EQ(attrib1.value_case(), attrib2.value_case());
-
-  switch (attrib1.value_case()) {
-    case screenai::UiElementAttribute::ValueCase::kBoolValue:
-      EXPECT_EQ(attrib1.bool_value(), attrib2.bool_value());
-      break;
-    case screenai::UiElementAttribute::kIntValue:
-      EXPECT_EQ(attrib1.int_value(), attrib2.int_value());
-      break;
-    case screenai::UiElementAttribute::kStringValue:
-      EXPECT_EQ(attrib1.string_value(), attrib2.string_value());
-      break;
-    case screenai::UiElementAttribute::kFloatValue:
-      EXPECT_EQ(attrib1.float_value(), attrib2.float_value());
-      break;
-    case screenai::UiElementAttribute::kIntListValue: {
-      ExpectLists(attrib1.int_list_value(), attrib2.int_list_value());
-      break;
-    }
-    case screenai::UiElementAttribute::kStringListValue: {
-      ExpectLists(attrib1.int_list_value(), attrib2.int_list_value());
-      break;
-    }
-    case screenai::UiElementAttribute::kFloatListValue: {
-      NOTREACHED_IN_MIGRATION() << "Chrome has no float list.";
-      break;
-    }
-    case screenai::UiElementAttribute::VALUE_NOT_SET:
-      break;
-  }
-}
-
-void ExpectViewHierarchyProtos(screenai::ViewHierarchy& generated,
-                               screenai::ViewHierarchy& expected) {
-  EXPECT_EQ(generated.ui_elements_size(), expected.ui_elements_size());
-
-  // Bounding boxes can have a one pixel difference threshold as there might be
-  // different approaches in rounding floats to integers.
-  // To compare |bounding_box_pixels| values which represent bounding boxes in
-  // pixels, we use |kPixelDifferenceThreshold|.
-  const gfx::PointF kPixelDifferenceThreshold(1, 1);
-
-  // |bounding_box| values represent the relative position of a bounding box to
-  // the tree, and as each of them (the element and the tree) can have a one
-  // pixel error, the total error can be up to two pixels. To get the tree size
-  // to compute |kRelativeDifferenceThreshold|, we use the 0th element which
-  // should be the root and cover the entire tree.
-  const auto& root = expected.ui_elements(0);
-  const gfx::PointF kRelativeDifferenceThreshold(
-      2.0 / root.bounding_box_pixels().right(),
-      2.0 / root.bounding_box_pixels().bottom());
-  EXPECT_EQ(root.bounding_box_pixels().top(), 0);
-  EXPECT_EQ(root.bounding_box_pixels().left(), 0);
-
-  for (int i = 0; i < generated.ui_elements_size(); i++) {
-    SCOPED_TRACE(base::StringPrintf("Comparing ui_elements at index: %i", i));
-    const screenai::UiElement& generated_uie = generated.ui_elements(i);
-    const screenai::UiElement& expected_uie = expected.ui_elements(i);
-
-    EXPECT_EQ(generated_uie.id(), expected_uie.id());
-    EXPECT_EQ(generated_uie.type(), expected_uie.type());
-    EXPECT_EQ(generated_uie.parent_id(), expected_uie.parent_id());
-
-    EXPECT_EQ(generated_uie.child_ids_size(), expected_uie.child_ids_size());
-    int min_length =
-        std::min(generated_uie.child_ids_size(), expected_uie.child_ids_size());
-    for (int child_index = 0; child_index < min_length; child_index++)
-      EXPECT_EQ(generated_uie.child_ids(child_index),
-                expected_uie.child_ids(child_index));
-
-    ExpectBoundingBoxes(generated_uie.bounding_box(),
-                        expected_uie.bounding_box(),
-                        kRelativeDifferenceThreshold);
-    ExpectBoundingBoxes(generated_uie.bounding_box_pixels(),
-                        expected_uie.bounding_box_pixels(),
-                        kPixelDifferenceThreshold);
-
-    // Attributes may have different orders in the two protos.
-    std::map<std::string, int> attribute_indices_map;
-    for (int j = 0; j < expected_uie.attributes_size(); j++)
-      attribute_indices_map[expected_uie.attributes(j).name()] = j;
-
-    int expected_attributes_count = expected_uie.attributes_size();
-    for (int j = 0; j < generated_uie.attributes_size(); j++) {
-      const ::screenai::UiElementAttribute& generated_attrib =
-          generated_uie.attributes(j);
-
-      const auto& expected_attrib_index =
-          attribute_indices_map.find(generated_attrib.name());
-      bool attribute_found_in_expected =
-          (expected_attrib_index != attribute_indices_map.end());
-
-      if (attribute_found_in_expected) {
-        ExpectAttributes(generated_attrib, expected_uie.attributes(
-                                               expected_attrib_index->second));
-        // Remove expected attributes from |attribute_indices_map|, leaving
-        // missing attributes for reporting.
-        attribute_indices_map.erase(expected_attrib_index);
-        continue;
-      }
-      // TODO(https://crbug.com/40851192): Follow up why visibility is
-      // sometimes not passed.
-      if (generated_attrib.name() != "/extras/styles/visibility")
-        EXPECT_TRUE(attribute_found_in_expected) << generated_attrib.name();
-      else
-        expected_attributes_count++;
-    }
-
-    EXPECT_EQ(expected_attributes_count, generated_uie.attributes_size());
-  }
-}
-
-bool LoadTextProto(const base::FilePath& proto_file_path,
-                   const char* proto_descriptor_relative_file_path,
-                   google::protobuf::MessageLite& proto) {
-  std::string file_content;
-  if (!base::ReadFileToString(proto_file_path, &file_content)) {
-    LOG(ERROR) << "Failed to read expected proto from: " << proto_file_path;
-    return false;
-  }
-
+std::string ConvertProtoToText(const std::string& proto_binary) {
   base::FilePath descriptor_full_path;
   if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT,
                               &descriptor_full_path)) {
     LOG(ERROR) << "Generated test data root not found!";
-    return false;
+    return "";
   }
-  descriptor_full_path =
-      descriptor_full_path.AppendASCII(proto_descriptor_relative_file_path);
+  descriptor_full_path = descriptor_full_path.AppendASCII(
+      "services/screen_ai/proto/view_hierarchy.descriptor");
 
+  screenai::ViewHierarchy proto;
   base::TestProtoLoader loader(descriptor_full_path, proto.GetTypeName());
   std::string serialized_message;
-  loader.ParseFromText(file_content, serialized_message);
-  return proto.ParseFromString(serialized_message);
+  loader.PrintToText(proto_binary, serialized_message);
+  return serialized_message;
+}
+
+ui::AXTree CreateSampleTree() {
+  // AXTree title=Test Tree
+  // id=1 rootWebArea child_ids=2,4,6 (4, 8)-(15, 16)
+  // non_atomic_text_field_root=true
+  // ++id=2 paragraph child_ids=3 (0, 0)-(0, 0) is_line_breaking_object=true
+  // ++++id=3 staticText EDITABLE name=StaticText00 (0, 0)-(0, 0)
+  // ++id=4 paragraph child_ids=5 (0, 0)-(0, 0) is_line_breaking_object=true
+  // ++++id=5 staticText name=StaticText10 (0, 0)-(0, 0)
+  // ++id=6 paragraph child_ids=7 (0, 0)-(0, 0) is_line_breaking_object=true
+  // ++++id=7 link LINKED child_ids=8,9 (0, 0)-(0, 0)
+  // ++++++id=8 staticText name=StaticText200 (0, 0)-(0, 0)
+  // ++++++id=9 staticText name=StaticText201 (0, 0)-(0, 0)
+
+  ui::AXNodeData root;
+  ui::AXNodeData paragraph_0;
+  ui::AXNodeData static_text_0_0;
+  ui::AXNodeData paragraph_1;
+  ui::AXNodeData static_text_1_0;
+  ui::AXNodeData paragraph_2;
+  ui::AXNodeData link_2_0;
+  ui::AXNodeData static_text_2_0_0;
+  ui::AXNodeData static_text_2_0_1;
+
+  root.id = 1;
+  paragraph_0.id = 2;
+  static_text_0_0.id = 3;
+  paragraph_1.id = 4;
+  static_text_1_0.id = 5;
+  paragraph_2.id = 6;
+  link_2_0.id = 7;
+  static_text_2_0_0.id = 8;
+  static_text_2_0_1.id = 9;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot,
+                        true);
+  root.relative_bounds.bounds = gfx::RectF(4, 8, 15, 16);
+  root.child_ids = {paragraph_0.id, paragraph_1.id, paragraph_2.id};
+
+  paragraph_0.role = ax::mojom::Role::kParagraph;
+  paragraph_0.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_0.child_ids = {static_text_0_0.id};
+
+  static_text_0_0.role = ax::mojom::Role::kStaticText;
+  static_text_0_0.AddState(ax::mojom::State::kEditable);
+  static_text_0_0.SetName("StaticText00");
+
+  paragraph_1.role = ax::mojom::Role::kParagraph;
+  paragraph_1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_1.child_ids = {static_text_1_0.id};
+
+  static_text_1_0.role = ax::mojom::Role::kStaticText;
+  static_text_1_0.SetName("StaticText10");
+
+  paragraph_2.role = ax::mojom::Role::kParagraph;
+  paragraph_2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                               true);
+  paragraph_2.child_ids = {link_2_0.id};
+
+  link_2_0.role = ax::mojom::Role::kLink;
+  link_2_0.AddState(ax::mojom::State::kLinked);
+  link_2_0.child_ids = {static_text_2_0_0.id, static_text_2_0_1.id};
+
+  static_text_2_0_0.role = ax::mojom::Role::kStaticText;
+  static_text_2_0_0.SetName("StaticText200");
+
+  static_text_2_0_1.role = ax::mojom::Role::kStaticText;
+  static_text_2_0_1.SetName("StaticText201");
+
+  ui::AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {root,        paragraph_0,       static_text_0_0,
+                         paragraph_1, static_text_1_0,   paragraph_2,
+                         link_2_0,    static_text_2_0_0, static_text_2_0_1};
+  initial_state.has_tree_data = true;
+
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.title = "Test Tree";
+  initial_state.tree_data = tree_data;
+
+  return ui::AXTree(initial_state);
 }
 
 }  // namespace
@@ -309,82 +237,36 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   }
 }
 
-class ProtoConvertorViewHierarchyTest
-    : public ::testing::TestWithParam<std::tuple<int, bool>> {
- public:
-  ProtoConvertorViewHierarchyTest() {
-    if (std::get<1>(GetParam())) {
-      feature_list_.InitAndEnableFeature(::features::kUseScreen2xV2);
-    } else {
-      feature_list_.InitAndDisableFeature(::features::kUseScreen2xV2);
-    }
-  }
-  ~ProtoConvertorViewHierarchyTest() override = default;
+// TODO(crbug.com/40851192): Remove this test when v2 is confirmed and is used
+// by default.
+TEST_F(MainContentExtractorProtoConvertorTest, ProtoV1Test) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(::features::kUseScreen2xV2);
 
- protected:
-  int test_case() { return std::get<0>(GetParam()); }
+  ui::AXTree tree = CreateSampleTree();
 
-  const base::FilePath GetInputFilePath() {
-    return GetTestFilePath(base::StringPrintf(
-        kProtoConversionSampleInputFileNameFormat, test_case()));
-  }
+  std::string generated_proto =
+      ConvertProtoToText(SnapshotToViewHierarchy(&tree));
+  WriteDebugProto(generated_proto, "expected_v1_proto.pbtxt");
+  std::string expected_proto;
+  ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_v1_proto.pbtxt"),
+                                     &expected_proto));
+  ASSERT_EQ(generated_proto, expected_proto);
+}
 
-  const base::FilePath GetExpectedFilePath() {
-    return GetTestFilePath(base::StringPrintf(
-        kProtoConversionSampleExpectedFileNameFormat, test_case(),
-        features::UseScreen2xV2() ? "_v2" : ""));
-  }
+TEST_F(MainContentExtractorProtoConvertorTest, ProtoV2Test) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kUseScreen2xV2);
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+  ui::AXTree tree = CreateSampleTree();
 
-INSTANTIATE_TEST_SUITE_P(
-    MainContentExtractorProtoConvertorTest,
-    ProtoConvertorViewHierarchyTest,
-    testing::Combine(testing::Range(0, kProtoConversionTestCasesCount),
-                     testing::Bool()));
-
-TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
-  const base::FilePath kInputJsonPath = GetInputFilePath();
-  const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
-
-  // Load JSON file.
-  std::string file_content;
-  ASSERT_TRUE(base::ReadFileToString(kInputJsonPath, &file_content))
-      << "Failed to load input AX tree: " << kInputJsonPath;
-  std::optional<base::Value> json = base::JSONReader::Read(file_content);
-  ASSERT_TRUE(json.has_value());
-
-  // Convert JSON file to AX tree update.
-  const std::map<std::string, ax::mojom::Role>
-      content_extraction_to_chrome_roles =
-          GetMainContentExtractorToChromeRoleConversionMapForTesting();
-  ui::AXTreeUpdate tree_update = ui::AXTreeUpdateFromJSON(
-      json.value(), &content_extraction_to_chrome_roles);
-  ASSERT_GT(tree_update.nodes.size(), 0u);
-
-  // Convert AX Tree to Screen2x proto.
-  ui::AXTree tree(tree_update);
-  std::string serialized_proto = SnapshotToViewHierarchy(&tree);
-  screenai::ViewHierarchy generated_view_hierarchy;
-  ASSERT_TRUE(generated_view_hierarchy.ParseFromString(serialized_proto))
-      << "Failed to parse created proto.";
-
-  WriteDebugProto(
-      serialized_proto,
-      base::StringPrintf("proto_convertor_sample%i_output.pb", test_case()));
-
-  // Load expected Proto.
-  screenai::ViewHierarchy expected_view_hierarchy;
-  ASSERT_TRUE(LoadTextProto(
-      kExpectedProtoPath,
-      "services/screen_ai/proto/view_hierarchy.descriptor",
-      expected_view_hierarchy));
-
-  // Compare protos.
-  ASSERT_NO_FATAL_FAILURE(ExpectViewHierarchyProtos(generated_view_hierarchy,
-                                                    expected_view_hierarchy));
+  std::string generated_proto =
+      ConvertProtoToText(SnapshotToViewHierarchy(&tree));
+  WriteDebugProto(generated_proto, "expected_v2_proto.pbtxt");
+  std::string expected_proto;
+  ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_v2_proto.pbtxt"),
+                                     &expected_proto));
+  ASSERT_EQ(generated_proto, expected_proto);
 }
 
 }  // namespace screen_ai
