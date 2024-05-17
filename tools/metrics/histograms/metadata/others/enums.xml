@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Error: Screenshot encoding failed"/>
   <int value="9" label="Escape key press"/>
   <int value="10" label="Unexpected side panel open"/>
+  <int value="11" label="Browser went into fullscreen"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->

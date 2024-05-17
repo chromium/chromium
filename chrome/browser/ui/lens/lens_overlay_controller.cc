@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_permission_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -339,6 +340,8 @@ void LensOverlayController::ShowUI(
   }
 
   scoped_tab_modal_ui_ = tab_->ShowModalUI();
+  fullscreen_observation_.Observe(
+      tab_browser->exclusive_access_manager()->fullscreen_controller());
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 }
 
@@ -955,6 +958,7 @@ void LensOverlayController::CloseUIPart2(
   pending_thumbnail_uri_.reset();
   thumbnail_uri_.clear();
   pending_region_.reset();
+  fullscreen_observation_.Reset();
 
   state_ = State::kOff;
 
@@ -1070,6 +1074,10 @@ bool LensOverlayController::HandleKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, overlay_web_view_->GetFocusManager());
+}
+
+void LensOverlayController::OnFullscreenStateChanged() {
+  CloseUIAsync(lens::LensOverlayDismissalSource::kFullscreened);
 }
 
 const GURL& LensOverlayController::GetPageURL() const {

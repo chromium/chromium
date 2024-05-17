@@ -7,9 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -70,6 +74,7 @@ class LensOverlayController : public LensSearchboxClient,
                               public lens::mojom::LensPageHandler,
                               public lens::mojom::LensSidePanelPageHandler,
                               public content::WebContentsDelegate,
+                              public FullscreenObserver,
                               public SidePanelViewStateObserver {
  public:
   LensOverlayController(tabs::TabInterface* tab,
@@ -485,6 +490,9 @@ class LensOverlayController : public LensSearchboxClient,
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
 
+  // FullscreenObserver:
+  void OnFullscreenStateChanged() override;
+
   // Overridden from LensSearchboxClient:
   const GURL& GetPageURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification()
@@ -669,6 +677,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay widget is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
+
+  // Observer to check for browser entering fullscreen.
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observation_{this};
 
   // Query controller.
   std::unique_ptr<lens::LensOverlayQueryController>

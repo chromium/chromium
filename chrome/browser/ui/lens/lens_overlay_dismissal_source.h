@@ -51,7 +51,10 @@ enum class LensOverlayDismissalSource {
   // Another side panel opened forcing our overlay to close.
   kUnexpectedSidePanelOpen = 10,
 
-  kMaxValue = kUnexpectedSidePanelOpen
+  // The browser entered fullscreen.
+  kFullscreened = 11,
+
+  kMaxValue = kFullscreened
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:LensOverlayDismissalSource)
 
