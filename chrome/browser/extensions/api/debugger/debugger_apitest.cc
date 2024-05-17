@@ -65,7 +65,10 @@
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -74,6 +77,21 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
+
+namespace {
+
+// Gets all URLs from the list of targets, with the ports removed.
+std::vector<std::string> GetTargetUrlsWithoutPorts(
+    const base::Value::List& targets) {
+  return base::ToVector(targets, [](const base::Value& value) {
+    GURL::Replacements remove_port;
+    remove_port.ClearPort();
+    const std::string* url = value.GetDict().FindString("url");
+    return url ? GURL(*url).ReplaceComponents(remove_port).spec()
+               : "<missing field>";
+  });
+}
+}  // namespace
 
 using testing::Eq;
 
@@ -685,14 +703,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
 
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
-    std::vector<std::string> urls =
-        base::ToVector(targets, [](const base::Value& value) {
-          GURL::Replacements remove_port;
-          remove_port.ClearPort();
-          const std::string* url = value.GetDict().FindString("url");
-          return url ? GURL(*url).ReplaceComponents(remove_port).spec()
-                     : "<missing field>";
-        });
+    std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
     EXPECT_THAT(urls, testing::UnorderedElementsAre(
                           "about:blank",
                           "http://127.0.0.1/simple.html?off_the_record"));
@@ -859,6 +870,7 @@ class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 };
 
+// Test that the debuggers can attach to the PDF embedder frame.
 IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
   // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
   if (IsParamFeatureEnabled()) {
@@ -871,6 +883,53 @@ IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
+
+class DebuggerExtensionApiOopifPdfTest : public DebuggerExtensionApiTest {
+ public:
+  DebuggerExtensionApiOopifPdfTest() {
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
+    return factory_.GetTestPdfViewerStreamManager(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  pdf::TestPdfViewerStreamManagerFactory factory_;
+};
+
+// Test that the inner PDF frames, i.e. the PDF extension frame and the PDF
+// content frame, aren't visible targets, while the PDF embedder frame is.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
+  GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+
+  // Load a full-page PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // Get targets.
+  auto get_targets_function =
+      base::MakeRefCounted<DebuggerGetTargetsFunction>();
+  base::Value get_targets_result =
+      std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
+          get_targets_function.get(), "[]", profile()));
+  ASSERT_TRUE(get_targets_result.is_list());
+
+  // Verify that the inner PDF frames aren't targets in the list. Only the PDF
+  // embedder frame (the main frame) should be a target.
+  const base::Value::List targets = std::move(get_targets_result).TakeList();
+  ASSERT_THAT(targets, testing::SizeIs(1));
+
+  // Verify that the target is the PDF embedder frame.
+  std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
+  ASSERT_THAT(urls, testing::SizeIs(1));
+  EXPECT_EQ(urls[0], "http://127.0.0.1/pdf/test.pdf");
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {

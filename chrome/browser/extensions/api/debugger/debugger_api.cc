@@ -62,7 +62,12 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "pdf/buildflags.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content::DevToolsAgentHost;
 using content::RenderProcessHost;
@@ -105,6 +110,14 @@ void DebuggeeFromDebuggerSession(Debuggee& dst, const DebuggerSession& src) {
   dst.extension_id = src.extension_id;
   dst.target_id = src.target_id;
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// Returns whether `url` is the URL for the built-in PDF extension.
+bool IsPdfExtensionUrl(const GURL& url) {
+  return url.scheme() == kExtensionScheme &&
+         url.host() == extension_misc::kPdfExtensionId;
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 bool ExtensionMayAttachToTargetProfile(Profile* extension_profile,
                                        bool allow_incognito_access,
@@ -907,6 +920,17 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
             profile, include_incognito_information(), *host)) {
       continue;
     }
+#if BUILDFLAG(ENABLE_PDF)
+    // OOPIF PDF viewer only. Don't list the `content::DevToolsAgentHost`s for
+    // inner PDF frames. PDF extension frames and PDF content frames shouldn't
+    // be exposed to chrome.debugger clients.
+    auto* process_host = host->GetProcessHost();
+    if (chrome_pdf::features::IsOopifPdfEnabled() &&
+        (IsPdfExtensionUrl(host->GetURL()) ||
+         (process_host && process_host->IsPdf()))) {
+      continue;
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
     result.Append(SerializeTarget(host));
   }
 
