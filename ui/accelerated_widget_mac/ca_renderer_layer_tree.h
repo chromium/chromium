@@ -12,9 +12,9 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -98,7 +98,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   class ContentLayer;
   friend class ContentLayer;
 
-  using CALayerMap = base::flat_map<IOSurfaceRef, base::WeakPtr<ContentLayer>>;
+  using CALayerMap =
+      std::unordered_map<IOSurfaceRef, base::WeakPtr<ContentLayer>>;
 
   void MatchLayersToOldTreeDefault(CARendererLayerTree* old_tree);
   void MatchLayersToOldTree(CARendererLayerTree* old_tree);
