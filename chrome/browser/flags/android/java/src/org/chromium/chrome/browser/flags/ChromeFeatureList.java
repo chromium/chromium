@@ -262,8 +262,6 @@ public abstract class ChromeFeatureList {
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String COMMERCE_PRICE_TRACKING = "CommercePriceTracking";
     public static final String CONTEXTUAL_PAGE_ACTIONS = "ContextualPageActions";
-    public static final String CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING =
-            "ContextualPageActionPriceTracking";
     public static final String CONTEXTUAL_PAGE_ACTION_READER_MODE =
             "ContextualPageActionReaderMode";
     public static final String CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION =

@@ -69,6 +69,7 @@ public class BookmarkTabletTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
                 });
     }
 

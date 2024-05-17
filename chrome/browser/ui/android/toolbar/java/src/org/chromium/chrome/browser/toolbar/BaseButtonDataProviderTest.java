@@ -42,10 +42,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Unit test for {@link BaseButtonDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-})
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class BaseButtonDataProviderTest {
     private class TestButtonDataProvider extends BaseButtonDataProvider {
         public TestButtonDataProvider(

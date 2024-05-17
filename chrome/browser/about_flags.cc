@@ -699,24 +699,6 @@ const FeatureEntry::FeatureVariation kContextualPageActionsVariations[] = {
     {"Disable UI", kContextualPageActions_DisableUi},
 };
 
-const FeatureEntry::FeatureVariation
-    kContextualPageActionPriceTrackingVariations[] = {
-        {"Quiet", kContextualPageActionsUiParams_Quiet,
-         std::size(kContextualPageActionsUiParams_Quiet), nullptr},
-        {"Action Chip", kContextualPageActionsUiParams_ActionChip,
-         std::size(kContextualPageActionsUiParams_ActionChip), nullptr},
-        {"Action Chip - 6s", kContextualPageActionsUiParams_ActionChip_6s,
-         std::size(kContextualPageActionsUiParams_ActionChip_6s), nullptr},
-        {"Action Chip - Alternative Color",
-         kContextualPageActionsUiParams_ActionChip_AltColor,
-         std::size(kContextualPageActionsUiParams_ActionChip_AltColor),
-         nullptr},
-        {"Action Chip - Alternative Color - 6s",
-         kContextualPageActionsUiParams_ActionChip_AltColor_6s,
-         std::size(kContextualPageActionsUiParams_ActionChip_AltColor_6s),
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kContextualPageActionReaderMode_ActionChip_NotRateLimited[] = {
         {"action_chip", "true"},
@@ -4760,14 +4742,6 @@ const FeatureEntry kFeatureEntries[] = {
          segmentation_platform::features::kContextualPageActions,
          kContextualPageActionsVariations,
          "ContextualPageActions")},
-    {"contextual-page-actions-with-price-tracking",
-     flag_descriptions::kContextualPageActionsPriceTrackingName,
-     flag_descriptions::kContextualPageActionsPriceTrackingDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActionPriceTracking,
-         kContextualPageActionPriceTrackingVariations,
-         "ContextualPageActionPriceTracking")},
     {"contextual-page-actions-reader-mode",
      flag_descriptions::kContextualPageActionsReaderModeName,
      flag_descriptions::kContextualPageActionsReaderModeDescription, kOsAndroid,
