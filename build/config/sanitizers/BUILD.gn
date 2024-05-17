@@ -180,8 +180,11 @@ static_library("options_sources") {
   }
 }
 
-source_set("dlclose_shim") {
-  sources = [ "//build/sanitizers/dlcloseshim.c" ]
+
+if (use_dlcloseshim) {
+  source_set("dlclose_shim") {
+    sources = [ "//build/sanitizers/dlcloseshim.c" ]
+  }
 }
 
 # Applies linker flags necessary when either :deps or :default_sanitizer_flags
