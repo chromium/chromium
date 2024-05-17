@@ -550,8 +550,8 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
   //    (Done in constructor.)
 
   // 9. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   NewSessionResultPromise* result =
       MakeGarbageCollected<NewSessionResultPromise>(resolver, config_, this);
@@ -649,8 +649,8 @@ ScriptPromise<IDLBoolean> MediaKeySession::load(
   //    (Available as getExecutionContext()->getSecurityOrigin() anytime.)
 
   // 7. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   LoadSessionResultPromise* result =
       MakeGarbageCollected<LoadSessionResultPromise>(resolver, config_, this);
@@ -774,8 +774,8 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
       DOMArrayBuffer::Create(response.Data(), response.ByteLength());
 
   // 5. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   SimpleResultPromise* result = MakeGarbageCollected<SimpleResultPromise>(
       resolver, config_, this, EmeApiType::kUpdate);
@@ -824,8 +824,8 @@ ScriptPromise<IDLUndefined> MediaKeySession::close(
     return CreateRejectedPromiseNotCallable(exception_state);
 
   // 3. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   CloseSessionResultPromise* result =
       MakeGarbageCollected<CloseSessionResultPromise>(resolver, config_, this);
@@ -881,8 +881,8 @@ ScriptPromise<IDLUndefined> MediaKeySession::remove(
     return CreateRejectedPromiseNotCallable(exception_state);
 
   // 3. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   SimpleResultPromise* result = MakeGarbageCollected<SimpleResultPromise>(
       resolver, config_, this, EmeApiType::kRemove);

@@ -369,8 +369,8 @@ ScriptPromise<IDLBoolean> MediaKeys::setServerCertificate(
       server_certificate.Data(), server_certificate.ByteLength());
 
   // 4. Let promise be a new promise.
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   SetCertificateResultPromise* result =
       MakeGarbageCollected<SetCertificateResultPromise>(resolver, config_,
@@ -432,7 +432,7 @@ ScriptPromise<V8MediaKeyStatus> MediaKeys::getStatusForPolicy(
   // Let promise be a new promise.
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8MediaKeyStatus>>(
-          script_state);
+          script_state, exception_state.GetContext());
   GetStatusForPolicyResultPromise* result =
       MakeGarbageCollected<GetStatusForPolicyResultPromise>(
           resolver, config_, min_hdcp_version, this);

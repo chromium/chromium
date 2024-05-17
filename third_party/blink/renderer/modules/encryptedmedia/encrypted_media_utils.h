@@ -79,11 +79,6 @@ class EncryptedMediaUtils {
 
   static WebEncryptedMediaClient* GetEncryptedMediaClientFromLocalDOMWindow(
       LocalDOMWindow*);
-
-  // Get interface and property name for |type|, e.t. "MediaKeys" and "load",
-  // respectively.
-  static const char* GetInterfaceName(EmeApiType type);
-  static const char* GetPropertyName(EmeApiType type);
 };
 
 }  // namespace blink

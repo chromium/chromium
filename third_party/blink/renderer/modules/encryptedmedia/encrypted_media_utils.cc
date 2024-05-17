@@ -156,45 +156,6 @@ String EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
   return "not-allowed";
 }
 
-// static
-const char* EncryptedMediaUtils::GetInterfaceName(EmeApiType type) {
-  switch (type) {
-    case EmeApiType::kCreateMediaKeys:
-      return "MediaKeySystemAccess";
-    case EmeApiType::kSetServerCertificate:
-    case EmeApiType::kGetStatusForPolicy:
-      return "MediaKeys";
-    case EmeApiType::kGenerateRequest:
-    case EmeApiType::kLoad:
-    case EmeApiType::kUpdate:
-    case EmeApiType::kClose:
-    case EmeApiType::kRemove:
-      return "MediaKeySession";
-  }
-}
-
-// static
-const char* EncryptedMediaUtils::GetPropertyName(EmeApiType type) {
-  switch (type) {
-    case EmeApiType::kCreateMediaKeys:
-      return "createMediaKeys";
-    case EmeApiType::kSetServerCertificate:
-      return "setServerCertificate";
-    case EmeApiType::kGetStatusForPolicy:
-      return "getStatusForPolicy";
-    case EmeApiType::kGenerateRequest:
-      return "generateRequest";
-    case EmeApiType::kLoad:
-      return "load";
-    case EmeApiType::kUpdate:
-      return "update";
-    case EmeApiType::kClose:
-      return "close";
-    case EmeApiType::kRemove:
-      return "remove";
-  }
-}
-
 WebEncryptedMediaClient*
 EncryptedMediaUtils::GetEncryptedMediaClientFromLocalDOMWindow(
     LocalDOMWindow* window) {
