@@ -21,7 +21,6 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/layout/fill_layout.h"
 
 ChooserDialogView::ChooserDialogView(
     std::unique_ptr<permissions::ChooserController> chooser_controller) {
@@ -42,12 +41,14 @@ ChooserDialogView::ChooserDialogView(
 
   DCHECK(chooser_controller);
 
+  SetUseDefaultFillLayout(true);
   SetButtonLabel(ui::DIALOG_BUTTON_OK, chooser_controller->GetOkButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  chooser_controller->GetCancelButtonLabel());
 
   device_chooser_content_view_ =
-      new DeviceChooserContentView(this, std::move(chooser_controller));
+      AddChildView(std::make_unique<DeviceChooserContentView>(
+          this, std::move(chooser_controller)));
   device_chooser_content_view_->SetBorder(views::CreateEmptyBorder(
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
           views::DialogContentType::kControl,
@@ -81,18 +82,6 @@ bool ChooserDialogView::IsDialogButtonEnabled(ui::DialogButton button) const {
 
 views::View* ChooserDialogView::GetInitiallyFocusedView() {
   return GetCancelButton();
-}
-
-views::View* ChooserDialogView::GetContentsView() {
-  return device_chooser_content_view_;
-}
-
-views::Widget* ChooserDialogView::GetWidget() {
-  return device_chooser_content_view_->GetWidget();
-}
-
-const views::Widget* ChooserDialogView::GetWidget() const {
-  return device_chooser_content_view_->GetWidget();
 }
 
 void ChooserDialogView::OnSelectionChanged() {

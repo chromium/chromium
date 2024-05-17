@@ -35,11 +35,6 @@ class ChooserDialogView : public views::DialogDelegateView,
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
 
-  // views::DialogDelegateView:
-  views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
-
   // views::TableViewObserver:
   void OnSelectionChanged() override;
 
