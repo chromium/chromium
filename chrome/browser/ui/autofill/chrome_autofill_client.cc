@@ -1267,23 +1267,8 @@ AutofillClient::PasswordFormType ChromeAutofillClient::ClassifyAsPasswordForm(
   std::unique_ptr<password_manager::PasswordForm> pw_form =
       parser.Parse(it->first, password_manager::FormDataParser::Mode::kFilling,
                    /*stored_usernames=*/{});
-  if (!pw_form) {
-    return PasswordFormType::kNoPasswordForm;
-  }
-
-  // TODO(crbug.com/323387899): Move into PWM helper to re-use on iOS.
-  if (pw_form->IsLikelyLoginForm()) {
-    return PasswordFormType::kLoginForm;
-  } else if (pw_form->IsLikelySignupForm()) {
-    return PasswordFormType::kSignupForm;
-  } else if (pw_form->IsLikelyChangePasswordForm()) {
-    return PasswordFormType::kChangePasswordForm;
-  } else if (pw_form->IsLikelyResetPasswordForm()) {
-    return PasswordFormType::kResetPasswordForm;
-  } else if (pw_form->IsSingleUsername()) {
-    return PasswordFormType::kSingleUsernameForm;
-  }
-  return PasswordFormType::kNoPasswordForm;
+  return pw_form ? pw_form->GetPasswordFormType()
+                 : PasswordFormType::kNoPasswordForm;
 }
 
 }  // namespace autofill

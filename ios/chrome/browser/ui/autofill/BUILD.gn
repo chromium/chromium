@@ -24,6 +24,7 @@ source_set("autofill") {
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
     "//components/password_manager/ios",
     "//components/plus_addresses",

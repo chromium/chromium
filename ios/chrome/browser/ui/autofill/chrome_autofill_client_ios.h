@@ -158,6 +158,10 @@ class ChromeAutofillClientIOS : public AutofillClient {
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
+  PasswordFormType ClassifyAsPasswordForm(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      FieldGlobalId field_id) const override;
 
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no

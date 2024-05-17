@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -524,6 +525,11 @@ struct PasswordForm {
   // it has a new password field and no current password field or username.
   // It's based on heuristics and may be inaccurate.
   bool IsLikelyResetPasswordForm() const;
+
+  // Returns the `PasswordFormType` classification of this form. Note that just
+  // as `IsLikelyLoginForm()`, `IsLikelySignupForm()`, etc. this prediction is
+  // based on heuristics and may be inaccurate.
+  autofill::AutofillClient::PasswordFormType GetPasswordFormType() const;
 
   // Returns true if current password element is set.
   bool HasUsernameElement() const;

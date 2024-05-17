@@ -330,6 +330,23 @@ bool PasswordForm::IsLikelyResetPasswordForm() const {
          !HasUsernameElement();
 }
 
+autofill::AutofillClient::PasswordFormType PasswordForm::GetPasswordFormType()
+    const {
+  using enum autofill::AutofillClient::PasswordFormType;
+  if (IsLikelyLoginForm()) {
+    return kLoginForm;
+  } else if (IsLikelySignupForm()) {
+    return kSignupForm;
+  } else if (IsLikelyChangePasswordForm()) {
+    return kChangePasswordForm;
+  } else if (IsLikelyResetPasswordForm()) {
+    return kResetPasswordForm;
+  } else if (IsSingleUsername()) {
+    return kSingleUsernameForm;
+  }
+  return kNoPasswordForm;
+}
+
 bool PasswordForm::HasUsernameElement() const {
   return !username_element_renderer_id.is_null();
 }

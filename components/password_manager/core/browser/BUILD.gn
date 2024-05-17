@@ -246,8 +246,9 @@ source_set("password_form") {
     "password_form_digest.cc",
     "password_form_digest.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types_shared",
     "//components/signin/public/base",
