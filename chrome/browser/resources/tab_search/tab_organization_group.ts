@@ -67,6 +67,7 @@ export class TabOrganizationGroupElement extends PolymerElement {
       showReject: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
 
       lastFocusedIndex_: {

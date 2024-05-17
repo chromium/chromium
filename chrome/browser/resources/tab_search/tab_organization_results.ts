@@ -15,7 +15,7 @@ import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_f
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {TabOrganizationGroupElement} from './tab_organization_group.js';
 import {getTemplate} from './tab_organization_results.html.js';
@@ -75,12 +75,29 @@ export class TabOrganizationResultsElement extends PolymerElement {
     return getTemplate();
   }
 
+  override ready() {
+    super.ready();
+
+    this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
+  }
+
   focusInput() {
     const group = this.shadowRoot!.querySelector('tab-organization-group');
     if (!group) {
       return;
     }
     group.focusInput();
+  }
+
+  private updateScroll_() {
+    const scrollable = this.$.scrollable;
+    scrollable.classList.toggle(
+        'can-scroll', scrollable.clientHeight < scrollable.scrollHeight);
+    scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
+    scrollable.classList.toggle(
+        'scrolled-to-bottom',
+        scrollable.scrollTop + scrollable.clientHeight >=
+            scrollable.scrollHeight);
   }
 
   private getTitle_(): string {
@@ -118,10 +135,12 @@ export class TabOrganizationResultsElement extends PolymerElement {
         MINIMUM_SCROLLABLE_MAX_HEIGHT,
         (this.availableHeight - NON_SCROLLABLE_VERTICAL_SPACING));
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
+    afterNextRender(this, () => this.updateScroll_());
   }
 
   private onSessionChange_() {
     this.feedbackSelectedOption_ = CrFeedbackOption.UNSPECIFIED;
+    afterNextRender(this, () => this.updateScroll_());
   }
 
   private onCreateAllGroupsClick_(event: CustomEvent) {

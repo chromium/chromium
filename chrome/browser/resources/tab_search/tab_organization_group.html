@@ -2,7 +2,8 @@
   cr-icon-button {
     --cr-icon-button-fill-color: var(--mwb-icon-button-fill-color);
     --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 20px;
+    --cr-icon-button-size: 24px;
+    margin: 0
   }
 
   cr-input {
@@ -28,6 +29,7 @@
   }
 
   tab-search-item {
+    --tab-search-item-icon-margin: 8px;
     --tab-search-favicon-background: var(--color-tab-search-background);
   }
 
@@ -58,6 +60,11 @@
     display: flex;
     flex: auto;
     justify-content: space-between;
+  }
+
+  :host(:not([show-reject])) .icon-edit,
+  .icon-clear {
+    margin-inline-end: var(--cr-icon-ripple-margin);
   }
 
   #multiOrganizationInput {
