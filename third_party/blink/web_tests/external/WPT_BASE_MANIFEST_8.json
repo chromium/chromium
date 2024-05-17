@@ -143682,6 +143682,19 @@
         ],
         {}
        ]
+      ],
+      "text-box-trim-tall-line-001.html": [
+       "1b2bbffc1483a8b30b5eeff0d60b8b51f981fde6",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-tall-line-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      }
     },
@@ -169870,6 +169883,21 @@
        {}
       ]
      ],
+     "break-within-bases": {
+      "basic.html": [
+       "da810c3dc5eb87c535ec2fac1db6334d6d23e276",
+       [
+        null,
+        [
+         [
+          "/css/css-ruby/break-within-bases/basic-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "empty-ruby-base-container.html": [
       "4d86e07985d0e99e586848f7ca3195e63371c4d4",
       [
@@ -324237,6 +324265,10 @@
       "text-box-trim-start-001-ref.html": [
        "40067cc592504c4622ded772b545a3e3a29e57dd",
        []
+      ],
+      "text-box-trim-tall-line-001-ref.html": [
+       "5595fe1a8f2e14c94ce8197c2701ac7fff8e7b07",
+       []
       ]
      }
     },
@@ -330017,6 +330049,12 @@
       "06c6eccd9a8821e487d62e43248b1984ffe7426d",
       []
      ],
+     "break-within-bases": {
+      "basic-ref.html": [
+       "c2b129f913428a1d9a5c3a2f2edd06fb91fec25a",
+       []
+      ]
+     },
      "empty-ruby-base-container-ref.html": [
       "e6119468c59af5581d9deeb6e20f60bb18f6aab6",
       []
@@ -399673,7 +399711,7 @@
        []
       ],
       "gather.json": [
-       "a01654637f14e29d3cdb69609b583e2f223cb3d7",
+       "acd7ad8775e6df514547ed5871d386b42b82c78a",
        []
       ],
       "gemm.json": [
@@ -682612,7 +682650,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "184e8033e6624cfd433494d7c01f917195c5b65d",
+      "668112cc10fff90db33c5f7aa100e1bdf258e5c8",
       [
        "webnn/validation_tests/gather.https.any.html",
        {
@@ -724029,7 +724067,7 @@
          ]
         ],
         "wheel.py": [
-         "ee0d4d4600d4522ec405296468add02e053014b8",
+         "3129e9b0e63ca15092f6264ce8eecfef471d0abd",
          [
           null,
           {}
@@ -726288,7 +726326,7 @@
         ]
        ],
        "wheel.py": [
-        "6d0f9ddb11fbe2a6775fb63747b5dc601a0acb8a",
+        "1c9bf082270429406080baab3373d5ff3f506aed",
         [
          null,
          {}
