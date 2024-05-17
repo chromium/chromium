@@ -115,7 +115,7 @@ function getClearBrowsingDataPrefs() {
 // once crbug.com/40283307 completed.
 async function testCbdExperimentDualWritesPref(
     element: SettingsClearBrowsingDataDialogElement, tabIndex: number,
-    userSelectedTimeFrame: number, prefName: string, inialPrefValue: number,
+    prefName: string, inialPrefValue: number, userSelectedTimeFrame: number,
     expectedDualWrittenPrefValue: number) {
   // Ensure the test starts with a known pref state.
   element.setPrefValue(prefName, inialPrefValue);
@@ -148,6 +148,7 @@ async function testCbdExperimentDualWritesPref(
 
   // The correct time range value is dual written to the other pref.
   actionButton.click();
+  await microtasksFinished();
   assertEquals(expectedDualWrittenPrefValue, element.getPref(prefName).value);
 }
 
@@ -463,6 +464,7 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     // Once the user tries to clear data without having made a time range
     // selection the dropdown goes into the dropdown-error state.
     actionButton.click();
+    await microtasksFinished();
     assertTrue(dropdownMenu.classList.contains('dropdown-error'));
 
     // Once a time range is selected, the dropdown is no longer in the
@@ -485,9 +487,9 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 0,
-        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period_basic',
         /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
   });
 
@@ -495,9 +497,9 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 0,
-        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
         /*prefName*/ 'browser.clear_data.time_period_basic',
         /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_HOUR);
   });
 
@@ -505,9 +507,9 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 1,
-        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period',
         /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
   });
 
@@ -515,9 +517,9 @@ suite('CbdTimeRangeExperiment_ExperimentOn', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 1,
-        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
         /*prefName*/ 'browser.clear_data.time_period',
         /*inialPrefValue*/ TimePeriod.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriodExperiment.LAST_15_MINUTES,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_HOUR);
   });
 });
@@ -545,9 +547,9 @@ suite('CbdTimeRangeExperiment_ExperimentOff', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 0,
-        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period_v2_basic',
         /*inialPrefValue*/ TimePeriodExperiment.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
   });
 
@@ -555,9 +557,9 @@ suite('CbdTimeRangeExperiment_ExperimentOff', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 0,
-        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period_v2_basic',
         /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.NOT_SELECTED);
   });
 
@@ -565,9 +567,9 @@ suite('CbdTimeRangeExperiment_ExperimentOff', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 1,
-        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period_v2',
         /*inialPrefValue*/ TimePeriodExperiment.LAST_WEEK,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.LAST_DAY);
   });
 
@@ -575,9 +577,9 @@ suite('CbdTimeRangeExperiment_ExperimentOff', function() {
     return testCbdExperimentDualWritesPref(
         /*element*/ element,
         /*tabIndex*/ 1,
-        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*prefName*/ 'browser.clear_data.time_period_v2',
         /*inialPrefValue*/ TimePeriodExperiment.NOT_SELECTED,
+        /*userSelectedTimeFrame*/ TimePeriod.LAST_DAY,
         /*expectedDualWrittenPrefValue*/ TimePeriodExperiment.NOT_SELECTED);
   });
 });
@@ -698,6 +700,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
         element.shadowRoot!.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!actionButton);
     actionButton.click();
+    await microtasksFinished();
     assertEquals(
         1, element.getPref('browser.last_clear_browsing_data_tab').value);
   });
