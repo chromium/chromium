@@ -1720,14 +1720,14 @@ Status ForwardBidiCommand(Session* session,
       return status;
     }
 
-    std::list<std::string> web_view_ids;
-    status =
-        session->chrome->GetWebViewIds(&web_view_ids, session->w3c_compliant);
+    size_t web_view_count;
+    status = session->chrome->GetWebViewCount(&web_view_count,
+                                              session->w3c_compliant);
     if (status.IsError()) {
       return status;
     }
 
-    bool is_last_web_view = web_view_ids.size() <= 1u;
+    bool is_last_web_view = web_view_count <= 1u;
     if (is_last_web_view) {
       session->quit = true;
       status = session->chrome->Quit();

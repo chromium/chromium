@@ -43,6 +43,12 @@ class Chrome {
 
   virtual bool HasCrashedWebView() = 0;
 
+  // Return number of opened WebViews without updating the internal maps
+  // it's needed for BiDi to prevent trying to attach to sessions when
+  // classic commands are not used.
+  virtual Status GetWebViewCount(size_t* web_view_count,
+                                 bool w3c_compliant) = 0;
+
   // Return the id of the first WebView that is a page.
   virtual Status GetWebViewIdForFirstTab(std::string* web_view_id,
                                          bool w3c_compliant) = 0;

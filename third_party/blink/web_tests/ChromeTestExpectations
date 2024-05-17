@@ -26,7 +26,7 @@ external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/frame.py [
 external/wpt/webdriver/tests/bidi/browsing_context/handle_user_prompt/handle_user_prompt.py [ Timeout ]
 crbug.com/324436866 external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_started.py [ Failure Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/print/invalid.py [ Timeout ]
-external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_prompt_opened.py [ Failure Pass Timeout ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/format.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure ]
 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/origin.py [ Failure ]
