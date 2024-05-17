@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/variations/service",
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/widget_kit/model",
   "+ios/chrome/browser/webdata_services/model",
