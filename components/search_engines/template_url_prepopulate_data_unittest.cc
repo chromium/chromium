@@ -7,21 +7,26 @@
 #include <stddef.h>
 
 #include <memory>
+#include <numeric>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -743,3 +748,220 @@ TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
               testing::IsEmpty());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// -- Choice screen randomization checks --------------------------------------
+
+class TemplateURLPrepopulateDataListTest
+    : public TemplateURLPrepopulateDataTest,
+      public testing::WithParamInterface<int> {
+ public:
+  // The data type for prepopulate IDs
+  // (`TemplateURLPrepopulateData::PrepopulatedEngine::id`), declared explicitly
+  // for readability.
+  using prepopulate_id_t = int;
+
+  static std::string ParamToTestSuffix(
+      const ::testing::TestParamInfo<int>& info) {
+    return country_codes::CountryIDToCountryString(info.param);
+  }
+
+  TemplateURLPrepopulateDataListTest()
+      : country_id_(GetParam()),
+        country_code_(country_codes::CountryIDToCountryString(country_id_)) {}
+
+  void SetUp() override {
+    if (kSkippedCountries.contains(country_id_)) {
+      GTEST_SKIP() << "Skipping, the Default set is used for country code "
+                   << country_code_;
+    }
+
+    TemplateURLPrepopulateDataTest::SetUp();
+    feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
+    OverrideCountryId(country_id_);
+    for (const auto& engine :
+         TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+             country_id_)) {
+      id_to_engine_[engine->id] = engine;
+    }
+  }
+
+ protected:
+  void RunEeaEngineListIsRandomTest(int number_of_iterations,
+                                    double max_allowed_deviation) {
+    // `per_engine_and_index_observations` maps from search engine prepopulate
+    // ID to the number of times we saw this engine at a given position in the
+    // list of items on the choice screen (the index in the vector is the
+    // observed index in the choice screen list).
+    base::flat_map<prepopulate_id_t, std::vector<int>>
+        per_engine_and_index_observations;
+    for (const auto& entry : id_to_engine_) {
+      // Fill the map with 0s.
+      per_engine_and_index_observations[entry.first] =
+          std::vector<int>(kEeaChoiceScreenItemCount, 0);
+    }
+
+    // Gather observations, loading the search engines `number_of_iterations`
+    // times and recording the returned positions.
+    for (int current_run = 0; current_run < number_of_iterations;
+         ++current_run) {
+      // Simulate being a fresh new profile, where the shuffle seed is not set.
+      prefs_.ClearPref(
+          prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed);
+
+      std::vector<std::unique_ptr<TemplateURLData>> actual_list =
+          TemplateURLPrepopulateData::GetPrepopulatedEngines(
+              &prefs_, search_engine_choice_service(),
+              /*default_search_provider_index=*/nullptr);
+
+      ASSERT_EQ(actual_list.size(), kEeaChoiceScreenItemCount);
+      for (size_t index = 0; index < kEeaChoiceScreenItemCount; ++index) {
+        per_engine_and_index_observations[actual_list[index]->prepopulate_id]
+                                         [index]++;
+      }
+    }
+
+    // variance in the appearance rate of the various engines for a given index.
+    std::vector<double> per_index_max_deviation(kEeaChoiceScreenItemCount, 0);
+    base::flat_map<prepopulate_id_t, double> per_engine_max_deviation;
+    base::flat_map<prepopulate_id_t, std::vector<double>>
+        per_engine_and_index_probabilities;
+    for (auto& entry : per_engine_and_index_observations) {
+      prepopulate_id_t engine_id = entry.first;
+      auto& per_index_observations = entry.second;
+
+      int total_engine_appearances = 0;
+      std::vector<double> probabilities(kEeaChoiceScreenItemCount, 0);
+
+      for (size_t index = 0; index < kEeaChoiceScreenItemCount; ++index) {
+        total_engine_appearances += per_index_observations[index];
+
+        double appearance_probability_at_index =
+            static_cast<double>(per_index_observations[index]) /
+            number_of_iterations;
+
+        double deviation =
+            appearance_probability_at_index - kExpectedItemProbability;
+        EXPECT_LE(deviation, max_allowed_deviation);
+
+        per_engine_max_deviation[engine_id] =
+            std::max(std::abs(deviation), per_engine_max_deviation[engine_id]);
+        per_index_max_deviation[index] =
+            std::max(std::abs(deviation), per_index_max_deviation[index]);
+        probabilities[index] = appearance_probability_at_index;
+      }
+
+      ASSERT_EQ(total_engine_appearances, number_of_iterations);
+      per_engine_and_index_probabilities[engine_id] = probabilities;
+    }
+
+    // Log the values if needed.
+    if (testing::Test::HasFailure() || VLOG_IS_ON(1)) {
+      std::string table_string = AssembleRowString(
+          /*header_text=*/"",
+          /*cell_values=*/{"0", "1", "2", "3", "4", "5", "6", "7", "max_dev"});
+
+      for (auto& id_and_engine : id_to_engine_) {
+        table_string += base::StringPrintf(
+            "\n%s| %.4f ",
+            AssembleRowString(
+                /*header_text=*/base::UTF16ToUTF8(
+                    std::u16string(id_and_engine.second->name)),
+                /*cell_values=*/per_engine_and_index_probabilities.at(
+                    id_and_engine.first))
+                .c_str(),
+            per_engine_max_deviation.at(id_and_engine.first));
+      }
+
+      table_string += "\n" + AssembleRowString(/*header_text=*/"max deviation",
+                                               per_index_max_deviation);
+
+      if (testing::Test::HasFailure()) {
+        LOG(ERROR) << "Failure in the search engine distributions:\n"
+                   << table_string;
+      } else {
+        VLOG(1) << "Search engine distributions:\n" << table_string;
+      }
+    }
+  }
+
+ private:
+  // TODO(b/341047036): Investigate how to not have to skip this here.
+  static inline const std::set<int> kSkippedCountries = {
+      country_codes::CountryCharsToCountryID('B', 'L'),  // St. Barthélemy
+      country_codes::CountryCharsToCountryID('E', 'A'),  // Ceuta & Melilla
+      country_codes::CountryCharsToCountryID('I', 'C'),  // Canary Islands
+      country_codes::CountryCharsToCountryID('M', 'F'),  // St. Martin
+  };
+
+  static constexpr size_t kEeaChoiceScreenItemCount = 8u;
+  static constexpr double kExpectedItemProbability =
+      1. / kEeaChoiceScreenItemCount;
+
+  static constexpr char row_header_format[] = "%s %20s ";
+  static constexpr char string_cell_format[] = "| %5s ";
+  static constexpr char probability_cell_format[] = "| %.3f ";
+
+  std::string AssembleRowString(std::string_view header_text,
+                                std::vector<double> cell_values) {
+    std::string row_string = base::StringPrintf(
+        row_header_format, country_code_.c_str(), header_text.data());
+    for (double& val : cell_values) {
+      row_string += base::StringPrintf(probability_cell_format, val);
+    }
+
+    return row_string;
+  }
+
+  std::string AssembleRowString(std::string_view header_text,
+                                std::vector<std::string_view> cell_values) {
+    std::string row_string = base::StringPrintf(
+        row_header_format, country_code_.c_str(), header_text.data());
+    for (std::string_view& val : cell_values) {
+      row_string += base::StringPrintf(string_cell_format, val.data());
+    }
+
+    return row_string;
+  }
+
+  const int country_id_;
+  const std::string country_code_;
+  base::flat_map<int,
+                 raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      id_to_engine_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    TemplateURLPrepopulateDataListTest,
+    ::testing::ValuesIn(search_engines::kEeaChoiceCountriesIds.begin(),
+                        search_engines::kEeaChoiceCountriesIds.end()),
+    TemplateURLPrepopulateDataListTest::ParamToTestSuffix);
+
+// Quick version of the test intended to flag glaring issues as part of the
+// automated test suites.
+TEST_P(TemplateURLPrepopulateDataListTest,
+       QuickEeaEngineListIsRandomPerCountry) {
+  RunEeaEngineListIsRandomTest(2000, 0.05);
+}
+
+// This test is permanently disabled as it is slow. It must *not* be removed as
+// it is necessary for compliance (see b/341066703). It is used manually to
+// prove that the search engines are shuffled in a randomly distributed order
+// when they are loaded from disk.
+// To run this test, use the following command line:
+//
+//     $OUT_DIR/components_unittests --gtest_also_run_disabled_tests \
+//         --gtest_filter="*ManualEeaEngineListIsRandomPerCountry/*" \
+//         --vmodule="*unittest*=1*"
+//
+// Explanations:
+// - Since the test is marked as disabled, we need to explicitly instruct
+//   filters to not discard it.
+// - By default the test logs the stats only if it picks up an error. If we
+//   want to always get the logs for all the countries, we need to enable
+//   verbose logging for this file. The stats tables are logged to STDERR, so
+//   append `2> output.txt` if it needs to be gathered in a file.
+TEST_P(TemplateURLPrepopulateDataListTest,
+       DISABLED_ManualEeaEngineListIsRandomPerCountry) {
+  RunEeaEngineListIsRandomTest(20000, 0.01);
+}
