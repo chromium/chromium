@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas WebGPU Access: endWebGPUAccess-exchanges-texture</h1>
+
+<p>endWebGPUAccess() should allow two canvases to exchange their textures.</p>
+
+<!-- Each canvas has a different size. -->
+<canvas id="c1" width="50" height="50"></canvas>
+<canvas id="c2" width="60" height="60"></canvas>
+<canvas id="c3" width="40" height="80"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_exchanges_texture(
+                 device,
+                 document.getElementById('c1'),
+                 document.getElementById('c2'));
+    });
+  },
+  'endWebGPUAccess() should allow canvases to exchange textures.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_exchanges_texture(
+                 device,
+                 new OffscreenCanvas(50, 50),
+                 new OffscreenCanvas(60, 60));
+    });
+  },
+  'endWebGPUAccess() should allow offscreen canvases to exchange textures.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_endWebGPUAccess_exchanges_texture(
+                 device,
+                 document.getElementById('c3'),
+                 new OffscreenCanvas(50, 50));
+    });
+  },
+  'endWebGPUAccess() with a mix of canvas types should allow the exchange of ' +
+  'textures.'
+);
+
+</script>

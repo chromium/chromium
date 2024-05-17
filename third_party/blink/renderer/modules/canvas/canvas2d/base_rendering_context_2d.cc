@@ -3583,7 +3583,8 @@ bool BaseRenderingContext2D::CopyGPUTextureToResourceProvider(
   return true;
 }
 
-void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
+void BaseRenderingContext2D::endWebGPUAccess(blink::GPUTexture* tex,
+                                             ExceptionState& exception_state) {
   // If the context is lost or doesn't exist, this call should be a no-op.
   // We don't want to throw an exception or attempt any changes if
   // `endWebGPUAccess` is called during teardown.
@@ -3600,12 +3601,13 @@ void BaseRenderingContext2D::endWebGPUAccess(ExceptionState& exception_state) {
     return;
   }
 
-  // Prevent unbalanced calls to endWebGPUAccess without an earlier call to
-  // beginWebGPUAccess.
-  if (!webgpu_access_texture_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "This canvas is not currently in use by WebGPU.");
+  // We allow the caller to pass in any reasonable texture.
+  // TODO(crbug.com/339846593): we do not yet honor the passed-in texture.
+  // Below this point, our code is still written in terms of
+  // `webgpu_access_texture_`. This will be fixed in a followup.
+  if (tex->Destroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The texture has been destroyed.");
     return;
   }
 

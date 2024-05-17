@@ -9,6 +9,6 @@
     SecureContext
 ] interface mixin CanvasWebGPUAccess {
   [RaisesException] GPUTexture beginWebGPUAccess(CanvasWebGPUAccessOption options);
-  [RaisesException] undefined endWebGPUAccess();
+  [RaisesException] undefined endWebGPUAccess(GPUTexture tex);
   GPUTextureFormat getTextureFormat();
 };

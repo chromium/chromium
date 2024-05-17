@@ -281,20 +281,15 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // WebGPU pipeline. The canvas' image can be used as a texture, or the texture
   // can be bound as a color attachment and modified. After beginWebGPUAccess is
   // called, the Canvas2D context will become unavailable until endWebGPUAccess
-  // is called. All other method calls to the context (including additional
-  // calls to beginWebGPUAccess) will throw InvalidStateError.
+  // is called.
   GPUTexture* beginWebGPUAccess(const CanvasWebGPUAccessOption*,
                                 ExceptionState& exception_state);
 
-  // Returns the canvas' back-buffer texture to Canvas2D after a prior call
-  // to beginWebGPUAccess. The GPUTexture becomes inaccessible to WebGPU; any
-  // modifications made to the texture will be preserved. The Canvas2D context
-  // is restored, and Canvas2D method calls will function normally once more.
-  // Throws InvalidStateError if a matching call to beginWebGPUAccess was not
-  // performed.
-  // Generates a GPUValidationError if the GPUTexture is used after
+  // Replaces the canvas' back-buffer texture with the passed-in GPUTexture.
+  // The GPUTexture immediately becomes inaccessible to WebGPU.
+  // A GPUValidationError will occur if the GPUTexture is used after
   // endWebGPUAccess is called.
-  void endWebGPUAccess(ExceptionState& exception_state);
+  void endWebGPUAccess(blink::GPUTexture* tex, ExceptionState& exception_state);
 
   // Returns the format of the GPUTexture that beginWebGPUAccess will return.
   // This is useful if you need to create the WebGPU render pipeline before
