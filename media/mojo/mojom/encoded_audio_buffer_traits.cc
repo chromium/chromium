@@ -33,12 +33,9 @@ bool StructTraits<media::mojom::EncodedAudioBufferDataView,
   if (data_view.is_null())
     return false;
 
-  size_t encoded_data_size = data_view.size();
-  auto encoded_data = base::HeapArray<uint8_t>::Uninit(encoded_data_size);
-  memcpy(encoded_data.data(), data_view.data(), encoded_data_size);
-
-  *output = media::EncodedAudioBuffer(params, std::move(encoded_data),
-                                      encoded_data_size, timestamp, duration);
+  *output = media::EncodedAudioBuffer(
+      params, base::HeapArray<uint8_t>::CopiedFrom(data_view), data_view.size(),
+      timestamp, duration);
   return true;
 }
 
