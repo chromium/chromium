@@ -49,7 +49,7 @@
     margin-top: 24px;
   }
 
-  iron-icon.policy-disabled {
+  cr-icon.policy-disabled {
     margin-inline-start: var(--cr-controlled-by-spacing);
   }
 </style>
@@ -85,7 +85,7 @@
         expanded="{{mutedLeakedCredentialsExpanded_}}">
       $i18n{mutedCompromisedCredentials}
     </cr-expand-button>
-    <iron-collapse id="mutedCredentialsList"
+    <cr-collapse id="mutedCredentialsList"
         opened="[[mutedLeakedCredentialsExpanded_]]">
       <template is="dom-repeat" items="[[mutedCompromisedCredentials_]]">
         <checkup-list-item item="[[item]]" first="[[!index]]"
@@ -97,7 +97,7 @@
             on-change-password-clicked="onChangePasswordClick_">
         </checkup-list-item>
       </template>
-    </iron-collapse>
+    </cr-collapse>
   </template>
 </template>
 <template is="dom-if" if="[[isReusedType(insecurityType_)]]" restamp>
@@ -136,8 +136,8 @@
         on-click="onMenuMuteUnmuteClick_" disabled="[[isMutingDisabled_]]">
       [[getMuteUnmuteLabel_(activeListItem_)]]
       <template is="dom-if" if="[[isMutingDisabled_]]" restamp>
-        <iron-icon icon="cr20:domain" class="policy-disabled">
-        </iron-icon>
+        <cr-icon icon="cr20:domain" class="policy-disabled">
+        </cr-icon>
       </template>
     </button>
   </template>
