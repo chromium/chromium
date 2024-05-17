@@ -9,6 +9,7 @@
 #import "base/allocator/partition_alloc_support.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
+#import "base/features.h"
 #import "base/files/file_path.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
@@ -234,6 +235,11 @@ void IOSChromeMainParts::PreCreateThreads() {
   // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
   SetUpFieldTrials(command_line_variation_ids);
+
+  // Initialize //base features that depend on the `FeatureList`. Don't force
+  // emitting profiler metadata since the profiler doesn't run on iOS.
+  base::features::Init(
+      base::features::EmitThreadControllerProfilerMetadata::kFeatureDependent);
 
   // Set metrics upload for stack/heap profiles.
   IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
