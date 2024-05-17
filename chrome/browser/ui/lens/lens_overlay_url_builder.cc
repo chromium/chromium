@@ -100,8 +100,6 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify) {
   new_url = net::AppendOrReplaceQueryParameter(
       new_url, kSearchCompanionParameterKey, kSearchCompanionParameterValue);
   new_url = net::AppendOrReplaceQueryParameter(
-      new_url, kAmbientParameterKey, kAmbientParameterValue);
-  new_url = net::AppendOrReplaceQueryParameter(
       new_url, kLanguageCodeParameterKey,
       g_browser_process->GetApplicationLocale());
   return new_url;
@@ -116,6 +114,8 @@ GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
   }
 
   GURL new_url = url_to_modify;
+  new_url = net::AppendOrReplaceQueryParameter(new_url, kAmbientParameterKey,
+                                               kAmbientParameterValue);
   omnibox::SearchContext search_context;
   if (page_url.has_value()) {
     search_context.set_webpage_url(page_url->spec());
@@ -242,8 +242,6 @@ bool HasCommonSearchQueryParameters(const GURL& url) {
   // Needed to prevent memory leaks even though we do not use the output.
   std::string temp_output_string;
   return net::GetValueForKeyInQuery(url, kSearchCompanionParameterKey,
-                                    &temp_output_string) &&
-         net::GetValueForKeyInQuery(url, kAmbientParameterKey,
                                     &temp_output_string) &&
          net::GetValueForKeyInQuery(url, kLanguageCodeParameterKey,
                                     &temp_output_string);
