@@ -56,6 +56,7 @@ import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -77,7 +78,7 @@ public class AutocompleteCoordinator
     private final @NonNull AutocompleteMediator mMediator;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @NonNull OmniboxSuggestionsDropdownAdapter mAdapter;
-    private final @NonNull PreWarmingRecycledViewPool mRecycledViewPool;
+    private final @NonNull Optional<PreWarmingRecycledViewPool> mRecycledViewPool;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private @NonNull ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
@@ -171,7 +172,12 @@ public class AutocompleteCoordinator
         mProfileSupplier.addObserver(mProfileChangeCallback);
 
         mAdapter = createAdapter(listItems);
-        mRecycledViewPool = new PreWarmingRecycledViewPool(mAdapter, context);
+
+        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            mRecycledViewPool = Optional.of(new PreWarmingRecycledViewPool(mAdapter, context));
+        } else {
+            mRecycledViewPool = Optional.empty();
+        }
 
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
         updateSuggestionListLayoutDirection();
@@ -179,7 +185,7 @@ public class AutocompleteCoordinator
 
     /** Clean up resources used by this class. */
     public void destroy() {
-        mRecycledViewPool.destroy();
+        mRecycledViewPool.ifPresent(p -> p.destroy());
         mProfileSupplier.removeObserver(mProfileChangeCallback);
         mMediator.destroy();
         if (mDropdown != null) {
@@ -218,11 +224,22 @@ public class AutocompleteCoordinator
             }
 
             private void onAsyncInflationComplete(ViewGroup container) {
-                OmniboxSuggestionsDropdown dropdown = new OmniboxSuggestionsDropdown(context);
+                OmniboxSuggestionsDropdown dropdown =
+                        container.findViewById(R.id.omnibox_suggestions_dropdown);
 
                 dropdown.forcePhoneStyleOmnibox(forcePhoneStyleOmnibox);
                 dropdown.setAdapter(mAdapter);
-                dropdown.setRecycledViewPool(mRecycledViewPool);
+                mRecycledViewPool.ifPresent(p -> dropdown.setRecycledViewPool(p));
+
+                if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+                    // NOTE: Old style Suggestions dropdown visibility management relies on adding
+                    // and removing the view from the view hierarchy. The view inflated from XML is
+                    // automatically added to the hierarchy, which changes the precondition assumed
+                    // by the old logic. The lines below ensure the initial condition is what the
+                    // logic expects it to be.
+                    dropdown.setVisibility(View.VISIBLE);
+                    UiUtils.removeViewFromParent(dropdown);
+                }
 
                 mHolder = new SuggestionListViewHolder(container, dropdown);
                 for (int i = 0; i < mCallbacks.size(); i++) {
@@ -358,7 +375,7 @@ public class AutocompleteCoordinator
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.onNativeInitialized();
-        mRecycledViewPool.onNativeInitialized();
+        mRecycledViewPool.ifPresent(p -> p.onNativeInitialized());
     }
 
     /**

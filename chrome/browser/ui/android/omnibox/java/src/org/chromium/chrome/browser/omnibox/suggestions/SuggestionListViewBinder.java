@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -48,7 +49,10 @@ class SuggestionListViewBinder {
                 // Ensure the tracked keyboard state is consistent with actual keyboard state.
                 // The keyboard is about to be called up.
                 view.dropdown.resetKeyboardShownState();
-                if (dropdownView.getParent() == null) {
+                if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+                    view.dropdown.setVisibility(View.VISIBLE);
+                    view.container.setVisibility(View.VISIBLE);
+                } else if (dropdownView.getParent() == null) {
                     view.container.addView(dropdownView);
                     // When showing the suggestions list for the first time, make sure to apply
                     // appropriate visibility to freshly inflated container.
@@ -57,7 +61,12 @@ class SuggestionListViewBinder {
                     updateContainerVisibility(model, view.container);
                 }
             } else {
-                UiUtils.removeViewFromParent(dropdownView);
+                if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+                    view.container.setVisibility(View.GONE);
+                    view.dropdown.setVisibility(View.GONE);
+                } else {
+                    UiUtils.removeViewFromParent(dropdownView);
+                }
             }
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));

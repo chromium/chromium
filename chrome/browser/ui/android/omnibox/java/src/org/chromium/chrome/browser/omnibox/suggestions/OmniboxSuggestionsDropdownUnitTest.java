@@ -127,7 +127,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new OmniboxSuggestionsDropdown(mContext);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, null);
         mDropdown.setAdapter(mAdapter);
         mListener = mDropdown.getLayoutScrollListener();
     }
@@ -386,7 +386,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @LooperMode(Mode.PAUSED)
     public void testAlignmentProvider_changeDuringlayout() {
-        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext));
+        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext, null));
         mDropdown.setAdapter(mAdapter);
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();
@@ -438,7 +438,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void forcePhoneStyleOmnibox_forcing_noClippingWhenForced() {
-        var dropdown = new OmniboxSuggestionsDropdown(mContext);
+        var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
         dropdown.forcePhoneStyleOmnibox(true);
         assertFalse(dropdown.getClipToOutline());
         assertNull(dropdown.getOutlineProvider());
@@ -448,7 +448,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Config(qualifiers = "sw600dp")
     public void forcePhoneStyleOmnibox_nonForcing_clipsOnTablets_narrowWindow() {
         var context = getContextForWindowWidth(DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1);
-        var dropdown = new OmniboxSuggestionsDropdown(context);
+        var dropdown = new OmniboxSuggestionsDropdown(context, null);
         dropdown.forcePhoneStyleOmnibox(false);
         assertFalse(dropdown.getClipToOutline());
         assertNull(dropdown.getOutlineProvider());
@@ -458,7 +458,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Config(qualifiers = "sw600dp")
     public void forcePhoneStyleOmnibox_nonForcing_clipsOnTablets_wideWindow() {
         var context = getContextForWindowWidth(DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
-        var dropdown = new OmniboxSuggestionsDropdown(context);
+        var dropdown = new OmniboxSuggestionsDropdown(context, null);
         dropdown.forcePhoneStyleOmnibox(false);
         assertTrue(dropdown.getClipToOutline());
         assertNotNull(dropdown.getOutlineProvider());
@@ -467,7 +467,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     @Config(qualifiers = "sw320dp")
     public void forcePhoneStyleOmnibox_nonForcing_noClippingOnPhones() {
-        var dropdown = new OmniboxSuggestionsDropdown(mContext);
+        var dropdown = new OmniboxSuggestionsDropdown(mContext, null);
         dropdown.forcePhoneStyleOmnibox(false);
         assertFalse(dropdown.getClipToOutline());
         assertNull(dropdown.getOutlineProvider());

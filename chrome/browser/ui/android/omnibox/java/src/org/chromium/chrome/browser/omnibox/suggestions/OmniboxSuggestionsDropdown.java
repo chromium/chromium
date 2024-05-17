@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -49,8 +50,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * virtual keyboard may actually cause throttling of the Accessibility events.
      */
     private static final long LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS = 300;
-
-    private final Context mContext;
 
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
@@ -215,8 +214,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      *
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context) {
-        super(context, null, android.R.attr.dropDownListViewStyle);
+    public OmniboxSuggestionsDropdown(@NonNull Context context, AttributeSet attrs) {
+        super(context, attrs, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
         setId(R.id.omnibox_suggestions_dropdown);
@@ -236,7 +235,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
         ViewCompat.setPaddingRelative(this, 0, paddingTop, 0, paddingBottom);
 
-        mContext = context;
+        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
+        }
     }
 
     /**
@@ -370,7 +371,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     public void refreshPopupBackground(@BrandedColorScheme int brandedColorScheme) {
         int color =
                 OmniboxResourceProvider.getSuggestionsDropdownBackgroundColorForColorScheme(
-                        mContext, brandedColorScheme);
+                        getContext(), brandedColorScheme);
 
         if (!isHardwareAccelerated()) {
             // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
@@ -392,8 +393,37 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     @Override
+    public void setVisibility(int visibility) {
+        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            if (visibility == VISIBLE) {
+                installAlignmentObserver();
+            } else {
+                removeAlignmentObserver();
+            }
+        }
+
+        super.setVisibility(visibility);
+    }
+
+    @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            installAlignmentObserver();
+        }
+    }
+
+    private void installAlignmentObserver() {
+        // TODO(40253396): this is needed only to permit view to be inflated from XML while keeping
+        // the old logic that relies on adding/removing the view to/from the view hierarchy.
+        // AsyncViewInflater automatically attaches the SuggestionsDropdown to the view hierarchy
+        // once it is done inflating the view, which triggers onAttachedToWindow(). We permit the
+        // old style management and remove the view from view hierarchy immediately after, which
+        // triggers onDetachedFromWindow().
+        // This should not be needed once we are ready to manage view presence using
+        // setVisibility().
+        if (mEmbedder == null) return;
+
         mEmbedder.onAttachedToWindow();
         mOmniboxAlignmentObserver = this::onOmniboxAlignmentChanged;
         mOmniboxAlignment = mEmbedder.addAlignmentObserver(mOmniboxAlignmentObserver);
@@ -403,6 +433,22 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            removeAlignmentObserver();
+        }
+    }
+
+    private void removeAlignmentObserver() {
+        // TODO(40253396): this is needed only to permit view to be inflated from XML while keeping
+        // the old logic that relies on adding/removing the view to/from the view hierarchy.
+        // AsyncViewInflater automatically attaches the SuggestionsDropdown to the view hierarchy
+        // once it is done inflating the view, which triggers onAttachedToWindow(). We permit the
+        // old style management and remove the view from view hierarchy immediately after, which
+        // triggers onDetachedFromWindow().
+        // This should not be needed once we are ready to manage view presence using
+        // setVisibility().
+        if (mEmbedder == null) return;
+
         mEmbedder.onDetachedFromWindow();
         mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
         if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
