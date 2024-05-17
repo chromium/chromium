@@ -219,8 +219,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IndexedDB.QuotaCheckTime.{QuotaCheckResult}" units="ms"
-    expires_after="2024-09-07">
+<histogram name="IndexedDB.QuotaCheckTime2.{QuotaCheckResult}" units="ms"
+    expires_after="2024-10-07">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

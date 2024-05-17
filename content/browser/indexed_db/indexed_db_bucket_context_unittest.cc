@@ -94,7 +94,7 @@ TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceQueuing) {
   EXPECT_TRUE(success_future2.Get());
   EXPECT_FALSE(success_future3.Get());
 
-  tester.ExpectTotalCount("IndexedDB.QuotaCheckTime.Success", 1);
+  tester.ExpectTotalCount("IndexedDB.QuotaCheckTime2.Success", 1);
 }
 
 TEST_F(IndexedDBBucketContextTest, CanUseDiskSpaceCaching) {

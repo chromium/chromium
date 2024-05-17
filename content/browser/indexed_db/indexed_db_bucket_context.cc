@@ -186,6 +186,9 @@ base::Time GenerateNextGlobalCompactionTime(base::Time now) {
 // * It times out the request if the quota manager is taking too long.
 struct GetBucketSpaceRequestWrapper {
   static constexpr base::TimeDelta kTimeoutDuration = base::Seconds(45);
+  // The timeout is split into 3 steps. See similar logic in
+  // IndexedDBTransaction::kMaxTimeoutStrikes for reasoning.
+  static constexpr int kTimeoutFraction = 3;
 
   explicit GetBucketSpaceRequestWrapper(
       base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> callback)
@@ -202,10 +205,20 @@ struct GetBucketSpaceRequestWrapper {
   ~GetBucketSpaceRequestWrapper() { InvokeCallback(); }
 
   void StartTimer() {
-    timeout.Start(FROM_HERE,
-                  kTimeoutDuration - (base::TimeTicks::Now() - start_time),
-                  base::BindOnce(&GetBucketSpaceRequestWrapper::InvokeCallback,
-                                 base::Unretained(this)));
+    timeout.Start(
+        FROM_HERE,
+        (timeouts_observed + 1) * (kTimeoutDuration / kTimeoutFraction) -
+            (base::TimeTicks::Now() - start_time),
+        base::BindOnce(&GetBucketSpaceRequestWrapper::TimeOut,
+                       base::Unretained(this)));
+  }
+
+  void TimeOut() {
+    if (++timeouts_observed == kTimeoutFraction) {
+      InvokeCallback();
+    } else {
+      StartTimer();
+    }
   }
 
   void InvokeCallback() {
@@ -214,21 +227,22 @@ struct GetBucketSpaceRequestWrapper {
     }
 
     static const char kDroppedRequest[] =
-        "IndexedDB.QuotaCheckTime.DroppedRequest";
-    static const char kSuccess[] = "IndexedDB.QuotaCheckTime.Success";
-    static const char kQuotaError[] = "IndexedDB.QuotaCheckTime.QuotaError";
+        "IndexedDB.QuotaCheckTime2.DroppedRequest";
+    static const char kSuccess[] = "IndexedDB.QuotaCheckTime2.Success";
+    static const char kQuotaError[] = "IndexedDB.QuotaCheckTime2.QuotaError";
     const char* histogram =
         result_value ? result_value->has_value() ? kSuccess : kQuotaError
                      : kDroppedRequest;
     base::UmaHistogramCustomTimes(
         histogram, base::TimeTicks::Now() - start_time, base::Milliseconds(1),
-        kTimeoutDuration, /*buckets=*/50U);
+        kTimeoutDuration * 2, /*buckets=*/50U);
 
     std::move(wrapped_callback)
         .Run(result_value.value_or(
             base::unexpected(storage::QuotaError::kUnknownError)));
   }
 
+  int timeouts_observed = 0;
   base::OneShotTimer timeout;
   base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> wrapped_callback;
   std::optional<storage::QuotaErrorOr<int64_t>> result_value;
