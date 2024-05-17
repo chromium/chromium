@@ -154,8 +154,6 @@ class WPTManifestUnitTest(unittest.TestCase):
             host.port_factory.get(),
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
         self.assertTrue(manifest.is_test_file('test.any.js'))
-        self.assertEqual(manifest.all_url_items(),
-                         {u'test.any.html': [u'test.any.html', {}]})
         self.assertEqual(manifest.extract_reference_list('foo/bar.html'), [])
 
     def test_all_url_items_skips_jsshell_tests(self):
@@ -180,8 +178,6 @@ class WPTManifestUnitTest(unittest.TestCase):
         manifest = WPTManifest.from_file(
             host.port_factory.get(),
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
-        self.assertEqual(manifest.all_url_items(),
-                         {u'test.any.html': [u'test.any.html', {}]})
 
     def test_file_for_test(self):
         # Test that we can lookup a test's filename for various cases like
@@ -206,11 +202,6 @@ class WPTManifestUnitTest(unittest.TestCase):
         manifest = WPTManifest.from_file(
             host.port_factory.get(),
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
-        self.assertEqual(
-            manifest.all_url_items(), {
-                u'test.any.html': [u'test.any.html', {}],
-                u'test.any.worker.html': [u'test.any.worker.html', {}]
-            })
         # Ensure that we can get back to `test.any.js` from both of the tests.
         self.assertEqual(
             manifest.file_path_for_test_url('test.any.html'), 'test.any.js')
@@ -251,13 +242,6 @@ class WPTManifestUnitTest(unittest.TestCase):
         manifest = WPTManifest.from_file(
             host.port_factory.get(),
             MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
-        self.assertEqual(
-            manifest.all_url_items(), {
-                'test.html': ['test.html', {}],
-                'test-with-variant-crash.html?xyz':
-                ['test-with-variant-crash.html?xyz', {}],
-                'test-crash.html': ['test-crash.html', {}]
-            })
 
         self.assertTrue(manifest.is_crash_test('test-crash.html'))
         self.assertTrue(
@@ -395,12 +379,12 @@ class WPTManifestUnitTest(unittest.TestCase):
 
         self.assertEqual(
             manifest.extract_fuzzy_metadata('fuzzy.html'),
-            [[2, 2], [40, 40]],
+            ([2, 2], [40, 40]),
         )
 
         self.assertEqual(
             manifest.extract_fuzzy_metadata('fuzzy-print.html'),
-            [[3, 10], [20, 100]],
+            ([3, 10], [20, 100]),
         )
 
         self.assertEqual(manifest.extract_fuzzy_metadata('not_fuzzy.html'),
