@@ -68,4 +68,16 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
 
 }  // namespace gpu
 
+template <>
+struct std::hash<gpu::Mailbox> {
+  std::size_t operator()(const gpu::Mailbox& m) const noexcept {
+    // As the name is cryptographically random bytes, the first few bytes
+    // should be more than sufficient as a hash.
+    return static_cast<size_t>(m.name[0]) |
+           (static_cast<size_t>(m.name[1]) << 8) |
+           (static_cast<size_t>(m.name[2]) << 16) |
+           (static_cast<size_t>(m.name[3]) << 24);
+  }
+};
+
 #endif  // GPU_COMMAND_BUFFER_COMMON_MAILBOX_H_

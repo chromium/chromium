@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <tuple>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -528,15 +528,21 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       read_lock_release_fence_overlay_locks_;
 
 #if BUILDFLAG(IS_APPLE)
-  class OverlayLockComparator {
-   public:
+  struct OverlayLockHash {
+    using is_transparent = void;
+    std::size_t operator()(const OverlayLock& o) const;
+    std::size_t operator()(const gpu::Mailbox& m) const;
+  };
+
+  struct OverlayLockKeyEqual {
     using is_transparent = void;
     bool operator()(const OverlayLock& lhs, const OverlayLock& rhs) const;
+    bool operator()(const OverlayLock& lhs, const gpu::Mailbox& rhs) const;
   };
 
   // A set for locks of overlays which are waiting to be released, using
-  // mailbox() as the unique key.
-  base::flat_set<OverlayLock, OverlayLockComparator>
+  // the mailbox() as the unique key.
+  std::unordered_set<OverlayLock, OverlayLockHash, OverlayLockKeyEqual>
       awaiting_release_overlay_locks_;
 #endif  // BUILDFLAG(IS_APPLE)
 

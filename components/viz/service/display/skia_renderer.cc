@@ -1368,8 +1368,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
       resource_provider_.get(), /*allow_access_to_gpu_thread=*/true);
 
   for (const auto& mailbox : released_overlays) {
-    auto iter = base::ranges::find(awaiting_release_overlay_locks_, mailbox,
-                                   &OverlayLock::mailbox);
+    auto iter = awaiting_release_overlay_locks_.find(mailbox);
     if (iter == awaiting_release_overlay_locks_.end()) {
       // The released overlay should always be found as awaiting to be released.
       DLOG(FATAL) << "Got an unexpected mailbox";
@@ -4423,11 +4422,27 @@ SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_APPLE)
-bool SkiaRenderer::OverlayLockComparator::operator()(
+std::size_t SkiaRenderer::OverlayLockHash::operator()(
+    const OverlayLock& o) const {
+  return std::hash<gpu::Mailbox>{}(o.mailbox());
+}
+
+std::size_t SkiaRenderer::OverlayLockHash::operator()(
+    const gpu::Mailbox& m) const {
+  return std::hash<gpu::Mailbox>{}(m);
+}
+
+bool SkiaRenderer::OverlayLockKeyEqual::operator()(
     const OverlayLock& lhs,
     const OverlayLock& rhs) const {
-  return lhs.mailbox() < rhs.mailbox();
+  return lhs.mailbox() == rhs.mailbox();
 }
-#endif  // BUILDFLAG(IS_APPLE)
+
+bool SkiaRenderer::OverlayLockKeyEqual::operator()(
+    const OverlayLock& lhs,
+    const gpu::Mailbox& rhs) const {
+  return lhs.mailbox() == rhs;
+}
+#endif
 
 }  // namespace viz
