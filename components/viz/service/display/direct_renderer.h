@@ -223,10 +223,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                                 const gfx::RectF& quad_rect);
   // This function takes DrawingFrame as an argument because RenderPass drawing
   // code uses its computations for buffer sizing.
-  void InitializeViewport(DrawingFrame* frame,
-                          const gfx::Rect& draw_rect,
-                          const gfx::Size& viewport_size,
-                          const gfx::Size& surface_size);
+  void InitializeViewport(DrawingFrame* frame, const gfx::Size& viewport_size);
   gfx::Rect MoveFromDrawToWindowSpace(const gfx::Rect& draw_rect) const;
 
   gfx::Rect DeviceViewportRectInDrawSpace() const;
@@ -398,9 +395,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // framebuffer, and the current window space viewport. During a draw, this
   // stores the values for the current render pass; in between draws, they
   // retain the values for the root render pass of the last draw.
-  gfx::Rect current_draw_rect_;
   gfx::Size current_viewport_size_;
-  gfx::Size current_surface_size_;
 
   DrawingFrame* current_frame() {
     DCHECK(current_frame_valid_);
