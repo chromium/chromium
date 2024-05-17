@@ -19,6 +19,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
@@ -61,6 +62,24 @@ constexpr char kSessionId[] = "session_id";
 constexpr char kChallenge[] = "aGVsbG8_d29ybGQ";
 constexpr net::Error kConnectionNetError = net::ERR_UNEXPECTED;
 
+MATCHER_P3(JwtHasExpectedFields, session_id, challenge, destination_url, "") {
+  std::string_view jwt = arg;
+  std::optional<base::Value::Dict> payload_dict =
+      signin::ExtractPayloadFromJwt(jwt);
+  if (!payload_dict) {
+    *result_listener << "Couldn't parse payload from JWT: " << jwt;
+    return false;
+  }
+
+  *result_listener << " with payload " << payload_dict->DebugString();
+  return testing::ExplainMatchResult(
+      base::test::DictionaryHasValues(base::Value::Dict()
+                                          .Set("sub", session_id)
+                                          .Set("jti", challenge)
+                                          .Set("aud", destination_url.spec())),
+      *payload_dict, result_listener);
+}
+
 UnexportableKeyId GenerateNewKey(
     UnexportableKeyService& unexportable_key_service) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
@@ -71,28 +90,6 @@ UnexportableKeyId GenerateNewKey(
   ServiceErrorOr<UnexportableKeyId> key_id = generate_future.Get();
   CHECK(key_id.has_value());
   return *key_id;
-}
-
-std::string GetChallengeFromJwt(std::string_view jwt) {
-  std::vector<std::string_view> parts = base::SplitStringPiece(
-      jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  if (parts.size() != 3) {
-    return std::string();
-  }
-
-  std::string payload;
-  if (!base::Base64UrlDecode(
-          parts[1], base::Base64UrlDecodePolicy::DISALLOW_PADDING, &payload)) {
-    return std::string();
-  }
-  std::optional<base::Value::Dict> payload_dict =
-      base::JSONReader::ReadDict(payload);
-  if (!payload_dict) {
-    return std::string();
-  }
-  std::string* challenge = payload_dict->FindString("jti");
-  return challenge ? *challenge : std::string();
 }
 
 std::string CreateChallengeHeaderValue(const std::string& challenge) {
@@ -249,7 +246,8 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessExpectedCookieSet) {
                         /*expect_assertion_was_generated_count=*/0);
 }
 
-TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessNonEmptyRefreshUrl) {
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       SuccessWithChallengeNonEmptyRefreshUrl) {
   const GURL refresh_url("https://security.google.com/CheckBinding");
   fetcher_ = std::make_unique<BoundSessionRefreshCookieFetcherImpl>(
       test_url_loader_factory_.GetSafeWeakWrapper(), *session_binding_helper_,
@@ -260,11 +258,24 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessNonEmptyRefreshUrl) {
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback());
 
-  EXPECT_EQ(test_url_loader_factory_.total_requests(), 1u);
+  SimulateChallengeRequired(CreateChallengeHeaderValue(kChallenge));
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url, refresh_url);
+  auto headers = pending_request->request.headers;
+  std::string assertion;
+  EXPECT_TRUE(headers.GetHeader("Sec-Session-Google-Response", &assertion));
 
+  EXPECT_TRUE(signin::VerifyJwtSignature(
+      assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
+      *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
+  EXPECT_THAT(assertion,
+              JwtHasExpectedFields(kSessionId, kChallenge, refresh_url));
+
+  // Set required cookies and complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), "");
@@ -272,7 +283,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, SuccessNonEmptyRefreshUrl) {
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(), Result::kSuccess);
   VerifyMetricsRecorded(Result::kSuccess,
-                        /*expect_assertion_was_generated_count=*/0);
+                        /*expect_assertion_was_generated_count=*/1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -452,7 +463,10 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_TRUE(signin::VerifyJwtSignature(
       assertion, *unexportable_key_service_.GetAlgorithm(binding_key_id_),
       *unexportable_key_service_.GetSubjectPublicKeyInfo(binding_key_id_)));
-  EXPECT_EQ(GetChallengeFromJwt(assertion), kChallenge);
+  EXPECT_THAT(assertion,
+              JwtHasExpectedFields(
+                  kSessionId, kChallenge,
+                  GURL("https://accounts.google.com/RotateBoundCookies")));
 
   // Set required cookies and complete the request.
   SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);

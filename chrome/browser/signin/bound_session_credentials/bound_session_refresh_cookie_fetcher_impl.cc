@@ -151,9 +151,7 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
         })");
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = !refresh_url_.is_empty()
-                     ? refresh_url_
-                     : GaiaUrls::GetInstance()->rotate_bound_cookies_url();
+  request->url = GetRefreshUrl();
   request->method = "GET";
 
   if (sec_session_challenge_response) {
@@ -347,7 +345,7 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
   session_binding_helper_->GenerateBindingKeyAssertion(
-      challenge, GaiaUrls::GetInstance()->rotate_bound_cookies_url(),
+      challenge, GetRefreshUrl(),
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
           weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
@@ -407,4 +405,10 @@ void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(
 void BoundSessionRefreshCookieFetcherImpl::Clone(
     mojo::PendingReceiver<network::mojom::CookieAccessObserver> observer) {
   cookie_observers_.Add(this, std::move(observer));
+}
+
+const GURL& BoundSessionRefreshCookieFetcherImpl::GetRefreshUrl() {
+  return !refresh_url_.is_empty()
+             ? refresh_url_
+             : GaiaUrls::GetInstance()->rotate_bound_cookies_url();
 }
