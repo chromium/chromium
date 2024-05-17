@@ -68,6 +68,11 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
       AddSameConstraints(self.view, self.overlay);
       [self.overlay.indicator startAnimating];
     }
+  } else if (base::FeatureList::GetInstance() &&
+             base::FeatureList::GetInstance()->IsFeatureOverridden(
+                 switches::kMinorModeRestrictionsForHistorySyncOptIn.name)) {
+    // Record button type metrics when the feature is overriden to be disabled.
+    [self recordButtonTypeMetricsWithRestrictionStatus:NO];
   }
 }
 
@@ -120,12 +125,16 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(200);
     self.actionButtonsVisibility =
         isRestricted ? ActionButtonsVisibility::kEquallyWeightedButtonShown
                      : ActionButtonsVisibility::kRegularButtonsShown;
-    signin_metrics::SyncButtonsType buttonType =
-        isRestricted
-            ? signin_metrics::SyncButtonsType::kHistorySyncEqualWeighted
-            : signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
-    base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
+    [self recordButtonTypeMetricsWithRestrictionStatus:isRestricted];
   }
+}
+
+- (void)recordButtonTypeMetricsWithRestrictionStatus:(BOOL)isRestricted {
+  signin_metrics::SyncButtonsType buttonType =
+      isRestricted
+          ? signin_metrics::SyncButtonsType::kHistorySyncEqualWeighted
+          : signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
 }
 
 @end

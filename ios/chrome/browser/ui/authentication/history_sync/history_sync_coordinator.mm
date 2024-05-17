@@ -271,13 +271,15 @@
 #pragma mark - Private
 
 - (void)recordActionButtonTappedWithHistorySyncCompleted:(BOOL)completed {
-  if (!base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+  if (!(base::FeatureList::GetInstance() &&
+        base::FeatureList::GetInstance()->IsFeatureOverridden(
+            switches::kMinorModeRestrictionsForHistorySyncOptIn.name))) {
     return;
   }
 
   std::optional<signin_metrics::SyncButtonClicked> buttonClicked;
   switch (_viewController.actionButtonsVisibility) {
+    case ActionButtonsVisibility::kDefault:
     case ActionButtonsVisibility::kRegularButtonsShown:
       buttonClicked = completed ? signin_metrics::SyncButtonClicked::
                                       kHistorySyncOptInNotEqualWeighted
