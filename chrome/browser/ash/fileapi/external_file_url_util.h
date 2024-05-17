@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_UTIL_H_
 #define CHROME_BROWSER_ASH_FILEAPI_EXTERNAL_FILE_URL_UTIL_H_
 
+#include "base/time/time.h"
 #include "storage/common/file_system/file_system_types.h"
 
 class GURL;
@@ -47,6 +48,24 @@ GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path);
 GURL CreateExternalFileURLFromPath(content::BrowserContext* browser_context,
                                    const base::FilePath& path,
                                    bool force = false);
+
+// Registers a Fusebox moniker (with the given read_only and lifetime) for an
+// "externalfile://etc/foo/bar.txt" URL and returns the corresponding
+// "file://etc/fusebox/etc/moniker/1234etc" URL. It returns an empty GURL on
+// failure (e.g. there is no global Fusebox server instance).
+//
+// If keep_extension is true then the returned GURL will have the same filename
+// extension as the input GURL: it will end with "moniker/1234etc.txt". If
+// false then the suffix will be a bare "moniker/1234etc", where "1234etc" is
+// the moniker's randomly generated identifier (as hexadecimal digits).
+//
+// See fusebox_moniker.h comments for more details about Fusebox monikers.
+GURL ExternalFileURLToFuseboxMonikerFileURL(
+    content::BrowserContext* browser_context,
+    const GURL& url,
+    bool read_only,
+    base::TimeDelta lifetime,
+    bool keep_extension);
 
 }  // namespace ash
 

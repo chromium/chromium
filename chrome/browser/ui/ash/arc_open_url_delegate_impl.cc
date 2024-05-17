@@ -30,9 +30,7 @@
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -57,7 +55,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/filename_util.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/base/window_open_disposition.h"
@@ -158,45 +155,13 @@ GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
 // system. This Moniker file is readable on the Linux filesystem like any other
 // file. Returns an empty URL if a Moniker could not be created.
 GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
-  const base::FilePath virtual_path = ash::ExternalFileURLToVirtualPath(
-      arc::ArcUrlToExternalFileUrl(content_url));
-
-  const storage::FileSystemURL fs_url =
-      file_manager::util::GetFileManagerFileSystemContext(profile)
-          ->CreateCrackedFileSystemURL(
-              blink::StorageKey::CreateFirstParty(
-                  file_manager::util::GetFilesAppOrigin()),
-              storage::kFileSystemTypeExternal, virtual_path);
-  if (!fs_url.is_valid()) {
-    return GURL();
-  }
-
-  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
-  if (!fusebox_server) {
-    return GURL();
-  }
-
-  constexpr bool kReadOnly = true;
-  fusebox::Moniker moniker = fusebox_server->CreateMoniker(fs_url, kReadOnly);
-
-  // Keep the Moniker alive for the same time as a file shared through the Web
-  // Share API. We could be cleverer about scheduling the clean up, but "destroy
-  // after a fixed amount of time" is simple and works well enough in
-  // practice.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](fusebox::Moniker moniker) {
-            fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
-            if (fusebox_server) {
-              fusebox_server->DestroyMoniker(moniker);
-            }
-          },
-          moniker),
-      webshare::PrepareDirectoryTask::kSharedFileLifetime);
-
-  return net::FilePathToFileURL(
-      base::FilePath(fusebox::MonikerMap::GetFilename(moniker)));
+  return ash::ExternalFileURLToFuseboxMonikerFileURL(
+      profile, arc::ArcUrlToExternalFileUrl(content_url),
+      /*read_only=*/true, webshare::PrepareDirectoryTask::kSharedFileLifetime,
+      // TODO(nigeltao): keep_extension=false is for refactoring compatibility,
+      // but probably isn't necessary and I think we can flip it to true (and
+      // then remove the argument entirely).
+      /*keep_extension=*/false);
 }
 
 apps::IntentPtr ConvertLaunchIntent(

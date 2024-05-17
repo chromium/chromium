@@ -80,6 +80,18 @@ class MonikerMap {
   // Returns the 1234etc base::Token from a Fusebox relative path (like
   // "moniker/1234etc"), where "moniker" is the fusebox::kMonikerSubdir prefix.
   //
+  // The "1234etc" string form is a 32-hexadecimal-digit representation of the
+  // 128-bit base::Token. It may optionally have a filename extension (a suffix
+  // that starts with a "." dot) that is ignored by the moniker system but can
+  // be useful for moniker consumers that use the filename extension as a hint
+  // for how to interpret the byte contents. Ignored by the moniker system
+  // means that these inputs produce the same ExtractTokenResult (they all name
+  // the same Moniker):
+  //
+  //  - "moniker/12345678901234567890123456789012"
+  //  - "moniker/12345678901234567890123456789012.html"
+  //  - "moniker/12345678901234567890123456789012.tar.gz"
+  //
   // The argument name is "fs_url_etc", as in storage::FileSystemURL, for
   // historical reasons, even though it is a relative path, not a FileSystemURL
   // (in string form) any more.

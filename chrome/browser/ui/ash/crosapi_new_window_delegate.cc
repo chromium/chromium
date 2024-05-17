@@ -10,10 +10,13 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/exo/wm_helper.h"
+#include "content/public/common/url_constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -206,7 +209,23 @@ void CrosapiNewWindowDelegate::NewWindowForDetachingTab(
 void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
                                        OpenUrlFrom from,
                                        Disposition disposition) {
-  crosapi::BrowserManager::Get()->OpenUrl(url, OpenUrlFromToMojom(from),
+  GURL url_to_open = url;
+
+  // Lacros can't see externalfile:// URLs. Convert them to regular file://
+  // URLs via Fusebox.
+  if (url_to_open.SchemeIs(content::kExternalFileScheme)) {
+    content::BrowserContext* browser_context =
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+            user_manager::UserManager::Get()->GetPrimaryUser());
+    if (browser_context) {
+      url_to_open = ash::ExternalFileURLToFuseboxMonikerFileURL(
+          browser_context, url, /*read_only=*/true,
+          /*lifetime=*/base::Hours(20),
+          /*keep_extension=*/true);
+    }
+  }
+
+  crosapi::BrowserManager::Get()->OpenUrl(url_to_open, OpenUrlFromToMojom(from),
                                           DispositionToMojom(disposition));
 }
 
