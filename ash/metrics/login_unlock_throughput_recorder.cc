@@ -46,17 +46,16 @@ constexpr char kLoginThroughput[] = "LoginThroughput";
 constexpr char kLoginThroughputUnordered[] = "LoginThroughput-unordered";
 
 // A class used to wait for animations.
-class AnimationObserver : public views::BoundsAnimatorObserver {
+class ShelfAnimationObserver : public views::BoundsAnimatorObserver {
  public:
-  AnimationObserver(base::OnceClosure& on_animation_end)
-      : on_animation_end_(std::move(on_animation_end)) {}
+  ShelfAnimationObserver(base::OnceClosure& on_shelf_animation_end)
+      : on_shelf_animation_end_(std::move(on_shelf_animation_end)) {}
 
-  AnimationObserver(const AnimationObserver&) = delete;
-  AnimationObserver& operator=(const AnimationObserver&) = delete;
+  ShelfAnimationObserver(const ShelfAnimationObserver&) = delete;
+  ShelfAnimationObserver& operator=(const ShelfAnimationObserver&) = delete;
+  ~ShelfAnimationObserver() override = default;
 
-  ~AnimationObserver() override = default;
-
-  // ShelfViewObserver overrides:
+  // views::BoundsAnimatorObserver overrides:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override {
     GetShelfView()->RemoveAnimationObserver(this);
@@ -65,16 +64,18 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
 
   void StartObserving() {
     ShelfView* shelf_view = GetShelfView();
-    if (shelf_view->IsAnimating()) {
-      shelf_view->AddAnimationObserver(this);
+
+    if (!shelf_view->IsAnimating()) {
+      RunCallbackAndDestroy();
       return;
     }
-    RunCallbackAndDestroy();
+
+    shelf_view->AddAnimationObserver(this);
   }
 
  private:
   void RunCallbackAndDestroy() {
-    std::move(on_animation_end_).Run();
+    std::move(on_shelf_animation_end_).Run();
     delete this;
   }
 
@@ -87,7 +88,7 @@ class AnimationObserver : public views::BoundsAnimatorObserver {
         ->shelf_view();
   }
 
-  base::OnceClosure on_animation_end_;
+  base::OnceClosure on_shelf_animation_end_;
 };
 
 std::string GetDeviceModeSuffix() {
@@ -245,7 +246,7 @@ void LoginUnlockThroughputRecorder::OnAuthSuccess() {
 
 void LoginUnlockThroughputRecorder::OnAshRestart() {
   is_ash_restart_ = true;
-  login_animation_finished_timer_.Stop();
+  post_login_deferred_task_timer_.Stop();
   if (!post_login_deferred_task_runner_->Started()) {
     post_login_deferred_task_runner_->Start();
   }
@@ -299,8 +300,9 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
 
   auto* rec = new ui::TotalAnimationThroughputReporter(
       primary_root->GetHost()->compositor(),
-      base::BindOnce(&LoginUnlockThroughputRecorder::OnLoginAnimationFinish,
-                     weak_ptr_factory_.GetWeakPtr(), primary_user_logged_in_),
+      base::BindOnce(
+          &LoginUnlockThroughputRecorder::OnCompositorAnimationFinished,
+          weak_ptr_factory_.GetWeakPtr(), primary_user_logged_in_),
       /*should_delete=*/true);
   login_animation_throughput_reporter_ = rec->GetWeakPtr();
   DCHECK(!scoped_throughput_reporter_blocker_);
@@ -310,11 +312,11 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
       login_animation_throughput_reporter_->NewScopedBlocker();
 
   constexpr base::TimeDelta kLoginAnimationDelayTimer = base::Seconds(20);
-  // login_animation_finished_timer_ is owned by this class so it's safe to
+  // post_login_deferred_task_timer_ is owned by this class so it's safe to
   // use unretained pointer here.
-  login_animation_finished_timer_.Start(
+  post_login_deferred_task_timer_.Start(
       FROM_HERE, kLoginAnimationDelayTimer, this,
-      &LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired);
+      &LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired);
 }
 
 void LoginUnlockThroughputRecorder::AddScheduledRestoreWindow(
@@ -454,7 +456,7 @@ void LoginUnlockThroughputRecorder::
   scoped_throughput_reporter_blocker_.reset();
 }
 
-void LoginUnlockThroughputRecorder::OnLoginAnimationFinish(
+void LoginUnlockThroughputRecorder::OnCompositorAnimationFinished(
     base::TimeTicks start,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   login_animation_throughput_received_ = true;
@@ -523,7 +525,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
     shelf_container->SchedulePaintInRect(bounds);
   }
 
-  base::OnceCallback on_animation_end = base::BindOnce(
+  base::OnceCallback on_shelf_animation_end = base::BindOnce(
       [](base::WeakPtr<LoginUnlockThroughputRecorder> self) {
         self->shelf_animation_finished_ = true;
         const base::TimeDelta duration_ms =
@@ -540,7 +542,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  (new AnimationObserver(on_animation_end))->StartObserving();
+  (new ShelfAnimationObserver(on_shelf_animation_end))->StartObserving();
 
   // Unblock deferred task now.
   // TODO(b/328339021, b/323098858): This is the mitigation against a bug
@@ -550,7 +552,7 @@ void LoginUnlockThroughputRecorder::ScheduleWaitForShelfAnimationEndIfNeeded() {
   base::UmaHistogramCustomTimes(
       "BootTime.Login4", base::TimeTicks::Now() - primary_user_logged_in_,
       base::Milliseconds(100), base::Seconds(100), 100);
-  login_animation_finished_timer_.Stop();
+  post_login_deferred_task_timer_.Stop();
   if (!post_login_deferred_task_runner_->Started()) {
     post_login_deferred_task_runner_->Start();
   }
@@ -722,10 +724,10 @@ void LoginUnlockThroughputRecorder::MaybeReportLoginFinished() {
   LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
 }
 
-void LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired() {
+void LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired() {
   TRACE_EVENT0(
       "startup",
-      "LoginUnlockThroughputRecorder::OnLoginAnimationFinishedTimerFired");
+      "LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired");
 
   // `post_login_deferred_task_runner_` could be started in tests in
   // `ScheduleWaitForShelfAnimationEndIfNeeded` where shelf is created

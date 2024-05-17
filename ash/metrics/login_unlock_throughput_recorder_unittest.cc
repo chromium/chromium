@@ -300,7 +300,7 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
 
   bool IsThroughputRecorderBlocked() {
     return throughput_recorder()
-        ->login_animation_throughput_reporter()
+        ->GetLoginAnimationThroughputReporterForTesting()
         ->IsBlocked();
   }
 
