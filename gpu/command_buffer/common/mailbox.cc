@@ -15,25 +15,23 @@
 namespace gpu {
 namespace {
 
-// The last byte of the mailbox's name stores the SharedImage flag. This avoids
-// conflicts with Verify logic, which uses the first byte.
-constexpr size_t kSharedImageFlagIndex = GL_MAILBOX_SIZE_CHROMIUM - 1;
+// The last byte of the mailbox's name stores a bit that ensures that the
+// mailbox doesn't end up being generated as zero. This avoids conflicts with
+// Verify logic, which uses the first byte.
+constexpr size_t kLiveMailboxIndex = GL_MAILBOX_SIZE_CHROMIUM - 1;
 
-// Use the lowest bit for the SharedImage flag (any bit would work).
-constexpr int8_t kSharedImageFlag = 0x1;
+// Use the lowest bit for the flag marking the mailbox as live (any bit would
+// work).
+constexpr int8_t kLiveMailboxFlag = 0x1;
 
-void MarkMailboxAsSharedImage(bool is_shared_image, int8_t* name) {
-  if (is_shared_image)
-    name[kSharedImageFlagIndex] |= kSharedImageFlag;
-  else
-    name[kSharedImageFlagIndex] &= ~kSharedImageFlag;
-}
-
-Mailbox GenerateMailbox(bool is_shared_image) {
+Mailbox GenerateMailbox() {
   Mailbox result;
   // Generates cryptographically-secure bytes.
   base::RandBytes(base::as_writable_byte_span(result.name));
-  MarkMailboxAsSharedImage(is_shared_image, result.name);
+
+  // Ensure that the mailbox is non-zero.
+  result.name[kLiveMailboxIndex] |= kLiveMailboxFlag;
+
 #if !defined(NDEBUG)
   int8_t value = 1;
   for (size_t i = 1; i < sizeof(result.name); ++i)
@@ -67,7 +65,7 @@ void Mailbox::SetName(const int8_t* n) {
 }
 
 Mailbox Mailbox::GenerateForSharedImage() {
-  return GenerateMailbox(true /* is_shared_image */);
+  return GenerateMailbox();
 }
 
 bool Mailbox::Verify() const {
