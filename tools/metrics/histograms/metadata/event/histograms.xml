@@ -280,39 +280,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
-    expires_after="2024-11-03">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.KeyPressed.TotalLatency metric (see crbug.com/1054021).
-
-    Time between the OS receiving a keyboard event and the resulting GPU frame
-    swap. If no swap was induced by the event, no recording is made. Only
-    recorded for key presses.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.EndToEnd.TouchpadPinch2" units="microseconds"
-    expires_after="2024-11-03">
-  <owner>nzolghadr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.GesturePinch*.TotalLatency metrics (see crbug.com/1054021).
-
-    Time between the OS receiving a touchpad pinch event and the resulting GPU
-    frame swap. If no swap was induced by the event, no recording is made.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.HitTest" units="microseconds"
     expires_after="2023-10-22">
   <owner>pdr@chromium.org</owner>
@@ -420,29 +387,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2024-11-03">
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a wheel event and the start of the frame
-    swap on the GPU service caused by the generated ScrollUpdate gesture event
-    if that ScrollUpdate is the first such event in a given scroll gesture event
-    sequence. If no swap was induced by the event, no recording is made.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.ScrollJank" enum="Boolean"
     expires_after="2024-11-03">
   <owner>ddrone@google.com</owner>
@@ -482,51 +426,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of LatencyInfo::GestureScrollUpdate events that are detected as janky
     during a particular scroll.
-  </summary>
-</histogram>
-
-<histogram
-    name="Event.Latency.ScrollUpdate.Scrollbar.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2023-08-08">
-  <owner>flackr@chromium.org</owner>
-  <owner>arakeri@microsoft.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.GestureScrollUpdate.Scrollbar.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a scrollbar event and start of the frame
-    swap on the GPU service caused by the generated ScrollUpdate gesture event.
-    If no swap was induced by the event, no recording is made. The first GSU of
-    every scrolling sequence is excluded from this metric.
-
-    Do not modify this metric in any way without contacting
-    speed-metrics-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2024-09-22">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.GestureScrollUpdate.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a wheel/touch event and start of the frame
-    swap on the GPU service caused by the generated ScrollUpdate gesture event.
-    If no swap was induced by the event, no recording is made. The first GSU of
-    every scrolling sequence is excluded from this metric.
-
-    Team: input-dev@chromium.org.
   </summary>
 </histogram>
 
@@ -657,29 +556,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PredictionNegative" summary="Negative impact values"/>
     <variant name="PredictionPositive" summary="Positive impact values"/>
   </token>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.Wheel.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2024-11-03">
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    NOTE: This metric is deprecated in favor of
-    EventLatency.GestureScrollUpdate.Wheel.TotalLatency metric (see
-    crbug.com/1054021).
-
-    Time between initial creation of a wheel event and start of the frame swap
-    on the GPU service caused by the generated ScrollUpdate gesture event. If no
-    swap was induced by the event, no recording is made. The first GSU of every
-    scrolling sequence is excluded from this metric.
-
-    Team: input-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
 </histogram>
 
 <histogram name="Event.MaxDragDistance.{ToolType}" units="dips"

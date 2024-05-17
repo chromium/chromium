@@ -33,7 +33,6 @@ namespace {
 
 // Trace ids are generated in sequence in practice, but in these tests, we don't
 // care about the value, so we'll just use a constant.
-const int kTraceEventId = 5;
 const char kUrl[] = "http://www.foo.bar.com/subpage/1";
 
 void AddFakeComponentsWithTimeStamp(
@@ -157,47 +156,6 @@ class RenderWidgetHostLatencyTrackerTest
   raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
-TEST_F(RenderWidgetHostLatencyTrackerTest, TestValidEventTiming) {
-  base::TimeTicks now = base::TimeTicks::Now();
-
-  ui::LatencyInfo latency_info;
-  latency_info.set_trace_id(kTraceEventId);
-  latency_info.set_source_event_type(ui::SourceEventType::WHEEL);
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
-      now + base::Milliseconds(60));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
-      now + base::Milliseconds(50));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
-      now + base::Milliseconds(40));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT,
-      now + base::Milliseconds(30));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      now + base::Milliseconds(20));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT, now + base::Milliseconds(10));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT, now);
-
-  viz_tracker()->OnGpuSwapBuffersCompleted({latency_info});
-
-  // When last_event_time of the end_component is less than the first_event_time
-  // of the start_component, zero is recorded instead of a negative value.
-  histogram_tester().ExpectUniqueSample(
-      "Event.Latency.ScrollBegin.Wheel.TimeToScrollUpdateSwapBegin4", 0, 1);
-}
-
 // Flaky on Android. https://crbug.com/970841
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestWheelToFirstScrollHistograms \
@@ -249,16 +207,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest,
           source_id, "Event.ScrollBegin.Wheel",
           {"TimeToScrollUpdateSwapBegin", "TimeToHandled", "IsMainThread"},
           total_ukm_entry_count);
-
-      // UMA histograms.
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.ScrollUpdate."
-                          "TimeToScrollUpdateSwapBegin2",
-                          0));
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.ScrollBegin.Wheel."
-                          "TimeToScrollUpdateSwapBegin4",
-                          1));
     }
   }
 }
@@ -312,16 +260,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, MAYBE_TestWheelToScrollHistograms) {
           source_id, "Event.ScrollUpdate.Wheel",
           {"TimeToScrollUpdateSwapBegin", "TimeToHandled", "IsMainThread"},
           total_ukm_entry_count);
-
-      // UMA histograms.
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.ScrollUpdate."
-                          "TimeToScrollUpdateSwapBegin2",
-                          1));
-      EXPECT_TRUE(
-          HistogramSizeEq("Event.Latency.ScrollBegin.Wheel."
-                          "TimeToScrollUpdateSwapBegin4",
-                          0));
     }
   }
 }
@@ -414,55 +352,6 @@ TEST_F(RenderWidgetHostLatencyTrackerTest, ScrollLatency) {
       event_latency_metadata.arrived_in_browser_main_timestamp.is_null());
   EXPECT_EQ(event_latency_metadata.arrived_in_browser_main_timestamp,
             begin_rwh_timestamp);
-}
-
-TEST_F(RenderWidgetHostLatencyTrackerTest, KeyEndToEndLatency) {
-  // These numbers are sensitive to where the histogram buckets are.
-  int event_timestamps_microseconds[] = {11, 24};
-
-  ui::LatencyInfo latency_info;
-  latency_info.set_trace_id(kTraceEventId);
-  latency_info.set_source_event_type(ui::SourceEventType::KEY_PRESS);
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[0]));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[0]));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT,
-      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[1]));
-
-  latency_info.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
-      base::TimeTicks() + base::Microseconds(event_timestamps_microseconds[1]));
-
-  viz_tracker()->OnGpuSwapBuffersCompleted({latency_info});
-
-  EXPECT_THAT(
-      histogram_tester().GetAllSamples("Event.Latency.EndToEnd.KeyPress"),
-      ElementsAre(Bucket(
-          event_timestamps_microseconds[1] - event_timestamps_microseconds[0],
-          1)));
-}
-
-TEST_F(RenderWidgetHostLatencyTrackerTest, TouchpadPinchEvents) {
-  ui::LatencyInfo latency;
-  latency.set_trace_id(kTraceEventId);
-  latency.set_source_event_type(ui::SourceEventType::TOUCHPAD);
-  latency.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-      base::TimeTicks() + base::Milliseconds(1));
-  latency.AddLatencyNumberWithTimestamp(
-      ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      base::TimeTicks() + base::Milliseconds(3));
-  AddFakeComponentsWithTimeStamp(*tracker(), &latency,
-                                 base::TimeTicks() + base::Milliseconds(5));
-  viz_tracker()->OnGpuSwapBuffersCompleted({latency});
-
-  EXPECT_TRUE(HistogramSizeEq("Event.Latency.EndToEnd.TouchpadPinch2", 1));
 }
 
 }  // namespace content

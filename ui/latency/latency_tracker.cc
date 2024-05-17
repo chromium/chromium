@@ -26,86 +26,8 @@
   if (!(x))                          \
     return;
 
-// Event latency that is mostly under 5 seconds. We should only use 100 buckets
-// when needed.
-#define UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(name, latency) \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(), 1,              \
-                              base::Seconds(5).InMicroseconds(), 100);
-
-#define UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(     \
-    suffix, scroll_type, input_modality, latency)                         \
-  STATIC_HISTOGRAM_POINTER_GROUP(                                         \
-      GetHistogramName(suffix, scroll_type, input_modality),              \
-      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex, \
-      Add(latency.InMicroseconds()),                                      \
-      base::Histogram::FactoryGet(                                        \
-          GetHistogramName(suffix, scroll_type, input_modality), 1,       \
-          base::Seconds(5).InMicroseconds(), 100,                         \
-          base::HistogramBase::kUmaTargetedHistogramFlag));
-
-// Event latency that is mostly under 100ms. We should only use 100 buckets
-// when needed. This drops reports on clients with low-resolution clocks.
-#define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS(name, latency) \
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                             \
-      name, latency, base::Microseconds(1), base::Milliseconds(100), 100);
-
-// Deprecated, use UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_MICROSECONDS instead.
-// Event latency that is mostly under 1 second. We should only use 100 buckets
-// when needed.
-#define UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(name,    \
-                                                                 latency) \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(), 1,          \
-                              base::Seconds(1).InMicroseconds(), 100);
-
-// Event latency that is mostly under 1 second. We should only use 100 buckets
-// when needed. This drops reports on clients with low-resolution clocks.
-#define UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(name,    \
-                                                                     latency) \
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                                    \
-      name, latency, base::Microseconds(1), base::Seconds(1), 100);
-
-// Long touch/wheel scroll latency component that is mostly under 200ms.
-#define UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2(name, latency)            \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(name, latency.InMicroseconds(),         \
-                              base::Milliseconds(1).InMicroseconds(), \
-                              base::Milliseconds(200).InMicroseconds(), 50);
-
-#define UMA_HISTOGRAM_SCROLL_LATENCY_LONG_2_GROUP(suffix, scroll_type,     \
-                                                  input_modality, latency) \
-  STATIC_HISTOGRAM_POINTER_GROUP(                                          \
-      GetHistogramName(suffix, scroll_type, input_modality),               \
-      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex,  \
-      Add(latency.InMicroseconds()),                                       \
-      base::Histogram::FactoryGet(                                         \
-          GetHistogramName(suffix, scroll_type, input_modality),           \
-          base::Milliseconds(1).InMicroseconds(),                          \
-          base::Milliseconds(200).InMicroseconds(), 50,                    \
-          base::HistogramBase::kUmaTargetedHistogramFlag));
-
-// Short touch/wheel scroll latency component that is mostly under 50ms.
-#define UMA_HISTOGRAM_SCROLL_LATENCY_SHORT_2_GROUP(suffix, scroll_type,     \
-                                                   input_modality, latency) \
-  STATIC_HISTOGRAM_POINTER_GROUP(                                           \
-      GetHistogramName(suffix, scroll_type, input_modality),                \
-      GetHistogramIndex(scroll_type, input_modality), kMaxHistogramIndex,   \
-      Add(latency.InMicroseconds()),                                        \
-      base::Histogram::FactoryGet(                                          \
-          GetHistogramName(suffix, scroll_type, input_modality), 1,         \
-          base::Milliseconds(50).InMicroseconds(), 50,                      \
-          base::HistogramBase::kUmaTargetedHistogramFlag));
-
 namespace ui {
 namespace {
-
-base::TimeDelta ComputeLatency(base::TimeTicks start, base::TimeTicks end) {
-  DCHECK(!start.is_null());
-  DCHECK(!end.is_null());
-  base::TimeDelta latency = end - start;
-  if (latency.is_negative()) {
-    return base::Milliseconds(0);
-  }
-  return latency;
-}
 
 bool IsInertialScroll(const LatencyInfo& latency) {
   return latency.source_event_type() == ui::SourceEventType::INERTIAL;
@@ -405,15 +327,6 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
     // them.
     ScrollType scroll_type =
         IsInertialScroll(latency) ? ScrollType::kInertial : ScrollType::kBegin;
-
-    if (scroll_type == ScrollType::kBegin &&
-        input_modality == ScrollInputModality::kWheel) {
-      // scroll event's underlying touch/wheel event.
-      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
-          "TimeToScrollUpdateSwapBegin4", scroll_type, input_modality,
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    }
-
     EmitLatencyHistograms(gpu_swap_begin_timestamp, gpu_swap_end_timestamp,
                           original_timestamp, latency, scroll_type,
                           input_modality);
@@ -430,38 +343,9 @@ void LatencyTracker::ComputeEndToEndLatencyHistograms(
     // them.
     ScrollType scroll_type =
         IsInertialScroll(latency) ? ScrollType::kInertial : ScrollType::kUpdate;
-
-    // This UMA metric tracks the performance of overall scrolling as a high
-    // level metric.
-    UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS(
-        "Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2",
-        ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-
-    if (scroll_type == ScrollType::kBegin &&
-        input_modality == ScrollInputModality::kWheel) {
-      // This UMA metric tracks the time from when the original touch/wheel
-      // event is created to when the scroll gesture results in final frame
-      // swap. First scroll events are excluded from this metric.
-      UMA_HISTOGRAM_INPUT_LATENCY_5_SECONDS_MAX_MICROSECONDS_GROUP(
-          "TimeToScrollUpdateSwapBegin4", scroll_type, input_modality,
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    }
-
     EmitLatencyHistograms(gpu_swap_begin_timestamp, gpu_swap_end_timestamp,
                           original_timestamp, latency, scroll_type,
                           input_modality);
-
-  } else if (latency.FindLatency(ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
-                                 &original_timestamp)) {
-    if (latency.source_event_type() == SourceEventType::KEY_PRESS) {
-      UMA_HISTOGRAM_INPUT_LATENCY_HIGH_RESOLUTION_MICROSECONDS(
-          "Event.Latency.EndToEnd.KeyPress",
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    } else if (latency.source_event_type() == SourceEventType::TOUCHPAD) {
-      UMA_HISTOGRAM_INPUT_LATENCY_CUSTOM_1_SECOND_MAX_MICROSECONDS(
-          "Event.Latency.EndToEnd.TouchpadPinch2",
-          ComputeLatency(original_timestamp, gpu_swap_begin_timestamp));
-    }
   }
 }
 
