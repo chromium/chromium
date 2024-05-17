@@ -191,11 +191,16 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       // for the profile that was used to autofill the field.
       continue;
     }
-    AutofillProfile* profile = pdm.address_data_manager().GetProfileByGUID(
-        *field->autofill_source_profile_guid());
-    if (profile && profile->token_quality().AddObservationsForFilledForm(
-                       form_structure, form_data, pdm)) {
-      pdm.address_data_manager().UpdateProfile(*profile);
+    const AutofillProfile* profile =
+        pdm.address_data_manager().GetProfileByGUID(
+            *field->autofill_source_profile_guid());
+    if (!profile) {
+      continue;
+    }
+    AutofillProfile updatable_profile = *profile;
+    if (updatable_profile.token_quality().AddObservationsForFilledForm(
+            form_structure, form_data, pdm)) {
+      pdm.address_data_manager().UpdateProfile(updatable_profile);
     }
   }
 }
