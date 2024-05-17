@@ -146,11 +146,17 @@ void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
   auto* sounds_controller =
       FocusModeController::Get()->focus_mode_sounds_controller();
   if (is_soundscape_type) {
-    soundscape_container_->UpdateContents(
-        sounds_controller->soundscape_playlists());
+    const auto& playlists = sounds_controller->soundscape_playlists();
+    if (playlists.empty()) {
+      return;
+    }
+    soundscape_container_->UpdateContents(playlists);
   } else {
-    youtube_music_container_->UpdateContents(
-        sounds_controller->youtube_music_playlists());
+    const auto& playlists = sounds_controller->youtube_music_playlists();
+    if (playlists.empty()) {
+      return;
+    }
+    youtube_music_container_->UpdateContents(playlists);
   }
 }
 
