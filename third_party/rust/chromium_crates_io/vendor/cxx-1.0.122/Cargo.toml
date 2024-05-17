@@ -11,10 +11,11 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.63"
 name = "cxx"
-version = "1.0.121"
+version = "1.0.122"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = "build.rs"
 links = "cxxbridge1"
 exclude = [
     "/demo",
@@ -23,6 +24,10 @@ exclude = [
     "/third-party",
     "/tools/buck/prelude",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Safe interop between Rust and C++"
 homepage = "https://cxx.rs"
 documentation = "https://docs.rs/cxx"
@@ -67,16 +72,42 @@ rustdoc-args = [
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
+name = "cxx"
+path = "src/lib.rs"
 doc-scrape-examples = false
 
+[[test]]
+name = "cxx_vector"
+path = "tests/cxx_vector.rs"
+
+[[test]]
+name = "compiletest"
+path = "tests/compiletest.rs"
+
+[[test]]
+name = "cxx_gen"
+path = "tests/cxx_gen.rs"
+
+[[test]]
+name = "unique_ptr"
+path = "tests/unique_ptr.rs"
+
+[[test]]
+name = "cxx_string"
+path = "tests/cxx_string.rs"
+
+[[test]]
+name = "test"
+path = "tests/test.rs"
+
 [dependencies.cxxbridge-macro]
-version = "=1.0.121"
+version = "=1.0.122"
 
 [dependencies.link-cplusplus]
 version = "1.0.9"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.121"
+version = "=1.0.122"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -95,7 +126,7 @@ features = ["diff"]
 version = "1.0.83"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.121"
+version = "=1.0.122"
 default-features = false
 
 [features]

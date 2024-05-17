@@ -368,15 +368,6 @@ Previously reviewed during security review and the audit is grandparented in.
 [[audits.cxx]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
-version = "1.0.116"
-notes = """
-Grepped for \"crypt\", \"cipher\" - there were no hits
-(except for benign hits in `MODULE.bazel.lock`)
-"""
-
-[[audits.cxx]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
 version = "1.0.117"
 notes = """
 Grepped for \"crypt\", \"cipher\" - there were no hits
@@ -384,30 +375,29 @@ Grepped for \"crypt\", \"cipher\" - there were no hits
 """
 
 [[audits.cxx]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
-delta = "1.0.110 -> 1.0.115"
-notes = """
-Grepped for \"crypt\", \"cipher\" - there were no hits
-(except for benign hits in `MODULE.bazel.lock`)
-"""
-
-[[audits.cxx]]
 who = "danakj <danakj@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["does-not-implement-crypto"]
 delta = "1.0.117 -> 1.0.119"
 notes = "Reviewed in https://crrev.com/c/5362739"
 
 [[audits.cxx]]
 who = "Dustin J. Mitchell <djmitche@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["does-not-implement-crypto"]
 delta = "1.0.119 -> 1.0.120"
 notes = "Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5392544."
 
 [[audits.cxx]]
 who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+criteria = ["does-not-implement-crypto""]
 delta = "1.0.120 -> 1.0.121"
+
+[[audits.cxx]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["does-not-implement-crypto"]
+version = "1.0.122"
+notes = """
+safe-to-deploy and ub-risk-2 are provided by exemption.
+"""
 
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
@@ -482,60 +472,20 @@ Previously reviewed during security review and the audit is grandparented in.
 """
 
 [[audits.cxxbridge-flags]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
-version = "1.0.116"
-notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
-
-[[audits.cxxbridge-flags]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
+who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
-version = "1.0.117"
+version = "1.0.122"
+notes = "no grep hits for cipher, crypto, fs, net, or unsafe"
+
+[[audits.cxxbridge-macro]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["does-not-implement-crypto"]
+version = "1.0.122"
 notes = """
-I grepped for \"crypt\", \"cipher\", \"fs\", \"net\", \"unsafe\" - there were no hits.
-The crate is very straightforward - it just defines a `pub const STD: &str`.
-The crate was added to Chromium in https://crrev.com/c/5029701.
+no grep hits for cipher, crypto.
+
+safe-to-deploy and ub-risk-2 are provided by exemption.
 """
-
-[[audits.cxxbridge-flags]]
-who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
-delta = "1.0.110 -> 1.0.115"
-notes = 'Grepped for \"crypt\", \"cipher\" - there were no hits'
-
-[[audits.cxxbridge-flags]]
-who = "danakj <danakj@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-delta = "1.0.117 -> 1.0.119"
-notes = "Reviewed in https://crrev.com/c/5362739"
-
-[[audits.cxxbridge-flags]]
-who = "Dustin J. Mitchell <djmitche@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-delta = "1.0.119 -> 1.0.120"
-notes = "Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5392544"
-
-[[audits.cxxbridge-flags]]
-who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
-delta = "1.0.120 -> 1.0.121"
-
-[[audits.cxxbridge-macro]]
-who = "danakj <danakj@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-delta = "1.0.117 -> 1.0.119"
-notes = "Reviewed in https://crrev.com/c/5362739"
-
-[[audits.cxxbridge-macro]]
-who = "Dustin J. Mitchell <djmitche@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-delta = "1.0.119 -> 1.0.120"
-notes = "Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/5392544"
-
-[[audits.cxxbridge-macro]]
-who = "Adrian Taylor <adetaylor@chromium.org>"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-delta = "1.0.120 -> 1.0.121"
 
 [[audits.either]]
 who = "agl@chromium.org"

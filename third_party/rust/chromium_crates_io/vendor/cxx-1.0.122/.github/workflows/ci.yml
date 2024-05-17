@@ -25,7 +25,7 @@ jobs:
           - rust: nightly
           - rust: beta
           - rust: stable
-          - rust: 1.60.0
+          - rust: 1.63.0
           - rust: 1.64.0
           - rust: 1.70.0
           - rust: 1.74.0
@@ -65,7 +65,7 @@ jobs:
         shell: bash
       - run: cargo run --manifest-path demo/Cargo.toml
       - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
-        if: matrix.rust != '1.60.0' && matrix.rust != '1.64.0'
+        if: matrix.rust != '1.63.0' && matrix.rust != '1.64.0'
       - run: cargo check --no-default-features --features alloc
         env:
           RUSTFLAGS: --cfg compile_error_if_std ${{env.RUSTFLAGS}}

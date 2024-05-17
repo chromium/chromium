@@ -11,14 +11,19 @@
 
 [package]
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.63"
 name = "cxxbridge-macro"
-version = "1.0.121"
+version = "1.0.122"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = false
 exclude = [
     "build.rs",
     "README.md",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Implementation detail of the `cxx` crate."
 homepage = "https://cxx.rs"
 readme = "README.md"
@@ -32,6 +37,8 @@ rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
+name = "cxxbridge_macro"
+path = "src/lib.rs"
 proc-macro = true
 
 [dependencies.clang-ast]

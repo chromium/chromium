@@ -48,6 +48,9 @@ through crates.io.
 ";
 
 fn main() {
+    println!("cargo:rustc-check-cfg=cfg(feature, values(\"experimental-async-fn\"))");
+    println!("cargo:rustc-check-cfg=cfg(feature, values(\"experimental-enum-variants-from-header\"))");
+
     if Path::new("src/syntax/mod.rs").exists() {
         return;
     }

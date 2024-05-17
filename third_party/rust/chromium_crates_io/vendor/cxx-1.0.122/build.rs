@@ -1,3 +1,6 @@
+#![allow(unknown_lints)]
+#![allow(unexpected_cfgs)]
+
 use std::env;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -24,8 +27,18 @@ fn main() {
     }
 
     if let Some(rustc) = rustc_version() {
-        if rustc.minor < 60 {
-            println!("cargo:warning=The cxx crate requires a rustc version 1.60.0 or newer.");
+        if rustc.minor >= 80 {
+            println!("cargo:rustc-check-cfg=cfg(built_with_cargo)");
+            println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
+            println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
+            println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
+            println!("cargo:rustc-check-cfg=cfg(doc_cfg)");
+            println!("cargo:rustc-check-cfg=cfg(no_core_ffi_c_char)");
+            println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
+        }
+
+        if rustc.minor < 63 {
+            println!("cargo:warning=The cxx crate requires a rustc version 1.63.0 or newer.");
             println!(
                 "cargo:warning=You appear to be building with: {}",
                 rustc.version,
