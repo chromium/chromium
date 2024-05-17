@@ -335,6 +335,17 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
   media_route_starter_->StartRoute(std::move(params));
 }
 
+void AccessCodeCastHandler::OnSinkAddedResultForTesting(
+    access_code_cast::mojom::AddSinkResultCode add_sink_result,
+    std::optional<MediaSink::Id> sink_id) {
+  OnSinkAddedResult(add_sink_result, sink_id);
+}
+
+void AccessCodeCastHandler::OnSinksUpdatedForTesting(
+    const std::vector<MediaSinkWithCastModes>& sinks) {
+  OnSinksUpdated(sinks);
+}
+
 // MediaRouter::CreateRoute callback handler - log the success / failure of the
 // CreateRoute operation and return the result code to the dialog.
 // If there is a presentation request, call the appropriate presentation

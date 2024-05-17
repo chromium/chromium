@@ -171,7 +171,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   AccessCodeCastHandler* handler() { return handler_.get(); }
 
   MediaRouteStarter* media_route_starter() {
-    return handler_->media_route_starter_.get();
+    return handler_->GetMediaRouteStarterForTesting();
   }
 
   TestingProfileManager* profile_manager() { return profile_manager_.get(); }
@@ -216,7 +216,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     set_screen_capture_allowed_for_testing(true);
 
     UpdateSinks({cast_sink_1().sink()}, std::vector<url::Origin>());
-    handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
+    handler()->SetSinkIdForTesting(cast_sink_1().sink().id());
 
     EXPECT_CALL(*router(),
                 CreateRouteInternal(source.id(), cast_sink_1().sink().id(), _,
@@ -233,7 +233,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
                   std::move(start_presentation_context));
 
     UpdateSinks({cast_sink_1().sink()}, {request.frame_origin});
-    handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
+    handler()->SetSinkIdForTesting(cast_sink_1().sink().id());
 
     auto source =
         MediaSource::ForPresentationUrl(*(request.presentation_urls.begin()));
@@ -370,16 +370,16 @@ TEST_F(AccessCodeCastHandlerTest, OnSinkAddedResult) {
 
   EXPECT_CALL(mock_callback_failure,
               Run(AddSinkResultCode::CHANNEL_OPEN_ERROR));
-  handler()->OnSinkAddedResult(AddSinkResultCode::CHANNEL_OPEN_ERROR,
-                               std::nullopt);
-  EXPECT_FALSE(handler()->sink_id_.has_value());
+  handler()->OnSinkAddedResultForTesting(AddSinkResultCode::CHANNEL_OPEN_ERROR,
+                                         std::nullopt);
+  EXPECT_FALSE(handler()->GetSinkIdForTesting().has_value());
 
   MockAddSinkCallback mock_callback_ok;
   handler()->SetSinkCallbackForTesting(mock_callback_ok.Get());
 
   EXPECT_CALL(mock_callback_ok, Run(AddSinkResultCode::OK)).Times(0);
-  handler()->OnSinkAddedResult(AddSinkResultCode::OK, "123456");
-  EXPECT_EQ(handler()->sink_id_.value(), "123456");
+  handler()->OnSinkAddedResultForTesting(AddSinkResultCode::OK, "123456");
+  EXPECT_EQ(handler()->GetSinkIdForTesting().value(), "123456");
 }
 
 // Demonstrates that if the expected device is added to the media router,
@@ -393,8 +393,8 @@ TEST_F(AccessCodeCastHandlerTest, DiscoveredDeviceAdded) {
   MediaSinkWithCastModes sink_with_cast_modes(cast_sink_1().sink());
   sink_with_cast_modes.cast_modes = {MediaCastMode::DESKTOP_MIRROR};
 
-  handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
-  handler()->OnSinksUpdated({sink_with_cast_modes});
+  handler()->SetSinkIdForTesting(cast_sink_1().sink().id());
+  handler()->OnSinksUpdatedForTesting({sink_with_cast_modes});
 }
 
 // Demonstrates that if handler is notified about a device other than the
@@ -404,12 +404,12 @@ TEST_F(AccessCodeCastHandlerTest, OtherDevicesIgnored) {
   EXPECT_CALL(mock_callback, Run(_)).Times(Exactly(0));
   handler()->SetSinkCallbackForTesting(mock_callback.Get());
 
-  handler()->set_sink_id_for_testing(cast_sink_1().sink().id());
+  handler()->SetSinkIdForTesting(cast_sink_1().sink().id());
 
   MediaSinkWithCastModes sink_with_cast_modes(cast_sink_2().sink());
   sink_with_cast_modes.cast_modes = {MediaCastMode::DESKTOP_MIRROR};
 
-  handler()->OnSinksUpdated({sink_with_cast_modes});
+  handler()->OnSinksUpdatedForTesting({sink_with_cast_modes});
 }
 
 // Demonstrates that desktop mirroring attempts call media router with the
@@ -517,7 +517,7 @@ TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
   CreateHandler({MediaCastMode::DESKTOP_MIRROR});
   set_screen_capture_allowed_for_testing(true);
   UpdateSinks({access_code_sink.sink()}, std::vector<url::Origin>());
-  handler()->set_sink_id_for_testing(access_code_sink.sink().id());
+  handler()->SetSinkIdForTesting(access_code_sink.sink().id());
 
   MediaRoute media_route_access = CreateRouteForTesting(access_code_sink.id());
   std::vector<MediaRoute> route_list = {media_route_access};
