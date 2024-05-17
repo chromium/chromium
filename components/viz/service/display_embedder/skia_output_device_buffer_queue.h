@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -101,9 +101,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // Given an overlay mailbox, returns the corresponding OverlayData* from
   // |overlays_|. Inserts an OverlayData if mailbox is not in |overlays_|.
-  OverlayData* GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
-                                      bool is_root_render_pass,
-                                      bool* is_existing = nullptr);
+  const OverlayData* GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
+                                            bool is_root_render_pass,
+                                            bool* is_existing = nullptr);
 
   std::unique_ptr<OutputPresenter> presenter_;
   const gpu::GpuDriverBugWorkarounds workarounds_;
@@ -144,16 +144,22 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Mailboxes of committed overlays for the last SwapBuffers call.
   std::vector<gpu::Mailbox> committed_overlay_mailboxes_;
 
-  class OverlayDataComparator {
-   public:
+  struct OverlayDataHash {
+    using is_transparent = void;
+    std::size_t operator()(const OverlayData& o) const;
+    std::size_t operator()(const gpu::Mailbox& m) const;
+  };
+
+  struct OverlayDataKeyEqual {
     using is_transparent = void;
     bool operator()(const OverlayData& lhs, const OverlayData& rhs) const;
     bool operator()(const OverlayData& lhs, const gpu::Mailbox& rhs) const;
-    bool operator()(const gpu::Mailbox& lhs, const OverlayData& rhs) const;
   };
+
   // A set for all overlays. The set uses overlay_data.mailbox() as the unique
   // key.
-  base::flat_set<OverlayData, OverlayDataComparator> overlays_;
+  std::unordered_set<OverlayData, OverlayDataHash, OverlayDataKeyEqual>
+      overlays_;
 
   // Set to true if no image is to be used for the primary plane of this frame.
   bool current_frame_has_no_primary_plane_ = false;

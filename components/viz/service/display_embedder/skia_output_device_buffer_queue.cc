@@ -61,7 +61,8 @@ namespace viz {
 
 class SkiaOutputDeviceBufferQueue::OverlayData {
  public:
-  OverlayData() = default;
+  OverlayData() = delete;
+  OverlayData(OverlayData&& other) = delete;
 
   OverlayData(std::unique_ptr<gpu::OverlayImageRepresentation> representation,
               std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
@@ -69,28 +70,14 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
               bool is_root_render_pass)
       : representation_(std::move(representation)),
         scoped_read_access_(std::move(scoped_read_access)),
-        ref_(1),
         is_root_render_pass_(is_root_render_pass) {
     DCHECK(representation_);
     DCHECK(scoped_read_access_);
   }
 
-  OverlayData(OverlayData&& other) { *this = std::move(other); }
+  ~OverlayData() = default;
 
-  ~OverlayData() { Reset(); }
-
-  OverlayData& operator=(OverlayData&& other) {
-    DCHECK(!IsInUseByWindowServer());
-    DCHECK(!ref_);
-    DCHECK(!scoped_read_access_);
-    DCHECK(!representation_);
-    scoped_read_access_ = std::move(other.scoped_read_access_);
-    representation_ = std::move(other.representation_);
-    ref_ = other.ref_;
-    other.ref_ = 0;
-    is_root_render_pass_ = other.is_root_render_pass_;
-    return *this;
-  }
+  OverlayData& operator=(OverlayData&& other) = delete;
 
   bool IsInUseByWindowServer() const {
 #if BUILDFLAG(IS_APPLE)
@@ -108,19 +95,15 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
 #endif
   }
 
-  void Ref() { ++ref_; }
+  void Ref() const { ++ref_; }
 
-  void Unref() {
-    DCHECK_GT(ref_, 0);
-    if (ref_ > 1) {
-      --ref_;
-    } else if (ref_ == 1) {
-      DCHECK(!IsInUseByWindowServer());
-      Reset();
-    }
+  void Unref() const {
+    // Unref should only be called when there is more than one reference.
+    DCHECK_GT(ref_, 1);
+    --ref_;
   }
 
-  void OnReuse() {
+  void OnReuse() const {
     // This is a proxy check for single-buffered overlay.
     if ((representation_->usage() &
          gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
@@ -133,7 +116,7 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     }
   }
 
-  void OnContextLost() { representation_->OnContextLost(); }
+  void OnContextLost() const { representation_->OnContextLost(); }
 
   bool unique() const { return ref_ == 1; }
   const gpu::Mailbox& mailbox() const { return representation_->mailbox(); }
@@ -142,20 +125,14 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
     return scoped_read_access_.get();
   }
 
-  bool IsRootRenderPass() { return is_root_render_pass_; }
+  bool IsRootRenderPass() const { return is_root_render_pass_; }
 
  private:
-  void Reset() {
-    scoped_read_access_.reset();
-    representation_.reset();
-    ref_ = 0;
-  }
-
-  std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
-  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
+  const std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
+  mutable std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
       scoped_read_access_;
-  int ref_ = 0;
-  bool is_root_render_pass_ = false;
+  mutable int ref_ = 1;
+  const bool is_root_render_pass_ = false;
 };
 
 SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
@@ -372,7 +349,7 @@ void SkiaOutputDeviceBufferQueue::SchedulePrimaryPlane(
   }
 }
 
-SkiaOutputDeviceBufferQueue::OverlayData*
+const SkiaOutputDeviceBufferQueue::OverlayData*
 SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
                                                     bool is_root_render_pass,
                                                     bool* is_existing) {
@@ -589,7 +566,7 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   [[maybe_unused]] std::vector<gpu::Mailbox> released_overlays;
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
-  base::EraseIf(overlays_, [&result, &has_in_use_overlays,
+  std::erase_if(overlays_, [&result, &has_in_use_overlays,
                             &released_overlays](auto& overlay) {
     if (!overlay.unique()) {
       return false;
@@ -618,7 +595,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
       overlay.scoped_read_access()->SetReleaseFence(
           result.release_fence.Clone());
     }
-    overlay.Unref();
     return true;
   });
 
@@ -674,7 +650,7 @@ void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
 
   std::vector<gpu::Mailbox> released_overlays;
 
-  base::EraseIf(overlays_, [&released_overlays](auto& overlay) {
+  std::erase_if(overlays_, [&released_overlays](auto& overlay) {
     if (!overlay.unique() || overlay.IsInUseByWindowServer() ||
         overlay.IsRootRenderPass()) {
       return false;
@@ -689,8 +665,6 @@ void SkiaOutputDeviceBufferQueue::ReleaseOverlays() {
 #else
     (void)released_overlays;
 #endif
-
-    overlay.Unref();
     return true;
   });
 
@@ -809,21 +783,26 @@ bool SkiaOutputDeviceBufferQueue::EnsureMinNumberOfBuffers(size_t n) {
   return RecreateImages();
 }
 
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
-    const OverlayData& lhs,
-    const OverlayData& rhs) const {
-  return lhs.mailbox() < rhs.mailbox();
+size_t SkiaOutputDeviceBufferQueue::OverlayDataHash::operator()(
+    const OverlayData& o) const {
+  return std::hash<gpu::Mailbox>{}(o.mailbox());
 }
 
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
+size_t SkiaOutputDeviceBufferQueue::OverlayDataHash::operator()(
+    const gpu::Mailbox& m) const {
+  return std::hash<gpu::Mailbox>{}(m);
+}
+
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
+    const OverlayData& lhs,
+    const OverlayData& rhs) const {
+  return lhs.mailbox() == rhs.mailbox();
+}
+
+bool SkiaOutputDeviceBufferQueue::OverlayDataKeyEqual::operator()(
     const OverlayData& lhs,
     const gpu::Mailbox& rhs) const {
-  return lhs.mailbox() < rhs;
-}
-bool SkiaOutputDeviceBufferQueue::OverlayDataComparator::operator()(
-    const gpu::Mailbox& lhs,
-    const OverlayData& rhs) const {
-  return lhs < rhs.mailbox();
+  return lhs.mailbox() == rhs;
 }
 
 void SkiaOutputDeviceBufferQueue::SetVSyncDisplayID(int64_t display_id) {
