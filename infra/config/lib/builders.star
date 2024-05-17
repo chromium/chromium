@@ -363,6 +363,7 @@ defaults = args.defaults(
     siso_experiments = [],
     siso_remote_jobs = None,
     health_spec = None,
+    builder_config_settings = None,
 
     # Variables for modifying builder characteristics in a shadow bucket
     shadow_builderless = None,
@@ -402,7 +403,7 @@ def builder(
         builder_group = args.DEFAULT,
         builder_spec = None,
         mirrors = None,
-        builder_config_settings = None,
+        builder_config_settings = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         sheriff_rotations = None,
@@ -690,9 +691,6 @@ def builder(
 
     if builder_spec and mirrors:
         fail("Only one of builder_spec or mirrors can be set")
-    if builder_config_settings and not (builder_spec or mirrors):
-        fail("builder_config_settings can only be set if builder_spec or " +
-             "mirrors is set")
 
     dimensions = {}
 
@@ -946,6 +944,10 @@ def builder(
 
     additional_exclusions = register_gn_args(builder_group, bucket, name, gn_args, use_siso)
 
+    builder_config_settings = defaults.get_value(
+        "builder_config_settings",
+        builder_config_settings,
+    )
     register_builder_config(
         bucket,
         name,

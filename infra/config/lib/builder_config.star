@@ -463,9 +463,6 @@ def register_builder_config(
             relative to the per-builder output root dir.
     """
     if not builder_spec and not mirrors:
-        if settings:
-            fail("settings specified without builder_spec or mirrors")
-
         # TODO(gbeaty) Eventually make this a failure for the chromium
         # family of recipes
         return
