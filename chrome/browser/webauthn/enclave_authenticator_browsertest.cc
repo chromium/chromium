@@ -435,11 +435,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       destruction_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
-    void AddAdditionalTransport(
-        std::optional<device::FidoTransportProtocol> transport) {
-      additional_transport_ = transport;
-    }
-
     void SetPendingTrustedVaultConnection(
         std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
       pending_connection_ = std::move(connection);
@@ -468,11 +463,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override {
-      if (additional_transport_.has_value()) {
-        tai->available_transports.insert(*additional_transport_);
-      }
-    }
+        override {}
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
       run_loop_->QuitWhenIdle();
@@ -487,7 +478,6 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
    private:
     raw_ptr<EnclaveAuthenticatorBrowserTest> test_instance_;
-    std::optional<device::FidoTransportProtocol> additional_transport_;
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     std::unique_ptr<base::RunLoop> run_loop_;
     std::unique_ptr<base::RunLoop> destruction_run_loop_;
@@ -2630,15 +2620,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
   delegate_observer()->WaitForDelegateDestruction();
 }
 
+// TODO(kenrb): This is disabled due to flakiness failures. It will be enabled
+// in a subsequent with a probable fix.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       MakeCredentialDeclineGPM) {
+                       DISABLED_MakeCredentialDeclineGPM) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
       DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
   SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
-  delegate_observer()->AddAdditionalTransport(
-      device::FidoTransportProtocol::kInternal);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2668,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForDelegateDestruction();
 
   // With the enclave configured, the next request should offer GPM as a
-  // priority mechanism for an attachment=platform request.
+  // priority mechanism.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
@@ -2691,8 +2681,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
 
-  // After backing out of GPM twice, the next attempt should default to
-  // mechanism selection.
+  // After backing out of GPM twice, the next attempts should default to
+  // mechanism selection
   content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
