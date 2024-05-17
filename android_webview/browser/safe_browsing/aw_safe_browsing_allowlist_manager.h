@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -19,6 +20,23 @@ class SequencedTaskRunner;
 
 namespace android_webview {
 struct TrieNode;
+
+class AwSafeBrowsingAllowlistManager;
+
+class AwSafeBrowsingAllowlistSetObserver : public base::CheckedObserver {
+ public:
+  explicit AwSafeBrowsingAllowlistSetObserver(
+      AwSafeBrowsingAllowlistManager* manager);
+
+  virtual void OnSafeBrowsingAllowListSet() = 0;
+
+  ~AwSafeBrowsingAllowlistSetObserver() override;
+
+ private:
+  // AwSafeBrowsingAllowlistManager has static singleton lifetime so raw_ptr
+  // will be fine.
+  raw_ptr<AwSafeBrowsingAllowlistManager> manager_;
+};
 
 // This class tracks the allowlisting policies for Safebrowsing. The class
 // interacts with UI thread, where the allowlist is set, and then checks
@@ -76,6 +94,11 @@ class AwSafeBrowsingAllowlistManager {
   void SetAllowlistOnUIThread(std::vector<std::string>&& rules,
                               base::OnceCallback<void(bool)> callback);
 
+  void RegisterAllowlistSetObserver(
+      AwSafeBrowsingAllowlistSetObserver* observer);
+
+  void RemoveAllowlistSetObserver(AwSafeBrowsingAllowlistSetObserver* observer);
+
  private:
   // Builds allowlist on background thread.
   void BuildAllowlist(const std::vector<std::string>& rules,
@@ -86,6 +109,9 @@ class AwSafeBrowsingAllowlistManager {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+
+  base::ObserverList<AwSafeBrowsingAllowlistSetObserver>
+      allowlist_set_observers_;
 
   std::unique_ptr<TrieNode> allowlist_;
 };

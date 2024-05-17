@@ -179,6 +179,16 @@ bool IsAllowed(const GURL& url, const TrieNode* node) {
 
 }  // namespace
 
+AwSafeBrowsingAllowlistSetObserver::AwSafeBrowsingAllowlistSetObserver(
+    AwSafeBrowsingAllowlistManager* manager)
+    : manager_(manager) {
+  manager_->RegisterAllowlistSetObserver(this);
+}
+
+AwSafeBrowsingAllowlistSetObserver::~AwSafeBrowsingAllowlistSetObserver() {
+  manager_->RemoveAllowlistSetObserver(this);
+}
+
 AwSafeBrowsingAllowlistManager::AwSafeBrowsingAllowlistManager(
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner)
@@ -192,6 +202,9 @@ AwSafeBrowsingAllowlistManager::~AwSafeBrowsingAllowlistManager() {}
 void AwSafeBrowsingAllowlistManager::SetAllowlist(
     std::unique_ptr<TrieNode> allowlist) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  for (auto&& observer : allowlist_set_observers_) {
+    observer.OnSafeBrowsingAllowListSet();
+  }
   allowlist_ = std::move(allowlist);
 }
 
@@ -237,6 +250,16 @@ bool AwSafeBrowsingAllowlistManager::IsUrlAllowed(const GURL& url) const {
     return false;
   }
   return IsAllowed(url, allowlist_.get());
+}
+
+void AwSafeBrowsingAllowlistManager::RegisterAllowlistSetObserver(
+    AwSafeBrowsingAllowlistSetObserver* listener) {
+  allowlist_set_observers_.AddObserver(listener);
+}
+
+void AwSafeBrowsingAllowlistManager::RemoveAllowlistSetObserver(
+    AwSafeBrowsingAllowlistSetObserver* listener) {
+  allowlist_set_observers_.RemoveObserver(listener);
 }
 
 }  // namespace android_webview

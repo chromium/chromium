@@ -235,6 +235,8 @@ AwRenderProcessGoneDelegate* AwRenderProcessGoneDelegate::FromWebContents(
 
 AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
+      AwSafeBrowsingAllowlistSetObserver(
+          AwBrowserProcess::GetInstance()->GetSafeBrowsingAllowlistManager()),
       browser_view_renderer_(this,
                              content::GetUIThreadTaskRunner({}),
                              content::GetIOThreadTaskRunner({})),
@@ -1612,6 +1614,10 @@ AwContents::RenderProcessGoneResult AwContents::OnRenderProcessGone(
 
   return result ? RenderProcessGoneResult::kHandled
                 : RenderProcessGoneResult::kUnhandled;
+}
+
+void AwContents::OnSafeBrowsingAllowListSet() {
+  web_contents()->GetController().GetBackForwardCache().Flush();
 }
 
 }  // namespace android_webview

@@ -25,6 +25,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -37,6 +38,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -561,5 +563,34 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         Assert.assertTrue(isPageShowPersisted());
         helper.waitForCallback(originalCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(helper.getUrl(), mInitialUrl);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageEvictedWhenSafeBrowsingAllowlistSet() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        ArrayList<String> allowlist = new ArrayList<>();
+        allowlist.add("google.com");
+        SettableFuture<Boolean> allowlistSetFuture = SettableFuture.create();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AwContentsStatics.setSafeBrowsingAllowlist(
+                                allowlist,
+                                result -> {
+                                    allowlistSetFuture.set(true);
+                                }));
+        Assert.assertTrue(allowlistSetFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        navigateBack();
+        String notRestoredReasons = getNotRestoredReasons();
+        Assert.assertEquals(extractSimpleReasonString(notRestoredReasons), "masked");
+        Assert.assertFalse(isPageShowPersisted());
+
+        // Test BFCache can still work for future navigations
+        navigateForwardAndBack();
+        Assert.assertTrue(isPageShowPersisted());
     }
 }
